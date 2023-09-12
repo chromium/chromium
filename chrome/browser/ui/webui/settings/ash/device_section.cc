@@ -744,7 +744,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       // TODO(crbug.com/1097328): Remove this string, as it is unused.
       {"keyboardShowLanguageAndInput",
        IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT},
-      {"keyboardTitle", IDS_SETTINGS_KEYBOARD_TITLE},
+      {"keyboardTitle", kIsRevampEnabled
+                            ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE
+                            : IDS_SETTINGS_KEYBOARD_TITLE},
       {"keyRepeatDelay", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY},
       {"keyRepeatDelayLong", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY_LONG},
       {"keyRepeatDelayShort", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY_SHORT},
@@ -1155,9 +1157,13 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kPointers, kPointersSettings,
                             generator);
 
+  const int kKeyboardTitleStringID =
+      ash::features::IsOsSettingsRevampWayfindingEnabled()
+          ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE
+          : IDS_SETTINGS_KEYBOARD_TITLE;
   if (base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit)) {
     // Per-device Keyboard.
-    generator->RegisterTopLevelSubpage(IDS_SETTINGS_KEYBOARD_TITLE,
+    generator->RegisterTopLevelSubpage(kKeyboardTitleStringID,
                                        mojom::Subpage::kPerDeviceKeyboard,
                                        mojom::SearchResultIcon::kKeyboard,
                                        mojom::SearchResultDefaultRank::kMedium,
@@ -1236,7 +1242,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Keyboard.
   generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_KEYBOARD_TITLE, mojom::Subpage::kKeyboard,
+      kKeyboardTitleStringID, mojom::Subpage::kKeyboard,
       mojom::SearchResultIcon::kKeyboard,
       mojom::SearchResultDefaultRank::kMedium, mojom::kKeyboardSubpagePath);
   static constexpr mojom::Setting kKeyboardSettings[] = {
