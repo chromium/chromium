@@ -245,9 +245,13 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     });
 
     this.$.historyGraph.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (this.currentPricePointIndex_ != null) {
-        let nextIndex = -1;
+      if (this.currentPricePointIndex_ != null &&
+          (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        this.$.historyGraph.focus();
+        e.preventDefault();
+        e.stopPropagation();
 
+        let nextIndex = -1;
         if (e.key === 'ArrowLeft') {
           nextIndex = this.currentPricePointIndex_ - 1;
         } else if (e.key === 'ArrowRight') {
