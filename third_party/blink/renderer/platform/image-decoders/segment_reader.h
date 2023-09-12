@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_SEGMENT_READER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -15,9 +16,6 @@ template <typename T>
 class sk_sp;
 
 namespace blink {
-
-class ROBuffer;
-class ParkableImage;
 
 // Interface that looks like SharedBuffer. Used by ImageDecoders to use various
 // sources of input including:
@@ -43,8 +41,6 @@ class PLATFORM_EXPORT SegmentReader
   static scoped_refptr<SegmentReader> CreateFromSkData(sk_sp<SkData>);
   static scoped_refptr<SegmentReader> CreateFromROBuffer(
       scoped_refptr<ROBuffer>);
-  static scoped_refptr<SegmentReader> CreateFromParkableImage(
-      scoped_refptr<ParkableImage>);
 
   SegmentReader() = default;
   SegmentReader(const SegmentReader&) = delete;
@@ -54,6 +50,13 @@ class PLATFORM_EXPORT SegmentReader
   virtual sk_sp<SkData> GetAsSkData() const = 0;
   virtual void LockData() {}
   virtual void UnlockData() {}
+
+  static sk_sp<SkData> RWBufferCopyAsSkData(RWBuffer::ROIter iter,
+                                            size_t available);
+  static size_t RWBufferGetSomeData(RWBuffer::ROIter& iter,
+                                    size_t& position_of_block,
+                                    const char*& data,
+                                    size_t position);
 
  protected:
   friend class ThreadSafeRefCounted<SegmentReader>;

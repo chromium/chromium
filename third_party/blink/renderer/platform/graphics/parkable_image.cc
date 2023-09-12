@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -95,6 +96,97 @@ void NotifyWriteToDiskFinished(scoped_refptr<ParkableImageImpl>) {
 }
 
 }  // namespace
+
+// ParkableImageSegmentReader
+
+class ParkableImageSegmentReader : public SegmentReader {
+ public:
+  explicit ParkableImageSegmentReader(scoped_refptr<ParkableImage> image);
+  size_t size() const override;
+  size_t GetSomeData(const char*& data, size_t position) const override;
+  sk_sp<SkData> GetAsSkData() const override;
+  void LockData() override;
+  void UnlockData() override;
+
+ private:
+  ~ParkableImageSegmentReader() override = default;
+  scoped_refptr<ParkableImage> parkable_image_;
+  size_t available_;
+};
+
+ParkableImageSegmentReader::ParkableImageSegmentReader(
+    scoped_refptr<ParkableImage> image)
+    : parkable_image_(std::move(image)), available_(parkable_image_->size()) {}
+
+size_t ParkableImageSegmentReader::size() const {
+  return available_;
+}
+
+size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
+                                               size_t position) const {
+  if (!parkable_image_) {
+    return 0;
+  }
+
+  base::AutoLock lock(parkable_image_->impl_->lock_);
+  DCHECK(parkable_image_->impl_->is_locked());
+
+  RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
+  size_t position_of_block = 0;
+
+  return RWBufferGetSomeData(iter, position_of_block, data, position);
+}
+
+sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
+  if (!parkable_image_) {
+    return nullptr;
+  }
+
+  base::AutoLock lock(parkable_image_->impl_->lock_);
+  parkable_image_->impl_->Unpark();
+
+  RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
+
+  if (!iter.HasNext()) {  // No need to copy because the data is contiguous.
+    // We lock here so that we don't get a use-after-free. ParkableImage can
+    // not be parked while it is locked, so the buffer is valid for the whole
+    // lifetime of the SkData. We add the ref so that the ParkableImage has a
+    // longer limetime than the SkData.
+    parkable_image_->AddRef();
+    parkable_image_->LockData();
+    return SkData::MakeWithProc(
+        iter.data(), available_,
+        [](const void* ptr, void* context) -> void {
+          auto* parkable_image = static_cast<ParkableImage*>(context);
+          {
+            base::AutoLock lock(parkable_image->impl_->lock_);
+            parkable_image->UnlockData();
+          }
+          // Don't hold the mutex while we call |Release|, since |Release| can
+          // free the ParkableImage, if this is the last reference to it;
+          // Freeing the ParkableImage while the mutex is held causes a UAF when
+          // the dtor for base::AutoLock is called.
+          parkable_image->Release();
+        },
+        parkable_image_.get());
+  }
+
+  // Data is not contiguous so we need to copy.
+  return RWBufferCopyAsSkData(iter, available_);
+}
+
+void ParkableImageSegmentReader::LockData() {
+  base::AutoLock lock(parkable_image_->impl_->lock_);
+  parkable_image_->impl_->Unpark();
+
+  parkable_image_->LockData();
+}
+
+void ParkableImageSegmentReader::UnlockData() {
+  base::AutoLock lock(parkable_image_->impl_->lock_);
+
+  parkable_image_->UnlockData();
+}
 
 BASE_FEATURE(kUseParkableImageSegmentReader,
              "UseParkableImageSegmentReader",
@@ -448,8 +540,7 @@ scoped_refptr<SegmentReader> ParkableImage::MakeROSnapshot() {
   DCHECK_CALLED_ON_VALID_THREAD(impl_->thread_checker_);
 
   if (base::FeatureList::IsEnabled(kUseParkableImageSegmentReader)) {
-    return SegmentReader::CreateFromParkableImage(
-        scoped_refptr<ParkableImage>(this));
+    return CreateSegmentReader();
   } else {
     return impl_->GetROBufferSegmentReader();
   }
@@ -478,6 +569,10 @@ void ParkableImage::LockData() {
 void ParkableImage::UnlockData() {
   DCHECK(impl_);
   impl_->UnlockData();
+}
+
+scoped_refptr<SegmentReader> ParkableImage::CreateSegmentReader() {
+  return base::MakeRefCounted<ParkableImageSegmentReader>(this);
 }
 
 }  // namespace blink

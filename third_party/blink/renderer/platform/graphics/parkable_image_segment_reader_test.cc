@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 
 namespace blink {
 namespace {
@@ -27,7 +27,7 @@ TEST_F(ParkableImageSegmentReaderTest, Empty) {
   auto pi = ParkableImage::Create();
   ASSERT_EQ(pi->size(), 0u);  // ParkableImage is empty when created.
 
-  auto segment_reader = SegmentReader::CreateFromParkableImage(pi);
+  auto segment_reader = pi->CreateSegmentReader();
   // ParkableImageSegmentReader is also empty when created.
   EXPECT_EQ(segment_reader->size(), 0u);
 }
@@ -40,7 +40,7 @@ TEST_F(ParkableImageSegmentReaderTest, NonEmpty) {
   ASSERT_EQ(pi->size(),
             sizeof(g_abc));  // ParkableImage is larger after Append.
 
-  auto segment_reader = SegmentReader::CreateFromParkableImage(pi);
+  auto segment_reader = pi->CreateSegmentReader();
 
   // SegmentReader is the same size as ParkableImage.
   EXPECT_EQ(segment_reader->size(), sizeof(g_abc));
@@ -57,7 +57,7 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
   ASSERT_EQ(pi->size(),
             shared_buffer_size);  // ParkableImage is larger after Append.
 
-  auto segment_reader = SegmentReader::CreateFromParkableImage(pi);
+  auto segment_reader = pi->CreateSegmentReader();
   // ParkableImageSegmentReader is same size as ParkableImage when created.
   EXPECT_EQ(segment_reader->size(), shared_buffer_size);
 
@@ -82,8 +82,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
     parkable_image->Append(shared_buffer.get(), parkable_image->size());
   }
 
-  auto segment_reader =
-      SegmentReader::CreateFromParkableImage(std::move(parkable_image));
+  auto segment_reader = parkable_image->CreateSegmentReader();
   segment_reader->LockData();
 
   const char* segment;
@@ -111,8 +110,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
     parkable_image->Append(shared_buffer.get(), parkable_image->size());
   }
 
-  auto segment_reader =
-      SegmentReader::CreateFromParkableImage(std::move(parkable_image));
+  auto segment_reader = parkable_image->CreateSegmentReader();
   segment_reader->LockData();
   auto sk_data = segment_reader->GetAsSkData();
 
@@ -138,8 +136,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
   shared_buffer->Append(data, kDataSize);
   parkable_image->Append(shared_buffer.get(), parkable_image->size());
 
-  auto segment_reader =
-      SegmentReader::CreateFromParkableImage(std::move(parkable_image));
+  auto segment_reader = parkable_image->CreateSegmentReader();
   auto sk_data = segment_reader->GetAsSkData();
 
   // Make it so that |sk_data| is the only reference to the ParkableImage.
