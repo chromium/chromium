@@ -4450,6 +4450,9 @@
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
         # These are slow on the ASAN trybot for some reason.
         # crbug.com/1257927
         'swarming': {
@@ -4475,11 +4478,19 @@
           'shards': 2,
         },
       },
+      'Linux Tests': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
+      },
       # https://crbug.com/1184127
       'Linux Tests (Wayland)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
       },
       'Mac13 Tests': {
         'swarming': {
@@ -4517,6 +4528,9 @@
         },
       },
       'linux-chromeos-rel': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 2,
         },
@@ -4532,6 +4546,11 @@
         'swarming': {
           'shards': 2,
         },
+      },
+      'linux-lacros-tester-rel': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
       },
       'linux-rel-dev': {
         'swarming': {
