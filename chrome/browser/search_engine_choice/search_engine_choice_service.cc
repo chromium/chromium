@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -121,6 +122,13 @@ SearchEngineChoiceService::GetSearchEngines() {
 }
 
 bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
+  if (web_app::AppBrowserController::IsWebApp(&browser)) {
+    // Showing a Chrome-specific search engine dialog on top of a window
+    // dedicated to a specific web app is a horrible UX, we suppress it for this
+    // window. When the user proceeds to a non-web app window they will get it.
+    return false;
+  }
+
   // To avoid conflict, the dialog should not be shown if a sign-in dialog is
   // being currently displayed.
   if (browser.signin_view_controller()->ShowsModalDialog()) {
