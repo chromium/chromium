@@ -101,6 +101,9 @@ constexpr FetcherConfig kTestRetryConfig{
         },
 };
 
+// Receiver is an artificial consumer of the fetch process. Typically, calling
+// an RPC has the purpose of writing the data somewhere. Instances of this class
+// serve as a general-purpose destination for fetched data.
 class Receiver {
  public:
   const base::expected<std::unique_ptr<Response>, ProtoFetcherStatus>&
@@ -116,12 +119,6 @@ class Receiver {
       return;
     }
     result_ = std::move(response);
-  }
-
-  void ReceiveDeferred(std::unique_ptr<DeferredProtoFetcher<Response>> fetcher,
-                       ProtoFetcherStatus fetch_status,
-                       std::unique_ptr<Response> response) {
-    Receive(fetch_status, std::move(response));
   }
 
  private:
@@ -160,6 +157,7 @@ class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
     return fetcher;
   }
 
+  // Url loader helpers
   const GURL& GetUrlOfPendingRequest(size_t index) {
     return test_url_loader_factory_.GetPendingRequest(index)->request.url;
   }
@@ -188,12 +186,16 @@ class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
         GetUrlOfPendingRequest(index).spec(), "malformed-response");
   }
 
+  // Some tests check backoff strategies which introduce delays, this method is
+  // forwarding the time so that all operations scheduled in the future are
+  // completed. See FetcherConfig::backoff_policy for details.
   void FastForward() {
     // Fast forward enough to schedule all retries, which for testing should be
     // configured as order of millisecond.
     task_environment_.FastForwardBy(base::Hours(1));
   }
 
+  // Test identity environment helpers.
   void MakePrimaryAccountAvailable() {
     identity_test_env_.MakePrimaryAccountAvailable("bob@gmail.com",
                                                    ConsentLevel::kSignin);
@@ -213,6 +215,7 @@ class ProtoFetcherTest : public ::testing::TestWithParam<FetcherConfig> {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Test whether the outgoing request has correctly set endpoint and method.
 TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
   MakePrimaryAccountAvailable();
   SetAutomaticIssueOfAccessTokens();
@@ -230,6 +233,8 @@ TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
   EXPECT_EQ(pending_request->request.method, GetConfig().GetHttpMethod());
 }
 
+// Test whether the outgoing request has the HTTP payload, only for those HTTP
+// verbs that support it.
 TEST_P(ProtoFetcherTest, AddsPayload) {
   if (GetConfig().method != FetcherConfig::Method::kPost) {
     GTEST_SKIP() << "Payload not supported for " << GetConfig().GetHttpMethod()
@@ -251,6 +256,7 @@ TEST_P(ProtoFetcherTest, AddsPayload) {
   EXPECT_EQ(header, "application/x-protobuf");
 }
 
+// Tests a default flow, where an empty (default) proto is received.
 TEST_P(ProtoFetcherTest, AcceptsRequests) {
   MakePrimaryAccountAvailable();
   SetAutomaticIssueOfAccessTokens();
@@ -263,6 +269,9 @@ TEST_P(ProtoFetcherTest, AcceptsRequests) {
   EXPECT_TRUE(receiver->GetResult().has_value());
 }
 
+// Tests a flow where the caller is denied access token. There should be
+// response consumed, that indicated auth error and contains details about the
+// reason for denying access.
 TEST_P(ProtoFetcherTest, NoAccessToken) {
   MakePrimaryAccountAvailable();
   std::unique_ptr<Receiver> receiver = MakeReceiver();
@@ -279,6 +288,8 @@ TEST_P(ProtoFetcherTest, NoAccessToken) {
             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 }
 
+// Tests a flow where incoming data from RPC can't be deserialized to a valid
+// proto.
 TEST_P(ProtoFetcherTest, HandlesMalformedResponse) {
   MakePrimaryAccountAvailable();
   SetAutomaticIssueOfAccessTokens();
@@ -293,6 +304,8 @@ TEST_P(ProtoFetcherTest, HandlesMalformedResponse) {
             ProtoFetcherStatus::State::INVALID_RESPONSE);
 }
 
+// Tests whether access token information is added to the request in a right
+// header.
 TEST_P(ProtoFetcherTest, CreatesToken) {
   MakePrimaryAccountAvailable();
   SetAutomaticIssueOfAccessTokens();
@@ -310,6 +323,8 @@ TEST_P(ProtoFetcherTest, CreatesToken) {
   EXPECT_EQ(authorization_header, "Bearer access_token");
 }
 
+// Tests a flow where the request couldn't be completed due to network
+// infrastructure errors. The result must contain details about the error.
 TEST_P(ProtoFetcherTest, HandlesNetworkError) {
   if (GetConfig().backoff_policy.has_value()) {
     GTEST_SKIP() << "Test not suitable for retrying fetchers: is serves "
@@ -334,6 +349,8 @@ TEST_P(ProtoFetcherTest, HandlesNetworkError) {
             ProtoFetcherStatus::HttpStatusOrNetErrorType(net::ERR_UNEXPECTED));
 }
 
+// Tests a flow where the remote server couldn't process the request and
+// responded with an error.
 TEST_P(ProtoFetcherTest, HandlesServerError) {
   if (GetConfig().backoff_policy.has_value()) {
     GTEST_SKIP() << "Test not suitable for retrying fetchers: is serves "
@@ -357,6 +374,9 @@ TEST_P(ProtoFetcherTest, HandlesServerError) {
       ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_BAD_REQUEST));
 }
 
+// The fetchers are recording various metrics for the basic flow with default
+// empty proto response. This test is checking whether all metrics receive right
+// values.
 TEST_P(ProtoFetcherTest, RecordsMetrics) {
   MakePrimaryAccountAvailable();
   SetAutomaticIssueOfAccessTokens();
@@ -387,6 +407,11 @@ TEST_P(ProtoFetcherTest, RecordsMetrics) {
                   ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR, 0)));
 }
 
+// When retrying is configured, the fetch process is re-launched until a
+// decisive status is received (OK or permanent error, see
+// RetryingFetcherImpl::ShouldRetry for details). This tests checks that the
+// compound fetch process eventually terminates and that related metrics are
+// also recorded.
 TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
   if (!GetConfig().backoff_policy.has_value()) {
     GTEST_SKIP() << "Tests retrying features.";
@@ -424,6 +449,11 @@ TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
               base::BucketsInclude(base::Bucket(3, 1)));
 }
 
+// When retrying is configured, the fetch process is re-launched until a
+// decisive status is received (OK or permanent error, see
+// RetryingFetcherImpl::ShouldRetry for details). This tests checks that the
+// compound fetch process eventually terminates and that related metrics are
+// also recorded.
 TEST_P(ProtoFetcherTest,
        RetryingFetcherTerminatesOnPersistentErrorAndRecordsMetrics) {
   if (!GetConfig().backoff_policy.has_value()) {
@@ -458,6 +488,12 @@ TEST_P(ProtoFetcherTest,
               base::BucketsInclude(base::Bucket(2, 1)));
 }
 
+// When retrying is configured, the fetch process is re-launched until a
+// decisive status is received (OK or permanent error, see
+// RetryingFetcherImpl::ShouldRetry for details). This tests assumes only
+// transient error responses from the server (eg. those that are expect to go
+// away on their own soon). This means that no response will be received, and no
+// extra retrying metrics recording, because the process is still not finished.
 TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
   if (!GetConfig().backoff_policy.has_value()) {
     GTEST_SKIP() << "Tests retrying features.";
@@ -538,7 +574,11 @@ class FetchManagerTest : public testing::Test {
   ClassifyUrlResponse response_;
 };
 
+// Tests whether two requests can be handled "in parallel" from the observer's
+// point of view.
 TEST_F(FetchManagerTest, HandlesMultipleRequests) {
+  // Receiver's callbacks will be executed two times, once for every scheduled
+  // fetch,
   EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(2);
 
   ParallelFetchManager<ClassifyUrlRequest, ClassifyUrlResponse> under_test(
@@ -551,6 +591,9 @@ TEST_F(FetchManagerTest, HandlesMultipleRequests) {
 
   // task_environment_.RunUntilIdle() would be called from simulations.
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 2L);
+
+  // This is unblocking the pending network traffic so that EXPECT_CALL will be
+  // fulfilled.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
       response_.SerializeAsString());
@@ -559,7 +602,11 @@ TEST_F(FetchManagerTest, HandlesMultipleRequests) {
       response_.SerializeAsString());
 }
 
+// Tests whether destroying the fetch manager will also terminate all pending
+// network operations.
 TEST_F(FetchManagerTest, CancelsRequestsUponDestruction) {
+  // Receiver's callbacks will never be executed, because the fetch manager
+  // `under_test` will be gone before the responses are received.
   EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(0);
 
   {
@@ -577,7 +624,7 @@ TEST_F(FetchManagerTest, CancelsRequestsUponDestruction) {
   }
 
   // Unblocking network traffic won't help executing callbacks, since their
-  // parent manager |under_test| is now gone.
+  // parent manager `under_test` is now gone.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
       response_.SerializeAsString());
@@ -618,7 +665,15 @@ class DeferredFetcherTest : public ::testing::Test {
   IdentityTestEnvironment identity_test_env_;
 };
 
+// This test demonstrates possible misusage of proto fetchers (antipattern) and
+// its behavior. A fetcher bound to its own callback will be executed even when
+// all *visible* references will be gone (because the one remaining reference is
+// inside the callback). Such usage strips the caller from any control over the
+// fetch process and makes cancel or termination impossible. Use
+// ParallelFetchManager instead.
 TEST_F(DeferredFetcherTest, IsCreatedAndStarted) {
+  // Receiver's callbacks will be executed despite the fact that after calling
+  // Fetcher::Start, all references in the test body to the fetcher are gone.
   EXPECT_CALL(*this, Done(::testing::_, ::testing::_)).Times(1);
 
   {
@@ -636,7 +691,8 @@ TEST_F(DeferredFetcherTest, IsCreatedAndStarted) {
     base::OnceCallback<CallbackType> callback =
         base::BindOnce(&DeferredFetcherTest::Done, base::Unretained(this));
 
-    // Self-bind pattern.
+    // Self-bind pattern. An std::unique_ptr<*Fetcher> will be passed on the
+    // stack until the actual callback is executed.
     auto* fetcher_ptr = fetcher.get();
     fetcher_ptr->Start(
         base::BindOnce(&OnResponse, std::move(fetcher), std::move(callback)));
@@ -648,6 +704,8 @@ TEST_F(DeferredFetcherTest, IsCreatedAndStarted) {
 
   // Callbacks are pending on blocked network traffic.
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1L);
+
+  // Unblock the network traffic.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
       CreatePermissionRequestResponse().SerializeAsString());
