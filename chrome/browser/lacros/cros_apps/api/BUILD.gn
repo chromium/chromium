@@ -6,25 +6,34 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_lacros)
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "cros_apps_api_browsertest_base.cc",
+    "cros_apps_api_browsertest_base.h",
+  ]
+
+  public_deps = [
+    "//chrome/test:test_support_ui",
+    "//chromeos/constants",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
 
   sources = [
-    "cros_apps_api_browsertest.cc",
     "cros_apps_blink_runtime_feature_browsertest.cc",
+    "cros_apps_chromeos_api_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    # TODO(b/298329656): We shouldn't depend on things in .../extensions/. Ideally,
-    # this target would be in //chrome/browser/chromeos/ or //chromeos/, and then
-    # we could depend on it.
-    "//chrome/browser/chromeos/extensions/telemetry/api/telemetry:test_support",
+    ":test_support",
+    "diagnostics:browser_tests",
     "//chrome/browser/ui",
-    "//chrome/test:test_support_ui",
-    "//chromeos/constants",
-    "//chromeos/lacros",
     "//content/test:browsertest_support",
     "//content/test:test_support",
     "//testing/gtest",

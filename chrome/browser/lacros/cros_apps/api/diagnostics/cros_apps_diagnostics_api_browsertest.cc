@@ -5,12 +5,11 @@
 #include <string>
 
 #include "base/system/sys_info.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service.h"
+#include "chrome/browser/lacros/cros_apps/api/cros_apps_api_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -20,46 +19,16 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class CrosAppsApiBrowserTest : public InProcessBrowserTest {
+class CrosAppsDiagnosticsApiBrowserTest : public CrosAppsApiBrowserTestBase {
  public:
-  CrosAppsApiBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kCrosAppsApis);
-  }
-
-  CrosAppsApiBrowserTest(const CrosAppsApiBrowserTest&) = delete;
-  CrosAppsApiBrowserTest& operator=(const CrosAppsApiBrowserTest&) = delete;
-  ~CrosAppsApiBrowserTest() override = default;
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "BlinkExtensionChromeOS");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(CrosAppsApiBrowserTest, ChromeOsExists) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  EXPECT_EQ(true, content::EvalJs(web_contents,
-                                  "typeof window.chromeos !== 'undefined';"));
-}
-
-class CrosDiagnosticsApiBrowserTest : public CrosAppsApiBrowserTest {
- public:
-  CrosDiagnosticsApiBrowserTest() : CrosAppsApiBrowserTest() {
+  CrosAppsDiagnosticsApiBrowserTest() : CrosAppsApiBrowserTestBase() {
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kCrosDiagnosticsApi);
   }
 
-  // CrosAppsApiBrowserTest:
+  // CrosAppsApiBrowserTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    CrosAppsApiBrowserTest::SetUpCommandLine(command_line);
+    CrosAppsApiBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "BlinkExtensionChromeOSDiagnostics");
   }
@@ -78,7 +47,7 @@ class CrosDiagnosticsApiBrowserTest : public CrosAppsApiBrowserTest {
   std::unique_ptr<chromeos::FakeProbeService> fake_probe_service_;
 };
 
-IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest, DiagnosticsExists) {
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, DiagnosticsExists) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -87,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest, DiagnosticsExists) {
                       "typeof window.chromeos.diagnostics !== 'undefined';"));
 }
 
-IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -258,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
                        GetCpuInfo_Error_TelemetryProbeServiceUnavailable) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -271,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest,
           .error);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
                        GetCpuInfo_Error_CpuTelemetryInfoUnavailable) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -301,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest,
           .error);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosDiagnosticsApiBrowserTest, GetNetworkInterfaces) {
+IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest,
+                       GetNetworkInterfaces) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

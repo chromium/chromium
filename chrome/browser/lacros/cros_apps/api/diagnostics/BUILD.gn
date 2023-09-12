@@ -18,3 +18,23 @@ source_set("diagnostics") {
     "//content/public/common",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "cros_apps_diagnostics_api_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    # TODO(b/298329656): We shouldn't depend on things in .../extensions/. Ideally,
+    # this target would be in //chrome/browser/chromeos/ or //chromeos/, and then
+    # we could depend on it.
+    "//chrome/browser/chromeos/extensions/telemetry/api/telemetry:test_support",
+    "//chrome/browser/lacros/cros_apps/api:test_support",
+    "//chrome/browser/ui",
+    "//chromeos/lacros",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
