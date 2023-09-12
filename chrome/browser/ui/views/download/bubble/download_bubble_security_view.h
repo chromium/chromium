@@ -127,7 +127,11 @@ class DownloadBubbleSecurityView : public views::View,
   void AddProgressBar();
   void AddPasswordPrompt(views::View* parent);
 
-  void UpdateViews();
+  // `old_danger_type` is the previous danger type before the update, which is
+  // used for debugging only.
+  void UpdateViews(
+      download::DownloadDangerType old_danger_type =
+          download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
   void UpdateHeader();
   void UpdateIconAndText();
   void UpdateSecondaryIconAndText();
