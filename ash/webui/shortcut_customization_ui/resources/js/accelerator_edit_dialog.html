@@ -16,6 +16,10 @@
     display: grid;
   }
 
+  #acceleratorViewList accelerator-edit-view:not(:last-of-type) {
+    border-bottom: var(--cr-separator-line);
+  }
+
   #addIcon {
     padding-top: 11px;
   }
@@ -49,6 +53,7 @@
     border-radius: 16px;
     display: flex;
     flex-direction: column;
+    min-height: 296px;
     justify-content: space-between;
     margin-left: 32px;
     margin-right: 32px;
