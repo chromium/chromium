@@ -409,23 +409,39 @@ TEST_F(WindowFloatTest, FloatOnOtherDisplay) {
 }
 
 // Tests that floated windows that are moved to an external display are still
-// visible. Regression test for b/286864430.
+// visible and the same size. Regression test for http://b/286864430 and
+// http://b/297218727.
 TEST_F(WindowFloatTest, MoveFloatedWindowToOtherDisplay) {
   // On two displays of the same size, this was never an issue. The issue
   // happened if the destination display was narrower than the source display.
   UpdateDisplay("1200x800,1201+0-600x800");
 
   // Create a floated window on the primary display. Upon floating, it will
-  // automatically reposition to the bottom right corner.
-  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-  ASSERT_EQ(Shell::GetAllRootWindows()[0], window->GetRootWindow());
+  // automatically reposition to the bottom right corner. For this test, we want
+  // to ensure the normal state size is different from the floated size; we do
+  // this by initializing the window with a large size.
+  auto window = CreateAppWindow(gfx::Rect(1100, 700));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  CHECK(WindowState::Get(window.get())->IsFloated());
+  CHECK_NE(gfx::Size(1100, 700), window->bounds().size());
+
+  const gfx::Size primary_display_size = window->bounds().size();
 
   // After moving the window to the secondary display, the bounds of `window`
-  // should be partially visible.
+  // should be partially visible and remain the same size.
   PressAndReleaseKey(ui::VKEY_M, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
   EXPECT_TRUE(Shell::GetAllRootWindows()[1]->GetBoundsInScreen().Intersects(
       window->GetBoundsInScreen()));
+  EXPECT_EQ(primary_display_size, window->bounds().size());
+
+  // After moving the window back to the primary display, the bounds of `window`
+  // should be partially visible and remain the same size.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], window->GetRootWindow());
+  EXPECT_TRUE(Shell::GetAllRootWindows()[0]->GetBoundsInScreen().Intersects(
+      window->GetBoundsInScreen()));
+  EXPECT_EQ(primary_display_size, window->bounds().size());
 }
 
 TEST_F(WindowFloatTest, FloatWindowBoundsWithZoomDisplay) {

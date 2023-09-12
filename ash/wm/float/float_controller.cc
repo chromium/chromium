@@ -164,6 +164,11 @@ class FloatLayoutManager : public WmDefaultLayoutManager {
     window_state->OnWMEvent(&event);
   }
 
+  void OnWillRemoveWindowFromLayout(aura::Window* child) override {
+    WindowState::Get(child)->set_pre_added_to_workspace_window_bounds(
+        child->bounds());
+  }
+
   void SetChildBounds(aura::Window* child,
                       const gfx::Rect& requested_bounds) override {
     // This should result in sending a bounds change WMEvent to properly support
