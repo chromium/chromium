@@ -23,6 +23,7 @@ import java.util.Map;
 @JNINamespace("autofill")
 public class AutofillProfile {
     private String mGUID;
+    // TODO(crbug.com/1481519): Remove this variable as it became obsolete.
     private boolean mIsLocal;
     private @Source int mSource;
     private Map<Integer, ValueWithStatus> mFields;
@@ -234,32 +235,12 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    private static AutofillProfile create(String guid, boolean isLocal, @Source int source,
-            String honorificPrefix, @VerificationStatus int honorificPrefixStatus, String fullName,
-            @VerificationStatus int fullNameStatus, String companyName,
-            @VerificationStatus int companyNameStatus, String streetAddress,
-            @VerificationStatus int streetAddressStatus, String region,
-            @VerificationStatus int regionStatus, String locality,
-            @VerificationStatus int localityStatus, String dependentLocality,
-            @VerificationStatus int dependentLocalityStatus, String postalCode,
-            @VerificationStatus int postalCodeStatus, String sortingCode,
-            @VerificationStatus int sortingCodeStatus, String countryCode,
-            @VerificationStatus int countryCodeStatus, String phoneNumber,
-            @VerificationStatus int phoneNumberStatus, String emailAddress,
-            @VerificationStatus int emailAddressStatus, String languageCode) {
-        return new AutofillProfile(guid, isLocal, source,
-                new ValueWithStatus(honorificPrefix, honorificPrefixStatus),
-                new ValueWithStatus(fullName, fullNameStatus),
-                new ValueWithStatus(companyName, companyNameStatus),
-                new ValueWithStatus(streetAddress, streetAddressStatus),
-                new ValueWithStatus(region, regionStatus),
-                new ValueWithStatus(locality, localityStatus),
-                new ValueWithStatus(dependentLocality, dependentLocalityStatus),
-                new ValueWithStatus(postalCode, postalCodeStatus),
-                new ValueWithStatus(sortingCode, sortingCodeStatus),
-                new ValueWithStatus(countryCode, countryCodeStatus),
-                new ValueWithStatus(phoneNumber, phoneNumberStatus),
-                new ValueWithStatus(emailAddress, emailAddressStatus), languageCode);
+    private AutofillProfile(String guid, boolean isLocal, @Source int source, String languageCode) {
+        mGUID = guid;
+        mIsLocal = isLocal;
+        mSource = source;
+        mLanguageCode = languageCode;
+        mFields = new HashMap<>();
     }
 
     private AutofillProfile(String guid, boolean isLocal, @Source int source,
@@ -268,11 +249,7 @@ public class AutofillProfile {
             ValueWithStatus dependentLocality, ValueWithStatus postalCode,
             ValueWithStatus sortingCode, ValueWithStatus countryCode, ValueWithStatus phoneNumber,
             ValueWithStatus emailAddress, String languageCode) {
-        mGUID = guid;
-        mIsLocal = isLocal;
-        mSource = source;
-
-        mFields = new HashMap<>();
+        this(guid, isLocal, source, languageCode);
         mFields.put(ServerFieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
         mFields.put(ServerFieldType.NAME_FULL, fullName);
         mFields.put(ServerFieldType.COMPANY_NAME, companyName);
@@ -285,8 +262,6 @@ public class AutofillProfile {
         mFields.put(ServerFieldType.ADDRESS_HOME_COUNTRY, countryCode);
         mFields.put(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
         mFields.put(ServerFieldType.EMAIL_ADDRESS, emailAddress);
-
-        mLanguageCode = languageCode;
     }
 
     /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
@@ -299,6 +274,11 @@ public class AutofillProfile {
 
         mLanguageCode = profile.getLanguageCode();
         mLabel = profile.getLabel();
+    }
+
+    @CalledByNative
+    private int[] getFieldTypes() {
+        return mFields.keySet().stream().mapToInt(i -> i).toArray();
     }
 
     @CalledByNative
@@ -459,9 +439,15 @@ public class AutofillProfile {
         mSource = source;
     }
 
-    public void setInfo(@ServerFieldType int fieldType, @Nullable String value) {
+    @CalledByNative
+    public void setInfo(@ServerFieldType int fieldType, @Nullable String value,
+            @VerificationStatus int status) {
         value = value == null ? "" : value;
-        mFields.put(fieldType, new ValueWithStatus(value, VerificationStatus.USER_VERIFIED));
+        mFields.put(fieldType, new ValueWithStatus(value, status));
+    }
+
+    public void setInfo(@ServerFieldType int fieldType, @Nullable String value) {
+        setInfo(fieldType, value, VerificationStatus.USER_VERIFIED);
     }
 
     public void setHonorificPrefix(String honorificPrefix) {

@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -58,6 +59,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/autofill/android/main_autofill_jni_headers/AutofillProfile_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -325,47 +327,32 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
     const std::string& app_locale) const {
-  // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_AutofillProfile_create(
-      env, base::android::ConvertUTF8ToJavaString(env, guid()),
-      record_type() == AutofillProfile::LOCAL_PROFILE,
-      static_cast<jint>(source()),
-      base::android::ConvertUTF16ToJavaString(
-          env, GetInfo(AutofillType(NAME_HONORIFIC_PREFIX), app_locale)),
-      static_cast<jint>(GetVerificationStatus(NAME_HONORIFIC_PREFIX)),
-      base::android::ConvertUTF16ToJavaString(
-          env, GetInfo(AutofillType(NAME_FULL), app_locale)),
-      static_cast<jint>(GetVerificationStatus(NAME_FULL)),
-      base::android::ConvertUTF16ToJavaString(env, GetRawInfo(COMPANY_NAME)),
-      static_cast<jint>(GetVerificationStatus(COMPANY_NAME)),
-      base::android::ConvertUTF16ToJavaString(
-          env, GetRawInfo(ADDRESS_HOME_STREET_ADDRESS)),
-      static_cast<jint>(GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS)),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              GetRawInfo(ADDRESS_HOME_STATE)),
-      static_cast<jint>(GetVerificationStatus(ADDRESS_HOME_STATE)),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              GetRawInfo(ADDRESS_HOME_CITY)),
-      static_cast<jint>(GetVerificationStatus(ADDRESS_HOME_CITY)),
-      base::android::ConvertUTF16ToJavaString(
-          env, GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY)),
-      static_cast<jint>(GetVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY)),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              GetRawInfo(ADDRESS_HOME_ZIP)),
-      static_cast<jint>(GetVerificationStatus(ADDRESS_HOME_ZIP)),
-      base::android::ConvertUTF16ToJavaString(
-          env, GetRawInfo(ADDRESS_HOME_SORTING_CODE)),
-      static_cast<jint>(GetVerificationStatus(ADDRESS_HOME_SORTING_CODE)),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              GetRawInfo(ADDRESS_HOME_COUNTRY)),
-      static_cast<jint>(GetVerificationStatus(ADDRESS_HOME_COUNTRY)),
-      base::android::ConvertUTF16ToJavaString(
-          env, GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
-      static_cast<jint>(GetVerificationStatus(PHONE_HOME_WHOLE_NUMBER)),
-      base::android::ConvertUTF16ToJavaString(env, GetRawInfo(EMAIL_ADDRESS)),
-      static_cast<jint>(GetVerificationStatus(EMAIL_ADDRESS)),
-      base::android::ConvertUTF8ToJavaString(env, language_code()));
+  base::android::ScopedJavaLocalRef<jobject> jprofile =
+      Java_AutofillProfile_Constructor(
+          env, base::android::ConvertUTF8ToJavaString(env, guid()),
+          record_type() == AutofillProfile::LOCAL_PROFILE,
+          static_cast<jint>(source()),
+          base::android::ConvertUTF8ToJavaString(env, language_code()));
+
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
+    auto status = static_cast<jint>(GetVerificationStatus(type));
+    // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
+    if (type == NAME_FULL || type == NAME_HONORIFIC_PREFIX) {
+      Java_AutofillProfile_setInfo(
+          env, jprofile, static_cast<jint>(type),
+          base::android::ConvertUTF16ToJavaString(
+              env, GetInfo(AutofillType(type), app_locale)),
+          status);
+    } else {
+      Java_AutofillProfile_setInfo(
+          env, jprofile, static_cast<jint>(type),
+          base::android::ConvertUTF16ToJavaString(env, GetRawInfo(type)),
+          status);
+    }
+  }
+  return jprofile;
 }
 
 // static
@@ -384,24 +371,26 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
     profile.set_guid(guid);
   }
 
-  // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
-  for (ServerFieldType fieldType : {NAME_FULL, ADDRESS_HOME_COUNTRY}) {
-    MaybeSetInfoWithVerificationStatus(
-        &profile, fieldType,
-        Java_AutofillProfile_getInfo(env, jprofile, fieldType),
-        Java_AutofillProfile_getInfoStatus(env, jprofile, fieldType),
-        app_locale);
-  }
+  std::vector<int> field_types;
+  base::android::JavaIntArrayToIntVector(
+      env, Java_AutofillProfile_getFieldTypes(env, jprofile), &field_types);
 
-  for (ServerFieldType fieldType :
-       {NAME_HONORIFIC_PREFIX, COMPANY_NAME, ADDRESS_HOME_STREET_ADDRESS,
-        ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_DEPENDENT_LOCALITY,
-        ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, PHONE_HOME_WHOLE_NUMBER,
-        EMAIL_ADDRESS}) {
-    MaybeSetRawInfoWithVerificationStatus(
-        &profile, fieldType,
-        Java_AutofillProfile_getInfo(env, jprofile, fieldType),
-        Java_AutofillProfile_getInfoStatus(env, jprofile, fieldType));
+  for (int int_field_type : field_types) {
+    auto field_type = ToSafeServerFieldType(int_field_type, NO_SERVER_DATA);
+    CHECK(field_type != NO_SERVER_DATA);
+    // TODO(crbug.com/1471502): Reconcile usage of GetInfo and GetRawInfo below.
+    if (field_type == NAME_FULL || field_type == ADDRESS_HOME_COUNTRY) {
+      MaybeSetInfoWithVerificationStatus(
+          &profile, field_type,
+          Java_AutofillProfile_getInfo(env, jprofile, field_type),
+          Java_AutofillProfile_getInfoStatus(env, jprofile, field_type),
+          app_locale);
+    } else {
+      MaybeSetRawInfoWithVerificationStatus(
+          &profile, field_type,
+          Java_AutofillProfile_getInfo(env, jprofile, field_type),
+          Java_AutofillProfile_getInfoStatus(env, jprofile, field_type));
+    }
   }
 
   profile.set_language_code(ConvertJavaStringToUTF8(
