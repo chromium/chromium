@@ -135,9 +135,10 @@ void EditingList::AddHeader(views::View* container) {
   header_container->SetProperty(views::kMarginsKey,
                                 gfx::Insets::TLBR(0, 0, 16, 0));
   header_container->AddChildView(std::make_unique<ash::IconButton>(
-      base::BindRepeating(&EditingList::OnAddButtonPressed,
+      base::BindRepeating(&EditingList::OnDoneButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsAddIcon,
+      // TODO(b/296126993): Add the UX provided back arrow icon.
+      ash::IconButton::Type::kMedium, &kBackArrowTouchIcon,
       // TODO(b/279117180): Update a11y string.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
   header_container->AddChildView(ash::bubble_utils::CreateLabel(
@@ -145,9 +146,9 @@ void EditingList::AddHeader(views::View* container) {
       // TODO(b/274690042): Replace it with localized strings.
       u"Editing", cros_tokens::kCrosSysOnSurface));
   header_container->AddChildView(std::make_unique<ash::IconButton>(
-      base::BindRepeating(&EditingList::OnDoneButtonPressed,
+      base::BindRepeating(&EditingList::OnAddButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsAddIcon,
       // TODO(b/279117180): Update a11y string.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
