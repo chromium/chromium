@@ -505,6 +505,15 @@ absl::optional<EventReportWindows> ValidateEventReportWindows(
 
 constexpr int kSourceColumnCount = 19;
 
+int64_t StorageFileSizeKB(const base::FilePath& path_to_database) {
+  int64_t file_size = -1;
+  if (!path_to_database.empty() &&
+      base::GetFileSize(path_to_database, &file_size)) {
+    file_size = file_size / 1024;
+  }
+  return file_size;
+}
+
 }  // namespace
 
 struct AttributionStorageSql::StoredSourceData {
@@ -767,6 +776,12 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   const std::string serialized_source_origin =
       common_info.source_origin().Serialize();
   if (!HasCapacityForStoringSource(serialized_source_origin)) {
+    if (int64_t file_size = StorageFileSizeKB(path_to_database_);
+        file_size > -1) {
+      base::UmaHistogramCounts10M(
+          "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached",
+          file_size);
+    }
     return StoreSourceResult(
         StorableSource::Result::kInsufficientSourceCapacity,
         /*min_fake_report_time=*/absl::nullopt,
@@ -2385,12 +2400,9 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   db_init_status_ = DbStatus::kOpen;
   RecordInitializationStatus(InitStatus::kSuccess);
 
-  int64_t file_size = 0L;
-  if (!path_to_database_.empty() &&
-      base::GetFileSize(path_to_database_, &file_size)) {
-    int64_t file_size_kb = file_size / 1024;
-    base::UmaHistogramCounts10M("Conversions.Storage.Sql.FileSize",
-                                file_size_kb);
+  if (int64_t file_size = StorageFileSizeKB(path_to_database_);
+      file_size > -1) {
+    base::UmaHistogramCounts10M("Conversions.Storage.Sql.FileSize", file_size);
   }
   return true;
 }

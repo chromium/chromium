@@ -743,6 +743,8 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   delegate()->set_max_sources_per_origin(2);
   delegate()->set_max_attributions_per_source(1);
 
+  base::HistogramTester histograms;
+
   ASSERT_EQ(storage()
                 ->StoreSource(
                     SourceBuilder().SetSourceEventId(3).SetPriority(1).Build())
@@ -772,6 +774,9 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
                 ->StoreSource(SourceBuilder().SetSourceEventId(7).Build())
                 .status,
             StorableSource::Result::kInsufficientSourceCapacity);
+  EXPECT_GT(histograms.GetTotalSum(
+                "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached"),
+            0);
 
   ASSERT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(5u), SourceEventIdIs(6u)));

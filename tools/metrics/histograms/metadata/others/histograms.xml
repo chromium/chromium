@@ -4225,6 +4225,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached"
+    units="KB" expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the file size of the storage database in KB when the max sources per
+    origin limit is reached. Emitted whenever a source fails to be stored due to
+    this limit.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.Storage.Sql.InitStatus2"
     enum="ConversionStorageSqlInitStatus" expires_after="M121">
   <owner>johnidel@chromium.org</owner>
