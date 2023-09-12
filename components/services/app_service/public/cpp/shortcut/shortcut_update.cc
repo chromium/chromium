@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
@@ -70,6 +71,10 @@ void ShortcutUpdate::Merge(Shortcut* state, const Shortcut* delta) {
   SET_OPTIONAL_VALUE(name);
   SET_ENUM_VALUE(shortcut_source, ShortcutSource::kUnknown);
 
+  if (delta->icon_key.has_value()) {
+    state->icon_key = std::move(*delta->icon_key->Clone());
+  }
+
   // When adding new fields to the Shortcut struct, this function should also
   // be updated.
 }
@@ -101,6 +106,20 @@ ShortcutSource ShortcutUpdate::ShortcutSource() const {
 bool ShortcutUpdate::ShortcutSourceChanged() const {
   IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(shortcut_source,
                                       ShortcutSource::kUnknown);
+}
+
+absl::optional<apps::IconKey> ShortcutUpdate::IconKey() const {
+  if (delta_ && delta_->icon_key.has_value()) {
+    return std::move(*delta_->icon_key->Clone());
+  }
+  if (state_ && state_->icon_key.has_value()) {
+    return std::move(*state_->icon_key->Clone());
+  }
+  return absl::nullopt;
+}
+
+bool ShortcutUpdate::IconKeyChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(icon_key);
 }
 
 // For logging and debug purposes.

@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -144,6 +145,9 @@ TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
   EXPECT_EQ(stored_shortcut->shortcut_source, apps::ShortcutSource::kUser);
   EXPECT_EQ(stored_shortcut->host_app_id, app_constants::kChromeAppId);
   EXPECT_EQ(stored_shortcut->local_id, local_shortcut_id);
+  EXPECT_TRUE(stored_shortcut->icon_key.has_value());
+  EXPECT_EQ(stored_shortcut->icon_key->icon_effects,
+            apps::IconEffects::kCrOsStandardMask);
 }
 
 TEST_F(BrowserShortcutsTest, WebAppNotPublishedAsShortcut) {
@@ -183,6 +187,9 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
   EXPECT_EQ(stored_shortcut->shortcut_source, apps::ShortcutSource::kUser);
   EXPECT_EQ(stored_shortcut->host_app_id, app_constants::kChromeAppId);
   EXPECT_EQ(stored_shortcut->local_id, local_shortcut_id);
+  EXPECT_TRUE(stored_shortcut->icon_key.has_value());
+  EXPECT_EQ(stored_shortcut->icon_key->icon_effects,
+            apps::IconEffects::kCrOsStandardMask);
 }
 
 TEST_F(BrowserShortcutsTest, LaunchShortcut) {

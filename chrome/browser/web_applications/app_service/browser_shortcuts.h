@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -45,7 +46,10 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
 
   // Publish web app identified by `app_id` as browser shortcut to the
   // AppService if the web app is considered as shortcut in ChromeOS.
-  void MaybePublishBrowserShortcut(const AppId& app_id);
+  // `raw_icon_updated` should be set when the manifest raw icon has
+  // changed to allow AppService icon directory to clear the old icons.
+  void MaybePublishBrowserShortcut(const AppId& app_id,
+                                   bool raw_icon_updated = false);
 
   // apps::ShortcutPublisher:
   void LaunchShortcut(const std::string& host_app_id,
@@ -66,6 +70,8 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   const raw_ptr<Profile> profile_;
 
   const raw_ptr<WebAppProvider> provider_;
+
+  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};

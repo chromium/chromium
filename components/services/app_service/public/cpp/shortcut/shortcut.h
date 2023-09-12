@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/strong_alias.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -68,6 +69,10 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // 'shortcut_id' is generated from the hash of 'host_app_id' and 'local_id',
   // these value should not be updated separately.
   const ShortcutId shortcut_id;
+
+  // Represents what icon should be loaded for this shortcut, icon key will
+  // change if the icon has been updated from the publisher.
+  absl::optional<IconKey> icon_key;
 };
 
 // A view class to reduce the risk of lifetime issues by preventing

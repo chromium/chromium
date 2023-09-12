@@ -538,8 +538,10 @@ absl::optional<IconKey> AppServiceProxyAsh::ShortcutInnerIconLoader::GetIconKey(
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
-  // TODO(crbug.com/1412708): Get icon key from shortcut struct.
-  return absl::make_optional<IconKey>(0, 0, 0);
+
+  return std::move(*host_->ShortcutRegistryCache()
+                        ->GetShortcut(ShortcutId(id))
+                        ->icon_key->Clone());
 }
 
 std::unique_ptr<IconLoader::Releaser>

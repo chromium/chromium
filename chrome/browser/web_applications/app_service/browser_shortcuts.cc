@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,7 +85,8 @@ bool BrowserShortcuts::IsShortcut(const AppId& app_id) {
   }
 }
 
-void BrowserShortcuts::MaybePublishBrowserShortcut(const AppId& app_id) {
+void BrowserShortcuts::MaybePublishBrowserShortcut(const AppId& app_id,
+                                                   bool raw_icon_updated) {
   if (!IsShortcut(app_id)) {
     return;
   }
@@ -97,6 +99,10 @@ void BrowserShortcuts::MaybePublishBrowserShortcut(const AppId& app_id) {
   shortcut->name =
       provider_->registrar_unsafe().GetAppShortName(web_app->app_id());
   shortcut->shortcut_source = apps::ShortcutSource::kUser;
+  // TODO(crbug.com/1412708): Add shortcut specific icon masking.
+  shortcut->icon_key = std::move(
+      *icon_key_factory_.CreateIconKey(apps::IconEffects::kCrOsStandardMask));
+  shortcut->icon_key->raw_icon_updated = raw_icon_updated;
   apps::ShortcutPublisher::PublishShortcut(std::move(shortcut));
 }
 

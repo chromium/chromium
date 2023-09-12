@@ -20,6 +20,7 @@ component("shortcut") {
   deps = [
     "//base",
     "//components/crx_file",
+    "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:macros",
     "//third_party/abseil-cpp:absl",
   ]

@@ -410,4 +410,23 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, LoadIcon) {
       gfx::Image(app_list_item->CloneMetadata()->badge_icon)));
 }
 
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, IconVersionUpdated) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  ash::AppListItem* app_list_item = GetAppListItem(shortcut_id.value());
+  ASSERT_TRUE(app_list_item);
+  EXPECT_EQ(app_list_item->CloneMetadata()->icon_version, 0);
+
+  apps::ShortcutPtr delta =
+      std::make_unique<Shortcut>(cache()->GetShortcutHostAppId(shortcut_id),
+                                 cache()->GetShortcutLocalId(shortcut_id));
+  delta->icon_key = IconKey(100, 0, 0);
+  cache()->UpdateShortcut(std::move(delta));
+
+  EXPECT_EQ(app_list_item->CloneMetadata()->icon_version, 1);
+}
+
 }  // namespace apps

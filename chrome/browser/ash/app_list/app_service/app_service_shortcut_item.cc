@@ -42,6 +42,9 @@ void AppServiceShortcutItem::OnShortcutUpdate(
   if (update.NameChanged()) {
     SetName(update.Name());
   }
+  if (update.IconKeyChanged()) {
+    IncrementIconVersion();
+  }
 }
 
 AppServiceShortcutItem::AppServiceShortcutItem(

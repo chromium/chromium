@@ -22,6 +22,7 @@ TEST_F(ShortcutUpdateTest, StateIsNonNull) {
   Shortcut shortcut = Shortcut(host_app_id_, local_id_);
   shortcut.name = "Name";
   shortcut.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut.icon_key = IconKey(100, 0, 0);
   ShortcutUpdate u(&shortcut, nullptr);
 
   EXPECT_EQ(u.HostAppId(), host_app_id_);
@@ -29,16 +30,20 @@ TEST_F(ShortcutUpdateTest, StateIsNonNull) {
   EXPECT_EQ(u.ShortcutId(), shortcut_id_);
 
   EXPECT_EQ(u.Name(), "Name");
-  EXPECT_EQ(u.NameChanged(), false);
+  EXPECT_FALSE(u.NameChanged());
 
   EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kDeveloper);
-  EXPECT_EQ(u.ShortcutSourceChanged(), false);
+  EXPECT_FALSE(u.ShortcutSourceChanged());
+
+  EXPECT_EQ(u.IconKey(), IconKey(100, 0, 0));
+  EXPECT_FALSE(u.IconKeyChanged());
 }
 
 TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   Shortcut shortcut = Shortcut(host_app_id_, local_id_);
   shortcut.name = "Name";
   shortcut.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut.icon_key = IconKey(100, 0, 0);
   ShortcutUpdate u(nullptr, &shortcut);
 
   EXPECT_EQ(u.HostAppId(), host_app_id_);
@@ -46,20 +51,25 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
   EXPECT_EQ(u.ShortcutId(), shortcut_id_);
 
   EXPECT_EQ(u.Name(), "Name");
-  EXPECT_EQ(u.NameChanged(), true);
+  EXPECT_TRUE(u.NameChanged());
 
   EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kDeveloper);
-  EXPECT_EQ(u.ShortcutSourceChanged(), true);
+  EXPECT_TRUE(u.ShortcutSourceChanged());
+
+  EXPECT_EQ(u.IconKey(), IconKey(100, 0, 0));
+  EXPECT_TRUE(u.IconKeyChanged());
 }
 
 TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
   Shortcut shortcut_state = Shortcut(host_app_id_, local_id_);
   shortcut_state.name = "Name";
   shortcut_state.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_state.icon_key = IconKey(100, 0, 0);
 
   Shortcut shortcut_delta = Shortcut(host_app_id_, local_id_);
   shortcut_delta.name = "New name";
   shortcut_delta.shortcut_source = ShortcutSource::kUser;
+  shortcut_delta.icon_key = IconKey(101, 1, 1);
 
   ShortcutUpdate u(&shortcut_state, &shortcut_delta);
 
@@ -68,20 +78,25 @@ TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
   EXPECT_EQ(u.ShortcutId(), shortcut_id_);
 
   EXPECT_EQ(u.Name(), "New name");
-  EXPECT_EQ(u.NameChanged(), true);
+  EXPECT_TRUE(u.NameChanged());
 
   EXPECT_EQ(u.ShortcutSource(), ShortcutSource::kUser);
-  EXPECT_EQ(u.ShortcutSourceChanged(), true);
+  EXPECT_TRUE(u.ShortcutSourceChanged());
+
+  EXPECT_EQ(u.IconKey(), IconKey(101, 1, 1));
+  EXPECT_TRUE(u.IconKeyChanged());
 }
 
 TEST_F(ShortcutUpdateTest, Merge) {
   Shortcut shortcut_state = Shortcut(host_app_id_, local_id_);
   shortcut_state.name = "Name";
   shortcut_state.shortcut_source = ShortcutSource::kDeveloper;
+  shortcut_state.icon_key = IconKey(100, 0, 0);
 
   Shortcut shortcut_delta = Shortcut(host_app_id_, local_id_);
   shortcut_delta.name = "New name";
   shortcut_delta.shortcut_source = ShortcutSource::kUser;
+  shortcut_delta.icon_key = IconKey(101, 1, 1);
 
   ShortcutUpdate::Merge(&shortcut_state, &shortcut_delta);
 
@@ -91,6 +106,7 @@ TEST_F(ShortcutUpdateTest, Merge) {
   EXPECT_EQ(shortcut_state.shortcut_source, ShortcutSource::kUser);
   EXPECT_EQ(shortcut_state.host_app_id, host_app_id_);
   EXPECT_EQ(shortcut_state.local_id, local_id_);
+  EXPECT_EQ(shortcut_state.icon_key, IconKey(101, 1, 1));
 }
 
 TEST_F(ShortcutUpdateTest, Equal) {
