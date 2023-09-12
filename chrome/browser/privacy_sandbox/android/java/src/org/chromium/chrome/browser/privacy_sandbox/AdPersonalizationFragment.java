@@ -17,7 +17,6 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
@@ -162,7 +161,7 @@ public class AdPersonalizationFragment extends PrivacySandboxSettingsBaseFragmen
         mFledgeCategory.removeAll();
         mFledgeCategory.setVisible(true);
         if (mLargeIconBridge == null) {
-            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+            mLargeIconBridge = new LargeIconBridge(getProfile());
         }
         for (String site : currentFledgeSites) {
             FledgePreference preference =

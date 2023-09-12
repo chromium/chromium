@@ -28,18 +28,18 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener {
     public static final String TOGGLE_PREFERENCE = "ad_measurement_toggle";
 
-    static boolean isAdMeasurementPrefEnabled() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static boolean isAdMeasurementPrefEnabled(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
         return prefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
     }
 
-    static void setAdMeasurementPrefEnabled(boolean isEnabled) {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static void setAdMeasurementPrefEnabled(Profile profile, boolean isEnabled) {
+        PrefService prefService = UserPrefs.get(profile);
         prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED, isEnabled);
     }
 
-    static boolean isAdMeasurementPrefManaged() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static boolean isAdMeasurementPrefManaged(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
         return prefService.isManagedPreference(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
     }
 
@@ -50,7 +50,7 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference_v4);
 
         ChromeSwitchPreference adMeasurementToggle = findPreference(TOGGLE_PREFERENCE);
-        adMeasurementToggle.setChecked(isAdMeasurementPrefEnabled());
+        adMeasurementToggle.setChecked(isAdMeasurementPrefEnabled(getProfile()));
         adMeasurementToggle.setOnPreferenceChangeListener(this);
         adMeasurementToggle.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
     }
@@ -61,7 +61,7 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
             boolean enabled = (boolean) value;
             RecordUserAction.record(enabled ? "Settings.PrivacySandbox.AdMeasurement.Enabled"
                                             : "Settings.PrivacySandbox.AdMeasurement.Disabled");
-            setAdMeasurementPrefEnabled(enabled);
+            setAdMeasurementPrefEnabled(getProfile(), enabled);
             return true;
         }
         return false;
@@ -72,7 +72,7 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
-                    return isAdMeasurementPrefManaged();
+                    return isAdMeasurementPrefManaged(getProfile());
                 }
                 return false;
             }

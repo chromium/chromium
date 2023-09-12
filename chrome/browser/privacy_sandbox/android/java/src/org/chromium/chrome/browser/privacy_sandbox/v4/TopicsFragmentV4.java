@@ -52,18 +52,18 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private TextMessagePreference mDisabledTopicsPreference;
     private ClickableSpansTextMessagePreference mTopicsPageFooterPreference;
 
-    static boolean isTopicsPrefEnabled() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static boolean isTopicsPrefEnabled(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
         return prefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
     }
 
-    static void setTopicsPrefEnabled(boolean isEnabled) {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static void setTopicsPrefEnabled(Profile profile, boolean isEnabled) {
+        PrefService prefService = UserPrefs.get(profile);
         prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, isEnabled);
     }
 
-    static boolean isTopicsPrefManaged() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static boolean isTopicsPrefManaged(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
         return prefService.isManagedPreference(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
     }
 
@@ -81,7 +81,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mTopicsPageFooterPreference =
                 (ClickableSpansTextMessagePreference) findPreference(TOPICS_PAGE_FOOTER_PREFERENCE);
 
-        mTopicsTogglePreference.setChecked(isTopicsPrefEnabled());
+        mTopicsTogglePreference.setChecked(isTopicsPrefEnabled(getProfile()));
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
         mTopicsTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
 
@@ -133,7 +133,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
             boolean enabled = (boolean) value;
             RecordUserAction.record(enabled ? "Settings.PrivacySandbox.Topics.Enabled"
                                             : "Settings.PrivacySandbox.Topics.Disabled");
-            setTopicsPrefEnabled(enabled);
+            setTopicsPrefEnabled(getProfile(), enabled);
             updatePreferenceVisibility();
             PrivacySandboxBridge.topicsToggleChanged(enabled);
             return true;
@@ -174,7 +174,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private void updatePreferenceVisibility() {
-        boolean topicsEnabled = isTopicsPrefEnabled();
+        boolean topicsEnabled = isTopicsPrefEnabled(getProfile());
         boolean topicsEmpty = mCurrentTopicsCategory.getPreferenceCount() == 0;
 
         // Visible when Topics are disabled.
@@ -192,7 +192,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (TOPICS_TOGGLE_PREFERENCE.equals(preference.getKey())) {
-                    return isTopicsPrefManaged();
+                    return isTopicsPrefManaged(getProfile());
                 }
                 return false;
             }

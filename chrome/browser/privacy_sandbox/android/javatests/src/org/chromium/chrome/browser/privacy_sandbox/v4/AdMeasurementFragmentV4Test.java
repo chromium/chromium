@@ -112,12 +112,16 @@ public final class AdMeasurementFragmentV4Test {
 
     private void setAdMeasurementPrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> AdMeasurementFragmentV4.setAdMeasurementPrefEnabled(isEnabled));
+                ()
+                        -> AdMeasurementFragmentV4.setAdMeasurementPrefEnabled(
+                                Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isAdMeasurementPrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> AdMeasurementFragmentV4.isAdMeasurementPrefEnabled());
+                ()
+                        -> AdMeasurementFragmentV4.isAdMeasurementPrefEnabled(
+                                Profile.getLastUsedRegularProfile()));
     }
 
     @Test

@@ -139,12 +139,14 @@ public final class TopicsFragmentV4Test {
 
     private void setTopicsPrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> TopicsFragmentV4.setTopicsPrefEnabled(isEnabled));
+                ()
+                        -> TopicsFragmentV4.setTopicsPrefEnabled(
+                                Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isTopicsPrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> TopicsFragmentV4.isTopicsPrefEnabled());
+                () -> TopicsFragmentV4.isTopicsPrefEnabled(Profile.getLastUsedRegularProfile()));
     }
 
     @Test

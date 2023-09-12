@@ -61,18 +61,18 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     private ClickableSpansTextMessagePreference mFooterPreference;
     private boolean mMoreThanMaxSitesToDisplay;
 
-    static boolean isFledgePrefEnabled() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static boolean isFledgePrefEnabled(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
         return prefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
     }
 
-    static void setFledgePrefEnabled(boolean isEnabled) {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static void setFledgePrefEnabled(Profile profile, boolean isEnabled) {
+        PrefService prefService = UserPrefs.get(profile);
         prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED, isEnabled);
     }
 
-    static boolean isFledgePrefManaged() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+    static boolean isFledgePrefManaged(Profile profile) {
+        PrefService prefService = UserPrefs.get(profile);
         return prefService.isManagedPreference(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
     }
 
@@ -90,7 +90,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mAllSitesPreference = findPreference(ALL_SITES_PREFERENCE);
         mFooterPreference = (ClickableSpansTextMessagePreference) findPreference(FOOTER_PREFERENCE);
 
-        mFledgeTogglePreference.setChecked(isFledgePrefEnabled());
+        mFledgeTogglePreference.setChecked(isFledgePrefEnabled(getProfile()));
         mFledgeTogglePreference.setOnPreferenceChangeListener(this);
         mFledgeTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
         mMoreThanMaxSitesToDisplay = false;
@@ -152,7 +152,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
             boolean enabled = (boolean) value;
             RecordUserAction.record(enabled ? "Settings.PrivacySandbox.Fledge.Enabled"
                                             : "Settings.PrivacySandbox.Fledge.Disabled");
-            setFledgePrefEnabled(enabled);
+            setFledgePrefEnabled(getProfile(), enabled);
             updatePreferenceVisibility();
             return true;
         }
@@ -179,7 +179,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
 
     private void populateCurrentSites(List<String> currentSites) {
         if (mLargeIconBridge == null) {
-            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+            mLargeIconBridge = new LargeIconBridge(getProfile());
         }
 
         mCurrentSitesCategory.removeAll();
@@ -202,7 +202,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private void updatePreferenceVisibility() {
-        boolean fledgeEnabled = isFledgePrefEnabled();
+        boolean fledgeEnabled = isFledgePrefEnabled(getProfile());
         boolean sitesEmpty = mCurrentSitesCategory.getPreferenceCount() == 0;
 
         // Visible when Fledge is disabled.
@@ -223,7 +223,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (FLEDGE_TOGGLE_PREFERENCE.equals(preference.getKey())) {
-                    return isFledgePrefManaged();
+                    return isFledgePrefManaged(getProfile());
                 }
                 return false;
             }

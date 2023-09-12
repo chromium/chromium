@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.privacy_sandbox.FledgePreference;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.favicon.LargeIconBridge;
 
@@ -81,7 +80,7 @@ public class FledgeAllSitesFragmentV4
 
     private void populateSites(List<String> allSites) {
         if (mLargeIconBridge == null) {
-            mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile());
+            mLargeIconBridge = new LargeIconBridge(getProfile());
         }
 
         mPreferenceScreen.removeAll();

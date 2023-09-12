@@ -145,12 +145,14 @@ public final class FledgeFragmentV4Test {
 
     private void setFledgePrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> FledgeFragmentV4.setFledgePrefEnabled(isEnabled));
+                ()
+                        -> FledgeFragmentV4.setFledgePrefEnabled(
+                                Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isFledgePrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> FledgeFragmentV4.isFledgePrefEnabled());
+                () -> FledgeFragmentV4.isFledgePrefEnabled(Profile.getLastUsedRegularProfile()));
     }
 
     private void scrollToSetting(Matcher<View> matcher) {

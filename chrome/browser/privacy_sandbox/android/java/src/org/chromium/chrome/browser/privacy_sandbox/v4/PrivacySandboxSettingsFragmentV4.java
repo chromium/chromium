@@ -66,16 +66,17 @@ public class PrivacySandboxSettingsFragmentV4 extends PrivacySandboxSettingsBase
 
     private void updatePrefDescription() {
         if (!showRestrictedView()) {
-            mTopicsPref.setSummary(TopicsFragmentV4.isTopicsPrefEnabled()
+            mTopicsPref.setSummary(TopicsFragmentV4.isTopicsPrefEnabled(getProfile())
                             ? R.string.ad_privacy_page_topics_link_row_sub_label_enabled
                             : R.string.ad_privacy_page_topics_link_row_sub_label_disabled);
 
-            mFledgePref.setSummary(FledgeFragmentV4.isFledgePrefEnabled()
+            mFledgePref.setSummary(FledgeFragmentV4.isFledgePrefEnabled(getProfile())
                             ? R.string.ad_privacy_page_fledge_link_row_sub_label_enabled
                             : R.string.ad_privacy_page_fledge_link_row_sub_label_disabled);
         }
 
-        mAdMeasurementPref.setSummary(AdMeasurementFragmentV4.isAdMeasurementPrefEnabled()
+        mAdMeasurementPref.setSummary(
+                AdMeasurementFragmentV4.isAdMeasurementPrefEnabled(getProfile())
                         ? R.string.ad_privacy_page_ad_measurement_link_row_sub_label_enabled
                         : R.string.ad_privacy_page_ad_measurement_link_row_sub_label_disabled);
     }
