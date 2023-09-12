@@ -41,19 +41,21 @@ bool MaybeReturnCachedStatus(
     return false;
 
   if (*saved_status == kHandleStatusValid) {
-    std::move(*callback).Run(account_id, token,
-                             TokenHandleUtil::Status::kValid);
+    std::move(*callback).Run(account_id, token, /*reauth_required=*/false);
     return true;
   }
 
   if (*saved_status == kHandleStatusInvalid) {
-    std::move(*callback).Run(account_id, token,
-                             TokenHandleUtil::Status::kInvalid);
+    std::move(*callback).Run(account_id, token, /*reauth_required=*/true);
     return true;
   }
 
   NOTREACHED();
   return false;
+}
+
+bool IsReauthRequired(const TokenHandleUtil::Status& status) {
+  return status == TokenHandleUtil::Status::kInvalid;
 }
 
 void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
@@ -68,8 +70,7 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
           known_user.FindStringPath(account_id, kTokenHandlePref)) {
     if (token != *latest_token) {
       LOG(WARNING) << "Outdated token, assuming status is unknown";
-      std::move(callback).Run(account_id, token,
-                              TokenHandleUtil::Status::kUnknown);
+      std::move(callback).Run(account_id, token, /*reauth_required=*/false);
       return;
     }
   }
@@ -84,7 +85,8 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
     known_user.SetStringPref(account_id, kTokenHandleStatusPref,
                              kHandleStatusInvalid);
   }
-  std::move(callback).Run(account_id, token, status);
+  std::move(callback).Run(account_id, token,
+                          /*reauth_required=*/IsReauthRequired(status));
 }
 
 // Checks if token handle is explicitly marked as `kValid` for `account_id`.
@@ -132,7 +134,7 @@ bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
 }
 
 // static
-void TokenHandleUtil::CheckToken(
+void TokenHandleUtil::IsReauthRequired(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
@@ -140,12 +142,13 @@ void TokenHandleUtil::CheckToken(
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
   if (!token) {
-    std::move(callback).Run(account_id, std::string(), Status::kUnknown);
+    std::move(callback).Run(account_id, std::string(),
+                            /*reauth_required=*/false);
     return;
   }
 
   if (g_invalid_token_for_testing && g_invalid_token_for_testing == *token) {
-    std::move(callback).Run(account_id, *token, Status::kInvalid);
+    std::move(callback).Run(account_id, *token, /*reauth_required=*/true);
     return;
   }
 
@@ -157,7 +160,7 @@ void TokenHandleUtil::CheckToken(
   // If token is explicitly marked as invalid, it does not make sense to check
   // it again.
   if (HasTokenStatusInvalid(account_id)) {
-    std::move(callback).Run(account_id, *token, Status::kInvalid);
+    std::move(callback).Run(account_id, *token, /*reauth_required=*/true);
     return;
   }
 
@@ -202,7 +205,7 @@ TokenHandleUtil::TokenDelegate::TokenDelegate(
     const AccountId& account_id,
     const std::string& token,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TokenValidationCallback callback)
+    TokenDelegateCallback callback)
     : owner_(owner),
       account_id_(account_id),
       token_(token),

@@ -627,7 +627,7 @@ void UserSelectionScreen::CheckUserStatus(const AccountId& account_id) {
   }
 
   if (token_handle_util_->HasToken(account_id)) {
-    token_handle_util_->CheckToken(
+    token_handle_util_->IsReauthRequired(
         account_id,
         ProfileHelper::Get()->GetSigninProfile()->GetURLLoaderFactory(),
         base::BindOnce(&UserSelectionScreen::OnUserStatusChecked,
@@ -708,11 +708,10 @@ void UserSelectionScreen::OnBeforeShow() {
   input_method::InputMethodManager::Get()->SetState(ime_state_);
 }
 
-void UserSelectionScreen::OnUserStatusChecked(
-    const AccountId& account_id,
-    const std::string& token,
-    const TokenHandleUtil::Status& status) {
-  if (status == TokenHandleUtil::Status::kInvalid) {
+void UserSelectionScreen::OnUserStatusChecked(const AccountId& account_id,
+                                              const std::string& token,
+                                              bool reauth_required) {
+  if (reauth_required) {
     RecordReauthReason(account_id, ReauthReason::kInvalidTokenHandle);
     SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                 std::u16string());

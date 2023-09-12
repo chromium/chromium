@@ -38,11 +38,12 @@ class TokenHandleUtil {
   // `account_id`: The account for which the token handle check was performed.
   // `token`: The token which was checked. Empty if we could not find a token
   // handle for `account_id`.
-  // `status`: Status of `token`.
+  // `reauth_required`: Result of the of `IsReauthRequired()`. `true` means that
+  // reauthentication is required for `account_id`.
   using TokenValidationCallback =
       base::OnceCallback<void(const AccountId& account_id,
                               const std::string& token,
-                              const Status& status)>;
+                              bool reauth_required)>;
 
   // Returns true if UserManager has token handle associated with `account_id`.
   static bool HasToken(const AccountId& account_id);
@@ -56,7 +57,7 @@ class TokenHandleUtil {
 
   // Performs token handle check for `account_id`. Will call `callback` with
   // corresponding result. See `TokenValidationCallback` for details.
-  void CheckToken(
+  void IsReauthRequired(
       const AccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       TokenValidationCallback callback);
@@ -74,12 +75,16 @@ class TokenHandleUtil {
   // Associates GaiaOAuthClient::Delegate with User ID and Token.
   class TokenDelegate : public gaia::GaiaOAuthClient::Delegate {
    public:
+    using TokenDelegateCallback =
+        base::OnceCallback<void(const AccountId& account_id,
+                                const std::string& token,
+                                const Status& status)>;
     TokenDelegate(
         const base::WeakPtr<TokenHandleUtil>& owner,
         const AccountId& account_id,
         const std::string& token,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        TokenValidationCallback callback);
+        TokenDelegateCallback callback);
 
     TokenDelegate(const TokenDelegate&) = delete;
     TokenDelegate& operator=(const TokenDelegate&) = delete;
@@ -102,7 +107,7 @@ class TokenHandleUtil {
     AccountId account_id_;
     std::string token_;
     base::TimeTicks tokeninfo_response_start_time_;
-    TokenValidationCallback callback_;
+    TokenDelegateCallback callback_;
     gaia::GaiaOAuthClient gaia_client_;
   };
 

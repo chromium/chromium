@@ -196,7 +196,7 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
       multi_user_util::GetAccountIdFromProfile(profile_);
   if (TokenHandleUtil::HasToken(account_id) &&
       !TokenHandleUtil::IsRecentlyChecked(account_id)) {
-    token_handle_util_->CheckToken(
+    token_handle_util_->IsReauthRequired(
         account_id, profile->GetURLLoaderFactory(),
         base::BindOnce(&SigninErrorNotifier::OnTokenHandleCheck,
                        weak_factory_.GetWeakPtr()));
@@ -204,12 +204,11 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
   OnErrorChanged();
 }
 
-void SigninErrorNotifier::OnTokenHandleCheck(
-    const AccountId& account_id,
-    const std::string& token,
-    const TokenHandleUtil::Status& status) {
+void SigninErrorNotifier::OnTokenHandleCheck(const AccountId& account_id,
+                                             const std::string& token,
+                                             bool reauth_required) {
   token_handle_fetcher_->DiagnoseTokenHandleMapping(account_id, token);
-  if (status != TokenHandleUtil::Status::kInvalid) {
+  if (!reauth_required) {
     return;
   }
   RecordReauthReason(account_id, ReauthReason::kInvalidTokenHandle);
@@ -293,8 +292,8 @@ void SigninErrorNotifier::HandleDeviceAccountError(
     return;
 
   // We need to save the flag in the local state because
-  // TokenHandleUtil::CheckToken might fail on the login screen due to lack of
-  // network connectivity.
+  // TokenHandleUtil::IsReauthRequired might fail on the login screen due to
+  // lack of network connectivity.
   SaveForceOnlineSignin(profile_);
   std::unique_ptr<message_center::Notification> notification =
       CreateDeviceAccountErrorNotification(

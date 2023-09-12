@@ -124,7 +124,7 @@ class UserSelectionScreen
 
   void OnUserStatusChecked(const AccountId& account_id,
                            const std::string& token,
-                           const TokenHandleUtil::Status& status);
+                           bool reauth_required);
   void OnAllowedInputMethodsChanged();
 
   void OnStartAuthSession(bool user_exists,
