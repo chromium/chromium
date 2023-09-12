@@ -72222,6 +72222,18 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Switch to different webcontents"/>
 </enum>
 
+<enum name="MessageAction">
+  <int value="0" label="Dismiss"/>
+  <int value="1" label="Snooze"/>
+  <int value="2" label="Action"/>
+  <int value="3" label="Cancel"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Abort"/>
+  <int value="6" label="Feature engaged"/>
+  <int value="7" label="Override for UI region conflict"/>
+  <int value="10" label="Override for precedence"/>
+</enum>
+
 <enum name="MessageDismissReason">
   <int value="0" label="Unknown (controlled by client)"/>
   <int value="1" label="Primary action"/>

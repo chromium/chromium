@@ -38014,6 +38014,74 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="UserEducation.MessageAction.Abort.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    The In-Product Help Bubble was aborted due to leaving the flow of the
+    feature promotion. This is specific to the IPH implementation and could mean
+    navigation or hiding a surface.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.Action.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    The In-Product Help Bubble was closed after the user selected the action in
+    the IPH. For a Custom Action IPH, this means the custom action was
+    activated. For a Tutorial IPH, this means the tutorial was started.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.Cancel.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    The In-Product Help Bubble was closed after the user pressed Escape or
+    clicked &quot;X&quot; in the IPH.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.Dismiss.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>The user dismissed the In-Product Help Bubble.</description>
+</action>
+
+<action name="UserEducation.MessageAction.FeatureEngaged.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    The user engaged with the promoted feature outside the In-Product Help
+    Bubble in a way that obviated the need for this IPH.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.OverrideForPrecedence.IPH"
+    not_user_triggered="true">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    The In-Product Help Bubble was closed to allow showing a message with higher
+    priority.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.OverrideForUIRegionConflict.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    The In-Product Help Bubble was closed to avoid overlap with an important UI
+    element.
+  </description>
+</action>
+
+<action name="UserEducation.MessageAction.Snooze.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>The user snoozed the In-Product Help Bubble.</description>
+</action>
+
+<action name="UserEducation.MessageAction.Timeout.IPH">
+  <owner>mickeyburks@chromium.org</owner>
+  <description>
+    The In-Product Help Bubble spontaneously timed out after some time interval.
+  </description>
+</action>
+
 <action name="UserManager_Cleared_Legacy_User_Prefs">
   <owner>mahmadi@chromium.org</owner>
   <description>
@@ -39573,6 +39641,17 @@ should be able to be added at any place in this file.
       name="InProductHelp.ShouldTriggerHelpUIResult.Triggered.IPH"/>
   <affected-action
       name="InProductHelp.ShouldTriggerHelpUIResult.WouldHaveTriggered.IPH"/>
+  <affected-action name="UserEducation.MessageAction.Abort.IPH"/>
+  <affected-action name="UserEducation.MessageAction.Action.IPH"/>
+  <affected-action name="UserEducation.MessageAction.Cancel.IPH"/>
+  <affected-action name="UserEducation.MessageAction.Dismiss.IPH"/>
+  <affected-action name="UserEducation.MessageAction.FeatureEngaged.IPH"/>
+  <affected-action
+      name="UserEducation.MessageAction.OverrideForPrecedence.IPH"/>
+  <affected-action
+      name="UserEducation.MessageAction.OverrideForUIRegionConflict.IPH"/>
+  <affected-action name="UserEducation.MessageAction.Snooze.IPH"/>
+  <affected-action name="UserEducation.MessageAction.Timeout.IPH"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -43,17 +44,18 @@ enum class FeaturePromoCloseReasonInternal {
   kDismiss = 0,  // Promo dismissed by user.
   kSnooze = 1,   // Promo snoozed by user.
   kAction = 2,   // Custom action taken by user.
+  kCancel = 3,   // Promo was cancelled.
 
   // Actions outside the FeaturePromo.
-  kTimeout = 3,         // Promo timed out.
-  kAbortPromo = 4,      // Promo aborted by indirect user action.
-  kFeatureEngaged = 5,  // Promo closed by indirect user engagement.
+  kTimeout = 4,         // Promo timed out.
+  kAbortPromo = 5,      // Promo aborted by indirect user action.
+  kFeatureEngaged = 6,  // Promo closed by indirect user engagement.
 
   // Controller system actions.
-  kOverrideForUIRegionConflict = 6,  // Promo aborted to avoid overlap.
-  kOverrideForDemo = 7,              // Promo aborted by the demo system.
-  kOverrideForTesting = 8,           // Promo aborted for tests.
-  kOverrideForPrecedence = 9,        // Promo aborted for higher priority Promo.
+  kOverrideForUIRegionConflict = 7,  // Promo aborted to avoid overlap.
+  kOverrideForDemo = 8,              // Promo aborted by the demo system.
+  kOverrideForTesting = 9,           // Promo aborted for tests.
+  kOverrideForPrecedence = 10,       // Promo aborted for higher priority Promo.
 
   kMaxValue = kOverrideForPrecedence,
 };
@@ -318,13 +320,69 @@ bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature,
     return false;
 
   const bool was_open = promo_bubble_ && promo_bubble_->is_open();
-  if (promo_bubble_)
+  if (promo_bubble_) {
     promo_bubble_->Close();
+    RecordPromoAction(iph_feature, close_reason);
+  }
   if (!continuing_after_bubble_closed_ &&
       iph_feature_bypassing_tracker_ == &iph_feature) {
     iph_feature_bypassing_tracker_ = nullptr;
   }
   return was_open;
+}
+
+void FeaturePromoControllerCommon::RecordPromoAction(
+    const base::Feature& iph_feature,
+    int action) {
+  std::string action_name = "UserEducation.MessageAction.";
+
+  switch (static_cast<internal::FeaturePromoCloseReasonInternal>(action)) {
+    case internal::FeaturePromoCloseReasonInternal::kDismiss:
+      action_name.append("Dismiss");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kSnooze:
+      action_name.append("Snooze");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kAction:
+      action_name.append("Action");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kCancel:
+      action_name.append("Cancel");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kTimeout:
+      action_name.append("Timeout");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kAbortPromo:
+      action_name.append("Abort");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kFeatureEngaged:
+      action_name.append("FeatureEngaged");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::
+        kOverrideForUIRegionConflict:
+      action_name.append("OverrideForUIRegionConflict");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kOverrideForPrecedence:
+      action_name.append("OverrideForPrecedence");
+      break;
+    case internal::FeaturePromoCloseReasonInternal::kOverrideForDemo:
+      // Not used for metrics.
+      return;
+    case internal::FeaturePromoCloseReasonInternal::kOverrideForTesting:
+      // Not used for metrics.
+      return;
+  }
+  action_name.append(".");
+  action_name.append(iph_feature.name);
+  // Record the user action.
+  base::RecordComputedAction(action_name);
+
+  // Record the histogram.
+  std::string histogram_name =
+      std::string("UserEducation.MessageAction.").append(iph_feature.name);
+  base::UmaHistogramEnumeration(
+      histogram_name,
+      static_cast<internal::FeaturePromoCloseReasonInternal>(action));
 }
 
 bool FeaturePromoControllerCommon::DismissNonCriticalBubbleInRegion(
@@ -450,8 +508,13 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   create_params.arrow = spec.bubble_arrow();
 
   // Critical promos don't time out.
-  if (is_critical_promo)
+  if (is_critical_promo) {
     create_params.timeout = base::Seconds(0);
+  } else {
+    create_params.timeout_callback = base::BindOnce(
+        &FeaturePromoControllerCommon::OnHelpBubbleTimeout,
+        weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()));
+  }
 
   // Feature isn't present for some critical promos.
   if (spec.feature()) {
@@ -556,14 +619,33 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
 
 void FeaturePromoControllerCommon::OnHelpBubbleSnoozed(
     const base::Feature* feature) {
-  if (iph_feature_bypassing_tracker_ != feature)
+  if (iph_feature_bypassing_tracker_ != feature) {
+    RecordPromoAction(
+        *feature,
+        static_cast<int>(internal::FeaturePromoCloseReasonInternal::kSnooze));
     snooze_service_->OnUserSnooze(*feature);
+  }
+}
+
+void FeaturePromoControllerCommon::OnHelpBubbleTimeout(
+    const base::Feature* feature) {
+  if (iph_feature_bypassing_tracker_ != feature) {
+    RecordPromoAction(
+        *feature,
+        static_cast<int>(internal::FeaturePromoCloseReasonInternal::kTimeout));
+  }
 }
 
 void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
     const base::Feature* feature) {
-  if (snooze_service_ && iph_feature_bypassing_tracker_ != feature)
-    snooze_service_->OnUserDismiss(*feature);
+  if (iph_feature_bypassing_tracker_ != feature) {
+    RecordPromoAction(
+        *feature,
+        static_cast<int>(internal::FeaturePromoCloseReasonInternal::kDismiss));
+    if (snooze_service_) {
+      snooze_service_->OnUserDismiss(*feature);
+    }
+  }
 }
 
 void FeaturePromoControllerCommon::OnCustomAction(

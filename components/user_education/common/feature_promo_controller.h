@@ -225,6 +225,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // if a bubble is closed as a result.
   bool DismissNonCriticalBubbleInRegion(const gfx::Rect& screen_bounds);
 
+  // Records user actions and histograms that discern what action was
+  // taken to close a promotion.
+  void RecordPromoAction(const base::Feature& iph_feature, int action);
+
   // Blocks further promos and closes any existing non-critical ones.
   [[nodiscard]] TestLock BlockPromosForTesting();
 
@@ -391,6 +395,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Callback for snoozed tutorial features. .
   void OnTutorialHelpBubbleSnoozed(const base::Feature* iph_feature,
                                    TutorialIdentifier tutorial_id);
+
+  // Callback when a feature's help bubble times out.
+  void OnHelpBubbleTimeout(const base::Feature* feature);
 
   // Callback when a feature's help bubble is dismissed by any means other than
   // snoozing (including "OK" or "Got it!" buttons).

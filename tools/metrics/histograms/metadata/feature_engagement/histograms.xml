@@ -626,6 +626,14 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
+<histogram name="UserEducation.MessageAction.{IPHFeature}" enum="MessageAction"
+    expires_after="2024-09-01">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>Records what action was taken to close the In-Product Help.</summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
