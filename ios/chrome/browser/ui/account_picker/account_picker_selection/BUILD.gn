@@ -7,8 +7,6 @@ source_set("account_picker_selection") {
     "account_picker_selection_screen_consumer.h",
     "account_picker_selection_screen_coordinator.h",
     "account_picker_selection_screen_coordinator.mm",
-    "account_picker_selection_screen_identity_item_configurator.h",
-    "account_picker_selection_screen_identity_item_configurator.mm",
     "account_picker_selection_screen_mediator.h",
     "account_picker_selection_screen_mediator.mm",
     "account_picker_selection_screen_table_view_controller.h",
@@ -19,6 +17,7 @@ source_set("account_picker_selection") {
     "account_picker_selection_screen_view_controller.mm",
   ]
   deps = [
+    ":identity_item_configurator",
     "//base",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/net:crurl",
@@ -38,9 +37,16 @@ source_set("account_picker_selection") {
     "//ios/chrome/browser/ui/account_picker:account_picker_logger",
     "//ios/chrome/browser/ui/account_picker/account_picker_screen",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
+}
+
+source_set("identity_item_configurator") {
+  sources = [
+    "account_picker_selection_screen_identity_item_configurator.h",
+    "account_picker_selection_screen_identity_item_configurator.mm",
+  ]
+  deps = [ "//ios/chrome/browser/ui/authentication/cells" ]
 }
