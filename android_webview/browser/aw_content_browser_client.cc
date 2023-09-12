@@ -32,6 +32,8 @@
 #include "android_webview/browser/network_service/aw_url_loader_throttle.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_navigation_throttle.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
+#include "android_webview/browser/supervised_user/aw_supervised_user_throttle.h"
+#include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/common/aw_content_client.h"
 #include "android_webview/common/aw_descriptors.h"
@@ -655,6 +657,17 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       result.push_back(
           std::make_unique<AwURLLoaderThrottle>(static_cast<AwBrowserContext*>(
               browser_context)));
+    }
+  }
+
+  if ((request.destination == network::mojom::RequestDestination::kDocument ||
+       request.destination == network::mojom::RequestDestination::kIframe) &&
+      request.url.SchemeIsHTTPOrHTTPS()) {
+    AwSupervisedUserUrlClassifier* urlClassifier =
+        AwSupervisedUserUrlClassifier::GetInstance();
+    if (urlClassifier->ShouldCreateThrottle()) {
+      result.push_back(
+          std::make_unique<AwSupervisedUserThrottle>(urlClassifier));
     }
   }
 

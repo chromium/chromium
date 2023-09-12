@@ -133,6 +133,18 @@ BASE_FEATURE(kWebViewSafeBrowsingSafeMode,
              "WebViewSafeBrowsingSafeMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable detection of loading mature sites (according to Google SafeSearch)
+// on WebViews running on supervised user accounts.
+BASE_FEATURE(kWebViewSupervisedUserSiteDetection,
+             "WebViewSupervisedUserSiteDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable blocking the loading of mature sites (according to Google SafeSearch)
+// on WebViews running on supervised user accounts.
+BASE_FEATURE(kWebViewSupervisedUserSiteBlock,
+             "WebViewSupervisedUserSiteBlock",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,

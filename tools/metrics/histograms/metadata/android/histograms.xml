@@ -5745,6 +5745,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.WebView.SupervisedUser.UrlCheckResult"
+    enum="AndroidWebViewSupervisedUserUrlCheckResult"
+    expires_after="2024-08-28">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether a given URL is allowed to be loaded by the current device
+    user. This is based on a combination of a call to GMS Core, which checks if
+    the url is allowed, and the setting
+    AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK, which determines if we
+    actually block urls or only log the results.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.SupervisedUser.UrlCheckTime" units="ms"
+    expires_after="2024-08-28">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time taken to return from the call to GMS Core that checks if a
+    given URL is allowed to be loaded by the current device user.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
     enum="WebViewClientTypeEnum" expires_after="2024-08-23">
   <owner>pbirk@chromium.org</owner>

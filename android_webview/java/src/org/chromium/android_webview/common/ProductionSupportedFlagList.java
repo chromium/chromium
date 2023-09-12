@@ -563,6 +563,12 @@ public final class ProductionSupportedFlagList {
                     "Enables Service Worker static routing API."),
             Flag.baseFeature(ContentFeatures.BACK_FORWARD_CACHE_MEDIA_SESSION_SERVICE,
                     "Enables media session usage when bfcache is enabled"),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION,
+                    "Enable detection of the loading of mature sites on "
+                            + "WebViews running on supervised user accounts"),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK,
+                    "Enable blocking the loading of mature sites on "
+                            + "WebViews running on supervised user accounts"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

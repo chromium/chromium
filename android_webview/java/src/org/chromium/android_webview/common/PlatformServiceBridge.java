@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -122,4 +123,8 @@ public abstract class PlatformServiceBridge {
      * query SafeModeController to receive mitigation steps.
      */
     public void checkForAppRecovery() {}
+
+    public @Nullable AwSupervisedUserUrlClassifierDelegate getUrlClassifierDelegate() {
+        return null;
+    }
 }
