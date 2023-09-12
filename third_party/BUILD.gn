@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
@@ -64,4 +65,9 @@ component("freetype_harfbuzz") {
   } else {
     public_deps += [ "//third_party/harfbuzz-ng:harfbuzz_source" ]
   }
+}
+
+buildflag_header("freetype_buildflags") {
+  header = "freetype_buildflags.h"
+  flags = [ "USE_SYSTEM_FREETYPE=$use_system_freetype" ]
 }
