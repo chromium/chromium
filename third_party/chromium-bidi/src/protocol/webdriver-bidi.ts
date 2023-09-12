@@ -465,13 +465,13 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type PrintPageParameters = {
     /**
-     * Must be greater than or equal to `0`.
+     * Must be greater than or equal to `0.0352`.
      *
      * @defaultValue `27.94`
      */
     height?: number;
     /**
-     * Must be greater than or equal to `0`.
+     * Must be greater than or equal to `0.0352`.
      *
      * @defaultValue `21.59`
      */
