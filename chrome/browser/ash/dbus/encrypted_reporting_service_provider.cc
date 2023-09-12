@@ -58,10 +58,9 @@ void SendStatusAsResponse(
   writer.AppendProtoAsArrayOfBytes(response_message);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Turn on the debug state flag, if required.
-  if (::reporting::HistoryTracker::Get()->debug_state()) {
-    response_message.set_health_data_logging_enabled(true);
-  }
+  // Turn on/off the debug state flag (for Ash only).
+  response_message.set_health_data_logging_enabled(
+      ::reporting::HistoryTracker::Get()->debug_state());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Send `response`
