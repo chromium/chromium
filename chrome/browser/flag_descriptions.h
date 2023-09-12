@@ -3598,11 +3598,6 @@ extern const char kExoOrdinalMotionDescription[];
 extern const char kExoSurroundingTextOffsetName[];
 extern const char kExoSurroundingTextOffsetDescription[];
 
-extern const char
-    kExperimentalAccessibilityChromeVoxOobeDialogImprovementsName[];
-extern const char
-    kExperimentalAccessibilityChromeVoxOobeDialogImprovementsDescription[];
-
 extern const char kExperimentalAccessibilityDictationContextCheckingName[];
 extern const char
     kExperimentalAccessibilityDictationContextCheckingDescription[];

@@ -1150,21 +1150,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   WaitForSpokenSuccessMetric();
 }
 
-class WelcomeScreenImprovedChromeVoxHintTest
-    : public WelcomeScreenChromeVoxHintTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WelcomeScreenChromeVoxHintTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityChromeVoxOobeDialogImprovements);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
-                       DialogStructure) {
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DialogStructure) {
   test::WaitForWelcomeScreen();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
@@ -1180,8 +1166,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
       "labelForAria_", kChromeVoxHintDialogCloseButton, std::string("Close"));
 }
 
-IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
-                       LaptopAnnouncement) {
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopAnnouncement) {
   test::WaitForWelcomeScreen();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
@@ -1192,8 +1177,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
   WaitForSpokenSuccessMetric();
 }
 
-IN_PROC_BROWSER_TEST_F(WelcomeScreenImprovedChromeVoxHintTest,
-                       TabletAnnouncement) {
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, TabletAnnouncement) {
   test::WaitForWelcomeScreen();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);

@@ -307,10 +307,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      features::IsOobeJellyModalEnabled());
   // TODO (b/269117729) Cleanup OobeSimon
   source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
-  source->AddBoolean(
-      "isChromeVoxHintImprovementsEnabled",
-      ::features::
-          IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled());
   source->AddBoolean("isOobeAssistantEnabled",
                      !features::IsOobeSkipAssistantEnabled());
   source->AddBoolean("isOobeGaiaInfoScreenEnabled",

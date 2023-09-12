@@ -136,15 +136,6 @@ bool IsDictationOfflineAvailable() {
       ash::features::kOnDeviceSpeechRecognition);
 }
 
-BASE_FEATURE(kExperimentalAccessibilityChromeVoxOobeDialogImprovements,
-             "ExperimentalAccessibilityChromeVoxOobeDialogImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsExperimentalAccessibilityChromeVoxOobeDialogImprovementsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityChromeVoxOobeDialogImprovements);
-}
-
 BASE_FEATURE(kExperimentalAccessibilityDictationContextChecking,
              "ExperimentalAccessibilityDictationContextChecking",
              base::FEATURE_DISABLED_BY_DEFAULT);

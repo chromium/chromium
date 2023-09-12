@@ -96,15 +96,6 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         readOnly: true,
       },
 
-      isChromeVoxHintImprovementsEnabled_: {
-        type: Boolean,
-        value: function() {
-          return (
-              loadTimeData.getBoolean('isChromeVoxHintImprovementsEnabled'));
-        },
-        readOnly: true,
-      },
-
       isDeviceRequisitionConfigurable_: {
         type: Boolean,
         value: function() {

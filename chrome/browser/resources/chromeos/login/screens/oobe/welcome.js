@@ -195,15 +195,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
         },
         readOnly: true,
       },
-
-      isChromeVoxHintImprovementsEnabled_: {
-        type: Boolean,
-        value: function() {
-          return (
-              loadTimeData.getBoolean('isChromeVoxHintImprovementsEnabled'));
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -854,16 +845,9 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     }
     this.cleanupChromeVoxHint_();
     // |msgId| depends on both feature enabled status and tablet mode.
-    let msgId;
-    if (this.isChromeVoxHintImprovementsEnabled_) {
-      msgId = this.$.welcomeScreen.isInTabletMode ?
-          'chromeVoxHintAnnouncementTextTabletExpanded' :
-          'chromeVoxHintAnnouncementTextLaptopExpanded';
-    } else {
-      msgId = this.$.welcomeScreen.isInTabletMode ?
-          'chromeVoxHintAnnouncementTextTablet' :
-          'chromeVoxHintAnnouncementTextLaptop';
-    }
+    const msgId = this.$.welcomeScreen.isInTabletMode ?
+        'chromeVoxHintAnnouncementTextTabletExpanded' :
+        'chromeVoxHintAnnouncementTextLaptopExpanded';
 
     const message = this.i18n(msgId);
     chrome.tts.speak(message, options, () => {
