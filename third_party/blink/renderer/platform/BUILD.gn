@@ -810,6 +810,8 @@ component("platform") {
     "graphics/canvas_2d_layer_bridge.h",
     "graphics/canvas_color_params.cc",
     "graphics/canvas_color_params.h",
+    "graphics/canvas_hibernation_handler.cc",
+    "graphics/canvas_hibernation_handler.h",
     "graphics/canvas_resource.cc",
     "graphics/canvas_resource.h",
     "graphics/canvas_resource_dispatcher.cc",
