@@ -119,16 +119,16 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 
 #if BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // PNaCl on Chrome OS is on rootfs and there is no need to download it. But
   // Chrome4ChromeOS on Linux doesn't contain PNaCl so enable component
   // installer when running on Linux. See crbug.com/422121 for more details.
   if (!base::SysInfo::IsRunningOnChromeOS()) {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     RegisterPnaclComponent(cus);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_NACL) && !BUILDFLAG(IS_ANDROID)
 
   RegisterSubresourceFilterComponent(cus);
@@ -146,6 +146,15 @@ void RegisterComponentsForUpdate() {
 
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      // PNaCl on Lacros used to be a component, but on real devices this has
+      // been replaced by a link to the files also used by ash.
+      // Clean up the component if it is present.
+      DeletePnaclComponent(path);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
   RegisterSSLErrorAssistantComponent(cus);
 

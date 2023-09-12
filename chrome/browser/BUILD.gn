@@ -5642,6 +5642,7 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros",
+      "//chromeos/lacros:lacros_paths",
       "//chromeos/lacros/dbus",
       "//chromeos/startup",
       "//chromeos/startup:constants",

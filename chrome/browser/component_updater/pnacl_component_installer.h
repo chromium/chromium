@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_PNACL_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_PNACL_COMPONENT_INSTALLER_H_
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace pnacl {
 // Returns true if PNaCl actually needs an on-demand component update.
 // E.g., if PNaCl is not yet installed and the user is loading a PNaCl app,
@@ -20,6 +24,8 @@ namespace component_updater {
 class ComponentUpdateService;
 
 void RegisterPnaclComponent(ComponentUpdateService* cus);
+
+void DeletePnaclComponent(const base::FilePath& user_data_dir);
 
 }  // namespace component_updater
 
