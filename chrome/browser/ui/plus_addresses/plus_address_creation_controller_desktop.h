@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_
+#define CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/plus_addresses/plus_address_service.h"
@@ -13,11 +13,12 @@
 
 namespace plus_addresses {
 
-class PlusAddressCreationControllerImpl
+class PlusAddressCreationControllerDesktop
     : public PlusAddressCreationController,
-      public content::WebContentsUserData<PlusAddressCreationControllerImpl> {
+      public content::WebContentsUserData<
+          PlusAddressCreationControllerDesktop> {
  public:
-  ~PlusAddressCreationControllerImpl() override;
+  ~PlusAddressCreationControllerDesktop() override;
 
   // PlusAddressCreationController implementation:
   void OfferCreation(const url::Origin& main_frame_origin,
@@ -28,13 +29,14 @@ class PlusAddressCreationControllerImpl
 
  private:
   // WebContentsUserData:
-  explicit PlusAddressCreationControllerImpl(
+  explicit PlusAddressCreationControllerDesktop(
       content::WebContents* web_contents);
-  friend class content::WebContentsUserData<PlusAddressCreationControllerImpl>;
+  friend class content::WebContentsUserData<
+      PlusAddressCreationControllerDesktop>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace plus_addresses
 
-#endif  // CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_PLUS_ADDRESSES_PLUS_ADDRESS_CREATION_CONTROLLER_DESKTOP_H_

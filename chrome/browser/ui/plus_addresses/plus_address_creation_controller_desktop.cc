@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_impl.h"
+#include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "components/plus_addresses/plus_address_service.h"
 
@@ -10,16 +10,16 @@ namespace plus_addresses {
 // static
 PlusAddressCreationController* PlusAddressCreationController::GetOrCreate(
     content::WebContents* web_contents) {
-  PlusAddressCreationControllerImpl::CreateForWebContents(web_contents);
-  return PlusAddressCreationControllerImpl::FromWebContents(web_contents);
+  PlusAddressCreationControllerDesktop::CreateForWebContents(web_contents);
+  return PlusAddressCreationControllerDesktop::FromWebContents(web_contents);
 }
-PlusAddressCreationControllerImpl::PlusAddressCreationControllerImpl(
+PlusAddressCreationControllerDesktop::PlusAddressCreationControllerDesktop(
     content::WebContents* web_contents)
-    : content::WebContentsUserData<PlusAddressCreationControllerImpl>(
+    : content::WebContentsUserData<PlusAddressCreationControllerDesktop>(
           *web_contents) {}
-PlusAddressCreationControllerImpl::~PlusAddressCreationControllerImpl() =
+PlusAddressCreationControllerDesktop::~PlusAddressCreationControllerDesktop() =
     default;
-void PlusAddressCreationControllerImpl::OfferCreation(
+void PlusAddressCreationControllerDesktop::OfferCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {
   // TODO(crbug.com/1467623): implement modal flows.
@@ -40,9 +40,9 @@ void PlusAddressCreationControllerImpl::OfferCreation(
 }
 
 // TODO(crbug.com/1467623): implement modal flows.
-void PlusAddressCreationControllerImpl::OnConfirmed() {}
-void PlusAddressCreationControllerImpl::OnCanceled() {}
-void PlusAddressCreationControllerImpl::OnDialogDestroyed() {}
+void PlusAddressCreationControllerDesktop::OnConfirmed() {}
+void PlusAddressCreationControllerDesktop::OnCanceled() {}
+void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PlusAddressCreationControllerImpl);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PlusAddressCreationControllerDesktop);
 }  // namespace plus_addresses
