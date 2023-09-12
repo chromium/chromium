@@ -130,7 +130,8 @@ void AutofillContextMenuManager::AppendItems() {
   }
 
   // Includes the option of submitting feedback on Autofill.
-  if (base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
+  if (personal_data_manager_->IsAutofillEnabled() &&
+      base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
@@ -146,6 +147,7 @@ void AutofillContextMenuManager::AppendItems() {
   }
 
   if (params_.field_renderer_id &&
+      personal_data_manager_->IsAutofillProfileEnabled() &&
       base::FeatureList::IsEnabled(
           features::kAutofillFallbackForAutocompleteUnrecognized)) {
     MaybeAddFallbackForAutocompleteUnrecognizedToMenu(*driver);
