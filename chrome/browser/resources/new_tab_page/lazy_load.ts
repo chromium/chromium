@@ -56,6 +56,7 @@ export {DummyModuleElement, dummyV2Descriptor} from './modules/v2/dummy/module.j
 export {CartTileModuleElementV2} from './modules/v2/history_clusters/cart/cart_tile.js';
 export {HistoryClustersProxyImpl as HistoryClustersProxyImplV2} from './modules/v2/history_clusters/history_clusters_proxy.js';
 export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
+export {VisitTileModuleElement} from './modules/v2/history_clusters/visit_tile.js';
 export {ModuleHeaderElementV2} from './modules/v2/module_header.js';
 export {DismissModuleInstanceEvent, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

@@ -12,8 +12,11 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/discount/discount.mojom.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/discount/discount_processor.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
@@ -60,6 +63,12 @@ HistoryClustersPageHandlerV2::HistoryClustersPageHandlerV2(
           ntp_features::kNtpChromeCartInHistoryClusterModule)) {
     cart_processor_ = std::make_unique<CartProcessor>(
         CartServiceFactory::GetForProfile(profile_));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleDiscounts)) {
+    discount_processor_ = std::make_unique<DiscountProcessor>(
+        commerce::ShoppingServiceFactory::GetForBrowserContext(profile_));
   }
 }
 
@@ -154,6 +163,22 @@ void HistoryClustersPageHandlerV2::GetCartForCluster(
   }
   DCHECK(cart_processor_);
   cart_processor_->GetCartForCluster(std::move(cluster), std::move(callback));
+}
+
+void HistoryClustersPageHandlerV2::GetDiscountsForCluster(
+    history_clusters::mojom::ClusterPtr cluster,
+    GetDiscountsForClusterCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleDiscounts)) {
+    std::move(callback).Run(
+        base::flat_map<
+            GURL, std::vector<
+                      ntp::history_clusters::discount::mojom::DiscountPtr>>());
+    return;
+  }
+  DCHECK(discount_processor_);
+  discount_processor_->GetDiscountsForCluster(std::move(cluster),
+                                              std::move(callback));
 }
 
 void HistoryClustersPageHandlerV2::ShowJourneysSidePanel(
