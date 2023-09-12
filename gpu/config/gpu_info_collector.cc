@@ -344,6 +344,12 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
 }
 
 void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
+  static BASE_FEATURE(kCollectWebGPUSupportMetrics,
+                      "CollectWebGPUSupportMetrics",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  if (!base::FeatureList::IsEnabled(kCollectWebGPUSupportMetrics)) {
+    return;
+  }
   // Note: These enum values should not change and should match those in
   // //tools/metrics/histograms/enums.xml
   enum class WebGPUSupport {
