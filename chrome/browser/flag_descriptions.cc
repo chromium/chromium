@@ -1893,6 +1893,10 @@ const char kCrasSplitAlsaUsbInternalDescription[] =
     "When enable, CRAS will create different iodev with USB and internal "
     "device.";
 
+const char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
+const char kPwaRestoreUiDescription[] =
+    "When enabled, the PWA Restore UI can be shown";
+
 const char kRestoreTabsOnFREName[] = "Restore tabs on FRE";
 const char kRestoreTabsOnFREDescription[] =
     "Enable promo sheet to indicate tabs from synced devices can be restored";

@@ -20,6 +20,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kConvertTrackpadEventsToMouse);
 // Use the old-style opening of an External Picker when uploading files.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 
+// Enable the PWA Restore functionality.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kPwaRestoreUi);
+
 // Reports all of the available pointer types (i.e. coarse, fine) to content
 // rather than just the first one detected.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportAllAvailablePointerTypes);

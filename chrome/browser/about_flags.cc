@@ -9767,6 +9767,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordEditDialogWithDetailsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordEditDialogWithDetails)},
+
+    {"pwa-restore-ui", flag_descriptions::kPwaRestoreUiName,
+     flag_descriptions::kPwaRestoreUiDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kPwaRestoreUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"autofill-enable-ranking-formula-address-profiles",
      flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesName,

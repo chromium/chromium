@@ -1061,6 +1061,9 @@ extern const char kTabAudioMutingDescription[];
 extern const char kCrasSplitAlsaUsbInternalName[];
 extern const char kCrasSplitAlsaUsbInternalDescription[];
 
+extern const char kPwaRestoreUiName[];
+extern const char kPwaRestoreUiDescription[];
+
 extern const char kRestoreTabsOnFREName[];
 extern const char kRestoreTabsOnFREDescription[];
 

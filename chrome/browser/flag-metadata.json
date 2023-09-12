@@ -6891,6 +6891,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "pwa-restore-ui",
+    "owners": [ "finnur", "beverloo" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "pwa-update-dialog-for-icon",
     "owners": [ "finnur", "beverloo" ],
     "expiry_milestone": 140

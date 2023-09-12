@@ -60957,6 +60957,7 @@ from previous Chrome versions.
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
   <int value="-1872205507" label="ShelfNewUi:enabled"/>
   <int value="-1871552967" label="DesktopPWAsTabStrip:disabled"/>
+  <int value="-1871472551" label="PwaRestoreUi:enabled"/>
   <int value="-1871389939" label="DeskButton:enabled"/>
   <int value="-1871185948" label="VrLaunchIntents:disabled"/>
   <int value="-1870961970" label="enable-filemanager-mtp"/>
@@ -63668,6 +63669,7 @@ from previous Chrome versions.
   <int value="-527050466" label="NavigationRequestPreconnect:disabled"/>
   <int value="-526737102" label="TerminalAlternativeEmulator:disabled"/>
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
+  <int value="-523224129" label="PwaRestoreUi:disabled"/>
   <int value="-523155003" label="PhoneHubCameraRoll:disabled"/>
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>
   <int value="-522137246" label="PdfPortfolio:disabled"/>
