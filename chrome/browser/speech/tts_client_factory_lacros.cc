@@ -33,7 +33,8 @@ TtsClientFactoryLacros::TtsClientFactoryLacros()
 
 TtsClientFactoryLacros::~TtsClientFactoryLacros() = default;
 
-KeyedService* TtsClientFactoryLacros::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TtsClientFactoryLacros::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new TtsClientLacros(context);
+  return std::make_unique<TtsClientLacros>(context);
 }
