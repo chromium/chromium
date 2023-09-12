@@ -305,7 +305,11 @@ void PrefetchStreamingURLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-PrefetchResponseReader::PrefetchResponseReader() = default;
+PrefetchResponseReader::PrefetchResponseReader() {
+  serving_url_loader_receivers_.set_disconnect_handler(base::BindRepeating(
+      &PrefetchResponseReader::OnServingURLLoaderMojoDisconnect,
+      weak_ptr_factory_.GetWeakPtr()));
+}
 
 PrefetchResponseReader::~PrefetchResponseReader() {
   if (should_record_metrics_) {
@@ -330,7 +334,7 @@ void PrefetchResponseReader::MaybeReleaseSoonSelfPointer() {
   if (!self_pointer_) {
     return;
   }
-  if (serving_url_loader_receiver_.is_bound()) {
+  if (!serving_url_loader_receivers_.empty()) {
     return;
   }
 
@@ -340,8 +344,6 @@ void PrefetchResponseReader::MaybeReleaseSoonSelfPointer() {
 }
 
 void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
-  serving_url_loader_receiver_.reset();
-  serving_url_loader_client_.reset();
   MaybeReleaseSoonSelfPointer();
 }
 
@@ -352,16 +354,24 @@ PrefetchResponseReader::CreateRequestHandler() {
   }
 
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
-                        base::WrapRefCounted(this));
+                        base::WrapRefCounted(this), std::move(body_));
 }
 
 void PrefetchResponseReader::BindAndStart(
+    mojo::ScopedDataPipeConsumerHandle body,
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  DCHECK(!serving_url_loader_receiver_.is_bound());
-  DCHECK(!self_pointer_);
-  self_pointer_ = base::WrapRefCounted(this);
+  // Currently only one client is allowed.
+  // TODO(crbug.com/1449360): Actually support multiple clients.
+  CHECK(serving_url_loader_clients_.empty());
+
+  serving_url_loader_receivers_.Add(this, std::move(receiver));
+  ServingUrlLoaderClientId client_id =
+      serving_url_loader_clients_.Add(std::move(client));
+  if (!self_pointer_) {
+    self_pointer_ = base::WrapRefCounted(this);
+  }
 
   if (load_state_ == LoadState::kCompleted) {
     served_after_completion_ = true;
@@ -369,33 +379,106 @@ void PrefetchResponseReader::BindAndStart(
     served_before_completion_ = true;
   }
 
-  serving_url_loader_receiver_.Bind(std::move(receiver));
-  serving_url_loader_receiver_.set_disconnect_handler(
-      base::BindOnce(&PrefetchResponseReader::OnServingURLLoaderMojoDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()));
-  serving_url_loader_client_.Bind(std::move(client));
+  forward_body_ = std::move(body);
 
-  RunEventQueue();
+  switch (load_state_) {
+    case LoadState::kResponseReceived:
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
+      // In these cases, `ForwardResponse()` is expected to be called always
+      // inside `RunEventQueue()` below, because `CreateRequestHandler()` was
+      // called after response headers are received. Both the head and body
+      // plumbed to `ForwardResponse()` should be non-null.
+      //
+      // The `kFailed` cases here should be transitioned from
+      // `kResponseReceived` state, because `this` should have been servable
+      // when `CreateRequestHandler()` was called, and thus the head/body should
+      // remain valid (reflecting the successful `kResponseReceived`) and
+      // `ForwardResponse()` should be called. Other `kFailed` cases shouldn't
+      // reach here.
+      //
+      // TODO(crbug.com/1449360): we might want to revisit this behavior.
+      CHECK(GetHead());
+      CHECK(forward_body_);
+      break;
+
+    case LoadState::kRedirectHandled:
+      // For redirects, `ForwardResponse()` shouldn't be called at all, and the
+      // head and body are both null.
+      CHECK(!GetHead());
+      CHECK(!forward_body_);
+      break;
+
+    case LoadState::kStarted:
+    case LoadState::kFailedResponseReceived:
+      // `CreateRequestHandler()` shouldn't be called for these non-servable
+      // states.
+      NOTREACHED();
+      break;
+  }
+
+  RunEventQueue(client_id);
+
+  // Basically `forward_body_` should have been moved out by `ForwardResponse()`
+  // inside `RunEventQueue()`, but `forward_body_` can remain non-null here e.g.
+  // when the serving clients are disconnected before `ForwardResponse()`.
+  // Anyway clear `forward_body_` to ensure it is only valid/used in this
+  // `BindAndStart()` -> `ForwardResponse()` scope.
+  forward_body_.reset();
 }
 
-void PrefetchResponseReader::AddEventToQueue(base::OnceClosure closure) {
-  DCHECK(event_queue_status_ != EventQueueStatus::kFinished);
+void PrefetchResponseReader::AddEventToQueue(
+    base::RepeatingCallback<void(ServingUrlLoaderClientId)> callback) {
+  // To avoid complexity and bugs, `AddEventToQueue()` and `RunEventQueue()` are
+  // assumed non-reentrant. This should be OK because `callback` is just calling
+  // URLLoaderClient mojo methods which are assumed to work asynchronously.
+  CHECK_EQ(event_queue_status_, EventQueueStatus::kNotRunning);
+  event_queue_status_ = EventQueueStatus::kRunning;
 
-  event_queue_.emplace_back(std::move(closure));
+  // Dispatch `callback` to clients that are currently serving.
+  //
+  // If the event is added AFTER a client is added, then `callback` (and the
+  // corresponding `URLLoaderClient` mojo method) is called directly here.
+
+  // Iterate over a separate vector, just in case `serving_url_loader_clients_`
+  // is mutated during iteration, which shouldn't occur (as we assume
+  // non-reentrancy).
+  std::vector<ServingUrlLoaderClientId> client_ids;
+  for (auto it = serving_url_loader_clients_.begin();
+       it != serving_url_loader_clients_.end(); ++it) {
+    client_ids.push_back(it.id());
+  }
+
+  CHECK_EQ(serving_url_loader_clients_.size(), client_ids.size());
+  for (auto client_id : client_ids) {
+    callback.Run(client_id);
+  }
+  // Just roughly check that `serving_url_loader_clients_` seems unchanged.
+  CHECK_EQ(serving_url_loader_clients_.size(), client_ids.size());
+
+  // Queue `callback` to `event_queue_` for clients that might be added in the
+  // future.
+  //
+  // If the event is added BEFORE a client is added, then `callback` is queued
+  // to `event_queue_` here and will be called when the client is added (== when
+  // `RunEventQueue()` is called).
+  event_queue_.push_back(std::move(callback));
+
+  event_queue_status_ = EventQueueStatus::kNotRunning;
 }
 
-void PrefetchResponseReader::RunEventQueue() {
-  DCHECK(serving_url_loader_client_);
-  DCHECK(event_queue_.size() > 0);
-  DCHECK_EQ(event_queue_status_, EventQueueStatus::kNotStarted);
+void PrefetchResponseReader::RunEventQueue(ServingUrlLoaderClientId client_id) {
+  CHECK_GT(event_queue_.size(), 0u);
+
+  // Should be non-reentrant (see a comment in `AddEventToQueue()` above).
+  CHECK_EQ(event_queue_status_, EventQueueStatus::kNotRunning);
 
   event_queue_status_ = EventQueueStatus::kRunning;
-  while (event_queue_.size() > 0) {
-    auto event_itr = event_queue_.begin();
-    std::move(*event_itr).Run();
-    event_queue_.erase(event_itr);
+  for (const auto& callback : event_queue_) {
+    callback.Run(client_id);
   }
-  event_queue_status_ = EventQueueStatus::kFinished;
+
+  event_queue_status_ = EventQueueStatus::kNotRunning;
 }
 
 void PrefetchResponseReader::OnComplete(
@@ -427,14 +510,9 @@ void PrefetchResponseReader::OnComplete(
   response_complete_time_ = base::TimeTicks::Now();
   completion_status_ = completion_status;
 
-  if (serving_url_loader_client_ &&
-      event_queue_status_ == EventQueueStatus::kFinished) {
-    ForwardCompletionStatus();
-    return;
-  }
   AddEventToQueue(
-      base::BindOnce(&PrefetchResponseReader::ForwardCompletionStatus,
-                     base::Unretained(this)));
+      base::BindRepeating(&PrefetchResponseReader::ForwardCompletionStatus,
+                          base::Unretained(this)));
 }
 
 void PrefetchResponseReader::OnReceiveEarlyHints(
@@ -443,15 +521,9 @@ void PrefetchResponseReader::OnReceiveEarlyHints(
         load_state_ == LoadState::kResponseReceived ||
         load_state_ == LoadState::kFailedResponseReceived);
 
-  if (serving_url_loader_client_ &&
-      event_queue_status_ == EventQueueStatus::kFinished) {
-    ForwardEarlyHints(std::move(early_hints));
-    return;
-  }
-
-  AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardEarlyHints,
-                                 base::Unretained(this),
-                                 std::move(early_hints)));
+  AddEventToQueue(
+      base::BindRepeating(&PrefetchResponseReader::ForwardEarlyHints,
+                          base::Unretained(this), std::move(early_hints)));
 }
 
 void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -459,15 +531,9 @@ void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
         load_state_ == LoadState::kResponseReceived ||
         load_state_ == LoadState::kFailedResponseReceived);
 
-  if (serving_url_loader_client_ &&
-      event_queue_status_ == EventQueueStatus::kFinished) {
-    ForwardTransferSizeUpdate(transfer_size_diff);
-    return;
-  }
-
   AddEventToQueue(
-      base::BindOnce(&PrefetchResponseReader::ForwardTransferSizeUpdate,
-                     base::Unretained(this), transfer_size_diff));
+      base::BindRepeating(&PrefetchResponseReader::ForwardTransferSizeUpdate,
+                          base::Unretained(this), transfer_size_diff));
 }
 
 void PrefetchResponseReader::HandleRedirect(
@@ -496,10 +562,9 @@ void PrefetchResponseReader::HandleRedirect(
       return;
   }
 
-  DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
-  AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardRedirect,
-                                 base::Unretained(this), redirect_info,
-                                 std::move(redirect_head)));
+  AddEventToQueue(base::BindRepeating(&PrefetchResponseReader::ForwardRedirect,
+                                      base::Unretained(this), redirect_info,
+                                      std::move(redirect_head)));
 }
 
 void PrefetchResponseReader::OnReceiveResponse(
@@ -507,9 +572,10 @@ void PrefetchResponseReader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
   CHECK_EQ(load_state_, LoadState::kStarted);
-  CHECK_EQ(event_queue_status_, EventQueueStatus::kNotStarted);
   CHECK(!head_);
   CHECK(head);
+  CHECK(!body_);
+  CHECK(serving_url_loader_clients_.empty());
 
   switch (status) {
     case PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody:
@@ -550,42 +616,57 @@ void PrefetchResponseReader::OnReceiveResponse(
   }
 
   head_ = std::move(head);
-  AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardResponse,
-                                 base::Unretained(this), std::move(body)));
+  body_ = std::move(body);
+  AddEventToQueue(base::BindRepeating(&PrefetchResponseReader::ForwardResponse,
+                                      base::Unretained(this)));
 }
 
-void PrefetchResponseReader::ForwardCompletionStatus() {
-  DCHECK(serving_url_loader_client_);
+void PrefetchResponseReader::ForwardCompletionStatus(
+    ServingUrlLoaderClientId client_id) {
   DCHECK(completion_status_);
-  serving_url_loader_client_->OnComplete(completion_status_.value());
+  if (network::mojom::URLLoaderClient* client =
+          serving_url_loader_clients_.Get(client_id)) {
+    client->OnComplete(completion_status_.value());
+  }
 }
 
 void PrefetchResponseReader::ForwardEarlyHints(
-    network::mojom::EarlyHintsPtr early_hints) {
-  DCHECK(serving_url_loader_client_);
-  serving_url_loader_client_->OnReceiveEarlyHints(std::move(early_hints));
+    const network::mojom::EarlyHintsPtr& early_hints,
+    ServingUrlLoaderClientId client_id) {
+  if (network::mojom::URLLoaderClient* client =
+          serving_url_loader_clients_.Get(client_id)) {
+    client->OnReceiveEarlyHints(early_hints->Clone());
+  }
 }
 
 void PrefetchResponseReader::ForwardTransferSizeUpdate(
-    int32_t transfer_size_diff) {
-  DCHECK(serving_url_loader_client_);
-  serving_url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
+    int32_t transfer_size_diff,
+    ServingUrlLoaderClientId client_id) {
+  if (network::mojom::URLLoaderClient* client =
+          serving_url_loader_clients_.Get(client_id)) {
+    client->OnTransferSizeUpdated(transfer_size_diff);
+  }
 }
 
 void PrefetchResponseReader::ForwardRedirect(
     const net::RedirectInfo& redirect_info,
-    network::mojom::URLResponseHeadPtr head) {
-  DCHECK(serving_url_loader_client_);
-  serving_url_loader_client_->OnReceiveRedirect(redirect_info, std::move(head));
+    const network::mojom::URLResponseHeadPtr& head,
+    ServingUrlLoaderClientId client_id) {
+  if (network::mojom::URLLoaderClient* client =
+          serving_url_loader_clients_.Get(client_id)) {
+    client->OnReceiveRedirect(redirect_info, head->Clone());
+  }
 }
 
 void PrefetchResponseReader::ForwardResponse(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(serving_url_loader_client_);
-  DCHECK(head_);
-  DCHECK(body);
-  serving_url_loader_client_->OnReceiveResponse(head_->Clone(), std::move(body),
-                                                absl::nullopt);
+    ServingUrlLoaderClientId client_id) {
+  CHECK(head_);
+  CHECK(forward_body_);
+  if (network::mojom::URLLoaderClient* client =
+          serving_url_loader_clients_.Get(client_id)) {
+    client->OnReceiveResponse(head_->Clone(), std::move(forward_body_),
+                              absl::nullopt);
+  }
 }
 
 void PrefetchResponseReader::FollowRedirect(

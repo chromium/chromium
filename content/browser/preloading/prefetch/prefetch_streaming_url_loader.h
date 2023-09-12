@@ -10,7 +10,9 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_status.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -20,12 +22,12 @@ namespace content {
 class PrefetchStreamingURLLoader;
 
 // `PrefetchResponseReader` stores the prefetched data needed for serving, and
-// serves a URLLoaderClient (`serving_url_loader_client_`). One
+// serves URLLoaderClients (`serving_url_loader_clients_`). One
 // `PrefetchResponseReader` corresponds to one
 // `PrefetchContainer::SinglePrefetch`, i.e. one redirect hop.
 //
 // A sequences of events are received from `PrefetchStreamingURLLoader` and
-// served to `serving_url_loader_client_`.
+// served to each of `serving_url_loader_clients_`.
 //
 // `PrefetchResponseReader` is kept alive by:
 // - `PrefetchContainer::SinglePrefetch::response_reader_`
@@ -34,6 +36,11 @@ class PrefetchStreamingURLLoader;
 //   while it is serving to its `mojom::URLLoaderClient`, or
 // - The `RequestHandler` returned by `CreateRequestHandler()`
 //   until it is called.
+//
+// TODO(crbug.com/1449360): Currently at most one client per
+// `PrefetchResponseReader` is allowed due to other servablility conditions.
+// Upcoming CLs will enable multiple clients/navigation requests per
+// `PrefetchResponseReader` behind a flag.
 class CONTENT_EXPORT PrefetchResponseReader final
     : public network::mojom::URLLoader,
       public base::RefCounted<PrefetchResponseReader> {
@@ -48,9 +55,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // be still be kept alive by others even after that.
   void MaybeReleaseSoonSelfPointer();
 
-  // Adds events (plumbing either directly to `serving_url_loader_client_` or
-  // via `AddEventToQueue()`) from the methods with the same names in
-  // `PrefetchStreamingURLLoader`.
+  // Adds events from the methods with the same names in
+  // `PrefetchStreamingURLLoader` to `event_queue_` and existing
+  // `serving_url_loader_clients_`.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
   void OnReceiveResponse(PrefetchStreamingURLLoaderStatus status,
                          network::mojom::URLResponseHeadPtr head,
@@ -82,29 +89,39 @@ class CONTENT_EXPORT PrefetchResponseReader final
   }
 
  private:
+  // Identifies a client in `serving_url_loader_clients_`.
+  using ServingUrlLoaderClientId = mojo::RemoteSetElementId;
+
   friend class base::RefCounted<PrefetchResponseReader>;
 
   ~PrefetchResponseReader() override;
 
   void BindAndStart(
+      mojo::ScopedDataPipeConsumerHandle body,
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
-  // Adds an event to the queue that will be run when serving the prefetch.
-  void AddEventToQueue(base::OnceClosure closure);
+  // Adds an event to the queue.
+  // The callbacks are called in-order for each of
+  // `serving_url_loader_clients_`, regardless of whether events are added
+  // before or after clients are added.
+  void AddEventToQueue(
+      base::RepeatingCallback<void(ServingUrlLoaderClientId)> callback);
+  // Sends all stored events in `event_queue_` to the client.
+  // Called when a new client (identified by `client_id_`) is added.
+  void RunEventQueue(ServingUrlLoaderClientId client_id);
 
-  // Sends all stored events in |event_queue_| to |serving_url_loader_client_|.
-  void RunEventQueue();
-
-  // Helper functions to send the appropriate events to
-  // |serving_url_loader_client_|.
-  void ForwardCompletionStatus();
-  void ForwardEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void ForwardTransferSizeUpdate(int32_t transfer_size_diff);
+  // Helper functions to send the appropriate events to a client.
+  void ForwardCompletionStatus(ServingUrlLoaderClientId client_id);
+  void ForwardEarlyHints(const network::mojom::EarlyHintsPtr& early_hints,
+                         ServingUrlLoaderClientId client_id);
+  void ForwardTransferSizeUpdate(int32_t transfer_size_diff,
+                                 ServingUrlLoaderClientId client_id);
   void ForwardRedirect(const net::RedirectInfo& redirect_info,
-                       network::mojom::URLResponseHeadPtr);
-  void ForwardResponse(mojo::ScopedDataPipeConsumerHandle body);
+                       const network::mojom::URLResponseHeadPtr&,
+                       ServingUrlLoaderClientId client_id);
+  void ForwardResponse(ServingUrlLoaderClientId client_id);
 
   // network::mojom::URLLoader
   void FollowRedirect(
@@ -121,17 +138,16 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   PrefetchStreamingURLLoaderStatus GetStatusForRecording() const;
 
-  // The URL Loader events that occur before serving the prefetch are queued up
-  // until the prefetch is served.
-  std::vector<base::OnceClosure> event_queue_;
+  // All URLLoader events are queued up here.
+  std::vector<base::RepeatingCallback<void(ServingUrlLoaderClientId)>>
+      event_queue_;
 
   // The status of the event queue.
   enum class EventQueueStatus {
-    kNotStarted,
+    kNotRunning,
     kRunning,
-    kFinished,
   };
-  EventQueueStatus event_queue_status_{EventQueueStatus::kNotStarted};
+  EventQueueStatus event_queue_status_{EventQueueStatus::kNotRunning};
 
   // Valid state transitions (which imply valid event sequences) are:
   // - Redirect: `kStarted` -> `kRedirectHandled`
@@ -170,6 +186,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
   LoadState load_state_{LoadState::kStarted};
 
   // Used for UMA recording.
+  // TODO(crbug.com/1449360): we might want to adapt these flags and UMA
+  // semantics for multiple client settings, but so far we don't have any
+  // specific plans.
   absl::optional<PrefetchStreamingURLLoaderStatus> failure_reason_;
   bool served_before_completion_{false};
   bool served_after_completion_{false};
@@ -177,12 +196,17 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   // The prefetched data and metadata. Not set for a redirect response.
   network::mojom::URLResponseHeadPtr head_;
+  mojo::ScopedDataPipeConsumerHandle body_;
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   absl::optional<base::TimeTicks> response_complete_time_;
 
-  // The URL loader client that will serve the prefetched data.
-  mojo::Receiver<network::mojom::URLLoader> serving_url_loader_receiver_{this};
-  mojo::Remote<network::mojom::URLLoaderClient> serving_url_loader_client_;
+  // Only used temporarily to plumb the body `BindAndStart()` to
+  // `ForwardResponse()`.
+  mojo::ScopedDataPipeConsumerHandle forward_body_;
+
+  // The URL loader clients that will serve the prefetched data.
+  mojo::ReceiverSet<network::mojom::URLLoader> serving_url_loader_receivers_;
+  mojo::RemoteSet<network::mojom::URLLoaderClient> serving_url_loader_clients_;
 
   // Set when this manages its own lifetime.
   scoped_refptr<PrefetchResponseReader> self_pointer_;
