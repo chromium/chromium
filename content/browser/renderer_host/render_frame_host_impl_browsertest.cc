@@ -130,7 +130,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #endif  // defined(USE_AURA)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 #include "content/browser/renderer_host/browser_compositor_view_mac.h"
 #include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
 #endif
