@@ -7849,29 +7849,40 @@ inline void Element::SetInlineStyleFromString(
   }
 }
 
+bool Element::IsStyleAttributeChangeAllowed(const AtomicString& style_string) {
+  if (auto* shadow_root = ContainingShadowRoot()) {
+    if (shadow_root->IsUserAgent()) {
+      return true;
+    }
+  }
+
+  if (auto* context = GetExecutionContext()) {
+    if (auto* policy = context->GetContentSecurityPolicyForCurrentWorld()) {
+      WTF::OrdinalNumber start_line_number = WTF::OrdinalNumber::BeforeFirst();
+      auto& document = GetDocument();
+      if (document.GetScriptableDocumentParser() &&
+          !document.IsInDocumentWrite()) {
+        start_line_number =
+            document.GetScriptableDocumentParser()->LineNumber();
+      }
+      return policy->AllowInline(
+          ContentSecurityPolicy::InlineType::kStyleAttribute, this,
+          style_string, String() /* nonce */, document.Url(),
+          start_line_number);
+    }
+  }
+  return false;
+}
+
 void Element::StyleAttributeChanged(
     const AtomicString& new_style_string,
     AttributeModificationReason modification_reason) {
   DCHECK(IsStyledElement());
-  WTF::OrdinalNumber start_line_number = WTF::OrdinalNumber::BeforeFirst();
-  if (GetDocument().GetScriptableDocumentParser() &&
-      !GetDocument().IsInDocumentWrite()) {
-    start_line_number =
-        GetDocument().GetScriptableDocumentParser()->LineNumber();
-  }
 
   if (new_style_string.IsNull()) {
     EnsureUniqueElementData().inline_style_.Clear();
   } else if (modification_reason == AttributeModificationReason::kByCloning ||
-             (ContainingShadowRoot() &&
-              ContainingShadowRoot()->IsUserAgent()) ||
-             (GetExecutionContext() &&
-              GetExecutionContext()
-                  ->GetContentSecurityPolicyForCurrentWorld()
-                  ->AllowInline(
-                      ContentSecurityPolicy::InlineType::kStyleAttribute, this,
-                      new_style_string, String() /* nonce */,
-                      GetDocument().Url(), start_line_number))) {
+             IsStyleAttributeChangeAllowed(new_style_string)) {
     SetInlineStyleFromString(new_style_string);
   }
 

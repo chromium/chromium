@@ -1570,6 +1570,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool ShouldUpdateLastRememberedBlockSize() const;
   bool ShouldUpdateLastRememberedInlineSize() const;
 
+  bool IsStyleAttributeChangeAllowed(const AtomicString& style_string);
+
   enum class HighlightRecalc {
     // No highlight recalc is needed.
     kNone,
