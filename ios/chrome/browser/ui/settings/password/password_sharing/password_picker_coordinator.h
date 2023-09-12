@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_PICKER_COORDINATOR_H_
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace password_manager {
@@ -28,6 +29,9 @@ struct CredentialUIEntry;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Stops this coordinator and calls `completion` on view controller dismissal.
+- (void)stopWithDismissViewCompletion:(ProceduralBlock)completion;
 
 // Delegate handling coordinator dismissal.
 @property(nonatomic, weak) id<PasswordPickerCoordinatorDelegate> delegate;

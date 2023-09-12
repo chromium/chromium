@@ -9,6 +9,7 @@
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/tests_hook.h"

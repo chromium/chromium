@@ -52,6 +52,10 @@ class IdentityManager;
             (const std::vector<password_manager::CredentialUIEntry>&)credentials
          toRecipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients;
 
+// Credentials selected by the user to be shared.
+@property(nonatomic, assign) std::vector<password_manager::CredentialUIEntry>
+    selectedCredentials;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_MEDIATOR_H_

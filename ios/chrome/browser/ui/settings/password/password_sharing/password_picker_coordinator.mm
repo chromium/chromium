@@ -74,9 +74,13 @@
 }
 
 - (void)stop {
+  [self stopWithDismissViewCompletion:nil];
+}
+
+- (void)stopWithDismissViewCompletion:(ProceduralBlock)completion {
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:YES
-                         completion:nil];
+                         completion:completion];
   self.navigationController = nil;
   self.viewController = nil;
   self.mediator = nil;
@@ -86,6 +90,13 @@
 
 - (void)passwordPickerWasDismissed:(PasswordPickerViewController*)controller {
   [self.delegate passwordPickerCoordinatorWasDismissed:self];
+}
+
+- (void)passwordPickerClosed:(PasswordPickerViewController*)controller
+     withSelectedCredentials:
+         (const std::vector<password_manager::CredentialUIEntry>&)credentials {
+  [self.delegate passwordPickerCoordinatorWasDismissed:self
+                               withSelectedCredentials:credentials];
 }
 
 @end

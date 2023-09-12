@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator.h"
 
+#import "base/ios/block_types.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -65,6 +66,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
 // Coordinator for password picker.
 @property(nonatomic, strong)
     PasswordPickerCoordinator* passwordPickerCoordinator;
+
+// Information about potential password sharing recipients of the user.
+@property(nonatomic, strong) NSArray<RecipientInfoForIOSDisplay*>* recipients;
 
 @end
 
@@ -130,7 +134,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self stopFamilyPickerCoordinator];
   [self stopFamilyPromoCoordinator];
   [self stopAlertCoordinator];
-  [self stopPasswordPickerCoordinator];
+  [self stopPasswordPickerCoordinatorWithDismissViewCompletion:nil];
 }
 
 #pragma mark - FamilyPickerCoordinatorDelegate
@@ -176,10 +180,25 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)passwordPickerCoordinatorWasDismissed:
     (PasswordPickerCoordinator*)coordinator {
   if (self.passwordPickerCoordinator == coordinator) {
-    [self stopPasswordPickerCoordinator];
+    [self stopPasswordPickerCoordinatorWithDismissViewCompletion:nil];
   }
 
   [self.delegate passwordSharingCoordinatorDidRemove:self];
+}
+
+- (void)
+    passwordPickerCoordinatorWasDismissed:
+        (PasswordPickerCoordinator*)coordinator
+                  withSelectedCredentials:
+                      (const std::vector<password_manager::CredentialUIEntry>&)
+                          credentials {
+  self.mediator.selectedCredentials = credentials;
+
+  if (self.passwordPickerCoordinator == coordinator) {
+    [self stopPasswordPickerCoordinatorWithDismissViewCompletion:^{
+      [self startFamilyPickerCoordinator];
+    }];
+  }
 }
 
 #pragma mark - PasswordSharingMediatorDelegate
@@ -188,16 +207,12 @@ using password_manager::FetchFamilyMembersRequestStatus;
             (NSArray<RecipientInfoForIOSDisplay*>*)familyMembers
                   withStatus:(const FetchFamilyMembersRequestStatus&)status {
   // TODO(crbug.com/1463882): Add EG tests for the whole flow.
+  self.recipients = familyMembers;
+
   switch (status) {
     case FetchFamilyMembersRequestStatus::kSuccess:
       if (_credentials.size() == 1) {
-        [self.familyPickerCoordinator stop];
-        self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser
-                            recipients:familyMembers];
-        self.familyPickerCoordinator.delegate = self;
-        [self.familyPickerCoordinator start];
+        [self startFamilyPickerCoordinator];
       } else {
         self.passwordPickerCoordinator = [[PasswordPickerCoordinator alloc]
             initWithBaseViewController:self.viewController
@@ -229,6 +244,16 @@ using password_manager::FetchFamilyMembersRequestStatus;
 }
 
 #pragma mark - Private
+
+- (void)startFamilyPickerCoordinator {
+  [self.familyPickerCoordinator stop];
+  self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      recipients:self.recipients];
+  self.familyPickerCoordinator.delegate = self;
+  [self.familyPickerCoordinator start];
+}
 
 - (void)startAlertCoordinator {
   NSString* title = l10n_util::GetNSString(
@@ -270,8 +295,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.alertCoordinator = nil;
 }
 
-- (void)stopPasswordPickerCoordinator {
-  [self.passwordPickerCoordinator stop];
+- (void)stopPasswordPickerCoordinatorWithDismissViewCompletion:
+    (ProceduralBlock)completion {
+  [self.passwordPickerCoordinator stopWithDismissViewCompletion:completion];
   self.passwordPickerCoordinator.delegate = nil;
   self.passwordPickerCoordinator = nil;
 }

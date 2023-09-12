@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_PICKER_COORDINATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_PICKER_COORDINATOR_DELEGATE_H_
 
+namespace password_manager {
+struct CredentialUIEntry;
+}
+
 @class PasswordPickerCoordinator;
 
 // Delegate for PasswordPickerCoordinator.
@@ -13,6 +17,14 @@
 // Called when the user cancels or dismisses the password selection.
 - (void)passwordPickerCoordinatorWasDismissed:
     (PasswordPickerCoordinator*)coordinator;
+
+// Called when the user confirms the selection by clicking the next button.
+- (void)
+    passwordPickerCoordinatorWasDismissed:
+        (PasswordPickerCoordinator*)coordinator
+                  withSelectedCredentials:
+                      (const std::vector<password_manager::CredentialUIEntry>&)
+                          credentials;
 
 @end
 

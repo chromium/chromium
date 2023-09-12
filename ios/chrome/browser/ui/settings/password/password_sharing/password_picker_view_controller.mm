@@ -163,7 +163,12 @@ const CGFloat kAccessorySymbolSize = 22;
 }
 
 - (void)nextButtonTapped {
-  // TODO(crbug.com/1463882): Handle next tap.
+  std::vector<password_manager::CredentialUIEntry> selectedCredentials;
+  for (NSIndexPath* indexPath in self.tableView.indexPathsForSelectedRows) {
+    selectedCredentials.push_back(_credentials[indexPath.row]);
+  }
+  [self.delegate passwordPickerClosed:self
+              withSelectedCredentials:selectedCredentials];
 }
 
 // Enables next button if any row is selected or disables it otherwise.
