@@ -126,7 +126,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
       rowCount_: {
         type: Number,
-        computed: 'computeRowCount_(singleRow, columnCount_, tiles_)',
+        computed: 'computeRowCount_(singleRow, columnCount_, tiles_, showAdd_)',
       },
 
       customLinksEnabled_: {
