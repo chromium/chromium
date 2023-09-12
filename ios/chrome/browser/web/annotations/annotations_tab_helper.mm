@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -15,7 +16,9 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
@@ -26,6 +29,8 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
@@ -52,6 +57,11 @@ void AnnotationsTabHelper::SetBaseViewController(
 void AnnotationsTabHelper::SetMiniMapCommands(
     id<MiniMapCommands> mini_map_handler) {
   mini_map_handler_ = mini_map_handler;
+}
+
+void AnnotationsTabHelper::SetParcelTrackingOptInCommands(
+    id<ParcelTrackingOptInCommands> parcel_tracking_handler) {
+  parcel_tracking_handler_ = parcel_tracking_handler;
 }
 
 #pragma mark - WebStateObserver methods.
@@ -145,8 +155,46 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
     DCHECK(manager);
     base::Value annotations(std::move(deferred.value()));
+    if (IsIOSParcelTrackingEnabled()) {
+      AnnotationsTabHelper::MaybeShowParcelTrackingUI(annotations.GetList());
+    }
     manager->DecorateAnnotations(web_state_, annotations, seq_id);
   }
+}
+
+void AnnotationsTabHelper::MaybeShowParcelTrackingUI(
+    base::Value::List& annotations_list) {
+  NSMutableArray<CustomTextCheckingResult*>* parcels =
+      [[NSMutableArray alloc] init];
+  for (size_t i = 0; i < annotations_list.size();) {
+    const base::Value::Dict& entity = annotations_list[i].GetDict();
+    NSTextCheckingResult* match = web::DecodeNSTextCheckingResultData(
+        base::SysUTF8ToNSString(entity.FindString("data")->c_str()));
+    if (!match || match.resultType != TCTextCheckingTypeParcelTracking) {
+      i++;
+      continue;
+    }
+    [parcels addObject:base::apple::ObjCCast<CustomTextCheckingResult>(match)];
+    // Remove the parcel from annotations_list to prevent decorating the
+    // tracking number.
+    annotations_list.EraseValue(annotations_list[i]);
+  }
+  if ([parcels count] > 0) {
+    ChromeBrowserState* browser_state =
+        ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+    if (IsUserEligibleParcelTrackingOptInPrompt(browser_state)) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&AnnotationsTabHelper::ShowParcelTrackingUI,
+                                    weak_factory_.GetWeakPtr(), parcels));
+    }
+  }
+}
+
+void AnnotationsTabHelper::ShowParcelTrackingUI(
+    NSArray<CustomTextCheckingResult*>* parcels) {
+  [parcel_tracking_handler_
+      showParcelTrackingOptInPromptWithParcels:parcels
+                                   forWebState:web_state_];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTabHelper)

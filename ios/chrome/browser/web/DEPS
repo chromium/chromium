@@ -38,6 +38,7 @@ include_rules = [
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/translate",
   "+ios/chrome/browser/rlz",
+  "+ios/chrome/browser/parcel_tracking",
 ]
 
 specific_include_rules = {

@@ -15,12 +15,14 @@
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
@@ -136,6 +138,10 @@
     annotationsTabHelper->SetBaseViewController(_baseViewController);
     annotationsTabHelper->SetMiniMapCommands(
         HandlerForProtocol(_commandDispatcher, MiniMapCommands));
+    if (IsIOSParcelTrackingEnabled()) {
+      annotationsTabHelper->SetParcelTrackingOptInCommands(
+          HandlerForProtocol(_commandDispatcher, ParcelTrackingOptInCommands));
+    }
   }
 
   PriceNotificationsTabHelper* priceNotificationsTabHelper =

@@ -31,6 +31,7 @@ source_set("commands") {
     "open_new_tab_command.mm",
     "overflow_menu_customization_commands.h",
     "page_info_commands.h",
+    "parcel_tracking_opt_in_commands.h",
     "password_breach_commands.h",
     "password_protection_commands.h",
     "password_suggestion_commands.h",
@@ -68,6 +69,7 @@ source_set("commands") {
     "//ios/chrome/browser/tabs",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web",
+    "//ios/web/public/annotations:custom_text_check_result",
     "//net",
     "//url",
   ]
