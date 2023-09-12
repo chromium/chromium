@@ -177,12 +177,13 @@ FakeWebState::GetSessionCertificatePolicyCache() {
 
 CRWSessionStorage* FakeWebState::BuildSessionStorage() const {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.userData =
-      web::SerializableUserDataManager::FromWebState(this)
-          ->GetUserDataForSession();
   session_storage.itemStorages = @[ [[CRWNavigationItemStorage alloc] init] ];
   session_storage.stableIdentifier = stable_identifier_;
   session_storage.uniqueIdentifier = unique_identifier_;
+  if (const SerializableUserDataManager* manager =
+          SerializableUserDataManager::FromWebState(this)) {
+    session_storage.userData = manager->GetUserDataForSession();
+  }
   return session_storage;
 }
 
