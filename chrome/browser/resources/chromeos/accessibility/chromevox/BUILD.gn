@@ -411,6 +411,7 @@ if (is_chromeos_ash) {
     sources = [
       "background/auto_scroll_handler_test.js",
       "background/background_test.js",
+      "background/braille/braille_captions_background_test.js",
       "background/braille/braille_display_manager_test.js",
       "background/braille/braille_input_handler_test.js",
       "background/braille/braille_test.js",
