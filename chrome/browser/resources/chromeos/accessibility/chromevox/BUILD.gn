@@ -443,6 +443,7 @@ if (is_chromeos_ash) {
       "options/bluetooth_braille_display_manager_test.js",
       "options/bluetooth_braille_display_ui_test.js",
       "options/options_test.js",
+      "panel/menu_manager_test.js",
       "panel/panel_test.js",
       "panel/panel_test_base.js",
       "panel/tutorial_test.js",

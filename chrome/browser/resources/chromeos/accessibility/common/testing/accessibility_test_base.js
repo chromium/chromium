@@ -51,10 +51,9 @@ AccessibilityTestBase = class extends testing.Test {
    */
   prepareToExpectMethodCall(object, method) {
     let methodCalled = false;
-    this.addCallbackPostMethod(object, method, () => {
-      methodCalled = true;
-    }, () => true);
-    return () => assertTrue(methodCalled);
+    this.addCallbackPostMethod(
+        object, method, () => methodCalled = true, () => true);
+    return () => assertTrue(methodCalled, `Expected ${method}() to be called`);
   }
 
   /**

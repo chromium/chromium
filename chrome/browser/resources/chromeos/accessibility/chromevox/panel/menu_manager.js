@@ -257,7 +257,8 @@ export class MenuManager {
       if (!titleMsgId) {
         // Title messages are intentionally missing for some keyboard
         // shortcuts.
-        if (!(command in COMMANDS_WITH_NO_MSG_ID)) {
+        if (!(command in COMMANDS_WITH_NO_MSG_ID) &&
+            !MenuManager.disableMissingMsgsErrorsForTesting) {
           console.error('No localization for: ' + command);
         }
         binding.title = '';
@@ -392,6 +393,10 @@ export class MenuManager {
     this.searchMenu_ = menu;
   }
 }
+
+
+/** @type {boolean} */
+MenuManager.disableMissingMsgsErrorsForTesting = false;
 
 // Local to module.
 

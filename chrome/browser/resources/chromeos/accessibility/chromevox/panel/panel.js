@@ -228,6 +228,8 @@ export class Panel extends PanelInterface {
       case PanelCommandType.CLOSE_CHROMEVOX:
         this.onClose_();
       case PanelCommandType.ENABLE_TEST_HOOKS:
+        window.MenuManager = MenuManager;
+        window.Msgs = Msgs;
         window.Panel = Panel;
         break;
     }

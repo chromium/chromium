@@ -19,6 +19,8 @@ ChromeVoxPanelTestBase = class extends ChromeVoxE2ETest {
         '/chromevox/common/panel_command.js');
 
     await new PanelCommand(PanelCommandType.ENABLE_TEST_HOOKS).send();
+    await this.waitForPendingMethods();
+    this.getPanelWindow().MenuManager.disableMissingMsgsErrorsForTesting = true;
   }
 
   getPanelWindow() {
@@ -37,5 +39,18 @@ ChromeVoxPanelTestBase = class extends ChromeVoxE2ETest {
    */
   getPanel() {
     return this.getPanelWindow().Panel;
+  }
+
+  async waitForMenu(menuMsg) {
+    const menuManager = this.getPanel().instance.menuManager_;
+
+    // Menu and menu item updates occur in a different js context, so tests need
+    // to wait until an update has been made.
+    return new Promise(
+        resolve =>
+            this.addCallbackPostMethod(menuManager, 'activateMenu', () => {
+              assertEquals(menuMsg, menuManager.activeMenu_.menuMsg);
+              resolve();
+            }, () => true));
   }
 };
