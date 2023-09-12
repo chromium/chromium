@@ -101,6 +101,11 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kKeyboardAccessibleTooltip);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsKeyboardAccessibleTooltipEnabled();
 
+// Used to enable gesture changes for notifications.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kNotificationGesturesUpdate);
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsNotificationGesturesUpdateEnabled();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kHandwritingGesture);
 

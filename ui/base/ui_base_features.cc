@@ -377,6 +377,17 @@ bool IsKeyboardAccessibleTooltipEnabled() {
   return keyboard_accessible_tooltip_enabled;
 }
 
+// Enables trackpad gestures to dismiss notifications. Also, updates gestures to
+// only dismiss notifications when swiping towards the notification center.
+// TODO(https://b/288337080): Remove this flag once the feature is ready.
+BASE_FEATURE(kNotificationGesturesUpdate,
+             "NotificationGesturesUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNotificationGesturesUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kNotificationGesturesUpdate);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kHandwritingGesture,
              "HandwritingGesture",
