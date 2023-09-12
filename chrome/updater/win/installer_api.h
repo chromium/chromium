@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_WIN_INSTALLER_API_H_
 
 #include <string>
+#include <utility>
 
 #include "base/win/registry.h"
 #include "chrome/updater/enum_traits.h"
@@ -129,9 +130,17 @@ bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
                                    const std::string& app_id,
                                    const InstallerOutcome& installer_outcome);
 
-// Translates the Installer API outcome into an `Installer::Result` value.
-// `exit_code` is the exit code of the installer process, which may be used
-// in some cases, depending on the installer outcome.
+// Translates the Installer API outcome into an `Installer::Result` value and
+// the original error code set by the installer if relevant in some cases such
+// as reboot.
+// TODO(crbug.com/1481362): Remove the need for
+// `MakeInstallerResultAndOriginalError` if this can be implemented in
+// `update_client` instead.
+std::pair<Installer::Result, absl::optional<int>>
+MakeInstallerResultAndOriginalError(
+    absl::optional<InstallerOutcome> installer_outcome,
+    int exit_code);
+
 Installer::Result MakeInstallerResult(
     absl::optional<InstallerOutcome> installer_outcome,
     int exit_code);

@@ -2143,6 +2143,15 @@ INSTANTIATE_TEST_SUITE_P(
          {},
          "more.com"},
 
+        // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
+        {false,
+         base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                       base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+         ERROR_SUCCESS_REBOOT_REQUIRED,
+         "The requested operation is successful. Changes will not be effective "
+         "until the system is rebooted. ",
+         {}},
+
         // Interactive install via the command line with a launch command,
         // InstallerResult::kSuccess, will run `more.com` since interactive
         // install.
@@ -2156,7 +2165,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
-  const bool should_install_successfully = !GetParam().error_code;
+  const bool should_install_successfully =
+      !GetParam().error_code ||
+      GetParam().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
 
   if (!GetParam().interactive_install) {
     ASSERT_NO_FATAL_FAILURE(Install());

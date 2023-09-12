@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -401,7 +402,8 @@ std::string GetTextForSystemError(int error) {
 // Omaha/Google Update. Some edge cases could be missing.
 // TODO(crbug.com/1172866): remove the hardcoded assumption that error must
 // be zero to indicate success.
-Installer::Result MakeInstallerResult(
+std::pair<Installer::Result, absl::optional<int>>
+MakeInstallerResultAndOriginalError(
     absl::optional<InstallerOutcome> installer_outcome,
     int exit_code) {
   if (installer_outcome && installer_outcome->installer_result) {
@@ -465,12 +467,37 @@ Installer::Result MakeInstallerResult(
         }
         break;
     }
-    return result;
+
+    // `update_client` needs to view `ERROR_SUCCESS_REBOOT_REQUIRED` as a
+    // success, otherwise it will consider the app as not installed even though
+    // it installed successfully. So we reset the `error` to `0` here. The
+    // original error will be returned by this function via the
+    // `original_result_error`.
+    if (result.error == ERROR_SUCCESS_REBOOT_REQUIRED) {
+      const int original_result_error = result.error;
+      result.error = 0;
+      return std::make_pair(result, original_result_error);
+    }
+
+    return std::make_pair(result, absl::nullopt);
   }
 
-  return exit_code == 0
-             ? Installer::Result(update_client::InstallError::NONE)
-             : Installer::Result(kErrorApplicationInstallerFailed, exit_code);
+  // TODO(crbug.com/1481314): handle an `exit_code` of
+  // `ERROR_SUCCESS_REBOOT_REQUIRED`.
+  return std::make_pair(
+      exit_code == 0
+          ? Installer::Result(update_client::InstallError::NONE)
+          : Installer::Result(kErrorApplicationInstallerFailed, exit_code),
+      absl::nullopt);
+}
+
+// Calls `MakeInstallerResultAndOriginalError` and returns the resultant
+// `Installer::Result`.
+Installer::Result MakeInstallerResult(
+    absl::optional<InstallerOutcome> installer_outcome,
+    int exit_code) {
+  return MakeInstallerResultAndOriginalError(installer_outcome, exit_code)
+      .first;
 }
 
 // Clears the previous installer output, runs the application installer,

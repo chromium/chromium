@@ -190,11 +190,16 @@ MakeUpdateClientCrxStateChangeCallback(
           // Read the installer API results from the registry.
           // TODO(crbug.com/1478305): Remove this code if `update_client`
           // provides these values in the future.
-          const Installer::Result result =
-              MakeInstallerResult(GetClientStateKeyLastInstallerOutcome(
-                                      GetUpdaterScope(), update_state.app_id),
-                                  update_state.error_code);
+          // TODO(crbug.com/1481362): Remove the need for
+          // `MakeInstallerResultAndOriginalError` if this can be implemented in
+          // `update_client` instead.
+          const auto [result, error] = MakeInstallerResultAndOriginalError(
+              GetClientStateKeyLastInstallerOutcome(GetUpdaterScope(),
+                                                    update_state.app_id),
+              update_state.error_code);
           update_state.installer_cmd_line = result.installer_cmd_line;
+          if (error)
+            update_state.error_code = *error;
           update_state.extra_code1 = result.extended_error;
           update_state.installer_text = result.installer_text;
 #endif  // BUILDFLAG(IS_WIN)
