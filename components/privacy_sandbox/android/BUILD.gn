@@ -1,0 +1,21 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/components/privacy_sandbox/TrackingProtectionSettings.java" ]
+  resources_package = "org.chromium.components.privacy_sandbox"
+  deps = [
+    ":java_resources",
+    "//components/browser_ui/settings/android:java",
+    "//components/strings:components_strings_grd",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/xml/tracking_protection_preferences.xml" ]
+  deps = [ "//components/strings:components_strings_grd" ]
+}

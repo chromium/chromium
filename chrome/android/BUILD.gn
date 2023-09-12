@@ -548,6 +548,7 @@ if (current_toolchain == default_toolchain) {
       "//components/policy/android:policy_java",
       "//components/power_bookmarks/core:proto_java",
       "//components/prefs/android:java",
+      "//components/privacy_sandbox/android:java",
       "//components/profile_metrics:browser_profile_type_enum_java",
       "//components/query_tiles:java",
       "//components/safe_browsing/android:safe_browsing_java",

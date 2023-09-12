@@ -29,6 +29,7 @@ found in the LICENSE file.
         android:key="tracking_protection"
         android:title="@string/tracking_protection_title"
         android:summary="@string/tracking_protection_summary"
+        android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
         app:isPreferenceVisible="false" />
     <Preference
         android:key="privacy_sandbox"

@@ -2160,4 +2160,10 @@
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_629" desc="Taxonomy Member. Meaning: [holiday &amp; vacation packages, these typically include transportation &amp; accommodation and sometimes meals; also theme or activity-based travel packages] Existing Ref: http://tc-message/message/FatCatTaxonomy_Verticals4/3495940381581141578">
     Vacation Offers
   </message>
+
+  <!-- Tracking Protection -->
+  <!-- TODO(b/295926938: finalize the strings. -->
+  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
+    Chrome limits the amount of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
+  </message>
 </grit-part>
