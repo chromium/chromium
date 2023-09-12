@@ -734,7 +734,18 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   return item;
 }
 
-- (void)updateBatchUploadSection {
+// Loads the batch upload section.
+- (void)loadBatchUploadSection {
+  // Drop the batch upload item from a previous loading.
+  self.batchUploadItem = nil;
+  // Create the batch upload section and item if needed.
+  [self updateBatchUploadSection:NO];
+}
+
+// Fetches the local data descriptions from the sync server, and calls
+// `-[ManageSyncSettingsMediator localDataDescriptionsFetchedWithDescription:]`
+// to process those description.
+- (void)fetchLocalDataDescriptionsForBatchUpload {
   if (self.syncAccountState != SyncSettingsAccountState::kSignedIn ||
       !base::FeatureList::IsEnabled(syncer::kSyncEnableBatchUploadLocalData)) {
     return;
@@ -756,10 +767,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
                            description) {
         [weakSelf localDataDescriptionsFetchedWithDescription:description];
       }));
-
-  return;
 }
 
+// Saves the local data description, and update the batch upload section.
 - (void)localDataDescriptionsFetchedWithDescription:
     (std::map<syncer::ModelType, syncer::LocalDataDescription>)description {
   self.localPasswordsToUpload = 0;
@@ -773,8 +783,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       self.localItemsToUpload += type.second.item_count;
     }
   }
-
-  [self loadBatchUploadSection];
+  [self updateBatchUploadSection:YES];
 }
 
 // Deletes the batch upload section and notifies the consumer about model
@@ -794,9 +803,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self.consumer deleteSections:indexSet withRowAnimation:YES];
 }
 
-// This is always called after the model is loaded, so it will always notify the
-// consumer of the model updates.
-- (void)loadBatchUploadSection {
+// Updates the batch upload section according to data already fetched.
+// `notifyConsummer` if YES, call the consumer to update the table view.
+- (void)updateBatchUploadSection:(BOOL)notifyConsummer {
   // Batch upload option is not shown if sync is disabled by policy, if the
   // account is in a persistent error state that requires a user action, or if
   // there is no local data to offer the batch upload.
@@ -830,6 +839,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     [self.consumer reloadItem:self.batchUploadItem];
   }
 
+  if (!notifyConsummer) {
+    return;
+  }
   NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:batchUploadSectionIndex];
   if (batchUploadSectionAlreadyExists) {
     // The section should be updated if it already exists.
@@ -1006,11 +1018,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
   [self loadIdentityAccountSection];
   [self loadSyncErrorsSection];
-  [self updateBatchUploadSection];
+  [self loadBatchUploadSection];
   [self loadSyncDataTypeSection];
   [self loadSignOutAndTurnOffSyncSection];
   [self loadAdvancedSettingsSection];
   [self loadSignOutAndManageAccountsSection];
+  [self fetchLocalDataDescriptionsForBatchUpload];
 }
 
 #pragma mark - SyncObserverModelBridge
@@ -1021,11 +1034,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     return;
   }
   [self updateSyncErrorsSection:YES];
-  [self updateBatchUploadSection];
+  [self updateBatchUploadSection:YES];
   [self updateSyncEverythingItemNotifyConsumer:YES];
   [self updateSyncItemsNotifyConsumer:YES];
   [self updateEncryptionItem:YES];
   [self updateSignOutSection];
+  [self fetchLocalDataDescriptionsForBatchUpload];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -1052,8 +1066,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     [self updateIdentityAccountSection];
     [self updateSyncItemsNotifyConsumer:YES];
     [self updateSyncErrorsSection:YES];
-    [self updateBatchUploadSection];
+    [self updateBatchUploadSection:YES];
     [self updateEncryptionItem:YES];
+    [self fetchLocalDataDescriptionsForBatchUpload];
   }
 }
 
@@ -1161,7 +1176,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self updateSyncEverythingItemNotifyConsumer:YES];
   [self updateSyncItemsNotifyConsumer:YES];
   // Switching toggles might affect the batch upload recommendation.
-  [self updateBatchUploadSection];
+  [self fetchLocalDataDescriptionsForBatchUpload];
 }
 
 - (void)didSelectItem:(TableViewItem*)item cellRect:(CGRect)cellRect {
