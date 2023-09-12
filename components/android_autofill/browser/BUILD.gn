@@ -133,6 +133,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_provider_unittest.cc",
+    "form_data_android_unittest.cc",
     "form_event_logger_weblayer_android_unittest.cc",
     "form_field_data_android_unittest.cc",
   ]
