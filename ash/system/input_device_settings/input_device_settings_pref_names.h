@@ -125,6 +125,7 @@ constexpr char kButtonRemappingKeyEvent[] = "key_event";
 constexpr char kButtonRemappingDomCode[] = "dom_code";
 constexpr char kButtonRemappingDomKey[] = "dom_key";
 constexpr char kButtonRemappingModifiers[] = "modifiers";
+constexpr char kButtonRemappingHardCodedAction[] = "hardcoded_action";
 
 }  // namespace ash::prefs
 

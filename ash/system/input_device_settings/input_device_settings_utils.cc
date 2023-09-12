@@ -218,6 +218,10 @@ base::Value::Dict ConvertButtonRemappingToDict(
   } else if (remapping.remapping_action->is_action()) {
     dict.Set(prefs::kButtonRemappingAction,
              static_cast<int>(remapping.remapping_action->get_action()));
+  } else if (remapping.remapping_action->is_hardcoded_action()) {
+    dict.Set(
+        prefs::kButtonRemappingHardCodedAction,
+        static_cast<int>(remapping.remapping_action->get_hardcoded_action()));
   }
 
   return dict;
@@ -284,11 +288,15 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
       dict.FindDict(prefs::kButtonRemappingKeyEvent);
   const absl::optional<int> action =
       dict.FindInt(prefs::kButtonRemappingAction);
-  // Remapping action can't be both a key event and an action.
-  if (key_event && action) {
+  const absl::optional<int> hardcoded_action =
+      dict.FindInt(prefs::kButtonRemappingHardCodedAction);
+  // Remapping action can only have one value at most.
+  if ((key_event && action) || (key_event && hardcoded_action) ||
+      (action && hardcoded_action)) {
     return nullptr;
   }
-  // Remapping action can be either a keyboard event or an action or null.
+  // Remapping action can be either a keyboard event or an action
+  // or hardcoded action or null.
   if (key_event) {
     const absl::optional<int> dom_code =
         key_event->FindInt(prefs::kButtonRemappingDomCode);
@@ -310,6 +318,9 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
   } else if (action) {
     remapping_action = mojom::RemappingAction::NewAction(
         static_cast<ash::AcceleratorAction>(*action));
+  } else if (hardcoded_action) {
+    remapping_action = mojom::RemappingAction::NewHardcodedAction(
+        static_cast<mojom::HardCodedAction>(*hardcoded_action));
   }
 
   return mojom::ButtonRemapping::New(*name, std::move(button),

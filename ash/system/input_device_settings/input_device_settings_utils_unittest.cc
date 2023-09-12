@@ -47,6 +47,11 @@ const mojom::ButtonRemapping button_remapping4(
     /*name=*/"test4",
     /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
     /*remapping_action=*/nullptr);
+const mojom::ButtonRemapping button_remapping5(
+    /*name=*/"test5",
+    /*button=*/mojom::Button::NewVkey(::ui::KeyboardCode::VKEY_3),
+    /*remapping_action=*/
+    mojom::RemappingAction::NewHardcodedAction(mojom::HardCodedAction::kCopy));
 }  // namespace
 
 class DeviceKeyTest : public testing::TestWithParam<
@@ -171,6 +176,18 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
             *dict4.FindInt(prefs::kButtonRemappingKeyboardCode));
   EXPECT_EQ(nullptr, dict4.FindDict(prefs::kButtonRemappingKeyEvent));
   EXPECT_EQ(absl::nullopt, dict4.FindInt(prefs::kButtonRemappingAction));
+
+  const base::Value::Dict dict5 =
+      ConvertButtonRemappingToDict(button_remapping5);
+  EXPECT_EQ(button_remapping5.name,
+            *dict5.FindString(prefs::kButtonRemappingName));
+  EXPECT_EQ(static_cast<int>(button_remapping5.button->get_vkey()),
+            *dict5.FindInt(prefs::kButtonRemappingKeyboardCode));
+  EXPECT_EQ(nullptr, dict5.FindDict(prefs::kButtonRemappingKeyEvent));
+  EXPECT_EQ(absl::nullopt, dict5.FindInt(prefs::kButtonRemappingAction));
+  EXPECT_EQ(static_cast<int>(
+                button_remapping5.remapping_action->get_hardcoded_action()),
+            dict5.FindInt(prefs::kButtonRemappingHardCodedAction));
 }
 
 TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
@@ -337,6 +354,26 @@ TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
             static_cast<int>(button_remapping1.remapping_action->get_action()));
   mojom::ButtonRemappingPtr remapping8 = ConvertDictToButtonRemapping(dict8);
   EXPECT_FALSE(remapping8);
+
+  // Valid dict with name, vkey and hardcoded action fields.
+  base::Value::Dict dict9;
+  dict9.Set(prefs::kButtonRemappingName, button_remapping5.name);
+  dict9.Set(prefs::kButtonRemappingKeyboardCode,
+            static_cast<int>(button_remapping5.button->get_vkey()));
+  dict9.Set(prefs::kButtonRemappingHardCodedAction,
+            static_cast<int>(
+                button_remapping5.remapping_action->get_hardcoded_action()));
+
+  mojom::ButtonRemappingPtr remapping9 = ConvertDictToButtonRemapping(dict9);
+  EXPECT_EQ(*dict9.FindString(prefs::kButtonRemappingName), remapping9->name);
+  EXPECT_TRUE(remapping9->button->is_vkey());
+  EXPECT_EQ(static_cast<::ui::KeyboardCode>(
+                *dict9.FindInt(prefs::kButtonRemappingKeyboardCode)),
+            remapping9->button->get_vkey());
+  EXPECT_TRUE(remapping9->remapping_action->is_hardcoded_action());
+  EXPECT_EQ(static_cast<mojom::HardCodedAction>(
+                *dict9.FindInt(prefs::kButtonRemappingHardCodedAction)),
+            remapping9->remapping_action->get_hardcoded_action());
 }
 
 TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {

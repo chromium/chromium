@@ -247,10 +247,12 @@ struct ButtonRemapping {
   RemappingAction? remapping_action;
 };
 
-// Represents the remapping action which can be either a key event or action.
+// Represents the remapping action which can be either a key event or action
+// or hardcoded action.
 union RemappingAction {
   ash.mojom.AcceleratorAction action;
   KeyEvent key_event;
+  HardCodedAction hardcoded_action;
 };
 
 // Represents the key event the button remaps to.
@@ -277,4 +279,10 @@ enum CustomizableButton {
   kBack = 4,
   kExtra = 5,
   kSide = 6,
+};
+
+// Contains the valid set of hardcoded actions.
+enum HardCodedAction {
+  kCopy = 0,
+  kPaste = 1,
 };
