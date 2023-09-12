@@ -11,9 +11,8 @@
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/commerce/core/account_checker.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -43,12 +42,130 @@ const char kGetStatusPath[] = ":status";
 // lowerCamelCase JSON proto message keys.
 const char kTrackingIdKey[] = "trackingId";
 const char kCarrierKey[] = "carrier";
-const char kGetStatusRequestParamKey[] = "parcelIds";
+const char kParcelIdsKey[] = "parcelIds";
 const char kParcelStatusKey[] = "parcelStatus";
 const char kParcelIdentifierKey[] = "parcelIdentifier";
 const char kParcelStateKey[] = "parcelState";
 const char kTrackingUrlKey[] = "trackingUrl";
 const char kEstimatedDeliveryTimeUsecKey[] = "estimatedDeliveryTimeUsec";
+const char kSourcePageDomainKey[] = "sourcePageDomain";
+
+constexpr net::NetworkTrafficAnnotationTag
+    kStartTrackingParcelTrafficAnnotation = net::DefineNetworkTrafficAnnotation(
+        "chrome_commerce_start_tracking_parcel",
+        R"(
+          semantics {
+            sender: "Chrome Shopping"
+            description:
+              "Inform the server to start tracking the status for some parcels."
+            trigger:
+              "A Chrome-initiated request that requires user enabling the "
+              "parcel tracking feature. The request is sent after Chrome "
+              "detects a page has carrier and parcels information, and user "
+              "choose to enable tracking for those parcels."
+            user_data {
+              type: OTHER
+              type: ACCESS_TOKEN
+            }
+            data:
+              "Carrier, tracking ID and the page domain that Chrome detects "
+              "the tracking information is included in the request."
+            destination: GOOGLE_OWNED_SERVICE
+            internal {
+              contacts { email: "chrome-shopping-eng@google.com" }
+            }
+            last_reviewed: "2023-09-07"
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              "This feature is only avaliable for signed-in users. Users can "
+              "enable or disable parcel tracking through settings."
+            chrome_policy {
+              BrowserSignin {
+                policy_options {mode: MANDATORY}
+                BrowserSignin: 0
+              }
+            }
+          }
+        )");
+
+constexpr net::NetworkTrafficAnnotationTag
+    kStopTrackingParcelTrafficAnnotation = net::DefineNetworkTrafficAnnotation(
+        "chrome_commerce_stop_tracking_parcel",
+        R"(
+          semantics {
+            sender: "Chrome Shopping"
+            description:
+              "Inform the server to stop tracking the status for some parcels."
+            trigger:
+              "A Chrome-initiated http DELETE request that requires user "
+              "enabling the parcel tracking feature. The request is sent after "
+              "user choose to disabling tracking for some parcels."
+            user_data {
+              type: OTHER
+              type: ACCESS_TOKEN
+            }
+            data:
+              "Tracking ID is included in the request."
+            destination: GOOGLE_OWNED_SERVICE
+            internal {
+              contacts { email: "chrome-shopping-eng@google.com" }
+            }
+            last_reviewed: "2023-09-07"
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              "This feature is only avaliable for signed-in users. Users can "
+              "enable or disable parcel tracking through settings."
+            chrome_policy {
+              BrowserSignin {
+                policy_options {mode: MANDATORY}
+                BrowserSignin: 0
+              }
+            }
+          }
+        )");
+
+constexpr net::NetworkTrafficAnnotationTag
+    kStopTrackingAllParcelTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation(
+            "chrome_commerce_stop_tracking_all_parcel",
+            R"(
+              semantics {
+                sender: "Chrome Shopping"
+                description:
+                  "Inform the server to stop tracking the status for all "
+                  "parcels."
+                trigger:
+                  "A Chrome-initiated http DELETE request that is sent when "
+                  "user disables the parcel tracking feature."
+                user_data {
+                  type: NONE
+                  type: ACCESS_TOKEN
+                }
+                data:
+                  "No data is sent in the request."
+                destination: GOOGLE_OWNED_SERVICE
+                internal {
+                  contacts { email: "chrome-shopping-eng@google.com" }
+                }
+                last_reviewed: "2023-09-07"
+              }
+              policy {
+                cookies_allowed: NO
+                setting:
+                  "This feature is only avaliable for signed-in users. Users "
+                  "can enable or disable parcel tracking through settings."
+                chrome_policy {
+                  BrowserSignin {
+                    policy_options {mode: MANDATORY}
+                    BrowserSignin: 0
+                  }
+                }
+              }
+            )");
 
 constexpr net::NetworkTrafficAnnotationTag kGetParcelStatusTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("chrome_commerce_parcels_status", R"(
@@ -66,10 +183,10 @@ constexpr net::NetworkTrafficAnnotationTag kGetParcelStatusTrafficAnnotation =
           "ranges between half an hour to 12 hours."
         user_data {
           type: OTHER
+          type: ACCESS_TOKEN
         }
         data:
           "Parcel carrier and tracking ID is included in the request. "
-          "No user information is sent."
         destination: GOOGLE_OWNED_SERVICE
         internal {
           contacts { email: "chrome-shopping-eng@google.com" }
@@ -146,6 +263,15 @@ absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
   return absl::make_optional<ParcelStatus>(status);
 }
 
+void OnInvalidParcelIdentifierError(
+    ParcelsServerProxy::GetParcelStatusCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     ParcelStatusRequestStatus::kInvalidParcelIdentifiers,
+                     std::make_unique<std::vector<ParcelStatus>>()));
+}
+
 }  // namespace
 
 ParcelsServerProxy::ParcelsServerProxy(
@@ -163,48 +289,76 @@ void ParcelsServerProxy::GetParcelStatus(
 
   base::Value::List parcel_list = Serialize(parcel_identifiers);
   if (parcel_list.empty()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       ParcelStatusRequestStatus::kInvalidParcelIdentifiers,
-                       std::make_unique<std::vector<ParcelStatus>>()));
+    OnInvalidParcelIdentifierError(std::move(callback));
     return;
   }
   base::Value::Dict request_json;
-  request_json.Set(kGetStatusRequestParamKey, std::move(parcel_list));
-  std::string post_data;
-  base::JSONWriter::Write(request_json, &post_data);
-  auto fetcher = CreateEndpointFetcher(
-      GURL(kServiceBaseUrl.Get() + kGetStatusPath), post_data);
+  request_json.Set(kParcelIdsKey, std::move(parcel_list));
+  SendJsonRequestToServer(
+      std::move(request_json), GURL(kServiceBaseUrl.Get() + kGetStatusPath),
+      kGetParcelStatusTrafficAnnotation,
+      base::BindOnce(&ParcelsServerProxy::ProcessGetParcelStatusResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
-  auto* const fetcher_ptr = fetcher.get();
-  fetcher_ptr->Fetch(base::BindOnce(
-      &ParcelsServerProxy::ProcessGetParcelStatusResponse,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), std::move(fetcher)));
+void ParcelsServerProxy::StartTrackingParcels(
+    const std::vector<ParcelIdentifier>& parcel_identifiers,
+    const std::string& source_page_domain,
+    GetParcelStatusCallback callback) {
+  CHECK_GT(parcel_identifiers.size(), 0u);
+  base::Value::List parcel_list = Serialize(parcel_identifiers);
+  if (parcel_list.empty()) {
+    OnInvalidParcelIdentifierError(std::move(callback));
+    return;
+  }
+  base::Value::Dict request_json;
+  request_json.Set(kParcelIdsKey, std::move(parcel_list));
+  request_json.Set(kSourcePageDomainKey, source_page_domain);
+
+  SendJsonRequestToServer(
+      std::move(request_json), GURL(kServiceBaseUrl.Get()),
+      kStartTrackingParcelTrafficAnnotation,
+      base::BindOnce(&ParcelsServerProxy::ProcessGetParcelStatusResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ParcelsServerProxy::StopTrackingParcel(
+    const std::string& tracking_id,
+    StopParcelTrackingCallback callback) {
+  SendStopTrackingRequestToServer(
+      GURL(kServiceBaseUrl.Get() + "/" + tracking_id),
+      kStopTrackingParcelTrafficAnnotation, std::move(callback));
+}
+
+void ParcelsServerProxy::StopTrackingAllParcels(
+    StopParcelTrackingCallback callback) {
+  SendStopTrackingRequestToServer(GURL(kServiceBaseUrl.Get()),
+                                  kStopTrackingAllParcelTrafficAnnotation,
+                                  std::move(callback));
 }
 
 std::unique_ptr<EndpointFetcher> ParcelsServerProxy::CreateEndpointFetcher(
     const GURL& url,
-    const std::string& post_data) {
+    const std::string& http_method,
+    const std::string& post_data,
+    const net::NetworkTrafficAnnotationTag traffic_annotation) {
   return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOAuthName, url, kPostHttpMethod, kContentType,
+      url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope}, kTimeoutMs.Get(), post_data,
-      kGetParcelStatusTrafficAnnotation, identity_manager_,
-      signin::ConsentLevel::kSync);
+      traffic_annotation, identity_manager_, signin::ConsentLevel::kSync);
 }
 
 void ParcelsServerProxy::ProcessGetParcelStatusResponse(
     GetParcelStatusCallback callback,
-    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-    std::unique_ptr<EndpointResponse> responses) {
-  if (responses->http_status_code != net::HTTP_OK || responses->error_type) {
+    std::unique_ptr<EndpointResponse> response) {
+  if (response->http_status_code != net::HTTP_OK || response->error_type) {
     std::move(callback).Run(ParcelStatusRequestStatus::kServerError,
                             std::make_unique<std::vector<ParcelStatus>>());
     return;
   }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
+      response->response,
       base::BindOnce(&ParcelsServerProxy::OnGetParcelStatusJsonParsed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -227,6 +381,54 @@ void ParcelsServerProxy::OnGetParcelStatusJsonParsed(
   }
   std::move(callback).Run(ParcelStatusRequestStatus::kServerReponseParsingError,
                           std::make_unique<std::vector<ParcelStatus>>());
+}
+
+void ParcelsServerProxy::OnStopTrackingResponse(
+    StopParcelTrackingCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
+    std::unique_ptr<EndpointResponse> response) {
+  if (response->http_status_code != net::HTTP_OK || response->error_type) {
+    std::move(callback).Run(ParcelStatusRequestStatus::kServerError);
+  } else {
+    std::move(callback).Run(ParcelStatusRequestStatus::kSuccess);
+  }
+}
+
+void ParcelsServerProxy::OnServerResponse(
+    EndpointFetcherCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
+    std::unique_ptr<EndpointResponse> response) {
+  std::move(callback).Run(std::move(response));
+}
+
+void ParcelsServerProxy::SendJsonRequestToServer(
+    base::Value::Dict request_json,
+    const GURL& server_url,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    EndpointFetcherCallback callback) {
+  std::string post_data;
+  base::JSONWriter::Write(request_json, &post_data);
+  auto fetcher = CreateEndpointFetcher(GURL(server_url), kPostHttpMethod,
+                                       post_data, network_traffic_annotation);
+
+  auto* const fetcher_ptr = fetcher.get();
+  fetcher_ptr->Fetch(base::BindOnce(&ParcelsServerProxy::OnServerResponse,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback), std::move(fetcher)));
+}
+
+void ParcelsServerProxy::SendStopTrackingRequestToServer(
+    const GURL& server_url,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    StopParcelTrackingCallback callback) {
+  auto fetcher =
+      CreateEndpointFetcher(server_url, kDeleteHttpMethod, kEmptyPostData,
+                            network_traffic_annotation);
+
+  auto* const fetcher_ptr = fetcher.get();
+  fetcher_ptr->Fetch(base::BindOnce(&ParcelsServerProxy::OnStopTrackingResponse,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback), std::move(fetcher)));
 }
 
 }  // namespace commerce

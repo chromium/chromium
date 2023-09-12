@@ -338,6 +338,7 @@ source_set("account_checker") {
   ]
 
   deps = [
+    ":commerce_constants",
     ":feature_list",
     ":pref_names",
     "//base",
@@ -376,6 +377,7 @@ source_set("account_checker_unittests") {
   sources = [ "account_checker_unittest.cc" ]
   deps = [
     ":account_checker",
+    ":commerce_constants",
     ":feature_list",
     ":pref_names",
     "//base",

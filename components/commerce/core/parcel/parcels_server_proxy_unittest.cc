@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/parcel/parcels_server_proxy.h"
 #include "components/commerce/core/proto/parcel.pb.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
@@ -28,7 +29,9 @@ using testing::InSequence;
 
 namespace {
 
-const char kParcelsServiceUrl[] =
+const char kParcelsBaseUrl[] =
+    "https://memex-pa.googleapis.com/v1/shopping/parcels";
+const char kParcelsStatusUrl[] =
     "https://memex-pa.googleapis.com/v1/shopping/parcels:status";
 
 const std::string kExpectedGetParcelStatusPostData =
@@ -37,6 +40,13 @@ const std::string kResponseSucceeded =
     "{ \"parcelStatus\": [{\"parcelIdentifier\": {\"trackingId\": \"xyz\","
     "\"carrier\": 1}, \"parcelState\": 2, \"trackingUrl\": \"www.foo.com\","
     "\"estimatedDeliveryTimeUsec\": \"1000\"}]}";
+const std::string kExpectedStartTrackingPostData =
+    "{\"parcelIds\":[{\"carrier\":2,\"trackingId\":\"xyz\"}],"
+    "\"sourcePageDomain\":\"www.abc.com\"}";
+const std::string kTestTrackingUrl = "www.foo.com";
+const std::string kTestTrackingId = "xyz";
+const std::string kTestSourcePageDomain = "www.abc.com";
+const std::string kDeleteHttpMethod = "DELETE";
 }  // namespace
 
 std::vector<commerce::ParcelIdentifier> GetTestParcelIdentifiers() {
@@ -60,7 +70,10 @@ class MockParcelsServerProxy : public ParcelsServerProxy {
 
   MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
               CreateEndpointFetcher,
-              (const GURL& url, const std::string& post_data),
+              (const GURL& url,
+               const std::string& http_method,
+               const std::string& post_data,
+               const net::NetworkTrafficAnnotationTag traffic_annotation),
               (override));
 };
 
@@ -94,8 +107,8 @@ class ParcelsServerProxyTest : public testing::Test {
 TEST_F(ParcelsServerProxyTest, TestGetParcelStatus) {
   fetcher_->SetFetchResponse(kResponseSucceeded);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kParcelsServiceUrl),
-                                    kExpectedGetParcelStatusPostData))
+              CreateEndpointFetcher(GURL(kParcelsStatusUrl), kPostHttpMethod,
+                                    kExpectedGetParcelStatusPostData, _))
       .Times(1);
 
   base::RunLoop run_loop;
@@ -108,9 +121,10 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatus) {
             ASSERT_EQ(1, static_cast<int>(parcel_status->size()));
             auto status = (*parcel_status)[0];
             ASSERT_EQ(ParcelStatus::PICKED_UP, status.parcel_state());
-            ASSERT_EQ("www.foo.com", status.tracking_url());
+            ASSERT_EQ(kTestTrackingUrl, status.tracking_url());
             ASSERT_EQ(1000, status.estimated_delivery_time_usec());
-            ASSERT_EQ("xyz", status.parcel_identifier().tracking_id());
+            ASSERT_EQ(kTestTrackingId,
+                      status.parcel_identifier().tracking_id());
             ASSERT_EQ(commerce::ParcelIdentifier::FEDEX,
                       status.parcel_identifier().carrier());
             run_loop->Quit();
@@ -122,8 +136,8 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatus) {
 TEST_F(ParcelsServerProxyTest, TestGetParcelStatusWithErrorResponse) {
   fetcher_->SetFetchResponse("{1:2}");
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kParcelsServiceUrl),
-                                    kExpectedGetParcelStatusPostData))
+              CreateEndpointFetcher(GURL(kParcelsStatusUrl), kPostHttpMethod,
+                                    kExpectedGetParcelStatusPostData, _))
       .Times(1);
   base::RunLoop run_loop;
   server_proxy_->GetParcelStatus(
@@ -159,8 +173,8 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatusWithoutTrackingId) {
 TEST_F(ParcelsServerProxyTest, TestGetParcelStatusWithServerError) {
   fetcher_->SetFetchResponse(kResponseSucceeded, net::HTTP_NOT_FOUND);
   EXPECT_CALL(*server_proxy_,
-              CreateEndpointFetcher(GURL(kParcelsServiceUrl),
-                                    kExpectedGetParcelStatusPostData))
+              CreateEndpointFetcher(GURL(kParcelsStatusUrl), kPostHttpMethod,
+                                    kExpectedGetParcelStatusPostData, _))
       .Times(1);
   base::RunLoop run_loop;
   server_proxy_->GetParcelStatus(
@@ -173,6 +187,106 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatusWithServerError) {
             run_loop->Quit();
           },
           &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsServerProxyTest, TestStartTrackingParcelsWithServerError) {
+  fetcher_->SetFetchResponse(kResponseSucceeded, net::HTTP_NOT_FOUND);
+  EXPECT_CALL(*server_proxy_,
+              CreateEndpointFetcher(GURL(kParcelsBaseUrl), kPostHttpMethod,
+                                    kExpectedStartTrackingPostData, _))
+      .Times(1);
+  base::RunLoop run_loop;
+  server_proxy_->StartTrackingParcels(
+      GetTestParcelIdentifiers(), kTestSourcePageDomain,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+             std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
+            ASSERT_EQ(ParcelStatusRequestStatus::kServerError, request_status);
+            ASSERT_EQ(0, static_cast<int>(parcel_status->size()));
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsServerProxyTest, TestStartTrackingParcels) {
+  fetcher_->SetFetchResponse(kResponseSucceeded);
+  EXPECT_CALL(*server_proxy_,
+              CreateEndpointFetcher(GURL(kParcelsBaseUrl), kPostHttpMethod,
+                                    kExpectedStartTrackingPostData, _))
+      .Times(1);
+  base::RunLoop run_loop;
+  server_proxy_->StartTrackingParcels(
+      GetTestParcelIdentifiers(), kTestSourcePageDomain,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+             std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
+            ASSERT_EQ(ParcelStatusRequestStatus::kSuccess, request_status);
+            ASSERT_EQ(1, static_cast<int>(parcel_status->size()));
+            auto status = (*parcel_status)[0];
+            ASSERT_EQ(ParcelStatus::PICKED_UP, status.parcel_state());
+            ASSERT_EQ(kTestTrackingUrl, status.tracking_url());
+            ASSERT_EQ(1000, status.estimated_delivery_time_usec());
+            ASSERT_EQ(kTestTrackingId,
+                      status.parcel_identifier().tracking_id());
+            ASSERT_EQ(commerce::ParcelIdentifier::FEDEX,
+                      status.parcel_identifier().carrier());
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsServerProxyTest, TestStopTrackingParcel) {
+  fetcher_->SetFetchResponse(kResponseSucceeded);
+  EXPECT_CALL(*server_proxy_,
+              CreateEndpointFetcher(
+                  GURL(std::string(kParcelsBaseUrl) + "/" + kTestTrackingId),
+                  kDeleteHttpMethod, std::string(), _))
+      .Times(1);
+  base::RunLoop run_loop;
+  server_proxy_->StopTrackingParcel(
+      kTestTrackingId, base::BindOnce(
+                           [](base::RunLoop* run_loop,
+                              ParcelStatusRequestStatus request_status) {
+                             ASSERT_EQ(ParcelStatusRequestStatus::kSuccess,
+                                       request_status);
+                             run_loop->Quit();
+                           },
+                           &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsServerProxyTest, TestStopTrackingAllParcels) {
+  fetcher_->SetFetchResponse(kResponseSucceeded);
+  EXPECT_CALL(*server_proxy_,
+              CreateEndpointFetcher(GURL(kParcelsBaseUrl), kDeleteHttpMethod,
+                                    std::string(), _))
+      .Times(1);
+  base::RunLoop run_loop;
+  server_proxy_->StopTrackingAllParcels(base::BindOnce(
+      [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status) {
+        ASSERT_EQ(ParcelStatusRequestStatus::kSuccess, request_status);
+        run_loop->Quit();
+      },
+      &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(ParcelsServerProxyTest, TestStopTrackingAllParcelsWithServerError) {
+  fetcher_->SetFetchResponse(kResponseSucceeded, net::HTTP_NOT_FOUND);
+  EXPECT_CALL(*server_proxy_,
+              CreateEndpointFetcher(GURL(kParcelsBaseUrl), kDeleteHttpMethod,
+                                    std::string(), _))
+      .Times(1);
+  base::RunLoop run_loop;
+  server_proxy_->StopTrackingAllParcels(base::BindOnce(
+      [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status) {
+        ASSERT_EQ(ParcelStatusRequestStatus::kServerError, request_status);
+        run_loop->Quit();
+      },
+      &run_loop));
   run_loop.Run();
 }
 

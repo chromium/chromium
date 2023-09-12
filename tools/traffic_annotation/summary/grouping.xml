@@ -225,9 +225,6 @@ after discussions on the right group.
       <annotation id="download_bubble_retry_download"/>
       <annotation id="quick_answers_loader"/>
       <annotation id="chrome_search_suggest_service"/>
-      <annotation id="chrome_commerce_subscriptions_create"/>
-      <annotation id="chrome_commerce_subscriptions_delete"/>
-      <annotation id="chrome_commerce_subscriptions_get"/>
       <annotation id="cryptauth_get_my_devices"/>
       <annotation id="chrome_commerce_waa_fetcher"/>
       <annotation id="shopping_list_ui_image_fetcher"/>
@@ -296,7 +293,6 @@ after discussions on the right group.
       <annotation id="iwa_update_discovery_web_bundle"/>
       <annotation id="almanac_launcher_app"/>
       <annotation id="ip_protection_service_get_proxy_config"/>
-      <annotation id="chrome_commerce_parcels_status"/>
       <annotation id="plus_address_creation"/>
     </sender>
   </group>
@@ -362,6 +358,19 @@ after discussions on the right group.
       <annotation id="sct_auditing_hashdance"/>
       <annotation id="ppapi_download_request"/>
       <annotation id="tailored_security_service"/>
+    </sender>
+  </group>
+  <group name="Chrome Commerce" hidden="true">
+    <sender name="Parcel Tracking">
+      <annotation id="chrome_commerce_parcels_status"/>
+      <annotation id="chrome_commerce_start_tracking_parcel"/>
+      <annotation id="chrome_commerce_stop_tracking_parcel"/>
+      <annotation id="chrome_commerce_stop_tracking_all_parcel"/>
+    </sender>
+    <sender name="Subscription">
+      <annotation id="chrome_commerce_subscriptions_create"/>
+      <annotation id="chrome_commerce_subscriptions_delete"/>
+      <annotation id="chrome_commerce_subscriptions_get"/>
     </sender>
   </group>
   <group name="Cookieless Ads" hidden="true">

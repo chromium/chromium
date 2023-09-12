@@ -8,7 +8,7 @@ source_set("parcel") {
     "parcels_server_proxy.h",
   ]
   deps = [
-    "//components/commerce/core:account_checker",
+    "//components/commerce/core:commerce_constants",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/endpoint_fetcher:endpoint_fetcher",
@@ -30,6 +30,7 @@ source_set("unit_tests") {
   public_deps = [
     ":parcel",
     "//base/test:test_support",
+    "//components/commerce/core:commerce_constants",
     "//components/commerce/core:proto",
     "//components/endpoint_fetcher:test_support",
     "//components/signin/public/identity_manager:test_support",
