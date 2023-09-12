@@ -55,8 +55,9 @@ class PrintBrowserTest : public InProcessBrowserTest {
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
 
   void PrintAndWaitUntilPreviewIsReady();
-  void PrintAndWaitUntilPreviewIsReady(const PrintParams& params);
   // Returns the Print Preview dialog.
+  content::WebContents* PrintAndWaitUntilPreviewIsReady(
+      const PrintParams& params);
   content::WebContents* PrintAndWaitUntilPreviewIsReadyAndLoaded();
   content::WebContents* PrintAndWaitUntilPreviewIsReadyAndLoaded(
       const PrintParams& params);

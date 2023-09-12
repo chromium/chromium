@@ -540,10 +540,11 @@ void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady() {
   PrintAndWaitUntilPreviewIsReady(PrintParams());
 }
 
-void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
+content::WebContents* PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
     const PrintParams& params) {
-  PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(params,
-                                                /*wait_for_loaded=*/false);
+  return PrintAndWaitUntilPreviewIsReadyAndMaybeLoaded(
+      params,
+      /*wait_for_loaded=*/false);
 }
 
 content::WebContents*

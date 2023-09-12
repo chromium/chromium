@@ -576,9 +576,15 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
   void PrintAfterPreviewIsReadyAndLoaded(const PrintParams& params) {
+    PrintAfterPreviewIsReadyAndMaybeLoaded(params, /*wait_for_loaded=*/true);
+  }
+
+  void PrintAfterPreviewIsReadyAndMaybeLoaded(const PrintParams& params,
+                                              bool wait_for_loaded) {
     // First invoke the Print Preview dialog with requested method.
     content::WebContents* preview_dialog =
-        PrintAndWaitUntilPreviewIsReadyAndLoaded(params);
+        wait_for_loaded ? PrintAndWaitUntilPreviewIsReadyAndLoaded(params)
+                        : PrintAndWaitUntilPreviewIsReady(params);
     ASSERT_TRUE(preview_dialog);
 
     // Print Preview is completely ready, can now initiate printing.
@@ -3232,6 +3238,57 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   }
 
   PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_THAT(print_view_manager->preview_allowed(), testing::Optional(true));
+
+  // Since the scanned document was the one shown in the print preview dialog,
+  // no snapshotting should have taken place.
+  EXPECT_EQ(composited_for_content_analysis_count(), 0);
+  EXPECT_EQ(print_view_manager->got_snapshot_count(), 0);
+  EXPECT_EQ(scanning_responses_count(), 1);
+
+  // Validate that `NewDocument()` is only called for actual printing, not as
+  // part of content analysis, since that can needlessly prompt the user.
+  // When printing OOP, an extra call for a new document will occur since it
+  // gets called in both the browser process and in the Print Backend service.
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
+                       PrintWithPreviewBeforeLoaded) {
+  AddPrinter("printer_name");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
+
+  if (PrintAllowedOrNonBlockingPolicy() && UseService()) {
+    // The expected events for this are:
+    // 1.  Update print settings.
+    // 2.  A print job is started.
+    // 3.  Rendering for 1 page of document of content.
+    // 4.  Completes with document done.
+    // 5.  Wait for the one print job to be destroyed, to ensure printing
+    //     finished cleanly before completing the test.
+    SetNumExpectedMessages(/*num=*/5);
+  } else {
+    print_view_manager->set_on_print_preview_done_closure(base::BindOnce(
+        &ContentAnalysisBeforePrintPreviewBrowserTest::CheckForQuit,
+        base::Unretained(this)));
+    // Expect an extra message for the print job created after content
+    // analysis to be destroyed.
+    SetNumExpectedMessages(/*num=*/PrintAllowedOrNonBlockingPolicy() ? 2 : 1);
+  }
+
+  PrintAfterPreviewIsReadyAndMaybeLoaded(PrintParams(),
+                                         /*wait_for_loaded=*/false);
 
   EXPECT_THAT(print_view_manager->preview_allowed(), testing::Optional(true));
 
