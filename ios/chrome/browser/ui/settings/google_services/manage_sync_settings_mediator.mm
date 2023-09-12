@@ -1216,8 +1216,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       [self.commandHandler showAccountsPage];
       break;
     case BatchUploadButtonItemType:
-      // TODO(crbug.com/1468246): Should show the batch upload UI. For now, the
-      // button is clickable but with no-op.
+      [self.commandHandler openBulkUpload];
       break;
     case SyncEverythingItemType:
     case AutofillDataTypeItemType:

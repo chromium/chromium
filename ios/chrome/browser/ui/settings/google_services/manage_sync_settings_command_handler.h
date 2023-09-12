@@ -33,6 +33,9 @@
 // it doesn't close the current view.
 - (void)showManageYourGoogleAccount;
 
+// Open the view to batch upload data.
+- (void)openBulkUpload;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_

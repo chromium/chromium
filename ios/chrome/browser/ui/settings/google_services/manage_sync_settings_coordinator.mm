@@ -39,6 +39,8 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
@@ -55,6 +57,7 @@ using signin_metrics::PromoAction;
 using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 @interface ManageSyncSettingsCoordinator () <
+    BulkUploadCoordinatorDelegate,
     ManageSyncSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
     SignoutActionSheetCoordinatorDelegate,
@@ -64,6 +67,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
+  // The coordinator for the view Save in Account.
+  BulkUploadCoordinator* _bulkUploadCoordinator;
 }
 
 // View controller.
@@ -173,6 +178,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)stop {
   [super stop];
   [self.mediator disconnect];
+  [self stopBulkUpload];
   self.mediator = nil;
   self.viewController = nil;
   // This coordinator displays the main view and it is in charge to enable sync
@@ -201,6 +207,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 #pragma mark - Private
+
+- (void)stopBulkUpload {
+  [_bulkUploadCoordinator stop];
+  _bulkUploadCoordinator.delegate = nil;
+  _bulkUploadCoordinator = nil;
+}
 
 // Closes the Manage sync settings view controller.
 - (void)closeManageSyncSettings {
@@ -243,6 +255,16 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 #pragma mark - ManageSyncSettingsCommandHandler
+
+- (void)openBulkUpload {
+  [self stopBulkUpload];
+  base::RecordAction(base::UserMetricsAction("BulkUploadSettingsOpen"));
+  _bulkUploadCoordinator = [[BulkUploadCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  _bulkUploadCoordinator.delegate = self;
+  [_bulkUploadCoordinator start];
+}
 
 - (void)openWebAppActivityDialog {
   base::RecordAction(base::UserMetricsAction(
@@ -419,6 +441,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS];
   [applicationCommands showSignin:signinCommand
                baseViewController:self.viewController];
+}
+
+#pragma mark - BulkUploadCoordinatorDelegate
+
+- (void)bulkUploadCoordinatorShouldStop:(BulkUploadCoordinator*)coordinator {
+  DCHECK_EQ(coordinator, _bulkUploadCoordinator);
+  [self stopBulkUpload];
 }
 
 #pragma mark - SyncObserverModelBridge
