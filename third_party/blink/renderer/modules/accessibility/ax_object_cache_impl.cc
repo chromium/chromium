@@ -2879,16 +2879,18 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Accessibility.Performance.ProcessDeferredAccessibilityEvents");
 
-  // Destroy and recreate any objects which are no longer valid, for example
-  // they used AXNodeObject and now must be an AXLayoutObject, or vice-versa.
-  // Also fires children changed on the parent of these nodes.
-  ProcessInvalidatedObjects(document);
+  do {
+    // Destroy and recreate any objects which are no longer valid, for example
+    // they used AXNodeObject and now must be an AXLayoutObject, or vice-versa.
+    // Also fires children changed on the parent of these nodes.
+    ProcessInvalidatedObjects(document);
 
-  // Call the queued callback methods that do processing which must occur when
-  // layout is clean. These callbacks are stored in
-  // tree_update_callback_queue_, and have names like
-  // FooBarredWithCleanLayout().
-  ProcessCleanLayoutCallbacks(document);
+    // Call the queued callback methods that do processing which must occur when
+    // layout is clean. These callbacks are stored in
+    // tree_update_callback_queue_, and have names like
+    // FooBarredWithCleanLayout().
+    ProcessCleanLayoutCallbacks(document);
+  } while (!GetInvalidatedIds(document).empty());
 
   // Send events to RenderAccessibilityImpl, which serializes them and then
   // sends the serialized events and dirty objects to the browser process.
@@ -3108,12 +3110,6 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
            "and that never changes: "
         << new_object->ToString(true, true);
 #endif
-  }
-
-  // More ids may have become invalidated while processing this set.
-  // Continue until there are no invalidated ids remaining.
-  if (!GetInvalidatedIds(document).empty()) {
-    ProcessInvalidatedObjects(document);
   }
 }
 
