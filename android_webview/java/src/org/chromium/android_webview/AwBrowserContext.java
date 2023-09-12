@@ -71,8 +71,7 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             // Prefs dir will be created if it doesn't exist, so must allow writes.
-            mSharedPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                    getSharedPrefsFilename(relativePath), Context.MODE_PRIVATE);
+            mSharedPreferences = createSharedPrefs(relativePath);
 
             if (isDefaultAwBrowserContext()) {
                 // Migration requires disk writes.
@@ -279,11 +278,25 @@ public class AwBrowserContext implements BrowserContextHandle {
         AwBrowserContextJni.get().clearFormData(mNativeAwBrowserContext);
     }
 
+    private static SharedPreferences createSharedPrefs(String relativePath) {
+        return ContextUtils.getApplicationContext().getSharedPreferences(
+                getSharedPrefsFilename(relativePath), Context.MODE_PRIVATE);
+    }
+
     @CalledByNative
     public static AwBrowserContext create(long nativeAwBrowserContext, String name,
             String relativePath, AwCookieManager cookieManager, boolean isDefault) {
         return new AwBrowserContext(
                 nativeAwBrowserContext, name, relativePath, cookieManager, isDefault);
+    }
+
+    @CalledByNative
+    public static void deleteSharedPreferences(String relativePath) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            final String sharedPrefsFilename = getSharedPrefsFilename(relativePath);
+            SharedPreferences.Editor prefsEditor = createSharedPrefs(sharedPrefsFilename).edit();
+            prefsEditor.clear().apply();
+        }
     }
 
     @NativeMethods

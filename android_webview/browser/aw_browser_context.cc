@@ -787,6 +787,10 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   CHECK(storage_deleted);
   bool cache_deleted = base::DeletePathRecursively(cache_path);
   CHECK(cache_deleted);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AwBrowserContext_deleteSharedPreferences(
+      env, base::android::ConvertUTF8ToJavaString(env, relative_path.value()));
 }
 
 }  // namespace android_webview

@@ -12,12 +12,12 @@ import android.webkit.WebView;
 import androidx.annotation.IntDef;
 
 import com.android.webview.chromium.CallbackConverter;
+import com.android.webview.chromium.ProfileStore;
 import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
-import com.android.webview.chromium.ProfileStore;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
