@@ -95,6 +95,7 @@ import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
@@ -493,7 +494,7 @@ public class KeyboardAccessoryModernViewTest {
         // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
         // above url.
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(TEST_CARD_ART_IMAGE);
+                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
         // Create an autofill suggestion and set the `customIconUrl`.
         AutofillBarItem customIconItem = new AutofillBarItem(
                 getDefaultAutofillSuggestionBuilder().setCustomIconUrl(customIconUrl).build(),
@@ -525,7 +526,7 @@ public class KeyboardAccessoryModernViewTest {
         // Return the response of PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable
         // to null to indicate that the image is not present in the cache.
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
         AutofillBarItem customIconItem = new AutofillBarItem(
                 getDefaultAutofillSuggestionBuilder().setCustomIconUrl(customIconUrl).build(),
                 new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
