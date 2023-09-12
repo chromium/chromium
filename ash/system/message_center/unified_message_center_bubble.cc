@@ -118,13 +118,13 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   notification_center_view_->Init();
   UpdateBubbleState();
 
-  tray_->tray_event_filter()->AddBubble(this);
+  tray_event_filter_ = std::make_unique<TrayEventFilter>(
+      bubble_widget_, bubble_view_, /*tray_button=*/tray_);
   tray_->bubble()->unified_view()->AddObserver(this);
 }
 
 UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
   if (bubble_widget_) {
-    tray_->tray_event_filter()->RemoveBubble(this);
     if (tray_->bubble()->unified_view()) {
       tray_->bubble()->unified_view()->RemoveObserver(this);
     }
@@ -292,7 +292,6 @@ void UnifiedMessageCenterBubble::OnViewIsDeleting(views::View* observed_view) {
 
 void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {
   CHECK_EQ(bubble_widget_, widget);
-  tray_->tray_event_filter()->RemoveBubble(this);
   tray_->bubble()->unified_view()->RemoveObserver(this);
   notification_center_view_->RemoveObserver(this);
   bubble_widget_->RemoveObserver(this);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/tray/tray_bubble_wrapper.h"
+#include <memory>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
@@ -29,7 +30,6 @@ TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
 TrayBubbleWrapper::~TrayBubbleWrapper() {
   if (event_handling_) {
     Shell::Get()->activation_client()->RemoveObserver(this);
-    tray_->tray_event_filter()->RemoveBubble(this);
   }
   if (bubble_widget_) {
     auto* transient_manager = ::wm::TransientWindowManager::GetOrCreate(
@@ -62,7 +62,8 @@ void TrayBubbleWrapper::ShowBubble(
     Shell::Get()->app_list_controller()->DismissAppList();
 
   if (event_handling_) {
-    tray_->tray_event_filter()->AddBubble(this);
+    tray_event_filter_ = std::make_unique<TrayEventFilter>(
+        bubble_widget_, bubble_view_, /*tray_button=*/tray_);
     Shell::Get()->activation_client()->AddObserver(this);
   }
 }

@@ -28,25 +28,17 @@
 
 namespace ash {
 
-TrayEventFilter::TrayEventFilter() = default;
+TrayEventFilter::TrayEventFilter(views::Widget* bubble_widget,
+                                 TrayBubbleView* bubble_view,
+                                 TrayBackgroundView* tray_button)
+    : bubble_widget_(bubble_widget),
+      bubble_view_(bubble_view),
+      tray_button_(tray_button) {
+  Shell::Get()->AddPreTargetHandler(this);
+}
 
 TrayEventFilter::~TrayEventFilter() {
-  DCHECK(bubbles_.empty());
-}
-
-void TrayEventFilter::AddBubble(TrayBubbleBase* bubble) {
-  bool was_empty = bubbles_.empty();
-  bubbles_.insert(bubble);
-  if (was_empty && !bubbles_.empty()) {
-    Shell::Get()->AddPreTargetHandler(this);
-  }
-}
-
-void TrayEventFilter::RemoveBubble(TrayBubbleBase* bubble) {
-  bubbles_.erase(bubble);
-  if (bubbles_.empty()) {
-    Shell::Get()->RemovePreTargetHandler(this);
-  }
+  Shell::Get()->RemovePreTargetHandler(this);
 }
 
 void TrayEventFilter::OnMouseEvent(ui::MouseEvent* event) {
@@ -68,6 +60,10 @@ void TrayEventFilter::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
+  if (!bubble_widget_ || !bubble_view_ || !tray_button_) {
+    return;
+  }
+
   // Users in a capture session may be trying to capture tray bubble(s).
   if (capture_mode_util::IsCaptureModeActive()) {
     return;
@@ -93,88 +89,79 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     }
   }
 
-  std::set<TrayBackgroundView*> trays;
   // Check the boundary for all bubbles, and do not handle the event if it
   // happens inside of any of those bubbles.
   const gfx::Point screen_location =
       event.target() ? event.target()->GetScreenLocation(event)
                      : event.root_location();
-  for (const TrayBubbleBase* bubble : bubbles_) {
-    const views::Widget* bubble_widget = bubble->GetBubbleWidget();
-    if (!bubble_widget) {
-      continue;
-    }
 
-    gfx::Rect bounds = bubble_widget->GetWindowBoundsInScreen();
-    bounds.Inset(bubble->GetBubbleView()->GetBorderInsets());
+  gfx::Rect bounds = bubble_widget_->GetWindowBoundsInScreen();
+  bounds.Inset(bubble_view_->GetBorderInsets());
 
-    int64_t display_id = display::Screen::GetScreen()
-                             ->GetDisplayNearestPoint(screen_location)
-                             .id();
-    StatusAreaWidget* status_area =
-        Shell::GetRootWindowControllerWithDisplayId(display_id)
-            ->shelf()
-            ->GetStatusAreaWidget();
+  int64_t display_id = display::Screen::GetScreen()
+                           ->GetDisplayNearestPoint(screen_location)
+                           .id();
+  StatusAreaWidget* status_area =
+      Shell::GetRootWindowControllerWithDisplayId(display_id)
+          ->shelf()
+          ->GetStatusAreaWidget();
 
-    TrayBackgroundView* tray = bubble->GetTray();
-    CHECK(tray);
+  // When Quick Settings bubble is opened and the date tray is
+  // clicked, the bubble should not be closed since it will transition
+  // to show calendar.
+  if (tray_button_->catalog_name() ==
+          TrayBackgroundViewCatalogName::kUnifiedSystem &&
+      status_area->date_tray()->GetBoundsInScreen().Contains(screen_location)) {
+    return;
+  }
 
-    // When Quick Settings bubble is opened and the date tray is clicked, the
-    // bubble should not be closed since it will transition to show calendar.
-    if (tray->catalog_name() == TrayBackgroundViewCatalogName::kUnifiedSystem &&
-        status_area->date_tray()->GetBoundsInScreen().Contains(
-            screen_location)) {
-      continue;
-    }
+  UnifiedSystemTray* unified_system_tray = status_area->unified_system_tray();
 
-    // The system tray and message center are separate bubbles but they need
-    // to stay open together. We need to make sure to check if a click falls
-    // with in both their bounds and not close them both in this case.
-    UnifiedSystemTray* unified_system_tray = status_area->unified_system_tray();
-    TrayBubbleBase* system_tray_bubble = unified_system_tray->bubble();
-    if (unified_system_tray->IsBubbleShown() && system_tray_bubble != bubble) {
-      bounds.Union(
-          system_tray_bubble->GetBubbleWidget()->GetWindowBoundsInScreen());
-    } else if (unified_system_tray->IsMessageCenterBubbleShown()) {
-      TrayBubbleBase* message_center_bubble =
-          unified_system_tray->message_center_bubble();
+  // The system tray and message center are separate bubbles but they need to
+  // stay open together. We need to make sure to check if a click falls with in
+  // both their bounds and not close them both in this case.
+  if (!features::IsQsRevampEnabled() &&
+      tray_button_->catalog_name() ==
+          TrayBackgroundViewCatalogName::kUnifiedSystem) {
+    auto* system_tray_bubble = unified_system_tray->bubble();
+    TrayBubbleBase* message_center_bubble =
+        unified_system_tray->message_center_bubble();
+    CHECK(message_center_bubble);
+    if (bubble_widget_ == system_tray_bubble->GetBubbleWidget()) {
       bounds.Union(
           message_center_bubble->GetBubbleWidget()->GetWindowBoundsInScreen());
+    } else {
+      CHECK_EQ(bubble_widget_, message_center_bubble->GetBubbleWidget());
+      bounds.Union(system_tray_bubble->GetBoundsInScreen());
     }
-
-    // If the bubble is anchored to the shelf corner, the notification popup
-    // will be shown on top of that bubble. In that case, we should not filter
-    // out the events happening on the popup notification.
-    if (features::IsNotifierCollisionEnabled() &&
-        bubble->GetBubbleView()->IsAnchoredToShelfCorner() &&
-        unified_system_tray->GetMessagePopupCollection()
-            ->popup_collection_bounds()
-            .Contains(screen_location)) {
-      continue;
-    }
-
-    if (bounds.Contains(screen_location)) {
-      continue;
-    }
-
-    if (tray) {
-      // Maybe close the parent tray if the user drags on it. Otherwise, let the
-      // tray logic handle the event and determine show/hide behavior if the
-      // user clicks on the parent tray.
-      bounds = tray->GetBoundsInScreen();
-      if (tray->GetVisible() && bounds.Contains(screen_location) &&
-          event.type() != ui::ET_GESTURE_SCROLL_BEGIN) {
-        continue;
-      }
-    }
-
-    trays.insert(tray);
   }
 
-  // Close all bubbles other than the one that the user clicked on.
-  for (TrayBackgroundView* tray_background_view : trays) {
-    tray_background_view->ClickedOutsideBubble();
+  // If the bubble is anchored to the shelf corner, the notification
+  // popup will be shown on top of that bubble. In that case, we
+  // should not filter out the events happening on the popup
+  // notification.
+  if (features::IsNotifierCollisionEnabled() &&
+      bubble_view_->IsAnchoredToShelfCorner() &&
+      unified_system_tray->GetMessagePopupCollection()
+          ->popup_collection_bounds()
+          .Contains(screen_location)) {
+    return;
   }
+
+  if (bounds.Contains(screen_location)) {
+    return;
+  }
+
+  // Maybe close the parent tray if the user drags on it. Otherwise, let the
+  // tray logic handle the event and determine show/hide behavior if the
+  // user clicks on the parent tray.
+  bounds = tray_button_->GetBoundsInScreen();
+  if (tray_button_->GetVisible() && bounds.Contains(screen_location) &&
+      event.type() != ui::ET_GESTURE_SCROLL_BEGIN) {
+    return;
+  }
+
+  tray_button_->ClickedOutsideBubble();
 }
 
 }  // namespace ash

@@ -5,31 +5,35 @@
 #ifndef ASH_SYSTEM_TRAY_TRAY_EVENT_FILTER_H_
 #define ASH_SYSTEM_TRAY_TRAY_EVENT_FILTER_H_
 
-#include <set>
-
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
 class LocatedEvent;
 }
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
-class TrayBubbleBase;
+
+class TrayBackgroundView;
+class TrayBubbleView;
 
 // Handles events for a tray bubble, e.g. to close the system tray bubble when
 // the user clicks outside it.
 class ASH_EXPORT TrayEventFilter : public ui::EventHandler {
  public:
-  TrayEventFilter();
+  TrayEventFilter(views::Widget* bubble_widget,
+                  TrayBubbleView* bubble_view,
+                  TrayBackgroundView* tray_button);
 
   TrayEventFilter(const TrayEventFilter&) = delete;
   TrayEventFilter& operator=(const TrayEventFilter&) = delete;
 
   ~TrayEventFilter() override;
-
-  void AddBubble(TrayBubbleBase* bubble);
-  void RemoveBubble(TrayBubbleBase* bubble);
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -39,7 +43,9 @@ class ASH_EXPORT TrayEventFilter : public ui::EventHandler {
  private:
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
-  std::set<TrayBubbleBase*> bubbles_;
+  const raw_ptr<views::Widget> bubble_widget_;
+  const raw_ptr<TrayBubbleView> bubble_view_;
+  const raw_ptr<TrayBackgroundView> tray_button_;
 };
 
 }  // namespace ash

@@ -288,8 +288,6 @@ TrayBackgroundView::TrayBackgroundView(
 
   AddChildView(tray_container_.get());
 
-  tray_event_filter_ = std::make_unique<TrayEventFilter>();
-
   // Use layer color to provide background color. Note that children views
   // need to have their own layers to be visible.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);

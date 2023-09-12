@@ -15,6 +15,7 @@ namespace ash {
 
 class TrayBackgroundView;
 class TrayBubbleView;
+class TrayEventFilter;
 
 // Creates and manages the Widget and EventFilter components of a bubble.
 class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
@@ -58,6 +59,8 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
 
   // Owned by `bubble_widget_`
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+
+  std::unique_ptr<TrayEventFilter> tray_event_filter_;
 
   // When set to false disables the tray's event filtering
   // and also ignores the activation events. Eche window is an example of a use

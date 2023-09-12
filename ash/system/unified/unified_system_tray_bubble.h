@@ -32,6 +32,7 @@ class Widget;
 
 namespace ash {
 
+class TrayEventFilter;
 class UnifiedSystemTray;
 class UnifiedSystemTrayController;
 class UnifiedSystemTrayView;
@@ -189,6 +190,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   // Whether the QsRevamp feature is enabled.
   const bool is_qs_revamp_enabled_;
+
+  std::unique_ptr<TrayEventFilter> tray_event_filter_;
 
   base::WeakPtrFactory<UnifiedSystemTrayBubble> weak_factory_{this};
 };

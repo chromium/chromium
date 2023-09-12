@@ -33,7 +33,6 @@ class View;
 namespace ash {
 class Shelf;
 class TrayContainer;
-class TrayEventFilter;
 
 // Base class for some children of StatusAreaWidget. This class handles setting
 // and animating the background when the Launcher is shown/hidden. It also
@@ -220,7 +219,6 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   bool is_active() const { return is_active_; }
 
   TrayContainer* tray_container() const { return tray_container_; }
-  TrayEventFilter* tray_event_filter() { return tray_event_filter_.get(); }
   Shelf* shelf() { return shelf_; }
   TrayBackgroundViewCatalogName catalog_name() const { return catalog_name_; }
 
@@ -382,7 +380,6 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   RoundedCornerBehavior corner_behavior_;
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
-  std::unique_ptr<TrayEventFilter> tray_event_filter_;
   std::unique_ptr<TrayBackgroundViewSessionChangeHandler> handler_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;

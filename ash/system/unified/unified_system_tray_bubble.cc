@@ -111,7 +111,6 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   if (Shell::Get()->tablet_mode_controller()) {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
-  unified_system_tray_->tray_event_filter()->RemoveBubble(this);
   unified_system_tray_->shelf()->RemoveObserver(this);
 
   // Unified view children depend on `controller_` which is about to go away.
@@ -135,10 +134,14 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
 }
 
 void UnifiedSystemTrayBubble::InitializeObservers() {
-  unified_system_tray_->tray_event_filter()->AddBubble(this);
   unified_system_tray_->shelf()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
+
+  CHECK(bubble_widget_);
+  CHECK(bubble_view_);
+  tray_event_filter_ = std::make_unique<TrayEventFilter>(
+      bubble_widget_, bubble_view_, /*tray_button=*/unified_system_tray_);
 }
 
 gfx::Rect UnifiedSystemTrayBubble::GetBoundsInScreen() const {
