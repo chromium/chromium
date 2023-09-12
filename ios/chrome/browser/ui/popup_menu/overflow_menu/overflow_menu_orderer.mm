@@ -1153,6 +1153,57 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
         "IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition",
         HistogramDestinationFromDestination(orderData.shownDestinations[3]));
   }
+
+  DestinationsCustomizationEvent event;
+  event.PutOrRemove(
+      DestinationsCustomizationEventFields::kSmartSortingTurnedOff,
+      smartSortingNewlyDisabled);
+  event.PutOrRemove(DestinationsCustomizationEventFields::kSmartSortingTurnedOn,
+                    smartSortingNewlyEnabled);
+  event.PutOrRemove(DestinationsCustomizationEventFields::kSmartSortingIsOn,
+                    _destinationCustomizationModel.destinationUsageEnabled);
+  event.PutOrRemove(
+      DestinationsCustomizationEventFields::kDestinationWasRemoved,
+      removedDestinations.size() > 0);
+  event.PutOrRemove(DestinationsCustomizationEventFields::kDestinationWasAdded,
+                    addedDestinations.size() > 0);
+
+  // Loop through initial and new shown destinations lists to see if a
+  // reordering occurred.
+  for (unsigned long oldIndex = 0, newIndex = 0;
+       oldIndex < _destinationOrderData.shownDestinations.size() &&
+       newIndex < orderData.shownDestinations.size();) {
+    overflow_menu::Destination oldDestination =
+        _destinationOrderData.shownDestinations[oldIndex];
+    overflow_menu::Destination newDestination =
+        orderData.shownDestinations[newIndex];
+
+    bool destinationRemoved =
+        std::find(removedDestinations.begin(), removedDestinations.end(),
+                  oldDestination) != removedDestinations.end();
+    // If either destination was added or removed, skip it.
+    if (destinationRemoved) {
+      oldIndex++;
+      continue;
+    }
+
+    bool destinationAdded =
+        std::find(addedDestinations.begin(), addedDestinations.end(),
+                  newDestination) != addedDestinations.end();
+    if (destinationAdded) {
+      newIndex++;
+      continue;
+    }
+
+    if (oldDestination == newDestination) {
+      oldIndex++;
+      newIndex++;
+      continue;
+    }
+    event.Put(DestinationsCustomizationEventFields::kDestinationWasReordered);
+    break;
+  }
+  RecordDestinationsCustomizationEvent(event);
 }
 
 // Records any necessary metrics for when action customization takes place,
@@ -1208,6 +1259,45 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
         "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition",
         HistogramActionFromActionType(orderData.shownActions[3]));
   }
+
+  ActionsCustomizationEvent event;
+  event.PutOrRemove(ActionsCustomizationEventFields::kActionWasRemoved,
+                    removedActions.size() > 0);
+  event.PutOrRemove(ActionsCustomizationEventFields::kActionWasAdded,
+                    addedActions.size() > 0);
+  // Loop through initial and new shown actions lists to see if a reordering
+  // occurred.
+  for (unsigned long oldIndex = 0, newIndex = 0;
+       oldIndex < _actionOrderData.shownActions.size() &&
+       newIndex < orderData.shownActions.size();) {
+    overflow_menu::ActionType oldAction =
+        _actionOrderData.shownActions[oldIndex];
+    overflow_menu::ActionType newAction = orderData.shownActions[newIndex];
+
+    // If either action was added or removed, skip it.
+    bool actionRemoved = std::find(removedActions.begin(), removedActions.end(),
+                                   oldAction) != removedActions.end();
+    if (actionRemoved) {
+      oldIndex++;
+      continue;
+    }
+
+    bool actionAdded = std::find(addedActions.begin(), addedActions.end(),
+                                 newAction) != addedActions.end();
+    if (actionAdded) {
+      newIndex++;
+      continue;
+    }
+
+    if (oldAction == newAction) {
+      oldIndex++;
+      newIndex++;
+    } else {
+      event.Put(ActionsCustomizationEventFields::kActionWasReordered);
+      break;
+    }
+  }
+  RecordActionsCustomizationEvent(event);
 }
 
 // Records any necessary metrics for when Chrome automatically reorders the menu

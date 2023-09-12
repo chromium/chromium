@@ -1714,6 +1714,16 @@ chromium-metrics-reviews@google.com.
   <summary>The action removed during an overflow menu customization.</summary>
 </histogram>
 
+<histogram name="IOS.OverflowMenu.Customization.ActionsCustomized"
+    units="bitfield value" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    A bitfield value representing various sub-events that can take place during
+    an action customization session.
+  </summary>
+</histogram>
+
 <histogram name="IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition"
     enum="IOSOverflowMenuAction" expires_after="2024-02-11">
   <owner>rkgibson@google.com</owner>
@@ -1765,6 +1775,16 @@ chromium-metrics-reviews@google.com.
   <owner>bling-mony-pod@google.com</owner>
   <summary>
     The destination removed during an overflow menu customization.
+  </summary>
+</histogram>
+
+<histogram name="IOS.OverflowMenu.Customization.DestinationsCustomized"
+    units="bitfield value" expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    A bitfield value representing various sub-events that can take place during
+    a destination customization session.
   </summary>
 </histogram>
 

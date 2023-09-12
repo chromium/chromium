@@ -2000,9 +2000,9 @@ TEST_F(OverflowMenuOrdererTest, Customization_BadgeReorderingMetricsNotFired) {
       "IOS.OverflowMenu.DestinationsOrderChangedProgrammatically", 2, 0);
 }
 
-// Tests that the proper metrics are fired when destination customization
+// Tests that the proper metrics are recorded when destination customization
 // completes.
-TEST_F(OverflowMenuOrdererTest, DestinationCustomizationFiresMetrics) {
+TEST_F(OverflowMenuOrdererTest, DestinationCustomizationRecordsMetrics) {
   base::test::ScopedFeatureList features(kOverflowMenuCustomization);
 
   DestinationRanking all_destinations = SampleDestinations();
@@ -2046,6 +2046,16 @@ TEST_F(OverflowMenuOrdererTest, DestinationCustomizationFiresMetrics) {
       "IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition", 3,
       1);
 
+  std::vector<base::Bucket> buckets = tester.GetAllSamples(
+      "IOS.OverflowMenu.Customization.DestinationsCustomized");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & 1 << 0);
+  EXPECT_FALSE(buckets[0].min & 1 << 1);
+  EXPECT_FALSE(buckets[0].min & 1 << 2);
+  EXPECT_TRUE(buckets[0].min & 1 << 3);
+  EXPECT_FALSE(buckets[0].min & 1 << 4);
+  EXPECT_FALSE(buckets[0].min & 1 << 5);
+
   // Now turn destination 4 (the first hidden destination) back on and also turn
   // destination usage history back on.
   destinationModel = overflow_menu_orderer_.destinationCustomizationModel;
@@ -2073,10 +2083,21 @@ TEST_F(OverflowMenuOrdererTest, DestinationCustomizationFiresMetrics) {
   tester.ExpectBucketCount(
       "IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition", 2,
       1);
+
+  buckets = tester.GetAllSamples(
+      "IOS.OverflowMenu.Customization.DestinationsCustomized");
+  ASSERT_EQ(2U, buckets.size());
+  EXPECT_FALSE(buckets[1].min & 1 << 0);
+  EXPECT_TRUE(buckets[1].min & 1 << 1);
+  EXPECT_TRUE(buckets[1].min & 1 << 2);
+  EXPECT_FALSE(buckets[1].min & 1 << 3);
+  EXPECT_TRUE(buckets[1].min & 1 << 4);
+  EXPECT_FALSE(buckets[1].min & 1 << 5);
 }
 
-// Tests that the proper metrics are fired when action customization completes.
-TEST_F(OverflowMenuOrdererTest, ActionCustomizationFiresMetrics) {
+// Tests that the proper metrics are recorded when action customization
+// completes.
+TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
   base::test::ScopedFeatureList features(kOverflowMenuCustomization);
 
   ActionRanking all_actions = SampleActions();
@@ -2116,6 +2137,13 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationFiresMetrics) {
   tester.ExpectBucketCount(
       "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 7, 1);
 
+  std::vector<base::Bucket> buckets =
+      tester.GetAllSamples("IOS.OverflowMenu.Customization.ActionsCustomized");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & 1 << 0);
+  EXPECT_FALSE(buckets[0].min & 1 << 1);
+  EXPECT_FALSE(buckets[0].min & 1 << 2);
+
   // Now turn action 4 (the first hidden action) back on.
   actionModel = overflow_menu_orderer_.actionCustomizationModel;
   actionModel.hiddenActions[0].shown = YES;
@@ -2132,4 +2160,11 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationFiresMetrics) {
       "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 6, 2);
   tester.ExpectBucketCount(
       "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 7, 2);
+
+  buckets =
+      tester.GetAllSamples("IOS.OverflowMenu.Customization.ActionsCustomized");
+  ASSERT_EQ(2U, buckets.size());
+  EXPECT_FALSE(buckets[1].min & 1 << 0);
+  EXPECT_TRUE(buckets[1].min & 1 << 1);
+  EXPECT_FALSE(buckets[1].min & 1 << 2);
 }

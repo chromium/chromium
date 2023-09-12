@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_metrics.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 
 IOSOverflowMenuDestination HistogramDestinationFromDestination(
@@ -70,4 +71,16 @@ IOSOverflowMenuAction HistogramActionFromActionType(
     case overflow_menu::ActionType::EditActions:
       return IOSOverflowMenuAction::kEditActions;
   }
+}
+
+void RecordDestinationsCustomizationEvent(
+    DestinationsCustomizationEvent event) {
+  base::UmaHistogramSparse(
+      "IOS.OverflowMenu.Customization.DestinationsCustomized",
+      event.ToEnumBitmask());
+}
+
+void RecordActionsCustomizationEvent(ActionsCustomizationEvent event) {
+  base::UmaHistogramSparse("IOS.OverflowMenu.Customization.ActionsCustomized",
+                           event.ToEnumBitmask());
 }
