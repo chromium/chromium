@@ -1034,6 +1034,7 @@
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome_reclient',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome_reclient',
       'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
+      'android-12-x64-dual-coverage-exp-rel': 'android_release_trybot_x64_dual_coverage_fastbuild_webview_trichrome_reclient',
       'android-12-x64-rel': 'android_release_trybot_x64_coverage_fastbuild_webview_trichrome_reclient',
       'android-12-x64-siso-rel': 'android_release_trybot_x64_coverage_fastbuild_webview_trichrome_reclient',
       'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
@@ -1075,6 +1076,7 @@
       'android-deterministic-rel': 'android_without_codecs_release_trybot_reclient',
       'android-fieldtrial-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials_reclient',
+      'android-nougat-x86-dual-coverage-exp-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_dual_coverage_reclient',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
       'android-nougat-x86-siso-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
@@ -1868,6 +1870,14 @@
       'webview_trichrome', 'no_secondary_abi', 'webview_shell',
     ],
 
+    # TODO(crbug.com/1416662): Add java coverage once dual coverage supported
+    # in recipe.
+    'android_release_trybot_x64_dual_coverage_fastbuild_webview_trichrome_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
+      'android_fastbuild', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'webview_trichrome', 'no_secondary_abi', 'webview_shell',
+    ],
+
     'android_release_trybot_x64_fastbuild_webview_trichrome_reclient': [
       'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
       'android_fastbuild', 'webview_trichrome',
@@ -1891,6 +1901,14 @@
     'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient': [
       'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
       'android_fastbuild', 'use_java_coverage', 'partial_code_coverage_instrumentation',
+      'webview_monochrome', 'webview_shell',
+    ],
+
+    # TODO(crbug.com/1416662): Add java coverage once dual coverage supported
+    # in recipe.
+    'android_release_trybot_x86_fastbuild_webview_monochrome_dual_coverage_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
+      'android_fastbuild', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'webview_monochrome', 'webview_shell',
     ],
 

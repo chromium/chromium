@@ -86,6 +86,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "android-12-x64-dual-coverage-exp-rel",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-12-x64-rel",
           "group": "tryserver.chromium.android"
         },

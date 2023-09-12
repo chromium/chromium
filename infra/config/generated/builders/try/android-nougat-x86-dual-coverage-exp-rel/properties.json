@@ -39,25 +39,22 @@
           "builder": "android-nougat-x86-rel",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-nougat-x86-dual-coverage-exp-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-nougat-x86-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-nougat-x86-siso-rel",
-          "group": "tryserver.chromium.android"
-        }
       ]
     }
   },
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
+    "instance": "rbe-chromium-untrusted",
     "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
@@ -69,9 +66,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "android"
-  ]
+  "builder_group": "tryserver.chromium.android",
+  "cq": "required",
+  "recipe": "chromium_trybot"
 }

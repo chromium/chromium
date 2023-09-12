@@ -57,6 +57,29 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
+# TODO(crbug.com/1416662): Remove the builder after the experiment.
+try_.builder(
+    name = "android-12-x64-dual-coverage-exp-rel",
+    description_html = """\
+This builder shadows android-12-x64-rel builder to experiment both jacoco and clang coverage enabled builds.
+""",
+    mirrors = [
+        "ci/android-12-x64-rel",
+    ],
+    coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 3,
+    ),
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
+    use_clang_coverage = True,
+    # TODO(crbug.com/1416662): Add java coverage once dual coverage supported
+    # in recipe.
+    # use_java_coverage = True,
+)
+
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -414,6 +437,32 @@ try_.builder(
 try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
+)
+
+# TODO(crbug.com/1416662): Remove the builder after the experiment.
+try_.builder(
+    name = "android-nougat-x86-dual-coverage-exp-rel",
+    description_html = """\
+This builder shadows android-nougat-x86-rel builder to experiment both jacoco and clang coverage enabled builds.
+""",
+    mirrors = [
+        "ci/android-nougat-x86-rel",
+    ],
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        "chromium.add_one_test_shard": 10,
+    },
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 3,
+    ),
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
+    use_clang_coverage = True,
+    # TODO(crbug.com/1416662): Add java coverage once dual coverage supported
+    # in recipe.
+    # use_java_coverage = True,
 )
 
 try_.orchestrator_builder(
