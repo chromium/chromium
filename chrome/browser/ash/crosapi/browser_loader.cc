@@ -83,7 +83,7 @@ void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
   rootfs_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), LacrosSelection::kRootfs),
-      source == LacrosSelectionSource::kPolicy);
+      source == LacrosSelectionSource::kForced);
 }
 
 void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback,
@@ -93,7 +93,7 @@ void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback,
   stateful_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), LacrosSelection::kStateful),
-      source == LacrosSelectionSource::kPolicy);
+      source == LacrosSelectionSource::kForced);
 
   // Unmount the rootfs lacros-chrome when using stateful lacros-chrome.
   // This will keep stateful lacros-chrome only mounted and not hold the rootfs
@@ -130,11 +130,11 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     // too.
     switch (lacros_selection.value()) {
       case browser_util::LacrosSelection::kRootfs:
-        SelectRootfsLacros(std::move(callback), LacrosSelectionSource::kPolicy);
+        SelectRootfsLacros(std::move(callback), LacrosSelectionSource::kForced);
         return;
       case browser_util::LacrosSelection::kStateful:
         SelectStatefulLacros(std::move(callback),
-                             LacrosSelectionSource::kPolicy);
+                             LacrosSelectionSource::kForced);
         return;
       case browser_util::LacrosSelection::kDeployedLocally:
         NOTREACHED();
@@ -310,8 +310,8 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "Unknown";
     case BrowserLoader::LacrosSelectionSource::kCompatibilityCheck:
       return ostream << "CompatibilityCheck";
-    case BrowserLoader::LacrosSelectionSource::kPolicy:
-      return ostream << "Policy";
+    case BrowserLoader::LacrosSelectionSource::kForced:
+      return ostream << "Forced";
     case BrowserLoader::LacrosSelectionSource::kDeployedPath:
       return ostream << "DeployedPath";
   }

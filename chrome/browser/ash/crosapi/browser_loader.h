@@ -71,8 +71,10 @@ class BrowserLoader {
     // lacros selection is not available.
     kCompatibilityCheck,
 
-    // Forced by the selection policy.
-    kPolicy,
+    // Forced by the selection policy or about:flags. See
+    // browser_util::DetermineLacrosSelection for the detailed condition when
+    // the lacros selection is forced.
+    kForced,
 
     // Forced by registered lacros-chrome path.
     kDeployedPath,
