@@ -83,8 +83,6 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
   bool is_payments_related =
       base::Contains(registered_payments_renderer_ids_, renderer_id);
 
-  DCHECK(is_password_related || is_payments_related);
-
   if (is_password_related) {
     ShowPasswordBottomSheet(params);
   } else if (is_payments_related) {
