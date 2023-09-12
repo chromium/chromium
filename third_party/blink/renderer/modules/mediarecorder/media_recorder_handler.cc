@@ -722,9 +722,6 @@ void MediaRecorderHandler::WriteData(base::StringPiece data) {
 void MediaRecorderHandler::UpdateTracksLiveAndEnabled() {
   DCHECK(IsMainThread());
 
-  const auto video_tracks = media_stream_->VideoComponents();
-  const auto audio_tracks = media_stream_->AudioComponents();
-
   if (!video_tracks_.empty()) {
     UpdateTrackLiveAndEnabled(*video_tracks_[0], /*is_video=*/true);
   }
