@@ -22,7 +22,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.net.CallbackException;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.UploadDataProvider;
@@ -137,9 +138,11 @@ public class UploadDataProvidersTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "This is not the case for the fallback implementation")
     // Tests that ByteBuffer's limit cannot be changed by the caller.
-    public void testUploadChangeBufferLimit() throws Exception {
+    public void
+    testUploadChangeBufferLimit() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());

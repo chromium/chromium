@@ -17,12 +17,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
-
-/**
- * Tests requests that generate Network Error Logging reports.
- */
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
+/** Tests requests that generate Network Error Logging reports. */
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support network error logging")
 public class NetworkErrorLoggingTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -40,7 +40,6 @@ public class NetworkErrorLoggingTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testManualReportUpload() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
                 (builder)
@@ -68,7 +67,6 @@ public class NetworkErrorLoggingTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testUploadNELReportsFromHeaders() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             builder.setExperimentalOptions("{\"NetworkErrorLogging\": {\"enable\": true}}");
@@ -103,7 +101,6 @@ public class NetworkErrorLoggingTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testUploadNELReportsFromPreloadedPolicy() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             String serverOrigin = Http2TestServer.getServerUrl();

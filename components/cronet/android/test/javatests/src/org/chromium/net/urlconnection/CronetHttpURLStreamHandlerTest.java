@@ -19,7 +19,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 
 import java.net.HttpURLConnection;
@@ -31,7 +32,7 @@ import java.net.URL;
  * Tests for CronetHttpURLStreamHandler class.
  */
 @Batch(Batch.UNIT_TESTS)
-@OnlyRunNativeCronet
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK}, reason = "See crrev.com/c/4590329")
 @RunWith(AndroidJUnit4.class)
 public class CronetHttpURLStreamHandlerTest {
     @Rule

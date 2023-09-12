@@ -24,7 +24,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UrlRequest.Status;
 import org.chromium.net.UrlRequest.StatusListener;
@@ -129,8 +130,10 @@ public class GetStatusTest {
     @Test
     @SmallTest
     // Regression test for crbug.com/606872.
-    @OnlyRunNativeCronet
-    public void testGetStatusForUpload() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "The fallback implementation doesn't support status queries")
+    public void
+    testGetStatusForUpload() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());

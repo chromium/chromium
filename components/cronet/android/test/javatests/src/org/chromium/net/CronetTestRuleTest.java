@@ -19,15 +19,13 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.CronetTestRule.OnlyRunJavaCronet;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.JavaCronetEngine;
 
-/**
- * Tests features of CronetTestRule.
- */
+/** Tests features of CronetTestRule. */
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
 public class CronetTestRuleTest {
@@ -85,7 +83,7 @@ public class CronetTestRuleTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK}, reason = "Testing the rule")
     public void testRunOnlyNativeMustRun() {
         assertThat(mTestRule.testingJavaImpl()).isFalse();
         assertThat(mTestWasRun).isFalse();
@@ -96,8 +94,10 @@ public class CronetTestRuleTest {
 
     @Test
     @SmallTest
-    @OnlyRunJavaCronet
-    public void testRunOnlyJavaMustRun() {
+    @IgnoreFor(
+            implementations = {CronetImplementation.STATICALLY_LINKED}, reason = "Testing the rule")
+    public void
+    testRunOnlyJavaMustRun() {
         assertThat(mTestRule.testingJavaImpl()).isTrue();
         assertThat(mTestWasRun).isFalse();
         mTestWasRun = true;

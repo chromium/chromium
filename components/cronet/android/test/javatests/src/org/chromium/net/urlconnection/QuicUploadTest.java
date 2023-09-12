@@ -19,7 +19,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestUtil;
 import org.chromium.net.QuicTestServer;
 
@@ -28,11 +29,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 
-/**
- * Tests HttpURLConnection upload using QUIC.
- */
+/** Tests HttpURLConnection upload using QUIC. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support QUIC")
 public class QuicUploadTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -67,7 +68,6 @@ public class QuicUploadTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Regression testing for crbug.com/618872.
     public void testOneMassiveWrite() throws Exception {
         String path = "/simple.txt";

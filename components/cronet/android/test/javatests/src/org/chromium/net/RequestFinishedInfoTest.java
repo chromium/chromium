@@ -20,7 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
 import org.chromium.net.impl.CronetMetrics;
@@ -33,10 +34,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Test RequestFinishedInfo.Listener and the metrics information it provides.
- */
+/** Test RequestFinishedInfo.Listener and the metrics information it provides. */
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't RequestFinished listeners")
 public class RequestFinishedInfoTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
@@ -50,6 +51,7 @@ public class RequestFinishedInfoTest {
     private static class AssertCallbackDoneRequestFinishedListener
             extends TestRequestFinishedListener {
         private final TestUrlRequestCallback mCallback;
+
         public AssertCallbackDoneRequestFinishedListener(TestUrlRequestCallback callback) {
             // Use same executor as request callback to verify stable call order.
             super(callback.getExecutor());
@@ -108,7 +110,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListener() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
@@ -137,7 +138,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListenerDirectExecutor() throws Exception {
         DirectExecutor testExecutor = new DirectExecutor();
@@ -170,7 +170,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListenerDifferentThreads() throws Exception {
         TestRequestFinishedListener firstListener = new TestRequestFinishedListener();
@@ -211,7 +210,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListenerFailedRequest() throws Exception {
         String connectionRefusedUrl = "http://127.0.0.1:3";
@@ -263,7 +261,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testRequestFinishedListenerThrowInTerminalCallback() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
@@ -282,7 +279,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testRequestFinishedListenerThrowInListener() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.makeListenerThrow();
@@ -300,7 +296,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testRequestFinishedListenerThrowInEngineListener() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.makeListenerThrow();
@@ -319,7 +314,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListenerRemoved() throws Exception {
         TestExecutor testExecutor = new TestExecutor();
@@ -345,7 +339,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testRequestFinishedListenerCanceledRequest() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
@@ -388,7 +381,6 @@ public class RequestFinishedInfoTest {
     // collection is enabled and the URLRequest hasn't been created. See http://crbug.com/675629.
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testExceptionInRequestStart() throws Exception {
         // The listener in this test shouldn't get any tasks.
         Executor executor = new RejectAllTasksExecutor();
@@ -448,7 +440,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testOrderSuccessfulRequest() throws Exception {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -478,7 +469,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     @RequiresMinApi(11)
     public void testUpdateAnnotationOnSucceeded() throws Exception {
         // The annotation that is updated in onSucceeded() callback.
@@ -516,7 +506,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Tests a failed request where the error originates from Java.
     public void testOrderFailedRequestJava() throws Exception {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback() {
@@ -554,7 +543,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Tests a failed request where the error originates from native code.
     public void testOrderFailedRequestNative() throws Exception {
         String connectionRefusedUrl = "http://127.0.0.1:3";
@@ -588,7 +576,6 @@ public class RequestFinishedInfoTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testOrderCanceledRequest() throws Exception {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback() {
             @Override

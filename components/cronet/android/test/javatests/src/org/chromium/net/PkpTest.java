@@ -24,7 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.test.util.CertTestUtil;
 
 import java.io.ByteArrayInputStream;
@@ -36,10 +37,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Public-Key-Pinning tests of Cronet Java API.
- */
+/** Public-Key-Pinning tests of Cronet Java API. */
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support public key pinning")
 public class PkpTest {
     private static final int DISTANT_FUTURE = Integer.MAX_VALUE;
     private static final boolean INCLUDE_SUBDOMAINS = true;
@@ -79,14 +80,13 @@ public class PkpTest {
     }
 
     /**
-     * Tests the case when the pin hash does not match. The client is expected to
-     * receive the error response.
+     * Tests the case when the pin hash does not match. The client is expected to receive the error
+     * response.
      *
      * @throws Exception
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testErrorCodeIfPinDoesNotMatch() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         byte[] nonMatchingHash = generateSomeSha256();
@@ -98,14 +98,13 @@ public class PkpTest {
     }
 
     /**
-     * Tests the case when the pin hash matches. The client is expected to
-     * receive the successful response with the response code 200.
+     * Tests the case when the pin hash matches. The client is expected to receive the successful
+     * response with the response code 200.
      *
      * @throws Exception
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSuccessIfPinMatches() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         // Get PKP hash of the real certificate
@@ -120,15 +119,14 @@ public class PkpTest {
     }
 
     /**
-     * Tests the case when the pin hash does not match and the client accesses the subdomain of
-     * the configured PKP host with includeSubdomains flag set to true. The client is
-     * expected to receive the error response.
+     * Tests the case when the pin hash does not match and the client accesses the subdomain of the
+     * configured PKP host with includeSubdomains flag set to true. The client is expected to
+     * receive the error response.
      *
      * @throws Exception
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testIncludeSubdomainsFlagEqualTrue() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         byte[] nonMatchingHash = generateSomeSha256();
@@ -140,15 +138,14 @@ public class PkpTest {
     }
 
     /**
-     * Tests the case when the pin hash does not match and the client accesses the subdomain of
-     * the configured PKP host with includeSubdomains flag set to false. The client is expected to
+     * Tests the case when the pin hash does not match and the client accesses the subdomain of the
+     * configured PKP host with includeSubdomains flag set to false. The client is expected to
      * receive the successful response with the response code 200.
      *
      * @throws Exception
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testIncludeSubdomainsFlagEqualFalse() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         byte[] nonMatchingHash = generateSomeSha256();
@@ -168,7 +165,6 @@ public class PkpTest {
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSuccessIfNoPinSpecified() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         byte[] nonMatchingHash = generateSomeSha256();
@@ -187,7 +183,6 @@ public class PkpTest {
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSoonExpiringPin() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         final int tenSecondsAhead = 10;
@@ -200,14 +195,13 @@ public class PkpTest {
     }
 
     /**
-     * Tests mismatching pins that expired 1 second ago. Since the pins have expired, they
-     * should not be enforced during the request; thus a successful response is expected.
+     * Tests mismatching pins that expired 1 second ago. Since the pins have expired, they should
+     * not be enforced during the request; thus a successful response is expected.
      *
      * @throws Exception
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testRecentlyExpiredPin() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         final int oneSecondAgo = -1;
@@ -220,14 +214,13 @@ public class PkpTest {
     }
 
     /**
-     * Tests that the pinning of local trust anchors is enforced when pinning bypass for local
-     * trust anchors is disabled.
+     * Tests that the pinning of local trust anchors is enforced when pinning bypass for local trust
+     * anchors is disabled.
      *
      * @throws Exception
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testLocalTrustAnchorPinningEnforced() throws Exception {
         createCronetEngineBuilder(DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, UNKNOWN_ROOT);
         byte[] nonMatchingHash = generateSomeSha256();
@@ -247,7 +240,6 @@ public class PkpTest {
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testLocalTrustAnchorPinningNotEnforced() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, UNKNOWN_ROOT);
         byte[] nonMatchingHash = generateSomeSha256();
@@ -266,7 +258,6 @@ public class PkpTest {
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testPinsAreNotPersisted() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         byte[] nonMatchingHash = generateSomeSha256();

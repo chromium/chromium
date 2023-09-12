@@ -20,7 +20,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.NetworkException;
 
@@ -34,7 +35,7 @@ import java.net.URL;
  * Tests {@code getOutputStream} when {@code setChunkedStreamingMode} is enabled.
  */
 @Batch(Batch.UNIT_TESTS)
-@OnlyRunNativeCronet
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK}, reason = "See crrev.com/c/4590329")
 @RunWith(AndroidJUnit4.class)
 public class CronetChunkedOutputStreamTest {
     @Rule

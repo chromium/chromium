@@ -31,7 +31,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.NativeTestServer;
@@ -54,12 +55,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Test logging functionalities.
- */
+/** Test logging functionalities. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(JUnit4.class)
 @RequiresMinAndroidApi(Build.VERSION_CODES.O)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support telemetry logging")
 public final class CronetLoggerTest {
     private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
     private final CronetLoggerTestRule mLoggerTestRule = new CronetLoggerTestRule(TestLogger.class);
@@ -121,7 +122,7 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testHttpCacheModeEnum() {
-        final int publicBuilderHttpCacheModes[] = {CronetEngine.Builder.HTTP_CACHE_DISABLED,
+        final int[] publicBuilderHttpCacheModes = {CronetEngine.Builder.HTTP_CACHE_DISABLED,
                 CronetEngine.Builder.HTTP_CACHE_IN_MEMORY,
                 CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, CronetEngine.Builder.HTTP_CACHE_DISK};
         for (int publicBuilderHttpCacheMode : publicBuilderHttpCacheModes) {
@@ -150,7 +151,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testTelemetryDefaultEnabled() throws JSONException {
         final String url = NativeTestServer.getEchoBodyURL();
 
@@ -172,7 +172,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testTelemetryDisabled() throws JSONException {
         final String url = NativeTestServer.getEchoBodyURL();
         JSONObject jsonExperimentalOptions = new JSONObject().put("enable_telemetry", false);
@@ -194,7 +193,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns = new JSONObject()
                                       .put("enable", true)
@@ -258,7 +256,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testEngineCreationAndTrafficInfoEngineId() throws Exception {
         final String url = "www.example.com";
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
@@ -292,7 +289,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testMultipleEngineCreationAndTrafficInfoEngineId() throws Exception {
         final String url = "www.example.com";
         ExperimentalCronetEngine.Builder engineBuilder =
@@ -337,7 +333,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSuccessfulRequestNative() throws Exception {
         final String url = NativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
@@ -370,7 +365,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testFailedRequestNative() throws Exception {
         final String url = "www.unreachable-url.com";
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
@@ -404,7 +398,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testCanceledRequestNative() throws Exception {
         final String url = NativeTestServer.getEchoBodyURL();
         CronetEngine engine = mTestRule.getTestFramework().startEngine();
@@ -440,7 +433,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testEmptyHeadersSizeNative() {
         Map<String, List<String>> headers = Collections.emptyMap();
         assertThat(CronetUrlRequest.estimateHeadersSizeInBytes(headers)).isEqualTo(0);
@@ -455,7 +447,6 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testNonEmptyHeadersSizeNative() {
         Map<String, List<String>> headers = new HashMap<String, List<String>>() {
             {

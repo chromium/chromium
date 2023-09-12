@@ -25,7 +25,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -37,10 +38,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-/**
- * Test Network Quality Estimator.
- */
+/** Test Network Quality Estimator. */
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support network quality estimating")
 public class NQETest {
     private static final String TAG = NQETest.class.getSimpleName();
 
@@ -90,7 +91,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testNotEnabled() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         Executor networkQualityExecutor = Executors.newSingleThreadExecutor();
@@ -114,7 +114,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testListenerRemoved() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
                 (builder) -> builder.enableNetworkQualityEstimator(true));
@@ -151,7 +150,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testQuicDisabled() throws Exception {
         // Set up HistogramWatcher before starting CronetEngine. This is because the
         // HistogramWatcher takes a snapshot of the starting sample count and uses the delta of this
@@ -176,7 +174,8 @@ public class NQETest {
 
             // The pref may not be written if the computed Effective Connection Type (ECT) matches
             // the default ECT for the current connection type. Force the ECT to "Slow-2G". Since
-            // "Slow-2G" is not the default ECT for any connection type, this ensures that the pref
+            // "Slow-2G" is not the default ECT for any connection type, this ensures that the
+            // pref
             // is written to.
             JSONObject nqeOptions =
                     new JSONObject().put("force_effective_connection_type", "Slow-2G");
@@ -262,7 +261,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testPrefsWriteRead() throws Exception {
         // When the loop is run for the first time, network quality is written to the disk. The
         // test verifies that in the next loop, the network quality is read back.
@@ -365,7 +363,6 @@ public class NQETest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testQuicDisabledWithParams() throws Exception {
         Executor listenersExecutor = Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
         TestNetworkQualityRttListener rttListener =

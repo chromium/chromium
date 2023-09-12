@@ -19,16 +19,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 
 import java.nio.ByteBuffer;
 import java.util.Date;
 
-/**
- * Tests functionality of BidirectionalStream's QUIC implementation.
- */
+/** Tests functionality of BidirectionalStream's QUIC implementation. */
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support bidirectional streaming")
 public class BidirectionalStreamQuicTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -63,7 +64,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Test that QUIC is negotiated.
     public void testSimpleGet() throws Exception {
         String path = "/simple.txt";
@@ -87,7 +87,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePost() throws Exception {
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;
@@ -129,7 +128,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePostWithFlush() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
@@ -163,7 +161,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePostWithFlushTwice() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
@@ -200,7 +197,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimpleGetWithFlush() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
@@ -245,7 +241,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testSimplePostWithFlushAfterOneWrite() throws Exception {
         // TODO(xunjieli): Use ParameterizedTest instead of the loop.
         for (int i = 0; i < 2; i++) {
@@ -277,7 +272,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     // Tests that if the stream failed between the time when we issue a Write()
     // and when the Write() is executed in the native stack, there is no crash.
     // This test is racy, but it should catch a crash (if there is any) most of
@@ -324,7 +318,6 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testStreamFailWithQuicDetailedErrorCode() throws Exception {
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;

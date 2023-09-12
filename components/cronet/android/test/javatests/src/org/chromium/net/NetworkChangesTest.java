@@ -21,19 +21,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetLibraryLoader;
 
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-/**
- * Test Cronet under different network change scenarios.
- */
+/** Test Cronet under different network change scenarios. */
 @RunWith(AndroidJUnit4.class)
 @DoNotBatch(reason = "crbug/1459563")
-@OnlyRunNativeCronet
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "Tests implementation details of the native implementation")
 public class NetworkChangesTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();

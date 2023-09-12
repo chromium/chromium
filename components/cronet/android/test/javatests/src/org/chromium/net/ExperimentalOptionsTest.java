@@ -30,7 +30,8 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -46,6 +47,8 @@ import java.util.concurrent.CountDownLatch;
 @JNINamespace("cronet")
 @OptIn(markerClass = {ConnectionMigrationOptions.Experimental.class, DnsOptions.Experimental.class,
                QuicOptions.Experimental.class, QuicOptions.QuichePassthroughOption.class})
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support experimental options")
 public class ExperimentalOptionsTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -75,7 +78,6 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     // Tests that NetLog writes effective experimental options to NetLog.
     public void testNetLog() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
@@ -107,7 +109,6 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnableTelemetryFalse() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             JSONObject experimentalOptions = new JSONObject().put("enable_telemetry", false);
@@ -121,7 +122,6 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testEnableTelemetryDefault() throws Exception {
         CronetUrlRequestContext context =
                 (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
@@ -130,7 +130,6 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testSetSSLKeyLogFile() throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();
         File dir = new File(PathUtils.getDataDirectory());
@@ -199,7 +198,6 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     // Tests that basic Cronet functionality works when host cache persistence is enabled, and that
     // persistence works.
     public void testHostCachePersistence() throws Exception {
@@ -261,8 +259,8 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
-    // Experimental options should be specified through a JSON compliant string.
+    // Experimental options should be specified through a JSON compliant string. When that is not
+    // the case building a Cronet engine should fail.
     public void testWrongJsonExperimentalOptions() throws Exception {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 ()
@@ -278,7 +276,6 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    @OnlyRunNativeCronet
     public void testDetectBrokenConnection() throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
@@ -303,7 +300,6 @@ public class ExperimentalOptionsTest {
     @DisabledTest(message = "crbug.com/1320725")
     @Test
     @LargeTest
-    @OnlyRunNativeCronet
     public void testDetectBrokenConnectionOnNetworkFailure() throws Exception {
         // HangingRequestUrl stops the server from replying until mHangingUrlLatch is opened,
         // simulating a network failure between client and server.

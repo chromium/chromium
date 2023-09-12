@@ -6,6 +6,7 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
@@ -37,6 +38,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Custom TestRule for Cronet instrumentation tests.
@@ -117,16 +121,20 @@ public class CronetTestRule implements TestRule {
         setImplementationUnderTest(CronetImplementation.STATICALLY_LINKED);
         String packageName = desc.getTestClass().getPackage().getName();
 
-        boolean onlyRunTestForNative = desc.getAnnotation(OnlyRunNativeCronet.class) != null
-                || desc.getTestClass().getAnnotation(OnlyRunNativeCronet.class) != null;
-        boolean onlyRunTestForJava = desc.getAnnotation(OnlyRunJavaCronet.class) != null;
-        if (onlyRunTestForNative && onlyRunTestForJava) {
-            throw new IllegalArgumentException(desc.getMethodName()
-                    + " skipped because it specified both "
-                    + "OnlyRunNativeCronet and OnlyRunJavaCronet annotations");
+        EnumSet<CronetImplementation> excludedImplementations =
+                EnumSet.noneOf(CronetImplementation.class);
+        IgnoreFor ignoreAnnotation = getTestAnnotation(desc, IgnoreFor.class);
+        if (ignoreAnnotation != null) {
+            excludedImplementations =
+                    EnumSet.copyOf(Arrays.asList(ignoreAnnotation.implementations()));
         }
-        boolean doRunTestForNative = onlyRunTestForNative || !onlyRunTestForJava;
-        boolean doRunTestForJava = onlyRunTestForJava || !onlyRunTestForNative;
+        Log.i(TAG, "Excluded implementations: %s", excludedImplementations);
+
+        Set<CronetImplementation> implementationsUnderTest =
+                EnumSet.complementOf(excludedImplementations);
+        assumeFalse("Test skipped because all implementations were excluded. Provided reason: "
+                        + safeGetIgnoreReason(ignoreAnnotation),
+                implementationsUnderTest.isEmpty());
 
         // Find the API version required by the test.
         int requiredApiVersion = getMaximumAvailableApiLevel();
@@ -149,6 +157,7 @@ public class CronetTestRule implements TestRule {
                 requiredAndroidApiVersion = ((RequiresMinAndroidApi) a).value();
             }
         }
+
         assumeTrue(desc.getMethodName() + " skipped because it requires API " + requiredApiVersion
                         + " but only API " + getMaximumAvailableApiLevel() + " is present.",
                 getMaximumAvailableApiLevel() >= requiredApiVersion);
@@ -158,19 +167,15 @@ public class CronetTestRule implements TestRule {
                 Build.VERSION.SDK_INT >= requiredAndroidApiVersion);
 
         if (packageName.startsWith("org.chromium.net")) {
-            try {
-                if (doRunTestForNative) {
-                    Log.i(TAG, "Running test against Native implementation.");
-                    evaluateWithFramework(base);
+            for (CronetImplementation implementation : implementationsUnderTest) {
+                if (implementation.equals(CronetImplementation.AOSP_PLATFORM)) {
+                    // TODO(crbug/1451394): Remove this and fix tests.
+                    Log.i(TAG, "Skipping the Platform implementation");
+                    continue;
                 }
-                if (doRunTestForJava) {
-                    Log.i(TAG, "Running test against Java implementation.");
-                    setImplementationUnderTest(CronetImplementation.FALLBACK);
-                    evaluateWithFramework(base);
-                }
-            } catch (Throwable e) {
-                Log.e(TAG, "CronetTestBase#runTest failed for %s implementation.", mImplementation);
-                throw e;
+                Log.i(TAG, "Running test against " + implementation + " implementation.");
+                setImplementationUnderTest(implementation);
+                evaluateWithFramework(base);
             }
         } else {
             evaluateWithFramework(base);
@@ -203,22 +208,16 @@ public class CronetTestRule implements TestRule {
     }
 
     /**
-     * Annotation for test classes or methods in org.chromium.net package that disables rerunning
-     * the test against the Java-only implementation. When this annotation is present the test is
-     * only run against the native implementation.
+     * Annotation for test methods in org.chromium.net package that disables running the test
+     * against some of the implementations. When this annotation is present the test is only run
+     * against the {@link CronetImplementation} cases not specified in the annotation.
      */
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface OnlyRunNativeCronet {}
-
-    /**
-     * Annotation for test methods in org.chromium.net package that disables rerunning the test
-     * against the Native/Chromium implementation. When this annotation is present the test is only
-     * run against the Java implementation.
-     */
-    @Target(ElementType.METHOD)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface OnlyRunJavaCronet {}
+    public @interface IgnoreFor {
+        CronetImplementation[] implementations();
+        String reason();
+    }
 
     /**
      * Annotation allowing classes or individual tests to be skipped based on the version of the
@@ -592,5 +591,28 @@ public class CronetTestRule implements TestRule {
         private void verifyCronetEngineInstance(CronetEngine engine) {
             // TODO(danstahr): Add assertions for expected class
         }
+    }
+
+    /**
+     * Returns the most specific annotation of a given type applicable to the test case described by
+     * {@code description}. Returns {@code null} if no such annotation is found.
+     */
+    @Nullable
+    private static <T extends Annotation> T getTestAnnotation(
+            Description description, Class<T> clazz) {
+        T annotation = description.getAnnotation(clazz);
+
+        if (annotation != null) {
+            return annotation;
+        }
+
+        return description.getTestClass().getAnnotation(clazz);
+    }
+
+    private static String safeGetIgnoreReason(IgnoreFor ignoreAnnotation) {
+        if (ignoreAnnotation == null) {
+            return "";
+        }
+        return ignoreAnnotation.reason();
     }
 }

@@ -17,12 +17,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 
 /**
  * Unit tests for {@code MockCertVerifier}.
  */
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support MockCertVerifier")
 public class MockCertVerifierTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -43,7 +46,6 @@ public class MockCertVerifierTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testRequest_failsWithoutMockVerifier() {
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
@@ -53,7 +55,6 @@ public class MockCertVerifierTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testRequest_passesWithMockVerifier() {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
                 (builder)

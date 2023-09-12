@@ -18,17 +18,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 
 import java.util.Arrays;
 
-/**
- * Simple test for Brotli support.
- */
+/** Simple test for Brotli support. */
 @RunWith(AndroidJUnit4.class)
 @RequiresMinApi(5) // Brotli support added in API version 5: crrev.com/465216
 @Batch(Batch.UNIT_TESTS)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support Brotli")
 public class BrotliTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -48,7 +49,6 @@ public class BrotliTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testBrotliAdvertised() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             builder.enableBrotli(true);
@@ -65,7 +65,6 @@ public class BrotliTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testBrotliNotAdvertised() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             CronetTestUtil.setMockCertVerifierForTesting(
@@ -81,7 +80,6 @@ public class BrotliTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testBrotliDecoded() throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
             builder.enableBrotli(true);

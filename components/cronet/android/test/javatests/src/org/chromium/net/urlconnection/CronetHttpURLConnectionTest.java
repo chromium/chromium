@@ -26,7 +26,8 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.CronetTestUtil;
@@ -59,7 +60,7 @@ import java.util.regex.Pattern;
  */
 @DoNotBatch(reason = "crbug/1453571 testReadTimeout crashes because of MockUrlrequestJobFactory's"
                 + "interaction with a singleton")
-@OnlyRunNativeCronet
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK}, reason = "See crrev.com/c/4590329")
 @RunWith(AndroidJUnit4.class)
 public class CronetHttpURLConnectionTest {
     private static final String TAG = CronetHttpURLConnectionTest.class.getSimpleName();

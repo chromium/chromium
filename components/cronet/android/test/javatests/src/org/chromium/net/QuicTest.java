@@ -21,7 +21,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,10 +30,10 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.Executors;
 
-/**
- * Tests making requests using QUIC.
- */
+/** Tests making requests using QUIC. */
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "The fallback implementation doesn't support QUIC")
 public class QuicTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -50,12 +51,14 @@ public class QuicTest {
 
             // The pref may not be written if the computed Effective Connection Type (ECT) matches
             // the default ECT for the current connection type. Force the ECT to "Slow-2G". Since
-            // "Slow-2G" is not the default ECT for any connection type, this ensures that the pref
+            // "Slow-2G" is not the default ECT for any connection type, this ensures that the
+            // pref
             // is written to.
             JSONObject nqeParams =
                     new JSONObject().put("force_effective_connection_type", "Slow-2G");
 
-            // TODO(mgersh): Enable connection migration once it works, see http://crbug.com/634910
+            // TODO(mgersh): Enable connection migration once it works, see
+            // http://crbug.com/634910
             JSONObject quicParams = new JSONObject()
                                             .put("connection_options", "PACE,IW10,FOO,DEADBEEF")
                                             .put("max_server_configs_stored_in_properties", 2)
@@ -84,7 +87,6 @@ public class QuicTest {
 
     @Test
     @LargeTest
-    @OnlyRunNativeCronet
     public void testQuicLoadUrl() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         String quicURL = QuicTestServer.getServerURL() + "/simple.txt";
@@ -154,12 +156,9 @@ public class QuicTest {
         return new String(data, "UTF-8").contains(content);
     }
 
-    /**
-     * Tests that the network quality listeners are propoerly notified when QUIC is enabled.
-     */
+    /** Tests that the network quality listeners are propoerly notified when QUIC is enabled. */
     @Test
     @LargeTest
-    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testNQEWithQuic() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
@@ -226,7 +225,6 @@ public class QuicTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testMetricsWithQuic() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();

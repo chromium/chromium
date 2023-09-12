@@ -18,7 +18,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.NativeTestServer;
 
 import java.net.URL;
@@ -28,7 +29,7 @@ import java.net.URL;
  */
 @DoNotBatch(
         reason = "URL#setURLStreamHandlerFactory can be called at most once during JVM lifetime")
-@OnlyRunNativeCronet
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK}, reason = "See crrev.com/c/4590329")
 @RunWith(AndroidJUnit4.class)
 public class CronetURLStreamHandlerFactoryTest {
     @Rule

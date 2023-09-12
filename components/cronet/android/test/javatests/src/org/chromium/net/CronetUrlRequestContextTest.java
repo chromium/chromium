@@ -13,7 +13,6 @@ import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_IN_MEMORY;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
-import android.content.Context;
 import android.net.Network;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,8 +35,8 @@ import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.net.CronetTestRule.OnlyRunJavaCronet;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
@@ -64,9 +63,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Test CronetEngine.
- */
+/** Test CronetEngine. */
 @RunWith(AndroidJUnit4.class)
 @JNINamespace("cronet")
 public class CronetUrlRequestContextTest {
@@ -75,10 +72,8 @@ public class CronetUrlRequestContextTest {
 
     private static final String TAG = "CronetUrlReqCtxTest";
     // URLs used for tests.
-    private static final String MOCK_CRONET_TEST_FAILED_URL =
-            "http://mock.failed.request/-2";
-    private static final String MOCK_CRONET_TEST_SUCCESS_URL =
-            "http://mock.http/success.txt";
+    private static final String MOCK_CRONET_TEST_FAILED_URL = "http://mock.failed.request/-2";
+    private static final String MOCK_CRONET_TEST_SUCCESS_URL = "http://mock.http/success.txt";
     private static final int MAX_FILE_SIZE = 1000000000;
 
     private EmbeddedTestServer mTestServer;
@@ -130,10 +125,7 @@ public class CronetUrlRequestContextTest {
         }
     }
 
-    /**
-     * Callback that shutdowns the request context when request has succeeded
-     * or failed.
-     */
+    /** Callback that shutdowns the request context when request has succeeded or failed. */
     static class ShutdownTestUrlRequestCallback extends TestUrlRequestCallback {
         private final CronetEngine mCronetEngine;
         private final ConditionVariable mCallbackCompletionBlock = new ConditionVariable();
@@ -222,8 +214,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // HTTP flags are only supported on native Cronet for now
-    public void testHttpFlagsAreLoaded() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "HTTP flags are only supported on native Cronet for now")
+    public void
+    testHttpFlagsAreLoaded() throws Exception {
         setReadHttpFlagsInManifest(true);
         String marker = UUID.randomUUID().toString();
         setLogFlag(marker);
@@ -232,8 +226,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // HTTP flags are only supported on native Cronet for now
-    public void testHttpFlagsAreNotLoadedIfDisabledInManifest() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "HTTP flags are only supported on native Cronet for now")
+    public void
+    testHttpFlagsAreNotLoadedIfDisabledInManifest() throws Exception {
         setReadHttpFlagsInManifest(false);
         String marker = UUID.randomUUID().toString();
         setLogFlag(marker);
@@ -266,9 +262,11 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // TODO: Remove the annotation after fixing http://crbug.com/637979 & http://crbug.com/637972
-    @OnlyRunNativeCronet
-    public void testShutdown() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason =
+                    "Remove the annotation after fixing http://crbug.com/637979 & http://crbug.com/637972")
+    public void
+    testShutdown() throws Exception {
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         ShutdownTestUrlRequestCallback callback = new ShutdownTestUrlRequestCallback(cronetEngine);
         // Block callback when response starts to verify that shutdown fails
@@ -307,8 +305,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testShutdownDuringInit() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Tests native implementation internals")
+    public void
+    testShutdownDuringInit() throws Exception {
         final ConditionVariable block = new ConditionVariable(false);
 
         // Post a task to main thread to block until shutdown is called to test
@@ -342,8 +342,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testInitAndShutdownOnMainThread() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Tests native implementation internals")
+    public void
+    testInitAndShutdownOnMainThread() throws Exception {
         final ConditionVariable block = new ConditionVariable(false);
 
         // Post a task to main thread to init and shutdown on the main thread.
@@ -372,8 +374,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // JavaCronetEngine doesn't support throwing on repeat shutdown()
-    public void testMultipleShutdown() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "JavaCronetEngine doesn't support throwing on repeat shutdown()")
+    public void
+    testMultipleShutdown() throws Exception {
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         cronetEngine.shutdown();
         Exception e = assertThrows(Exception.class, cronetEngine::shutdown);
@@ -382,9 +386,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // TODO: Remove the annotation after fixing http://crbug.com/637972
-    @OnlyRunNativeCronet
-    public void testShutdownAfterError() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Remove the annotation after fixing http://crbug.com/637972")
+    public void
+    testShutdownAfterError() throws Exception {
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         ShutdownTestUrlRequestCallback callback = new ShutdownTestUrlRequestCallback(cronetEngine);
         UrlRequest.Builder urlRequestBuilder = cronetEngine.newUrlRequestBuilder(
@@ -398,8 +403,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // JavaCronetEngine doesn't support throwing on shutdown()
-    public void testShutdownAfterCancel() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "JavaCronetEngine doesn't support throwing on shutdown()")
+    public void
+    testShutdownAfterCancel() throws Exception {
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         // Block callback when response starts to verify that shutdown fails
@@ -420,9 +427,11 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Only chromium based Cronet supports the multi-network API
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Only chromium based Cronet supports the multi-network API")
     @RequiresMinAndroidApi(Build.VERSION_CODES.M) // Multi-network API is supported from Marshmallow
-    public void testNetworkBoundContextLifetime() throws Exception {
+    public void
+    testNetworkBoundContextLifetime() throws Exception {
         // Multi-network API is available starting from Android Lollipop.
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         ConnectivityManagerDelegate delegate =
@@ -471,9 +480,11 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Tests internals of Native CronetEngine
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Only chromium based Cronet supports the multi-network API")
     @RequiresMinAndroidApi(Build.VERSION_CODES.M) // Multi-network API is supported from Marshmallow
-    public void testNetworkBoundRequestCancel() throws Exception {
+    public void
+    testNetworkBoundRequestCancel() throws Exception {
         // Upon a network disconnection, NCN posts a tasks onto the network thread that calls
         // CronetContext::NetworkTasks::OnNetworkDisconnected.
         // Calling urlRequest.cancel() also, after some hoops, ends up in a posted tasks onto the
@@ -521,7 +532,6 @@ public class CronetUrlRequestContextTest {
     }
 
     @Test
-    @OnlyRunJavaCronet
     @RequiresMinAndroidApi(Build.VERSION_CODES.M)
     public void testBindToNetwork() {
         // bind to invalid network handle
@@ -533,8 +543,13 @@ public class CronetUrlRequestContextTest {
         builder.build().start();
         callback.blockForDone();
 
-        assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
-        assertThat(callback.mError).hasCauseThat().hasMessageThat().contains("Network bound");
+        if (mTestRule.testingJavaImpl()) {
+            assertThat(callback.mError)
+                    .isInstanceOf(org.chromium.net.impl.CronetExceptionImpl.class);
+            assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
+        } else {
+            assertThat(callback.mError).isInstanceOf(NetworkExceptionImpl.class);
+        }
 
         // bind to the default network
         ConnectivityManagerDelegate delegate =
@@ -552,9 +567,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // No netlogs for pure java impl
-    public void testNetLog() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No netlogs for pure java impl")
+    public void
+    testNetLog() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("cronet", "json", directory);
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -579,9 +595,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // No netlogs for pure java impl
-    public void testBoundedFileNetLog() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No netlogs for pure java impl")
+    public void
+    testBoundedFileNetLog() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
         assertThat(netLogDir.exists()).isFalse();
@@ -609,11 +626,12 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // No netlogs for pure java impl
-    // Tests that if stopNetLog is not explicity called, CronetEngine.shutdown()
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No netlogs for pure java impl")
+    // Tests that if stopNetLog is not explicitly called, CronetEngine.shutdown()
     // will take care of it. crbug.com/623701.
-    public void testNoStopNetLog() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    public void
+    testNoStopNetLog() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("cronet", "json", directory);
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -636,11 +654,12 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // No netlogs for pure java impl
-    // Tests that if stopNetLog is not explicity called, CronetEngine.shutdown()
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No netlogs for pure java impl")
+    // Tests that if stopNetLog is not explicitly called, CronetEngine.shutdown()
     // will take care of it. crbug.com/623701.
-    public void testNoStopBoundedFileNetLog() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    public void
+    testNoStopBoundedFileNetLog() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
         assertThat(netLogDir.exists()).isFalse();
@@ -758,10 +777,11 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // TODO: the Java implementation currently fails this test - it incorrectly
-    // increments the count on the second start.
-    @OnlyRunNativeCronet
-    public void testGetActiveRequestCountOnDoubleStart() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "The Java implementation currently fails this test - "
+                    + "it incorrectly increments the count on the second start")
+    public void
+    testGetActiveRequestCountOnDoubleStart() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
@@ -779,10 +799,11 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // Only native Cronet has code paths that throw exceptions directly from start() on invalid
-    // requests.
-    @OnlyRunNativeCronet
-    public void testGetActiveRequestCountOnInvalidRequest() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Only native Cronet has code paths that throw exceptions directly from "
+                    + "start() on invalid requests")
+    public void
+    testGetActiveRequestCountOnInvalidRequest() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest request = cronetEngine.newUrlRequestBuilder("", callback, callback.getExecutor())
@@ -854,9 +875,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // Request finished listeners are only supported by native Cronet.
-    @OnlyRunNativeCronet
-    public void testGetActiveRequestCountOnRequestFinishedListener() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Request finished listeners are only supported by native Cronet")
+    public void
+    testGetActiveRequestCountOnRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.blockListener();
@@ -877,9 +899,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // Request finished listeners are only supported by native Cronet.
-    @OnlyRunNativeCronet
-    public void testGetActiveRequestCountOnThrowingRequestFinishedListener() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Request finished listeners are only supported by native Cronet")
+    public void
+    testGetActiveRequestCountOnThrowingRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.makeListenerThrow();
@@ -901,10 +924,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // Request finished listeners are only supported by native Cronet.
-    @OnlyRunNativeCronet
-    public void testGetActiveRequestCountOnThrowingEngineRequestFinishedListener()
-            throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Request finished listeners are only supported by native Cronet")
+    public void
+    testGetActiveRequestCountOnThrowingEngineRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.makeListenerThrow();
@@ -925,9 +948,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    // Request finished listeners are only supported by native Cronet.
-    @OnlyRunNativeCronet
-    public void testGetActiveRequestCountOnEngineRequestFinishedListener() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Request finished listeners are only supported by native Cronet")
+    public void
+    testGetActiveRequestCountOnEngineRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.blockListener();
@@ -947,10 +971,11 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
     // Tests that NetLog contains events emitted by all live CronetEngines.
-    public void testNetLogContainEventsFromAllLiveEngines() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    public void
+    testNetLogContainEventsFromAllLiveEngines() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File file1 = File.createTempFile("cronet1", "json", directory);
         File file2 = File.createTempFile("cronet2", "json", directory);
@@ -993,10 +1018,11 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
     // Tests that NetLog contains events emitted by all live CronetEngines.
-    public void testBoundedFileNetLogContainEventsFromAllLiveEngines() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    public void
+    testBoundedFileNetLogContainEventsFromAllLiveEngines() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir1 = new File(directory, "NetLog1");
         assertThat(netLogDir1.exists()).isFalse();
@@ -1068,10 +1094,12 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Tests native implementation internals")
     // Tests that if CronetEngine is shut down on the network thread, an appropriate exception
     // is thrown.
-    public void testShutDownEngineOnNetworkThread() throws Exception {
+    public void
+    testShutDownEngineOnNetworkThread() throws Exception {
         final CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
@@ -1125,10 +1153,12 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Fallback implementation has no support for caches")
     // Tests that if CronetEngine is shut down when reading from disk cache,
     // there isn't a crash. See crbug.com/486120.
-    public void testShutDownEngineWhenReadingFromDiskCache() throws Exception {
+    public void
+    testShutDownEngineWhenReadingFromDiskCache() throws Exception {
         final CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
@@ -1170,8 +1200,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testNetLogAfterShutdown() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testNetLogAfterShutdown() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -1193,8 +1225,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testBoundedFileNetLogAfterShutdown() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testBoundedFileNetLogAfterShutdown() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder urlRequestBuilder =
@@ -1218,8 +1252,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testNetLogStartMultipleTimes() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testNetLogStartMultipleTimes() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         File directory = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("cronet", "json", directory);
@@ -1244,8 +1280,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testBoundedFileNetLogStartMultipleTimes() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testBoundedFileNetLogStartMultipleTimes() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
@@ -1274,8 +1312,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testNetLogStopMultipleTimes() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testNetLogStopMultipleTimes() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         File directory = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("cronet", "json", directory);
@@ -1301,8 +1341,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testBoundedFileNetLogStopMultipleTimes() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testBoundedFileNetLogStopMultipleTimes() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
@@ -1332,9 +1374,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testNetLogWithBytes() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testNetLogWithBytes() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("cronet", "json", directory);
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -1356,9 +1399,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testBoundedFileNetLogWithBytes() throws Exception {
-        Context context = mTestRule.getTestFramework().getContext();
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No NetLog support for fallback imnplementation")
+    public void
+    testBoundedFileNetLogWithBytes() throws Exception {
         File directory = new File(PathUtils.getDataDirectory());
         File netLogDir = new File(directory, "NetLog");
         assertThat(netLogDir.exists()).isFalse();
@@ -1402,8 +1446,8 @@ public class CronetUrlRequestContextTest {
     }
 
     /**
-     * Helper method to make a request to {@code url}, wait for it to
-     * complete, and check that the status code is the same as {@code expectedStatusCode}.
+     * Helper method to make a request to {@code url}, wait for it to complete, and check that the
+     * status code is the same as {@code expectedStatusCode}.
      */
     private void makeRequestAndCheckStatus(
             CronetEngine engine, String url, int expectedStatusCode) {
@@ -1437,8 +1481,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testEnableHttpCacheDisabled() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No caches support for fallback imnplementation")
+    public void
+    testEnableHttpCacheDisabled() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISABLED);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
@@ -1450,8 +1496,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Not supported by Java implementation
-    public void testEnableHttpCacheInMemory() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No caches support for fallback imnplementation")
+    public void
+    testEnableHttpCacheInMemory() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
@@ -1464,8 +1512,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Not supported by Java implementation
-    public void testEnableHttpCacheDisk() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No caches support for fallback imnplementation")
+    public void
+    testEnableHttpCacheDisk() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
@@ -1478,8 +1528,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testNoConcurrentDiskUsage() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No caches support for fallback imnplementation")
+    public void
+    testNoConcurrentDiskUsage() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
 
@@ -1497,8 +1549,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testEnableHttpCacheDiskNoHttp() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No caches support for fallback imnplementation")
+    public void
+    testEnableHttpCacheDiskNoHttp() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
@@ -1518,18 +1572,24 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Broken for Java implementation
-    public void testDisableCache() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No caches support for fallback imnplementation")
+    public void
+    testDisableCache() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
 
         // When cache is disabled, making a request does not write to the cache.
-        checkRequestCaching(cronetEngine, url, false, true /** disable cache */);
+        checkRequestCaching(cronetEngine, url, false, true
+                /** disable cache */
+        );
         checkRequestCaching(cronetEngine, url, false);
 
         // When cache is enabled, the second request is cached.
-        checkRequestCaching(cronetEngine, url, false, true /** disable cache */);
+        checkRequestCaching(cronetEngine, url, false, true
+                /** disable cache */
+        );
         checkRequestCaching(cronetEngine, url, true);
 
         // Shut down the server, next request should have a cached response.
@@ -1551,8 +1611,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Broken for Java
-    public void testEnableHttpCacheDiskNewEngine() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No caches support for fallback imnplementation")
+    public void
+    testEnableHttpCacheDiskNewEngine() throws Exception {
         CronetEngine cronetEngine =
                 createCronetEngineWithCache(CronetEngine.Builder.HTTP_CACHE_DISK);
         String url = NativeTestServer.getFileURL("/cacheable.txt");
@@ -1660,8 +1722,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Java engine doesn't produce metrics
-    public void testGetGlobalMetricsDeltas() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "No metrics support for fallback imnplementation")
+    public void
+    testGetGlobalMetricsDeltas() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
         byte[] delta1 = cronetEngine.getGlobalMetricsDeltas();
@@ -1687,8 +1751,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Deliberate manual creation of native engine
-    public void testCronetEngineBuilderConfig() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Deliberate manual creation of native engines")
+    public void
+    testCronetEngineBuilderConfig() throws Exception {
         // This is to prompt load of native library.
         mTestRule.getTestFramework().startEngine();
         // Verify CronetEngine.Builder config is passed down accurately to native code.
@@ -1710,8 +1776,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Deliberate manual creation of native engine
-    public void testCronetEngineQuicOffConfig() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Deliberate manual creation of native engines")
+    public void
+    testCronetEngineQuicOffConfig() throws Exception {
         // This is to prompt load of native library.
         mTestRule.getTestFramework().startEngine();
         // Verify CronetEngine.Builder config is passed down accurately to native code.
@@ -1748,8 +1816,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Deliberate manual creation of native engine
-    public void testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Deliberate manual creation of native engines")
+    public void
+    testSetLibraryLoaderIsEnforcedByDefaultEmbeddedProvider() throws Exception {
         CronetEngine.Builder builder =
                 new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
         TestBadLibraryLoader loader = new TestBadLibraryLoader();
@@ -1769,8 +1839,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    public void testSetLibraryLoaderIsIgnoredInNativeCronetEngineBuilderImpl() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Deliberate manual creation of native engines")
+    public void
+    testSetLibraryLoaderIsIgnoredInNativeCronetEngineBuilderImpl() throws Exception {
         CronetEngine.Builder builder = new CronetEngine.Builder(
                 new NativeCronetEngineBuilderImpl(mTestRule.getTestFramework().getContext()));
         TestBadLibraryLoader loader = new TestBadLibraryLoader();
@@ -1812,8 +1884,10 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet // Java implementation doesn't support experimental options
-    public void testHostResolverRules() throws Exception {
+    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+            reason = "Fallback implementation doesn't support experimental options")
+    public void
+    testHostResolverRules() throws Exception {
         String resolverTestHostname = "some-weird-hostname";
         URL testUrl = new URL(mUrl);
         mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {

@@ -15,7 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetUploadDataStream;
 import org.chromium.net.impl.CronetUrlRequest;
 
@@ -25,11 +26,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Tests that directly drive {@code CronetUploadDataStream} and
- * {@code UploadDataProvider} to simulate different ordering of reset, init,
- * read, and rewind calls.
+ * Tests that directly drive {@code CronetUploadDataStream} and {@code UploadDataProvider} to
+ * simulate different ordering of reset, init, read, and rewind calls.
  */
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "Testing internals of the native implementation")
 public class CronetUploadTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
@@ -64,12 +66,11 @@ public class CronetUploadTest {
     }
 
     /**
-     * Tests that after some data is read, init triggers a rewind, and that
-     * before the rewind completes, init blocks.
+     * Tests that after some data is read, init triggers a rewind, and that before the rewind
+     * completes, init blocks.
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testInitTriggersRewindAndInitBeforeRewindCompletes() throws Exception {
         // Init completes synchronously and read succeeds.
         assertThat(mHandler.init()).isTrue();
@@ -113,12 +114,11 @@ public class CronetUploadTest {
     }
 
     /**
-     * Tests that after some data is read, init triggers a rewind, and that
-     * after the rewind completes, init does not block.
+     * Tests that after some data is read, init triggers a rewind, and that after the rewind
+     * completes, init does not block.
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testInitTriggersRewindAndInitAfterRewindCompletes() throws Exception {
         // Init completes synchronously and read succeeds.
         assertThat(mHandler.init()).isTrue();
@@ -160,13 +160,9 @@ public class CronetUploadTest {
         assertThat(mHandler.getData()).isEqualTo("hello");
     }
 
-    /**
-     * Tests that if init before read completes, a rewind is triggered when
-     * read completes.
-     */
+    /** Tests that if init before read completes, a rewind is triggered when read completes. */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testReadCompleteTriggerRewind() throws Exception {
         // Reset and init before read completes.
         assertThat(mHandler.init()).isTrue();
@@ -195,13 +191,12 @@ public class CronetUploadTest {
     }
 
     /**
-     * Tests that when init again after rewind completes, no additional rewind
-     * is triggered. This test is the same as testReadCompleteTriggerRewind
-     * except that this test invokes reset and init again in the end.
+     * Tests that when init again after rewind completes, no additional rewind is triggered. This
+     * test is the same as testReadCompleteTriggerRewind except that this test invokes reset and
+     * init again in the end.
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testReadCompleteTriggerRewindOnlyOneRewind() throws Exception {
         testReadCompleteTriggerRewind();
         // Reset and Init again, no rewind should happen.
@@ -214,12 +209,11 @@ public class CronetUploadTest {
     }
 
     /**
-     * Tests that if reset before read completes, no rewind is triggered, and
-     * that a following init triggers rewind.
+     * Tests that if reset before read completes, no rewind is triggered, and that a following init
+     * triggers rewind.
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testResetBeforeReadCompleteAndInitTriggerRewind() throws Exception {
         // Reset before read completes. Rewind is not triggered.
         assertThat(mHandler.init()).isTrue();
@@ -246,15 +240,13 @@ public class CronetUploadTest {
     }
 
     /**
-     * Tests that there is no crash when native CronetUploadDataStream is
-     * destroyed while read is pending. The test is racy since the read could
-     * complete either before or after the Java CronetUploadDataStream's
-     * onDestroyUploadDataStream() method is invoked. However, the test should
-     * pass either way, though we are interested in the latter case.
+     * Tests that there is no crash when native CronetUploadDataStream is destroyed while read is
+     * pending. The test is racy since the read could complete either before or after the Java
+     * CronetUploadDataStream's onDestroyUploadDataStream() method is invoked. However, the test
+     * should pass either way, though we are interested in the latter case.
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testDestroyNativeStreamBeforeReadComplete() throws Exception {
         // Start a read and wait for it to be pending.
         assertThat(mHandler.init()).isTrue();
@@ -277,15 +269,13 @@ public class CronetUploadTest {
     }
 
     /**
-     * Tests that there is no crash when native CronetUploadDataStream is
-     * destroyed while rewind is pending. The test is racy since rewind could
-     * complete either before or after the Java CronetUploadDataStream's
-     * onDestroyUploadDataStream() method is invoked. However, the test should
-     * pass either way, though we are interested in the latter case.
+     * Tests that there is no crash when native CronetUploadDataStream is destroyed while rewind is
+     * pending. The test is racy since rewind could complete either before or after the Java
+     * CronetUploadDataStream's onDestroyUploadDataStream() method is invoked. However, the test
+     * should pass either way, though we are interested in the latter case.
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testDestroyNativeStreamBeforeRewindComplete() throws Exception {
         // Start a read and wait for it to complete.
         assertThat(mHandler.init()).isTrue();

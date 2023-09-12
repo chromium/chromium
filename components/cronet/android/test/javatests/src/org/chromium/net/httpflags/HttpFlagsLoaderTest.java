@@ -19,8 +19,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule;
+import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
-import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetManifestInterceptor;
 
@@ -29,6 +30,8 @@ import org.chromium.net.impl.CronetManifestInterceptor;
  */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
+@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+        reason = "These tests don't depend on Cronet's impl")
 public final class HttpFlagsLoaderTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
@@ -47,7 +50,6 @@ public final class HttpFlagsLoaderTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testLoad_returnsNullIfNoFlags() {
         setShouldReadHttpFlagsInManifest(true);
         mCronetTestFramework.setHttpFlags(null);
@@ -56,7 +58,6 @@ public final class HttpFlagsLoaderTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testLoad_returnsFileFlagContents() {
         setShouldReadHttpFlagsInManifest(true);
         Flags flags = Flags.newBuilder()
@@ -74,7 +75,6 @@ public final class HttpFlagsLoaderTest {
 
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
     public void testLoad_returnsNullIfDisabledInManifest() {
         setShouldReadHttpFlagsInManifest(false);
         mCronetTestFramework.setHttpFlags(Flags.newBuilder().build());
