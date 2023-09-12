@@ -8,6 +8,10 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class AuthenticationService;
 class PrefService;
 class PromosManager;
@@ -18,6 +22,7 @@ class PromosManager;
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                 authenticationService:
                     (AuthenticationService*)authenticationService
+                      identityManager:(signin::IdentityManager*)identityManager
                            localState:(PrefService*)localState;
 
 @end

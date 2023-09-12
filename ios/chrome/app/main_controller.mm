@@ -107,6 +107,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -508,6 +509,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                                         browserState)
               authenticationService:AuthenticationServiceFactory::
                                         GetForBrowserState(browserState)
+                    identityManager:IdentityManagerFactory::GetForBrowserState(
+                                        browserState)
                          localState:GetApplicationContext()->GetLocalState()]];
 }
 

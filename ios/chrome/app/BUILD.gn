@@ -111,6 +111,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs",
@@ -350,6 +352,8 @@ source_set("post_restore_app_agent") {
   ]
   deps = [
     "//base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/promos_manager:constants",

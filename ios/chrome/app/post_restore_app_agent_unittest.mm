@@ -19,6 +19,9 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -30,6 +33,7 @@
 
 using ::testing::_;
 using ::testing::AnyNumber;
+using testing::NiceMock;
 
 namespace {
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
@@ -40,26 +44,18 @@ class PostRestoreAppAgentTest : public PlatformTest {
  public:
   explicit PostRestoreAppAgentTest() { CreateAppAgent(); }
 
-  IOSChromeScopedTestingLocalState local_state_;
-  web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  PostRestoreAppAgent* appAgent_;
-  std::unique_ptr<MockPromosManager> promos_manager_;
-  AuthenticationService* auth_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  id mockAppState_;
-
   void CreateAppAgent() {
-    appAgent_ =
+    app_agent_ =
         [[PostRestoreAppAgent alloc] initWithPromosManager:CreatePromosManager()
                                      authenticationService:CreateAuthService()
+                                           identityManager:GetIdentityManager()
                                                 localState:local_state_.Get()];
     mockAppState_ = OCMClassMock([AppState class]);
-    [appAgent_ setAppState:mockAppState_];
+    [app_agent_ setAppState:mockAppState_];
   }
 
   MockPromosManager* CreatePromosManager() {
-    promos_manager_ = std::make_unique<MockPromosManager>();
+    promos_manager_ = std::make_unique<NiceMock<MockPromosManager>>();
 
     return promos_manager_.get();
   }
@@ -78,9 +74,13 @@ class PostRestoreAppAgentTest : public PlatformTest {
     return auth_service_;
   }
 
+  signin::IdentityManager* GetIdentityManager() {
+    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+  }
+
   void MockAppStateChange(InitStage initStage) {
     OCMStub([mockAppState_ initStage]).andReturn(initStage);
-    [appAgent_ appState:mockAppState_
+    [app_agent_ appState:mockAppState_
         didTransitionFromInitStage:InitStageStart];
   }
 
@@ -89,10 +89,30 @@ class PostRestoreAppAgentTest : public PlatformTest {
     accountInfo.email = kFakePreRestoreAccountEmail;
     StorePreRestoreIdentity(local_state_.Get(), accountInfo);
   }
+
+  // Signs in a fake identity.
+  void SignIn() {
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(fake_identity);
+    auth_service_->SignIn(fake_identity,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  }
+
+ protected:
+  IOSChromeScopedTestingLocalState local_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<MockPromosManager> promos_manager_;
+  AuthenticationService* auth_service_;
+  id mockAppState_;
+  PostRestoreAppAgent* app_agent_;
 };
 
 // Tests the logic of whether a promo should be registered.
-TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
+TEST_F(PostRestoreAppAgentTest, MaybeRegisterPromo) {
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
       .Times(0);
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(_))
@@ -110,7 +130,7 @@ TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
 }
 
 // Tests that the alert promo is registered.
-TEST_F(PostRestoreAppAgentTest, registerPromoAlert) {
+TEST_F(PostRestoreAppAgentTest, RegisterPromoAlert) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(
                   promos_manager::Promo::PostRestoreSignInAlert))
@@ -121,7 +141,7 @@ TEST_F(PostRestoreAppAgentTest, registerPromoAlert) {
 }
 
 // Tests that the reauth prompt is disabled.
-TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
+TEST_F(PostRestoreAppAgentTest, RegisterPromoDisablesReauthPrompt) {
   SetFakePreRestoreAccountInfo();
   auth_service_->SetReauthPromptForSignInAndSync();
   EXPECT_TRUE(auth_service_->ShouldReauthPromptForSignInAndSync());
@@ -130,7 +150,7 @@ TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
 }
 
 // Tests that the alert promo is deregistered with the right conditions.
-TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
+TEST_F(PostRestoreAppAgentTest, DeregisterPromoAlert) {
   EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
   EXPECT_CALL(*promos_manager_.get(),
               DeregisterPromo(promos_manager::Promo::PostRestoreSignInAlert))
@@ -139,4 +159,17 @@ TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
   SetFakePreRestoreAccountInfo();
   ClearPreRestoreIdentity(local_state_.Get());
   MockAppStateChange(InitStageFinal);
+}
+
+// Tests that if a signin occurs, the promo is deregistered.
+TEST_F(PostRestoreAppAgentTest, DeregisterPromoOnSignin) {
+  SetFakePreRestoreAccountInfo();
+  MockAppStateChange(InitStageFinal);
+
+  EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
+  EXPECT_CALL(*promos_manager_.get(),
+              DeregisterPromo(promos_manager::Promo::PostRestoreSignInAlert))
+      .Times(1);
+
+  SignIn();
 }
