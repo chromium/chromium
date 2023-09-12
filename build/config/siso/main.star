@@ -62,9 +62,9 @@ def init(ctx):
 
         # On Linux worker, it needs to be `python3` instead of `python3.exe`.
         arg0 = rule.get("command_prefix", "").split(" ")[0].strip("\"")
-        if arg0 == platform.python_bin:
+        if arg0 != platform.python_bin:
             continue
-        p = step_config.get("reproxy_config", {}).get("platform") or step_config["platforms"].get(rule.get("platform_ref", "default"))
+        p = rule.get("reproxy_config", {}).get("platform") or step_config["platforms"].get(rule.get("platform_ref", "default"))
         if not p:
             continue
         if p.get("OSFamily") == "Linux":
