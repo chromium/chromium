@@ -67,7 +67,7 @@ public class ChildProcessConnectionTest {
 
         @Override
         public boolean bindServiceConnection() {
-            mBound = true;
+            mBound = mBindResult;
             return mBindResult;
         }
 
@@ -646,15 +646,20 @@ public class ChildProcessConnectionTest {
         }
         // New connection for fallback service should be bound.
         ChildServiceConnectionMock boundServiceConnection = null;
+        int boundConnectionCount = 0;
         for (int i = 3; i < 6; ++i) {
             if (mMockConnections.get(i).isBound()) {
                 boundServiceConnection = mMockConnections.get(i);
+                boundConnectionCount++;
             }
             Intent bindIntent = mMockConnections.get(i).getBindIntent();
             assertNotNull(bindIntent);
             assertEquals(intValue, bindIntent.getIntExtra(intKey, -1));
             Assert.assertEquals("TestFallbackService", bindIntent.getComponent().getClassName());
         }
+
+        Assert.assertTrue(boundConnectionCount >= 2);
+        Assert.assertTrue(connection.isVisibleBindingBound());
 
         // Complete connection.
         boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);

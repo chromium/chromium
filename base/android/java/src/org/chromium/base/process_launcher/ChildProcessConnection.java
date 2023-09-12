@@ -798,33 +798,49 @@ public class ChildProcessConnection {
         assert isRunningOnLauncherThread();
         assert !mUnbound;
 
-        boolean success;
+        boolean success = bindUsingExistingBindings(useStrongBinding);
         boolean usedFallback = sAlwaysFallback && mFallbackServiceName != null;
-        if (useStrongBinding) {
-            mStrongBindingCount++;
-            success = mStrongBinding.bindServiceConnection();
-        } else {
-            mVisibleBindingCount++;
-            success = mVisibleBinding.bindServiceConnection();
-        }
-        if (!success) {
+        boolean canFallback = !sAlwaysFallback && mFallbackServiceName != null;
+        if (!success && !usedFallback && canFallback) {
             // Note this error condition is generally transient so `sAlwaysFallback` is
             // not set in this code path.
-            if (!usedFallback && mFallbackServiceName != null && retireBindingsAndBindFallback()) {
-                usedFallback = true;
-            } else {
-                return false;
-            }
+            retireAndCreateFallbackBindings();
+            success = bindUsingExistingBindings(useStrongBinding);
+            usedFallback = true;
+            canFallback = false;
         }
 
-        if (!usedFallback && mFallbackServiceName != null) {
+        if (success && !usedFallback && canFallback) {
             mLauncherHandler.postDelayed(
                     this::checkBindTimeOut, FALLBACK_TIMEOUT_IN_SECONDS * 1000);
         }
 
-        mWaivedBinding.bindServiceConnection();
-        updateBindingState();
-        return true;
+        return success;
+    }
+
+    private boolean bindUsingExistingBindings(boolean useStrongBinding) {
+        assert isRunningOnLauncherThread();
+
+        boolean success;
+        if (useStrongBinding) {
+            success = mStrongBinding.bindServiceConnection();
+            if (success) {
+                mStrongBindingCount++;
+            }
+        } else {
+            success = mVisibleBinding.bindServiceConnection();
+            if (success) {
+                mVisibleBindingCount++;
+            }
+        }
+
+        if (success) {
+            boolean result = mWaivedBinding.bindServiceConnection();
+            // One binding already succeeded. Waived binding should succeed too.
+            assert result;
+            updateBindingState();
+        }
+        return success;
     }
 
     private void checkBindTimeOut() {
@@ -842,19 +858,12 @@ public class ChildProcessConnection {
 
     private boolean retireBindingsAndBindFallback() {
         assert mFallbackServiceName != null;
-        Log.w(TAG, "Fallback to %s", mFallbackServiceName);
         boolean isStrongBindingBound = mStrongBinding.isBound();
         boolean isVisibleBindingBound = mVisibleBinding.isBound();
         boolean isNotPerceptibleBindingBound =
                 supportNotPerceptibleBinding() && mNotPerceptibleBinding.isBound();
         boolean isWaivedBindingBound = mWaivedBinding.isBound();
-        mStrongBinding.retire();
-        mVisibleBinding.retire();
-        if (supportNotPerceptibleBinding()) {
-            mNotPerceptibleBinding.retire();
-        }
-        mWaivedBinding.retire();
-        createBindings(mFallbackServiceName);
+        retireAndCreateFallbackBindings();
         // Expect all bindings to succeed or fail together. So early out as soon as
         // one binding fails.
         if (isStrongBindingBound) {
@@ -878,6 +887,18 @@ public class ChildProcessConnection {
             }
         }
         return true;
+    }
+
+    private void retireAndCreateFallbackBindings() {
+        assert mFallbackServiceName != null;
+        Log.w(TAG, "Fallback to %s", mFallbackServiceName);
+        mStrongBinding.retire();
+        mVisibleBinding.retire();
+        if (supportNotPerceptibleBinding()) {
+            mNotPerceptibleBinding.retire();
+        }
+        mWaivedBinding.retire();
+        createBindings(mFallbackServiceName);
     }
 
     @VisibleForTesting
