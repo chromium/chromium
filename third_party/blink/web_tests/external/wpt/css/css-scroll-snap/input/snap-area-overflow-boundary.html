@@ -3,6 +3,9 @@
 <title></title>
 <meta name="assert" content="Test passes if snap is to the nearest edge">
 <style>
+  body {
+    margin: 0px;
+  }
   #scroller {
     scroll-snap-type: block mandatory;
     overflow-y: scroll;
@@ -105,7 +108,7 @@ promise_test(async t => {
   await keyPress(scroller, "ArrowDown");
   await waitForAnimationEnd(scrollTop);
   assert_equals(scroller.scrollTop,
-                next.clientTop,
+                next.offsetTop,
                 'Advance to next snap-area');
 
 }, "Keyboard scrolling with vertical snap-area overflow");
@@ -126,7 +129,7 @@ promise_test(async t => {
 
   // Target position for wheel scroll overshoots the boundary of the snap-area.
   // Ensure that we stop at the boundary.
-  const scrollAmount =
+  let scrollAmount =
       target.clientHeight - scroller.clientHeight - scroller.scrollTop + 1;
 
   await new test_driver.Actions()
@@ -137,13 +140,15 @@ promise_test(async t => {
                       'End boundary of snap-area is valid snap target');
 
   // Must not get stuck at a snap position. Since already at the end of the
-  // snap area, we should advance to the next.
+  // snap area, we should advance to the next. scrollAmount must be enough to
+  // advance to next snap position.
+  scrollAmount = next.clientHeight / 2 + 10 /* margin-bottom */;
   await new test_driver.Actions()
-       .scroll(50, 50, 0, 50, {origin: scroller})
+       .scroll(50, 50, 0, scrollAmount, {origin: scroller})
        .send();
   await waitForAnimationEnd(scrollTop);
   assert_equals(scroller.scrollTop,
-                next.clientTop,
+                next.offsetTop,
                 'Advance to next snap-area');
 
 }, "Mouse-wheel scrolling with vertical snap-area overflow");

@@ -798,11 +798,11 @@ TEST_F(ScrollSnapDataTest, CoveringWithOverlap1) {
   // Snap up, out of small_1.
   TestSnapPositionY(container, 2000, -150, Type::kCovered, 1800, 50, 1800);
   // Snap to small_2.
-  TestSnapPositionY(container, 1600, 600, Type::kAligned, 2300);
+  TestSnapPositionY(container, 1600, 601, Type::kAligned, 2300);
   // Scroll inside small_2.
   TestSnapPositionY(container, 2300, 50, Type::kCovered, 2350, 2300, 2400);
   // Snap out of small_2.
-  TestSnapPositionY(container, 2300, 150, Type::kCovered, 2600, 2600, 4750);
+  TestSnapPositionY(container, 2300, 200, Type::kCovered, 2600, 2600, 4750);
   // Snap up into small_2.
   TestSnapPositionY(container, 2700, -300, Type::kCovered, 2400, 2300, 2400);
 }

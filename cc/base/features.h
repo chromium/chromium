@@ -47,6 +47,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapCoveringAvoidNestedSnapAreas);
 // allowing much more natural scrolling within these areas.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapCoveringUseNativeFling);
 
+// When enabled, if a snap container is snapping to a large snap area, it will
+// snap to the closest covering position if it is closer than the aligned
+// position. This avoid unnecessary jumps that attempt to honor the
+// scroll-snap-align value.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapPreferCloserCovering);
+
 // When enabled, cc will show blink's Web-Vital metrics inside its heads up
 // display.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
