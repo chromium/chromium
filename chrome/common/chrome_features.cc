@@ -395,13 +395,6 @@ const base::FeatureParam<bool> kDnsOverHttpsShowUiParam {
 const base::FeatureParam<std::string> kDnsOverHttpsTemplatesParam{
     &kDnsOverHttps, "Templates", ""};
 
-#if BUILDFLAG(IS_ANDROID)
-// Enable loading native libraries earlier in startup on Android.
-BASE_FEATURE(kEarlyLibraryLoad,
-             "EarlyLibraryLoad",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enable WebHID on extension service workers.
 BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,

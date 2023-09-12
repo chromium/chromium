@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
 import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
@@ -57,7 +56,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             // Only load the native library early for bundle builds since some tests use the
             // "--disable-native-initialization" switch, and the CommandLine is not initialized at
             // this point to check.
-            if (ChromeFeatureList.sEarlyLibraryLoad.isEnabled() && ProductConfig.IS_BUNDLE) {
+            if (ProductConfig.IS_BUNDLE) {
                 // Kick off library loading in a separate thread so it's ready when we need it.
                 new Thread(() -> LibraryLoader.getInstance().ensureInitialized()).start();
             }

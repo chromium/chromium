@@ -260,7 +260,6 @@ public abstract class ChromeFeatureList {
             "UseDownloadOfflineContentProvider";
     public static final String DRAG_DROP_INTO_OMNIBOX = "DragDropIntoOmnibox";
     public static final String DRAW_EDGE_TO_EDGE = "DrawEdgeToEdge";
-    public static final String EARLY_LIBRARY_LOAD = "EarlyLibraryLoad";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String EXPLORE_SITES = "ExploreSites";
     public static final String EMPTY_STATES = "EmptyStates";
@@ -553,7 +552,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(DELAY_TEMP_STRIP_REMOVAL, true);
     public static final CachedFlag sDragDropIntoOmnibox =
             new CachedFlag(DRAG_DROP_INTO_OMNIBOX, false);
-    public static final CachedFlag sEarlyLibraryLoad = new CachedFlag(EARLY_LIBRARY_LOAD, true);
     public static final CachedFlag sEmptyStates = new CachedFlag(EMPTY_STATES, true);
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
@@ -657,7 +655,6 @@ public abstract class ChromeFeatureList {
         sCommandLineOnNonRooted,
         sDelayTempStripRemoval,
         sDragDropIntoOmnibox,
-        sEarlyLibraryLoad,
         sEmptyStates,
         sFeedLoadingPlaceholder,
         sFriendlierSafeBrowsingSettingsEnhancedProtection,
