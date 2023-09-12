@@ -1,9 +1,20 @@
     <style include="settings-shared"></style>
-    <settings-toggle-button id="toggle" class="hr" label="$i18n{doNotTrack}"
+    <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
+      <settings-toggle-button id="toggle" class="hr" label="$i18n{doNotTrack}"
         pref="{{prefs.enable_do_not_track}}"
         on-settings-boolean-control-change="onToggleChange_"
         no-set-pref>
-    </settings-toggle-button>
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
+      <settings-toggle-button id="toggle" class="toggle"
+        label="$i18n{doNotTrack}"
+        pref="{{prefs.enable_do_not_track}}"
+        on-settings-boolean-control-change="onToggleChange_"
+        sub-label="$i18n{trackingProtectionDoNotTrackToggleSubLabel}"
+        no-set-pref>
+      </settings-toggle-button>
+    </template>
     <template is="dom-if" if="[[showDialog_]]"
         on-dom-change="onDomChange_" restamp>
       <cr-dialog id="confirmDialog"

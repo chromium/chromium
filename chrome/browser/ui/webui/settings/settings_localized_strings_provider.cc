@@ -2547,6 +2547,31 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"cookiePageBlockExceptions", IDS_SETTINGS_COOKIES_BLOCK_EXCEPTIONS},
     {"cookiePageSessionOnlyExceptions",
      IDS_SETTINGS_COOKIES_SESSION_ONLY_EXCEPTIONS},
+    {"trackingProtectionPageTitle",
+     IDS_SETTINGS_TRACKING_PROTECTION_PAGE_TITLE},
+    {"trackingProtectionPageDescription",
+     IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DESCRIPTION},
+    {"trackingProtectionHeading", IDS_SETTINGS_TRACKING_PROTECTION_HEADING},
+    {"trackingProtectionStandardRadioLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_STANDARD_RADIO_LABEL},
+    {"trackingProtectionStandardRadioSubLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_STANDARD_RADIO_SUB_LABEL},
+    {"trackingProtectionStandardBulletOne",
+     IDS_SETTINGS_TRACKING_PROTECTION_STANDARD_BULLET_ONE},
+    {"trackingProtectionStandardBulletOneDescription",
+     IDS_SETTINGS_TRACKING_PROTECTION_STANDARD_BULLET_ONE_DESCRIPTION},
+    {"trackingProtectionStandardBulletTwo",
+     IDS_SETTINGS_TRACKING_PROTECTION_STANDARD_BULLET_TWO},
+    {"trackingProtectionCustomRadioLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_CUSTOM_RADIO_LABEL},
+    {"trackingProtectionCustomRadioSubLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_CUSTOM_RADIO_SUB_LABEL},
+    {"trackingProtectionThirdPartyCookiesToggleLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_LABEL},
+    {"trackingProtectionThirdPartyCookiesToggleSubLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_SUB_LABEL},
+    {"trackingProtectionDoNotTrackToggleSubLabel",
+     IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_TOGGLE_SUB_LABEL},
     {"siteSettingsCategoryFederatedIdentityApi",
      IDS_SITE_SETTINGS_TYPE_FEDERATED_IDENTITY_API},
     {"siteSettingsCategoryHandlers", IDS_SITE_SETTINGS_TYPE_HANDLERS},
@@ -3194,6 +3219,15 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  // Tracking protection learn more links.
+  html_source->AddString(
+      "trackingProtectionStandardBulletTwoDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_TRACKING_PROTECTION_STANDARD_BULLET_TWO_DESCRIPTION,
+          base::ASCIIToUTF16(chrome::kCookiesSettingsHelpCenterURL)));
+  html_source->AddString("trackingProtectionThirdPartyCookiesLearnMoreUrl",
+                         chrome::kCookiesSettingsHelpCenterURL);
 
   // These ones cannot be constexpr because we need to check base::FeatureList.
   static webui::LocalizedString kSensorsLocalizedStrings[] = {

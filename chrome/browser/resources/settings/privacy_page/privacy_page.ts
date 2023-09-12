@@ -544,11 +544,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.isPrivacySandboxSettings4_;
   }
 
-  private isPrivacySandboxSettings4CookiesEntrypointEnabled_(): boolean {
+  private isPrivacySandboxSettings4CookiesPageEnabled_(): boolean {
     return this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
   }
 
-  private isPrivacySandboxSettings3CookiesEntrypointEnabled_(): boolean {
+  private isPrivacySandboxSettings3CookiesPageEnabled_(): boolean {
     return !this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
   }
 }

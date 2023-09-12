@@ -11,6 +11,7 @@ import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_to
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
 import {getTemplate} from './do_not_track_toggle.html.js';
@@ -44,11 +45,18 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      is3pcdRedesignEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
+      },
     };
   }
 
   prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
   private showDialog_: boolean;
+  private is3pcdRedesignEnabled_: boolean;
 
   private onDomChange_() {
     if (this.showDialog_) {
@@ -79,14 +87,14 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
   }
 
   private onDialogClosed_() {
-    focusWithoutInk(this.$.toggle);
+    focusWithoutInk(this.toggle_);
   }
 
   /**
    * Handles the shared proxy confirmation dialog 'Confirm' button.
    */
   private onDialogConfirm_() {
-    this.$.toggle.sendPrefChange();
+    this.toggle_.sendPrefChange();
     this.closeDialog_();
   }
 
@@ -95,8 +103,13 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
    * event.
    */
   private onDialogCancel_() {
-    this.$.toggle.resetToPrefValue();
+    this.toggle_.resetToPrefValue();
     this.closeDialog_();
+  }
+
+  private get toggle_(): SettingsToggleButtonElement {
+    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#toggle')!;
   }
 }
 

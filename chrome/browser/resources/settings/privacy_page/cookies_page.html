@@ -17,6 +17,20 @@
         padding-bottom: 10px;
       }
 
+      .bullet-row {
+        align-items: center;
+        display: flex;
+        padding: var(--cr-section-vertical-padding) 0;
+      }
+
+      .bullet-row > div {
+        padding: 0 var(--cr-section-padding);
+      }
+
+      .bullet-row > iron-icon {
+        padding-left: 8px;
+      }
+
       .bullet-line {
         align-items: center;
         display: flex;
@@ -57,7 +71,73 @@
       <img id="banner" alt=""
           src="chrome://settings/images/cookies_banner.svg">
     </picture>
-    <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+    <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
+      <div id="explanationText" class="secondary">
+        $i18n{trackingProtectionPageDescription}
+      </div>
+      <div id="generalControls">
+        <h2>$i18n{trackingProtectionHeading}</h2>
+        <settings-radio-group id="primarySettingGroup" no-set-pref
+            pref="{{prefs.tracking_protection.tracking_protection_level}}"
+            selectable-elements="
+                cr-radio-button, settings-collapse-radio-button"
+            on-change="onCookieControlsModeChanged_">
+          <settings-collapse-radio-button id="standard"
+              pref="[[prefs.tracking_protection.tracking_protection_level]]"
+              name="[[trackingProtectionLevelEnum_.STANDARD]]"
+              label="$i18n{trackingProtectionStandardRadioLabel}"
+              sub-label="$i18n{trackingProtectionStandardRadioSubLabel}"
+              expand-aria-label="
+                  $i18n{thirdPartyCookiesPageAllowExpandA11yLabel}">
+            <div slot="collapse">
+              <div class="bullet-row">
+                <iron-icon icon="settings:visibility-off"></iron-icon>
+                <div>
+                  $i18n{trackingProtectionStandardBulletOne}
+                  <div class="secondary">
+                    $i18n{trackingProtectionStandardBulletOneDescription}
+                  </div>
+                </div>
+              </div>
+              <div class="bullet-row">
+                <iron-icon icon="settings:visibility-off"></iron-icon>
+                <div>
+                  $i18n{trackingProtectionStandardBulletTwo}
+                  <div class="secondary">
+                    $i18nRaw{trackingProtectionStandardBulletTwoDescription}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button id="custom"
+              pref="[[prefs.tracking_protection.tracking_protection_level]]"
+              name="[[trackingProtectionLevelEnum_.CUSTOM]]"
+              label="$i18n{trackingProtectionCustomRadioLabel}"
+              sub-label="$i18n{trackingProtectionCustomRadioSubLabel}"
+              expand-aria-label="
+                  $i18n{thirdPartyCookiesPageBlockIncognitoExpandA11yLabel}">
+            <div slot="collapse">
+              <settings-toggle-button
+                id="blockThirdPartyToggle"
+                pref="
+                    {{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
+                label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+                sub-label="
+                    $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
+                learn-more-url="
+                    $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}">
+              </settings-toggle-button>
+              <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
+              </settings-do-not-track-toggle>
+            </div>
+          </settings-collapse-radio-button>
+        </settings-radio-group>
+      </div>
+    </template>
+    <template is="dom-if"
+      if="[[isPrivacySandboxSettings4CookieSettingsEnabled_(
+        isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
       <div id="explanationText" class="secondary">
         $i18n{thirdPartyCookiesPageDescription}
       </div>
@@ -147,7 +227,9 @@
         </settings-radio-group>
       </div>
     </template>
-    <template is="dom-if" if="[[!isPrivacySandboxSettings4_]]">
+    <template is="dom-if"
+      if="[[isPrivacySandboxSettings3CookieSettingsEnabled_(
+        isPrivacySandboxSettings4_, is3pcdRedesignEnabled_)]]">
       <div id="generalControls">
         <h2>$i18n{cookiePageGeneralControls}</h2>
         <settings-radio-group id="primarySettingGroup" no-set-pref

@@ -193,3 +193,14 @@ export enum CookiesExceptionType {
   SITE_DATA = 'site-data',
   COMBINED = 'combined',
 }
+
+/**
+ * Possible preference settings for the
+ * `tracking_protection.tracking_protection_level` pref. This should be kept in
+ * sync with the `TrackingProtectionLevel` enum in
+ * components/privacy_sandbox/tracking_protection_prefs.h
+ */
+export enum TrackingProtectionLevel {
+  STANDARD = 0,
+  CUSTOM = 1,
+}
