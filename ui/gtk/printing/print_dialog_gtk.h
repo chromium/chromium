@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "printing/buildflags/buildflags.h"
@@ -87,6 +88,8 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   raw_ptr<GtkPrintSettings> gtk_settings_ = nullptr;
   raw_ptr<GtkPageSetup> page_setup_ = nullptr;
   ScopedGObject<GtkPrinter> printer_;
+
+  base::OnceClosure reenable_parent_events_;
 
   base::FilePath path_to_pdf_;
 };
