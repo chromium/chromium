@@ -27,9 +27,7 @@ css1/text_properties/line_height.html
 css2.1/t100801-c544-valgn-02-d-agi.html
 css2.1/t100801-c544-valgn-04-d-agi.html
 css2.1/t1202-counter-04-b.html
-css2.1/t1202-counter-09-b.html
 css2.1/t1202-counters-04-b.html
-css2.1/t1202-counters-09-b.html
 css2.1/t1503-c522-font-family-00-b.html
 css2.1/t1507-c526-font-sz-00-b.html
 css2.1/t1508-c527-font-00-b.html

@@ -1300,6 +1300,16 @@ crbug.com/1469282 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scrol
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1098801 virtual/text-antialias/whitespace/whitespace-in-pre.html [ Failure ]
 
+# CSS counters tests to be fixed with new implementation.
+crbug.com/990657 external/wpt/css/css-lists/counter-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counter-004.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-004.html [ Failure ]
+
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
 crbug.com/591099 fast/css-intrinsic-dimensions/width-avoid-floats.html [ Failure ]
@@ -1313,8 +1323,6 @@ crbug.com/591099 [ Mac ] virtual/text-antialias/international/shape-across-eleme
 crbug.com/591099 [ Win ] virtual/text-antialias/international/shape-across-elements-simple.html [ Failure ]
 crbug.com/591099 [ Mac ] virtual/text-antialias/word-space-monospace.html [ Failure ]
 crbug.com/591099 [ Win ] virtual/text-antialias/word-space-monospace.html [ Failure ]
-crbug.com/591099 [ Mac ] css2.1/t1202-counter-09-b.html [ Failure ]
-crbug.com/591099 [ Mac ] css2.1/t1202-counters-09-b.html [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/CSS2/text/white-space-bidirectionality-001.xht [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/css-text/text-transform/text-transform-shaping-001.html [ Failure ]
 crbug.com/591099 [ Mac ] external/wpt/css/css-text/text-transform/text-transform-shaping-002.html [ Failure ]
