@@ -61,14 +61,19 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   if (window_activation_index != -1)
     window_info->activation_index = window_activation_index;
   window_info->window = window;
-  window_info->desk_id = window->GetProperty(aura::client::kWindowWorkspaceKey);
-  const std::string* desk_uuid =
-      window->GetProperty(aura::client::kDeskUuidKey);
 
-  // It's possible for the desk to no longer exist or not be found in the case of
-  // CloseAll.
-  window_info->desk_guid =
-      desk_uuid ? base::Uuid::ParseLowercase(*desk_uuid) : base::Uuid();
+  // Set either the `desk_id` or set the `desk_guid`, but not both.
+  const int desk_id = window->GetProperty(aura::client::kWindowWorkspaceKey);
+  if (desk_id == aura::client::kWindowWorkspaceVisibleOnAllWorkspaces) {
+    window_info->desk_id = desk_id;
+  } else {
+    const std::string* desk_uuid =
+        window->GetProperty(aura::client::kDeskUuidKey);
+    // It's possible for the desk to no longer exist or not be found in the case
+    // of CloseAll.
+    window_info->desk_guid =
+        desk_uuid ? base::Uuid::ParseLowercase(*desk_uuid) : base::Uuid();
+  }
 
   // If override bounds and window state are available (in tablet mode), save
   // those bounds.
