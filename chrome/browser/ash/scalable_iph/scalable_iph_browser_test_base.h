@@ -58,6 +58,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   void TearDownOnMainThread() override;
 
  protected:
+  void SetUpMocks();
+
   // Allow sub-classes to initialize scoped feature list with different values.
   // TODO(b/297565024): Abstract this as we initialize more than just IPH
   //                    configs in this method.

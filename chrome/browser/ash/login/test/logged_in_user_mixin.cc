@@ -74,13 +74,21 @@ void LoggedInUserMixin::SetUpOnMainThread() {
   // account.google.com requests would never reach fake GAIA server without
   // this.
   test_base_->host_resolver()->AddRule("*", "127.0.0.1");
-  // Ensures logging in doesn't hang on the post login Gaia screens.
-  login_manager_.SkipPostLoginScreens();
 }
 
 void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
                                   bool wait_for_active_session,
-                                  bool request_policy_update) {
+                                  bool request_policy_update,
+                                  bool skip_post_login_screens) {
+  if (skip_post_login_screens) {
+    // Ensures logging in doesn't hang on the post login Gaia screens.
+    login_manager_.SkipPostLoginScreens();
+  } else {
+    CHECK(!wait_for_active_session)
+        << "wait_for_active_session must be false if skip_post_login_screen is "
+           "false as there might not be an active session after a login.";
+  }
+
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   if (user_.user_type == user_manager::USER_TYPE_CHILD) {

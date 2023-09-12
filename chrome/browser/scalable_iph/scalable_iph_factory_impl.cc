@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -20,6 +21,8 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user.h"
@@ -53,6 +56,7 @@ ScalableIphFactoryImpl::ScalableIphFactoryImpl() {
   // to avoid circular dependencies from //chrome/browser.
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
   DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(ash::phonehub::PhoneHubManagerFactory::GetInstance());
 }
 
 ScalableIphFactoryImpl::~ScalableIphFactoryImpl() = default;
@@ -88,6 +92,15 @@ content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUse(
   }
 
   if (profile->IsChild()) {
+    return nullptr;
+  }
+
+  if (!ash::multidevice_setup::IsFeatureAllowed(
+          ash::multidevice_setup::mojom::Feature::kPhoneHub,
+          profile->GetPrefs())) {
+    DLOG(WARNING) << "Phone hub feature is disabled by a policy. This is "
+                     "expected only for test code as we are returning early "
+                     "above if a profile is managed.";
     return nullptr;
   }
 

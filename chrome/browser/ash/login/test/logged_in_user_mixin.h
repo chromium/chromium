@@ -92,9 +92,14 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   // * If |wait_for_active_session|, LoginManagerMixin will wait for the session
   // state to change to ACTIVE after logging in.
   // * If |request_policy_update|, UserPolicyMixin will set up user policy.
+  // * If |skip_post_login_screens|, LoginManagerMixin will skip post login
+  // screens. Default value is true (skip). Note that |wait_for_active_session|
+  // must be false if this value is false as there won't be no active session
+  // immediately after login.
   void LogInUser(bool issue_any_scope_token = false,
                  bool wait_for_active_session = true,
-                 bool request_policy_update = true);
+                 bool request_policy_update = true,
+                 bool skip_post_login_screens = true);
 
   LoginManagerMixin* GetLoginManagerMixin() { return &login_manager_; }
 
