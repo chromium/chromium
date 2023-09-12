@@ -121,6 +121,7 @@
 
 - (void)start {
   [super start];
+  signin_metrics::LogSignInStarted(_accessPoint);
   base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
