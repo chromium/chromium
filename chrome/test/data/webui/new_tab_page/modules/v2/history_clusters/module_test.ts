@@ -49,6 +49,15 @@ function removeHrefAndClick(element: HTMLElement) {
   element.click();
 }
 
+function checkInfoDialogContent(
+    moduleElement: HistoryClustersV2ModuleElement, id: string) {
+  const expectedInfo =
+      loadTimeData.getString(id).replaceAll('\n', '').replaceAll('<br>', '');
+  const actualInfo =
+      moduleElement.$.infoDialogRender.get().textContent!.replaceAll('\n', '');
+  assertEquals(expectedInfo, actualInfo);
+}
+
 suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
   let handler: TestMock<PageHandlerRemote>;
   let metrics: MetricsTracker;
@@ -344,6 +353,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
             $$(moduleElement, '#related-searches') as HTMLElement;
         assertTrue(!!relatedSearchesElement);
         assertEquals((numRelatedSearches < 2), relatedSearchesElement.hidden);
+        checkInfoDialogContent(moduleElement, 'modulesJourneysInfo');
       });
     });
   });
@@ -446,6 +456,11 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertEquals(
           'https://www.annotated.com/2',
           visitTiles[1]!.visit.normalizedUrl.url);
+
+      // Assert info dialog.
+      for (const moduleElement of moduleElements) {
+        checkInfoDialogContent(moduleElement, 'modulesHistoryWithDiscountInfo');
+      }
     });
   });
 });

@@ -243,6 +243,13 @@ export class HistoryClustersModuleElement extends I18nMixin
     HistoryClustersProxyImpl.getInstance().handler.recordClick(this.cluster.id);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
+
+  private getInfo_(discounts: string[]): TrustedHTML {
+    const hasDiscount = discounts.some((discount) => !!discount);
+    return this.i18nAdvanced(
+        hasDiscount ? 'modulesHistoryWithDiscountInfo' :
+                      'modulesJourneysInfo');
+  }
 }
 
 customElements.define(
