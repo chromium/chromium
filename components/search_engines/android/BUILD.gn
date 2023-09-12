@@ -28,3 +28,10 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",
   ]
 }
+
+android_library("test_utils_java") {
+  testonly = true
+  sources =
+      [ "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java" ]
+  deps = [ ":java" ]
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="20dp"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical">
+
+    <View
+        android:id="@+id/search_engine_choice_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@color/modern_grey_100"/>
+
+    <TextView
+        android:id="@+id/search_engine_choice_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_weight="1"
+        tools:text="Short Name"/>
+
+    <RadioButton
+        android:id="@+id/search_engine_choice_radio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

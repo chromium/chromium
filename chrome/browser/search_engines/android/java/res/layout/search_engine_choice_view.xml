@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.search_engines.choice_screen.ChoiceScreenView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:background="@android:color/white">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/modern_grey_50"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:text="@string/search_engine_choice_screen_title"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginHorizontal="24dp"
+        android:text="@string/search_engine_choice_screen_subtitle"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/choice_screen_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/modern_grey_50"
+        android:layout_marginHorizontal="24dp"/>
+
+    <View
+        android:id="@+id/choice_screen_divider"
+        style="@style/HorizontalDivider"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/choice_screen_primary_button"
+        style="@style/FilledButton.Flat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="24dp"
+        android:text="@string/search_engine_choice_screen_primary_action"/>
+</org.chromium.chrome.browser.search_engines.choice_screen.ChoiceScreenView>

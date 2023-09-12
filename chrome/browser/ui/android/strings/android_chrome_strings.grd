@@ -483,6 +483,17 @@ CHAR_LIMIT guidelines:
         You can choose your search engine
       </message>
 
+      <!-- Search engine choice screen. TODO(b/280753530): replace with final versions -->
+      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_TITLE" desc="" translateable="false">
+        *Title*
+      </message>
+      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_SUBTITLE" desc="" translateable="false">
+        *Subtitle*
+      </message>
+      <message name="IDS_SEARCH_ENGINE_CHOICE_SCREEN_PRIMARY_ACTION" desc="" translateable="false">
+        *Primary Action*
+      </message>
+
       <!-- Autofill and Payments preferences -->
       <message name="IDS_PAYMENT_APPS_TITLE" desc="Title of the preference to list the payment apps on device.">
         Payment apps
