@@ -378,9 +378,6 @@ class PasswordDetailsTableViewControllerTest
     UIPasteboard* general_pasteboard = [UIPasteboard generalPasteboard];
     EXPECT_NSEQ(expected_pasteboard, general_pasteboard.string);
     EXPECT_NSEQ(expected_snackbar_message, snack_bar().snackbarMessage);
-    // Verify that the error histogram was emitted to the success bucket.
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
   }
 
   void SetCredentialType(CredentialType credentialType) {
@@ -890,10 +887,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyUsername) {
       l10n_util::GetNSString(IDS_IOS_SETTINGS_USERNAME_WAS_COPIED_MESSAGE),
       snack_bar().snackbarMessage);
 
-  // Verify that the error histogram was emitted to the success bucket.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
-
   EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }
 
@@ -920,9 +913,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE),
       snack_bar().snackbarMessage);
-  // Verify that the error histogram was emitted to the success bucket.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
 }
 
 // Tests error histogram is emitted when we fail copying a field.
@@ -936,10 +926,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyDetailsFailedEmitted) {
   // When no menu controller is passed, there's no way of knowing which field
   // should be copied to the pasteboard and thus copying should fail.
   [password_details copyPasswordDetails:nil];
-
-  // Verify that the error histogram was emitted to the failure bucket.
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", true, 1);
 
   EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }

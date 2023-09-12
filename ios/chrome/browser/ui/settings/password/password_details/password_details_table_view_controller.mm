@@ -641,6 +641,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)ensureContextMenuShownForItemType:(NSInteger)itemType
                                 tableView:(UITableView*)tableView
                               atIndexPath:(NSIndexPath*)indexPath {
+  // TODO(crbug.com/1481223): Replace UIMenuController with
+  // UIEditMenuInteraction in iOS 16+.
   UIMenuController* menu = [UIMenuController sharedMenuController];
   if (![menu isMenuVisible]) {
     menu.menuItems = [self menuItemsForItemType:itemType];
@@ -1379,26 +1381,16 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
           self.passwords[self.tableView.indexPathForSelectedRow.section]
               .federation;
       StoreTextInPasteboard(copiedString);
-      [self logCopyPasswordDetailsFailure:NO];
       return;
     }
     case PasswordDetailsItemTypePassword: {
       [self showPasswordFor:PasswordAccessReasonCopy];
-      [self logCopyPasswordDetailsFailure:NO];
       return;
     }
   }
 
   if (message.length) {
-    [self logCopyPasswordDetailsFailure:NO];
     [self showToast:message forSuccess:YES];
-  } else {
-    // TODO(crbug.com/1359331): There's a bug that is caused by `menu` being
-    // nil, which leads to a nil message and a crash. Avoiding the crash and
-    // logging for monitoring the issue. Since `menu` is an instance of
-    // `UIMenuController` which is deprecated on iOS 16, this crash should go
-    // away once we switch to `UIEditMenuInteraction`.
-    [self logCopyPasswordDetailsFailure:YES];
   }
 }
 
@@ -1470,11 +1462,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
           password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
       break;
   }
-}
-
-- (void)logCopyPasswordDetailsFailure:(BOOL)failure {
-  base::UmaHistogramBoolean(
-      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", failure);
 }
 
 - (void)logChangeBetweenOldNote:(NSString*)oldNote

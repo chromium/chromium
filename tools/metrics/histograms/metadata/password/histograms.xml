@@ -1763,17 +1763,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.iOS.PasswordDetails.CopyDetailsFailed"
-    enum="Boolean" expires_after="2023-09-24">
-  <owner>eic@google.com</owner>
-  <owner>tmartino@chromium.com</owner>
-  <summary>
-    This metric counts how many times we fail to copy a field in the Passwords
-    Details to the pastboard. Only the true bucket is logged. See
-    crbug.com/1359331.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.iOS.PasswordManagerVisit" enum="Boolean"
     expires_after="2023-12-21">
   <owner>eic@google.com</owner>
