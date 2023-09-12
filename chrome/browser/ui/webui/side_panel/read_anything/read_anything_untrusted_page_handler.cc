@@ -337,6 +337,10 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 }
 
 void ReadAnythingUntrustedPageHandler::LogTextStyle() {
+  if (!browser_ || !browser_->profile()->GetPrefs()) {
+    return;
+  }
+
   // This is called when the side panel closes, so retrieving the values from
   // preferences won't happen very often.
   PrefService* prefs = browser_->profile()->GetPrefs();
