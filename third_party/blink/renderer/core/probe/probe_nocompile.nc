@@ -13,14 +13,10 @@ class TestProbeSink;
 // Generated include should appear after all dependencies.
 #include "third_party/blink/renderer/core/probe/test_probes_inl.h"
 
-namespace blink {
-namespace probe {
+namespace blink::probe {
 
-#if defined(NCTEST_SCOPED_PROBE_CONSTRUCTOR_CALLED_WITH_RVALUE) // [r"fatal error: no matching constructor for initialization of 'probe::Frobnicate'"]
 void WontCompile() {
-  probe::Frobnicate scoped_probe((String()));
+  probe::Frobnicate scoped_probe((String()));  // expected-error {{no matching constructor for initialization of 'probe::Frobnicate'}}
 }
-#endif
 
-}
-}
+}  // namespace blink::probe

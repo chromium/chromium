@@ -68,25 +68,24 @@ blink_core_sources("probe") {
   ]
 }
 
-if (enable_nocompile_tests) {
+if (enable_nocompile_tests_new) {
   probe_generator("test_probes") {
     probe_set = "test_probes"
     probe_sink = "test_probe_sink"
     output = "${blink_core_output_dir}/probe"
   }
 
-  nocompile_test("blink_probes_nocompile_tests") {
-    sources = [ "probes_test.nc" ]
+  group("blink_probes_nocompile_tests") {
+    # TODO(crbug.com/1480969): Empty placeholder group until the legacy
+    # nocompile targets are deleted from the buildbot configs.
+  }
 
+  nocompile_source_set("probe_nocompile_tests") {
+    sources = [ "probe_nocompile.nc" ]
     deps = [
       ":test_probes",
-      "//base",
-      "//base/test:run_all_unittests",
-      "//testing/gtest",
-    ]
-    include_dirs = [
-      root_gen_dir,
-      "//v8/include",
+      "//third_party/blink/renderer/platform/wtf",
+      "//v8",
     ]
   }
 }

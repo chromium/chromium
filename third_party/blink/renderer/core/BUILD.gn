@@ -7,6 +7,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
+import("//build/nocompile.gni")
 import("//build/toolchain/toolchain.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -1435,6 +1436,10 @@ source_set("unit_tests") {
     "//ui/base/dragdrop/mojom:mojom_blink",
     "//ui/gfx:test_support",
   ]
+
+  if (enable_nocompile_tests_new) {
+    deps += [ "//third_party/blink/renderer/core/probe:probe_nocompile_tests" ]
+  }
 
   data_deps = [ ":unit_tests_data" ]
 
