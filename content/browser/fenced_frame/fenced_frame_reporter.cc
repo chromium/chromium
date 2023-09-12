@@ -373,7 +373,7 @@ bool FencedFrameReporter::SendReportInternal(
   DCHECK(reporting_destination_info.reporting_url_map);
 
   // Compute the destination url for the report.
-  GURL url;
+  GURL destination_url;
   if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
     std::string event_type =
         absl::get<DestinationEnumEvent>(event_variant).type;
@@ -393,8 +393,8 @@ bool FencedFrameReporter::SendReportInternal(
     }
 
     // Validate the reporting URL.
-    url = url_iter->second;
-    if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    destination_url = url_iter->second;
+    if (!destination_url.is_valid() || !destination_url.SchemeIsHTTPOrHTTPS()) {
       error_message = base::StrCat(
           {"This frame registered invalid reporting url for destination '",
            ReportingDestinationAsString(reporting_destination),
@@ -448,13 +448,38 @@ bool FencedFrameReporter::SendReportInternal(
       return false;
     }
 
+    const GURL& original_url =
+        absl::get<DestinationURLEvent>(event_variant).url;
+    if (!original_url.is_valid() || !original_url.SchemeIs(url::kHttpsScheme)) {
+      attempted_custom_url_report_to_disallowed_origin_ = true;
+      error_message =
+          "This frame attempted to send a report to an invalid custom "
+          "destination URL. No further reports to custom destination URLs will "
+          "be allowed for this fenced frame config.";
+      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
+
     // Substitute macros in the specified URL using the macros.
-    url = GURL(SubstituteMappedStrings(
-        absl::get<DestinationURLEvent>(event_variant).url.spec(),
+    destination_url = GURL(SubstituteMappedStrings(
+        original_url.spec(),
         reporting_destination_info.reporting_ad_macros.value()));
-    url::Origin destination_origin = url::Origin::Create(url);
+    if (!destination_url.is_valid() ||
+        !destination_url.SchemeIs(url::kHttpsScheme)) {
+      attempted_custom_url_report_to_disallowed_origin_ = true;
+      error_message =
+          "This frame attempted to send a report to a custom destination URL "
+          "that is invalid after macro substitution. No further reports to "
+          "custom destination URLs will be allowed for this fenced frame "
+          "config.";
+      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
+      NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
+      return false;
+    }
 
     // Check whether the destination URL has an allowed origin.
+    url::Origin destination_origin = url::Origin::Create(destination_url);
     bool is_allowed_origin = false;
     for (auto& origin : allowed_reporting_origins_.value()) {
       if (origin.IsSameOriginWith(destination_origin)) {
@@ -481,7 +506,8 @@ bool FencedFrameReporter::SendReportInternal(
   if (!GetContentClient()
            ->browser()
            ->IsPrivacySandboxReportingDestinationAttested(
-               browser_context_, url::Origin::Create(url), invoking_api_)) {
+               browser_context_, url::Origin::Create(destination_url),
+               invoking_api_)) {
     error_message = base::StrCat({
         "The reporting destination '",
         ReportingDestinationAsString(reporting_destination),
@@ -497,7 +523,7 @@ bool FencedFrameReporter::SendReportInternal(
   // Construct the resource request.
   auto request = std::make_unique<network::ResourceRequest>();
 
-  request->url = url;
+  request->url = destination_url;
   request->mode = network::mojom::RequestMode::kCors;
   request->request_initiator = request_initiator;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
