@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
@@ -210,7 +211,7 @@ public class ToolbarPhoneTest {
             realMenuButtonCoordinator.getMenuButton().setVisibility(View.INVISIBLE);
             assertEquals(realMenuButtonCoordinator.isVisible(), false);
             float offsetWhenButtonInvisible = mToolbar.getLocationBarWidthOffsetForOptionalButton();
-            Assert.assertNotEquals("Offset should be different when menu button is invisible",
+            assertNotEquals("Offset should be different when menu button is invisible",
                     offsetWhenButtonInvisible, offsetWhenParentVisible);
         });
     }
@@ -779,6 +780,31 @@ public class ToolbarPhoneTest {
         assertTrue(mToolbar.getActiveLocationBarBackgroundForTesting() != null);
         assertTrue(mToolbar.getActiveLocationBarBackgroundForTesting()
                            instanceof NtpSearchBoxDrawable);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testToolbarBackgroundChanged() {
+        ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
+        int expectColor = androidx.core.graphics.ColorUtils.setAlphaComponent(
+                ChromeColors.getSurfaceColor(
+                        mToolbar.getContext(), R.dimen.home_surface_background_color_elevation),
+                0);
+
+        assertEquals(false, mToolbar.isLocationBarShownInNTP());
+        assertNotEquals(expectColor, toolbarBackgroundDrawable.getColor());
+
+        // Load the new tab page.
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        NewTabPageTestUtils.waitForNtpLoaded(tab);
+        assertEquals(true, mToolbar.isLocationBarShownInNTP());
+        assertEquals(expectColor, toolbarBackgroundDrawable.getColor());
+
+        // Focus on the Omnibox.
+        mOmnibox.requestFocus();
+        assertNotEquals(expectColor, toolbarBackgroundDrawable.getColor());
     }
 
     private static class TestControlsVisibilityDelegate

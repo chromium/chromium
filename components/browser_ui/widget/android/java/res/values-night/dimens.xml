@@ -15,4 +15,6 @@ found in the LICENSE file.
     <dimen name="chip_state_layer_hover_alpha">@dimen/chip_state_layer_hover_alpha_dark</dimen>
     <dimen name="chip_state_layer_focused_alpha">@dimen/chip_state_layer_focused_alpha_dark</dimen>
     <dimen name="chip_state_layer_pressed_alpha">@dimen/chip_state_layer_pressed_alpha_dark</dimen>
+    <!-- Surface Polish -->
+    <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_0</dimen>
 </resources>

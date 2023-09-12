@@ -207,4 +207,6 @@ found in the LICENSE file.
     <dimen name="empty_state_text_width">341dp</dimen>
     <dimen name="empty_state_heading_padding_top">18dp</dimen>
     <dimen name="empty_state_subheading_padding_top">8dp</dimen>
+    <!-- Surface Polish -->
+    <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>
 </resources>

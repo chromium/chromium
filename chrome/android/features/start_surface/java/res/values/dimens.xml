@@ -16,7 +16,6 @@ found in the LICENSE file.
     <dimen name="single_tab_card_lateral_margin">16dp</dimen>
 
     <!-- Surface Polish -->
-    <dimen name="home_surface_background_color_elevation">@dimen/default_elevation_2</dimen>
     <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="home_surface_search_box_background_neutral_color_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="home_surface_ui_background_radius">24dp</dimen>
