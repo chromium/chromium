@@ -766,7 +766,7 @@ void Canvas2DLayerBridge::ClearPendingRasterTimers() {
 void Canvas2DLayerBridge::FinishRasterTimers(
     gpu::raster::RasterInterface* raster_interface) {
   // If the context was lost, then the old queries are not valid anymore
-  if (!CheckResourceProviderValid()) {
+  if (!IsValid()) {
     ClearPendingRasterTimers();
     return;
   }
@@ -878,10 +878,6 @@ bool Canvas2DLayerBridge::HasRateLimiterForTesting() {
 }
 
 bool Canvas2DLayerBridge::IsValid() {
-  return CheckResourceProviderValid();
-}
-
-bool Canvas2DLayerBridge::CheckResourceProviderValid() {
   if (IsHibernating()) {
     return true;
   }

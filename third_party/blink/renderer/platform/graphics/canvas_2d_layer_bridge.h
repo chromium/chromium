@@ -290,7 +290,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   friend class HTMLCanvasPainterTestForCAP;
 
   bool IsHidden() { return is_hidden_; }
-  bool CheckResourceProviderValid();
   CanvasResourceProvider* ResourceProvider() const;
   void ResetResourceProvider();
 
