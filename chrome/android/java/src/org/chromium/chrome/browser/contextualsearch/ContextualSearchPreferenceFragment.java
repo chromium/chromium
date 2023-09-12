@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.contextualsearch;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -18,7 +18,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
  * Fragment to manage the Contextual Search preference in Chrome Settings, and to explain to the
  * user what Contextual Search (aka Touch to Search) actually does.
  */
-public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat {
+public class ContextualSearchPreferenceFragment extends ChromeBaseSettingsFragment {
     static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";
     static final String PREF_WAS_FULLY_ENABLED_SWITCH = "see_better_results_switch";
 
@@ -46,7 +46,8 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
             return true;
         });
 
-        contextualSearchSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate() {
+        contextualSearchSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
+                getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 return ContextualSearchPolicy.isContextualSearchDisabledByPolicy();

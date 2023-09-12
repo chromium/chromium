@@ -16,15 +16,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 public abstract class ChromeManagedPreferenceDelegate implements ManagedPreferenceDelegate {
     private Profile mProfile;
 
-    /**
-     * @deprecated Use {@link #ChromeManagedPreferenceDelegate(Profile)} that takes an explicit
-     *             profile reference.
-     */
-    @Deprecated
-    public ChromeManagedPreferenceDelegate() {
-        this(Profile.getLastUsedRegularProfile());
-    }
-
     /** Builds a ChromeManagedPreferenceDelegate for the given Profile. */
     public ChromeManagedPreferenceDelegate(Profile profile) {
         mProfile = profile;

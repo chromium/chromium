@@ -188,7 +188,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return new ChromeManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (TOPICS_TOGGLE_PREFERENCE.equals(preference.getKey())) {

@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
@@ -23,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.v4.PrivacySandboxSettingsFragmentV4;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
@@ -36,7 +36,7 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
  * Subclasses have to call super.onCreatePreferences(bundle, s) when overriding onCreatePreferences.
  */
 public abstract class PrivacySandboxSettingsBaseFragment
-        extends PreferenceFragmentCompat implements FragmentSettingsLauncher {
+        extends ChromeBaseSettingsFragment implements FragmentSettingsLauncher {
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
     // entry to the Privacy Sandbox UI.

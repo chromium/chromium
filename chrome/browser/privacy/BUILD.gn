@@ -30,6 +30,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/net:secure_dns_management_mode_generated_enum",
       "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
       "//chrome/browser/settings:java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/widget/android:java",

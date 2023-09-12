@@ -71,7 +71,7 @@ public class PrivacySandboxSettingsFragmentV3 extends PrivacySandboxSettingsBase
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
-        return new ChromeManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
