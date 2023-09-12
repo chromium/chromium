@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
+#include "build/build_config.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -321,7 +322,12 @@ INSTANTIATE_TEST_SUITE_P(MainContentExtractorProtoConvertorTest,
                          ProtoConvertorViewHierarchyTest,
                          testing::Range(0, kProtoConversionTestCasesCount));
 
-TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AxTreeJsonToProtoTest DISABLED_AxTreeJsonToProtoTest
+#else
+#define MAYBE_AxTreeJsonToProtoTest AxTreeJsonToProtoTest
+#endif
+TEST_P(ProtoConvertorViewHierarchyTest, MAYBE_AxTreeJsonToProtoTest) {
   const base::FilePath kInputJsonPath = GetInputFilePath();
   const base::FilePath kExpectedProtoPath = GetExpectedFilePath();
 
