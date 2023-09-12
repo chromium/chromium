@@ -2267,7 +2267,6 @@
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
       'capture_unittests': {},
-      'color_unittests': {},
       'components_browsertests': {
         'args': [
           '--test-arg=--disable-gpu',
@@ -2342,6 +2341,7 @@
         ],
       },
       'ui_touch_selection_unittests': {},
+      'ui_unittests': {},
       'url_unittests': {},
       'wm_unittests': {},
       'wtf_unittests': {},
@@ -4048,7 +4048,6 @@
       'capture_unittests': {},
       'cast_unittests': {},
       'cc_unittests': {},
-      'color_unittests': {},
       'components_browsertests': {},
       'components_unittests': {},
       'content_browsertests': {
@@ -4099,6 +4098,7 @@
         ],
       },
       'ui_touch_selection_unittests': {},
+      'ui_unittests': {},
       'url_unittests': {},
       'viz_unittests': {},
       'wtf_unittests': {},
@@ -4821,7 +4821,6 @@
       },
       'chrome_app_unittests': {},
       'chromedriver_unittests': {},
-      'color_unittests': {},
       'extensions_browsertests': {},
       'extensions_unittests': {},
       'filesystem_service_unittests': {},  # https://crbug.com/862712
@@ -4844,6 +4843,7 @@
           'shards': 3,
         },
       },
+      'ui_unittests': {},
       'views_unittests': {},
     },
 
@@ -4858,7 +4858,6 @@
       },
       'chrome_app_unittests': {},
       'chromedriver_unittests': {},
-      'color_unittests': {},
       'extensions_browsertests': {},
       'extensions_unittests': {},
       'filesystem_service_unittests': {},  # https://crbug.com/862712
@@ -4879,6 +4878,7 @@
           'shards': 3,
         },
       },
+      'ui_unittests': {},
       'views_unittests': {},
     },
 

@@ -95,7 +95,7 @@ source_set("test_support") {
   deps = [ ":color_headers" ]
 }
 
-test("color_unittests") {
+source_set("unit_tests") {
   testonly = true
 
   sources = [
@@ -106,7 +106,6 @@ test("color_unittests") {
     "color_provider_utils_unittest.cc",
     "color_recipe_unittest.cc",
     "color_transform_unittest.cc",
-    "run_all_unittests.cc",
   ]
 
   deps = [

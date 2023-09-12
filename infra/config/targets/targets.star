@@ -678,11 +678,6 @@ targets.compile_target(
     label = "//:chromiumos_preflight",
 )
 
-targets.console_test_launcher(
-    name = "color_unittests",
-    label = "//ui/color:color_unittests",
-)
-
 targets.script(
     name = "command_buffer_perftests",
     label = "//gpu:command_buffer_perftests",
@@ -2186,6 +2181,11 @@ targets.script(
 targets.compile_target(
     name = "chrome/updater:all",
     label = "//chrome/updater:all",
+)
+
+targets.console_test_launcher(
+    name = "ui_unittests",
+    label = "//ui/tests:ui_unittests",
 )
 
 targets.generated_script(

@@ -28,13 +28,10 @@ component("actions") {
   public_deps = [ ":actions_headers" ]
 }
 
-test("actions_unittests") {
+source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "actions_unittest.cc",
-    "run_all_unittests.cc",
-  ]
+  sources = [ "actions_unittest.cc" ]
 
   deps = [
     ":actions",

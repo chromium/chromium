@@ -543,10 +543,6 @@
     "label": "//:chromiumos_preflight",
     "type": "additional_compile_target",
   },
-  "color_unittests": {
-    "label": "//ui/color:color_unittests",
-    "type": "console_test_launcher",
-  },
   "command_buffer_perftests": {
     "label": "//gpu:command_buffer_perftests",
     "type": "script",
@@ -1788,6 +1784,10 @@
   "chrome/updater:all": {
     "label": "//chrome/updater:all",
     "type": "additional_compile_target",
+  },
+  "ui_unittests": {
+    "label": "//ui/tests:ui_unittests",
+    "type": "console_test_launcher",
   },
   "upload_trace_processor": {
     "label": "//tools/perf/core/perfetto_binary_roller:upload_trace_processor",
