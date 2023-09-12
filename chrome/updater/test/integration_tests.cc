@@ -926,7 +926,7 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   ASSERT_NO_FATAL_FAILURE(Install());
 
   base::Value::Dict group_policies;
-  group_policies.Set("Installtest1", IsSystemInstall(GetTestScope())
+  group_policies.Set("installtest1", IsSystemInstall(GetTestScope())
                                          ? kPolicyForceInstallMachine
                                          : kPolicyForceInstallUser);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
@@ -1510,7 +1510,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, NoUpdate) {
 TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicyManual) {
   ASSERT_TRUE(WaitForUpdaterExit());
   base::Value::Dict group_policies;
-  group_policies.Set("Updatetest1", kPolicyAutomaticUpdatesOnly);
+  group_policies.Set("updatetest1", kPolicyAutomaticUpdatesOnly);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
       kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_ERROR,
@@ -1520,7 +1520,7 @@ TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicyManual) {
 TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicy) {
   ASSERT_TRUE(WaitForUpdaterExit());
   base::Value::Dict group_policies;
-  group_policies.Set("Updatetest1", kPolicyDisabled);
+  group_policies.Set("updatetest1", kPolicyDisabled);
   ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
   ExpectLegacyUpdate3WebSucceeds(
       kAppId, AppBundleWebCreateMode::kCreateInstalledApp, STATE_ERROR,
