@@ -1284,7 +1284,11 @@ class MetaBuildWrapper:
       command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
       runtime_deps = self._DedupDependencies(runtime_deps)
-      if 'is_skylab=true' in vals['gn_args']:
+      # TODO(crbug.com/1481305): Lacros gtest may need files from folders
+      # filtered out here. Eventually, we should move the filter to builder
+      # specific config. Before that, leave the filter only for Ash.
+      if ('is_skylab=true' in vals['gn_args']
+          and not 'chromeos_is_browser_only=true' in vals['gn_args']):
         runtime_deps = self._FilterOutUnneededSkylabDeps(runtime_deps)
 
       canonical_target = target.replace(':','_').replace('/','_')
