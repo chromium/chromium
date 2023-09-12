@@ -854,6 +854,11 @@ SearchResultView::SetupContainerViewForTextVector(
               should_show_result_text_separator_label_ ||
               (!span.GetText().empty());
         }
+        // Text labels for keyboard shortcuts have additional left/right
+        // padding.
+        if (label_type == LabelType::kKeyboardShortcut) {
+          label->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 6, 0, 6));
+        }
         label->SetText(span.GetText());
         label->SetVisible(true);
         if (!elidable) {
