@@ -157,6 +157,16 @@ TEST_F(CastDetailedViewTest, AccessCodeCasting) {
   EXPECT_EQ(delegate_->close_bubble_call_count(), 0u);
 }
 
+// When the screen is locked, we should not show the access code device button,
+// since this opens a dialog that can't be accessed when the screen is locked.
+TEST_F(CastDetailedViewTest, AccessCodeCastingButtonScreenLocked) {
+  cast_config_.set_access_code_casting_enabled(true);
+  GetSessionControllerClient()->LockScreen();
+  ResetCastDevices();
+  views::View* add_access_code_device = GetAddAccessCodeDeviceView();
+  EXPECT_FALSE(add_access_code_device);
+}
+
 TEST_F(CastDetailedViewTest, ZeroStateView) {
   // The zero state view shows when there are no cast devices.
   ASSERT_TRUE(GetDeviceViews().empty());

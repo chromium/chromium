@@ -126,7 +126,9 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
 
   // Per product requirement, access code receiver should be shown before other
   // receivers.
-  if (CastConfigController::Get()->AccessCodeCastingEnabled()) {
+  if (CastConfigController::Get()->AccessCodeCastingEnabled() &&
+      (Shell::Get()->session_controller()->GetSessionState() !=
+       session_manager::SessionState::LOCKED)) {
     AddAccessCodeCastButton(item_container);
   }
 
