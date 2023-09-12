@@ -778,7 +778,7 @@ def main():
         return 0
 
     building_on_host_triple = RustTargetTriple()
-    xpy_args = ['--build', building_on_host_triple]
+    xpy_args = ['--build', building_on_host_triple, '--color', 'never']
     if args.build_mac_arm:
         building_for_host_triple = RustTargetTriple(build_mac_arm=True)
         xpy_args.extend([
