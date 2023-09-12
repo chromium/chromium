@@ -178,8 +178,13 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
   }
   LayoutInline::StyleDidChange(diff, old_style);
 
-  if (diff.NeedsFullLayout())
+  if (diff.NeedsFullLayout()) {
+    // The boundaries affect mask clip and clip path mask/clip.
+    if (StyleRef().MaskerResource() || StyleRef().HasClipPath()) {
+      SetNeedsPaintPropertyUpdate();
+    }
     SetNeedsBoundariesUpdate();
+  }
 
   SVGResources::UpdateEffects(*this, diff, old_style);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());

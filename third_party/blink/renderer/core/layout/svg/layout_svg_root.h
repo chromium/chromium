@@ -188,7 +188,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   bool IntrinsicSizeIsFontMetricsDependent() const;
   bool StyleChangeAffectsIntrinsicSize(const ComputedStyle& old_style) const;
 
-  void UpdateCachedBoundaries();
+  bool UpdateCachedBoundaries();
   SVGTransformChange BuildLocalToBorderBoxTransform();
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const final;

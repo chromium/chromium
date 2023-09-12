@@ -189,7 +189,10 @@ void LayoutSVGRoot::UpdateLayout() {
   content_.Layout(layout_info);
 
   if (needs_boundaries_or_transform_update_) {
-    UpdateCachedBoundaries();
+    if (UpdateCachedBoundaries()) {
+      // Boundaries affects the mask clip. (Other resources handled elsewhere.)
+      SetNeedsPaintPropertyUpdate();
+    }
     needs_boundaries_or_transform_update_ = false;
   }
 
@@ -289,8 +292,9 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutReplaced::StyleDidChange(diff, old_style);
 
-  if (diff.NeedsFullLayout())
+  if (diff.NeedsFullLayout()) {
     SetNeedsBoundariesUpdate();
+  }
 
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();
@@ -474,10 +478,10 @@ void LayoutSVGRoot::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   LayoutReplaced::MapLocalToAncestor(ancestor, transform_state, mode);
 }
 
-void LayoutSVGRoot::UpdateCachedBoundaries() {
+bool LayoutSVGRoot::UpdateCachedBoundaries() {
   NOT_DESTROYED();
   bool ignore;
-  content_.UpdateBoundingBoxes(/* object_bounding_box_valid */ ignore);
+  return content_.UpdateBoundingBoxes(/* object_bounding_box_valid */ ignore);
 }
 
 bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,

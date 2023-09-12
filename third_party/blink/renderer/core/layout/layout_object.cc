@@ -3812,8 +3812,9 @@ void LayoutObject::WillBeRemovedFromTree() {
   RemoveFromLayoutFlowThread();
 
   // Update cached boundaries in SVG layoutObjects if a child is removed.
-  if (Parent()->IsSVG())
+  if (Parent()->IsSVG()) {
     Parent()->SetNeedsBoundariesUpdate();
+  }
 
   if (bitfields_.IsScrollAnchorObject()) {
     // Clear the bit first so that anchor.clear() doesn't recurse into
@@ -4475,11 +4476,6 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 void LayoutObject::SetNeedsBoundariesUpdate() {
   NOT_DESTROYED();
   DCHECK(!GetDocument().InPostLifecycleSteps());
-  if (IsSVGChild()) {
-    // The boundaries affect mask clip and clip path mask/clip.
-    if (StyleRef().MaskerResource() || StyleRef().HasClipPath())
-      SetNeedsPaintPropertyUpdate();
-  }
   if (LayoutObject* layout_object = Parent())
     layout_object->SetNeedsBoundariesUpdate();
 }
