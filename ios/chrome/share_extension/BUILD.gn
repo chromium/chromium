@@ -44,7 +44,6 @@ source_set("share") {
 
   frameworks = [
     "Foundation.framework",
-    "Social.framework",
     "CoreGraphics.framework",
     "MobileCoreServices.framework",
     "UIKit.framework",
