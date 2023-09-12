@@ -108,6 +108,9 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
         [MagicStackModuleContainer titleStringForModule:type];
     [_title setContentHuggingPriority:UILayoutPriorityDefaultLow
                               forAxis:UILayoutConstraintAxisHorizontal];
+    [_title
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:UILayoutConstraintAxisVertical];
     [titleStackView addArrangedSubview:_title];
     // `setContentHuggingPriority:` does not guarantee that titleStackView
     // completely resists vertical expansion since UIStackViews do not have
