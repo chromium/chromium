@@ -8,8 +8,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -52,7 +55,10 @@ public class MissingDeviceLockCoordinator {
             Context context, ModalDialogManager modalDialogManager) {
         mView = MissingDeviceLockView.create(LayoutInflater.from(context));
 
-        mMediator = new MissingDeviceLockMediator(onContinueWithoutDeviceLock::onResult, context);
+        mMediator = new MissingDeviceLockMediator(
+                (wipeAllData)
+                        -> continueWithoutDeviceLock(wipeAllData, onContinueWithoutDeviceLock),
+                context);
 
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, MissingDeviceLockViewBinder::bind);
@@ -66,6 +72,14 @@ public class MissingDeviceLockCoordinator {
                         .with(ModalDialogProperties.DIALOG_STYLES,
                                 ModalDialogProperties.DialogStyles.NORMAL)
                         .build();
+    }
+
+    @VisibleForTesting
+    void continueWithoutDeviceLock(
+            Boolean wipeAllData, Callback<Boolean> onContinueWithoutDeviceLock) {
+        onContinueWithoutDeviceLock.onResult(wipeAllData);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED);
     }
 
     /**

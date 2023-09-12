@@ -23,6 +23,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountReauthenticationUtils;
@@ -93,17 +95,23 @@ public class DeviceLockMediator {
 
     private void onCreateDeviceLockClicked() {
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockDirectlyIntent(),
-                () -> maybeTriggerAccountReauthenticationChallenge(mDelegate::onDeviceLockReady));
+                () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
     private void onGoToOSSettingsClicked() {
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockThroughOSSettingsIntent(),
-                () -> maybeTriggerAccountReauthenticationChallenge(mDelegate::onDeviceLockReady));
+                () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
     private void onUserUnderstandsClicked() {
         triggerDeviceLockChallenge(
-                () -> maybeTriggerAccountReauthenticationChallenge(mDelegate::onDeviceLockReady));
+                () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
+    }
+
+    private void setDeviceLockReady() {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true);
+        mDelegate.onDeviceLockReady();
     }
 
     private void navigateToDeviceLockCreation(Intent intent, Runnable onSuccess) {

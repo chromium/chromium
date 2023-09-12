@@ -51,6 +51,8 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountReauthenticationUtils;
@@ -154,6 +156,8 @@ public class DeviceLockMediatorUnitTest {
                 ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
                 DeviceLockMediator.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM, "10");
         FeatureList.setTestValues(testValues);
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED);
     }
 
     @Test
@@ -393,6 +397,18 @@ public class DeviceLockMediatorUnitTest {
                 .confirmCredentialsOrRecentAuthentication(any(), any(), any(), any(), anyLong());
         verify(mDelegate, times(onDeviceLockReadyCalls)).onDeviceLockReady();
         verify(mDelegate, times(onDeviceLockRefusedCalls)).onDeviceLockRefused();
+
+        if (onDeviceLockReadyCalls > 0) {
+            assertTrue("Chrome should have recorded as passing the device lock page if the "
+                            + "device lock is ready.",
+                    SharedPreferencesManager.getInstance().readBoolean(
+                            ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
+        } else {
+            assertFalse("Chrome should not have recorded as passing the device lock page if the "
+                            + "device lock is not ready.",
+                    SharedPreferencesManager.getInstance().readBoolean(
+                            ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
+        }
     }
 
     private class MockDelegate implements DeviceLockCoordinator.Delegate {

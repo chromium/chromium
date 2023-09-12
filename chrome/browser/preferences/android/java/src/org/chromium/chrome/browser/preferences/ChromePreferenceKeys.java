@@ -242,6 +242,14 @@ public final class ChromePreferenceKeys {
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultOnCohortDisplaySpec";
 
     /**
+     * Whether the Device Lock page has been shown to the user and acknowledged with a device lock
+     * present. This is used to determine whether to show the device lock page when the user is
+     * interacting with sensitive personal data on the device.
+     */
+    public static final String DEVICE_LOCK_PAGE_HAS_BEEN_PASSED =
+            "Chrome.DeviceLockPage.HasBeenPassed";
+
+    /**
      * Indicates that Chrome should show an alert to the user about data privacy if the device
      * lock is removed.
      */
@@ -1011,6 +1019,7 @@ public final class ChromePreferenceKeys {
                 DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
                 DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
+                DEVICE_LOCK_PAGE_HAS_BEEN_PASSED,
                 DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 DSE_NEW_TAB_URL,
