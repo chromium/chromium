@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.ui.device_lock;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -82,7 +82,8 @@ public class MissingDeviceLockCoordinatorTest {
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 new MissingDeviceLockCoordinator(
                         (wipeAllData) -> {}, mActivity, mModalDialogManager);
-        assertNotEquals(missingDeviceLockCoordinator, null);
+        assertNotNull("The Missing Device Lock coordinator should not be null.",
+                missingDeviceLockCoordinator);
         missingDeviceLockCoordinator.showDialog();
         assertTrue("The modal dialog should be showing.", mModalDialogManager.isShowing());
         missingDeviceLockCoordinator.hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
