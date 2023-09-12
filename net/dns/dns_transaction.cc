@@ -1123,9 +1123,10 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     }
 
     base::UmaHistogramLongTimes(
-        base::StringPrintf("Net.DNS.ProbeSequence.%s.%s.AttemptTime",
-                           network_change ? "NetworkChange" : "ConfigChange",
-                           success ? "Success" : "Failure"),
+        base::JoinString({"Net.DNS.ProbeSequence",
+                          network_change ? "NetworkChange" : "ConfigChange",
+                          success ? "Success" : "Failure", "AttemptTime"},
+                         "."),
         base::TimeTicks::Now() - sequence_start_time);
   }
 

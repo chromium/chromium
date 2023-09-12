@@ -195,8 +195,9 @@ void ResolveContext::RecordServerFailure(size_t server_index,
         GetDohProviderIdForUma(server_index, true /* is_doh_server */, session);
 
     base::UmaHistogramSparse(
-        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureError",
-                           query_type.c_str(), provider_id.c_str()),
+        base::JoinString(
+            {"Net.DNS.DnsTransaction", query_type, provider_id, "FailureError"},
+            "."),
         std::abs(rv));
   }
 
@@ -529,13 +530,15 @@ void ResolveContext::RecordRttForUma(size_t server_index,
 
   if (rv == OK || rv == ERR_NAME_NOT_RESOLVED) {
     base::UmaHistogramMediumTimes(
-        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.SuccessTime",
-                           query_type.c_str(), provider_id.c_str()),
+        base::JoinString(
+            {"Net.DNS.DnsTransaction", query_type, provider_id, "SuccessTime"},
+            "."),
         rtt);
   } else {
     base::UmaHistogramMediumTimes(
-        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureTime",
-                           query_type.c_str(), provider_id.c_str()),
+        base::JoinString(
+            {"Net.DNS.DnsTransaction", query_type, provider_id, "FailureTime"},
+            "."),
         rtt);
   }
 }
@@ -648,8 +651,9 @@ void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
                                                      current_session_.get());
 
     base::UmaHistogramEnumeration(
-        base::StringPrintf("Net.DNS.ResolveContext.DohAutoupgrade.%s.Status",
-                           provider_id.c_str()),
+        base::JoinString(
+            {"Net.DNS.ResolveContext.DohAutoupgrade", provider_id, "Status"},
+            "."),
         status);
   }
 }
