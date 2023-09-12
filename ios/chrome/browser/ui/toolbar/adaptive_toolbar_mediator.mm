@@ -172,7 +172,7 @@
       break;
     case WebStateListChange::Type::kDetach: {
       if (webStateList->IsBatchInProgress()) {
-        return;
+        break;
       }
 
       [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
@@ -186,7 +186,7 @@
       break;
     case WebStateListChange::Type::kInsert: {
       if (webStateList->IsBatchInProgress()) {
-        return;
+        break;
       }
 
       [self.consumer setTabCount:_webStateList->count()
@@ -268,12 +268,10 @@
     _webStateList->RemoveObserver(_webStateListObserver.get());
   }
 
-  // TODO(crbug.com/727427):Add support for DCHECK(webStateList).
   _webStateList = webStateList;
-  self.webState = nil;
 
   if (_webStateList) {
-    self.webState = self.webStateList->GetActiveWebState();
+    self.webState = _webStateList->GetActiveWebState();
     _webStateList->AddObserver(_webStateListObserver.get());
 
     if (self.consumer) {
@@ -281,6 +279,7 @@
     }
   } else {
     // Clear the web navigation browser agent if the webStateList is nil.
+    self.webState = nil;
     self.navigationBrowserAgent = nil;
   }
 }
