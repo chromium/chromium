@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+mojom("mojo_bindings") {
+  sources = [ "performance.mojom" ]
+  webui_module_path = "/"
+  use_typescript_sources = true
+  public_deps = [
+    "//chrome/browser/resource_coordinator:mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//ui/base/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}

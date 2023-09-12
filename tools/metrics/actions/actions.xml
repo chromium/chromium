@@ -32332,6 +32332,14 @@ should be able to be added at any place in this file.
   <description>Recorded when the Lens side panel entry is shown.</description>
 </action>
 
+<action name="SidePanel.Performance.Shown">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <description>
+    Recorded when the performance side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.ReadAnything.Shown">
   <owner>abigailbklein@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

@@ -149,6 +149,10 @@ const base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>
         MemoryUsageInHovercardsUpdateTrigger::kBackground,
         &kMemoryUsageInHovercardsUpdateTriggerOptions};
 
+BASE_FEATURE(kPerformanceControlsSidePanel,
+             "PerformanceControlsSidePanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
