@@ -42,6 +42,10 @@ bool operator==(const LocalDataDescription& lhs,
 bool operator!=(const LocalDataDescription& lhs,
                 const LocalDataDescription& rhs);
 
+// gmock printer helper.
+void PrintTo(const LocalDataDescription& local_data_description,
+             std::ostream* os);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_SERVICE_LOCAL_DATA_DESCRIPTION_H_
