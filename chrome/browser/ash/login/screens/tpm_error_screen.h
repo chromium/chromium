@@ -16,6 +16,8 @@ class TpmErrorView;
 // Controller for the tpm error screen.
 class TpmErrorScreen : public BaseScreen {
  public:
+  using TView = TpmErrorView;
+
   enum class Result { kSkip };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
@@ -25,6 +27,10 @@ class TpmErrorScreen : public BaseScreen {
   TpmErrorScreen(const TpmErrorScreen&) = delete;
   TpmErrorScreen& operator=(const TpmErrorScreen&) = delete;
   ~TpmErrorScreen() override;
+
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
 
   static std::string GetResultString(Result result);
 

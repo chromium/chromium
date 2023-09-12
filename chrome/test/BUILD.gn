@@ -4259,6 +4259,7 @@ if (!is_android) {
         "../browser/ash/login/screens/terms_of_service_screen_browsertest.cc",
         "../browser/ash/login/screens/theme_selection_screen_browsertest.cc",
         "../browser/ash/login/screens/touchpad_scroll_screen_browsertest.cc",
+        "../browser/ash/login/screens/tpm_error_screen_browsertest.cc",
         "../browser/ash/login/screens/update_required_screen_browsertest.cc",
         "../browser/ash/login/screens/update_screen_browsertest.cc",
         "../browser/ash/login/screens/user_creation_screen_browsertest.cc",
