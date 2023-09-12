@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_shortcut_item.h"
 
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ash/app_list/app_service/app_service_shortcut_context_menu.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 // static
 const char AppServiceShortcutItem::kItemType[] = "AppServiceShortcutItem";
@@ -63,6 +65,17 @@ const char* AppServiceShortcutItem::GetItemType() const {
   return AppServiceShortcutItem::kItemType;
 }
 
+void AppServiceShortcutItem::LoadIcon() {
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->LoadShortcutIconWithBadge(
+          shortcut_id_, apps::IconType::kStandard,
+          ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+          ash::SharedAppListConfig::instance().shortcut_badge_icon_dimension(),
+          /*allow_placeholder_icon = */ false,
+          base::BindOnce(&AppServiceShortcutItem::OnLoadIcon,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
 void AppServiceShortcutItem::Activate(int event_flags) {
   int64_t display_id = GetController()->GetAppListDisplayId();
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchShortcut(
@@ -83,4 +96,28 @@ app_list::AppContextMenu* AppServiceShortcutItem::GetAppContextMenu() {
 
 void AppServiceShortcutItem::ExecuteLaunchCommand(int event_flags) {
   Activate(event_flags);
+}
+
+void AppServiceShortcutItem::OnLoadIcon(apps::IconValuePtr icon_value,
+                                        apps::IconValuePtr badge_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
+    return;
+  }
+  if (!badge_value || badge_value->icon_type != apps::IconType::kStandard) {
+    return;
+  }
+
+  // Temporary put the badge in with existing UI interface for testing purposes.
+  // The actual visual will be done in the UI layer with the icon and badge raw
+  // icons.
+  // TODO(crbug.com/1480423): Remove this when the actual visual is done in the
+  // UI.
+  gfx::ImageSkia icon_with_badge =
+      gfx::ImageSkiaOperations::CreateIconWithBadge(icon_value->uncompressed,
+                                                    badge_value->uncompressed);
+
+  SetIcon(icon_with_badge, icon_value->is_placeholder_icon);
+
+  // TODO(crbug.com/1412708): Add badge icon field in metadata and set the badge
+  // icon.
 }

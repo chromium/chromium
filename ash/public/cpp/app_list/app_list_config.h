@@ -32,6 +32,10 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
     return default_grid_icon_dimension_;
   }
 
+  int shortcut_badge_icon_dimension() const {
+    return shortcut_badge_icon_dimension_;
+  }
+
   size_t max_search_results() const { return max_search_results_; }
 
   size_t max_search_result_list_items() const {
@@ -106,6 +110,10 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   // The icon dimension of tile views in apps grid view.
   const int default_grid_icon_dimension_ = 64;
+
+  // The badge icon dimension of a shortcut in apps grid view.
+  // TODO(crbug.com/1480423): Update the size after the effects visual done.
+  const int shortcut_badge_icon_dimension_ = 32;
 
   // Maximum number of results to show in the launcher Search UI.
   const size_t max_search_results_ = 6;

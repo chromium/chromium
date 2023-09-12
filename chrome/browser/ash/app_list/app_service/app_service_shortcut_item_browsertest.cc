@@ -36,6 +36,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
+#include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
@@ -359,6 +360,34 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuReorder) {
   submenu->ActivatedAt(colour_reorder_command_index);
   EXPECT_EQ(ash::AppListSortOrder::kColor,
             chrome_model_updater->GetTemporarySortOrderForTest());
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, LoadIcon) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+
+  apps::StubIconLoader shortcut_stub_icon_loader;
+  apps::StubIconLoader app_stub_icon_loader;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->OverrideShortcutInnerIconLoaderForTesting(&shortcut_stub_icon_loader);
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
+  shortcut_stub_icon_loader.timelines_by_app_id_[shortcut_id.value()] = 1;
+  app_stub_icon_loader.timelines_by_app_id_[app_constants::kChromeAppId] = 1;
+
+  EXPECT_EQ(0, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(0, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  item->LoadIcon();
+  EXPECT_EQ(1, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(1, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
 }
 
 }  // namespace apps

@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
 namespace apps {
@@ -43,6 +45,7 @@ class AppServiceShortcutItem : public ChromeAppListItem,
 
   // ChromeAppListItem overrides:
   const char* GetItemType() const override;
+  void LoadIcon() override;
   void Activate(int event_flags) override;
   void GetContextMenuModel(ash::AppListItemContext item_context,
                            GetMenuModelCallback callback) override;
@@ -51,8 +54,13 @@ class AppServiceShortcutItem : public ChromeAppListItem,
   // app_list::AppContextMenuDelegate overrides:
   void ExecuteLaunchCommand(int event_flags) override;
 
+  void OnLoadIcon(apps::IconValuePtr icon_value,
+                  apps::IconValuePtr badge_value);
+
   std::unique_ptr<app_list::AppContextMenu> context_menu_;
 
   apps::ShortcutId shortcut_id_;
+
+  base::WeakPtrFactory<AppServiceShortcutItem> weak_ptr_factory_{this};
 };
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_SHORTCUT_ITEM_H_
