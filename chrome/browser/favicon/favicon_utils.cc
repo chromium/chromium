@@ -111,7 +111,7 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
 
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(contents);
-  // TODO(crbug.com/3041580): Investigate why some WebContents do not have
+  // TODO(crbug.com/1231506): Investigate why some WebContents do not have
   // an attached ContentFaviconDriver.
   if (!favicon_driver) {
     return gfx::Image();
