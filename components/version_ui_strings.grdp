@@ -100,8 +100,8 @@
     <message name="IDS_VERSION_UI_OS_TEXT2_LABEL" desc="End label text on the os://version page from ChromeOS which directs a user to a dialog showing Chrome browser specific version - enclosing url link.">
       .
     </message>
-    <message name="IDS_VERSION_UI_OS_LINK" translateable="false" desc="Label for a button on the os://version page from ChromeOS that will call a new window which allows to change Chrome browser version.">
-      chrome://version
+    <message name="IDS_VERSION_UI_OS_LINK" translateable="false" desc="Anchor tag on the os://version page from ChromeOS that will open a new browser tab which shows Chrome browser version.">
+      <ph name="BEGIN_LINK">&lt;a href="#" id="os-link-href" aria-describedby="os-link-desc"&gt;</ph>chrome://version<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
   </if>
   <if expr="chromeos_lacros">
@@ -111,8 +111,8 @@
     <message name="IDS_VERSION_UI_OS_TEXT2_LABEL" desc="End label text on the chrome://version page from ChromeOS which directs a user to a dialog showing OS specific version - enclosing url link.">
       .
     </message>
-    <message name="IDS_VERSION_UI_OS_LINK" translateable="false" desc="Label for button on the chrome://version page from ChromeOS that will call a new window which allows to change system version.">
-      os://version
+    <message name="IDS_VERSION_UI_OS_LINK" translateable="false" desc="Anchor tag on the chrome://version page in Lacros that will open a new window which shows the os version.">
+      <ph name="BEGIN_LINK">&lt;a href="os://version" id="os-link-href" aria-describedby="os-link-desc"&gt;</ph>os://version<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
   </if>
 </grit-part>

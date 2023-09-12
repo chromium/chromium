@@ -94,7 +94,6 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
     {version_ui::kFirmwareVersion, IDS_VERSION_UI_FIRMWARE_VERSION},
     {version_ui::kOsVersionHeaderText1, IDS_VERSION_UI_OS_TEXT1_LABEL},
     {version_ui::kOsVersionHeaderText2, IDS_VERSION_UI_OS_TEXT2_LABEL},
-    {version_ui::kOsVersionHeaderLink, IDS_VERSION_UI_OS_LINK},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     {version_ui::kOSName, IDS_VERSION_UI_OS},
@@ -104,6 +103,11 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
 #endif  // BUILDFLAG(IS_ANDROID)
   };
   html_source->AddLocalizedStrings(kStrings);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  auto os_link = l10n_util::GetStringUTF16(IDS_VERSION_UI_OS_LINK);
+  html_source->AddString(version_ui::kOsVersionHeaderLink, os_link);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   VersionUI::AddVersionDetailStrings(html_source);
 

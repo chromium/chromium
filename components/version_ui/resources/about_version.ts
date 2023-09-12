@@ -16,10 +16,10 @@ import './strings.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
-// <if expr="chromeos_ash or is_win or is_chromeos">
+// <if expr="is_chromeos or is_win">
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 // </if>
-// <if expr="is_chromeos">
+// <if expr="chromeos_ash">
 import {$} from 'chrome://resources/js/util_ts.js';
 // </if>
 // clang-format on
@@ -104,6 +104,9 @@ function returnCustomizationId(response: {[customizationId: string]: any}) {
       response['customizationId'];
 }
 
+// </if>
+
+// <if expr="chromeos_ash">
 /**
  * Callback from the backend to inform if Lacros is enabled or not.
  * @param enabled True if it is enabled.
@@ -123,7 +126,6 @@ function returnLacrosEnabled(enabled: string) {
 function crosUrlVersionRedirect() {
   chrome.send('crosUrlVersionRedirect');
 }
-
 // </if>
 
 function copyToClipboard() {
@@ -160,16 +162,24 @@ function initialize() {
   // <if expr="chromeos_lacros or is_win">
   addWebUiListener('return-os-version', returnOsVersion);
   // </if>
+
   // <if expr="is_chromeos">
   addWebUiListener('return-platform-version', returnPlatformVersion);
   addWebUiListener('return-firmware-version', returnFirmwareVersion);
   addWebUiListener(
       'return-arc-and-arc-android-sdk-versions',
       returnArcAndArcAndroidSdkVersions);
-  addWebUiListener('return-lacros-enabled', returnLacrosEnabled);
   getRequiredElement('arc_holder').hidden = true;
   chrome.chromeosInfoPrivate.get(['customizationId'])
       .then(returnCustomizationId);
+  // </if>
+
+  // <if expr="chromeos_ash">
+  addWebUiListener('return-lacros-enabled', returnLacrosEnabled);
+  // </if>
+  // <if expr="chromeos_lacros">
+  // We always display the container in Lacros
+  getRequiredElement('os-link-container').hidden = false;
   // </if>
 
   chrome.send('requestVersionInfo');

@@ -34,13 +34,11 @@ about:version template page
       <div class="os-link-container">
         <span class="os-link-icon"></span>
         <span aria-hidden="true" id="os-link-desc">$i18n{os-version-text1}</span>
-        <a href="#" id="os-link-href" aria-describedby="os-link-desc">
-          $i18n{os-version-link}
-        </a>
+        $i18nRaw{os-version-link}
         <span aria-hidden="true">$i18n{os-version-text2}</span>
       </div>
     </div>
-  </if>
+</if>
 
     <div id="outer">
       <div id="logo">
