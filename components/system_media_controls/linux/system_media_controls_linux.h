@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/dbus/properties/types.h"
@@ -19,6 +21,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DbusProperties;
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace dbus {
 class MethodCall;
@@ -39,6 +45,27 @@ COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPIPlayerInterfaceName[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPISignalSeeked[];
+
+// A helper class that deletes a file when going out of scope.
+class ScopedFile {
+ public:
+  ScopedFile();
+  ScopedFile(const base::FilePath& path,
+             scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+
+  ScopedFile(ScopedFile&& other) noexcept;
+  ScopedFile& operator=(ScopedFile&& rhs) noexcept;
+
+  ~ScopedFile();
+
+  const base::FilePath& path() const { return path_; }
+
+ private:
+  void Delete();
+
+  base::FilePath path_;
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+};
 
 // A D-Bus service conforming to the MPRIS spec:
 // https://specifications.freedesktop.org/mpris-spec/latest/
@@ -69,7 +96,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetTitle(const std::u16string& value) override;
   void SetArtist(const std::u16string& value) override;
   void SetAlbum(const std::u16string& value) override;
-  void SetThumbnail(const SkBitmap& bitmap) override {}
+  void SetThumbnail(const SkBitmap& bitmap) override;
   void SetPosition(const media_session::MediaPosition& position) override;
   void ClearThumbnail() override {}
   void ClearMetadata() override;
@@ -127,6 +154,8 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void StartPositionUpdateTimer();
   void StopPositionUpdateTimer();
 
+  void OnThumbnailFileWritten(ScopedFile thumbnail);
+
   absl::optional<media_session::MediaPosition> position_;
   base::RepeatingTimer position_update_timer_;
   bool playing_ = false;
@@ -149,7 +178,14 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   // True if we have finished creating the DBus service and received ownership.
   bool service_ready_ = false;
 
+  // A temporary file containing the thumbnail image.
+  ScopedFile thumbnail_;
+
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+
   base::ObserverList<SystemMediaControlsObserver> observers_;
+
+  base::WeakPtrFactory<SystemMediaControlsLinux> weak_factory_{this};
 };
 
 }  // namespace internal

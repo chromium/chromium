@@ -7,13 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -23,6 +30,8 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace system_media_controls {
 
@@ -48,6 +57,35 @@ const char kMprisAPINoTrackPath[] = "/org/mpris/MediaPlayer2/TrackList/NoTrack";
 const char kMprisAPICurrentTrackPathFormatString[] =
     "/org/chromium/MediaPlayer2/TrackList/Track%s";
 
+// Writes `bitmap` to a new temporary PNG file and returns a `ScopedFile`
+// that wraps it.  The path will be empty if the image was empty or the
+// image failed to write to the file.
+ScopedFile WriteBitmapToTmpFile(
+    const SkBitmap& bitmap,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner) {
+  if (bitmap.empty()) {
+    return {};
+  }
+
+  gfx::Image image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  auto data = image.As1xPNGBytes();
+
+  if (data->size() == 0) {
+    return {};
+  }
+
+  base::FilePath file_path;
+  if (!base::CreateTemporaryFile(&file_path)) {
+    return {};
+  }
+  ScopedFile scoped_file(std::move(file_path), file_task_runner);
+
+  if (!base::WriteFile(scoped_file.path(), *data)) {
+    return {};
+  }
+  return scoped_file;
+}
+
 }  // namespace
 
 const char kMprisAPIServiceNameFormatString[] =
@@ -57,11 +95,57 @@ const char kMprisAPIInterfaceName[] = "org.mpris.MediaPlayer2";
 const char kMprisAPIPlayerInterfaceName[] = "org.mpris.MediaPlayer2.Player";
 const char kMprisAPISignalSeeked[] = "Seeked";
 
+ScopedFile::ScopedFile() = default;
+
+ScopedFile::ScopedFile(
+    const base::FilePath& path,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner)
+    : path_(path), file_task_runner_(file_task_runner) {}
+
+ScopedFile::ScopedFile(ScopedFile&& other) noexcept {
+  if (!path_.empty()) {
+    CHECK_NE(path_, other.path_);
+  }
+  Delete();
+  path_ = std::move(other.path_);
+  file_task_runner_ = std::move(other.file_task_runner_);
+}
+
+ScopedFile& ScopedFile::operator=(ScopedFile&& other) noexcept {
+  if (!path_.empty()) {
+    CHECK_NE(path_, other.path_);
+  }
+  Delete();
+  path_ = std::move(other.path_);
+  file_task_runner_ = std::move(other.file_task_runner_);
+  return *this;
+}
+
+ScopedFile::~ScopedFile() {
+  Delete();
+}
+
+void ScopedFile::Delete() {
+  if (path_.empty()) {
+    return;
+  }
+  if (file_task_runner_->RunsTasksInCurrentSequence()) {
+    base::DeleteFile(path_);
+  } else {
+    file_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&base::DeleteFile), path_));
+  }
+  path_ = base::FilePath();
+}
+
 SystemMediaControlsLinux::SystemMediaControlsLinux(
     const std::string& product_name)
     : product_name_(product_name),
       service_name_(base::StringPrintf(kMprisAPIServiceNameFormatString,
-                                       base::Process::Current().Pid())) {}
+                                       base::Process::Current().Pid())),
+      file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
 
 SystemMediaControlsLinux::~SystemMediaControlsLinux() {
   if (bus_) {
@@ -163,6 +247,14 @@ void SystemMediaControlsLinux::SetAlbum(const std::u16string& value) {
       "xesam:album", MakeDbusVariant(DbusString(base::UTF16ToUTF8(value))));
 }
 
+void SystemMediaControlsLinux::SetThumbnail(const SkBitmap& bitmap) {
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&WriteBitmapToTmpFile, bitmap, file_task_runner_),
+      base::BindOnce(&SystemMediaControlsLinux::OnThumbnailFileWritten,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void SystemMediaControlsLinux::SetPosition(
     const media_session::MediaPosition& position) {
   position_ = position;
@@ -176,6 +268,7 @@ void SystemMediaControlsLinux::ClearMetadata() {
   SetTitle(std::u16string());
   SetArtist(std::u16string());
   SetAlbum(std::u16string());
+  SetThumbnail(SkBitmap());
   ClearTrackId();
   ClearPosition();
 }
@@ -488,6 +581,13 @@ void SystemMediaControlsLinux::StartPositionUpdateTimer() {
 
 void SystemMediaControlsLinux::StopPositionUpdateTimer() {
   position_update_timer_.Stop();
+}
+
+void SystemMediaControlsLinux::OnThumbnailFileWritten(ScopedFile thumbnail) {
+  const auto& path = thumbnail.path();
+  auto url = path.empty() ? "" : "file://" + base::EscapePath(path.value());
+  SetMetadataPropertyInternal("mpris:artUrl", MakeDbusVariant(DbusString(url)));
+  thumbnail_ = std::move(thumbnail);
 }
 
 }  // namespace internal
