@@ -362,7 +362,7 @@ void LayoutShiftTracker::ObjectShifted(
 
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
+    VLOG(2) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", " << object << " moved from "
             << old_rect_in_root.ToString() << " to "
             << new_rect_in_root.ToString() << " (visible from "
@@ -371,7 +371,7 @@ void LayoutShiftTracker::ObjectShifted(
     if (old_starting_point_in_root != old_rect_in_root.origin() ||
         new_starting_point_in_root != new_rect_in_root.origin() ||
         !translation_delta.IsZero() || !scroll_delta.IsZero()) {
-      VLOG(1) << " (starting point from "
+      VLOG(2) << " (starting point from "
               << old_starting_point_in_root.ToString() << " to "
               << new_starting_point_in_root.ToString() << ")";
     }
@@ -554,7 +554,7 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
 
   LocalFrame& frame = frame_view_->GetFrame();
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
+    VLOG(2) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url() << ", viewport was "
             << (impact_fraction * 100) << "% impacted with distance fraction "
             << move_distance_factor << " and subframe weighting factor "
@@ -635,7 +635,7 @@ void LayoutShiftTracker::ReportShift(double score_delta,
       "frame", GetFrameIdForTracing(&frame));
 
   if (ShouldLog(frame)) {
-    VLOG(1) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
+    VLOG(2) << "in " << (frame.IsOutermostMainFrame() ? "" : "subframe ")
             << frame.GetDocument()->Url().GetString() << ", layout shift of "
             << score_delta
             << (had_recent_input ? " excluded by recent input" : " reported")
