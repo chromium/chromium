@@ -3317,8 +3317,6 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     return;
   }
 
-  layout_view->SetPageScaleFactor(1.0);
-
   // Set up the initial containing block size for pagination. This is defined as
   // the page area size of the *first* page. [1] The size of the first page may
   // not be fully known yet, e.g. if the first page is named [2] and given a
@@ -3391,12 +3389,15 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   }
 
   if (overall_scale_factor > 1.0) {
-    // Re-layout and apply the same scale factor to all pages.
+    // Re-layout and apply the same scale factor to all pages. PageScaleFactor()
+    // has already been set to honor any scale factor from print settings. That
+    // has to be included as well.
     //
     // Note that we deliberately don't set a new initial containing block size
     // here. But should we? EdgeHTML does it. Gecko doesn't. WebKit is buggy
     // (uses the initial block based on the browser frame size).
-    layout_view->SetPageScaleFactor(overall_scale_factor);
+    layout_view->SetPageScaleFactor(layout_view->PageScaleFactor() *
+                                    overall_scale_factor);
     layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kPrintingChanged);
     frame_->GetDocument()->UpdateStyleAndLayout(
