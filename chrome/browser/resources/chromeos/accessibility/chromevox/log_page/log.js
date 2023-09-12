@@ -219,10 +219,6 @@ export class LogPage {
   }
 }
 
-document.addEventListener('DOMContentLoaded', async function() {
-  await LogPage.init();
-}, false);
-
 /** @type {LogPage} */
 LogPage.instance;
 

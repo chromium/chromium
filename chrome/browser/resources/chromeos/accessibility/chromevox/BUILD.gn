@@ -156,6 +156,7 @@ chromevox_es6_modules = [
   "common/tts_types.js",
   "learn_mode/learn_mode.js",
   "log_page/log.js",
+  "log_page/log_loader.js",
   "options/bluetooth_braille_display_manager.js",
   "options/bluetooth_braille_display_ui.js",
   "options/options.js",
