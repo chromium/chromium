@@ -462,4 +462,31 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSetEnabled) {
   EXPECT_TRUE(controller->live_caption().enabled());
 }
 
+TEST_F(AudioEffectsControllerTest, LiveCaptionAndNoiseCancellationAdded) {
+  // Prepare noise cancellation support.
+  fake_cras_audio_client()->SetNoiseCancellationSupported(true);
+  cras_audio_handler()->RequestNoiseCancellationSupported(base::DoNothing());
+
+  // Ensure that live caption is supported.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
+       features::kOnDeviceSpeechRecognition,
+       features::kShowLiveCaptionInVideoConferenceTray},
+      {});
+
+  SimulateUserLogin("testuser1@gmail.com");
+
+  // Both effects should be supported and added.
+  EXPECT_TRUE(audio_effects_controller()->IsEffectSupported(
+      VcEffectId::kNoiseCancellation));
+  EXPECT_TRUE(
+      audio_effects_controller()->IsEffectSupported(VcEffectId::kLiveCaption));
+
+  EXPECT_TRUE(audio_effects_controller()->GetEffectById(
+      VcEffectId::kNoiseCancellation));
+  EXPECT_TRUE(
+      audio_effects_controller()->GetEffectById(VcEffectId::kLiveCaption));
+}
+
 }  // namespace ash
