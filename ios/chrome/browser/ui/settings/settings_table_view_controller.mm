@@ -1643,7 +1643,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showGoogleSync {
-  DCHECK(!_manageSyncSettingsCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
   // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
@@ -1660,7 +1662,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showPasswords {
-  DCHECK(!_passwordsCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_passwordsCoordinator);
   _passwordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1669,9 +1673,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 // Shows Safety Check Screen.
-// TODO(crbug.com/1464966): Make sure there aren't mutiple active
-// `_safetyCheckCoordinator`s at once.
 - (void)showSafetyCheck {
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_safetyCheckCoordinator);
+
   _safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1733,7 +1739,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Shows Privacy screen.
 - (void)showPrivacy {
-  DCHECK(!_privacyCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!_privacyCoordinator);
   _privacyCoordinator = [[PrivacyCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -2000,12 +2008,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self.applicationCommandsHandler showSignin:command baseViewController:self];
 }
 
-#pragma mark Sign in
+#pragma mark - Sign in
 
 - (void)showSignInWithIdentity:(id<SystemIdentity>)identity
                    promoAction:(signin_metrics::PromoAction)promoAction
                     completion:(ShowSigninCommandCompletionCallback)completion {
-  DCHECK(!self.isSigninInProgress);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!self.isSigninInProgress);
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   AuthenticationOperation operation =

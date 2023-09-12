@@ -173,9 +173,8 @@ using password_manager::WarningType;
 
 #pragma mark - SafetyCheckNavigationCommands
 
-// TODO(crbug.com/1464966): Make sure there aren't mutiple active
-// `passwordCheckupCoordinator`s at once.
 - (void)showPasswordCheckupPage {
+  DUMP_WILL_BE_CHECK(!self.passwordCheckupCoordinator);
   CHECK(password_manager::features::IsPasswordCheckupEnabled());
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
@@ -189,7 +188,7 @@ using password_manager::WarningType;
 
 - (void)showPasswordIssuesPage {
   CHECK(!password_manager::features::IsPasswordCheckupEnabled());
-  CHECK(!self.passwordIssuesCoordinator);
+  DUMP_WILL_BE_CHECK(!self.passwordIssuesCoordinator);
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
             initForWarningType:WarningType::kCompromisedPasswordsWarning
       baseNavigationController:self.baseNavigationController

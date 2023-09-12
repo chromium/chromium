@@ -250,9 +250,11 @@ using password_manager::WarningType;
   [self.passwordCheckupCoordinator start];
 }
 
-// TODO(crbug.com/1464966): Make sure there aren't mutiple active
-// `passwordIssuesCoordinator`s at once.
 - (void)showPasswordIssues {
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!self.passwordIssuesCoordinator);
+
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
@@ -283,7 +285,9 @@ using password_manager::WarningType;
 
 - (void)showDetailedViewForAffiliatedGroup:
     (const password_manager::AffiliatedGroup&)affiliatedGroup {
-  DCHECK(!self.passwordDetailsCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!self.passwordDetailsCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
@@ -297,7 +301,9 @@ using password_manager::WarningType;
 }
 
 - (void)showAddPasswordSheet {
-  DCHECK(!self.addPasswordCoordinator);
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!self.addPasswordCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
