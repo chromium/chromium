@@ -117,7 +117,7 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
   return IsDriveAvailableForProfile(profile);
 }
 
-bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
+bool IsDriveFsBulkPinningAvailable(const Profile* const profile) {
   // Check the "DriveFsBulkPinning" Chrome feature. If this feature is disabled,
   // then it probably means that the kill switch has been activated, and the
   // bulk-pinning feature should not be available.
@@ -158,21 +158,21 @@ bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
                      user->GetAccountId().GetUserEmail());
 }
 
-bool IsDriveFsBulkPinningEnabled() {
-  return IsDriveFsBulkPinningEnabled(ProfileManager::GetActiveUserProfile());
+bool IsDriveFsBulkPinningAvailable() {
+  return IsDriveFsBulkPinningAvailable(ProfileManager::GetActiveUserProfile());
 }
 
-bool IsOobeDrivePinningEnabled(const Profile* const profile) {
+bool IsOobeDrivePinningAvailable(const Profile* const profile) {
   const bool b =
       base::FeatureList::IsEnabled(ash::features::kOobeDrivePinning) &&
       ash::features::IsOobeChoobeEnabled() &&
-      IsDriveFsBulkPinningEnabled(profile);
-  VLOG(1) << "IsOobeDrivePinningEnabled() returned " << b;
+      IsDriveFsBulkPinningAvailable(profile);
+  VLOG(1) << "IsOobeDrivePinningAvailable() returned " << b;
   return b;
 }
 
-bool IsOobeDrivePinningEnabled() {
-  return IsOobeDrivePinningEnabled(ProfileManager::GetActiveUserProfile());
+bool IsOobeDrivePinningAvailable() {
+  return IsOobeDrivePinningAvailable(ProfileManager::GetActiveUserProfile());
 }
 
 std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {

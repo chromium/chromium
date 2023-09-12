@@ -1354,7 +1354,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
 
   dict->Set("DRIVE_FS_BULK_PINNING",
-            drive::util::IsDriveFsBulkPinningEnabled(profile));
+            drive::util::IsDriveFsBulkPinningAvailable(profile));
 
   dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
 

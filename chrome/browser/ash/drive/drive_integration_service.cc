@@ -371,7 +371,7 @@ enum class BulkPinningMountFailureReason {
 
 void RecordBulkPinningMountFailureReason(const Profile* profile,
                                          BulkPinningMountFailureReason reason) {
-  if (!drive::util::IsDriveFsBulkPinningEnabled(profile)) {
+  if (!util::IsDriveFsBulkPinningAvailable(profile)) {
     return;
   }
   base::UmaHistogramEnumeration(
@@ -397,7 +397,7 @@ void DriveIntegrationService::RegisterPrefs() {
                             base::Unretained(this)));
   }
 
-  if (util::IsDriveFsBulkPinningEnabled(profile_)) {
+  if (util::IsDriveFsBulkPinningAvailable(profile_)) {
     registrar_.Add(
         kDriveFsBulkPinningEnabled,
         base::BindRepeating(&DriveIntegrationService::ToggleBulkPinning,
@@ -896,7 +896,7 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
     LOG(WARNING) << "DriveFS data directory '" << data_dir
                  << "' went missing and got created again";
 
-    if (util::IsDriveFsBulkPinningEnabled(profile_)) {
+    if (util::IsDriveFsBulkPinningAvailable(profile_)) {
       LOG(WARNING)
           << "Displaying system notification and disabling bulk-pinning";
 
@@ -1052,7 +1052,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   }
 
   // Enable bulk-pinning if the feature is enabled.
-  if (util::IsDriveFsBulkPinningEnabled(profile_)) {
+  if (util::IsDriveFsBulkPinningAvailable(profile_)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     // Instantiate a PinManager.
@@ -1237,7 +1237,7 @@ void DriveIntegrationService::ToggleBulkPinning() {
 
 void DriveIntegrationService::GetTotalPinnedSize(
     base::OnceCallback<void(int64_t)> callback) {
-  if (!util::IsDriveFsBulkPinningEnabled(profile_) || !IsMounted() ||
+  if (!util::IsDriveFsBulkPinningAvailable(profile_) || !IsMounted() ||
       !GetDriveFsInterface()) {
     std::move(callback).Run(-1);
     return;
@@ -1269,7 +1269,7 @@ void DriveIntegrationService::OnGetOfflineFilesSpaceUsage(
 
 void DriveIntegrationService::ClearOfflineFiles(
     base::OnceCallback<void(drive::FileError)> callback) {
-  if (!util::IsDriveFsBulkPinningEnabled(profile_) || !IsMounted() ||
+  if (!util::IsDriveFsBulkPinningAvailable(profile_) || !IsMounted() ||
       !GetDriveFsInterface()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
     return;

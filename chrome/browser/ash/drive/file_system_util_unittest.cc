@@ -66,7 +66,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, SetDriveConnectionStatusForTesting) {
   }
 }
 
-TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningEnabled) {
+TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
   TestingProfile profile;
   PrefService* const prefs = profile.GetPrefs();
   DCHECK(prefs);
@@ -77,27 +77,27 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningEnabled) {
     ScopedFeatureList features;
     features.InitWithFeatures(
         {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
-    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(&profile));
-    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
-    EXPECT_TRUE(IsDriveFsBulkPinningEnabled());
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable());
   }
 
   {
     ScopedFeatureList features;
     features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning},
                               {kDriveFsBulkPinning});
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(&profile));
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(nullptr));
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled());
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable());
   }
 
   {
     ScopedFeatureList features;
     features.InitWithFeatures({kDriveFsBulkPinning},
                               {kFeatureManagementDriveFsBulkPinning});
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(&profile));
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(nullptr));
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled());
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable());
   }
 
   prefs->SetBoolean(prefs::kDriveFsBulkPinningVisible, false);
@@ -106,8 +106,8 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningEnabled) {
     ScopedFeatureList features;
     features.InitWithFeatures(
         {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(&profile));
-    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
 
   prefs->SetBoolean(prefs::kDriveFsBulkPinningVisible, true);
@@ -116,8 +116,8 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningEnabled) {
     ScopedFeatureList features;
     features.InitWithFeatures(
         {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
-    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(&profile));
-    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
 
   {
@@ -128,8 +128,8 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningEnabled) {
     ScopedFeatureList features;
     features.InitWithFeatures(
         {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
-    EXPECT_FALSE(IsDriveFsBulkPinningEnabled(profile_with_domain.get()));
-    EXPECT_TRUE(IsDriveFsBulkPinningEnabled(nullptr));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(profile_with_domain.get()));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
 }
 

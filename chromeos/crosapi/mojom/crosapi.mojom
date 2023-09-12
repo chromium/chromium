@@ -1424,8 +1424,8 @@ struct BrowserInitParams {
 
   // If true, the DriveFsBulkPinning flag and it's accompanying feature
   // management flag has been enabled.
-  [MinVersion=65]
-  bool is_drivefs_bulk_pinning_enabled@65;
+  [MinVersion=65, RenamedFrom="is_drivefs_bulk_pinning_enabled"]
+  bool is_drivefs_bulk_pinning_available@65;
 
   // Tell lacros whether the device is available to enable Floss.
   [MinVersion=66]

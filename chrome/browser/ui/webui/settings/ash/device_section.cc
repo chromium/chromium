@@ -1995,8 +1995,9 @@ void DeviceSection::AddDeviceDisplayStrings(
   html_source->AddString("invalidDisplayId",
                          base::NumberToString(display::kInvalidDisplayId));
 
-  html_source->AddBoolean("enableDriveFsBulkPinning",
-                          drive::util::IsDriveFsBulkPinningEnabled(profile()));
+  html_source->AddBoolean(
+      "enableDriveFsBulkPinning",
+      drive::util::IsDriveFsBulkPinningAvailable(profile()));
 
   html_source->AddBoolean(
       "allowDisplayAlignmentApi",

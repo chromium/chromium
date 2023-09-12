@@ -2161,7 +2161,7 @@ void UserSessionManager::PerformPostBrowserLaunchOOBEActions(Profile* profile) {
   if (features::IsOobeDisplaySizeEnabled()) {
     DisplaySizeScreen::MaybeUpdateZoomFactor(profile);
   }
-  if (drive::util::IsOobeDrivePinningEnabled(profile)) {
+  if (drive::util::IsOobeDrivePinningAvailable(profile)) {
     DrivePinningScreen::ApplyDrivePinningPref(profile);
   }
 }

@@ -416,7 +416,7 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
       metadata->available_offline || *properties_->hosted;
   properties_->pinned = metadata->pinned;
 
-  if (drive::util::IsDriveFsBulkPinningEnabled(running_profile_)) {
+  if (drive::util::IsDriveFsBulkPinningAvailable(running_profile_)) {
     properties_->available_offline =
         (drivefs::IsHosted(metadata->type) &&
          !drive::util::IsPinnableGDocMimeType(metadata->content_mime_type))

@@ -107,11 +107,11 @@ constexpr Translation kNameTranslations[] = {
 // clang-format on
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool IsDriveFsBulkPinningEnabled() {
+bool IsDriveFsBulkPinningAvailable() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsDriveFsBulkPinningEnabled();
+  return chromeos::BrowserParamsProxy::Get()->IsDriveFsBulkPinningAvailable();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return drive::util::IsDriveFsBulkPinningEnabled();
+  return drive::util::IsDriveFsBulkPinningAvailable();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -130,7 +130,7 @@ ExternalInstallOptions GetConfigForGoogleDocs() {
   options.expected_app_id = kGoogleDocsAppId;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (IsDriveFsBulkPinningEnabled()) {
+  if (IsDriveFsBulkPinningAvailable()) {
     VLOG(1) << "DriveFsBulkPinning enabled, registering service worker";
     options.load_and_await_service_worker_registration = true;
     options.only_use_app_info_factory = false;

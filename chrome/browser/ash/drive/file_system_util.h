@@ -40,10 +40,10 @@ bool IsDriveEnabledForProfile(const Profile* profile);
 // feature has been activated (turned on) by the user. It merely indicates
 // whether the bulk-pinning feature is available and can be turned on by the
 // user if they choose to.
-[[nodiscard]] bool IsDriveFsBulkPinningEnabled(const Profile* profile);
-[[nodiscard]] bool IsDriveFsBulkPinningEnabled();
-[[nodiscard]] bool IsOobeDrivePinningEnabled(const Profile* profile);
-[[nodiscard]] bool IsOobeDrivePinningEnabled();
+[[nodiscard]] bool IsDriveFsBulkPinningAvailable(const Profile* profile);
+[[nodiscard]] bool IsDriveFsBulkPinningAvailable();
+[[nodiscard]] bool IsOobeDrivePinningAvailable(const Profile* profile);
+[[nodiscard]] bool IsOobeDrivePinningAvailable();
 
 // Connection status to Drive.
 enum class ConnectionStatus {

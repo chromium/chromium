@@ -590,7 +590,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    const bool enabled = drive::util::IsDriveFsBulkPinningEnabled(profile());
+    const bool enabled = drive::util::IsDriveFsBulkPinningAvailable(profile());
     SetSectionEnabled("bulk-pinning-section", enabled);
     if (!enabled) {
       return;

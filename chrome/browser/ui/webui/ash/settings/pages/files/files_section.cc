@@ -126,13 +126,13 @@ FilesSection::FilesSection(Profile* profile,
     updater.AddSearchTags(GetFilesOfficeSearchConcepts());
   }
 
-  if (drive::util::IsDriveFsBulkPinningEnabled(profile)) {
+  if (drive::util::IsDriveFsBulkPinningAvailable(profile)) {
     updater.AddSearchTags(GetFilesGoogleDriveFileSyncSearchConcepts());
   }
 
   if (base::FeatureList::IsEnabled(
           ash::features::kFilesGoogleDriveSettingsPage) ||
-      drive::util::IsDriveFsBulkPinningEnabled(profile)) {
+      drive::util::IsDriveFsBulkPinningAvailable(profile)) {
     updater.AddSearchTags(GetFilesGoogleDriveSubpageSearchConcepts());
   } else {
     updater.AddSearchTags(GetFilesGoogleDriveDisconnectSearchConcepts());
@@ -285,8 +285,9 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
             base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
   }
 
-  html_source->AddBoolean("enableDriveFsBulkPinning",
-                          drive::util::IsDriveFsBulkPinningEnabled(profile()));
+  html_source->AddBoolean(
+      "enableDriveFsBulkPinning",
+      drive::util::IsDriveFsBulkPinningAvailable(profile()));
 
   html_source->AddBoolean("showGoogleDriveSettingsPage",
                           base::FeatureList::IsEnabled(

@@ -73,7 +73,7 @@ void ChromeFileManagerUIDelegate::PollHostedPinStates() {
   }
 
   base::TimeDelta poll_delay =
-      drive::util::IsDriveFsBulkPinningEnabled(Profile::FromWebUI(web_ui_))
+      drive::util::IsDriveFsBulkPinningAvailable(Profile::FromWebUI(web_ui_))
           ? base::Seconds(15)
           : base::Minutes(3);
 

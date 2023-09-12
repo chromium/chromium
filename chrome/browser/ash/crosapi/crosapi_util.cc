@@ -659,8 +659,8 @@ void InjectBrowserInitParams(
 
   params->is_pdf_ocr_enabled = ::features::IsPdfOcrEnabled();
 
-  params->is_drivefs_bulk_pinning_enabled =
-      drive::util::IsDriveFsBulkPinningEnabled();
+  params->is_drivefs_bulk_pinning_available =
+      drive::util::IsDriveFsBulkPinningAvailable();
 
   params->is_sys_ui_downloads_integration_v2_enabled =
       ash::features::IsSysUiDownloadsIntegrationV2Enabled();

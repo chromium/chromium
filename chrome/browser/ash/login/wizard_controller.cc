@@ -879,7 +879,7 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (drive::util::IsOobeDrivePinningEnabled()) {
+  if (drive::util::IsOobeDrivePinningAvailable()) {
     append(std::make_unique<DrivePinningScreen>(
         oobe_ui->GetView<DrivePinningScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnDrivePinningScreenExit,
@@ -1020,7 +1020,7 @@ void WizardController::ShowDemoModeSetupScreen() {
 }
 
 void WizardController::ShowDrivePinningScreen() {
-  if (drive::util::IsOobeDrivePinningEnabled()) {
+  if (drive::util::IsOobeDrivePinningAvailable()) {
     SetCurrentScreen(GetScreen(DrivePinningScreenView::kScreenId));
   } else {
     OnDrivePinningScreenExit(DrivePinningScreen::Result::NOT_APPLICABLE);
@@ -1508,7 +1508,7 @@ void WizardController::OnConsolidatedConsentScreenExit(
   OnScreenExit(ConsolidatedConsentScreenView::kScreenId,
                ConsolidatedConsentScreen::GetResultString(result));
 
-  if (drive::util::IsOobeDrivePinningEnabled()) {
+  if (drive::util::IsOobeDrivePinningAvailable()) {
     GetScreen<DrivePinningScreen>()->StartCalculatingRequiredSpace();
   }
 

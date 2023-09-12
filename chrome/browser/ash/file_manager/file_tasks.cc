@@ -558,7 +558,7 @@ void RecordDriveOfflineUMAs(Profile* profile,
           file_url.path(),
           base::BindOnce(&RecordDriveOfflineUMAsGotMetadata, profile, type));
       if (!integration_service->IsOnline() &&
-          drive::util::IsDriveFsBulkPinningEnabled(profile) &&
+          drive::util::IsDriveFsBulkPinningAvailable(profile) &&
           profile->GetPrefs()->GetBoolean(
               drive::prefs::kDriveFsBulkPinningEnabled)) {
         base::UmaHistogramEnumeration(
