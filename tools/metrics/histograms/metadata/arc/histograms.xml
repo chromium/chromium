@@ -2733,7 +2733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
-    expires_after="2023-09-16">
+    expires_after="2024-03-16">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2747,7 +2747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Event" enum="WaylandTimingEvent"
-    expires_after="2024-01-21">
+    expires_after="2024-03-16">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
