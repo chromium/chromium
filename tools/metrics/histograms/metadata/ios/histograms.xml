@@ -2682,9 +2682,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
-    expires_after="2023-10-25">
+    expires_after="2024-04-25">
   <owner>gujen@google.com</owner>
-  <owner>ios-google-eng-ios@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Counts the number of Chrome Siri Shortcuts that the user has created in the
     Siri Shortcuts app. This is recorded once during startup. The histogram caps
@@ -2693,8 +2693,7 @@ chromium-metrics-reviews@google.com.
     isn't a Chrome-provided one. For example, a shortcut that opens URLs in
     Chrome and then opens URLs in another app won't be counted. As such, this
     metric undercounts the true number of Chrome shortcuts. This is a
-    restriction of the native Shortcuts API. This histogram is actively being
-    monitored by the iOS at Google team.
+    restriction of the native Shortcuts API.
   </summary>
 </histogram>
 
