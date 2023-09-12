@@ -19,7 +19,7 @@ namespace {
 // AutoNeedsBeginFrame, notifies the remote side to pause BeginFrame requests
 // after the client hasn't produced frames for kPauseBeginFrameThreshold frames.
 // Using a number so that the feature kicks in relatively quickly, but it is
-// also not overlly sensitive when the system occasionally drops frames.
+// also not overly sensitive when the system occasionally drops frames.
 constexpr int32_t kPauseBeginFrameThreshold = 5;
 
 }  // namespace
@@ -424,14 +424,18 @@ void LayerTreeFrameSinkHolder::OnSendDeadlineExpired(bool update_timer) {
     pending_begin_frames_.pop();
 
     frame_timing_history_->FrameDidNotProduce();
-    if (!pending_begin_frames_.empty()) {
+
+    bool should_pause_begin_frame =
+        frame_sink_->auto_needs_begin_frame() &&
+        frame_timing_history_->consecutive_did_not_produce_count() >=
+            kPauseBeginFrameThreshold;
+
+    if (!pending_begin_frames_.empty() || should_pause_begin_frame) {
       frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(
           /*valid=*/false);
     }
 
-    if (frame_sink_->auto_needs_begin_frame() &&
-        frame_timing_history_->consecutive_did_not_produce_count() >=
-            kPauseBeginFrameThreshold) {
+    if (should_pause_begin_frame) {
       ObserveBeginFrameSource(false);
     }
   }

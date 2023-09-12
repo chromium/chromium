@@ -40,10 +40,10 @@ class FrameTimingHistory {
   // Records a value for DidNotProduceToFrameArrival histogram if applicable.
   // For each DidNotProduceFrame response, the first call to this method
   // reports one value; the subsequent calls (if any) are ignored.
-  //   - `valid` set to false indicates that either (1) DidNotProduceFrame is
-  //     issued when there are already queued BeginFrame requests; or (2) a new
-  //     BeginFrame request arrives before the next frame. In this case the
-  //     value reported is 0.
+  //   - `valid` set to false indicates that (1) DidNotProduceFrame is issued
+  //     when there are already queued BeginFrame requests; or (2) a new
+  //     BeginFrame request arrives before the next frame; or (3) BeginFrame
+  //     requests are paused. In this case the value reported is 0.
   //   - `valid` set to true: called at the next frame arrival time, reporting
   //     the duration between sending the DidNotProduceFrame response and the
   //     next frame arrival.

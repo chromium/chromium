@@ -1048,7 +1048,8 @@ chromium-metrics-reviews@google.com.
     frames is reasonable. Please note that a value is reported for each
     DidNotProduceFrame. If (1) DidNotProduceFrame is issued when there are
     already queued BeginFrame requests; or (2) a new BeginFrame request arrives
-    before the next frame, then the value reported is 0.
+    before the next frame; or (3) BeginFrame requests are paused, then the value
+    reported is 0.
   </summary>
 </histogram>
 
