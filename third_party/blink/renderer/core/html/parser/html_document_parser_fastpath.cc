@@ -649,7 +649,10 @@ class HTMLFastPathParser {
     Span result;
     SkipWhitespace();
     const Char* start = pos_;
-    if (Char quote_char = GetNext(); quote_char == '"' || quote_char == '\'') {
+    // clang-format off
+    if (Char quote_char = GetNext();
+        quote_char == '"' || quote_char == '\'') {
+      // clang-format on
       start = ++pos_;
       while (pos_ != end_) {
         uint16_t c = GetNext();
@@ -664,6 +667,11 @@ class HTMLFastPathParser {
           return {Span{}, ScanEscapedAttrValue()};
         } else if (c == kDoubleQuote || c == kSingleQuote) {
           break;
+        } else if (UNLIKELY(c == '\0')) {
+          // \0 is generally mapped to \uFFFD (but there are exceptions).
+          // Fallback to normal path as this generally does not happen often.
+          return Fail(HtmlFastPathResult::kFailedParsingQuotedAttributeValue,
+                      std::pair{Span{}, USpan{}});
         } else {
           ++pos_;
         }
