@@ -194,6 +194,16 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
   }
 }
 
+void ChromeAppListItem::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
+  TRACE_EVENT0("ui", "ChromeAppListItem::SetBadgeIcon");
+  metadata_->badge_icon = badge_icon;
+
+  AppListModelUpdater* updater = model_updater();
+  if (updater) {
+    updater->SetItemBadgeIcon(id(), metadata_->badge_icon);
+  }
+}
+
 void ChromeAppListItem::SetAppStatus(ash::AppStatus app_status) {
   TRACE_EVENT0("ui", "ChromeAppListItem::SetAppStatus");
   metadata_->app_status = app_status;

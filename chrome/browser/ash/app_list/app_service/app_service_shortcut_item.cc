@@ -118,6 +118,5 @@ void AppServiceShortcutItem::OnLoadIcon(apps::IconValuePtr icon_value,
 
   SetIcon(icon_with_badge, icon_value->is_placeholder_icon);
 
-  // TODO(crbug.com/1412708): Add badge icon field in metadata and set the badge
-  // icon.
+  SetBadgeIcon(badge_value->uncompressed);
 }

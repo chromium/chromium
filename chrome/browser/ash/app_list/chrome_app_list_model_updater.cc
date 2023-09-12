@@ -433,6 +433,22 @@ void ChromeAppListModelUpdater::SetItemIconAndColor(
     OnAppListItemUpdated(item);
 }
 
+void ChromeAppListModelUpdater::SetItemBadgeIcon(
+    const std::string& id,
+    const gfx::ImageSkia& badge_icon) {
+  TRACE_EVENT0("ui", "ChromeAppListModelUpdater::SetItemBadgeIcon");
+  if (badge_icon.isNull()) {
+    return;
+  }
+  ash::AppListItem* item = model_.FindItem(id);
+  if (!item) {
+    return;
+  }
+  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
+  data->badge_icon = badge_icon;
+  model_.SetItemMetadata(id, std::move(data));
+}
+
 void ChromeAppListModelUpdater::SetItemName(const std::string& id,
                                             const std::string& name) {
   TRACE_EVENT0("ui", "ChromeAppListModelUpdater::SetItemName");

@@ -67,6 +67,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void SetItemIconAndColor(const std::string& id,
                            const gfx::ImageSkia& icon,
                            const ash::IconColor& icon_color) override;
+  void SetItemBadgeIcon(const std::string& id,
+                        const gfx::ImageSkia& badge_icon) override;
   void SetItemName(const std::string& id, const std::string& name) override;
   void SetAppStatus(const std::string& id, ash::AppStatus app_status) override;
   void SetItemPosition(const std::string& id,

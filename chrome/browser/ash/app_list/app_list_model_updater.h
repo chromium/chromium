@@ -74,6 +74,8 @@ class AppListModelUpdater {
   virtual void SetItemIconAndColor(const std::string& id,
                                    const gfx::ImageSkia& icon,
                                    const ash::IconColor& icon_color) {}
+  virtual void SetItemBadgeIcon(const std::string& id,
+                                const gfx::ImageSkia& badge_icon) {}
   virtual void SetItemName(const std::string& id, const std::string& name) {}
   virtual void SetAppStatus(const std::string& id, ash::AppStatus app_status) {}
   virtual void SetItemPosition(const std::string& id,

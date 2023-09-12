@@ -85,6 +85,7 @@ class ChromeAppListItem {
   // interfaces that talk to ash directly.
   void IncrementIconVersion();
   void SetIcon(const gfx::ImageSkia& icon, bool is_place_holder_icon);
+  void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
   void SetIsSystemFolder(bool is_system_folder);

@@ -46,6 +46,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/vector_icons.h"
 
 namespace apps {
@@ -388,6 +390,24 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, LoadIcon) {
   item->LoadIcon();
   EXPECT_EQ(1, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
   EXPECT_EQ(1, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  ash::AppListItem* app_list_item = GetAppListItem(shortcut_id.value());
+  ASSERT_TRUE(app_list_item);
+  ASSERT_FALSE(app_list_item->CloneMetadata()->icon.isNull());
+  ASSERT_FALSE(app_list_item->CloneMetadata()->badge_icon.isNull());
+
+  gfx::ImageSkia stub_icon(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
+
+  // TODO(crbug.com/1480423): Remove this when the actual visual is done in the
+  // UI.
+  gfx::ImageSkia icon_with_badge =
+      gfx::ImageSkiaOperations::CreateIconWithBadge(stub_icon, stub_icon);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(icon_with_badge),
+      gfx::Image(app_list_item->CloneMetadata()->icon)));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(stub_icon),
+      gfx::Image(app_list_item->CloneMetadata()->badge_icon)));
 }
 
 }  // namespace apps

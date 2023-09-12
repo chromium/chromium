@@ -141,6 +141,7 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
 
   gfx::ImageSkia icon;                  // The icon of this item.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
+  gfx::ImageSkia badge_icon;            // The badge icon for the item.
 
   // Whether the app was installed this session and has not yet been launched.
   bool is_new_install = false;
