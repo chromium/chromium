@@ -8,18 +8,24 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
 /**
  * Controls the behaviour of the Preload privacy guide page.
  */
 public class PreloadFragment extends Fragment
-        implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
+        implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
+                   RadioGroup.OnCheckedChangeListener {
+    private RadioButtonWithDescription mDisabledPreloading;
     private RadioButtonWithDescriptionAndAuxButton mStandardPreloading;
     private BottomSheetController mBottomSheetController;
     private PrivacyGuideBottomSheetView mBottomSheetView;
@@ -32,10 +38,31 @@ public class PreloadFragment extends Fragment
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        RadioGroup radioGroup = view.findViewById(R.id.preload_radio_button);
+        radioGroup.setOnCheckedChangeListener(this);
+
         mStandardPreloading =
                 (RadioButtonWithDescriptionAndAuxButton) view.findViewById(R.id.standard_option);
+        mDisabledPreloading = (RadioButtonWithDescription) view.findViewById(R.id.disabled_option);
 
         mStandardPreloading.setAuxButtonClickedListener(this);
+
+        initialRadioButtonConfig();
+    }
+
+    private void initialRadioButtonConfig() {
+        @PreloadPagesState
+        int preloadPagesState = PreloadPagesSettingsBridge.getState();
+        switch (preloadPagesState) {
+            case (PreloadPagesState.STANDARD_PRELOADING):
+                mStandardPreloading.setChecked(true);
+                break;
+            case (PreloadPagesState.NO_PRELOADING):
+                mDisabledPreloading.setChecked(true);
+                break;
+            default:
+                assert false : "Unexpected PreloadState " + preloadPagesState;
+        }
     }
 
     @Override
@@ -46,6 +73,17 @@ public class PreloadFragment extends Fragment
                     inflater.inflate(R.layout.privacy_guide_preload_standard_explanation, null));
         } else {
             assert false : "Unknown Aux clickedButtonId " + clickedButtonId;
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int clickedButtonId) {
+        if (clickedButtonId == R.id.standard_option) {
+            PreloadPagesSettingsBridge.setState(PreloadPagesState.STANDARD_PRELOADING);
+        } else if (clickedButtonId == R.id.disabled_option) {
+            PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
+        } else {
+            assert false : "Unknown clickedButtonId " + clickedButtonId;
         }
     }
 
