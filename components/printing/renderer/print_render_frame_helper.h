@@ -326,12 +326,12 @@ class PrintRenderFrameHelper
 
   // Initialize print page settings with default settings.
   // Used only for native printing workflow.
-  bool InitPrintSettings(bool fit_to_paper_size);
+  bool InitPrintSettings(blink::WebLocalFrame* frame,
+                         const blink::WebNode& node);
 
   // Calculate number of pages in source document.
-  bool CalculateNumberOfPages(blink::WebLocalFrame* frame,
-                              const blink::WebNode& node,
-                              uint32_t* number_of_pages);
+  uint32_t CalculateNumberOfPages(blink::WebLocalFrame* frame,
+                                  const blink::WebNode& node);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Set options for print preset from source PDF document.

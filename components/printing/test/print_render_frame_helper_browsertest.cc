@@ -1039,13 +1039,53 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize3) {
   VerifyPagesPrinted(true);
 }
 
-TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryNoCSSPageMargins) {
-  // The default page size in these tests is US Letter.
+TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryDefaultCSSPageMargins) {
+  // The default page size in these tests is US Letter (see MockPrinter). The
+  // default margin is 1/2 inch on each side, and this is taken into account for
+  // media query evaluation in this implementation, which is interoperable with
+  // others. The spec, on the other hand, says to match against the page *box*
+  // [1], not the page area [1]. I.e. margins shouldn't make any difference at
+  // all, according to the spec.
+  //
+  // [1] https://www.w3.org/TR/css-page-3/#page-model
   LoadHTML(R"HTML(
     <style>
       @page {
+        /* The default margins are overridden here (to 0) as far as page area
+           size and layout are concerned, but that cannot affect media query
+           evaluation, as that might cause cyclic dependencies. So the 1/2 inch
+           default margins are still taken into account for media query
+           evaluation.  */
         margin: 0;
       }
+
+      /* As explained above, this media query won't match, because of the
+         half-inch default margins. */
+      @media (width: 8.5in) and (height: 11in) {
+        div { break-before: page; }
+      }
+    </style>
+    First page
+    <div>Also first page</div>
+  )HTML");
+
+  print_manager()->SetExpectedPagesCount(1);
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryNoCSSPageMargins) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        /* This has no effect on media query evaluation (it affects the page
+           area size and layout, though). Only the default margins can affect
+           media query evaluation. */
+        margin: 100px;
+      }
+
+      /* This media query will match, since the default margins are 0,
+         and the default page size is US-Letter. */
       @media (width: 8.5in) and (height: 11in) {
         div { break-before: page; }
       }
@@ -1053,6 +1093,13 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryNoCSSPageMargins) {
     First page
     <div>Second page</div>
   )HTML");
+
+  // Set the default margins to 0, and the page area size equal to the page box
+  // size.
+  mojom::PrintParams& params = printer()->Params();
+  params.margin_left = 0;
+  params.margin_top = 0;
+  params.content_size = params.page_size;
 
   print_manager()->SetExpectedPagesCount(2);
   OnPrintPages();

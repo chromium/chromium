@@ -121,6 +121,12 @@ const char kPageSetupScriptFormat[] = "setupHeaderFooterTemplate(%s);";
 
 constexpr int kAllowedIpcDepthForPrint = 1;
 
+template <typename Param>
+struct ParamWithFitToPageScale {
+  Param param;
+  double fit_to_page_scale_factor = 1.0f;
+};
+
 void ExecuteScript(blink::WebLocalFrame* frame,
                    const char* script_format,
                    const base::Value& parameters) {
@@ -149,6 +155,11 @@ bool IsPrintScalingOptionFitToPage(const mojom::PrintParams& params) {
          mojom::PrintScalingOption::kFitToPrintableArea;
 }
 
+bool ShouldIgnoreCssPageSize(bool ignore_css_margins,
+                             const mojom::PrintParams& params) {
+  return ignore_css_margins && IsPrintScalingOptionFitToPage(params);
+}
+
 mojom::PageOrientation FromBlinkPageOrientation(
     blink::PageOrientation orientation) {
   switch (orientation) {
@@ -163,8 +174,7 @@ mojom::PageOrientation FromBlinkPageOrientation(
 
 blink::WebPrintPageDescription GetDefaultPageDescription(
     const mojom::PrintParams& page_params,
-    bool ignore_css_margins,
-    bool fit_to_page) {
+    bool ignore_css_margins) {
   int dpi = GetDPI(page_params);
 
   blink::WebPrintPageDescription description;
@@ -184,7 +194,8 @@ blink::WebPrintPageDescription GetDefaultPageDescription(
   description.margin_left =
       ConvertUnitFloat(page_params.margin_left, dpi, kPixelsPerInch);
   description.ignore_css_margins = ignore_css_margins;
-  description.ignore_page_size = ignore_css_margins && fit_to_page;
+  description.ignore_page_size =
+      ShouldIgnoreCssPageSize(ignore_css_margins, page_params);
 
   return description;
 }
@@ -192,10 +203,9 @@ blink::WebPrintPageDescription GetDefaultPageDescription(
 mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
                                         uint32_t page_index,
                                         const mojom::PrintParams& page_params,
-                                        bool ignore_css_margins,
-                                        bool fit_to_page) {
+                                        bool ignore_css_margins) {
   blink::WebPrintPageDescription description =
-      GetDefaultPageDescription(page_params, ignore_css_margins, fit_to_page);
+      GetDefaultPageDescription(page_params, ignore_css_margins);
   if (frame)
     frame->GetPageDescription(page_index, &description);
 
@@ -225,21 +235,26 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
   return page_css_params;
 }
 
-double FitPrintParamsToPage(const mojom::PrintParams& page_params,
-                            mojom::PrintParams* params_to_fit) {
+ParamWithFitToPageScale<mojom::PrintParamsPtr> FitPrintParamsToPage(
+    const mojom::PrintParams& page_params,
+    const mojom::PrintParams& css_params) {
+  ParamWithFitToPageScale<mojom::PrintParamsPtr> result;
+  result.param = css_params.Clone();
+
   double content_width =
-      static_cast<double>(params_to_fit->content_size.width());
+      static_cast<double>(result.param->content_size.width());
   double content_height =
-      static_cast<double>(params_to_fit->content_size.height());
+      static_cast<double>(result.param->content_size.height());
   int default_page_size_height = page_params.page_size.height();
   int default_page_size_width = page_params.page_size.width();
-  int css_page_size_height = params_to_fit->page_size.height();
-  int css_page_size_width = params_to_fit->page_size.width();
+  int css_page_size_height = result.param->page_size.height();
+  int css_page_size_width = result.param->page_size.width();
+
+  if (page_params.page_size == result.param->page_size) {
+    return result;
+  }
 
   double scale_factor = 1.0f;
-  if (page_params.page_size == params_to_fit->page_size)
-    return scale_factor;
-
   if (default_page_size_width < css_page_size_width ||
       default_page_size_height < css_page_size_height) {
     double ratio_width =
@@ -250,15 +265,18 @@ double FitPrintParamsToPage(const mojom::PrintParams& page_params,
     content_width *= scale_factor;
     content_height *= scale_factor;
   }
-  params_to_fit->margin_top = static_cast<int>(
+  result.param->margin_top = static_cast<int>(
       (default_page_size_height - css_page_size_height * scale_factor) / 2 +
-      (params_to_fit->margin_top * scale_factor));
-  params_to_fit->margin_left = static_cast<int>(
+      (result.param->margin_top * scale_factor));
+  result.param->margin_left = static_cast<int>(
       (default_page_size_width - css_page_size_width * scale_factor) / 2 +
-      (params_to_fit->margin_left * scale_factor));
-  params_to_fit->content_size = gfx::SizeF(content_width, content_height);
-  params_to_fit->page_size = page_params.page_size;
-  return scale_factor;
+      (result.param->margin_left * scale_factor));
+  result.param->content_size = gfx::SizeF(content_width, content_height);
+  result.param->page_size = page_params.page_size;
+
+  result.fit_to_page_scale_factor = scale_factor;
+
+  return result;
 }
 
 mojom::PageSizeMarginsPtr CalculatePageLayoutFromPrintParams(
@@ -329,8 +347,7 @@ void GetPageSizeAndContentAreaFromPageLayout(
 blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
     const mojom::PrintParams& print_params,
     bool source_is_pdf,
-    bool ignore_css_margins,
-    bool fit_to_page) {
+    bool ignore_css_margins) {
   blink::WebPrintParams webkit_print_params;
   int dpi = GetDPI(print_params);
   webkit_print_params.printer_dpi = dpi;
@@ -372,7 +389,7 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
   webkit_print_params.pages_per_sheet = print_params.pages_per_sheet;
 
   webkit_print_params.default_page_description =
-      GetDefaultPageDescription(print_params, ignore_css_margins, fit_to_page);
+      GetDefaultPageDescription(print_params, ignore_css_margins);
 
   return webkit_print_params;
 }
@@ -526,43 +543,25 @@ mojom::PrintScalingOption GetPrintScalingOption(
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-template <typename Param>
-struct ParamWithFitToPageScale {
-  Param param;
-  double fit_to_page_scale_factor = 1.0f;
-};
-
-ParamWithFitToPageScale<mojom::PrintParamsPtr> CalculatePrintParamsForCss(
-    blink::WebLocalFrame* frame,
-    uint32_t page_index,
-    const mojom::PrintParams& page_params,
-    bool ignore_css_margins,
-    bool fit_to_page) {
-  mojom::PrintParamsPtr result_params = GetCssPrintParams(
-      frame, page_index, page_params, ignore_css_margins, fit_to_page);
-
-  double fit_to_page_scale_factor = 1.0f;
-  if (fit_to_page && !ignore_css_margins) {
-    fit_to_page_scale_factor =
-        FitPrintParamsToPage(page_params, result_params.get());
-  }
-
-  return {std::move(result_params), fit_to_page_scale_factor};
-}
-
 // Get page layout and fit to page if needed. The layout is in device pixels.
 ParamWithFitToPageScale<mojom::PageSizeMarginsPtr> ComputePageLayoutForCss(
     blink::WebLocalFrame* frame,
     uint32_t page_index,
     const mojom::PrintParams& page_params,
     bool ignore_css_margins) {
-  ParamWithFitToPageScale<mojom::PrintParamsPtr> result =
-      CalculatePrintParamsForCss(frame, page_index, page_params,
-                                 ignore_css_margins,
-                                 IsPrintScalingOptionFitToPage(page_params));
+  mojom::PrintParamsPtr css_params =
+      GetCssPrintParams(frame, page_index, page_params, ignore_css_margins);
+
+  double fit_to_page_scale_factor = 1.0f;
+  if (!ignore_css_margins && IsPrintScalingOptionFitToPage(page_params)) {
+    auto fitted = FitPrintParamsToPage(page_params, *css_params);
+    css_params = std::move(fitted.param);
+    fit_to_page_scale_factor = fitted.fit_to_page_scale_factor;
+  }
   mojom::PageSizeMarginsPtr page_size_margins =
-      CalculatePageLayoutFromPrintParams(*result.param);
-  return {std::move(page_size_margins), result.fit_to_page_scale_factor};
+      CalculatePageLayoutFromPrintParams(*css_params);
+
+  return {std::move(page_size_margins), fit_to_page_scale_factor};
 }
 
 bool CopyMetafileDataToReadOnlySharedMem(
@@ -821,28 +820,33 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
                                     public blink::WebNonCompositedWidgetClient,
                                     public blink::WebLocalFrameClient {
  public:
-  PrepareFrameAndViewForPrint(const mojom::PrintParams& params,
-                              blink::WebLocalFrame* frame,
-                              const blink::WebNode& node,
-                              bool ignore_css_margins);
+  PrepareFrameAndViewForPrint(blink::WebLocalFrame* frame,
+                              const blink::WebNode& node);
   PrepareFrameAndViewForPrint(const PrepareFrameAndViewForPrint&) = delete;
   PrepareFrameAndViewForPrint& operator=(const PrepareFrameAndViewForPrint&) =
       delete;
   ~PrepareFrameAndViewForPrint() override;
 
-  // Optional. Replaces |frame_| with selection if needed. Will call |on_ready|
-  // when completed.
-  void CopySelectionIfNeeded(const WebPreferences& preferences,
-                             base::OnceClosure on_ready);
+  // Begin printing and generate print layout. Replaces `frame_` with selection
+  // if needed. Will call `on_ready` when completed. This may or may not happen
+  // asynchronously.
+  void BeginPrinting(const WebPreferences& preferences,
+                     const mojom::PrintParams& params,
+                     bool ignore_css_margins,
+                     base::OnceClosure on_ready);
 
-  // Prepares frame for printing.
-  void StartPrinting();
+  // Prepare the frame for printing. Enter print mode and compute print layout.
+  // May only be called if what's currently in `frame_` is what's going to be
+  // printed. Otherwise, use `BeginPrinting()` instead, to also support printing
+  // the currently selection.
+  void EnterPrintMode(const mojom::PrintParams& params,
+                      bool ignore_css_margins);
 
   blink::WebLocalFrame* frame() { return frame_.GetFrame(); }
 
   const blink::WebNode& node() const { return node_to_print_; }
 
-  uint32_t GetExpectedPageCount() const { return expected_pages_count_; }
+  uint32_t GetPageCount() const { return page_count_; }
 
   void FinishPrinting();
 
@@ -852,6 +856,9 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   }
 
  private:
+  void EnterPrintModeInternal(const mojom::PrintParams& params,
+                              bool ignore_css_margins);
+
   // blink::WebViewClient:
   void DidStopLoading() override;
 
@@ -871,13 +878,8 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
   void CallOnReady();
-  void CopySelection(const WebPreferences& preferences);
-  void ComputeScalingAndPrintParams(blink::WebLocalFrame* frame,
-                                    mojom::PrintParamsPtr& print_params,
-                                    std::string* selection,
-                                    bool is_pdf,
-                                    bool ignore_css_margins,
-                                    bool fit_to_page);
+  void CopySelection(const mojom::PrintParams& params,
+                     const WebPreferences& preferences);
 
   FrameReference frame_;
   FrameReference original_frame_;
@@ -885,11 +887,8 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   blink::WebNode node_to_print_;
   bool owns_web_view_ = false;
   mojom::PrintParamsPtr selection_only_print_params_;
-  blink::WebPrintParams web_print_params_;
-  uint32_t expected_pages_count_ = 0;
+  uint32_t page_count_ = 0;
   base::OnceClosure on_ready_;
-  const bool should_print_backgrounds_;
-  const bool should_print_selection_only_;
   bool is_printing_started_ = false;
   blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
 
@@ -897,66 +896,67 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
 };
 
 PrepareFrameAndViewForPrint::PrepareFrameAndViewForPrint(
-    const mojom::PrintParams& params,
     blink::WebLocalFrame* frame,
-    const blink::WebNode& node,
-    bool ignore_css_margins)
+    const blink::WebNode& node)
     : frame_(frame),
       original_frame_(frame),
       node_to_print_(node),
-      should_print_backgrounds_(params.should_print_backgrounds),
-      should_print_selection_only_(params.selection_only),
-      agent_group_scheduler_(*frame->GetAgentGroupScheduler()) {
-  TRACE_EVENT0("print", "PrepareFrameAndViewForPrint");
-
-  mojom::PrintParamsPtr print_params = params.Clone();
-  bool source_is_pdf = IsPrintingPdfFrame(frame, node_to_print_);
-  if (should_print_selection_only_) {
-    // Save the parameters for use in `CopySelection()`.
-    selection_only_print_params_ = std::move(print_params);
-
-    // Printing selection not an option for PDF.
-    DCHECK(!source_is_pdf);
-  } else {
-    bool fit_to_page =
-        ignore_css_margins && IsPrintScalingOptionFitToPage(*print_params);
-    ComputeScalingAndPrintParams(frame, print_params, /*selection=*/nullptr,
-                                 source_is_pdf, ignore_css_margins,
-                                 fit_to_page);
-  }
-}
+      agent_group_scheduler_(*frame->GetAgentGroupScheduler()) {}
 
 PrepareFrameAndViewForPrint::~PrepareFrameAndViewForPrint() {
   FinishPrinting();
 }
 
-void PrepareFrameAndViewForPrint::StartPrinting() {
-  blink::WebView* web_view = frame_.view();
-  web_view->GetSettings()->SetShouldPrintBackgrounds(should_print_backgrounds_);
-  expected_pages_count_ =
-      frame()->PrintBegin(web_print_params_, node_to_print_);
+void PrepareFrameAndViewForPrint::EnterPrintModeInternal(
+    const mojom::PrintParams& params,
+    bool ignore_css_margins) {
+  bool is_pdf = IsPrintingPdfFrame(frame(), node_to_print_);
+  blink::WebPrintParams web_print_params =
+      ComputeWebKitPrintParamsInDesiredDpi(params, is_pdf, ignore_css_margins);
+  blink::WebView* web_view = frame()->View();
+  web_view->GetSettings()->SetShouldPrintBackgrounds(
+      params.should_print_backgrounds);
+  page_count_ = frame()->PrintBegin(web_print_params, node_to_print_);
   is_printing_started_ = true;
 }
 
-void PrepareFrameAndViewForPrint::CopySelectionIfNeeded(
+void PrepareFrameAndViewForPrint::BeginPrinting(
     const WebPreferences& preferences,
+    const mojom::PrintParams& params,
+    bool ignore_css_margins,
     base::OnceClosure on_ready) {
   on_ready_ = std::move(on_ready);
-  if (should_print_selection_only_) {
-    CopySelection(preferences);
+  if (params.selection_only) {
+    // Printing selection not an option for PDF.
+    DCHECK(!IsPrintingPdfFrame(frame(), node_to_print_));
+
+    // Save the parameters. Will be used when the document has loaded the copied
+    // selection.
+    selection_only_print_params_ = params.Clone();
+
+    CopySelection(params, preferences);
   } else {
+    EnterPrintModeInternal(params, ignore_css_margins);
+
     // Call immediately, async call crashes scripting printing.
     CallOnReady();
   }
 }
 
+void PrepareFrameAndViewForPrint::EnterPrintMode(
+    const mojom::PrintParams& params,
+    bool ignore_css_margins) {
+  // Printing the selection isn't allowed here. Use `BeginPrinting()` instead.
+  DCHECK(!params.selection_only);
+
+  EnterPrintModeInternal(params, ignore_css_margins);
+}
+
 void PrepareFrameAndViewForPrint::CopySelection(
+    const mojom::PrintParams& params,
     const WebPreferences& preferences) {
-  std::string html;
-  ComputeScalingAndPrintParams(frame(), selection_only_print_params_, &html,
-                               /*is_pdf=*/false,
-                               /*ignore_css_margins=*/false,
-                               /*fit_to_page=*/false);
+  std::string html = frame()->SelectionAsMarkup().Utf8();
+
   // Save the URL before `frame_` gets reset below.
   GURL original_url = frame()->GetDocument().Url();
 
@@ -1012,38 +1012,22 @@ void PrepareFrameAndViewForPrint::CopySelection(
 
   // When loading is done this will call didStopLoading() and that will do the
   // actual printing.
-  auto params = std::make_unique<blink::WebNavigationParams>();
+  auto web_navigation_params = std::make_unique<blink::WebNavigationParams>();
   // Use the original URL, so relative links can stay as such.
-  params->url = original_url;
-  blink::WebNavigationParams::FillStaticResponse(params.get(), "text/html",
-                                                 "UTF-8", std::move(html));
-  navigation_control_->CommitNavigation(std::move(params),
+  web_navigation_params->url = original_url;
+  blink::WebNavigationParams::FillStaticResponse(
+      web_navigation_params.get(), "text/html", "UTF-8", std::move(html));
+  navigation_control_->CommitNavigation(std::move(web_navigation_params),
                                         /*extra_data=*/nullptr);
-}
-
-void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
-    blink::WebLocalFrame* frame,
-    mojom::PrintParamsPtr& print_params,
-    std::string* selection,
-    bool is_pdf,
-    bool ignore_css_margins,
-    bool fit_to_page) {
-  web_print_params_ = ComputeWebKitPrintParamsInDesiredDpi(
-      *print_params, is_pdf, ignore_css_margins, fit_to_page);
-  frame->PrintBegin(web_print_params_, node_to_print_);
-  print_params =
-      CalculatePrintParamsForCss(frame, /*page_index=*/0, *print_params,
-                                 ignore_css_margins, fit_to_page)
-          .param;
-  if (selection)
-    *selection = frame->SelectionAsMarkup().Utf8();
-  frame->PrintEnd();
-  web_print_params_ = ComputeWebKitPrintParamsInDesiredDpi(
-      *print_params, is_pdf, ignore_css_margins, fit_to_page);
 }
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {
   DCHECK(!on_ready_.is_null());
+
+  // The new document (with the selection) has loaded. Now print it.
+  EnterPrintModeInternal(*selection_only_print_params_,
+                         /*ignore_css_margins=*/false);
+
   // Don't call callback here, because it can delete `this` and WebView that is
   // called didStopLoading.
   frame()
@@ -1334,8 +1318,10 @@ void PrintRenderFrameHelper::PrintWithParams(
           ? mojom::PrintScalingOption::kFitToPrintableArea
           : mojom::PrintScalingOption::kSourceSize;
   SetPrintPagesParams(*settings);
-  prep_frame_view_ = std::make_unique<PrepareFrameAndViewForPrint>(
-      *settings->params, frame, plugin_node, /* ignore_css_margins=*/false);
+  prep_frame_view_ =
+      std::make_unique<PrepareFrameAndViewForPrint>(frame, plugin_node);
+  prep_frame_view_->EnterPrintMode(*settings->params,
+                                   /*ignore_css_margins=*/false);
 
   PrintPages();
   FinishFramePrinting();
@@ -1612,9 +1598,8 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   blink::WebNode node = delegate_->GetPdfElement(frame);
   bool is_pdf = IsPrintingPdfFrame(frame, node);
-  bool fit_to_page = IsPrintScalingOptionFitToPage(*print_pages_params.params);
   blink::WebPrintParams web_print_params = ComputeWebKitPrintParamsInDesiredDpi(
-      *print_pages_params.params, is_pdf, ignore_css_margins_, fit_to_page);
+      *print_pages_params.params, is_pdf, ignore_css_margins_);
   uint32_t page_count = frame->PrintBegin(web_print_params, node);
   if (page_count == 0) {
     frame->PrintEnd();
@@ -1686,11 +1671,11 @@ void PrintRenderFrameHelper::PrepareFrameForPreviewDocument() {
 
   const mojom::PrintParams& print_params = *print_pages_params_->params;
   prep_frame_view_ = std::make_unique<PrepareFrameAndViewForPrint>(
-      print_params, print_preview_context_.source_frame(),
-      print_preview_context_.source_node(), ignore_css_margins_);
+      print_preview_context_.source_frame(),
+      print_preview_context_.source_node());
 
-  prep_frame_view_->CopySelectionIfNeeded(
-      render_frame()->GetBlinkPreferences(),
+  prep_frame_view_->BeginPrinting(
+      render_frame()->GetBlinkPreferences(), print_params, ignore_css_margins_,
       base::BindOnce(&PrintRenderFrameHelper::OnFramePreparedForPreviewDocument,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -2083,11 +2068,15 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
 
   FrameReference frame_ref(frame);
 
-  uint32_t expected_page_count = 0;
-  if (!CalculateNumberOfPages(frame, node, &expected_page_count)) {
+  if (!InitPrintSettings(frame, node)) {
+    // Browser triggered this code path. It already knows about the failure.
+    notify_browser_of_print_failure_ = false;
+
     DidFinishPrinting(PrintingResult::kFailPrintInit);
-    return;  // Failed to init print page settings.
+    return;
   }
+
+  uint32_t expected_page_count = CalculateNumberOfPages(frame, node);
 
   // Some full screen plugins can say they don't want to print.
   if (!expected_page_count || expected_page_count > kMaxPageCount) {
@@ -2218,9 +2207,7 @@ void PrintRenderFrameHelper::PrintPages() {
   if (!prep_frame_view_)  // Printing is already canceled or failed.
     return;
 
-  prep_frame_view_->StartPrinting();
-
-  uint32_t page_count = prep_frame_view_->GetExpectedPageCount();
+  uint32_t page_count = prep_frame_view_->GetPageCount();
   if (!page_count || page_count > kMaxPageCount) {
     LOG(ERROR) << "Can't print 0 pages and the page count couldn't be greater "
                   "than kMaxPageCount.";
@@ -2344,7 +2331,8 @@ void PrintRenderFrameHelper::IPCProcessed() {
   }
 }
 
-bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
+bool PrintRenderFrameHelper::InitPrintSettings(blink::WebLocalFrame* frame,
+                                               const blink::WebNode& node) {
   // Reset to default values.
   ignore_css_margins_ = false;
 
@@ -2358,6 +2346,7 @@ bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
     return false;
   }
 
+  bool fit_to_paper_size = !IsPrintingPdfFrame(frame, node);
   settings.params->print_scaling_option =
       fit_to_paper_size ? mojom::PrintScalingOption::kFitToPrintableArea
                         : mojom::PrintScalingOption::kSourceSize;
@@ -2365,23 +2354,14 @@ bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
   return true;
 }
 
-bool PrintRenderFrameHelper::CalculateNumberOfPages(blink::WebLocalFrame* frame,
-                                                    const blink::WebNode& node,
-                                                    uint32_t* number_of_pages) {
+uint32_t PrintRenderFrameHelper::CalculateNumberOfPages(
+    blink::WebLocalFrame* frame,
+    const blink::WebNode& node) {
   DCHECK(frame);
-  bool fit_to_paper_size = !IsPrintingPdfFrame(frame, node);
-  if (!InitPrintSettings(fit_to_paper_size)) {
-    // Browser triggered this code path. It already knows about the failure.
-    notify_browser_of_print_failure_ = false;
-    return false;
-  }
-
   const mojom::PrintParams& params = *print_pages_params_->params;
-  PrepareFrameAndViewForPrint prepare(params, frame, node, ignore_css_margins_);
-  prepare.StartPrinting();
-
-  *number_of_pages = prepare.GetExpectedPageCount();
-  return true;
+  PrepareFrameAndViewForPrint prepare(frame, node);
+  prepare.EnterPrintMode(params, /*ignore_css_margins=*/false);
+  return prepare.GetPageCount();
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -2499,12 +2479,11 @@ bool PrintRenderFrameHelper::RenderPagesForPrint(blink::WebLocalFrame* frame,
 
   const mojom::PrintPagesParams& params = *print_pages_params_;
   const mojom::PrintParams& print_params = *params.params;
-  prep_frame_view_ = std::make_unique<PrepareFrameAndViewForPrint>(
-      print_params, frame, node, ignore_css_margins_);
+  prep_frame_view_ = std::make_unique<PrepareFrameAndViewForPrint>(frame, node);
   DCHECK(!print_pages_params_->params->selection_only ||
          print_pages_params_->pages.empty());
-  prep_frame_view_->CopySelectionIfNeeded(
-      render_frame()->GetBlinkPreferences(),
+  prep_frame_view_->BeginPrinting(
+      render_frame()->GetBlinkPreferences(), print_params, ignore_css_margins_,
       base::BindOnce(&PrintRenderFrameHelper::OnFramePreparedForPrintPages,
                      weak_ptr_factory_.GetWeakPtr()));
   return true;
@@ -2822,9 +2801,8 @@ bool PrintRenderFrameHelper::PrintPreviewContext::CreatePreviewDocument(
 
   // Need to make sure old object gets destroyed first.
   prep_frame_view_ = std::move(prepared_frame);
-  prep_frame_view_->StartPrinting();
 
-  total_page_count_ = prep_frame_view_->GetExpectedPageCount();
+  total_page_count_ = prep_frame_view_->GetPageCount();
   if (total_page_count_ == 0 || total_page_count_ > kMaxPageCount) {
     LOG(ERROR) << "CreatePreviewDocument got 0 page count or it's greater than "
                   "kMaxPageCount.";
