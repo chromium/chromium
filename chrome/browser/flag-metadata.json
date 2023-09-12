@@ -8294,7 +8294,7 @@
   {
     "name": "view-transition-on-navigation",
     "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
-    "expiry_milestone" : 118
+    "expiry_milestone" : 130
   },
   {
     "name": "viewport-segments",
