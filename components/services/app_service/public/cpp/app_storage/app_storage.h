@@ -7,17 +7,25 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace apps {
+
+class AppStorageFileHandler;
 
 // AppStorage is responsible for reading and writing the app information on
 // disk.
 class COMPONENT_EXPORT(APP_UPDATE) AppStorage
     : public apps::AppRegistryCache::Observer {
  public:
-  explicit AppStorage(apps::AppRegistryCache& app_registry_cache);
+  explicit AppStorage(const base::FilePath& base_path,
+                      apps::AppRegistryCache& app_registry_cache);
 
   AppStorage(const AppStorage&) = delete;
   AppStorage& operator=(const AppStorage&) = delete;
@@ -29,6 +37,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
+
+  scoped_refptr<AppStorageFileHandler> file_handler_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

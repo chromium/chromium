@@ -175,6 +175,8 @@ component("app_update") {
     "app_registry_cache_wrapper.h",
     "app_storage/app_storage.cc",
     "app_storage/app_storage.h",
+    "app_storage/app_storage_file_handler.cc",
+    "app_storage/app_storage_file_handler.h",
     "app_update.cc",
     "app_update.h",
     "capability_access_update.cc",

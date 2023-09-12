@@ -110,7 +110,8 @@ void AppServiceProxyAsh::Initialize() {
   }
 
   if (base::FeatureList::IsEnabled(kAppServiceStorage)) {
-    app_storage_ = std::make_unique<apps::AppStorage>(app_registry_cache_);
+    app_storage_ = std::make_unique<apps::AppStorage>(profile_->GetPath(),
+                                                      app_registry_cache_);
   }
 
   const user_manager::User* user =
