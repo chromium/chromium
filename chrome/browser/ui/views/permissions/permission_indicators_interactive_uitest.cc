@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      ExecuteJs(kWebContentsElementId, "requestCamera()"),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
       // `getUserMedia` is async, so wait until media stream is opened.
       WaitForStateChange(kWebContentsElementId, GetCameraStreamStateChange()),
       WaitForShow(ContentSettingImageView::kMediaActivityIndicatorElementId),
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_badge_for_testing,
           &gfx::kNoneIcon),
-      ExecuteJs(kWebContentsElementId, "stopCamera()"),
+      ExecuteJs(kWebContentsElementId, "stopCamera"),
       WaitForHide(ContentSettingImageView::kMediaActivityIndicatorElementId));
 }
 
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      ExecuteJs(kWebContentsElementId, "requestMicrophone()"),
+      ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForStateChange(kWebContentsElementId, GetMicStreamStateChange()),
       WaitForShow(ContentSettingImageView::kMediaActivityIndicatorElementId),
       CheckViewProperty(
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_badge_for_testing,
           &gfx::kNoneIcon),
-      ExecuteJs(kWebContentsElementId, "requestCamera()"),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
       // `getUserMedia` is async, so wait until media stream is opened.
       WaitForStateChange(kWebContentsElementId, GetCameraStreamStateChange()),
       WaitForShow(ContentSettingImageView::kMediaActivityIndicatorElementId),
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(PermissionIndicatorsInteractiveUITest,
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_badge_for_testing,
           &gfx::kNoneIcon),
-      ExecuteJs(kWebContentsElementId, "stopCamera()"),
-      ExecuteJs(kWebContentsElementId, "stopMic()"),
+      ExecuteJs(kWebContentsElementId, "stopCamera"),
+      ExecuteJs(kWebContentsElementId, "stopMic"),
       WaitForHide(ContentSettingImageView::kMediaActivityIndicatorElementId));
 }

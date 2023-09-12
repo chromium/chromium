@@ -4,15 +4,18 @@
 
 #include "chrome/test/interaction/interactive_browser_test.h"
 
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -21,6 +24,7 @@
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -60,6 +64,23 @@ std::string DescribeStateChange(
   }
   return oss.str();
 }
+
+// Matcher that determines whether a particular value is truthy.
+class IsTruthyMatcher : public testing::MatcherInterface<const base::Value&> {
+ public:
+  using is_gtest_matcher = void;
+
+  bool MatchAndExplain(const base::Value& x,
+                       testing::MatchResultListener* listener) const override {
+    return WebContentsInteractionTestUtil::IsTruthy(x);
+  }
+
+  void DescribeTo(std::ostream* os) const override { *os << "is truthy"; }
+
+  void DescribeNegationTo(std::ostream* os) const override {
+    *os << "is falsy";
+  }
+};
 
 }  // namespace
 
@@ -393,17 +414,38 @@ InteractiveBrowserTestApi::EnsureNotPresent(
 // static
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJs(
     ui::ElementIdentifier webcontents_id,
-    const std::string& function) {
+    const std::string& function,
+    ExecuteJsMode mode) {
   StepBuilder builder;
   builder.SetDescription(
       base::StringPrintf("ExecuteJs(\"\n%s\n\")", function.c_str()));
   builder.SetElementID(webcontents_id);
   builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](std::string function, ui::TrackedElement* el) {
-        AsInstrumentedWebContents(el)->Execute(function);
-      },
-      function));
+  switch (mode) {
+    case ExecuteJsMode::kFireAndForget:
+      builder.SetMustRemainVisible(false);
+      builder.SetStartCallback(base::BindOnce(
+          [](std::string function, ui::TrackedElement* el) {
+            AsInstrumentedWebContents(el)->Execute(function);
+          },
+          function));
+      break;
+    case ExecuteJsMode::kWaitForCompletion:
+      builder.SetStartCallback(base::BindOnce(
+          [](std::string function, ui::InteractionSequence* seq,
+             ui::TrackedElement* el) {
+            const auto full_function = base::StringPrintf(
+                "() => { (%s)(); return false; }", function.c_str());
+            std::string error_msg;
+            AsInstrumentedWebContents(el)->Evaluate(full_function, &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "ExecuteJsAt() failed: " << error_msg;
+              seq->FailForTesting();
+            }
+          },
+          function));
+      break;
+  }
   return builder;
 }
 
@@ -411,7 +453,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJs(
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
     ui::ElementIdentifier webcontents_id,
     const DeepQuery& where,
-    const std::string& function) {
+    const std::string& function,
+    ExecuteJsMode mode) {
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf(
       "ExecuteJsAt( %s, \"\n%s\n\")",
@@ -419,11 +462,41 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
       function.c_str()));
   builder.SetElementID(webcontents_id);
   builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](DeepQuery where, std::string function, ui::TrackedElement* el) {
-        AsInstrumentedWebContents(el)->ExecuteAt(where, function);
-      },
-      where, function));
+  switch (mode) {
+    case ExecuteJsMode::kFireAndForget:
+      builder.SetMustRemainVisible(false);
+      builder.SetStartCallback(base::BindOnce(
+          [](DeepQuery where, std::string function, ui::TrackedElement* el) {
+            AsInstrumentedWebContents(el)->ExecuteAt(where, function);
+          },
+          where, function));
+      break;
+    case ExecuteJsMode::kWaitForCompletion:
+      builder.SetStartCallback(base::BindOnce(
+          [](DeepQuery where, std::string function,
+             ui::InteractionSequence* seq, ui::TrackedElement* el) {
+            const auto full_function = base::StringPrintf(
+                R"(
+              (el, err) => {
+                if (err) {
+                  throw err;
+                }
+                (%s)(el);
+                return false;
+              }
+            )",
+                function.c_str());
+            std::string error_msg;
+            AsInstrumentedWebContents(el)->EvaluateAt(where, full_function,
+                                                      &error_msg);
+            if (!error_msg.empty()) {
+              LOG(ERROR) << "ExecuteJsAt() failed: " << error_msg;
+              seq->FailForTesting();
+            }
+          },
+          where, function));
+      break;
+  }
   return builder;
 }
 
@@ -431,23 +504,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
     ui::ElementIdentifier webcontents_id,
     const std::string& function) {
-  StepBuilder builder;
-  builder.SetDescription(
-      base::StringPrintf("CheckJsResult(\"\n%s\n\")", function.c_str()));
-  builder.SetElementID(webcontents_id);
-  builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](std::string function, ui::InteractionSequence* seq,
-         ui::TrackedElement* el) {
-        const auto result = AsInstrumentedWebContents(el)->Evaluate(function);
-        if (!WebContentsInteractionTestUtil::IsTruthy(result)) {
-          LOG(ERROR) << "CheckJsResult(): result of function is falsy: "
-                     << result;
-          seq->FailForTesting();
-        }
-      },
-      function));
-  return builder;
+  return CheckJsResult(webcontents_id, function,
+                       testing::Matcher<base::Value>(IsTruthyMatcher()));
 }
 
 // static
@@ -455,26 +513,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     ui::ElementIdentifier webcontents_id,
     const DeepQuery& where,
     const std::string& function) {
-  StepBuilder builder;
-  builder.SetDescription(base::StringPrintf(
-      "CheckJsResultAt( %s, \"\n%s\n\")",
-      internal::InteractiveBrowserTestPrivate::DeepQueryToString(where).c_str(),
-      function.c_str()));
-  builder.SetElementID(webcontents_id);
-  builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetStartCallback(base::BindOnce(
-      [](DeepQuery where, std::string function, ui::InteractionSequence* seq,
-         ui::TrackedElement* el) {
-        const auto result =
-            AsInstrumentedWebContents(el)->EvaluateAt(where, function);
-        if (!WebContentsInteractionTestUtil::IsTruthy(result)) {
-          LOG(ERROR) << "CheckJsResultAt(): result of function is falsy: "
-                     << result;
-          seq->FailForTesting();
-        }
-      },
-      where, function));
-  return builder;
+  return CheckJsResultAt(webcontents_id, where, function,
+                         testing::Matcher<base::Value>(IsTruthyMatcher()));
 }
 
 InteractiveBrowserTestApi::StepBuilder InteractiveBrowserTestApi::MoveMouseTo(

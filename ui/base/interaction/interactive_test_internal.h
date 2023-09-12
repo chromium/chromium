@@ -287,7 +287,7 @@ class StateObserverElementT : public StateObserverElement {
 // details of the step in the usual way.
 template <typename T, typename V = std::remove_cvref_t<T>>
 bool MatchAndExplain(const base::StringPiece& test_name,
-                     testing::Matcher<V>& matcher,
+                     const testing::Matcher<V>& matcher,
                      const T& value) {
   if (matcher.Matches(value))
     return true;

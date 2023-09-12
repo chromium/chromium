@@ -177,10 +177,16 @@ struct JsResultChecker<M<T>> {
     builder.SetStartCallback(base::BindOnce(
         [](std::string function, testing::Matcher<T> matcher,
            ui::InteractionSequence* seq, ui::TrackedElement* el) {
+          std::string error_msg;
           base::Value result =
-              el->AsA<TrackedElementWebContents>()->owner()->Evaluate(function);
-          if (!ui::test::internal::MatchAndExplain(
-                  "CheckJsResult()", matcher, E::Extract(std::move(result)))) {
+              el->AsA<TrackedElementWebContents>()->owner()->Evaluate(
+                  function, &error_msg);
+          if (!error_msg.empty()) {
+            LOG(ERROR) << "CheckJsResult() failed: " << error_msg;
+            seq->FailForTesting();
+          } else if (!ui::test::internal::MatchAndExplain(
+                         "CheckJsResult()", matcher,
+                         E::Extract(std::move(result)))) {
             seq->FailForTesting();
           }
         },
@@ -203,12 +209,26 @@ struct JsResultChecker<M<T>> {
         [](WebContentsInteractionTestUtil::DeepQuery where,
            std::string function, testing::Matcher<T> matcher,
            ui::InteractionSequence* seq, ui::TrackedElement* el) {
+          const auto full_function = base::StringPrintf(
+              R"(
+              (el, err) => {
+                if (err) {
+                  throw err;
+                }
+                return (%s)(el);
+              }
+            )",
+              function.c_str());
+          std::string error_msg;
           base::Value result =
               el->AsA<TrackedElementWebContents>()->owner()->EvaluateAt(
-                  where, function);
-          if (!ui::test::internal::MatchAndExplain(
-                  "CheckJsResultAt()", matcher,
-                  E::Extract(std::move(result)))) {
+                  where, full_function, &error_msg);
+          if (!error_msg.empty()) {
+            LOG(ERROR) << "CheckJsResult() failed: " << error_msg;
+            seq->FailForTesting();
+          } else if (!ui::test::internal::MatchAndExplain(
+                         "CheckJsResultAt()", matcher,
+                         E::Extract(std::move(result)))) {
             seq->FailForTesting();
           }
         },

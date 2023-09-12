@@ -154,7 +154,9 @@ class FirstRunInteractiveUiTest
 
   auto PressJsButton(const ui::ElementIdentifier web_contents_id,
                      const DeepQuery& button_query) {
-    return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()");
+    // This can close/navigate the current page, so don't wait for success.
+    return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
+                       ExecuteJsMode::kFireAndForget);
   }
 
   // Waits for the intro buttons to be shown and presses to proceed according

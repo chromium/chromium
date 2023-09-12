@@ -118,7 +118,7 @@ class PermissionChipKombuchaTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest, PermissionChipClickTest) {
   RunTestSequence(InstrumentTab(kWebContentsElementId),
                   NavigateWebContents(kWebContentsElementId, GetURL()),
-                  ExecuteJs(kWebContentsElementId, "requestNotification()"),
+                  ExecuteJs(kWebContentsElementId, "requestNotification"),
                   // Make sure the request chip is visible.
                   WaitForShow(OmniboxChipButton::kChipElementId),
                   // Make sure the permission popup bubble is visible.
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      ExecuteJs(kWebContentsElementId, "requestNotification()"),
+      ExecuteJs(kWebContentsElementId, "requestNotification"),
       // Make sure the request chip is visible.
       WaitForShow(OmniboxChipButton::kChipElementId),
       // There is no auto-popup bubble for the quiet chip.
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
-      ExecuteJs(kWebContentsElementId, "requestNotification()"),
+      ExecuteJs(kWebContentsElementId, "requestNotification"),
       // Make sure the request chip is visible.
       WaitForShow(OmniboxChipButton::kChipElementId),
       // There is no auto-popup bubble for the quiet chip.

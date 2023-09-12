@@ -276,10 +276,15 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // return value. If the return value is a promise, will block until the
   // promise resolves and then return the result.
   //
+  // If `error_msg` is specified, receives an error message on an uncaught
+  // exception, and the return value will be `NONE`. If `error_msg` is not
+  // specified, crashes on failure.
+  //
   // If you wish to do a background or asynchronous task but not block, have
   // your script return immediately and then call SendEventOnStateChange() to
   // monitor the result.
-  base::Value Evaluate(const std::string& function);
+  base::Value Evaluate(const std::string& function,
+                       std::string* error_msg = nullptr);
 
   // Executes `function` in the target WebContents. Identical to `Evaluate()`
   // except that the return value of the function is discarded and no effort is
@@ -313,15 +318,22 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // Evaluates `function` on the element returned by finding the element at
   // `where`; throw an error if `where` doesn't exist or capture with a second
   // argument.
+  //
   // The `function` parameter should be the text of a valid javascript unnamed
   // function that takes a DOM element and/or an error parameter if occurs and
   // optionally returns a value.
+  //
+  // If `error_msg` is specified, receives an error message on an uncaught
+  // exception, and the return value will be `NONE`. If `error_msg` is not
+  // specified, crashes on failure.
   //
   // Example:
   //   function(el) { return el.innterText; }
   // Or capture the error instead of throw:
   //   (el, err) => !err && !!el
-  base::Value EvaluateAt(const DeepQuery& where, const std::string& function);
+  base::Value EvaluateAt(const DeepQuery& where,
+                         const std::string& function,
+                         std::string* error_message = nullptr);
 
   // Same as EvaluateAt except that `function` is executed, the return value is
   // discarded, and no effort is made to wait for or return the result.

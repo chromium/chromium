@@ -198,22 +198,47 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       ui::ElementIdentifier webcontents_id,
       const DeepQuery& where);
 
+  // How to execute JavaScript when calling ExecuteJs() and ExecuteJsAt().
+  enum class ExecuteJsMode {
+    // Ensures that the code sent to the renderer completes without error before
+    // the next step can proceed. If an error occurs, the test fails.
+    //
+    // This is the default.
+    kWaitForCompletion,
+    // Sends the code to the renderer for execution, but does not wait for a
+    // response. If an error occurs, it may appear in the log, but the test
+    // will not detect it and will not fail.
+    //
+    // Use this mode if the code you are injecting will prevent the renderer
+    // from communicating the result back to the browser process.
+    kFireAndForget,
+  };
+
   // Execute javascript `function`, which should take no arguments, in
   // WebContents `webcontents_id`.
+  //
+  // You can use this method to call an existing function with no arguments in
+  // the global scope; to do that, specify only the name of the method (e.g.
+  // `myMethod` rather than `myMethod()`).
   [[nodiscard]] static StepBuilder ExecuteJs(
       ui::ElementIdentifier webcontents_id,
-      const std::string& function);
+      const std::string& function,
+      ExecuteJsMode mode = ExecuteJsMode::kWaitForCompletion);
 
   // Execute javascript `function`, which should take a single DOM element as an
   // argument, with the element at `where`, in WebContents `webcontents_id`.
   [[nodiscard]] static StepBuilder ExecuteJsAt(
       ui::ElementIdentifier webcontents_id,
       const DeepQuery& where,
-      const std::string& function);
+      const std::string& function,
+      ExecuteJsMode mode = ExecuteJsMode::kWaitForCompletion);
 
   // Executes javascript `function`, which should take no arguments and return a
   // value, in WebContents `webcontents_id`, and fails if the result is not
   // truthy.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated for truthiness. If the promise rejects, CheckJsResult() fails.
   [[nodiscard]] static StepBuilder CheckJsResult(
       ui::ElementIdentifier webcontents_id,
       const std::string& function);
@@ -232,6 +257,9 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // You must pass a literal or Matcher that matches the type returned by the
   // javascript function. If your function could return either an integer or a
   // floating-point value, you *must* use a double.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated against `matcher`. If the promise rejects, CheckJsResult() fails.
   template <typename T>
   [[nodiscard]] static StepBuilder CheckJsResult(
       ui::ElementIdentifier webcontents_id,
@@ -241,6 +269,9 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // Executes javascript `function`, which should take a single DOM element as
   // an argument and returns a value, in WebContents `webcontents_id` on the
   // element specified by `where`, and fails if the result is not truthy.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated for truthiness. If the promise rejects, CheckJsResultAt() fails.
   [[nodiscard]] static StepBuilder CheckJsResultAt(
       ui::ElementIdentifier webcontents_id,
       const DeepQuery& where,
@@ -250,6 +281,10 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // an argument and returns a value, in WebContents `webcontents_id` on the
   // element specified by `where`, and fails if the result does not match
   // `matcher`, which can be a literal or a testing::Matcher.
+  //
+  // If `function` instead returns a promise, the result of the promise is
+  // evaluated against `matcher`. If the promise rejects, CheckJsResultAt()
+  // fails.
   //
   // See notes on CheckJsResult() for what values and Matchers are supported.
   template <typename T>

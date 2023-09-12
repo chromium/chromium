@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestNotification()"),
+      ExecuteJs(kWebContentsElementId, "requestNotification"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCamera()"),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCamera()"),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestMicrophone()"),
+      ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
-      ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone()"),
+      ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       // We need to call `FlushEvents` here before `PressButton` because a

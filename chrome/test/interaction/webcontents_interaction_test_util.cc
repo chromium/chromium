@@ -106,17 +106,26 @@ content::EvalJsResult EvalJsLocal(
   std::string token =
       "EvalJsLocal-" + base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string runner_script = base::StringPrintf(
-      R"(Promise.resolve(%s)
-         .then(func => [func()])
-         .then((result) => Promise.all(result))
-         .then((result) => [result[0], ''],
-               (error) => [undefined,
-                           error && error.stack ?
-                               '\n' + error.stack :
-                               'Error: "' + error + '"'])
-         .then((reply) => window.domAutomationController.send(['%s', reply]));
-      //# sourceURL=EvalJs-runner.js)",
-      function.c_str(), token.c_str());
+      R"(
+        (() => {
+          const replyFunc =
+              (reply) => window.domAutomationController.send(['%s', reply]);
+          const errorReply =
+              (error) => [undefined,
+                        error && error.stack ?
+                            '\n' + error.stack :
+                            'Error: "' + error + '"'];
+          try {
+            Promise.resolve((%s)())
+              .then((result) => [result, ''],
+                    (error) => errorReply(error))
+              .then((result) => replyFunc(result));
+          } catch (err) {
+            replyFunc(errorReply(err));
+          }
+        })(); //# sourceURL=EvalJs-runner.js
+      )",
+      token.c_str(), function.c_str());
 
   if (!host->IsRenderFrameLive())
     return content::EvalJsResult(base::Value(), "Error: frame has crashed.");
@@ -690,10 +699,18 @@ void WebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
 }
 
 base::Value WebContentsInteractionTestUtil::Evaluate(
-    const std::string& function) {
+    const std::string& function,
+    std::string* error_message) {
   CHECK(is_page_loaded());
   auto result = EvalJsLocal(web_contents(), function);
-  CHECK(result.error.empty()) << result.error;
+  if (!result.error.empty()) {
+    if (error_message) {
+      *error_message = result.error;
+      return base::Value();
+    } else {
+      NOTREACHED_NORETURN() << "Uncaught JS exception: " << result.error;
+    }
+  }
 
   // Despite the fact that EvalJsResult::value is const, base::Value in general
   // is moveable and nothing special is done on EvalJsResult destructor, which
@@ -786,9 +803,10 @@ bool WebContentsInteractionTestUtil::Exists(const DeepQuery& query,
 
 base::Value WebContentsInteractionTestUtil::EvaluateAt(
     const DeepQuery& where,
-    const std::string& function) {
+    const std::string& function,
+    std::string* error_message) {
   const std::string full_query = CreateDeepQuery(where, function);
-  return Evaluate(full_query);
+  return Evaluate(full_query, error_message);
 }
 
 void WebContentsInteractionTestUtil::ExecuteAt(const DeepQuery& where,
