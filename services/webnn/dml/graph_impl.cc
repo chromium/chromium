@@ -295,9 +295,8 @@ NodeInfo CreateBinaryOperator(
       .ATensor = &a_tensor.GetDMLTensorDesc(),
       .BTensor = &b_tensor.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor.GetDMLTensorDesc()};
-  auto node = graph_builder.CreateOperatorNode(
-      operator_type, &binary_operator_desc, node_output_infos);
-  return node;
+  return graph_builder.CreateOperatorNode(operator_type, &binary_operator_desc,
+                                          node_output_infos);
 }
 
 bool CreateOperatorNodeForBinary(const IdToOperandMap& id_to_operand_map,
@@ -523,10 +522,23 @@ bool CreateOperatorNodeForPool2d(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
-                               const OperatorPtr& operation,
-                               GraphBuilder& graph_builder,
-                               IdToNodeOutputMap& id_to_node_output_map) {
+template <typename DML_OPERATOR_DESC>
+NodeInfo CreateUnaryOperator(const TensorDesc& input_tensor,
+                             const TensorDesc& output_tensor,
+                             const NodeOutputInfo& node_output_info,
+                             GraphBuilder& graph_builder,
+                             DML_OPERATOR_TYPE operator_type) {
+  DML_OPERATOR_DESC unary_operator_desc{
+      .InputTensor = &input_tensor.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor.GetDMLTensorDesc()};
+  return graph_builder.CreateOperatorNode(operator_type, &unary_operator_desc,
+                                          {node_output_info});
+}
+
+bool CreateOperatorNodeForUnary(const IdToOperandMap& id_to_operand_map,
+                                const OperatorPtr& operation,
+                                GraphBuilder& graph_builder,
+                                IdToNodeOutputMap& id_to_node_output_map) {
   const auto& input_node_output_info =
       GetInputNodeOutputInfo(operation, id_to_node_output_map);
   auto input_tensor_desc =
@@ -535,18 +547,29 @@ bool CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
   const auto output_tensor_desc =
       GetOutputTensorDesc(operation, id_to_operand_map);
 
-  DML_ACTIVATION_RELU_OPERATOR_DESC relu_operator_desc{
-      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
-      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
-
-  NodeInfo relu_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc,
-      {input_node_output_info});
-  if (relu_node.type == NodeInfo::Type::kInvalid) {
+  NodeInfo unary_node;
+  switch (operation->kind) {
+    case mojom::Operator::Kind::kRelu: {
+      unary_node = CreateUnaryOperator<DML_ACTIVATION_RELU_OPERATOR_DESC>(
+          input_tensor_desc, output_tensor_desc, input_node_output_info,
+          graph_builder, DML_OPERATOR_ACTIVATION_RELU);
+      break;
+    }
+    case mojom::Operator::Kind::kSoftmax: {
+      unary_node = CreateUnaryOperator<DML_ACTIVATION_SOFTMAX_OPERATOR_DESC>(
+          input_tensor_desc, output_tensor_desc, input_node_output_info,
+          graph_builder, DML_OPERATOR_ACTIVATION_SOFTMAX);
+      break;
+    }
+    default:
+      DLOG(ERROR) << "This operator type is not supported";
+      NOTREACHED_NORETURN();
+  }
+  if (unary_node.type == NodeInfo::Type::kInvalid) {
     return false;
   }
 
-  CreateNodeOutput(operation, graph_builder, relu_node, output_tensor_desc,
+  CreateNodeOutput(operation, graph_builder, unary_node, output_tensor_desc,
                    id_to_node_output_map);
 
   return true;
@@ -916,8 +939,9 @@ void GraphImpl::CreateAndBuild(
             id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }
-      case Operator::Kind::kRelu: {
-        was_creation_successful = CreateOperatorNodeForRelu(
+      case Operator::Kind::kRelu:
+      case Operator::Kind::kSoftmax: {
+        was_creation_successful = CreateOperatorNodeForUnary(
             id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }
@@ -971,14 +995,15 @@ void GraphImpl::CreateAndBuild(
       TensorDesc identity_tensor_desc(output_tensor_desc.GetDataType(),
                                       DML_TENSOR_FLAG_NONE,
                                       output_tensor_desc.GetDimensions());
-      DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC identity_operator_desc{
-          .InputTensor = &output_tensor_desc.GetDMLTensorDesc(),
-          .OutputTensor = &identity_tensor_desc.GetDMLTensorDesc()};
-      NodeInfo identity_node = graph_builder.CreateOperatorNode(
-          DML_OPERATOR_ELEMENT_WISE_IDENTITY, &identity_operator_desc,
-          {node_output_info});
+
+      NodeInfo identity_node =
+          CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC>(
+              output_tensor_desc, identity_tensor_desc, node_output_info,
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_IDENTITY);
+
       NodeOutputInfo identity_node_output_info = graph_builder.CreateNodeOutput(
           identity_node, std::move(identity_tensor_desc));
+
       graph_outputs.push_back(std::move(identity_node_output_info));
     } else {
       graph_outputs.push_back(std::move(node_output_info));

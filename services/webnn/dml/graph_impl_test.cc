@@ -373,17 +373,48 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorMaxPool2d) {
   }
 }
 
+struct UnaryOperatorTester {
+  mojom::Operator::Kind kind;
+  OperandInfo input;
+  OperandInfo output;
+  void Test(WebNNGraphDMLImplTest& helper) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildOperator(kind, {input_operand_id}, {output_operand_id});
+    EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+    EXPECT_TRUE(helper.CreateAndBuildGraph(builder.GetGraphInfo()));
+  }
+};
+
 // Test building a DML graph with single operator relu.
 TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorRelu) {
-  // Build the mojom graph info.
-  GraphInfoBuilder builder;
-  uint64_t input_operand_id = builder.BuildInput(
-      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  uint64_t output_operand_id = builder.BuildOutput(
-      "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
-  builder.BuildOperator(mojom::Operator::Kind::kRelu, {input_operand_id},
-                        {output_operand_id});
-  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+  {
+    UnaryOperatorTester{.kind = mojom::Operator::Kind::kRelu,
+                        .input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {1, 2, 3, 4}},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+}
+
+// Test building a DML graph with single operator softmax.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorSoftmax) {
+  // DML_ACTIVATION_SOFTMAX_OPERATOR_DESC support for 2 dimensions was
+  // introduced in DML_FEATURE_LEVEL_3_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
+  {
+    UnaryOperatorTester{.kind = mojom::Operator::Kind::kSoftmax,
+                        .input = {.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {2, 3}},
+                        .output = {.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2, 3}}}
+        .Test(*this);
+  }
 }
 
 // Test building a DML graph with two relu operators.
