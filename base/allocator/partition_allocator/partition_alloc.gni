@@ -204,6 +204,12 @@ declare_args() {
   # Shadow metadata is still under development and only supports Linux
   # for now.
   enable_shadow_metadata = false
+
+  if (is_apple) {
+    # TODO(crbug.com/1414153): this should be removed once the use of mach
+    # absolute time ticks is successfully launched on iOS.
+    partition_alloc_enable_mach_absolute_time_ticks = true
+  }
 }
 
 # *Scan is currently only used by Chromium, and supports only 64-bit.
@@ -305,6 +311,14 @@ assert(!use_asan_backup_ref_ptr || is_asan,
 
 assert(!use_asan_unowned_ptr || is_asan,
        "AsanUnownedPtr requires AddressSanitizer")
+
+if (is_apple) {
+  assert(!use_blink || partition_alloc_enable_mach_absolute_time_ticks,
+         "use_blink requires partition_alloc_enable_mach_absolute_time_ticks")
+
+  assert(!is_mac || partition_alloc_enable_mach_absolute_time_ticks,
+         "mac requires partition_alloc_enable_mach_absolute_time_ticks")
+}
 
 # AsanBackupRefPtr is not supported outside Chromium. The implementation is
 # entangled with `//base`. The code is only physically located with the rest of
