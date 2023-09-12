@@ -620,6 +620,10 @@ TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
       g_env->Video()->Codec() != media::VideoCodec::kHEVC)
     GTEST_SKIP();
 
+  if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+    GTEST_SKIP() << "Temporarily disabled due to b/298073737";
+  }
+
   auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->PlayUntil(DecoderListener::Event::kConfigInfo);

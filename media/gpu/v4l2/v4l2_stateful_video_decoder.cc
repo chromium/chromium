@@ -1153,8 +1153,10 @@ absl::optional<bool> H264FrameReassembler::DoesBufferMarkANewH264Frame(
         H264SliceHeader curr_slice_header;
         result = h264_parser_.ParseSliceHeader(nalu, &curr_slice_header);
         if (result != H264Parser::kOk) {
-          LOG(ERROR) << "Could not parse NALU header.";
-          return absl::nullopt;
+          // In this function we just want to find frame boundaries, so return
+          // but don't mark an error.
+          LOG(WARNING) << "Could not parse NALU header.";
+          return true;
         }
         const bool is_new_frame =
             previous_slice_header_ &&
