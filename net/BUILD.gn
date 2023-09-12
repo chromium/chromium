@@ -2433,6 +2433,7 @@ source_set("quic_test_tools") {
 }
 
 source_set("simple_quic_tools") {
+  testonly = true
   sources = [
     "tools/quic/quic_client_message_loop_network_helper.cc",
     "tools/quic/quic_client_message_loop_network_helper.h",
@@ -2474,6 +2475,7 @@ if (!is_ios) {
     ]
   }
   executable("quic_server") {
+    testonly = true
     sources = [
       "tools/quic/quic_simple_server_backend_factory.cc",
       "tools/quic/quic_simple_server_backend_factory.h",
@@ -2490,6 +2492,7 @@ if (!is_ios) {
     ]
   }
   executable("crypto_message_printer") {
+    testonly = true
     sources = [ "tools/quic/crypto_message_printer_bin.cc" ]
     deps = [
       ":net",
