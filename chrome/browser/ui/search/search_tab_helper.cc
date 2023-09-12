@@ -339,7 +339,9 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
   auto* browser_window =
       BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
   if (browser_window) {
-    browser_window->CloseFeaturePromo(customize_chrome_feature);
+    browser_window->CloseFeaturePromo(
+        customize_chrome_feature,
+        user_education::FeaturePromoCloseReason::kAbortPromo);
   }
 }
 
