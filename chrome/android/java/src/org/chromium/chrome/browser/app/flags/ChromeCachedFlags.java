@@ -221,11 +221,14 @@ public class ChromeCachedFlags {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void cacheMinimalBrowserFlagsTimeFromNativeTime() {
-        CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
+                System.currentTimeMillis());
     }
 
     public static long getLastCachedMinimalBrowserFlagsTimeMillis() {
-        return CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis();
+        return SharedPreferencesManager.getInstance().readLong(
+                ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS, 0);
     }
 
     @CalledByNative
