@@ -851,7 +851,7 @@ export class BrowsingContextImpl {
         (error as Error).message ===
         'invalid print parameters: content area is empty'
       ) {
-        throw new UnsupportedOperationException(error.message);
+        throw new InvalidArgumentException(error.message);
       }
       throw error;
     }
