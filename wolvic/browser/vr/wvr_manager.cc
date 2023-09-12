@@ -17,7 +17,7 @@ namespace wolvic {
 namespace {
 
 void WvrMatToTransform(const float in[16], gfx::Transform* out) {
-  *out = gfx::Transform::RowMajor(in[0], in[1], in[2], in[3], in[4], in[5],
+  *out = gfx::Transform::ColMajor(in[0], in[1], in[2], in[3], in[4], in[5],
                                   in[6], in[7], in[8], in[9], in[10], in[11],
                                   in[12], in[13], in[14], in[15]);
 }
@@ -152,9 +152,7 @@ device::mojom::XRViewPtr CreateView(
     const gfx::Transform head_mat = WvrPoseToTransform(pose);
     gfx::Transform eye_from_head;
     WvrMatToTransform(display_state.eyeTransform[eye], &eye_from_head);
-    gfx::Transform head_from_eye = eye_from_head.GetCheckedInverse();
-
-    view->mojo_from_view = head_mat * head_from_eye;
+    view->mojo_from_view = head_mat * eye_from_head;
   }
   return view;
 }
