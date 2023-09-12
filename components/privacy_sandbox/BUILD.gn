@@ -103,6 +103,7 @@ source_set("tracking_protection_settings") {
 
   deps = [
     ":tracking_protection_prefs",
+    "//components/content_settings/core/common",
     "//components/keyed_service/core:core",
     "//components/prefs",
   ]

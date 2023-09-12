@@ -7982,6 +7982,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "tracking-protection-3pcd",
+    "owners": ["fmacintosh@google.com", "koilos@google.com"],
+    "expiry_milestone": 133
+  },
+  {
     "name": "traffic-counters",
     "owners": ["khorimoto", "cros-connectivity@google.com"],
     "expiry_milestone": 120

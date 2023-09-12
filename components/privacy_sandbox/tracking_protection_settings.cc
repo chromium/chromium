@@ -5,6 +5,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
 #include "base/check.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
@@ -19,7 +20,10 @@ TrackingProtectionSettings::TrackingProtectionSettings(
 TrackingProtectionSettings::~TrackingProtectionSettings() = default;
 
 bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
-  return pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled);
+  // True if either debug flag or pref is enabled.
+  return base::FeatureList::IsEnabled(
+             content_settings::features::kTrackingProtection3pcd) ||
+         pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled);
 }
 
 tracking_protection::TrackingProtectionLevel

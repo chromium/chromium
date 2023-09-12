@@ -93,9 +93,9 @@ extern const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadTime;
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
 
-// Feature to enable redesigned cookie settings for 3PCD.
+// Feature to enable redesigned tracking protection UX + prefs for 3PCD.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kThirdPartyCookieDeprecationCookieSettings);
+BASE_DECLARE_FEATURE(kTrackingProtection3pcd);
 
 }  // namespace features
 }  // namespace content_settings

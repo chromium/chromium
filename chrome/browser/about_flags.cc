@@ -8270,6 +8270,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPreloadingOnPerformancePageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPerformanceSettingsPreloadingSubpage)},
 
+    {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
+     flag_descriptions::kTrackingProtection3pcdDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(content_settings::features::kTrackingProtection3pcd)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kClipboardHistoryLongpressInternalName,
      flag_descriptions::kClipboardHistoryLongpressName,

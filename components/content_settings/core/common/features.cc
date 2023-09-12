@@ -74,8 +74,8 @@ BASE_FEATURE(kImprovedSemanticsActivityIndicators,
              "ImprovedSemanticsActivityIndicators",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThirdPartyCookieDeprecationCookieSettings,
-             "ThirdPartyCookieDeprecationCookieSettings",
+BASE_FEATURE(kTrackingProtection3pcd,
+             "TrackingProtection3pcd",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
