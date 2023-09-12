@@ -2065,7 +2065,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, Tutorial) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
+// TODO(crbug.com/1481691): Re-enable this test
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ClipboardCopySpeech) {
   EnableChromeVox();
   sm_.Call([this]() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
