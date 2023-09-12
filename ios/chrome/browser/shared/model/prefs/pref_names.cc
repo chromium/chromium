@@ -198,6 +198,11 @@ const char kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness[] =
 const char kIosParcelTrackingOptInPromptDisplayed[] =
     "ios.parcel_tracking.opt_in_prompt_displayed";
 
+// Integer that maps to IOSParcelTrackingOptInStatus, the enum type of the
+// user's preference for automatically tracking parcels.
+const char kIosParcelTrackingOptInStatus[] =
+    "ios.parcel_tracking.opt_in_status";
+
 // The number of consecutive times the user dismissed the password bottom sheet.
 // This gets reset to 0 whenever the user selects a password from the bottom
 // sheet or from the keyboard accessory.

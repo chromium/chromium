@@ -12,6 +12,13 @@ class ChromeBrowserState;
 // Feature flag to enable the parcel tracking feature.
 BASE_DECLARE_FEATURE(kIOSParcelTracking);
 
+// Enum for the different values of the parcel tracking opt-in status.
+enum class IOSParcelTrackingOptInStatus {
+  kNeverTrack = 0,
+  kAlwaysTrack = 1,
+  kAskToTrack = 2,
+};
+
 // Returns true if the parcel tracking feature is enabled.
 bool IsIOSParcelTrackingEnabled();
 

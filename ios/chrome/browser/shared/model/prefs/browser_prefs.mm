@@ -509,8 +509,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kIosSaveToPhotosDefaultGaiaId,
                                std::string());
 
+  // Preferences related to parcel tracking.
   registry->RegisterBooleanPref(prefs::kIosParcelTrackingOptInPromptDisplayed,
                                 false);
+  registry->RegisterIntegerPref(prefs::kIosParcelTrackingOptInStatus, 0);
 
   registry->RegisterBooleanPref(kObsoleteIosSettingsPromoAlreadySeen, false);
   registry->RegisterIntegerPref(kObsoleteIosSettingsSigninPromoDisplayedCount,

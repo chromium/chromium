@@ -16,3 +16,23 @@ source_set("util") {
     "//ios/chrome/browser/signin",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "parcel_tracking_util_unittest.mm" ]
+  deps = [
+    ":util",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
