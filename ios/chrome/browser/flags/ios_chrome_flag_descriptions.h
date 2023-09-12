@@ -173,6 +173,10 @@ extern const char kBottomOmniboxDefaultSettingDescription[];
 extern const char kBottomOmniboxSteadyStateName[];
 extern const char kBottomOmniboxSteadyStateDescription[];
 
+// Title and description for the flag that enables donation of new intents.
+extern const char kSpotlightDonateNewIntentsName[];
+extern const char kSpotlightDonateNewIntentsDescription[];
+
 // Title and description for the flag to control if initial uploading of crash
 // reports is delayed.
 extern const char kBreakpadNoDelayInitialUploadName[];

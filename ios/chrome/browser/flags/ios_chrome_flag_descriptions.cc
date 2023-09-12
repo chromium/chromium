@@ -204,6 +204,10 @@ const char kBottomOmniboxSteadyStateName[] = "Bottom Omnibox (Steady)";
 const char kBottomOmniboxSteadyStateDescription[] =
     "Move the omnibox to the bottom in steady state";
 
+const char kSpotlightDonateNewIntentsName[] = "Donate New Spotlight Intents";
+const char kSpotlightDonateNewIntentsDescription[] =
+    "Donates relevant intents to Siri when corresponding features are used";
+
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
 const char kBreakpadNoDelayInitialUploadDescription[] =

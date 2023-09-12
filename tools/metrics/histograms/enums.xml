@@ -56211,6 +56211,22 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Available"/>
 </enum>
 
+<enum name="IOSSpotlightDonatedIntentType">
+  <int value="0" label="Search In Chrome"/>
+  <int value="1" label="Open Reading List"/>
+  <int value="2" label="Open Bookmarks"/>
+  <int value="3" label="Open Recent Tabs"/>
+  <int value="4" label="Open Tab Grid"/>
+  <int value="5" label="Open Voice Search"/>
+  <int value="6" label="Open New Tab"/>
+  <int value="7" label="Play Dino Game"/>
+  <int value="8" label="Set Default Browser"/>
+  <int value="9" label="View History"/>
+  <int value="10" label="Open Latest Tab"/>
+  <int value="11" label="Start Lens"/>
+  <int value="12" label="Clear Browsing Data"/>
+</enum>
+
 <enum name="IOSSpotlightOrigin">
   <int value="0" label="Unknown Origin"/>
   <int value="1" label="Bookmark"/>

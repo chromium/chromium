@@ -233,7 +233,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   // we need to refresh the empty view margin after the layout is done, to apply
   // the correct top margin value according to the promo view's height.
   [self updateEmptyViewTopMargin];
-  [IntentDonationHelper donateIntent:INTENT_OPEN_READING_LIST];
+  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenReadingList];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size

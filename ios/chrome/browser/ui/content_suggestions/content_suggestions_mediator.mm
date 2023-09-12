@@ -39,6 +39,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/set_up_list.h"
@@ -584,6 +585,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)openMostRecentTab {
   [self.NTPMetricsDelegate recentTabTileOpened];
   [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
+  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenLatestTab];
   [self hideRecentTabTile];
   WebStateList* web_state_list = self.browser->GetWebStateList();
   web::WebState* web_state =

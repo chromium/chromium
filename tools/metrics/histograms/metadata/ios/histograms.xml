@@ -2756,6 +2756,14 @@ chromium-metrics-reviews@google.com.
   <summary>Number of bookmarks indexed during initial indexation.</summary>
 </histogram>
 
+<histogram name="IOS.Spotlight.DonatedIntentType"
+    enum="IOSSpotlightDonatedIntentType" expires_after="2024-06-01">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>ameurhosni@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>Recorded each time an intent is donated.</summary>
+</histogram>
+
 <histogram name="IOS.Spotlight.OpenTabsIndexingDuration" units="ms"
     expires_after="2024-06-01">
   <owner>stkhapugin@chromium.org</owner>

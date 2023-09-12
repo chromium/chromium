@@ -9,6 +9,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -178,6 +179,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   if (!ios::provider::IsLensSupported()) {
     return;
   }
+
+  [IntentDonationHelper donateIntent:DonatedIntentType::kStartLens];
 
   // Create a Lens configuration for this request.
   const LensEntrypoint entrypoint = command.entryPoint;

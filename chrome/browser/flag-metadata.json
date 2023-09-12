@@ -7621,6 +7621,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "spotlight-donate-new-intents",
+    "owners": [
+      "bling-flags@google.com",
+      "stkhapugin"
+    ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "spotlight-open-tabs-source",
     "owners": [
       "bling-flags@google.com",

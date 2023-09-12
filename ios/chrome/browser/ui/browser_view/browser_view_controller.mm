@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/find_in_page/util.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
@@ -2244,6 +2245,7 @@ enum HeaderBehaviour {
   if (_startVoiceSearchAfterNewTabAnimation) {
     _startVoiceSearchAfterNewTabAnimation = NO;
     [self startVoiceSearch];
+    [IntentDonationHelper donateIntent:DonatedIntentType::kOpenVoiceSearch];
   }
 }
 

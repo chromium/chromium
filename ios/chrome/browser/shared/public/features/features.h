@@ -181,6 +181,9 @@ BASE_DECLARE_FEATURE(kSpotlightOpenTabsSource);
 // Enables indexing Reading List items in Spotlight.
 BASE_DECLARE_FEATURE(kSpotlightReadingListSource);
 
+// Enables intent donation for new intent types.
+BASE_DECLARE_FEATURE(kSpotlightDonateNewIntents);
+
 // Feature to enable sign-in only flow without device level account.
 BASE_DECLARE_FEATURE(kConsistencyNewAccountInterface);
 

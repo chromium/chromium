@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/followed_web_site.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
@@ -1562,6 +1563,7 @@ enum class ToolbarKind {
 }
 
 - (void)showBookmarksManager {
+  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenBookmarks];
   [_bookmarksCoordinator presentBookmarks];
 }
 
@@ -1588,6 +1590,8 @@ enum class ToolbarKind {
 }
 
 - (void)showRecentTabs {
+  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenRecentTabs];
+
   // TODO(crbug.com/825431): If BVC's clearPresentedState is ever called (such
   // as in tearDown after a failed egtest), then this coordinator is left in a
   // started state even though its corresponding VC is no longer on screen.

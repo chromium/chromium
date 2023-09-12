@@ -7,6 +7,7 @@ source_set("intents_donation_helper") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/intents",
     "//ui/base",
   ]

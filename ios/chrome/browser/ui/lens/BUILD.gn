@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",

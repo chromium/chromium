@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -41,6 +42,7 @@
 }
 
 - (void)tabGridTouchDown {
+  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenTabGrid];
   [self.applicationHandler prepareTabSwitcher];
 }
 
@@ -81,6 +83,8 @@
 
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kNewTabToolbarItemUsed);
+
+  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenNewTab];
 }
 
 - (void)cancelOmniboxFocusAction {
