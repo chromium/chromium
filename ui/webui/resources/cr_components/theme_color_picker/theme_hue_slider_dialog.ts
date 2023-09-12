@@ -97,12 +97,12 @@ export class ThemeHueSliderDialogElement extends
 
     // By default, align the dialog below the anchor. If the window is too
     // small, show it above the anchor.
-    const anchorBottom = anchor.offsetTop + anchor.offsetHeight;
-    if (anchorBottom + this.$.dialog.offsetHeight >= window.innerHeight) {
+    if (anchor.getBoundingClientRect().bottom + this.$.dialog.offsetHeight >=
+        window.innerHeight) {
       this.$.dialog.style.top =
           `${anchor.offsetTop - this.$.dialog.offsetHeight}px`;
     } else {
-      this.$.dialog.style.top = `${anchorBottom}px`;
+      this.$.dialog.style.top = `${anchor.offsetTop + anchor.offsetHeight}px`;
     }
   }
 
