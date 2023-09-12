@@ -7,12 +7,21 @@
 
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 
 namespace ash {
 
 // Returns paths to assets required for the TimeOfDay wallpaper/screensaver
 // feature.
+// TODO(b/289085706): Integrate DLC into this function.
 ASH_EXPORT const base::FilePath& GetTimeOfDaySrcDir();
+
+// Installs the TimeOfDay DLC package containing assets for the
+// Time Of Day screen saver. DLC will eventually replace the Time Of Day assets
+// currently stored in rootfs. Returns the root directory where the assets are
+// located. Returns an empty `base::FilePath` if the install fails.
+ASH_EXPORT void InstallTimeOfDayDlc(
+    base::OnceCallback<void(base::FilePath)> on_done);
 
 // TimeOfDay video file names.
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayCloudsVideo[];
