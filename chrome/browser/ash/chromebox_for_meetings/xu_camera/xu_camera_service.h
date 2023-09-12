@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
+#include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
@@ -73,7 +74,7 @@ class XuCameraService : public CfmObserver,
 
  protected:
   // If nullptr is passed the default Delegate will be used
-  explicit XuCameraService(Delegate* delegate_);
+  explicit XuCameraService(Delegate* delegate);
 
   // CfmObserver implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
@@ -107,43 +108,50 @@ class XuCameraService : public CfmObserver,
                                const absl::optional<std::string>& dev_path);
   void MapCtrlWithDevicePath(mojom::ControlMappingPtr mapping_ctrl,
                              MapCtrlCallback callback,
-                             const absl::optional<std::string>& dev_path);
+                             const absl::optional<std::string>& dev_path) const;
   void GetCtrlWithDevicePath(mojom::CtrlTypePtr ctrl,
                              mojom::GetFn fn,
                              GetCtrlCallback callback,
-                             const absl::optional<std::string>& dev_path);
+                             const absl::optional<std::string>& dev_path) const;
   void SetCtrlWithDevicePath(mojom::CtrlTypePtr ctrl,
                              const std::vector<uint8_t>& data,
                              SetCtrlCallback callback,
-                             const absl::optional<std::string>& dev_path);
+                             const absl::optional<std::string>& dev_path) const;
   uint8_t QueryXuControl(const base::ScopedFD& file_descriptor,
                          uint8_t unit_id,
                          uint8_t selector,
                          uint8_t* data,
                          uint8_t query_request,
-                         uint16_t size);
+                         uint16_t size) const;
   void GetDevicePath(
       mojom::WebcamIdPtr id,
       const content::GlobalRenderFrameHostId& host_id,
       base::OnceCallback<void(const absl::optional<std::string>&)> callback)
       const;
+  void GetCtrlDbus(const std::string& dev_path_or_ip_addr,
+                   const mojom::ControlQueryPtr& query,
+                   const uint8_t& query_request,
+                   GetCtrlCallback callback) const;
+  void SetCtrlDbus(const std::string& dev_path_or_ip_addr,
+                   const mojom::ControlQueryPtr& query,
+                   const std::vector<uint8_t>& data,
+                   SetCtrlCallback callback) const;
   uint8_t CtrlThroughQuery(const base::ScopedFD& file_descriptor,
                            const mojom::ControlQueryPtr& query,
                            std::vector<uint8_t>& data,
-                           const uint8_t& query_request);
+                           const uint8_t& query_request) const;
   uint8_t CtrlThroughMapping(const base::ScopedFD& file_descriptor,
                              const mojom::ControlMappingPtr& mapping,
                              std::vector<uint8_t>& data,
-                             const mojom::GetFn& fn);
-  void ConvertLength(std::vector<uint8_t>& data, uint32_t type);
+                             const mojom::GetFn& fn) const;
   template <typename T>
-  void CopyToData(T* value, std::vector<uint8_t>& data, size_t size);
+  void CopyToData(T* value, std::vector<uint8_t>& data, size_t size) const;
   template <typename T>
-  void CopyFromData(T* value, std::vector<uint8_t>& data);
+  void CopyFromData(T* value, const std::vector<uint8_t>& data) const;
   uint8_t GetLength(uint8_t* data,
                     const base::ScopedFD& file_descriptor,
                     const uint8_t& unit_id,
-                    const uint8_t& selector);
+                    const uint8_t& selector) const;
   void OnGetDevices(const std::vector<uint8_t>& guid_le,
                     GetUnitIdCallback callback,
                     std::vector<device::mojom::UsbDeviceInfoPtr> devices);
@@ -152,6 +160,7 @@ class XuCameraService : public CfmObserver,
   mojo::ReceiverSet<XuCamera, content::GlobalRenderFrameHostId> receivers_;
   mojo::Remote<device::mojom::UsbDeviceManager> usb_manager_;
   std::map<std::vector<uint8_t>, uint8_t> guid_unitid_map_ = {};
+  const std::vector<uint8_t> meet_xu_guid_le_;
   base::WeakPtrFactory<XuCameraService> weak_factory_{this};
 };
 
