@@ -193,7 +193,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       historyClustersPath_: {
         type: Boolean,
         value: () =>
-            loadTimeData.getBoolean('renameJourneys') ? '2' : 'journeys',
+            loadTimeData.getBoolean('renameJourneys') ? 'grouped' : 'journeys',
       },
 
       showHistoryClusters_: {
