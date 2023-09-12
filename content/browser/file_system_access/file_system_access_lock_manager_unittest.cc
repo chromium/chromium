@@ -66,7 +66,7 @@ class FileSystemAccessLockManagerTest : public testing::Test {
                                   const FileSystemURL& child_url) {
     LockType exclusive_lock_type = manager_->GetExclusiveLockType();
     LockType ancestor_lock_type = manager_->GetAncestorLockTypeForTesting();
-    LockType shared_lock_type = manager_->CreateSharedLockType();
+    LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
     // Parent cannot take an exclusive lock if child holds an exclusive lock.
     {
       auto child_lock = manager_->TakeLock(child_url, exclusive_lock_type);
@@ -147,7 +147,7 @@ TEST_F(FileSystemAccessLockManagerTest, ExclusiveLock) {
       FileSystemAccessEntryFactory::PathType::kLocal, path);
 
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
-  LockType shared_lock_type = manager_->CreateSharedLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
   {
     auto exclusive_lock = manager_->TakeLock(url, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
@@ -168,8 +168,8 @@ TEST_F(FileSystemAccessLockManagerTest, SharedLock) {
       FileSystemAccessEntryFactory::PathType::kLocal, path);
 
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
-  LockType shared_lock_type_1 = manager_->CreateSharedLockType();
-  LockType shared_lock_type_2 = manager_->CreateSharedLockType();
+  LockType shared_lock_type_1 = manager_->CreateSharedLockTypeForTesting();
+  LockType shared_lock_type_2 = manager_->CreateSharedLockTypeForTesting();
   {
     auto shared_lock = manager_->TakeLock(url, shared_lock_type_1);
     ASSERT_TRUE(shared_lock);
@@ -193,7 +193,7 @@ TEST_F(FileSystemAccessLockManagerTest, SandboxedFile) {
   url.SetBucket(kTestBucketLocator);
 
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
-  LockType shared_lock_type = manager_->CreateSharedLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
   {
     auto exclusive_lock = manager_->TakeLock(url, exclusive_lock_type);
     ASSERT_TRUE(exclusive_lock);
@@ -309,7 +309,7 @@ TEST_F(FileSystemAccessLockManagerTest, LockAcrossSites) {
   EXPECT_NE(url1.storage_key(), url2.storage_key());
 
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
-  LockType shared_lock_type = manager_->CreateSharedLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
 
   {
     auto exclusive_lock = manager_->TakeLock(url1, exclusive_lock_type);

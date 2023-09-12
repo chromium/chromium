@@ -1094,7 +1094,7 @@ FileSystemAccessManagerImpl::TakeLock(
   return lock_manager_->TakeLock(url, lock_type);
 }
 FileSystemAccessLockManager::LockType
-FileSystemAccessManagerImpl::CreateSharedLockType() const {
+FileSystemAccessManagerImpl::CreateSharedLockTypeForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lock_manager_->CreateSharedLockType();
 }
@@ -1102,6 +1102,21 @@ FileSystemAccessLockManager::LockType
 FileSystemAccessManagerImpl::GetExclusiveLockType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lock_manager_->GetExclusiveLockType();
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::GetSAHReadOnlyLockType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sah_read_only_lock_type_;
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::GetSAHReadwriteUnsafeLockType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sah_readwrite_unsafe_lock_type_;
+}
+FileSystemAccessLockManager::LockType
+FileSystemAccessManagerImpl::GetWFSSiloedLockType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return wfs_siloed_lock_type_;
 }
 FileSystemAccessLockManager::LockType
 FileSystemAccessManagerImpl::GetAncestorLockTypeForTesting() const {
