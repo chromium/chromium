@@ -207,6 +207,40 @@ TEST_CONFIG = """\
 }
 """
 
+CONFIG_STARLARK_GN_ARGS = """\
+{
+  'gn_args_locations_files': [
+      '../../infra/config/generated/builders/gn_args_locations.json',
+  ],
+  'builder_groups': {
+  },
+  'configs': {
+  },
+  'mixins': {
+  },
+}
+"""
+
+TEST_GN_ARGS_LOCATIONS_JSON = """\
+{
+  "chromium": {
+    "linux-official": "ci/linux-official/gn-args.json"
+  },
+  "tryserver.chromium": {
+    "linux-official": "try/linux-official/gn-args.json"
+  }
+}
+"""
+
+TEST_GN_ARGS_JSON = """\
+{
+  "gn_args": {
+    "string_arg": "has double quotes",
+    "bool_arg_lower_case": true
+  }
+}
+"""
+
 TEST_BAD_CONFIG = """\
 {
   'configs': {
@@ -871,6 +905,38 @@ class UnitTest(unittest.TestCase):
                     'use_goma = true\n'
                     '""" to _path_/args.gn.\n\n'
                     '/fake_src/buildtools/linux64/gn gen _path_\n'))
+
+  def test_lookup_starlark_generated_gn_args(self):
+    is_win = sys.platform == 'win32'
+    paths = [
+        '/fake_src/tools/mb/mb_config.pyl',
+        '/fake_src/tools/mb/../../infra/config/generated/builders/'
+        'gn_args_locations.json',
+        '/fake_src/tools/mb/../../infra/config/generated/builders/'
+        'ci/linux-official/gn-args.json',
+    ]
+    files = {
+        'c:' + paths[0].replace('/', '\\') if is_win else paths[0]:
+        CONFIG_STARLARK_GN_ARGS,
+        'c:' + paths[1].replace('/', '\\') if is_win else paths[1]:
+        TEST_GN_ARGS_LOCATIONS_JSON,
+        'c:' + paths[2].replace('/', '\\') if is_win else paths[2]:
+        TEST_GN_ARGS_JSON,
+    }
+    mbw = self.fake_mbw(files=files, win32=is_win)
+    expected_out = ('\n'
+                    'Writing """\\\n'
+                    'bool_arg_lower_case = true\n'
+                    'string_arg = "has double quotes"\n'
+                    '""" to _path_/args.gn.\n\n')
+    if is_win:
+      expected_out += 'c:\\fake_src\\buildtools\\win\\gn.exe gen _path_\n'
+    else:
+      expected_out += '/fake_src/buildtools/linux64/gn gen _path_\n'
+    self.check(['lookup', '-m', 'chromium', '-b', 'linux-official'],
+               mbw=mbw,
+               ret=0,
+               out=expected_out)
 
   def test_quiet_lookup(self):
     self.check(['lookup', '-c', 'debug_goma', '--quiet'], ret=0,
