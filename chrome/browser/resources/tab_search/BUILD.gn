@@ -24,8 +24,10 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "infinite_list.ts",
+    "tab_organization_page.ts",
     "tab_search_group_item.ts",
     "tab_search_item.ts",
+    "tab_search_page.ts",
   ]
 
   non_web_component_files = [

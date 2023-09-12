@@ -4,7 +4,7 @@
 
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, RecentlyClosedTab, Tab, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, RecentlyClosedTab, Tab, TabGroupColor, TabSearchApiProxyImpl, TabSearchItem, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -14,7 +14,7 @@ import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppTest', () => {
-  let tabSearchApp: TabSearchAppElement;
+  let tabSearchPage: TabSearchPageElement;
   let testProxy: TestTabSearchApiProxy;
 
   function verifyTabIds(rows: NodeListOf<HTMLElement>, ids: number[]) {
@@ -25,12 +25,12 @@ suite('TabSearchAppTest', () => {
   }
 
   function queryRows(): NodeListOf<HTMLElement> {
-    return tabSearchApp.$.tabsList.querySelectorAll(
+    return tabSearchPage.$.tabsList.querySelectorAll(
         'tab-search-item, tab-search-group-item');
   }
 
   function queryListTitle(): NodeListOf<HTMLElement> {
-    return tabSearchApp.$.tabsList.querySelectorAll('.list-section-title');
+    return tabSearchPage.$.tabsList.querySelectorAll('.list-section-title');
   }
 
   /**
@@ -48,10 +48,10 @@ suite('TabSearchAppTest', () => {
     testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.setInstance(testProxy);
 
-    tabSearchApp = document.createElement('tab-search-app');
+    tabSearchPage = document.createElement('tab-search-page');
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(tabSearchApp);
+    document.body.appendChild(tabSearchPage);
     await flushTasks();
   }
 
@@ -88,7 +88,7 @@ suite('TabSearchAppTest', () => {
           recentlyClosedDefaultItemDisplayCount: 5,
         });
 
-    tabSearchApp.$.tabsList.ensureAllDomItemsAvailable();
+    tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
 
     // Assert the recently closed tab group is included in the recently closed
     // items section and that the recently closed tabs belonging to it are
@@ -101,7 +101,7 @@ suite('TabSearchAppTest', () => {
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,
     }));
-    tabSearchApp.$.tabsList.ensureAllDomItemsAvailable();
+    tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
 
     assertEquals(8, queryRows().length);
   });
@@ -128,7 +128,7 @@ suite('TabSearchAppTest', () => {
   test('Default tab selection when data is present', async () => {
     await setupTest(createProfileData());
     assertNotEquals(
-        -1, tabSearchApp.getSelectedIndex(),
+        -1, tabSearchPage.getSelectedIndex(),
         'No default selection in the presence of data');
   });
 
@@ -139,15 +139,15 @@ suite('TabSearchAppTest', () => {
           recentlyClosedSectionExpanded: true,
         }),
         {useFuzzySearch: false});
-    tabSearchApp.setValue('bing');
+    tabSearchPage.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
 
-    tabSearchApp.setValue('paypal');
+    tabSearchPage.setValue('paypal');
     await flushTasks();
     verifyTabIds(queryRows(), [100]);
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
   });
 
   test('Search text changes recently closed tab items', async () => {
@@ -177,7 +177,7 @@ suite('TabSearchAppTest', () => {
           recentlyClosedDefaultItemDisplayCount: 5,
         });
 
-    tabSearchApp.setValue('sample');
+    tabSearchPage.setValue('sample');
     await flushTasks();
 
     // Assert that the recently closed items associated to a recently closed
@@ -188,10 +188,10 @@ suite('TabSearchAppTest', () => {
 
   test('No tab selected when there are no search matches', async () => {
     await setupTest(createProfileData());
-    tabSearchApp.setValue('Twitter');
+    tabSearchPage.setValue('Twitter');
     await flushTasks();
     assertEquals(0, queryRows().length);
-    assertEquals(-1, tabSearchApp.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedIndex());
   });
 
   test('Click on tab item triggers actions', async () => {
@@ -205,7 +205,7 @@ suite('TabSearchAppTest', () => {
     }));
 
     const tabSearchItem =
-        tabSearchApp.$.tabsList.querySelector('tab-search-item')!;
+        tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
     tabSearchItem.click();
     const [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(tabData.tabId, tabInfo.tabId);
@@ -240,7 +240,7 @@ suite('TabSearchAppTest', () => {
       recentlyClosedSectionExpanded: true,
     }));
 
-    const tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+    const tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
         'tab-search-item[id="100"]')!;
     tabSearchItem.click();
     const [tabId, withSearch, isTab, index] =
@@ -277,7 +277,7 @@ suite('TabSearchAppTest', () => {
     }));
 
     const tabSearchItem =
-        tabSearchApp.$.tabsList.querySelector('tab-search-group-item')!;
+        tabSearchPage.$.tabsList.querySelector('tab-search-group-item')!;
     tabSearchItem.click();
     const [id, withSearch, isTab, index] =
         await testProxy.whenCalled('openRecentlyClosedEntry');
@@ -292,19 +292,19 @@ suite('TabSearchAppTest', () => {
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs: []}],
     }));
 
-    const searchField = tabSearchApp.$.searchField;
+    const searchField = tabSearchPage.$.searchField;
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
-    assertEquals(-1, tabSearchApp.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
-    assertEquals(-1, tabSearchApp.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'Home');
-    assertEquals(-1, tabSearchApp.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'End');
-    assertEquals(-1, tabSearchApp.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedIndex());
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
@@ -313,25 +313,25 @@ suite('TabSearchAppTest', () => {
 
     const numTabs =
         testData.windows.reduce((total, w) => total + w.tabs.length, 0);
-    const searchField = tabSearchApp.$.searchField;
+    const searchField = tabSearchPage.$.searchField;
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
-    assertEquals(numTabs - 1, tabSearchApp.getSelectedIndex());
+    assertEquals(numTabs - 1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowDown');
-    assertEquals(1, tabSearchApp.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'End');
-    assertEquals(numTabs - 1, tabSearchApp.getSelectedIndex());
+    assertEquals(numTabs - 1, tabSearchPage.getSelectedIndex());
 
     keyDownOn(searchField, 0, [], 'Home');
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
   });
 
   test(
@@ -341,10 +341,10 @@ suite('TabSearchAppTest', () => {
         const testData = generateSampleDataFromSiteNames(siteNames);
         await setupTest(testData);
 
-        const searchField = tabSearchApp.$.searchField;
+        const searchField = tabSearchPage.$.searchField;
 
         keyDownOn(searchField, 0, ['shift'], 'Tab');
-        await waitAfterNextRender(tabSearchApp);
+        await waitAfterNextRender(tabSearchPage);
 
         // Since default actions are not triggered via simulated events we rely
         // on asserting the expected DOM item count necessary to focus the last
@@ -355,11 +355,11 @@ suite('TabSearchAppTest', () => {
   test('Key with modifiers should not affect selected item', async () => {
     await setupTest(createProfileData());
 
-    const searchField = tabSearchApp.$.searchField;
+    const searchField = tabSearchPage.$.searchField;
 
     for (const key of ['ArrowUp', 'ArrowDown', 'Home', 'End']) {
       keyDownOn(searchField, 0, ['shift'], key);
-      assertEquals(0, tabSearchApp.getSelectedIndex());
+      assertEquals(0, tabSearchPage.getSelectedIndex());
     }
   });
 
@@ -370,22 +370,22 @@ suite('TabSearchAppTest', () => {
         createProfileData({windows: []}));
     await flushTasks();
     verifyTabIds(queryRows(), []);
-    assertEquals(-1, tabSearchApp.getSelectedIndex());
+    assertEquals(-1, tabSearchPage.getSelectedIndex());
   });
 
   test('On tabs changed, tab item selection preserved or updated', async () => {
     const testData = createProfileData();
     await setupTest(testData);
 
-    const searchField = tabSearchApp.$.searchField;
+    const searchField = tabSearchPage.$.searchField;
     keyDownOn(searchField, 0, [], 'ArrowDown');
-    assertEquals(1, tabSearchApp.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedIndex());
 
     testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
       windows: [testData.windows[0]!],
     }));
     await flushTasks();
-    assertEquals(1, tabSearchApp.getSelectedIndex());
+    assertEquals(1, tabSearchPage.getSelectedIndex());
 
     testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
       windows: [{
@@ -395,13 +395,13 @@ suite('TabSearchAppTest', () => {
       }],
     }));
     await flushTasks();
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
   });
 
   test('refresh on tab updated', async () => {
     await setupTest(createProfileData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<TabSearchItem>(
+    let tabSearchItem = tabSearchPage.$.tabsList.querySelector<TabSearchItem>(
         'tab-search-item[id="1"]')!;
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('https://www.google.com', tabSearchItem.data.tab.url.url);
@@ -417,7 +417,7 @@ suite('TabSearchAppTest', () => {
     // tabIds are not changed after tab updated.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     tabSearchItem =
-        tabSearchApp.$.tabsList.querySelector('tab-search-item[id="1"]')!;
+        tabSearchPage.$.tabsList.querySelector('tab-search-item[id="1"]')!;
     assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
     assertEquals(updatedTab.url.url, tabSearchItem.data.tab.url.url);
     assertEquals('www.example.com', tabSearchItem.data.hostname);
@@ -465,7 +465,7 @@ suite('TabSearchAppTest', () => {
         {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []});
     await flushTasks();
     assertNotEquals(
-        null, tabSearchApp.shadowRoot!.querySelector('#no-results'));
+        null, tabSearchPage.shadowRoot!.querySelector('#no-results'));
   });
 
   test('Closed tab appears in recently closed section', async () => {
@@ -517,15 +517,15 @@ suite('TabSearchAppTest', () => {
     await setupTest(createProfileData());
     assertEquals(1, testProxy.getCallCount('getProfileData'));
 
-    const searchField = tabSearchApp.$.searchField;
+    const searchField = tabSearchPage.$.searchField;
 
-    tabSearchApp.setValue('Apple');
+    tabSearchPage.setValue('Apple');
     await flushTasks();
     verifyTabIds(queryRows(), [6, 4]);
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
     keyDownOn(searchField, 0, [], 'ArrowDown');
-    assertEquals('Apple', tabSearchApp.getSearchTextForTesting());
-    assertEquals(1, tabSearchApp.getSelectedIndex());
+    assertEquals('Apple', tabSearchPage.getSearchTextForTesting());
+    assertEquals(1, tabSearchPage.getSelectedIndex());
 
     // When hidden visibilitychange should reset selection and search text.
     Object.defineProperty(
@@ -533,8 +533,8 @@ suite('TabSearchAppTest', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     await flushTasks();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    assertEquals('', tabSearchApp.getSearchTextForTesting());
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals('', tabSearchPage.getSearchTextForTesting());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
 
     // State should match that of the hidden state when visible again.
     Object.defineProperty(
@@ -542,8 +542,8 @@ suite('TabSearchAppTest', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     await flushTasks();
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    assertEquals('', tabSearchApp.getSearchTextForTesting());
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals('', tabSearchPage.getSearchTextForTesting());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
   });
 
   test('Verify tab switch is called correctly', async () => {
@@ -552,7 +552,7 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
 
     // Click the first element with tabId 1.
-    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+    let tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
         'tab-search-item[id="1"]')!;
     tabSearchItem.click();
 
@@ -563,7 +563,7 @@ suite('TabSearchAppTest', () => {
 
     testProxy.reset();
     // Click the first element with tabId 6.
-    tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+    tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
         'tab-search-item[id="6"]')!;
     tabSearchItem.click();
 
@@ -574,13 +574,13 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    tabSearchApp.setValue('bing');
+    tabSearchPage.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
 
     testProxy.reset();
     // Click the only remaining element with tabId 2.
-    tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+    tabSearchItem = tabSearchPage.$.tabsList.querySelector<HTMLElement>(
         'tab-search-item[id="2"]')!;
     tabSearchItem.click();
 
@@ -593,7 +593,7 @@ suite('TabSearchAppTest', () => {
 
   test('Verify showUi() is called correctly', async () => {
     await setupTest(createProfileData());
-    await waitAfterNextRender(tabSearchApp);
+    await waitAfterNextRender(tabSearchPage);
 
     // Make sure that tab data has been received.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
@@ -604,9 +604,9 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    tabSearchApp.setValue('bing');
+    tabSearchPage.setValue('bing');
     await flushTasks();
-    await waitAfterNextRender(tabSearchApp);
+    await waitAfterNextRender(tabSearchPage);
     verifyTabIds(queryRows(), [2]);
 
     // |showUi()| should still have only been called once.
@@ -674,7 +674,7 @@ suite('TabSearchAppTest', () => {
       tabGroups: [tabGroup],
     }));
 
-    const tabSearchItem = tabSearchApp.$.tabsList.querySelector<TabSearchItem>(
+    const tabSearchItem = tabSearchPage.$.tabsList.querySelector<TabSearchItem>(
         'tab-search-item[id="1"]')!;
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('Search Engines', tabSearchItem.data.tabGroup!.title);
@@ -735,7 +735,7 @@ suite('TabSearchAppTest', () => {
 
           assertEquals(
               SAMPLE_WINDOW_HEIGHT,
-              tabSearchApp.getAvailableHeightForTesting());
+              tabSearchPage.getAvailableHeightForTesting());
         });
   });
 });

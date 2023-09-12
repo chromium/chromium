@@ -64,6 +64,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
       "new Promise((resolve) => {"
       "  const interval = setInterval(() => {"
       "    const tabItems = document.querySelector('tab-search-app').shadowRoot"
+      "        .querySelector('tab-search-page').shadowRoot"
       "        .getElementById('tabsList')"
       "        .querySelectorAll('tab-search-item');"
       "    if (tabItems && tabItems.length === %d) {"
@@ -91,6 +92,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, SwitchToTabAction) {
 
   const std::string tab_item_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
+      "    .querySelector('tab-search-page').shadowRoot"
       "    .getElementById('tabsList')"
       "    .querySelector('tab-search-item[id=\"%s\"]')",
       base::NumberToString(tab_id).c_str());
@@ -108,6 +110,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
 
   const std::string tab_item_button_js = base::StringPrintf(
       "document.querySelector('tab-search-app').shadowRoot"
+      "    .querySelector('tab-search-page').shadowRoot"
       "    .getElementById('tabsList')"
       "    .querySelector('tab-search-item[id=\"%s\"]')"
       "    .shadowRoot.getElementById('closeButton')",

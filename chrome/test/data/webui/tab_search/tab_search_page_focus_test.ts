@@ -4,7 +4,7 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {InfiniteList, ProfileData, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {InfiniteList, ProfileData, TabSearchApiProxyImpl, TabSearchItem, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -13,7 +13,7 @@ import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disabl
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppFocusTest', () => {
-  let tabSearchApp: TabSearchAppElement;
+  let tabSearchPage: TabSearchPageElement;
   let testProxy: TestTabSearchApiProxy;
 
   disableAnimationBehavior(InfiniteList, 'scrollTo');
@@ -28,26 +28,26 @@ suite('TabSearchAppFocusTest', () => {
 
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
-    tabSearchApp = document.createElement('tab-search-app');
+    tabSearchPage = document.createElement('tab-search-page');
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(tabSearchApp);
+    document.body.appendChild(tabSearchPage);
     await flushTasks();
   }
 
   function queryRows() {
-    return tabSearchApp.$.tabsList.querySelectorAll('tab-search-item');
+    return tabSearchPage.$.tabsList.querySelectorAll('tab-search-item');
   }
 
   function queryListTitle(): NodeListOf<HTMLElement> {
-    return tabSearchApp.$.tabsList.querySelectorAll('.list-section-title');
+    return tabSearchPage.$.tabsList.querySelectorAll('.list-section-title');
   }
 
   test('KeyNavigation', async () => {
     await setupTest(createProfileData());
 
     // Initially, the search input should have focus.
-    const searchInput = tabSearchApp.$.searchInput;
+    const searchInput = tabSearchPage.$.searchInput;
     assertEquals(searchInput, getDeepActiveElement());
 
     const tabSearchItems = queryRows();
@@ -69,14 +69,14 @@ suite('TabSearchAppFocusTest', () => {
     // On restoring focus to the search field, a list item should be selected if
     // available.
     searchInput.focus();
-    assertEquals(0, tabSearchApp.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedIndex());
   });
 
   test('KeyPress', async () => {
     await setupTest(createProfileData());
 
     const tabSearchItem =
-        tabSearchApp.$.tabsList.querySelector('tab-search-item')!;
+        tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
     tabSearchItem.focus();
 
     keyDownOn(tabSearchItem, 0, [], 'Enter');
@@ -94,11 +94,11 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(
         generateSampleDataFromSiteNames(sampleSiteNames(numTabItems)));
 
-    await waitAfterNextRender(tabSearchApp);
+    await waitAfterNextRender(tabSearchPage);
     assertEquals(numTabItems, queryRows().length);
 
     const tabSearchItem =
-        tabSearchApp.$.tabsList.querySelector('tab-search-item')!;
+        tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
     tabSearchItem.focus();
 
     const closeButton =
@@ -110,7 +110,7 @@ suite('TabSearchAppFocusTest', () => {
         tabIds: [(i + 1)],
         recentlyClosedTabs: [],
       });
-      await waitAfterNextRender(tabSearchApp);
+      await waitAfterNextRender(tabSearchPage);
       assertEquals(numTabItems - 1 - i, queryRows().length);
       assertEquals('tab-search-item', getDeepActiveElement()!.localName);
     }
@@ -119,16 +119,16 @@ suite('TabSearchAppFocusTest', () => {
   test('ViewScrolling', async () => {
     await setupTest(generateSampleDataFromSiteNames(sampleSiteNames(10)));
 
-    const tabsDiv = tabSearchApp.$.tabsList;
+    const tabsDiv = tabSearchPage.$.tabsList;
     // Assert that the tabs are in a overflowing state.
     assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
 
     const tabItems =
-        tabSearchApp.$.tabsList.querySelectorAll('tab-search-item');
+        tabSearchPage.$.tabsList.querySelectorAll('tab-search-item');
     for (let i = 0; i < tabItems.length; i++) {
       tabItems[i]!.focus();
 
-      assertEquals(i, tabSearchApp.getSelectedIndex());
+      assertEquals(i, tabSearchPage.getSelectedIndex());
       assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, i);
     }
   });
@@ -137,13 +137,13 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(createProfileData());
 
     // Set the current focus to the search input element.
-    const searchInput = tabSearchApp.$.searchInput;
+    const searchInput = tabSearchPage.$.searchInput;
     searchInput.focus();
     assertEquals(searchInput, getDeepActiveElement());
 
     // Focus an item in the list, search input should not be focused.
     const tabSearchItem =
-        tabSearchApp.$.tabsList.querySelector('tab-search-item')!;
+        tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
     tabSearchItem.focus();
     assertEquals(tabSearchItem, getDeepActiveElement());
     assertNotEquals(searchInput, getDeepActiveElement());
@@ -168,9 +168,9 @@ suite('TabSearchAppFocusTest', () => {
     // thus ensuring that on adding a recently closed item to the list, it will
     // be outside the visible boundaries.
     const tabItemHeight =
-        getStylePropertyPixelValue(tabSearchApp, '--mwb-item-height');
+        getStylePropertyPixelValue(tabSearchPage, '--mwb-item-height');
     const titleItemHeight = getStylePropertyPixelValue(
-        tabSearchApp, '--mwb-list-section-title-height');
+        tabSearchPage, '--mwb-list-section-title-height');
     const windowHeight = (titleItemHeight * 2) + (4 * tabItemHeight);
 
     await setupTest(createProfileData({
@@ -194,14 +194,14 @@ suite('TabSearchAppFocusTest', () => {
     // Expand the `Recently Closed` section.
     recentlyClosedTitleExpandButton!.click();
 
-    await waitAfterNextRender(tabSearchApp);
-    const tabsDiv = tabSearchApp.$.tabsList;
+    await waitAfterNextRender(tabSearchPage);
+    const tabsDiv = tabSearchPage.$.tabsList;
     // Assert that the tabs are in a overflowing state.
     assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
 
     // Assert the first recently closed item is in view bounds.
     const tabItems =
-        tabSearchApp.$.tabsList.querySelectorAll('tab-search-item');
+        tabSearchPage.$.tabsList.querySelectorAll('tab-search-item');
     assertTabItemInViewBounds(tabsDiv, tabItems[4]!);
   });
 });

@@ -62,6 +62,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"audioPlaying", IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT},
       {"expandRecentlyClosed", IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED},
       {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
+      {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
+      {"tabOrganizationTabName", IDS_TAB_ORGANIZATION_TAB_NAME},
 
   };
   webui::SetupChromeRefresh2023(source);
@@ -98,6 +100,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddInteger(
       "recentlyClosedDefaultItemDisplayCount",
       features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
+
+  source->AddBoolean("tabOrganizationEnabled", features::IsTabOrganization());
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);

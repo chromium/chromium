@@ -19,5 +19,5 @@ class TabSearchFocusTest : public WebUIMochaBrowserTest {
 #define MAYBE_App App
 #endif
 IN_PROC_BROWSER_TEST_F(TabSearchFocusTest, MAYBE_App) {
-  RunTest("tab_search/tab_search_app_focus_test.js", "mocha.run()");
+  RunTest("tab_search/tab_search_page_focus_test.js", "mocha.run()");
 }
