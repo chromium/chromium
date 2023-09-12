@@ -8774,7 +8774,7 @@
 <translation id="8138217203226449454">האם התכוונת לשנות את ספק החיפוש שלך?</translation>
 <translation id="8138997515734480534">הסטטוס של <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏קבצים ב-Google Drive</translation>
-<translation id="8139643636835015859">‏הפעולה הזו תפנה מקום אחסון בנפח GB<ph name="OFFLINE_STORAGE_SIZE" /> שמשמש את הקבצים שלך במצב אופליין. חלק מהקבצים עדיין יהיו זמינים במצב אופליין. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="8139643636835015859">הפעולה הזו תפנה מקום אחסון בנפח <ph name="OFFLINE_STORAGE_SIZE" /> שמשמש את הקבצים שלך במצב אופליין. חלק מהקבצים עדיין יהיו זמינים במצב אופליין. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BEGIN_LINK" />הדפדפן שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="BROWSER_DOMAIN" /><ph name="BEGIN_LINK" />והפרופיל שלך מנוהל<ph name="END_LINK" /> על ידי <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8141418916163800697">‏אפשר להגדיר תכונות נוספות בהגדרות Phone Hub</translation>

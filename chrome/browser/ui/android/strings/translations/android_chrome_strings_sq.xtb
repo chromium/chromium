@@ -337,7 +337,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="2861923151411510142">Disa veçori të Chrome nuk do të ofrohen më</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2871733351037274014">Ngarkimi paraprak i faqeve</translation>
-<translation id="2876136027428473467"><ph name="CHILD_NAME" /> dëshiron që të miratosh këtë sajt uebi:</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> dëshiron që të miratosh këtë uebsajt:</translation>
 <translation id="2886836735871983413">Një listë sajtesh do të shfaqet këtu ndërsa shfleton uebin</translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
 <translation id="2891154217021530873">Ndalo ngarkimin e faqes</translation>
@@ -354,7 +354,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="2932150158123903946">Hapësira ruajtëse e Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tastiera jote nuk do të ndryshojë</translation>
 <translation id="2936980480904111527">Njoftimet e Chrome i bëjnë gjërat më të lehta</translation>
-<translation id="2940075786175545812">Opsioni për të miratuar ose jo një sajt uebi</translation>
+<translation id="2940075786175545812">Opsioni për të miratuar ose jo një uebsajt</translation>
 <translation id="2942036813789421260">Skeda e shikimit paraprak është e mbyllur</translation>
 <translation id="2946420957526726953">Chrome po përditësohet për t'u lidhur me pajisjet e tjera</translation>
 <translation id="2951071800649516099">Shto faqe në listën tënde të leximit për më vonë</translation>
@@ -490,7 +490,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
 <translation id="3631987586758005671">Po ndahet te <ph name="DEVICE_NAME" /></translation>
-<translation id="363596933471559332">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një sajt uebi.</translation>
+<translation id="363596933471559332">Identifikohu automatikisht në uebsajte duke përdorur kredencialet e ruajtura. Kur veçoria është e çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një uebsajt.</translation>
 <translation id="3636940436873918441">Gjuhët e preferuara</translation>
 <translation id="3677911431265050325">Kërko sajtin për celular</translation>
 <translation id="3687645719033307815">Po shikon një pamje paraprake të kësaj faqeje</translation>
@@ -760,7 +760,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4985248278475639481">Rreth personalizimit të reklamave</translation>
 <translation id="4987271110129728827">Faqja nuk mund të gjendet. Kontrollo drejtshkrimin ose provo të kërkosh në ueb.</translation>
 <translation id="4988526792673242964">Faqet</translation>
-<translation id="4991110219272367918">Opsioni për të miratuar ose jo një sajt uebi u mbyll</translation>
+<translation id="4991110219272367918">Opsioni për të miratuar ose jo një uebsajt u mbyll</translation>
 <translation id="499724277181351974">Navigo: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Ndiqe këtë sajt këtu</translation>
 <translation id="5004416275253351869">Kontrollet e aktivitetit të Google</translation>
@@ -983,9 +983,9 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6210748933810148297">Nuk je <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Po shikon paraprakisht këtë faqe</translation>
 <translation id="6221633008163990886">Shkyç për të eksportuar fjalëkalimet e tua</translation>
-<translation id="6232535412751077445">Aktivizimi i funksionit "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një sajt uebi i përgjigjet kërkesës dhe se si interpretohet kërkesa.
+<translation id="6232535412751077445">Aktivizimi i veçorisë "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një uebsajt i përgjigjet kërkesës dhe se si interpretohet kërkesa.
 
-Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në sajtet e tjera të uebit që ke vizituar. Shumë sajte uebi do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
+Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në uebsajtet e tjera që ke vizituar. Shumë uebsajte do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
 <translation id="6233974827872475843">Ruaj fjalëkalimet në këtë pajisje në "Llogarinë tënde të Google" duke aktivizuar sinkronizimin</translation>
 <translation id="6255794742848779505">Ne po ndryshojmë mënyrën se si ruhen fjalëkalimet në këtë pajisje</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
@@ -1134,7 +1134,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
-<translation id="6908998565271542516">Opsioni për të miratuar ose jo një sajt uebi të hapur në gjatësinë e plotë</translation>
+<translation id="6908998565271542516">Opsioni për të miratuar ose jo një uebsajt të hapur në gjatësinë e plotë</translation>
 <translation id="6909589135458168665">Ngarkimi paraprak i faqeve</translation>
 <translation id="6910211073230771657">Fshirë</translation>
 <translation id="6942665639005891494">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit duke përdorur opsionin e menysë "Cilësimet"</translation>
