@@ -11,15 +11,16 @@
 #include "base/check_op.h"
 #include "base/values.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "net/cookies/site_for_cookies.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
@@ -49,7 +50,8 @@ PdfViewWebPluginClient::PdfViewWebPluginClient(
     content::RenderFrame* render_frame)
     : render_frame_(render_frame),
       v8_value_converter_(content::V8ValueConverter::Create()),
-      isolate_(blink::MainThreadIsolate()) {
+      isolate_(
+          render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate()) {
   DCHECK(render_frame_);
 }
 

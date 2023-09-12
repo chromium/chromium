@@ -11,7 +11,7 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -127,13 +127,13 @@ void PluginPlaceholderBase::NotifyPlaceholderReadyForTestingCallback() {
   blink::WebElement element = plugin()->Container()->GetElement();
   element.SetAttribute("placeholderReady", "true");
 
+  blink::WebLocalFrame* frame = element.GetDocument().GetFrame();
   base::Value value("placeholderReady");
   blink::WebSerializedScriptValue message_data =
       blink::WebSerializedScriptValue::Serialize(
-          blink::MainThreadIsolate(),
+          frame->GetAgentGroupScheduler()->Isolate(),
           content::V8ValueConverter::Create()->ToV8Value(
-              value,
-              element.GetDocument().GetFrame()->MainWorldScriptContext()));
+              value, frame->MainWorldScriptContext()));
   blink::WebDOMMessageEvent msg_event(message_data);
 
   plugin()->Container()->EnqueueMessageEvent(msg_event);

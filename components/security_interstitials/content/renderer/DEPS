@@ -6,6 +6,7 @@ include_rules = [
   "+gin",
   "+mojo/public/cpp/bindings",
   "+third_party/blink/public/common",
+  "+third_party/blink/public/platform",
   "+third_party/blink/public/web",
   "+v8/include",
 ]

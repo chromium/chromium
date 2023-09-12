@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -384,7 +385,7 @@ void WebViewPlugin::WebViewHelper::DidClearWindowObject() {
   if (!plugin_->delegate_)
     return;
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = frame_->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame_->MainWorldScriptContext();
   DCHECK(!context.IsEmpty());
