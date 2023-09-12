@@ -3,11 +3,20 @@
 // found in the LICENSE file.
 
 #include "ash/system/do_not_disturb_notification_controller.h"
+
+#include <memory>
+#include <string>
+
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/model/clock_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,32 +34,41 @@ using message_center::MessageCenter;
 const char kDoNotDisturbNotifierId[] =
     "ash.do_not_disturb_notification_controller";
 
-}  // namespace
+// Creates a notification for do not disturb. If a focus session is active, the
+// title and the message of the notification will indicate if DND will be
+// turned off when the focus session ends.
+std::unique_ptr<message_center::Notification> CreateNotification() {
+  auto* focus_mode_controller =
+      features::IsFocusModeEnabled() ? FocusModeController::Get() : nullptr;
+  const bool should_show_focus_text =
+      focus_mode_controller && focus_mode_controller->in_focus_session() &&
+      !focus_mode_controller->previous_do_not_disturb_state();
 
-DoNotDisturbNotificationController::DoNotDisturbNotificationController() {
-  MessageCenter::Get()->AddObserver(this);
-}
+  std::u16string time_str;
+  if (should_show_focus_text) {
+    time_str = base::TimeFormatTimeOfDayWithHourClockType(
+        focus_mode_controller->end_time(),
+        Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+        base::kKeepAmPm);
+  }
 
-DoNotDisturbNotificationController::~DoNotDisturbNotificationController() {
-  MessageCenter::Get()->RemoveObserver(this);
-}
-
-// static
-const char DoNotDisturbNotificationController::kDoNotDisturbNotificationId[] =
-    "do_not_disturb";
-
-std::unique_ptr<message_center::Notification>
-DoNotDisturbNotificationController::CreateNotification() {
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TURN_OFF));
   optional_fields.pinned = true;
-  return ash::CreateSystemNotificationPtr(
+  return CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      kDoNotDisturbNotificationId,
-      l10n_util::GetStringUTF16(IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE),
+      DoNotDisturbNotificationController::kDoNotDisturbNotificationId,
+      should_show_focus_text
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE,
+                time_str)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
-          IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION),
+          should_show_focus_text
+              ? IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION
+              : IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION),
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDoNotDisturbNotifierId,
@@ -69,6 +87,20 @@ DoNotDisturbNotificationController::CreateNotification() {
       vector_icons::kSettingsOutlineIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
+
+}  // namespace
+
+DoNotDisturbNotificationController::DoNotDisturbNotificationController() {
+  MessageCenter::Get()->AddObserver(this);
+}
+
+DoNotDisturbNotificationController::~DoNotDisturbNotificationController() {
+  MessageCenter::Get()->RemoveObserver(this);
+}
+
+// static
+const char DoNotDisturbNotificationController::kDoNotDisturbNotificationId[] =
+    "do_not_disturb";
 
 void DoNotDisturbNotificationController::OnQuietModeChanged(
     bool in_quiet_mode) {

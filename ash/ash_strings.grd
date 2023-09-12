@@ -7017,6 +7017,12 @@ New install
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION" desc="Text description used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
         Notifications are muted when Do Not Disturb is on
       </message>
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE" translateable="false" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
+        Do Not Disturb is on until <ph name="time">$1<ex>1:40 PM</ex></ph>
+      </message>
+      <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION" translateable="false" desc="Text description used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
+        Notifications are muted when in Focus session
+      </message>
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TURN_OFF" desc="Label for a button on the 'Do Not Disturb' notification that turns off 'Do Not Disturb' mode.">
         Turn off
       </message>
