@@ -11323,33 +11323,19 @@
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230809",
+                    "name": "Enabled_20230912",
                     "params": {
                         "JobPrint": "true",
                         "Sandbox": "false"
                     },
-                    "enable_features": [
-                        "EnableOopPrintDrivers"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OutOfProcessPrintDriversPrintPreview": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230809",
                     "enable_features": [
                         "EnableOopPrintDrivers"
                     ]
