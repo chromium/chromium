@@ -252,6 +252,10 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
   for (auto& observer : observers_) {
     observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
   }
+  if (media_item_ui_) {
+    media_item_ui_->OnDeviceSelectorViewDevicesChanged(
+        device_entry_views_container_->children().size() > 0);
+  }
 }
 
 void MediaItemUIDeviceSelectorView::SetMediaItemUIView(
@@ -494,6 +498,10 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
   UpdateVisibility();
   for (auto& observer : observers_) {
     observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
+  }
+  if (media_item_ui_) {
+    media_item_ui_->OnDeviceSelectorViewDevicesChanged(
+        device_entry_views_container_->children().size() > 0);
   }
 }
 

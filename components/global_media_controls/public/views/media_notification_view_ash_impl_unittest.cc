@@ -186,9 +186,17 @@ TEST_F(MediaNotificationViewAshImplTest, ChevronIconVisibilityCheck) {
 
 TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorViewCheck) {
   EXPECT_NE(view()->GetStartCastingButtonForTesting(), nullptr);
-  EXPECT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetStartCastingButtonForTesting()->GetVisible());
   EXPECT_EQ(view()->GetDeviceSelectorForTesting(), device_selector());
+  EXPECT_FALSE(view()->GetDeviceSelectorForTesting()->GetVisible());
   EXPECT_NE(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
+  EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
+
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(testing::Return(false));
+  view()->UpdateDeviceSelectorAvailability(/*has_devices=*/true);
+  EXPECT_TRUE(view()->GetStartCastingButtonForTesting()->GetVisible());
+  EXPECT_TRUE(view()->GetDeviceSelectorForTesting()->GetVisible());
   EXPECT_FALSE(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible());
 
   EXPECT_CALL(*device_selector(), ShowOrHideDeviceList());

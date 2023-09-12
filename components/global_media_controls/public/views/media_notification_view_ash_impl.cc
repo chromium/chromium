@@ -284,6 +284,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
     start_casting_button_->SetCallback(base::BindRepeating(
         &MediaNotificationViewAshImpl::StartCastingButtonPressed,
         base::Unretained(this)));
+    start_casting_button_->SetVisible(false);
   }
 
   // Create the picture-in-picture button.
@@ -297,9 +298,6 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   // is being casted to another device.
   if (footer_view) {
     footer_view_ = controls_row->AddChildView(std::move(footer_view));
-    if (start_casting_button_) {
-      start_casting_button_->SetVisible(false);
-    }
     picture_in_picture_button_->SetVisible(false);
   }
 
@@ -423,6 +421,18 @@ void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
     artwork_view_->SetClipPath(path);
   }
   SchedulePaint();
+}
+
+void MediaNotificationViewAshImpl::UpdateDeviceSelectorAvailability(
+    bool has_devices) {
+  CHECK(start_casting_button_);
+  // Do not show the start casting button if this media item is being casted to
+  // another device and has a footer view of stop casting button.
+  bool visible = has_devices && !footer_view_;
+  if (visible != start_casting_button_->GetVisible()) {
+    start_casting_button_->SetVisible(visible);
+    UpdateCastingState();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -565,6 +575,13 @@ void MediaNotificationViewAshImpl::UpdateCastingState() {
   CHECK(device_selector_view_);
   CHECK(device_selector_view_separator_);
 
+  if (!start_casting_button_->GetVisible()) {
+    device_selector_view_->SetVisible(false);
+    device_selector_view_separator_->SetVisible(false);
+    return;
+  }
+
+  device_selector_view_->SetVisible(true);
   bool is_expanded = device_selector_view_->IsDeviceSelectorExpanded();
   if (is_expanded) {
     // Use the ink drop color as the button background if user clicks the button

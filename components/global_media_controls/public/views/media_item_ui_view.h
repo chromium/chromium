@@ -111,6 +111,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   void RemoveObserver(
       global_media_controls::MediaItemUIObserver* observer) override;
 
+  // Called when the devices in the device selector view have changed.
+  void OnDeviceSelectorViewDevicesChanged(bool has_devices);
+
+  // Called when the size of the device selector view has changed.
   void OnDeviceSelectorViewSizeChanged();
 
   const std::u16string& GetTitle() const;

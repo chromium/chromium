@@ -537,12 +537,6 @@ void MediaNotificationViewModernImpl::OnThemeChanged() {
   UpdateForegroundColor();
 }
 
-void MediaNotificationViewModernImpl::UpdateDeviceSelectorAvailability(
-    bool availability) {
-  GetMediaNotificationBackground()->UpdateDeviceSelectorAvailability(
-      availability);
-}
-
 void MediaNotificationViewModernImpl::UpdateWithMuteStatus(bool mute) {
   if (mute_button_) {
     mute_button_->SetToggled(mute);
@@ -562,6 +556,11 @@ void MediaNotificationViewModernImpl::UpdateWithMuteStatus(bool mute) {
 void MediaNotificationViewModernImpl::UpdateWithVolume(float volume) {
   if (volume_slider_)
     volume_slider_->SetVolume(volume);
+}
+
+void MediaNotificationViewModernImpl::UpdateDeviceSelectorVisibility(
+    bool visible) {
+  GetMediaNotificationBackground()->UpdateDeviceSelectorAvailability(visible);
 }
 
 void MediaNotificationViewModernImpl::UpdateActionButtonsVisibility() {

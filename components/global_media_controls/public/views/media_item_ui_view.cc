@@ -319,6 +319,10 @@ void MediaItemUIView::OnShowCastingDevicesRequested() {
   }
 }
 
+void MediaItemUIView::OnDeviceSelectorViewDevicesChanged(bool has_devices) {
+  view_->UpdateDeviceSelectorAvailability(has_devices);
+}
+
 void MediaItemUIView::OnDeviceSelectorViewSizeChanged() {
   OnSizeChanged();
 }
@@ -476,8 +480,7 @@ void MediaItemUIView::OnSizeChanged() {
     auto device_selector_view_size = device_selector_view_->GetPreferredSize();
     CHECK(device_selector_view_size.width() == kWidth);
     new_size.set_height(new_size.height() + device_selector_view_size.height());
-    view_->UpdateDeviceSelectorAvailability(
-        device_selector_view_->GetVisible());
+    view_->UpdateDeviceSelectorVisibility(device_selector_view_->GetVisible());
   }
 
   SetPreferredSize(new_size);

@@ -478,10 +478,8 @@ void MediaNotificationViewImpl::UpdateWithVectorIcon(
     UpdateForegroundColor();
 }
 
-void MediaNotificationViewImpl::UpdateDeviceSelectorAvailability(
-    bool availability) {
-  GetMediaNotificationBackground()->UpdateDeviceSelectorAvailability(
-      availability);
+void MediaNotificationViewImpl::UpdateDeviceSelectorVisibility(bool visible) {
+  GetMediaNotificationBackground()->UpdateDeviceSelectorAvailability(visible);
 }
 
 void MediaNotificationViewImpl::OnThemeChanged() {

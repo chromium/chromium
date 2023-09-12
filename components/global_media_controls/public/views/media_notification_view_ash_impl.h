@@ -82,9 +82,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override {}
   void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) override {}
-  void UpdateDeviceSelectorAvailability(bool availability) override {}
   void UpdateWithMuteStatus(bool mute) override {}
   void UpdateWithVolume(float volume) override {}
+  void UpdateDeviceSelectorVisibility(bool visible) override {}
+  void UpdateDeviceSelectorAvailability(bool has_devices) override;
 
   // views::View:
   void AddedToWidget() override;
