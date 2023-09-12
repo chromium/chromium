@@ -13,15 +13,16 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/url_and_title.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "components/url_formatter/elide_url.h"
+#include "ui/base/models/tree_node_iterator.h"
 
 namespace browser_sync {
 
@@ -31,9 +32,11 @@ const syncer::ModelTypeSet kSupportedTypes = {
     syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST};
 
 std::string GetDomainFromUrl(const GURL& url) {
-  // TODO(crbug.com/1451508): Use url_formatter helpers instead.
-  return net::registry_controlled_domains::GetDomainAndRegistry(
-      url.host(), net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  // TODO(crbug.com/1451508): Return UTF16 strings to avoid converting back for
+  // display in the UI.
+  return base::UTF16ToUTF8(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          url));
 }
 
 template <typename ContainerT, typename F>
@@ -56,6 +59,26 @@ syncer::LocalDataDescription CreateLocalDataDescription(syncer::ModelType type,
   }
   desc.domain_count = domains.size();
   return desc;
+}
+
+// Returns urls of all the bookmarks which can be moved to the account store,
+// i.e. it does not include folders nor managed bookmarks.
+std::vector<GURL> GetAllUserBookmarksExcludingFolders(
+    bookmarks::BookmarkModel* model) {
+  std::vector<GURL> bookmarked_urls;
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
+      model->root_node());
+  while (iterator.has_next()) {
+    const bookmarks::BookmarkNode* const node = iterator.Next();
+    // Skip folders and managed bookmarks.
+    if (node->is_url() && model->client()->CanBeEditedByUser(node)) {
+      // `CanBeEditedByUser()` and `CanSyncNode()` predicates should be
+      // identical.
+      CHECK(model->client()->CanSyncNode(node));
+      bookmarked_urls.push_back(node->url());
+    }
+  }
+  return bookmarked_urls;
 }
 
 }  // namespace
@@ -125,14 +148,12 @@ class LocalDataQueryHelper::LocalDataQueryRequest
   }
 
   void FetchLocalBookmarks() {
-    std::vector<bookmarks::UrlAndTitle> local_bookmarks;
-    // Only the actual bookmarks are of interest here and not the folders.
-    helper_->local_bookmark_model_->GetBookmarks(&local_bookmarks);
-    result_.emplace(
-        syncer::BOOKMARKS,
-        CreateLocalDataDescription(
-            syncer::BOOKMARKS, std::move(local_bookmarks),
-            [](const bookmarks::UrlAndTitle& item) { return item.url; }));
+    std::vector<GURL> bookmarked_urls =
+        GetAllUserBookmarksExcludingFolders(helper_->local_bookmark_model_);
+    result_.emplace(syncer::BOOKMARKS,
+                    CreateLocalDataDescription(
+                        syncer::BOOKMARKS, std::move(bookmarked_urls),
+                        [](const GURL& url) { return url; }));
     // Trigger the barrier closure.
     barrier_callback_.Run();
   }
