@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/personalization_app/time_of_day_paths.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 
 #include "base/no_destructor.h"
 
-namespace ash::personalization_app {
+namespace ash {
 
 namespace {
 
@@ -29,4 +29,4 @@ const base::FilePath::CharType kTimeOfDayNewMexicoVideo[] =
 const base::FilePath::CharType kAmbientVideoHtml[] =
     FILE_PATH_LITERAL("ambient_video.html");
 
-}  // namespace ash::personalization_app
+}  // namespace ash

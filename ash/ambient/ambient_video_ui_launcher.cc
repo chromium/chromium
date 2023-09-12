@@ -9,7 +9,7 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ui/ambient_video_view.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/public/cpp/personalization_app/time_of_day_paths.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -22,16 +22,15 @@ namespace ash {
 namespace {
 
 base::FilePath GetVideoHtmlPath() {
-  return personalization_app::GetTimeOfDaySrcDir().Append(
-      personalization_app::kAmbientVideoHtml);
+  return GetTimeOfDaySrcDir().Append(kAmbientVideoHtml);
 }
 
 base::StringPiece GetVideoFile(AmbientVideo video) {
   switch (video) {
     case AmbientVideo::kNewMexico:
-      return personalization_app::kTimeOfDayNewMexicoVideo;
+      return kTimeOfDayNewMexicoVideo;
     case AmbientVideo::kClouds:
-      return personalization_app::kTimeOfDayCloudsVideo;
+      return kTimeOfDayCloudsVideo;
   }
 }
 
