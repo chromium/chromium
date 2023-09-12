@@ -56,7 +56,6 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/ime_util_chromeos.h"
-#include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -835,9 +834,6 @@ WindowState::WindowState(aura::Window* window)
       current_state_(
           new DefaultState(chromeos::ToWindowStateType(GetShowState()))) {
   window_->AddObserver(this);
-}
-
-void WindowState::Init() {
   UpdateWindowPropertiesFromStateType();
   OnPrePipStateChange(WindowStateType::kDefault);
 }
@@ -909,16 +905,6 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
   if (GetStateType() != window_->GetProperty(chromeos::kWindowStateTypeKey)) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
     window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
-
-    // During `Shell` deletion, we can be here after the shadow controller has
-    // been destroyed
-    auto* shadow_controller = Shell::Get()->shadow_controller();
-    if (shadow_controller && shadow_controller->GetShadowForWindow(window_)) {
-      // We change shadow radius based on WindowStateType. Shadow controller
-      // does not react to ash's extended window state. Therefore we need to
-      // manually call `UpdateShadowForWindow()`.
-      shadow_controller->UpdateShadowForWindow(window_);
-    }
   }
 
   if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
@@ -1232,11 +1218,6 @@ WindowState* WindowState::Get(aura::Window* window) {
   state = new WindowState(window);
   window->SetProperty(kWindowStateKey, state);
 
-  // Initialize the window state after setting it as a window property.
-  // Otherwise, as part of window state initialization we end of calling
-  // `WindowState::Get()` and will end up creating window state again
-  // recursively.
-  state->Init();
   return state;
 }
 

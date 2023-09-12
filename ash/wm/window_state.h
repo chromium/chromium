@@ -490,8 +490,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   explicit WindowState(aura::Window* window);
 
-  void Init();
-
   WindowStateDelegate* delegate() { return delegate_.get(); }
   BoundsChangeAnimationType bounds_animation_type() {
     return bounds_animation_type_;
