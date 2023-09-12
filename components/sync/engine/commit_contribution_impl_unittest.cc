@@ -177,6 +177,9 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   request_data.base_version = kBaseVersion;
   base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
                      &request_data.specifics_hash);
+  request_data.deprecated_bookmark_folder = false;
+  request_data.deprecated_bookmark_unique_position =
+      UniquePosition::FromProto(data->specifics.bookmark().unique_position());
   request_data.entity = std::move(data);
 
   SyncEntity entity;
@@ -219,6 +222,9 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   request_data.base_version = kBaseVersion;
   base::Base64Encode(base::SHA1HashString(data->specifics.SerializeAsString()),
                      &request_data.specifics_hash);
+  request_data.deprecated_bookmark_folder = true;
+  request_data.deprecated_bookmark_unique_position =
+      UniquePosition::FromProto(data->specifics.bookmark().unique_position());
   request_data.entity = std::move(data);
 
   SyncEntity entity;

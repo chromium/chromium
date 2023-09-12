@@ -120,6 +120,12 @@ std::unique_ptr<CommitRequestData> MockModelTypeProcessor::CommitRequest(
   request_data->base_version = base_version;
   base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()),
                      &request_data->specifics_hash);
+  if (specifics.has_bookmark()) {
+    request_data->deprecated_bookmark_folder =
+        (specifics.bookmark().type() == sync_pb::BookmarkSpecifics::FOLDER);
+    request_data->deprecated_bookmark_unique_position =
+        UniquePosition::FromProto(specifics.bookmark().unique_position());
+  }
 
   return request_data;
 }

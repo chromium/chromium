@@ -13,6 +13,7 @@
 
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/sync.pb.h"
 
@@ -38,6 +39,11 @@ struct CommitRequestData {
   // Fields sent to the sync server.
   std::unique_ptr<EntityData> entity;
   int64_t base_version = 0;
+
+  // Fields sent to the sync server for backward-compatibility. The fields will
+  // be removed once a corresponding field in SyncEntity is removed.
+  bool deprecated_bookmark_folder = false;
+  UniquePosition deprecated_bookmark_unique_position;
 
   // Fields not sent to the sync server. However, they are kept to be sent back
   // to the processor in the response.

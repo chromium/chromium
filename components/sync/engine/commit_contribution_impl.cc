@@ -241,21 +241,11 @@ void CommitContributionImpl::PopulateCommitProto(
     // Handle bookmarks separately.
     if (type == BOOKMARKS) {
       // Populate SyncEntity.folder for backward-compatibility.
-      switch (entity_data.specifics.bookmark().type()) {
-        case sync_pb::BookmarkSpecifics::UNSPECIFIED:
-          NOTREACHED();
-          break;
-        case sync_pb::BookmarkSpecifics::URL:
-          commit_proto->set_folder(false);
-          break;
-        case sync_pb::BookmarkSpecifics::FOLDER:
-          commit_proto->set_folder(true);
-          break;
-      }
-      const UniquePosition unique_position = UniquePosition::FromProto(
-          entity_data.specifics.bookmark().unique_position());
-      DCHECK(unique_position.IsValid());
-      *commit_proto->mutable_unique_position() = unique_position.ToProto();
+      commit_proto->set_folder(commit_entity.deprecated_bookmark_folder);
+      CHECK(commit_entity.deprecated_bookmark_unique_position.IsValid());
+      *commit_proto->mutable_unique_position() =
+          commit_entity.deprecated_bookmark_unique_position.ToProto();
+
       // parent_id field is set only for legacy clients only, before M99.
       if (!entity_data.legacy_parent_id.empty()) {
         commit_proto->set_parent_id_string(entity_data.legacy_parent_id);
