@@ -36,8 +36,10 @@ public class CachedFeatureFlags {
     /**
      * Sets the feature flags to use in JUnit and instrumentation tests.
      *
-     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations instead.
+     * @deprecated Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations
+     * instead.
      */
+    @Deprecated
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
         assert features != null;
 

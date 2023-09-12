@@ -36,13 +36,13 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.url.GURL;
-
-import java.util.Map;
 
 /**
  * Unit tests for {@link CustomTabActivityNavigationController}.
@@ -57,6 +57,8 @@ public class CustomTabActivityNavigationControllerTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
+    @Rule
+    public final JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private CustomTabActivityNavigationController mNavigationController;
 
@@ -78,9 +80,8 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents() {
-        CachedFeatureFlags.setFeaturesForTesting(
-                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, false));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -103,9 +104,8 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents_BackPressRefactor() {
-        CachedFeatureFlags.setFeaturesForTesting(
-                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, true));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -126,9 +126,8 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne() {
-        CachedFeatureFlags.setFeaturesForTesting(
-                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, false));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -152,9 +151,8 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne_BackPressRefactor() {
-        CachedFeatureFlags.setFeaturesForTesting(
-                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, true));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -174,9 +172,8 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void doesntFinish_IfBackNavigationHappensWithBeforeUnloadHandler() {
-        CachedFeatureFlags.setFeaturesForTesting(
-                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, false));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -195,9 +192,8 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void doesntFinish_IfBackNavigationHappensWithBeforeUnloadHandler_BackPressRefactor() {
-        CachedFeatureFlags.setFeaturesForTesting(
-                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR, true));
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
