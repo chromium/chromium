@@ -43,6 +43,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -106,10 +107,20 @@ const ui::InputDevice kSamplePointingStickInternal(
     "kSamplePointingStickInternal");
 const ui::InputDevice kSampleMouseUsb(3,
                                       ui::INPUT_DEVICE_USB,
-                                      "kSampleMouseUsb");
+                                      "kSampleMouseUsb",
+                                      /*phys=*/"",
+                                      /*sys_path=*/base::FilePath(),
+                                      /*vendor=*/0x0001,
+                                      /*product=*/0x0002,
+                                      /*version=*/0x0003);
 const ui::InputDevice kSampleGraphicsTablet(4,
                                             ui::INPUT_DEVICE_USB,
-                                            "kSampleGraphicsTablet");
+                                            "kSampleGraphicsTablet",
+                                            /*phys=*/"",
+                                            /*sys_path=*/base::FilePath(),
+                                            /*vendor=*/0x0004,
+                                            /*product=*/0x0005,
+                                            /*version=*/0x0006);
 
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -1119,6 +1130,69 @@ TEST_F(InputDeviceSettingsControllerTest, ObservingButtons) {
   controller_->StartObservingButtons(kSampleTouchpadInternal.id);
   ASSERT_EQ(0u, rewriter->mice_to_observe().size());
   ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+}
+
+TEST_F(InputDeviceSettingsControllerTest, ObservingButtonsDuplicateIds) {
+  auto mouse1 = kSampleMouseUsb;
+  auto mouse2 = kSampleMouseUsb;
+  mouse2.id = mouse2.id + 100;
+
+  auto graphics_tablet1 = kSampleGraphicsTablet;
+  auto graphics_tablet2 = kSampleGraphicsTablet;
+  graphics_tablet2.id = graphics_tablet2.id + 100;
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices({mouse1});
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices({graphics_tablet1});
+  ui::DeviceDataManagerTestApi().SetUncategorizedDevices(
+      {mouse2, graphics_tablet2});
+
+  auto* rewriter = Shell::Get()
+                       ->event_rewriter_controller()
+                       ->peripheral_customization_event_rewriter();
+
+  controller_->StartObservingButtons(mouse1.id);
+  ASSERT_EQ(2u, rewriter->mice_to_observe().size());
+  EXPECT_TRUE(rewriter->mice_to_observe().contains(mouse1.id));
+  EXPECT_TRUE(rewriter->mice_to_observe().contains(mouse2.id));
+
+  controller_->StopObservingButtons();
+  ASSERT_EQ(0u, rewriter->mice_to_observe().size());
+  ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+
+  controller_->StartObservingButtons(kSampleGraphicsTablet.id);
+  ASSERT_EQ(2u, rewriter->graphics_tablets_to_observe().size());
+  EXPECT_TRUE(
+      rewriter->graphics_tablets_to_observe().contains(graphics_tablet1.id));
+  EXPECT_TRUE(
+      rewriter->graphics_tablets_to_observe().contains(graphics_tablet2.id));
+
+  controller_->StopObservingButtons();
+  ASSERT_EQ(0u, rewriter->mice_to_observe().size());
+  ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+
+  controller_->StartObservingButtons(kSampleTouchpadInternal.id);
+  ASSERT_EQ(0u, rewriter->mice_to_observe().size());
+  ASSERT_EQ(0u, rewriter->graphics_tablets_to_observe().size());
+}
+
+TEST_F(InputDeviceSettingsControllerTest, GetSettingsDuplicateIds) {
+  auto mouse1 = kSampleMouseUsb;
+  auto mouse2 = kSampleMouseUsb;
+  mouse2.id = mouse2.id + 100;
+
+  auto graphics_tablet1 = kSampleGraphicsTablet;
+  auto graphics_tablet2 = kSampleGraphicsTablet;
+  graphics_tablet2.id = graphics_tablet2.id + 100;
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices({mouse1});
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices({graphics_tablet1});
+  ui::DeviceDataManagerTestApi().SetUncategorizedDevices(
+      {mouse2, graphics_tablet2});
+
+  EXPECT_EQ(controller_->GetMouseSettings(mouse1.id),
+            controller_->GetMouseSettings(mouse2.id));
+  EXPECT_EQ(controller_->GetGraphicsTabletSettings(graphics_tablet1.id),
+            controller_->GetGraphicsTabletSettings(graphics_tablet2.id));
 }
 
 }  // namespace ash

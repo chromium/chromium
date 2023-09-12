@@ -10,7 +10,9 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_duplicate_id_finder.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
@@ -169,6 +171,12 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshStoredLoginScreenPointingStickSettings();
   void RefreshStoredLoginScreenTouchpadSettings();
 
+  mojom::Mouse* FindMouse(DeviceId id);
+  mojom::Touchpad* FindTouchpad(DeviceId id);
+  mojom::Keyboard* FindKeyboard(DeviceId id);
+  mojom::GraphicsTablet* FindGraphicsTablet(DeviceId id);
+  mojom::PointingStick* FindPointingStick(DeviceId id);
+
   base::ObserverList<Observer> observers_;
 
   std::unique_ptr<InputDeviceSettingsPolicyHandler> policy_handler_;
@@ -201,6 +209,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       InputDeviceNotifier<mojom::GraphicsTabletPtr, ui::InputDevice>>
       graphics_tablet_notifier_;
   std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
+
+  std::unique_ptr<InputDeviceDuplicateIdFinder> duplicate_id_finder_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
   absl::optional<AccountId> active_account_id_;

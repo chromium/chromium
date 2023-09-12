@@ -17,6 +17,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_duplicate_id_finder.h"
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
@@ -289,6 +290,35 @@ void UpdateDuplicateDeviceSettings(
   }
 }
 
+template <typename T>
+T* FindDevice(InputDeviceSettingsControllerImpl::DeviceId id,
+              const InputDeviceDuplicateIdFinder* deduper,
+              base::flat_map<InputDeviceSettingsControllerImpl::DeviceId,
+                             mojo::StructPtr<T>>& devices_) {
+  auto iter = devices_.find(id);
+  if (iter != devices_.end()) {
+    return iter->second.get();
+  }
+
+  if (!deduper) {
+    return nullptr;
+  }
+
+  const auto* duplicate_device_ids = deduper->GetDuplicateDeviceIds(id);
+  if (!duplicate_device_ids) {
+    return nullptr;
+  }
+
+  for (const auto& duplicate_id : *duplicate_device_ids) {
+    iter = devices_.find(duplicate_id);
+    if (iter != devices_.end()) {
+      return iter->second.get();
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 void DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
@@ -412,6 +442,8 @@ void InputDeviceSettingsControllerImpl::Init() {
         base::BindRepeating(
             &InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated,
             base::Unretained(this)));
+
+    duplicate_id_finder_ = std::make_unique<InputDeviceDuplicateIdFinder>();
   }
   metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
 }
@@ -769,47 +801,32 @@ InputDeviceSettingsControllerImpl::GetMousePolicies() {
 
 const mojom::KeyboardSettings*
 InputDeviceSettingsControllerImpl::GetKeyboardSettings(DeviceId id) {
-  auto iter = keyboards_.find(id);
-  if (iter == keyboards_.end()) {
-    return nullptr;
-  }
-  return iter->second->settings.get();
+  const auto* keyboard = FindKeyboard(id);
+  return keyboard ? keyboard->settings.get() : nullptr;
 }
 
 const mojom::MouseSettings* InputDeviceSettingsControllerImpl::GetMouseSettings(
     DeviceId id) {
-  auto iter = mice_.find(id);
-  if (iter == mice_.end()) {
-    return nullptr;
-  }
-  return iter->second->settings.get();
+  const auto* mouse = FindMouse(id);
+  return mouse ? mouse->settings.get() : nullptr;
 }
 
 const mojom::TouchpadSettings*
 InputDeviceSettingsControllerImpl::GetTouchpadSettings(DeviceId id) {
-  auto iter = touchpads_.find(id);
-  if (iter == touchpads_.end()) {
-    return nullptr;
-  }
-  return iter->second->settings.get();
+  const auto* touchpad = FindTouchpad(id);
+  return touchpad ? touchpad->settings.get() : nullptr;
 }
 
 const mojom::PointingStickSettings*
 InputDeviceSettingsControllerImpl::GetPointingStickSettings(DeviceId id) {
-  auto iter = pointing_sticks_.find(id);
-  if (iter == pointing_sticks_.end()) {
-    return nullptr;
-  }
-  return iter->second->settings.get();
+  const auto* pointing_stick = FindPointingStick(id);
+  return pointing_stick ? pointing_stick->settings.get() : nullptr;
 }
 
 const mojom::GraphicsTabletSettings*
 InputDeviceSettingsControllerImpl::GetGraphicsTabletSettings(DeviceId id) {
-  auto iter = graphics_tablets_.find(id);
-  if (iter == graphics_tablets_.end()) {
-    return nullptr;
-  }
-  return iter->second->settings.get();
+  const auto* graphics_tablet = FindGraphicsTablet(id);
+  return graphics_tablet ? graphics_tablet->settings.get() : nullptr;
 }
 
 std::vector<mojom::KeyboardPtr>
@@ -1432,6 +1449,28 @@ void InputDeviceSettingsControllerImpl::InitializeTouchpadSettings(
       local_state_, active_account_id_.value(), touchpad);
 }
 
+mojom::Mouse* InputDeviceSettingsControllerImpl::FindMouse(DeviceId id) {
+  return FindDevice(id, duplicate_id_finder_.get(), mice_);
+}
+
+mojom::Touchpad* InputDeviceSettingsControllerImpl::FindTouchpad(DeviceId id) {
+  return FindDevice(id, duplicate_id_finder_.get(), touchpads_);
+}
+
+mojom::Keyboard* InputDeviceSettingsControllerImpl::FindKeyboard(DeviceId id) {
+  return FindDevice(id, duplicate_id_finder_.get(), keyboards_);
+}
+
+mojom::GraphicsTablet* InputDeviceSettingsControllerImpl::FindGraphicsTablet(
+    DeviceId id) {
+  return FindDevice(id, duplicate_id_finder_.get(), graphics_tablets_);
+}
+
+mojom::PointingStick* InputDeviceSettingsControllerImpl::FindPointingStick(
+    DeviceId id) {
+  return FindDevice(id, duplicate_id_finder_.get(), pointing_sticks_);
+}
+
 void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
   DCHECK(features::IsPeripheralCustomizationEnabled());
   PeripheralCustomizationEventRewriter* rewriter =
@@ -1439,10 +1478,24 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
           ->event_rewriter_controller()
           ->peripheral_customization_event_rewriter();
   CHECK(rewriter);
-  if (mice_.contains(id)) {
-    rewriter->StartObservingMouse(id);
-  } else if (graphics_tablets_.contains(id)) {
-    rewriter->StartObservingGraphicsTablet(id);
+  auto* mouse = FindMouse(id);
+  if (mouse) {
+    const auto* duplicate_ids =
+        duplicate_id_finder_->GetDuplicateDeviceIds(mouse->id);
+    for (const auto& duplicate_id : *duplicate_ids) {
+      rewriter->StartObservingMouse(duplicate_id);
+    }
+    return;
+  }
+
+  auto* graphics_tablet = FindGraphicsTablet(id);
+  if (graphics_tablet) {
+    const auto* duplicate_ids =
+        duplicate_id_finder_->GetDuplicateDeviceIds(graphics_tablet->id);
+    for (const auto& duplicate_id : *duplicate_ids) {
+      rewriter->StartObservingGraphicsTablet(duplicate_id);
+    }
+    return;
   }
 }
 
@@ -1460,12 +1513,12 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
     DeviceId device_id,
     const mojom::Button& button) {
   DCHECK(features::IsPeripheralCustomizationEnabled());
-  auto mouse_iter = mice_.find(device_id);
-  if (mouse_iter == mice_.end()) {
+  auto* mouse_ptr = FindMouse(device_id);
+  if (!mouse_ptr) {
     return;
   }
 
-  auto& mouse = *mouse_iter->second;
+  auto& mouse = *mouse_ptr;
   auto& button_remappings = mouse.settings->button_remappings;
   auto remapping_iter =
       base::ranges::find(button_remappings, button,
@@ -1481,7 +1534,7 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), mouse);
   DispatchCustomizableMouseButtonPressed(mouse, button);
-  DispatchMouseSettingsChanged(device_id);
+  DispatchMouseSettingsChanged(mouse_ptr->id);
 
   UpdateDuplicateDeviceSettings(
       mouse, mice_,
@@ -1494,12 +1547,12 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
     DeviceId device_id,
     const mojom::Button& button) {
   DCHECK(features::IsPeripheralCustomizationEnabled());
-  auto graphics_tablet_iter = graphics_tablets_.find(device_id);
-  if (graphics_tablet_iter == graphics_tablets_.end()) {
+  auto* graphics_tablet_ptr = FindGraphicsTablet(device_id);
+  if (!graphics_tablet_ptr) {
     return;
   }
 
-  auto& graphics_tablet = *graphics_tablet_iter->second;
+  auto& graphics_tablet = *graphics_tablet_ptr;
   auto& tablet_button_remappings =
       graphics_tablet.settings->tablet_button_remappings;
   auto tablet_remapping_iter =
@@ -1531,7 +1584,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
     DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
   }
   // TODO(dpad): Update graphics tablet prefs.
-  DispatchGraphicsTabletSettingsChanged(device_id);
+  DispatchGraphicsTabletSettingsChanged(graphics_tablet_ptr->id);
 
   UpdateDuplicateDeviceSettings(
       graphics_tablet, graphics_tablets_,
