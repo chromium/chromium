@@ -220,9 +220,12 @@ crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac intel release asan ] Pixel_SVGHuge [ Skip ]
 # Mac Nvidia laptops are quite old and the test times out on release builds too.
 crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
-# Test flakily times out on Win10 and Linux Debug
-crbug.com/1474637 [ win10 nvidia debug ] Pixel_SVGHuge [ RetryOnFailure ]
-crbug.com/1474637 [ linux nvidia debug ] Pixel_SVGHuge [ RetryOnFailure ]
+# With the SmallerInterestArea experiment, the test becomes slower, and thus
+# times out. Remove this if crbug.com/1459256 ends up not shipping. This is
+# because the feature causes Chrome to raster the SVG image more times, which
+# increases runtime (by ~50%), pushing it from flaky to failing.
+crbug.com/1474637 [ win10 nvidia debug ] Pixel_SVGHuge [ Skip ]
+crbug.com/1474637 [ linux nvidia debug ] Pixel_SVGHuge [ Skip ]
 
 # Fuchsia devices do not have enough memory for this test.
 crbug.com/1441056 [ fuchsia ] Pixel_SVGHuge [ Skip ]
