@@ -50,7 +50,7 @@ namespace {
 
 constexpr UrlIdentity::TypeSet allowed_types = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kIsolatedWebApp,
-    UrlIdentity::Type::kFile};
+    UrlIdentity::Type::kFile, UrlIdentity::Type::kChromeExtension};
 
 constexpr UrlIdentity::FormatOptions options = {
     .default_options = {
