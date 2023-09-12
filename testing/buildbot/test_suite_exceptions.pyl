@@ -3117,6 +3117,9 @@
         },
       },
       'Linux ASan LSan Tests (1)': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
         # These are slow on the ASan trybot for some reason, crbug.com/1257927
         'swarming': {
           'shards': 12,
@@ -3141,6 +3144,9 @@
         },
       },
       'Linux TSan Tests': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
         # These are slow on the TSan bots for some reason, crbug.com/1257927
         'swarming': {
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
@@ -3208,6 +3214,9 @@
         },
       },
       'linux-chromeos-rel': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 5,
         },
@@ -3238,6 +3247,11 @@
         'swarming': {
           'shards': 5,
         },
+      },
+      'linux-lacros-tester-rel': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        'retry_only_failed_tests': True,
       },
       'linux-rel-cft': {
         'args': [

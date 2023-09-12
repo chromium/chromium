@@ -773,6 +773,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "interactive_ui_tests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -8482,6 +8483,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "interactive_ui_tests",
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
