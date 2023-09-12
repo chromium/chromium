@@ -71,7 +71,9 @@ class CONTENT_EXPORT PreloadingDataImpl
   PreloadingAttempt* AddPreloadingAttempt(
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
-      PreloadingURLMatchCallback url_match_predicate) override;
+      PreloadingURLMatchCallback url_match_predicate,
+      ukm::SourceId triggering_primary_page_source_id =
+          ukm::kInvalidSourceId) override;
   void AddPreloadingPrediction(
       PreloadingPredictor predictor,
       int64_t confidence,

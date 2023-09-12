@@ -138,6 +138,10 @@ class TestNavigationObserver {
     return last_source_site_instance_.get();
   }
 
+  ukm::SourceId next_page_ukm_source_id() const {
+    return next_page_ukm_source_id_;
+  }
+
  protected:
   // Register this TestNavigationObserver as an observer of the |web_contents|.
   void RegisterAsObserver(WebContents* web_contents);
@@ -281,6 +285,12 @@ class TestNavigationObserver {
   int last_nav_entry_id_ = 0;
 
   scoped_refptr<SiteInstance> last_source_site_instance_;
+
+  // The UKM source ID of the next page.
+  //
+  // For prerender activations, this will retain a bit different UKM source ID
+  // from usual. See NavigationHandle::GetNextPageUkmSourceId() for details.
+  ukm::SourceId next_page_ukm_source_id_ = ukm::kInvalidSourceId;
 
   // The MessageLoopRunner used to spin the message loop.
   scoped_refptr<MessageLoopRunner> message_loop_runner_;

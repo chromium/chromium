@@ -106,6 +106,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -200,9 +201,66 @@ DOCUMENT_USER_DATA_KEY_IMPL(DocumentData);
 
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using ukm::builders::Preloading_Attempt;
+using ukm::builders::Preloading_Attempt_PreviousPrimaryPage;
 using ukm::builders::Preloading_Prediction;
 static const auto kMockElapsedTime =
     base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
+
+// Utility class to make building expected
+// TestUkmRecorder::HumanReadableUkmEntry for EXPECT_EQ for
+// PreloadingAttemptPreviousPrimaryPage.
+class PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder {
+ public:
+  explicit PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder(
+      PreloadingPredictor predictor)
+      : predictor_(predictor) {}
+
+  // Unlike PreloadingAttemptUkmEntryBuilder, this method assumes a navigation
+  // has not occurred thus `TimeToNextNavigation` is not set.
+  //
+  // Optional `ready_time` should be set by the caller, if this attempt ever
+  // reaches `PreloadingTriggeringOutcome::kReady` state, at the time of
+  // reporting. Install `base::ScopedMockElapsedTimersForTest` into the test
+  // fixture to assert the entry's latency values' correctness.
+  ukm::TestUkmRecorder::HumanReadableUkmEntry BuildEntry(
+      ukm::SourceId source_id,
+      PreloadingType preloading_type,
+      PreloadingEligibility eligibility,
+      PreloadingHoldbackStatus holdback_status,
+      PreloadingTriggeringOutcome triggering_outcome,
+      PreloadingFailureReason failure_reason,
+      bool accurate,
+      absl::optional<base::TimeDelta> ready_time = absl::nullopt,
+      absl::optional<blink::mojom::SpeculationEagerness> eagerness =
+          absl::nullopt) const {
+    std::map<std::string, int64_t> metrics = {
+        {Preloading_Attempt::kPreloadingTypeName,
+         static_cast<int64_t>(preloading_type)},
+        {Preloading_Attempt::kPreloadingPredictorName, predictor_.ukm_value()},
+        {Preloading_Attempt::kEligibilityName,
+         static_cast<int64_t>(eligibility)},
+        {Preloading_Attempt::kHoldbackStatusName,
+         static_cast<int64_t>(holdback_status)},
+        {Preloading_Attempt::kTriggeringOutcomeName,
+         static_cast<int64_t>(triggering_outcome)},
+        {Preloading_Attempt::kFailureReasonName,
+         static_cast<int64_t>(failure_reason)},
+        {Preloading_Attempt::kAccurateTriggeringName, accurate ? 1 : 0}};
+    if (ready_time) {
+      metrics.insert({Preloading_Attempt::kReadyTimeName,
+                      ukm::GetExponentialBucketMinForCounts1000(
+                          ready_time->InMilliseconds())});
+    }
+    if (eagerness) {
+      metrics.insert({Preloading_Attempt::kSpeculationEagernessName,
+                      static_cast<int64_t>(eagerness.value())});
+    }
+    return UkmEntry{source_id, std::move(metrics)};
+  }
+
+ private:
+  PreloadingPredictor predictor_;
+};
 
 // Tests the params of WebContentsImpl that contains a prerendered page for a
 // new tab navigation.
@@ -906,16 +964,41 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Click the link annotated with "target=_blank". This should activate the
   // prerendered page.
+  TestNavigationObserver activation_observer(kPrerenderingUrl);
+  activation_observer.WatchExistingWebContents();
   test::PrerenderHostObserver prerender_observer(
       *prerender_web_contents, prerender_host->frame_tree_node_id());
   const std::string kLinkClickScript = R"(
       clickSameSiteNewWindowLink();
   )";
   EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  activation_observer.WaitForNavigationFinished();
   EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_EQ(activation_observer.last_navigation_url(), kPrerenderingUrl);
   EXPECT_TRUE(prerender_observer.was_activated());
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+
+  {
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
+
+    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kSuccess,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
+
+    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
+        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
+                                                  attempt_expected_entry);
+  }
 
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
@@ -994,16 +1077,42 @@ IN_PROC_BROWSER_TEST_F(
 
   // Click the link annotated with "target=_blank rel=noopener". This should
   // activate the prerendered page.
+  TestNavigationObserver activation_observer(kPrerenderingUrl);
+  activation_observer.WatchExistingWebContents();
   test::PrerenderHostObserver prerender_observer(
       *prerender_web_contents, prerender_host->frame_tree_node_id());
   const std::string kLinkClickScript = R"(
       clickSameSiteNewWindowWithNoopenerLink();
   )";
   EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
+  activation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_EQ(activation_observer.last_navigation_url(), kPrerenderingUrl);
   EXPECT_EQ(prerender_web_contents->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_TRUE(prerender_observer.was_activated());
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+
+  {
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
+
+    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kSuccess,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
+
+    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
+        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
+                                                  attempt_expected_entry);
+  }
 
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
@@ -1086,6 +1195,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(prerender_web_contents, web_contents_impl());
   ExpectWebContentsIsForNewTabPrerendering(*prerender_web_contents);
 
+  ukm::SourceId triggering_primary_page_source_id =
+      web_contents_impl()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
   // Click the link annotated with "target=_blank rel=opener". This should not
   // activate the prerendered page.
   test::PrerenderHostObserver prerender_observer(
@@ -1103,6 +1215,48 @@ IN_PROC_BROWSER_TEST_F(
   // The navigation occurred in a new WebContents, so the original WebContents
   // should still be showing the initial trigger page.
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Navigate to `kPrerenderingUrl` on the original WebContents. This should
+  // destroy the prerendered page and its WebContents.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+  EXPECT_FALSE(prerender_observer.was_activated());
+  prerender_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
+
+  // Wait for UKM recording in PreloadingDataImpl::WebContentsDestroyed() on
+  // the destruction of the prerender WebContents.
+  // TODO(nhiroki): Wait for that in a more deterministic way instead of
+  // RunUntilIdle().
+  base::RunLoop().RunUntilIdle();
+
+  {
+    // The prerender WebContents doesn't have the primary page that can record
+    // UKM on destruction. Instead, it asks the primary page hosted on the
+    // primary WebContents to record UKM.
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt_PreviousPrimaryPage::kEntryName,
+        test::kPreloadingAttemptUkmMetrics);
+    ASSERT_EQ(attempt_ukm_entries.size(), 1u);
+
+    PreloadingAttemptPreviousPrimaryPageUkmEntryBuilder
+        attempt_ukm_entry_builder(
+            content_preloading_predictor::kSpeculationRules);
+    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder.BuildEntry(
+        triggering_primary_page_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kReady,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/false,
+        /*ready_time=*/kMockElapsedTime,
+        blink::mojom::SpeculationEagerness::kEager);
+
+    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
+        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
+                                                  attempt_expected_entry);
+  }
 }
 
 // TODO(crbug.com/1350676): Add more test cases for prerender-in-new-tab:

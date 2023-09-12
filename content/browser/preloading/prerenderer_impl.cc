@@ -195,19 +195,6 @@ bool PrerendererImpl::MaybePrerender(
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host_.get());
 
-  auto* preloading_data =
-      PreloadingData::GetOrCreateForWebContents(web_contents);
-
-  // Create new PreloadingAttempt and pass all the values corresponding to
-  // this prerendering attempt.
-  PreloadingURLMatchCallback same_url_matcher =
-      PreloadingData::GetSameURLMatcher(candidate->url);
-  auto* preloading_attempt =
-      static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
-          GetPredictorForSpeculationRules(candidate->injection_world),
-          PreloadingType::kPrerender, std::move(same_url_matcher)));
-  preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
-
   auto [begin, end] = base::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
       std::less<>(), &PrerenderInfo::url);
@@ -250,12 +237,11 @@ bool PrerendererImpl::MaybePrerender(
   switch (candidate->target_browsing_context_name_hint) {
     case blink::mojom::SpeculationTargetHint::kBlank: {
       if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
-        // `preloading_attempt` is not available for prerendering in a new tab
-        // as it's associated with the current WebContents.
-        // TODO(crbug.com/1350676): Create new PreloadAttempt associated with
-        // WebContents for prerendering.
-        int prerender_host_id =
-            registry_->CreateAndStartHostForNewTab(attributes);
+        // For the prerender-in-new-tab, PreloadingAttempt will be managed by a
+        // prerender WebContents to be created later.
+        int prerender_host_id = registry_->CreateAndStartHostForNewTab(
+            attributes,
+            GetPredictorForSpeculationRules(candidate->injection_world));
         started_prerenders_.insert(
             end, {.injection_world = candidate->injection_world,
                   .eagerness = candidate->eagerness,
@@ -270,8 +256,20 @@ bool PrerendererImpl::MaybePrerender(
     }
     case blink::mojom::SpeculationTargetHint::kNoHint:
     case blink::mojom::SpeculationTargetHint::kSelf: {
-      int prerender_host_id = registry_->CreateAndStartHost(
-          attributes, /*preloading_attempt=*/preloading_attempt);
+      // Create new PreloadingAttempt and pass all the values corresponding to
+      // this prerendering attempt.
+      auto* preloading_data =
+          PreloadingData::GetOrCreateForWebContents(web_contents);
+      PreloadingURLMatchCallback same_url_matcher =
+          PreloadingData::GetSameURLMatcher(candidate->url);
+      auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
+          preloading_data->AddPreloadingAttempt(
+              GetPredictorForSpeculationRules(candidate->injection_world),
+              PreloadingType::kPrerender, std::move(same_url_matcher)));
+      preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
+
+      int prerender_host_id =
+          registry_->CreateAndStartHost(attributes, preloading_attempt);
       started_prerenders_.insert(end,
                                  {.injection_world = candidate->injection_world,
                                   .eagerness = candidate->eagerness,

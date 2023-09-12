@@ -43,7 +43,7 @@ class PrerenderNewTabHandle {
   // Starts prerendering in `web_contents_`. Returns the root FrameTreeNode id
   // of the prerendered page, which can be used as the id of PrerenderHost, on
   // success. Returns RenderFrameHost::kNoFrameTreeNodeId on failure.
-  int StartPrerendering();
+  int StartPrerendering(PreloadingPredictor preloading_predictor);
 
   // Cancels prerendering started in `web_contents_`.
   void CancelPrerendering(const PrerenderCancellationReason& reason);

@@ -280,6 +280,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_nav_entry_id_ =
       NavigationRequest::From(navigation_handle)->nav_entry_id();
   last_source_site_instance_ = navigation_handle->GetSourceSiteInstance();
+  next_page_ukm_source_id_ = navigation_handle->GetNextPageUkmSourceId();
 
   // Allow extending classes to fetch data available via navigation_handle.
   NavigationOfInterestDidFinish(navigation_handle);
