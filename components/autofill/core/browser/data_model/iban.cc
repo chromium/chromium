@@ -308,8 +308,10 @@ void Iban::set_nickname(const std::u16string& nickname) {
 
 std::u16string Iban::GetIdentifierStringForAutofillDisplay(
     bool is_value_masked) const {
-  DCHECK(!value_.empty());
   const std::u16string stripped_value = GetStrippedValue();
+  if (stripped_value.empty()) {
+    return stripped_value;
+  }
   size_t value_length = stripped_value.size();
   auto ShouldMask = [&](size_t i) {
     // The first 2-letter country code and 2 IBAN check digits will stay
