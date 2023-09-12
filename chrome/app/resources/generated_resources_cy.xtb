@@ -1435,6 +1435,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2102495993840063010">Apiau Android</translation>
 <translation id="2104166991923847969">Diffodd y poethfan yn awtomatig</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> wedi'i guddio</translation>
+<translation id="2108204112555497972">Wedi'i wirio <ph name="NUM_DAYS_HOURS_MINUTES" /> yn ôl</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Rhif ffôn}zero{# rhif ffôn}two{# rif ffôn}few{# rhif ffôn}many{# rhif ffôn}other{# rhif ffôn}}</translation>
 <translation id="2110941575868943054">Caniateir i chwilio am ddyfeisiau Bluetooth</translation>
 <translation id="211144231511833662">Clirio Mathau</translation>
@@ -2476,6 +2477,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2907619724991574506">Cyfeiriadau URL cychwyn</translation>
 <translation id="2907798539022650680">Wedi methu â chysylltu â '<ph name="NAME" />': <ph name="DETAILS" />
     Neges gweinydd: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Agor ffeiliau Word, Excel a PowerPoint</translation>
 <translation id="2908162660801918428">Ychwanegu Oriel Cyfryngau yn ôl Cyfeiriadur</translation>
 <translation id="2908358077082926882">Pwyswch “<ph name="CURRENTKEY" />” eto i dynnu'r aseiniad a <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Methu â chysylltu â gwasanaethau Google. Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni. Cod gwall: <ph name="ERROR_CODE" />.</translation>
@@ -6117,6 +6119,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5920543303088087579">Mae cysylltu â'r rhwydwaith hwn wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="5921257443092182237">Mae gwasanaeth lleoliad Google yn defnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol, a synwyryddion i helpu i amcangyfrif lleoliad y ddyfais hon.</translation>
 <translation id="5924047253200400718">Cael help<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Gofynnwch cyn copïo neu symud ffeiliau Microsoft i Google Drive</translation>
 <translation id="5924527146239595929">Tynnwch lun newydd neu dewiswch lun neu eicon presennol.
     <ph name="LINE_BREAK" />
     Bydd y llun hwn yn ymddangos ar sgrîn mewngofnodi a chlo sgrîn y Chromebook.</translation>
@@ -6535,6 +6538,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6263284346895336537">Ddim yn Gritigol</translation>
 <translation id="6264365405983206840">Dewis y &amp;Cyfan</translation>
 <translation id="6264376385120300461">Lawrlwytho beth bynnag</translation>
+<translation id="6265159465845424232">Gofynnwch cyn copïo neu symud ffeiliau Microsoft i Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Tynnu'r porth</translation>
 <translation id="6266532094411434237">Wrthi'n cysylltu â <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Dewiswch dystysgrif i ddilysu'ch hun i <ph name="HOST_NAME" /></translation>
@@ -7302,6 +7306,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6897363604023044284">Dewiswch wefannau i'w clirio</translation>
 <translation id="6897688156970667447">Yn ddefnyddiol mewn golau isel ac yn arbed batri</translation>
 <translation id="6897972855231767338">Dysgu rhagor am bori fel gwestai</translation>
+<translation id="6898438890765871056">Agor ffolder OneDrive</translation>
 <translation id="6898440773573063262">Bellach gellir ffurfweddu apiau Kiosk i awto-lansio ar y ddyfais hon.</translation>
 <translation id="6899427698619335650">Caniatáu aseiniad diacritig hyblyg. Er enghraifft, gallwch deipio 'anh1' neu 'a1nh' i gael 'ánh'.</translation>
 <translation id="6900284862687837908">Ap Cefndir: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8055,6 +8060,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7517959947270534934">Ni all aelod o'ch teulu dderbyn cyfrineiriau ar hyn o bryd. Gofynnwch iddynt ddiweddaru Chrome a chysoni eu cyfrineiriau.</translation>
 <translation id="7520766081042531487">Porth Anhysbys: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Dangos llwybrau byr</translation>
+<translation id="7521430434164837205">Ffeiliau Microsoft 365</translation>
 <translation id="7522255036471229694">Dywedwch "OK Google"</translation>
 <translation id="7523117833414447032">Wrth ddarllen priflythrennau</translation>
 <translation id="7523585675576642403">Ailenwi'r Proffil</translation>
@@ -9786,6 +9792,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8896830132794747524">Bydd symudiadau cyflymach gyda'ch llygoden yn symud y cyrchwr ymhellach</translation>
 <translation id="8898140163781851592">Prif fotwm llygoden</translation>
 <translation id="8898786835233784856">Dewis y Tab Nesaf</translation>
+<translation id="8898790559170352647">Ychwanegu eich cyfrif Microsoft</translation>
 <translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="8899851313684471736">Agor y ddolen mewn ffenestr &amp;newydd</translation>
 <translation id="8900413463156971200">Galluogi Rhwydwaith Symudol</translation>

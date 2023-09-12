@@ -1420,6 +1420,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2102495993840063010">Android-erako aplikazioak</translation>
 <translation id="2104166991923847969">Desaktibatu automatikoki wifi-gunea</translation>
 <translation id="2105809836724866556">Ezkutatu dira <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Duela <ph name="NUM_DAYS_HOURS_MINUTES" /> egiaztatu da</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefono-zenbakia}other{# telefono-zenbaki}}</translation>
 <translation id="2110941575868943054">Bluetooth bidezko gailuak bilatzeko baimena dutenak</translation>
 <translation id="211144231511833662">Garbitu motak</translation>
@@ -2458,6 +2459,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2907619724991574506">Abioko URLak</translation>
 <translation id="2907798539022650680">Ezin izan da konektatu "<ph name="NAME" />" sarera: <ph name="DETAILS" />
     Zerbitzariaren mezua: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Ireki Word-eko, Excel-eko eta PowerPoint-eko fitxategiak</translation>
 <translation id="2908162660801918428">Gehitu multimedia galeria direktorioaren arabera</translation>
 <translation id="2908358077082926882">Esleipena kentzeko eta <ph name="RESPONSE" />, sakatu "<ph name="CURRENTKEY" />" berriro</translation>
 <translation id="2909506265808101667">Ezin izan da konektatu Google-ren zerbitzuetara. Egiaztatu sarera konektatuta zaudela eta saiatu berriro. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
@@ -6096,6 +6098,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5920543303088087579">Administratzaileak desgaitu du sarera konektatzeko aukera</translation>
 <translation id="5921257443092182237">Gailu honen kokapena estimatzeko, wifi-sarea, sare mugikorrak eta sentsoreak erabiltzen ditu Google-ren kokapen-zerbitzuak.</translation>
 <translation id="5924047253200400718">Lortu laguntza<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Galdetu Microsoft-eko fitxategiak kopiatu edo Google Drive-ra eraman aurretik</translation>
 <translation id="5924527146239595929">Atera argazki bat edo aukeratu lehendik duzun argazki edo ikono bat.
           <ph name="LINE_BREAK" />
           Chromebook-aren hasierako pantailan eta pantaila blokeatuan agertuko da argazkia.</translation>
@@ -6513,6 +6516,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6263284346895336537">Ez da kritikoa</translation>
 <translation id="6264365405983206840">Hautatu &amp;guztiak</translation>
 <translation id="6264376385120300461">Deskargatu halere</translation>
+<translation id="6265159465845424232">Galdetu Microsoft-eko fitxategiak kopiatu edo Microsoft OneDrive-ra eraman aurretik</translation>
 <translation id="6265687851677020761">Kendu ataka</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> gailura konektatzen</translation>
 <translation id="6267166720438879315">Hautatu ziurtagiria zeure burua <ph name="HOST_NAME" /> ostalarian egiaztatzeko</translation>
@@ -7272,6 +7276,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6897363604023044284">Aukeratu garbitu nahi dituzun webguneak</translation>
 <translation id="6897688156970667447">Argi gutxi dagoenerako eta bateria aurrezteko balio du</translation>
 <translation id="6897972855231767338">Lortu gonbidatu gisa arakatzeari buruzko informazio gehiago</translation>
+<translation id="6898438890765871056">Ireki OneDrive-ko karpeta</translation>
 <translation id="6898440773573063262">Orain, aplikazio espezializatuak konfigura daitezke gailuan automatikoki abiaraz daitezen.</translation>
 <translation id="6899427698619335650">Eman zeinu diakritikoak modu malguan esleitzeko baimena. Adibidez, "ánh" lortzeko, "anh1" edo "a1nh" idatz dezakezu.</translation>
 <translation id="6900284862687837908">Atzeko planoko aplikazioa: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8024,6 +8029,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7517959947270534934">Familiako kideak ezin du jaso pasahitzik une honetan. Eska iezaiozu Chrome eguneratzeko eta pasahitzak sinkronizatzeko.</translation>
 <translation id="7520766081042531487">Ezkutuko moduaren ataria: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Erakutsi lasterbideak</translation>
+<translation id="7521430434164837205">Microsoft 365-eko fitxategiak</translation>
 <translation id="7522255036471229694">Esan "Hey Google"</translation>
 <translation id="7523117833414447032">Maiuskulak irakurtzean</translation>
 <translation id="7523585675576642403">Aldatu profilaren izena</translation>
@@ -9751,6 +9757,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8896830132794747524">Sagua bizkorrago mugitzen baduzu, urrunago joango da kurtsorea</translation>
 <translation id="8898140163781851592">Saguaren botoi nagusia</translation>
 <translation id="8898786835233784856">Hautatu hurrengo fitxa</translation>
+<translation id="8898790559170352647">Gehitu Microsoft-eko kontua</translation>
 <translation id="8898822736010347272">Erabiltzen dituzun orri batzuen URLak, sistemari buruzko informazio mugatua eta orrietako eduki batzuk bidaltzen dizkio Google-ri mehatxuak aurkitzeko eta sarearen erabiltzaile guztiak babesteko.</translation>
 <translation id="8899851313684471736">Ireki esteka &amp;leiho berrian</translation>
 <translation id="8900413463156971200">Gaitu sare mugikorra</translation>

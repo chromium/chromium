@@ -488,6 +488,7 @@
 <translation id="1390548061267426325">פתיחה ככרטיסייה רגילה</translation>
 <translation id="1390907927270446471">ל<ph name="PROFILE_USERNAME" /> אין הרשאה להדפיס ב-<ph name="PRINTER_NAME" />. צריך לפנות למנהל המערכת.</translation>
 <translation id="1392047138650695757">המילונים של המשתמש</translation>
+<translation id="139300021892314943">הגבלת המשתמשים שיכולים להיכנס</translation>
 <translation id="1393283411312835250">שמש ועננים</translation>
 <translation id="1395730723686586365">המעדכן הופעל</translation>
 <translation id="1395832189806039783">הדגשה של פריט באמצעות מיקוד המקלדת</translation>
@@ -1430,6 +1431,7 @@
 <translation id="2102495993840063010">‏אפליקציות Android</translation>
 <translation id="2104166991923847969">כיבוי אוטומטי של הנקודה לשיתוף אינטרנט</translation>
 <translation id="2105809836724866556">ההסתרה של <ph name="MODULE_TITLE" /> בוצעה</translation>
+<translation id="2108204112555497972">התבצעה בדיקה לפני <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{מספר טלפון}one{# מספרי טלפון}two{# מספרי טלפון}other{# מספרי טלפון}}</translation>
 <translation id="2110941575868943054">‏יש הרשאה לאתר מכשירי Bluetooth</translation>
 <translation id="211144231511833662">ניקוי הסוגים</translation>
@@ -2472,6 +2474,7 @@
 <translation id="2907619724991574506">כתובות אתרים בהפעלה</translation>
 <translation id="2907798539022650680">הניסיון להתחבר אל '<ph name="NAME" />' נכשל: <ph name="DETAILS" />
 הודעת שרת: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">‏פתיחת קבצים של Word,‏ Excel ו-PowerPoint</translation>
 <translation id="2908162660801918428">הוספת גלריית מדיה לפי ספרייה</translation>
 <translation id="2908358077082926882">צריך להקיש שוב על "<ph name="CURRENTKEY" />" כדי להסיר את ההקצאה ו<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">‏לא ניתן היה להתחבר אל שירותי Google. צריך לבדוק את החיבור לרשת ולנסות שוב. קוד השגיאה: <ph name="ERROR_CODE" />.</translation>
@@ -2531,6 +2534,7 @@
 <translation id="2956070239128776395">הקטע מוצב בתוך קבוצה: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">אזהרת 'אריזת תוסף'</translation>
 <translation id="2959127025785722291">משהו השתבש. לא ניתן היה להשלים את הסריקה. יש לנסות שוב.</translation>
+<translation id="2959474507964749987">‏יכול להיות שהקובץ המוצפן הזה הוא וירוס או תוכנה זדונית.<ph name="LINE_BREAK" />אפשר לשלוח את הקובץ והסיסמה לגלישה הבטוחה של Google כדי לבדוק אם הוא לא בטוח. בדרך כלל סריקות נמשכות כמה שניות.<ph name="LINE_BREAK" />כדי להפעיל סריקה, צריך להוסיף את הסיסמה של הקובץ.</translation>
 <translation id="2959842337402130152">לא ניתן לשחזר מפני שאין מספיק מקום אחסון. צריך לפנות <ph name="SPACE_REQUIRED" /> במכשיר ולנסות שוב.</translation>
 <translation id="2960208947600937804">‏אירעה שגיאה במהלך ההגדרה של Linux. יש לפנות אל מנהל המערכת.</translation>
 <translation id="2960942820860729477">קצב הרענון</translation>
@@ -3994,6 +3998,7 @@
 <translation id="4147099377280085053">בחירת טבלת ברייל</translation>
 <translation id="4147911968024186208">אפשר לנסות שוב. אם השגיאה הזאת ממשיכה להופיע, ניתן לפנות לנציג התמיכה.</translation>
 <translation id="414800391140809654">יכול להשתמש בפרטים שלך בזמן הגלישה</translation>
+<translation id="4148195018520464922">אפשר להגביל את הכניסה של משתמשים מסוימים. הפעולה הזו תסיר את האפשרות 'הוספת משתמש' ממסך הכניסה. אפשר גם להסיר משתמשים קיימים.</translation>
 <translation id="4150201353443180367">תצוגה</translation>
 <translation id="4150569944729499860">הקשר מסך</translation>
 <translation id="4151449637210235443">‏איך היה מהלך המשחק (gameplay) האחרון שלך?</translation>
@@ -4192,6 +4197,7 @@
 <translation id="4322394346347055525">סגירת כרטיסיות אחרות</translation>
 <translation id="4324577459193912240">הקובץ לא הושלם</translation>
 <translation id="4325237902968425115">הסרת ההתקנה של <ph name="LINUX_APP_NAME" /> מתבצעת…</translation>
+<translation id="4325433082696797523">אחסון וחשמל</translation>
 <translation id="4326146840124313313">‏האבטחה הכי יעילה של Chrome מגינה עליך טוב יותר מפני תוספים, הורדות ואתרים מסוכנים</translation>
 <translation id="4326484226728068206">פריטים עם <ph name="DISCOUNT_TEXT" /> בעגלת הקניות שלך ב-<ph name="MERCHANT_NAME" />,‏ <ph name="MERCHANT_DOMAIN" />, נצפו <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">מים עם קרח</translation>
@@ -6110,6 +6116,7 @@
 <translation id="5920543303088087579">החיבור לרשת הזו הושבת על ידי מנהל המערכת</translation>
 <translation id="5921257443092182237">‏כדי להעריך את המיקום של המכשיר הזה, שירותי המיקום של Google מסתמכים על מקורות כמו Wi-Fi, רשתות סלולריות וחיישנים.</translation>
 <translation id="5924047253200400718">קבלת עזרה<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">‏צריך לשאול לפני שמעתיקים או מעבירים קובצי Microsoft ל-Google Drive</translation>
 <translation id="5924527146239595929">‏אפשר לצלם תמונה חדשה, או לבחור תמונה או סמל קיימים.
     <ph name="LINE_BREAK" />
     התמונה תופיע במסך הכניסה ובמסך הנעילה ב-Chromebook.</translation>
@@ -6528,6 +6535,7 @@
 <translation id="6263284346895336537">לא קריטי</translation>
 <translation id="6264365405983206840">בחירת &amp;הכול</translation>
 <translation id="6264376385120300461">להוריד בכל זאת</translation>
+<translation id="6265159465845424232">‏צריך לשאול לפני שמעתיקים או מעבירים קובצי Microsoft ל-Microsoft OneDrive</translation>
 <translation id="6265687851677020761">הסרת היציאה</translation>
 <translation id="6266532094411434237">מתבצעת התחברות אל <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">יש לבחור אישור כדי לאמת את עצמך מול <ph name="HOST_NAME" /></translation>
@@ -7291,6 +7299,7 @@
 <translation id="6897363604023044284">בחירת אתרים שהנתונים שלהם יוסרו</translation>
 <translation id="6897688156970667447">שימושי בתנאי תאורה חלשה וחוסך בצריכת הסוללה</translation>
 <translation id="6897972855231767338">מידע נוסף על גלישה כאורח</translation>
+<translation id="6898438890765871056">‏פתיחה של תיקיית OneDrive</translation>
 <translation id="6898440773573063262">כעת ניתן להגדיר הפעלה אוטומטית עבור יישומי קיוסק במכשיר הזה.</translation>
 <translation id="6899427698619335650">‏הפעלת ההקצאה הגמישה של סימנים דיאקריטיים. לדוגמה, אפשר להקליד anh1 או a1nh כדי לקבל ánh.</translation>
 <translation id="6900284862687837908">יישום רקע: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8045,6 +8054,7 @@
 <translation id="7517959947270534934">‏בן המשפחה שלך לא יכול לקבל סיסמאות כרגע. צריך לבקש ממנו לעדכן את Chrome ולסנכרן את הסיסמאות.</translation>
 <translation id="7520766081042531487">פורטל אנונימי: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">הצגת קיצורי דרך</translation>
+<translation id="7521430434164837205">‏קובצי Microsoft 365</translation>
 <translation id="7522255036471229694">‏יש לומר "Hey Google"</translation>
 <translation id="7523117833414447032">בהקראת אותיות רישיות</translation>
 <translation id="7523585675576642403">שינוי שם הפרופיל</translation>
@@ -8156,6 +8166,7 @@
 <translation id="7617263010641145920">‏הפעלה של חנות Play</translation>
 <translation id="7617648809369507487">שימוש במצב שקט יותר של התראות</translation>
 <translation id="7621382409404463535">המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
+<translation id="7621480263311228380">לאתר אין הרשאה להשתמש במידע עליך שנשמר בו</translation>
 <translation id="7621595347123595643">לא תהיה אפשרות לשחזר נתונים מקומיים אם שוכחים את הסיסמה או קוד האימות.</translation>
 <translation id="7622114377921274169">בטעינה.</translation>
 <translation id="7622768823216805500">‏אתרים מתקינים בדרך כלל רכיבי handler של תשלומים כדי להציע תכונות קנייה, כמו תשלום קל יותר בקופה</translation>
@@ -9774,6 +9785,7 @@
 <translation id="8896830132794747524">תנועות מהירות יותר עם העכבר יזיזו את הסמן רחוק יותר</translation>
 <translation id="8898140163781851592">כפתור ראשי בעכבר</translation>
 <translation id="8898786835233784856">בחר את הכרטיסייה הבאה</translation>
+<translation id="8898790559170352647">‏הוספה של חשבון Microsoft</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8899851313684471736">פתיחת קישור &amp;בחלון חדש</translation>
 <translation id="8900413463156971200">הפעלת רשת סלולרית</translation>

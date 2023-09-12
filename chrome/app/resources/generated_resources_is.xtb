@@ -1433,6 +1433,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2102495993840063010">Android forrit</translation>
 <translation id="2104166991923847969">Slökkva sjálfkrafa á heitum reit</translation>
 <translation id="2105809836724866556">Faldi: <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Athugað fyrir: <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Símanúmer}one{# símanúmer}other{# símanúmer}}</translation>
 <translation id="2110941575868943054">Leyfilegt að leita að Bluetooth-tækjum</translation>
 <translation id="211144231511833662">Hreinsa gerðir</translation>
@@ -2474,6 +2475,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2907619724991574506">Ræsingarvefslóðir</translation>
 <translation id="2907798539022650680">Mistókst að tengjast „<ph name="NAME" />“: <ph name="DETAILS" />
     Skilaboð frá þjóni: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Opna Word-, Excel- og PowerPoint-skrár</translation>
 <translation id="2908162660801918428">Bæta efnissafni við eftir möppu</translation>
 <translation id="2908358077082926882">Ýttu aftur á „<ph name="CURRENTKEY" />“ til að afturkalla úthlutun og <ph name="RESPONSE" />.</translation>
 <translation id="2909506265808101667">Ekki tókst að tengjast Google þjónustum. Athugaðu nettenginguna og reyndu aftur. Villukóði: <ph name="ERROR_CODE" />.</translation>
@@ -4196,6 +4198,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4322394346347055525">Loka öðrum flipum</translation>
 <translation id="4324577459193912240">Skrá er ókláruð</translation>
 <translation id="4325237902968425115">Fjarlægir <ph name="LINUX_APP_NAME" />...</translation>
+<translation id="4325433082696797523">Geymslurými og orka</translation>
 <translation id="4326146840124313313">Mesta öryggi Chrome ver þig betur gegn hættulegum vefsvæðum, niðurhali og viðbótum</translation>
 <translation id="4326484226728068206">Vörur í körfunni þinni <ph name="DISCOUNT_TEXT" /> frá <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, skoðaðar <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Klakavatn</translation>
@@ -6114,6 +6117,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5920543303088087579">Stjórnandinn hefur lokað fyrir að hægt sé að tengjast þessu netkerfi</translation>
 <translation id="5921257443092182237">Staðsetningarþjónusta Google notar heimildir eins og Wi-Fi, farsímakerfi og skynjara til að ákvarða staðsetningu þessa tækis.</translation>
 <translation id="5924047253200400718">Fá aðstoð<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Spyrja áður en Microsoft-skrár eru afritaðar eða fluttar yfir á Google Drive</translation>
 <translation id="5924527146239595929">Taktu nýja mynd eða veldu mynd eða tákn sem fyrir er.
     <ph name="LINE_BREAK" />
     Þessi mynd birtist á innskráningarskjá og lásskjá Chromebook.</translation>
@@ -6532,6 +6536,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6263284346895336537">Ekki hætta</translation>
 <translation id="6264365405983206840">Velja &amp;allt</translation>
 <translation id="6264376385120300461">Sækja samt</translation>
+<translation id="6265159465845424232">Spyrja áður en Microsoft-skrár eru afritaðar eða fluttar yfir á Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjarlægja tengi</translation>
 <translation id="6266532094411434237">Tengist <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Veldu vottorð til að auðkenna þig fyrir <ph name="HOST_NAME" /></translation>
@@ -7293,6 +7298,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6897363604023044284">Veldu svæði til að hreinsa</translation>
 <translation id="6897688156970667447">Gagnlegt þegar birtan er lítil og sparar rafhlöðuorku</translation>
 <translation id="6897972855231767338">Nánar um að vafra sem gestur</translation>
+<translation id="6898438890765871056">Opna OneDrive-möppu</translation>
 <translation id="6898440773573063262">Sjálfsalaforrit er nú hægt að grunnstilla þannig að þau séu ræst sjálfkrafa í þessu tæki.</translation>
 <translation id="6899427698619335650">Leyfa sveigjanlega úthlutun stafmerkja. Þú getur t.d. slegið inn „anh1“ eða „a1nh“ til að fá „ánh“.</translation>
 <translation id="6900284862687837908">Bakgrunnsforrit: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8046,6 +8052,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7517959947270534934">Fjölskyldumeðlimur þinn getur ekki tekið á móti aðgangsorðum eins og er. Biddu viðkomandi um að uppfæra Chrome og samstilla aðgangsorðin sín.</translation>
 <translation id="7520766081042531487">Huliðsgátt: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Sýna flýtilykla</translation>
+<translation id="7521430434164837205">Microsoft 365-skrár</translation>
 <translation id="7522255036471229694">Segðu „Ok Google“</translation>
 <translation id="7523117833414447032">Þegar hástafir eru lesnir</translation>
 <translation id="7523585675576642403">Endurnefna prófíl</translation>
@@ -9774,6 +9781,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8896830132794747524">Hraðari hreyfingar með músinni hreyfa bendilinn lengra</translation>
 <translation id="8898140163781851592">Aðalhnappur músar</translation>
 <translation id="8898786835233784856">Velja næsta flipa</translation>
+<translation id="8898790559170352647">Bættu Microsoft-reikningnum þínum við</translation>
 <translation id="8898822736010347272">Sendir vefslóðir sumra vefsíðna sem þú skoðar, takmarkaðar kerfisupplýsingar og tiltekið innihald síðna til Google til að hjálpa til við að finna og loka á nýjar ógnir og vernda alla vefnotendur.</translation>
 <translation id="8899851313684471736">Opna tengil í nýjum glugga</translation>
 <translation id="8900413463156971200">Virkja farsímakerfi</translation>

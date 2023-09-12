@@ -1433,6 +1433,7 @@
 <translation id="2102495993840063010">Апликации за Android</translation>
 <translation id="2104166991923847969">Автоматско исклучување на точката на пристап</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е скриен</translation>
+<translation id="2108204112555497972">Проверено: пред <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="2110941575868943054">Дозволено да се бараат уреди со Bluetooth</translation>
 <translation id="211144231511833662">Избриши ги типовите</translation>
@@ -2474,6 +2475,7 @@
 <translation id="2907619724991574506">URL-врски за стартување</translation>
 <translation id="2907798539022650680">Не успеа да се поврзе на „<ph name="NAME" />“: <ph name="DETAILS" />
     Порака од серверот: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Отворајте датотеки Word, Excel и PowerPoint</translation>
 <translation id="2908162660801918428">Додајте Галерија на медиуми според Директориум</translation>
 <translation id="2908358077082926882">Притиснете „<ph name="CURRENTKEY" />“ повторно за да го отстраните назначувањето и <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Не може да се поврземе со услугите на Google. Проверете ја мрежната врска и обидете се повторно. Код за грешка: <ph name="ERROR_CODE" />.</translation>
@@ -6115,6 +6117,7 @@
 <translation id="5920543303088087579">Администраторот оневозможил поврзување на оваа мрежа</translation>
 <translation id="5921257443092182237">Услугата според локација на Google користи извори како што се Wi-Fi, мобилни мрежи и сензори за да помогне да се процени локацијата на уредов.</translation>
 <translation id="5924047253200400718">Побарајте помош <ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Прашај пред копирање или преместување датотеки на Microsoft во Google Drive</translation>
 <translation id="5924527146239595929">Снимете нова или изберете постојна фотографија или икона.
     <ph name="LINE_BREAK" />
     Сликава ќе се појавува на екранот за најавување и на заклучениот екран на Chromebook.</translation>
@@ -6533,6 +6536,7 @@
 <translation id="6263284346895336537">Не е критично</translation>
 <translation id="6264365405983206840">Избери ги &amp;сите</translation>
 <translation id="6264376385120300461">Сепак преземи</translation>
+<translation id="6265159465845424232">Прашај пред копирање или преместување датотеки на Microsoft во Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Отстрани ја портата</translation>
 <translation id="6266532094411434237">Се поврзува со <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Изберете сертификат за да се автентицирате на <ph name="HOST_NAME" /></translation>
@@ -7294,6 +7298,7 @@
 <translation id="6897363604023044284">Изберете ги сајтовите за бришење</translation>
 <translation id="6897688156970667447">Корисно при слаба светлина и штеди батерија</translation>
 <translation id="6897972855231767338">Дознајте повеќе за прелистувањето како гостин</translation>
+<translation id="6898438890765871056">Отворете ја папката OneDrive</translation>
 <translation id="6898440773573063262">Апликациите на Киоск сега може да се конфигурираат за автоматски да се стартуваат на уредот.</translation>
 <translation id="6899427698619335650">Дозволете флексибилна дијакритичка задача. На пример, може да напишете „anh1“ или „a1nh“ за да добиете „ánh“.</translation>
 <translation id="6900284862687837908">Апликација во заднина: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8047,6 +8052,7 @@
 <translation id="7517959947270534934">Членот на вашето семејство не може да прима лозинки во моментов. Кажете му да го ажурира Chrome и да ги синхронизира своите лозинки.</translation>
 <translation id="7520766081042531487">Инкогнито портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Прикажи кратенки</translation>
+<translation id="7521430434164837205">Датотеки на Microsoft 365</translation>
 <translation id="7522255036471229694">Кажете „Ok Google“</translation>
 <translation id="7523117833414447032">При читање големи букви</translation>
 <translation id="7523585675576642403">Преименувајте го профилот</translation>
@@ -9778,6 +9784,7 @@
 <translation id="8896830132794747524">Побрзите движења со глувчето ќе го поместат курсорот подалеку</translation>
 <translation id="8898140163781851592">Примарно копче на глувче</translation>
 <translation id="8898786835233784856">Избери нова картичка</translation>
+<translation id="8898790559170352647">Додајте ја вашата сметка на Microsoft</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
 <translation id="8899851313684471736">Отвори ја врската во нов &amp;прозорец</translation>
 <translation id="8900413463156971200">Овозможување мобилна мрежа</translation>

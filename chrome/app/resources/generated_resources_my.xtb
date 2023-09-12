@@ -1430,6 +1430,7 @@
 <translation id="2102495993840063010">Android အက်ပ်များ</translation>
 <translation id="2104166991923847969">ဟော့စပေါ့ကို အလိုအလျောက် ပိတ်ခြင်း</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ကို ဖျောက်လိုက်ပါပြီ</translation>
+<translation id="2108204112555497972">ပြီးခဲ့သော <ph name="NUM_DAYS_HOURS_MINUTES" /> က အမှတ်ခြစ်ထားသည်</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ဖုန်းနံပါတ်}other{ဖုန်းနံပါတ် # ခု}}</translation>
 <translation id="2110941575868943054">ဘလူးတုသ်သုံးစက်များ ရှာရန် ခွင့်ပြုထားသည်</translation>
 <translation id="211144231511833662">ရိုက်ထားသည်များကို ရှင်းထုတ်ရန်</translation>
@@ -2471,6 +2472,7 @@
 <translation id="2907619724991574506">အစပြု URLs</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' သို့ ချိတ်ဆက်ခြင်း မအောင်မြင်ပါ− <ph name="DETAILS" />
     ဆာဗာမက်ဆေ့ဂျ်− <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word၊ Excel နှင့် PowerPoint ဖိုင်များဖွင့်နိုင်သည်</translation>
 <translation id="2908162660801918428">မီဒီယာ ပြခန်းကို ဒါရိုက်ထရီ နားမှာ ထည့်ပေးရန်</translation>
 <translation id="2908358077082926882">သတ်မှတ်မှုကို ဖယ်ရှားရန် “<ph name="CURRENTKEY" />” ထပ်နှိပ်ပြီး <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Google ဝန်ဆောင်မှုများနှင့် ချိတ်ဆက်၍မရပါ။ သင့်ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
@@ -6112,6 +6114,7 @@
 <translation id="5920543303088087579">ဤကွန်ရက်သို့ ချိတ်ဆက်ခြင်းကို သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားပါသည်</translation>
 <translation id="5921257443092182237">Google ၏ တည်နေရာဝန်ဆောင်မှုသည် ဤစက်ပစ္စည်း၏ တည်နေရာကို ခန့်မှန်းနိုင်ရန် Wi-Fi၊ မိုဘိုင်းကွန်ရက်များနှင့် အာရုံခံကိရိယာများကဲ့သို့သော အရင်းအမြစ်များကို အသုံးပြုပါသည်။</translation>
 <translation id="5924047253200400718"><ph name="SCANNING_STATUS" /> အကူအညီ ရယူရန်</translation>
+<translation id="5924438086390153180">Microsoft ဖိုင်များကို Google Drive သို့ မိတ္တူမကူးမီ (သို့) မရွှေ့မီ မေးပါ</translation>
 <translation id="5924527146239595929">ဓာတ်ပုံအသစ်ရိုက်ပါ သို့မဟုတ် ရှိပြီးသားဓာတ်ပုံ သို့မဟုတ် သင်္ကေတကို ရွေးပါ။<ph name="LINE_BREAK" />၎င်းပုံကို Chromebook လက်မှတ်ထိုးဝင်သည့် မျက်နှာပြင်နှင့် လော့ခ်မျက်နှာပြင်တွင် ပြသပါမည်။</translation>
 <translation id="5925147183566400388">အသိမှတ်ပြုလက်မှတ် လေ့ကျင့်မှု အကြောင်းရာ ညွှန်ပြကိရိယာ</translation>
 <translation id="5927132638760172455">အမည်မသိ လက်ခံသူတစ်ဦးသို့ Casting လုပ်နေ၏</translation>
@@ -6529,6 +6532,7 @@
 <translation id="6263284346895336537">အရေးတကြီး မဟုတ်ပါ</translation>
 <translation id="6264365405983206840">အားလုံး  &amp;ရွေးရန်</translation>
 <translation id="6264376385120300461">မည်သို့ပင်ဖြစ်စေ ဒေါင်းလုဒ်လုပ်ရန်</translation>
+<translation id="6265159465845424232">Microsoft ဖိုင်များကို Microsoft OneDrive သို့ မိတ္တူမကူးမီ (သို့) မရွှေ့မီ မေးပါ</translation>
 <translation id="6265687851677020761">ပို့တ်ဖယ်ရှားရန်</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> သို့ ချိတ်ဆက်နေသည်</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> သို့သင်ကိုယ်တိုင် စစ်မှန်ကြောင်း သက်သေပြရန် အသိမှတ်ပြုလက်မှတ် ရွေးပါ</translation>
@@ -7286,6 +7290,7 @@
 <translation id="6897363604023044284">ရှင်းလင်းရန်အတွက် ဝဘ်ဆိုက်ကို ရွေးရန်</translation>
 <translation id="6897688156970667447">အလင်းနည်းချိန်တွင် အကူအညီဖြစ်ပြီး ဘက်ထရီ ချွေတာနိုင်သည်</translation>
 <translation id="6897972855231767338">ဧည့်သည်အဖြစ် ကြည့်ရှုခြင်းအကြောင်း ပိုမိုလေ့လာရန်</translation>
+<translation id="6898438890765871056">OneDrive ဖိုင်တွဲဖွင့်ရန်</translation>
 <translation id="6898440773573063262">Kiosk အပလီကေးရှင်းမျာကို ယခုတော့ ဒီကိရိယာ ပေါ်မှာ အော်တို-ဖွင့်တင်ပေးရန် စီစဉ်ဖွဲ့စည်း၍ ရနိုင်ပြီ။</translation>
 <translation id="6899427698619335650">လိုက်လျောညီထွေ အသံပြောင်း သတ်မှတ်မှုကို ခွင့်ပြုရန်။ ဥပမာ “ánh” ရရန် “anh1” (သို့) “a1nh” ရိုက်နိုင်သည်။</translation>
 <translation id="6900284862687837908">နောက်ခံအက်ပ်: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8039,6 +8044,7 @@
 <translation id="7517959947270534934">သင့်မိသားစုဝင်သည် စကားဝှက်များကို ယခု မရယူနိုင်ပါ။ Chrome အပ်ဒိတ်လုပ်ပြီး သူ၏စကားဝှက်များ စင့်ခ်လုပ်ခိုင်းပါ။</translation>
 <translation id="7520766081042531487">ရုပ်ဖျက်ဌာန-: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ဖြတ်လမ်းလင့်ခ်များ ပြပါ</translation>
+<translation id="7521430434164837205">Microsoft 365 ဖိုင်</translation>
 <translation id="7522255036471229694">"Ok Google" ဟုပြောပါ</translation>
 <translation id="7523117833414447032">စာလုံးကြီးများကို ဖတ်သည့်အခါ</translation>
 <translation id="7523585675576642403">ပရိုဖိုင်ကို အမည်ပြောင်းရန်</translation>
@@ -9766,6 +9772,7 @@
 <translation id="8896830132794747524">သင့်မောက်စ်ကို ပိုမြန်မြန်ရွှေ့ပါက ကာဆာ ပိုဝေးဝေးရောက်သည်</translation>
 <translation id="8898140163781851592">ပင်မ မောက်စ်ခလုတ်</translation>
 <translation id="8898786835233784856">နောက်တပ်ပ်ကို ရွေးပါ</translation>
+<translation id="8898790559170352647">Microsoft အကောင့်ထည့်ရန်</translation>
 <translation id="8898822736010347272">အန္တရာယ်အသစ်များ ရှာဖွေရာ၌ အထောက်အကူဖြစ်စေရန်နှင့် ဝဘ်ပေါ်ရှိလူတိုင်းကို ကာကွယ်ရန် သင်ဝင်ကြည့်သည့် အချို့ဝဘ်ဆိုက်များ၏ URL များ၊ ကန့်သတ်ထားသည့် စနစ်အချက်အလက်များနှင့် အချို့သော ဝဘ်ဆိုက်ပါအကြောင်းအရာတို့ကို Google သို့ ပို့သည်။</translation>
 <translation id="8899851313684471736">ဝင်ဒိုး &amp;အသစ် ထဲမှာ လင့် ဖွင့်ပေးရန်</translation>
 <translation id="8900413463156971200">ဆယ်လူလာ ဖွင့်ရန်</translation>

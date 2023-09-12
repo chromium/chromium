@@ -1422,6 +1422,7 @@
 <translation id="2102495993840063010">Android հավելվածներ</translation>
 <translation id="2104166991923847969">Ավտոմատ անջատել թեժ կետը</translation>
 <translation id="2105809836724866556">Թաքցված է՝ <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Ստուգվել է <ph name="NUM_DAYS_HOURS_MINUTES" /> առաջ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Հեռախոսահամար}one{# հեռախոսահամար}other{# հեռախոսահամար}}</translation>
 <translation id="2110941575868943054">Bluetooth սարքեր որոնելու թույլտվություն ունեցող կայքեր</translation>
 <translation id="211144231511833662">Մաքրել տեսակների նշավանդակները</translation>
@@ -2458,6 +2459,7 @@
 <translation id="2907619724991574506">Մեկնարկի URL-հասցեներ</translation>
 <translation id="2907798539022650680">Չհաջողվեց միանալ «<ph name="NAME" />»-ին՝ <ph name="DETAILS" />
     Սերվերի հաղորդագրությունը՝ <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Բացեք Word, Excel և PowerPoint ֆայլեր</translation>
 <translation id="2908162660801918428">Մեդիա սրահի ավելացում գրացուցակից</translation>
 <translation id="2908358077082926882">Նշանակումը չեղարկելու և <ph name="RESPONSE" /> համար նորից սեղմեք «<ph name="CURRENTKEY" />»։</translation>
 <translation id="2909506265808101667">Չհաջողվեց միանալ Google-ի ծառայություններին։ Ստուգեք կապը և նորից փորձեք։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
@@ -6099,6 +6101,7 @@
 <translation id="5920543303088087579">Ձեր ադմինիստրատորն արգելափակել է այս ցանցին միանալու հնարավորությունը</translation>
 <translation id="5921257443092182237">Google-ի տեղորոշման ծառայությունն օգտագործում է Wi-Fi, բջջային ցանցեր և տվիչներ՝ այս սարքի տեղադրությունը որոշելու համար։</translation>
 <translation id="5924047253200400718">Օգնություն<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Թույլտվություն հարցնել նախքան Google Drive-ում Microsoft ֆայլեր պատճենելը կամ տեղափոխելը</translation>
 <translation id="5924527146239595929">Նոր լուսանկար արեք կամ ընտրեք եղած լուսանկարներից կամ պատկերակներից մեկը:
     <ph name="LINE_BREAK" />
     Այս նկարը կցուցադրվի Chromebook-ի մուտքի էկրանին և կողպէկրանին:</translation>
@@ -6516,6 +6519,7 @@
 <translation id="6263284346895336537">Ոչ վճռական</translation>
 <translation id="6264365405983206840">Ընտրել &amp;բոլորը</translation>
 <translation id="6264376385120300461">Ներբեռնել</translation>
+<translation id="6265159465845424232">Թույլտվություն հարցնել նախքան Microsoft OneDrive-ում Microsoft ֆայլեր պատճենելը կամ տեղափոխելը</translation>
 <translation id="6265687851677020761">Հեռացնել միացքը</translation>
 <translation id="6266532094411434237">Միացում <ph name="DEVICE" /> սարքին</translation>
 <translation id="6267166720438879315">Ընտրեք վկայագիր՝ <ph name="HOST_NAME" />-ում իսկորոշվելու համար</translation>
@@ -7277,6 +7281,7 @@
 <translation id="6897363604023044284">Ընտրել կայքեր՝ մաքրելու համար</translation>
 <translation id="6897688156970667447">Հարմար է վատ լուսավորության դեպքում և տնտեսում է մարտկոցի լիցքը</translation>
 <translation id="6897972855231767338">Իմանալ ավելին հյուրի ռեժիմում դիտարկման մասին</translation>
+<translation id="6898438890765871056">Բացել OneDrive պանակը</translation>
 <translation id="6898440773573063262">Այժմ այս սարքի վրա Kiosk ծրագրերը կարելի է կազմաձևել այնպես, որ դրանք ավտոմատ գործարկվեն:</translation>
 <translation id="6899427698619335650">Թույլատրել դիակրիտիկ նշանների ճկուն նշանակումը։ Օրինակ՝ կարող եք մուտքագրել «anh1» կամ «a1nh»՝ «ánh» ստանալու համար։</translation>
 <translation id="6900284862687837908">Ետին պլանի հավելված՝ <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8030,6 +8035,7 @@
 <translation id="7517959947270534934">Ձեր ընտանիքի անդամն այս պահին չի կարող գաղտնաբառեր ստանալ։ Խնդրեք նրան թարմացնել Chrome-ը և համաժամացնել իր գաղտնաբառերը։</translation>
 <translation id="7520766081042531487">Ինկոգնիտո պորտալ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Ցույց տալ դյուրանցումները</translation>
+<translation id="7521430434164837205">Microsoft 365 ֆայլեր</translation>
 <translation id="7522255036471229694">Ասեք «Ok Google»</translation>
 <translation id="7523117833414447032">Մեծատառերը կարդալիս</translation>
 <translation id="7523585675576642403">Վերանվանեք պրոֆիլը</translation>
@@ -9757,6 +9763,7 @@
 <translation id="8896830132794747524">Մկնիկի հետ ավելի արագ շարժումները կտեղափոխեն կուրսորն ավելի հեռու</translation>
 <translation id="8898140163781851592">Մկնիկի հիմնական կոճակ</translation>
 <translation id="8898786835233784856">Select Next Tab</translation>
+<translation id="8898790559170352647">Ավելացրեք ձեր Microsoft հաշիվը</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="8899851313684471736">Բացել հղումը նոր &amp;պատուհանով</translation>
 <translation id="8900413463156971200">Միացնել բջջային ցանցը</translation>

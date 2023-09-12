@@ -1419,6 +1419,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2102495993840063010">Android ilovalar</translation>
 <translation id="2104166991923847969">Hotspotni avtomatik faolsizlantirish</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> berkitilgan</translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> oldin tekshirilgan</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefon raqami}other{# ta telefon raqami}}</translation>
 <translation id="2110941575868943054">Bluetooth qurilmalarni qidirishi mumkin</translation>
 <translation id="211144231511833662">Turlarni tozalash</translation>
@@ -2460,6 +2461,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2907619724991574506">Ishga tushirish URL manzillari</translation>
 <translation id="2907798539022650680">“<ph name="NAME" />” tarmog‘iga ulanmadi: <ph name="DETAILS" />
     Server xabari: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel va PowerPoint fayllarini ochish</translation>
 <translation id="2908162660801918428">Media gallereyasini jilddan qo‘shish</translation>
 <translation id="2908358077082926882">Tayinlovni bekor qilish va <ph name="RESPONSE" /> uchun “<ph name="CURRENTKEY" />” tugmasini qayta bosing.</translation>
 <translation id="2909506265808101667">Google xizmatlari aloqada emas. Internetga ulanishni tekshiring va qayta urining. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
@@ -6101,6 +6103,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5920543303088087579">Bu tarmoqqa ulanish ruxsati administrator tomonidan o‘chirib qo‘yilgan</translation>
 <translation id="5921257443092182237">Google joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi.</translation>
 <translation id="5924047253200400718">Yordam sahifasiga o‘tish<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Microsoft fayllarini Google Drive xizmatiga koʻchirish yoki nusxalashdan oldin soʻralsin</translation>
 <translation id="5924527146239595929">Suratga oling yoki mavjud surat yoki ikonkalardan birini tanlang.
     <ph name="LINE_BREAK" />
     Bu rasm Chromebook qurilmasining kirish va qulflash ekranida ko‘rinadi.</translation>
@@ -6519,6 +6522,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6263284346895336537">Muhim emas</translation>
 <translation id="6264365405983206840">&amp;Barchasini tanlash</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
+<translation id="6265159465845424232">Microsoft fayllarini OneDrive xizmatiga koʻchirish yoki nusxalashdan oldin soʻralsin</translation>
 <translation id="6265687851677020761">Portni olib tashlash</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> qurilmasiga ulanmoqda</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> saytida haqiqiylik tekshiruvi uchun sertifikat tanlang</translation>
@@ -7278,6 +7282,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6897363604023044284">Tozalash uchun saytlarni tanlang</translation>
 <translation id="6897688156970667447">Qorongʻilikda foydali va batareyani tejaydi</translation>
 <translation id="6897972855231767338">Mehmon rejimi haqida batafsil</translation>
+<translation id="6898438890765871056">OneDrive jildini ochish</translation>
 <translation id="6898440773573063262">Endi bu qurilmada kiosk-ilovalari avtomatik ishga tushirilishini sozlash mumkin.</translation>
 <translation id="6899427698619335650">Moslashuvchan diakritik tayinlovga ruxsat bering. Masalan, “ánh” natijasini olish uchun “anh1” yoki “a1nh” yozing.</translation>
 <translation id="6900284862687837908">Orqa fondagi ilova: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8031,6 +8036,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7517959947270534934">Oila aʼzolaringiz hozir parollarni qabul qila olmaydi. Ulardan Chrome brauzerini yangilash va parollarini sinxronlashni soʻrang.</translation>
 <translation id="7520766081042531487">Inkognito rejimidagi portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Yorliqlarni ochish</translation>
+<translation id="7521430434164837205">Microsoft 365 fayllari</translation>
 <translation id="7522255036471229694">“Ok Google” deb ayting</translation>
 <translation id="7523117833414447032">Katta harflarni oʻqish vaqtida</translation>
 <translation id="7523585675576642403">Profilni qayta nomlash</translation>
@@ -9757,6 +9763,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8896830132794747524">Sichqonchani keskin harakatlantirish kursorni tezroq suradi</translation>
 <translation id="8898140163781851592">Asosiy sichqoncha tugmasi</translation>
 <translation id="8898786835233784856">Keyingi ichki oynani tanlash</translation>
+<translation id="8898790559170352647">Microsoft hisobingizni qoʻshing</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8899851313684471736">Havolani yangi &amp;oynada ochish</translation>
 <translation id="8900413463156971200">Mobil tarmoqni yoqish</translation>

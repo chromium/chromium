@@ -1431,6 +1431,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2102495993840063010">Android-sovellukset</translation>
 <translation id="2104166991923847969">Laita hotspot pois päältä automaattisesti</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> piilotettu</translation>
+<translation id="2108204112555497972">Tarkistettu <ph name="NUM_DAYS_HOURS_MINUTES" /> sitten</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Puhelinnumero}other{# puhelinnumeroa}}</translation>
 <translation id="2110941575868943054">Bluetooth-laitteiden etsiminen sallittu</translation>
 <translation id="211144231511833662">Tyhjennä valinnat</translation>
@@ -2472,6 +2473,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2907619724991574506">Käynnistyksen URL-osoitteet</translation>
 <translation id="2907798539022650680">Yhteyden muodostaminen kohteeseen <ph name="NAME" /> epäonnistui: <ph name="DETAILS" />
     Palvelimen viesti: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Avaa Word-, Excel- ja PowerPoint-tiedostoja</translation>
 <translation id="2908162660801918428">Lisää mediagalleria hakemiston mukaan</translation>
 <translation id="2908358077082926882">Paina <ph name="CURRENTKEY" /> uudelleen, niin voit poistaa näppäimen määrityksen ja <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Googlen palveluihin ei saatu yhteyttä. Tarkista verkkoyhteys ja yritä uudelleen. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
@@ -6110,6 +6112,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5920543303088087579">Järjestelmänvalvoja on estänyt yhteyden muodostamisen tähän verkkoon.</translation>
 <translation id="5921257443092182237">Googlen sijaintipalvelut pyrkivät arvioimaan tämän laitteen sijainnin esim. Wi-Fi- ja mobiiliverkkojen sekä anturien avulla.</translation>
 <translation id="5924047253200400718">Lue ohjeita <ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Kysy ennen Microsoft-tiedostojen kopioimista tai siirtämistä Google Driveen</translation>
 <translation id="5924527146239595929">Ota uusi kuva tai valitse olemassa oleva kuva tai kuvake.
     <ph name="LINE_BREAK" />
     Tämä kuva näkyy Chromebookin kirjautumisnäytöllä ja lukitusnäytöllä.</translation>
@@ -6528,6 +6531,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6263284346895336537">Ei-kriittinen</translation>
 <translation id="6264365405983206840">Valitse k&amp;aikki</translation>
 <translation id="6264376385120300461">Lataa silti</translation>
+<translation id="6265159465845424232">Kysy ennen Microsoft-tiedostojen kopioimista tai siirtämistä Microsoft OneDriveen</translation>
 <translation id="6265687851677020761">Poista portti</translation>
 <translation id="6266532094411434237">Yhdistetään: <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Valitse varmenne, jolla todennat itsesi kohteelle <ph name="HOST_NAME" /></translation>
@@ -7287,6 +7291,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6897363604023044284">Valitse sivustoja datan tyhjentämiseksi</translation>
 <translation id="6897688156970667447">Hyödyllinen hämärässä ja säästää akkua</translation>
 <translation id="6897972855231767338">Lue lisää selaamisesta vierailijana</translation>
+<translation id="6898438890765871056">Avaa OneDrive-kansio</translation>
 <translation id="6898440773573063262">Kioskisovellukset voi nyt määrittää käynnistymään automaattisesti tällä laitteella.</translation>
 <translation id="6899427698619335650">Salli joustava diakriittinen määritys. Jos esimerkiksi haluat kirjoittaa "ánh", voit kirjoittaa "anh1” tai "a1nh".</translation>
 <translation id="6900284862687837908">Taustasovellus: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8041,6 +8046,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7517959947270534934">Perheenjäsenesi ei voi vastaanottaa salasanoja tällä hetkellä. Pyydä häntä päivittämään Chrome ja synkronoimaan salasanat.</translation>
 <translation id="7520766081042531487">Incognito-portaali: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Näytä pikakuvakkeet</translation>
+<translation id="7521430434164837205">Microsoft 365 ‑tiedostot</translation>
 <translation id="7522255036471229694">Sano ”Hey Google”.</translation>
 <translation id="7523117833414447032">Kun isot kirjaimet luetaan</translation>
 <translation id="7523585675576642403">Nimeä profiili uudelleen</translation>
@@ -9768,6 +9774,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8896830132794747524">Nopeammat liikkeet hiirellä liikuttavat kohdistinta kauemmas</translation>
 <translation id="8898140163781851592">Hiiren ensisijainen painike</translation>
 <translation id="8898786835233784856">Valitse seuraava välilehti</translation>
+<translation id="8898790559170352647">Lisää Microsoft-tilisi</translation>
 <translation id="8898822736010347272">Lähettää Googlelle joidenkin vierailemiesi sivujen URL-osoitteita, rajallisia järjestelmätietoja ja osia sivujen sisällöstä auttaakseen löytämään uusia uhkia ja suojaamaan kaikkia verkon käyttäjiä.</translation>
 <translation id="8899851313684471736">Avaa linkki uudessa &amp;ikkunassa</translation>
 <translation id="8900413463156971200">Ota mobiiliverkko käyttöön</translation>

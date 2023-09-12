@@ -419,6 +419,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="3340938510625667914">Chrome-Aktionen</translation>
 <translation id="3344485292736684439">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
+<translation id="3349676726073650389">Die Websites und Suchanfragen, denen du folgst, werden in deinem Google-Konto gespeichert. Du kannst sie jederzeit in den Einstellungen verwalten.</translation>
 <translation id="3365529507898144230">In Google Fotos speichern</translation>
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="3377063233124932127">Deine gespeicherten Lesezeichen, Passwörter und mehr werden jetzt oben angezeigt.</translation>
@@ -787,6 +788,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5597915316964418992">Tab-Raster öffnen</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
+<translation id="5619871095170816857">Auf dieser Karte wird der Tab angezeigt, den du zuletzt auf einem deiner synchronisierten Geräte in den letzten 24 Stunden verwendest hast.</translation>
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
 <translation id="562753339521713441">Sicherheitscheck starten</translation>
 <translation id="5631164295104953411">Zahlungsmethode hinzufügen</translation>
@@ -1092,6 +1094,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7082853213442715471">Wenn dieser Modus aktiviert ist, werden bestimmte Webtechnologien blockiert. Dies kann dazu führen, dass einige Websites langsamer geladen werden oder nicht richtig funktionieren.</translation>
 <translation id="7095110968493193530">Im Google Passwortmanager für <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Letzte Tabs</translation>
+<translation id="7101580180124131336">Du siehst jetzt unter „Folge ich“ Inhalte von und über <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7102005569666697658">Wird heruntergeladen… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108762695052995889">Zur Website</translation>
@@ -1172,6 +1175,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="764827086632467055">Tippe auf „Standard-Browser-App“</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7666861622396822790">Du kannst dies in den <ph name="BEGIN_LINK" />Inhaltseinstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="7671141431838911305">Installieren</translation>
 <translation id="7679915578945954324">Webadressen kopiert</translation>
 <translation id="7687508192620387263">Kalenderdatei verfügbar</translation>
@@ -1246,6 +1250,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8032569120109842252">Folge ich</translation>
 <translation id="804225253087497565">Der <ph name="BEGIN_LINK" />Suchverlauf<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />andere Arten von Aktivitäten<ph name="END_LINK" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="804427445359061970">Hier werden deine Tabs von anderen Geräten angezeigt</translation>
+<translation id="8044568254381073661">Ohne Verschlüsselung speichern</translation>
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8065292699993359127">URLs in Chrome im Inkognitomodus öffnen</translation>
 <translation id="806745655614357130">Daten getrennt halten</translation>
@@ -1302,7 +1307,9 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8386068868580335421">Zurücksetzen</translation>
 <translation id="838867811594159347">Passphrase eingeben…</translation>
 <translation id="8393889347136007944">Tabs, die <ph name="THRESHOLD" /> Tage lang nicht verwendet wurden</translation>
+<translation id="8395339334550012808">Bald siehst du unter „Folge ich“ Inhalte von und über <ph name="CHANNEL_NAME" />.</translation>
 <translation id="8395378633507873708">Adressleiste</translation>
+<translation id="8403629764260204788">„Weitersurfen“ ausblenden</translation>
 <translation id="8407669440184693619">Keine Passwörter für diese Website gefunden</translation>
 <translation id="842017693807136194">Angemeldet mit</translation>
 <translation id="8423121072346537366">gerade eben</translation>

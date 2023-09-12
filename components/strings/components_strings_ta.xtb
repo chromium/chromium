@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">பொதுவாக, பாதுகாப்பான தளங்களைக் கூட சில நேரங்களில் ஹேக்கர்கள் ஹேக் செய்துவிடுகின்றனர். ஆபத்துகளைப் புரிந்துகொண்டால் மட்டும் <ph name="BEGIN_LINK" />பாதுகாப்பற்ற இந்தத் தளத்திற்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">கணினி நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, காலாவதித் தேதி: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">கம்ப்யூட்டர்</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ஆக இருக்கும்போது குறிப்பிடப்பட வேண்டும். அத்துடன் சரியான சரமாகவும் இருக்க வேண்டும்.</translation>
 <translation id="1743393865165844832">படுக்கைகள் &amp; படுக்கை விரிப்புகள்</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">இறைச்சி &amp; கடலுணவு</translation>
 <translation id="2367567093518048410">நிலை</translation>
 <translation id="23703388716193220">கோல்ஃப் உபகரணங்கள்</translation>
+<translation id="2378084239755710604">சேமித்துள்ள கார்டு மூடப்பட்டது.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome அமைப்புகளில் உங்கள் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="2384307209577226199">நிறுவன இயல்புநிலை</translation>
@@ -2256,6 +2258,7 @@
 <translation id="5689199277474810259">JSONக்கு ஏற்று</translation>
 <translation id="5689516760719285838">இருப்பிடம்</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates மதிப்பு தொடர்புடையதாகவும் இல்லை, பயன்படுத்தவும் படாது. அதற்கு DnsOverHttpsMode கொள்கையை <ph name="SECURE_DNS_MODE_AUTOMATIC" /> அல்லது <ph name="SECURE_DNS_MODE_SECURE" /> ஆக அமைக்க வேண்டும்.</translation>
+<translation id="5691848789297492617">சேமித்துள்ள கார்டு முழுத் திரையில் திறக்கப்பட்டது.</translation>
 <translation id="5695542892312572833">உங்கள் பர்ச்சேஸைச் சரிபார்த்து நிறைவுசெய்ய Windows Helloவைப் பயன்படுத்த விரும்புகிறீர்களா?</translation>
 <translation id="5699628521141772782">பால் பொருட்கள் &amp; முட்டைகள்</translation>
 <translation id="5701381305118179107">மையம்</translation>
@@ -3231,6 +3234,7 @@
 <translation id="7676643023259824263"><ph name="TEXT" /> கிளிப்-போர்டு உரையைத் தேடும்</translation>
 <translation id="7679367271685653708">இதுவரை இணையத்தில் பார்த்தவற்றை Chrome அமைப்புகளில் தெரிந்துகொள்ளலாம் நிர்வகிக்கலாம்</translation>
 <translation id="7679947978757153706">பேஸ்பால்</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, காலாவதித் தேதி: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">ஃபேண்டஸி விளையாட்டுகள்</translation>
 <translation id="7682287625158474539">ஷிப்பிங்</translation>
 <translation id="7682451652090915298">ரக்பி</translation>

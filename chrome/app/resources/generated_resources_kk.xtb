@@ -1417,6 +1417,7 @@
 <translation id="2102495993840063010">Android қолданбалары</translation>
 <translation id="2104166991923847969">Хотспотты автоматты өшіру</translation>
 <translation id="2105809836724866556">"<ph name="MODULE_TITLE" />" жасырылды.</translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> бұрын тексерілді.</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефон нөмірі}other{# телефон нөмірі}}</translation>
 <translation id="2110941575868943054">Bluetooth құрылғыларын іздеуге рұқсат етіледі.</translation>
 <translation id="211144231511833662">Түрлеріндегі құсбелгілерді алып тастау</translation>
@@ -2455,6 +2456,7 @@
 <translation id="2907619724991574506">Бастау URL сілтемелері</translation>
 <translation id="2907798539022650680">"<ph name="NAME" />" қызметіне қосылмады: <ph name="DETAILS" />
     Сервер хабары: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel және PowerPoint файлдарын ашу</translation>
 <translation id="2908162660801918428">Каталог бойынша медиа галереяны қосу</translation>
 <translation id="2908358077082926882">Тағайындауды өшіріп, <ph name="RESPONSE" /> үшін "<ph name="CURRENTKEY" />" пернесін тағы басыңыз.</translation>
 <translation id="2909506265808101667">Google қызметтеріне қосылмады. Желі байланысын тексеріп, қайталап көріңіз. Қате коды: <ph name="ERROR_CODE" />.</translation>
@@ -6093,6 +6095,7 @@
 <translation id="5920543303088087579">Әкімшіңіз бұл желіге қосылу мүмкіндігін өшіріп қойған</translation>
 <translation id="5921257443092182237">Google орынды анықтау қызметі Wi-Fi, мобильдік желілер және сенсорлар сияқты дереккөздерді пайдаланып, осы құрылғының орнын анықтауға мүмкіндік береді.</translation>
 <translation id="5924047253200400718">Анықтама алу<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Microsoft файлдарын Google Drive-ға көшіру немесе тасымалдау алдында сұрау</translation>
 <translation id="5924527146239595929">Жаңа суретке түсіріңіз немесе бар суретті не белгішені таңдаңыз.
     <ph name="LINE_BREAK" />
     Бұл сурет Chromebook кіру экранында және құлып экранында көрсетіледі.</translation>
@@ -6510,6 +6513,7 @@
 <translation id="6263284346895336537">Маңызды емес</translation>
 <translation id="6264365405983206840">&amp;Барлығын таңдау</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
+<translation id="6265159465845424232">Microsoft файлдарын Microsoft OneDrive-ға көшіру немесе тасымалдау алдында сұрау</translation>
 <translation id="6265687851677020761">Портты өшіру</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> құрылғысына жалғануда</translation>
 <translation id="6267166720438879315">Өзіңізді <ph name="HOST_NAME" /> хостына аутентификациялау үшін сертификат таңдаңыз</translation>
@@ -7269,6 +7273,7 @@
 <translation id="6897363604023044284">Өшірілетін сайт деректерін таңдау</translation>
 <translation id="6897688156970667447">Әлсіз жарық жағдайында пайдалы және батарея зарядын үнемдейді.</translation>
 <translation id="6897972855231767338">Қонақ ретінде шолу туралы толық ақпарат</translation>
+<translation id="6898438890765871056">OneDrive қалтасын ашу</translation>
 <translation id="6898440773573063262">Киоск қолданбалары енді осы құрылғыда автоматты түрде іске қосылатындай реттелуі мүмкін.</translation>
 <translation id="6899427698619335650">Икемді диакритика тағайындауына рұқсат етіңіз. Мысалы, "ánh" дегенді алу үшін "anh1" немесе "a1nh" деп теруге болады.</translation>
 <translation id="6900284862687837908">Фондық қолданба: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8021,6 +8026,7 @@
 <translation id="7517959947270534934">Отбасы мүшесі дәл қазір құпия сөздерді ала алмайды. Одан Chrome браузерін жаңартуын және құпия сөздерін синхрондауын сұраңыз.</translation>
 <translation id="7520766081042531487">Инкогнито порталы: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Жылдам пәрмендерді көрсету</translation>
+<translation id="7521430434164837205">Microsoft 365 файлдары</translation>
 <translation id="7522255036471229694">"Ok Google" деп айтыңыз</translation>
 <translation id="7523117833414447032">Бас әріптерді оқығанда</translation>
 <translation id="7523585675576642403">Профильдің атын өзгерту</translation>
@@ -9748,6 +9754,7 @@
 <translation id="8896830132794747524">Тінтуірмен жылдамырақ қозғалыстар курсорды алыстатады.</translation>
 <translation id="8898140163781851592">Негізгі тінтуір түймесі</translation>
 <translation id="8898786835233784856">Келесі қойындыны таңдау</translation>
+<translation id="8898790559170352647">Microsoft аккаунтын қосыңыз</translation>
 <translation id="8898822736010347272">Жаңа қауіптерді анықтап, интернетте барлығын қорғауға көмектесу үшін кірген кейбір беттердің URL мекенжайларын, шектеулі жүйе ақпаратын және кейбір беттердің контентін Google-ға жібереді.</translation>
 <translation id="8899851313684471736">Сілтемені жаңа &amp;терезеде ашу</translation>
 <translation id="8900413463156971200">Ұялы байланыс желісін қосу</translation>

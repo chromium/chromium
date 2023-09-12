@@ -1422,6 +1422,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2102495993840063010">Aplikace Android</translation>
 <translation id="2104166991923847969">Hotspot automaticky vypínat</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> – skryto</translation>
+<translation id="2108204112555497972">Zkontrolováno před <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonní číslo}few{# telefonní čísla}many{# telefonního čísla}other{# telefonních čísel}}</translation>
 <translation id="2110941575868943054">Je povoleno vyhledávat zařízení Bluetooth</translation>
 <translation id="211144231511833662">Vymazat typy</translation>
@@ -2460,6 +2461,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2907619724991574506">Adresy URL po spuštění</translation>
 <translation id="2907798539022650680">Připojení k položce <ph name="NAME" /> se nezdařilo: <ph name="DETAILS" />
 Zpráva serveru: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Otevírejte soubory Word, Excel a PowerPoint</translation>
 <translation id="2908162660801918428">Přidat galerii médií podle adresáře</translation>
 <translation id="2908358077082926882">Pokud přiřazení chcete odstranit a <ph name="RESPONSE" />, znovu stiskněte klávesu <ph name="CURRENTKEY" />.</translation>
 <translation id="2909506265808101667">Ke službám Google se nelze připojit. Zkontrolujte připojení k síti a zkuste to znovu. Kód chyby: <ph name="ERROR_CODE" />.</translation>
@@ -6097,6 +6099,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5920543303088087579">Připojení k této síti je vaším administrátorem zakázáno</translation>
 <translation id="5921257443092182237">Služby určování polohy Google používají zdroje, jako jsou sítě Wi-Fi, mobilní sítě a senzory, pomocí nichž se snaží odhadnout polohu tohoto zařízení.</translation>
 <translation id="5924047253200400718">Nápověda<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Před zkopírováním nebo přesunutím souborů Microsoft na Disk Google se zeptat</translation>
 <translation id="5924527146239595929">Vyfoťte se nebo vyberte existující fotku či ikonu.
     <ph name="LINE_BREAK" />
     Tato fotka se bude zobrazovat na přihlašovací obrazovce a na obrazovce uzamčení Chromebooku.</translation>
@@ -6514,6 +6517,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6263284346895336537">Nekritický</translation>
 <translation id="6264365405983206840">Vybr&amp;at vše</translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
+<translation id="6265159465845424232">Před zkopírováním nebo přesunutím souborů Microsoft do úložiště Microsoft OneDrive se zeptat</translation>
 <translation id="6265687851677020761">Odebrat port</translation>
 <translation id="6266532094411434237">Připojování k zařízení <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Vyberte certifikát pro ověření na serveru <ph name="HOST_NAME" /></translation>
@@ -7277,6 +7281,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6897363604023044284">Vybrat weby k vymazání</translation>
 <translation id="6897688156970667447">Užitečné při slabém osvětlení a šetří baterii</translation>
 <translation id="6897972855231767338">Další informace o prohlížení v roli hosta</translation>
+<translation id="6898438890765871056">Otevřít složku OneDrive</translation>
 <translation id="6898440773573063262">Aplikace veřejného terminálu lze v tomto zařízení teď nakonfigurovat na automatické spouštění.</translation>
 <translation id="6899427698619335650">Povolit flexibilní přiřazení diakritiky. Můžete například zadat „anh1“ nebo „a1nh“, abyste získali „ánh“.</translation>
 <translation id="6900284862687837908">Aplikace na pozadí: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8030,6 +8035,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7517959947270534934">Člen vaší rodiny momentálně nemůže přijímat hesla. Požádejte ho, aby aktualizoval Chrome a synchronizoval svá hesla.</translation>
 <translation id="7520766081042531487">Anonymní portál: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Zobrazit zkratky</translation>
+<translation id="7521430434164837205">Soubory Microsoft 365</translation>
 <translation id="7522255036471229694">Řekněte „Ok Google“.</translation>
 <translation id="7523117833414447032">Při čtení velkých písmen</translation>
 <translation id="7523585675576642403">Přejmenovat profil</translation>
@@ -9759,6 +9765,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8896830132794747524">Rychlejší pohyby myši posunou kurzor dále</translation>
 <translation id="8898140163781851592">Primární tlačítko myši</translation>
 <translation id="8898786835233784856">Vybrat další kartu</translation>
+<translation id="8898790559170352647">Přidejte svůj účet Microsoft</translation>
 <translation id="8898822736010347272">Odesílá adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek do Googlu a pomáhá tak objevovat nové hrozby a chránit všechny uživatele internetu.</translation>
 <translation id="8899851313684471736">Otevřít o&amp;dkaz v novém okně</translation>
 <translation id="8900413463156971200">Aktivovat mobilní síť</translation>

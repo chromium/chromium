@@ -2979,6 +2979,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="722454870747268814">Neuer Inkognitotab</translation>
 <translation id="7226276626900992675">Du hast dieser Website die Verwendung von Drittanbieter-Cookies erlaubt. Das bedeutet, dass sich die meisten Funktionen der Website vermutlich nutzen lassen, du aber nicht so gut geschützt bist.</translation>
 <translation id="7227293336683593977">Preisentwicklung</translation>
+<translation id="7227747683324411744">Angreifer auf der Website, die du besuchen möchtest, werden möglicherweise versuchen, dich zur Installation schädlicher Software zu verleiten, die sich auf deine Internetnutzung auswirkt – z. B. indem sie deine Startseite ändern oder zusätzliche Werbung auf von dir besuchten Websites einblenden.</translation>
 <translation id="7233592378249864828">Bestätigungsblatt drucken</translation>
 <translation id="7234638337680728591">Treibstoffpreise und Kraftstoffe für Fahrzeuge</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % abgeschlossen | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3177,6 +3178,7 @@ Weitere Details:
 <translation id="7599089013883397081">Zeitüberschreitung beim Herunterladen</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="7601297359530599375">Normalerweise verbindest du dich auf sichere Weise mit dieser Website, aber Chrome konnte dieses Mal keine sichere Verbindung herstellen. Möglicherweise versucht ein Hacker, deine Onlineaktivitäten zu überwachen oder deine Netzwerkverbindung zu modifizieren. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Angreifer auf der Website, die du besuchen möchtest, installieren möglicherweise schädliche Software, mit der z. B. Passwörter, Fotos, Nachrichten oder Kreditkartennummern gestohlen oder gelöscht werden können.</translation>
 <translation id="7610193165460212391">Wert liegt außerhalb des zulässigen Bereichs (<ph name="VALUE" />).</translation>
 <translation id="7613889955535752492">Gültig bis: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Passwörter in den Chrome-Einstellungen abzurufen und zu verwalten</translation>
@@ -3574,6 +3576,7 @@ Weitere Details:
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Mikrofonberechtigung einmal gewährt</translation>
+<translation id="8422228580902424274">Angreifer auf der Website, die du besuchen möchtest, werden möglicherweise versuchen, dich dazu zu verleiten, Software zu installieren oder Informationen wie dein Passwort, deine Telefonnummer oder deine Kreditkartennummer preiszugeben.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Einstellungen</translation>

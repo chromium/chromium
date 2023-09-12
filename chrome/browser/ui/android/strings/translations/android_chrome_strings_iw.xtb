@@ -58,6 +58,7 @@
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1246905108078336582">להסיר את ההצעה מהלוח?</translation>
 <translation id="1258753120186372309">‏דודל של Google‏: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">‏מעכשיו יוצג לך תוכן מאתר <ph name="SITE_NAME" />, ותוכן לגביו, בקטע 'במעקב'. האתרים והחיפושים שבמעקב נשמרים בחשבון Google שלך. בכל שלב אפשר לנהל את הפריטים שבמעקב בהגדרות.</translation>
 <translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">ההיסטוריה תופיע כאן</translation>
@@ -136,6 +137,7 @@
 <translation id="1671236975893690980">ההורדה תיכף תתחיל…</translation>
 <translation id="1672586136351118594">אין להציג שוב</translation>
 <translation id="1680919990519905526">‏קניית מוצר עם Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">‏בקרוב יוצג לך תוכן מאתר <ph name="SITE_NAME" />, ותוכן לגביו, בקטע 'במעקב'. האתרים והחיפושים שבמעקב נשמרים בחשבון Google שלך. בכל שלב אפשר לנהל את הפריטים שבמעקב בהגדרות.</translation>
 <translation id="1702543251015153180">רוצה לשנות את ההגדרות של העיצוב הכהה?</translation>
 <translation id="1702907158640575240">דפדפן מנוהל</translation>
 <translation id="1710099199314114079">מעבר בין כרטיסיות וסגירתן</translation>
@@ -310,6 +312,7 @@
 <translation id="265156376773362237">טעינה רגילה מראש</translation>
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
+<translation id="2673169232805572412">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי לשלוח ל-Google כתובות URL וקטעי תוכן מדפים</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
 <translation id="2708051474374549906">‏הגנה יזומה בזמן אמת מפני אתרים, הורדות ותוספים מסוכנים, המבוססת על נתוני הגלישה שלך שנשלחים אל Google</translation>
 <translation id="2708226184420201102">פתיחה בדפדפן <ph name="PRODUCT_NAME" /></translation>

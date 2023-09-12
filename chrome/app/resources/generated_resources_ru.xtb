@@ -1422,6 +1422,7 @@
 <translation id="2102495993840063010">Приложения для Android</translation>
 <translation id="2104166991923847969">Автоматически отключать точку доступа</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> скрыты.</translation>
+<translation id="2108204112555497972">Проверено <ph name="NUM_DAYS_HOURS_MINUTES" /> назад</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефона}one{# номер телефона}few{# номера телефонов}many{# номеров телефонов}other{# номера телефона}}</translation>
 <translation id="2110941575868943054">Разрешено искать устройства Bluetooth</translation>
 <translation id="211144231511833662">Снять флажки типов</translation>
@@ -2460,6 +2461,7 @@
 <translation id="2907619724991574506">URL-адреса запуска</translation>
 <translation id="2907798539022650680">Не удалось подключиться к сети "<ph name="NAME" />": <ph name="DETAILS" />
     Сообщение сервера: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Открывайте файлы Word, Excel и PowerPoint</translation>
 <translation id="2908162660801918428">Добавление галереи мультимедиа из папки</translation>
 <translation id="2908358077082926882">Чтобы снять назначение и <ph name="RESPONSE" />, нажмите клавишу "<ph name="CURRENTKEY" />" ещё раз.</translation>
 <translation id="2909506265808101667">Не удалось подключиться к сервисам Google. Проверьте подключение к сети и повторите попытку. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -6099,6 +6101,7 @@
 <translation id="5920543303088087579">Администратор запретил подключаться к этой сети</translation>
 <translation id="5921257443092182237">Для определения местоположения устройства мы используем различные источники, например сети Wi-Fi, мобильные сети и датчики.</translation>
 <translation id="5924047253200400718">Справка<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Запрашивать разрешение перед копированием или перемещением файлов Microsoft на Google Диск</translation>
 <translation id="5924527146239595929">Сделайте новое фото или выберите существующий снимок либо картинку.
     <ph name="LINE_BREAK" />
     Это изображение появится на экране входа и блокировки Chromebook.</translation>
@@ -6517,6 +6520,7 @@
 <translation id="6263284346895336537">Не критично</translation>
 <translation id="6264365405983206840">Выделить все</translation>
 <translation id="6264376385120300461">Все равно скачать</translation>
+<translation id="6265159465845424232">Запрашивать разрешение перед копированием или перемещением файлов Microsoft в Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Удалить порт</translation>
 <translation id="6266532094411434237">Подключение к устройству "<ph name="DEVICE" />"</translation>
 <translation id="6267166720438879315">Выберите сертификат для аутентификации на <ph name="HOST_NAME" /></translation>
@@ -7282,6 +7286,7 @@
 <translation id="6897363604023044284">Выбрать сайты</translation>
 <translation id="6897688156970667447">Рекомендуется использовать при плохом освещении. Позволяет экономить заряд батареи.</translation>
 <translation id="6897972855231767338">Подробнее о гостевом режиме</translation>
+<translation id="6898438890765871056">Открыть папку OneDrive</translation>
 <translation id="6898440773573063262">Автозапуск киоск-приложений на этом устройстве разрешен</translation>
 <translation id="6899427698619335650">Разрешить гибкое назначение диакритических знаков. Например, можно ввести "anh1" или "a1nh", чтобы получить "ánh".</translation>
 <translation id="6900284862687837908">Фоновое приложение: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8035,6 +8040,7 @@
 <translation id="7517959947270534934">Участник семейной группы не может получать пароли. Попросите его обновить Chrome и синхронизировать пароли.</translation>
 <translation id="7520766081042531487">Портал в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Показывать ярлыки</translation>
+<translation id="7521430434164837205">Файлы Microsoft 365</translation>
 <translation id="7522255036471229694">Скажите "Окей, Google"</translation>
 <translation id="7523117833414447032">Озвучивание заглавных букв</translation>
 <translation id="7523585675576642403">Переименовать профиль</translation>
@@ -9765,6 +9771,7 @@
 <translation id="8896830132794747524">Чем быстрее вы двигаете мышью, тем дальше перемещается курсор</translation>
 <translation id="8898140163781851592">Основная кнопка мыши</translation>
 <translation id="8898786835233784856">Выбрать следующую вкладку</translation>
+<translation id="8898790559170352647">Добавьте аккаунт Microsoft</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей Интернета)</translation>
 <translation id="8899851313684471736">Открыть ссылку в новом &amp;окне</translation>
 <translation id="8900413463156971200">Включить мобильную сеть</translation>

@@ -2162,6 +2162,14 @@ Es posible que la política <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> anul
 <translation id="2839294585867804686">Configuración de "Network File Shares"</translation>
 <translation id="2841911109921764691">El botón principal en la pantalla de acceso es el derecho</translation>
 <translation id="284288632677954003">URL de un archivo XML que contiene URL que nunca deben abrirse en otro navegador</translation>
+<translation id="28458742190197992">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" /> para un perfil administrado en particular.
+
+Si no estableces esta política o la inhabilitas, no se recopilarán ni subirán datos.
+Si la habilitas, los datos se recopilan y se suben a <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+El informe contiene datos de uso y estado del perfil, incluidas, sin limitaciones, la versión del SO y del navegador, las extensiones instaladas y las políticas aplicadas.
+
+Esta política solo se puede establecer como política del usuario basada en la nube.</translation>
 <translation id="2846689894646472396">Tasa de revisión de eventos de red en milisegundos</translation>
 <translation id="2847788524147474533">Priorizar las políticas de máquina de la plataforma sobre las políticas de máquina en la nube</translation>
 <translation id="2849275596224278787">Ocultar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
@@ -5724,6 +5732,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       ECH es un protocolo en evolución, por lo que la implementación de <ph name="PRODUCT_NAME" /> está sujeta a cambios. Por lo tanto, esta política es una medida temporal para controlar la implementación experimental inicial. Se reemplazará con controles finales a medida que finalice el protocolo.</translation>
 <translation id="5939656968921014919">Inhabilitar el modo de desarrollador de apps aisladas</translation>
+<translation id="5939873071468124100">Restringir las cuentas que pueden usar la integración de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="5945312246863177268">No permitir a los usuarios hacer clic en la notificación de Phone Hub para iniciar la aplicación Eche</translation>
 <translation id="5946082169633555022">Canal beta</translation>
 <translation id="5946329690214660966">Establecer un cronograma personalizado para buscar actualizaciones</translation>
@@ -5795,6 +5804,16 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6019162469732742754">Usar el Modo automático</translation>
 <translation id="6019606564278029236">Permitir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
+<translation id="602038990586229155">Esta política controla las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" />, lo que permite que los usuarios envíen las solicitudes a la Consola del administrador de Google para obtener su aprobación.
+
+Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará, y no se crearán ni cargarán las solicitudes de instalación de extensiones.
+Si no la estableces o la inhabilitas, no se crearán ni cargarán las solicitudes de instalación de extensiones.
+Si la habilitas, se crearán las solicitudes de instalación de extensiones y se cargarán a la Consola del administrador de Google.
+
+Si los usuarios intentan instalar una extensión que <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" /> no permiten, se crearán las solicitudes de instalación de extensiones.
+
+Esta política solo será válida si la máquina está habilitada en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
+Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6022948604095165524">Acción al iniciar</translation>
 <translation id="602318745029752898">Permitir las voces de texto a voz de la red mejorada en Seleccionar para pronunciar</translation>
 <translation id="6026722971789064331">Controla el uso de la API de File System para escritura</translation>
@@ -6753,6 +6772,13 @@ La política se quitará de <ph name="PRODUCT_NAME" /> en el futuro.</translatio
       Si habilitas la política, se habilitará Respuestas rápidas.
       Si inhabilitas la política, se inhabilitará Respuestas rápidas.
       Si no estableces la política, los usuarios podrán habilitar o inhabilitar Respuestas rápidas.</translation>
+<translation id="6712624291905573620">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" />, que suben información sobre el funcionamiento del navegador a <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Si no estableces esta política o la inhabilitas, no se recopilarán ni subirán datos.
+Si la habilitas, los datos se recopilan y se suben a <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
+Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6720330829631914048">Las horas transcurridas desde que comienza el día (en formato de 24 horas).</translation>
 <translation id="6721252203593581486">WebSQL en contextos de terceros (p. ej., iframes entre sitios) está desactivado de forma predeterminada a partir de la versión M97 y se quitará por completo en la versión M101.
           Si estableces esta política como falsa o no la estableces, WebSQL en contextos de terceros permanecerá inhabilitada.
@@ -8327,6 +8353,13 @@ también es seguro.</translation>
 <translation id="8062375903420954294">Esta política permite restringir las direcciones IP y las interfaces que utiliza WebRTC al momento de intentar encontrar la mejor conexión disponible. Consulta el RFC 8828, sección 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Si no estableces la política, de forma predeterminada se utilizarán todas las interfaces disponibles.</translation>
 <translation id="8062485064082966327">Usa un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
 <translation id="8071371098891664137">Si eliges <ph name="PRINTERS_BLOCKLIST" /> para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> especificará las impresoras que no podrán utilizar los usuarios. El usuario podrá acceder a todas las impresoras, excepto aquellas con los ID mencionados en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="8072934771584553388">Esta política permite que los administradores restrinjan qué cuentas pueden acceder a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> cuando <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> está habilitado.
+
+Si no estableces esta política o la estableces con un valor vacío, se podrá usar cualquier cuenta para acceder.
+
+Si estableces esta política como un nombre de dominio o un ID de usuario (consulta https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints), solo se pueden usar las cuentas de ese nombre de dominio o el ID de usuario para acceder.
+
+Si cambias la restricción, es posible que los usuarios salgan de su cuenta de <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si no cumple con la nueva restricción.</translation>
 <translation id="8076521374016204899">Si habilitas la política o no la estableces, los usuarios que se autentiquen con una contraseña podrán bloquear la pantalla.
 
       Si inhabilitas la política, los usuarios no podrán bloquear la pantalla (solo podrán salir de la sesión de usuario).</translation>
@@ -8978,6 +9011,12 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
       Si se establece la política como verdadera, es posible que las pestañas que hayan estado en segundo plano por al menos 5 minutos queden inmovilizadas. Cuando se inmovilizan las pestañas, se reduce el uso de la CPU, la batería y la memoria. <ph name="PRODUCT_NAME" /> utiliza heurísticas para evitar que se inmovilicen las pestañas que realizan tareas útiles en segundo plano (p. ej., muestran notificaciones de pantalla, reproducen sonidos o transmiten video). Los desarrolladores web también pueden inhabilitar la inmovilización en sus sitios (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si se establece la política como falsa, no se inmovilizará ninguna pestaña.</translation>
+<translation id="8612188068319977428">Controla la frecuencia de las cargas de informes de estado de Chrome.
+
+Esto incluye los informes habilitados por<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.
+
+Si no se establece la política, los informes se suben cada 24 horas.
+Si se establece la política, definirá la cantidad de horas entre dos cargas de informes sucesivas.</translation>
 <translation id="8619748440665904084">Inhabilitar la importación de datos para autocompletar formularios en la primera ejecución</translation>
 <translation id="8623672932476443039">Si habilitas la política, los usuarios podrán acceder al modo de desarrollador de apps aisladas.
       Si inhabilitas la política, los usuarios no podrán acceder a esa función.

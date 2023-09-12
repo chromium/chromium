@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">‏פתיחת הסימניות ב-Chrome.</translation>
 <translation id="2147651015520127414">‏Chrome אימת ש-<ph name="ISSUER" /> הנפיק את האישור של אתר זה.</translation>
 <translation id="2199719347983604670">‏נתונים מסנכרון Chrome</translation>
+<translation id="2311240109311056604">‏פתיחת המשחק Chrome Dino.</translation>
 <translation id="2339201583852607431">‏הסיסמה שלך תישמר בחשבון Google‏ (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">‏המיקום שלך ישותף על ידי Chrome עם אתרים שיאושרו על ידך.</translation>
 <translation id="2347208864470321755">‏כשהתכונה הזו פועלת, Chrome יציע לתרגם דפים שנכתבו בשפות אחרות באמצעות Google Translate‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -71,6 +72,7 @@
 <translation id="3655656110921623717">‏כלומר, Chrome תמיד יבקש את האתר לנייד.</translation>
 <translation id="3720541637541300822">‏כרטיסיות מצב אנונימי יינעלו כש-Chrome ייסגר</translation>
 <translation id="3741995255368156336">‏פתיחה של רשימת הקריאה ב-Chrome.</translation>
+<translation id="3744018071945602754">‏ניהול הסיסמאות ב-Chrome</translation>
 <translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
 <translation id="384394811301901750">‏Google Chrome לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="3901001113120561395">‏ליהנות מכל מה ש-Chrome מציע.</translation>
@@ -82,6 +84,7 @@
 <translation id="417201473131094001">‏אין תמיכה ב-Chrome Canary</translation>
 <translation id="4233521129555661685">‏במכשיר הזה נעשה שימוש ב‑Chrome על ידי <ph name="USER_EMAIL1" /> ונשארו סימניות, סיסמאות והגדרות נוספות.</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
+<translation id="4453284704333523777">‏ניהול של הגדרות Chrome</translation>
 <translation id="4508370294876102450">‏פתיחת Chrome מכל אפליקציה</translation>
 <translation id="4523886039239821078">‏תוספים מסוימים גורמים ל-Chrome לקרוס. יש להסיר את ההתקנה שלהם:</translation>
 <translation id="4633328489441962921">‏Chrome לא יכול לחפש עדכונים</translation>
@@ -95,10 +98,12 @@
 <translation id="484033449593719797">‏אין תמיכה ב-Chrome בטא</translation>
 <translation id="4840404732697892756">‏למנהל הסיסמאות של Google יש אפשרות לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="4903674399067644695">‏בכרטיס הזה מוצגות הצעות שיעזרו לך ליהנות מהמיטב של Chrome.</translation>
+<translation id="49200511069271369">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שבחרת להיכנס אליו ואת אופן השימוש ב-Chrome. לאדמין יש אפשרות להגדיר תכונות מסוימות או להגביל אותן.</translation>
 <translation id="5030102366287574140">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות.</translation>
 <translation id="5108659628347594808">‏משפרים את Chrome</translation>
 <translation id="5112925986883715005">‏הצגה של רשימת הקריאה ב-Chrome</translation>
 <translation id="5119391094379141756">‏בוחרים באפשרות Chrome</translation>
+<translation id="5156818928311866442">‏פתיחה של הגדרות Chrome כדי להגדיר את Chrome כדפדפן ברירת המחדל.</translation>
 <translation id="5162467219239570114">‏Chrome אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות חדשות של Chrome.</translation>
 <translation id="5190139289262548459">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שנכנסת אליו ואת אופן השימוש ב-Chrome.</translation>
 <translation id="5389212809648216794">‏Google Chrome לא יכול להשתמש במצלמה כי אפליקציה אחרת משתמשת בה</translation>
@@ -116,6 +121,7 @@
 <translation id="571296537125272375">‏Chrome לא יכול לחפש עדכונים</translation>
 <translation id="5716154293141027663">‏Chrome ייפתח בכל פעם שתתבצע הקשה על קישור באפליקציות אחרות</translation>
 <translation id="5808435672482059465">‏הצגת ההיסטוריה ב‑Chrome</translation>
+<translation id="589695154992054845">‏ייפתח שירות מנהל הסיסמאות ב-Chrome.</translation>
 <translation id="5998675059699164418">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chrome.</translation>
 <translation id="6054613632208573261">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="6063091872902370735">‏התרת כניסה אל Chrome</translation>
@@ -145,6 +151,7 @@
 <translation id="7173660919484573146">‏Chrome משתמש ב-Face ID כדי להבטיח גישה מאושרת לסיסמאות שלך.</translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="72119412072970160">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות של Google באפליקציות אחרות ב-iPad.</translation>
+<translation id="7254380941803999489">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="7261678641327190792">‏Chrome לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="7272930098487145294">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chrome להוסיף תמונות לגלריה שלך</translation>
 <translation id="7275945473750112644">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים שלך מ-Chrome יימחקו מהמכשיר הזה</translation>
@@ -203,6 +210,7 @@
   • אם Chrome קורס, הפרטים על הקריסה עשויים לכלול גם פרטים אישיים מסוימים.
 
   • אם הסנכרון מופעל, המדדים עשויים לכלול גם פרטים לגבי כתובות URL שביקרת בהן.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">‏ייפתחו ההגדרות ב-Chrome.</translation>
 <translation id="9112744793181547300">‏להגדיר את Chrome כדפדפן ברירת המחדל?</translation>
 <translation id="9122931302567044771">‏כלומר, Chrome תמיד יבקש את האתר למחשב.</translation>
 <translation id="9181628561061032322">‏ייפתחו הכרטיסיות האחרונות ב-Chrome.</translation>

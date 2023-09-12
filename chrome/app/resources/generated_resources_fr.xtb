@@ -1421,6 +1421,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2104166991923847969">Désactiver le point d'accès automatiquement</translation>
 <translation id="2105809836724866556">Vous avez masqué : <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Vérification effectuée il y a <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="2110941575868943054">Autorisés à rechercher des appareils Bluetooth</translation>
 <translation id="211144231511833662">Effacer les types</translation>
@@ -2459,6 +2460,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2907619724991574506">URL de démarrage</translation>
 <translation id="2907798539022650680">Échec de la connexion à "<ph name="NAME" />" : <ph name="DETAILS" />
     Message du serveur : <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Ouvrir des fichiers Word, Excel et PowerPoint</translation>
 <translation id="2908162660801918428">Ajouter une galerie de médias par répertoire</translation>
 <translation id="2908358077082926882">Appuyez de nouveau sur <ph name="CURRENTKEY" /> pour supprimer cette association et <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Impossible de se connecter aux services Google. Vérifiez votre connexion réseau et réessayez. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -6100,6 +6102,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5920543303088087579">Votre administrateur a désactivé la connexion à ce réseau</translation>
 <translation id="5921257443092182237">Le service de localisation de Google utilise des sources comme le Wi-Fi, les réseaux mobiles et des capteurs pour estimer la position de cet appareil.</translation>
 <translation id="5924047253200400718">Obtenir de l'aide<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Demander avant de copier ou de déplacer des fichiers Microsoft vers Google Drive</translation>
 <translation id="5924527146239595929">Prenez une photo ou choisissez-en une.
     <ph name="LINE_BREAK" />
     Cette photo s'affichera sur l'écran de connexion et l'écran de verrouillage du Chromebook.</translation>
@@ -6518,6 +6521,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6263284346895336537">Non essentielle</translation>
 <translation id="6264365405983206840">Tout &amp;sélectionner</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
+<translation id="6265159465845424232">Demander avant de copier ou de déplacer des fichiers Microsoft vers Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Supprimer le port</translation>
 <translation id="6266532094411434237">Connexion à <ph name="DEVICE" />…</translation>
 <translation id="6267166720438879315">Sélectionnez un certificat pour vous authentifier sur <ph name="HOST_NAME" />.</translation>
@@ -7279,6 +7283,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6897363604023044284">Choisir les données de sites à effacer</translation>
 <translation id="6897688156970667447">Utile par faible luminosité et économise la batterie</translation>
 <translation id="6897972855231767338">En savoir plus sur la navigation en tant qu'invité</translation>
+<translation id="6898438890765871056">Ouvrir le dossier OneDrive</translation>
 <translation id="6898440773573063262">Les applications kiosque peuvent désormais être configurées pour se lancer automatiquement sur cet appareil.</translation>
 <translation id="6899427698619335650">Autoriser l'attribution diacritique flexible. Par exemple, vous pouvez saisir "anh1" ou "a1nh" pour obtenir "ánh".</translation>
 <translation id="6900284862687837908">Application en arrière-plan : <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8033,6 +8038,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7517959947270534934">Le membre de votre famille ne peut pas recevoir de mots de passe pour le moment. Demandez-lui de mettre à jour Chrome et de synchroniser ses mots de passe.</translation>
 <translation id="7520766081042531487">Portail de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Afficher les raccourcis</translation>
+<translation id="7521430434164837205">Fichiers Microsoft 365</translation>
 <translation id="7522255036471229694">Dites "Ok Google"</translation>
 <translation id="7523117833414447032">Lors de la lecture de majuscules</translation>
 <translation id="7523585675576642403">Renommer le profil</translation>
@@ -9762,6 +9768,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8896830132794747524">Bouger la souris plus rapidement déplacera le curseur plus loin</translation>
 <translation id="8898140163781851592">Bouton de souris principal</translation>
 <translation id="8898786835233784856">Sélectionner l'onglet suivant</translation>
+<translation id="8898790559170352647">Ajouter votre compte Microsoft</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
 <translation id="8899851313684471736">Ouvrir le lien dans une nouvelle &amp;fenêtre</translation>
 <translation id="8900413463156971200">Activer le réseau mobile</translation>

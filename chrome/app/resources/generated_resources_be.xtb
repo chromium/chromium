@@ -1421,6 +1421,7 @@
 <translation id="2102495993840063010">Праграмы для Android</translation>
 <translation id="2104166991923847969">Аўтаматычна выключаць хот-спот</translation>
 <translation id="2105809836724866556">Схавана: <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Праверана <ph name="NUM_DAYS_HOURS_MINUTES" /> таму</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
 <translation id="2110941575868943054">Дазволена шукаць прылады з Bluetooth</translation>
 <translation id="211144231511833662">Скасаваць выбар тыпаў прылад</translation>
@@ -2459,6 +2460,7 @@
 <translation id="2907619724991574506">Пачатковыя URL-адрасы</translation>
 <translation id="2907798539022650680">Не ўдалося падключыцца да "<ph name="NAME" />": <ph name="DETAILS" />
     Паведамленне сервера: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Адкрываць файлы Word, Excel і PowerPoint</translation>
 <translation id="2908162660801918428">Дадаванне мультымедыйнай галерэі па каталозе</translation>
 <translation id="2908358077082926882">Каб скасаваць прызначэнне і <ph name="RESPONSE" />, яшчэ раз націсніце "<ph name="CURRENTKEY" />"</translation>
 <translation id="2909506265808101667">Не ўдалося падключыцца да сэрвісаў Google. Праверце падключэнне да сеткі і паўтарыце спробу. Код памылкі: <ph name="ERROR_CODE" />.</translation>
@@ -6097,6 +6099,7 @@
 <translation id="5920543303088087579">Падключэнне да гэтай сеткі выключана адміністратарам</translation>
 <translation id="5921257443092182237">Для вызначэння месцазнаходжання гэтай прылады служба геалакацыі Google выкарыстоўвае такія крыніцы, як Wi-Fi, мабільныя сеткі і датчыкі.</translation>
 <translation id="5924047253200400718">Атрымаць даведку <ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Запытваць перад капіраваннем або перамяшчэннем файлаў Microsoft на Google Дыск</translation>
 <translation id="5924527146239595929">Зрабіце фота або выберыце існуючае фота або значок.
     <ph name="LINE_BREAK" />
     Яно будзе паказвацца на экранах уваходу і блакіроўкі Chromebook.</translation>
@@ -6515,6 +6518,7 @@
 <translation id="6263284346895336537">Не крытычнае</translation>
 <translation id="6264365405983206840">Выбраць &amp;усё</translation>
 <translation id="6264376385120300461">Усё роўна спампаваць</translation>
+<translation id="6265159465845424232">Запытваць перад капіраваннем або перамяшчэннем файлаў Microsoft на Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Выдаліць порт</translation>
 <translation id="6266532094411434237">Ідзе падключэнне да прылады "<ph name="DEVICE" />"</translation>
 <translation id="6267166720438879315">Выберыце сертыфікат для аўтэнтыфікацыі сябе на хосце <ph name="HOST_NAME" /></translation>
@@ -7280,6 +7284,7 @@
 <translation id="6897363604023044284">Выбраць сайты для выдалення даных</translation>
 <translation id="6897688156970667447">Дапамагае пры слабым асвятленні і эканоміць зарад акумулятара</translation>
 <translation id="6897972855231767338">Даведацца больш пра карыстанне браўзерам у якасці госця</translation>
+<translation id="6898438890765871056">Адкрыць папку OneDrive</translation>
 <translation id="6898440773573063262">Цяпер для праграм-кіёскаў на гэтай прыладзе можна наладзіць аўтаматычны запуск.</translation>
 <translation id="6899427698619335650">Дазволіць гібкае назначэнне дыякрытычных знакаў. Напрыклад, каб атрымаць "ánh", можна ўвесці "anh1" або "a1nh".</translation>
 <translation id="6900284862687837908">Фонавая праграма: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8033,6 +8038,7 @@
 <translation id="7517959947270534934">Удзельнік сямейнай групы не можа атрымаць паролі. Папрасіце абнавіць Chrome і сінхранізаваць паролі.</translation>
 <translation id="7520766081042531487">Партал у рэжыме інкогніта: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Паказаць спалучэнні клавіш</translation>
+<translation id="7521430434164837205">Файлы Microsoft 365</translation>
 <translation id="7522255036471229694">Скажыце "Ok Google"</translation>
 <translation id="7523117833414447032">Пры агучванні загалоўных літар</translation>
 <translation id="7523585675576642403">Пераймянуйце профіль</translation>
@@ -9763,6 +9769,7 @@
 <translation id="8896830132794747524">Больш хуткія рухі мышшу будуць перамяшчаць курсор на большую адлегласць</translation>
 <translation id="8898140163781851592">Асноўная кнопка мышы</translation>
 <translation id="8898786835233784856">Выбраць наступную ўкладку</translation>
+<translation id="8898790559170352647">Дадаць уліковы запіс Microsoft</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="8899851313684471736">Адкрыць спасылку ў новым &amp;акне</translation>
 <translation id="8900413463156971200">Уключыць сотавую сетку</translation>

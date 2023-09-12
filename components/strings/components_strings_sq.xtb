@@ -128,11 +128,11 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1252209483516427155">Xhaketa</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizuar)</translation>
 <translation id="1255086252236620440">Mikserë</translation>
-<translation id="1256368399071562588">&lt;p&gt;Nëse përpiqesh të vizitosh një sajt uebi dhe ai nuk hapet, provo në fillim të rregullosh gabimin me këto hapa për zgjidhjen e problemeve:&lt;/p&gt;
+<translation id="1256368399071562588">&lt;p&gt;Nëse përpiqesh të vizitosh një uebsajt dhe ai nuk hapet, provo në fillim të rregullosh gabimin me këto hapa për zgjidhjen e problemeve:&lt;/p&gt;
     &lt;ol&gt;
     &lt;li&gt;Kontrollo adresën e uebit për gabime drejtshkrimore.&lt;/li&gt;
     &lt;li&gt;Sigurohu që lidhja e internetit funksionon normalisht.&lt;/li&gt;
-    &lt;li&gt;Kontakto me pronarin e sajtit të uebit.&lt;/li&gt;
+    &lt;li&gt;Kontakto me pronarin e uebsajtit.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ke futur fjalëkalimin tënd në një sajt që nuk menaxhohet nga organizata jote. Për të mbrojtur llogarinë tënde, mos e ripërdor fjalëkalimin në aplikacione dhe sajte të tjera.</translation>
 <translation id="1257553931232494454">nivelet e zmadhimit</translation>
@@ -687,7 +687,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizo veglat e qasshmërisë te cilësimet e Chrome</translation>
 <translation id="2384307209577226199">Parazgjedhja e ndërmarrjes</translation>
-<translation id="238459632961158867">Sajti i uebit</translation>
+<translation id="238459632961158867">Uebsajti</translation>
 <translation id="2385809941344967209">Përditësoje Chrome nga cilësimet e tua të Chrome</translation>
 <translation id="2386255080630008482">Certifikata e serverit është revokuar.</translation>
 <translation id="239293030466334554">Kabrioletë</translation>
@@ -907,7 +907,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2909946352844186028">U zbulua një ndryshim i rrjetit.</translation>
 <translation id="2911973620368911614">ID-ja e përdoruesit të llogarisë së punës</translation>
 <translation id="2913421697249863476">Barbekju dhe skara</translation>
-<translation id="2914160345369867329"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacionit tënd. Kur Chrome u përpoq të lidhej me <ph name="SITE" /> këtë herë, sajti i uebit dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues po përpiqet të pretendojë se është <ph name="SITE" /> ose lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacioni yt është ende i sigurt sepse Chrome e ndaloi lidhjen para se të shkëmbehej ndonjë e dhënë.</translation>
+<translation id="2914160345369867329"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacionit tënd. Kur Chrome u përpoq të lidhej me <ph name="SITE" /> këtë herë, uebsajti dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues po përpiqet të pretendojë se është <ph name="SITE" /> ose lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacioni yt është ende i sigurt sepse Chrome e ndaloi lidhjen para se të shkëmbehej ndonjë e dhënë.</translation>
 <translation id="2915068235268646559">Ndërprerje aksidentale nga <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Pikturimi</translation>
 <translation id="2916038427272391327">Mbyll programet e tjera</translation>
@@ -953,7 +953,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2989742184762224133">Dy kapje me tel lart</translation>
 <translation id="2991174974383378012">Ndarja me sajtet e uebit</translation>
 <translation id="299122504639061328">Menaxho motorin e parazgjedhur të kërkimit dhe kërkimin në sajte</translation>
-<translation id="2991571918955627853">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor HSTS. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
+<translation id="2991571918955627853">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse uebsajti përdor HSTS. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="2995517112308048736">Madhësia e skedarit:</translation>
 <translation id="299990983510665749">Automjet me portobagazh</translation>
 <translation id="3002501248619246229">Kontrollo median e tabakasë së hyrjes</translation>
@@ -1227,7 +1227,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3566649245868131295">Punë në sektorin mjekësor dhe të shëndetësisë</translation>
 <translation id="3567778190852720481">Nuk mund të regjistrohesh me llogarinë e ndërmarrjes (llogaria e ndërmarrjes nuk është e përshtatshme).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
-<translation id="3568886473829759308">Qasu te sajti i uebit për të shikuar informacionet, burimet ose shërbimet e ofruara nga biznesi.</translation>
+<translation id="3568886473829759308">Qasu tek uebsajti për të shikuar informacionet, burimet ose shërbimet e ofruara nga biznesi.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Lejo për këtë sajt</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1327,7 +1327,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3744212718085287312">Të bëhet më e sigurt me një kartë virtuale herën tjetër?</translation>
 <translation id="3744286742364977428">Skedarët që shkarkon dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë.</translation>
-<translation id="3744899669254331632">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse sajti i uebit dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chromium. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
+<translation id="3744899669254331632">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse uebsajti dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chromium. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
 <translation id="3748009735914587286">Metal (me shumë shkëlqim)</translation>
 <translation id="3748148204939282805">Sulmuesit në  <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve ose të zbulosh informacion personal (për shembull, fjalëkalime, numra telefoni ose karta krediti). <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria e aviacionit</translation>
@@ -1544,7 +1544,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4221630205957821124">&lt;h4&gt;Hapi 1: Identifikohu në portal&lt;/h4&gt;
     &lt;p&gt;Rrjetet Wi-Fi në vende të tilla si kafenetë apo aeroportet kërkojnë që të identifikohesh. Për të parë faqen e identifikimit, vizito një faqe që përdor &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
-    &lt;li&gt;Shko te një sajt uebi që fillon me &lt;code&gt;http://&lt;/code&gt;, si &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
+    &lt;li&gt;Shko te një uebsajt që fillon me &lt;code&gt;http://&lt;/code&gt;, si &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
     &lt;li&gt;Në faqen e identifikimit që hapet, identifikohu për të përdorur internetin.&lt;/li&gt;
     &lt;/ol&gt;
     &lt;h4&gt;Hapi 2: Hap faqen në modalitetin "e fshehtë" (vetëm kompjuter)&lt;/h4&gt;
@@ -1557,7 +1557,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     &lt;p&gt;Për të rregulluar problemin, çaktivizo softuerin e antivirusit. Nëse faqja funksionon pasi çaktivizohet softueri, çaktivizo këtë softuer kur përdor sajte të sigurta.&lt;/p&gt;
     &lt;p&gt;Mos harro të aktivizosh sërish programin e antivirusit kur të mbarosh.&lt;/p&gt;
     &lt;h4&gt;Hapi 5: Merr më shumë ndihmë&lt;/h4&gt;
-    &lt;p&gt;Nëse ende e sheh gabimin, kontakto me zotëruesin e sajtit të uebit.&lt;/p&gt;</translation>
+    &lt;p&gt;Nëse ende e sheh gabimin, kontakto me zotëruesin e uebsajtit.&lt;/p&gt;</translation>
 <translation id="4223404254440398437">Mikrofoni nuk lejohet</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Provo të ekzekutosh diagnostikimin e rrjetit<ph name="END_LINK" />.</translation>
 <translation id="422722221769396062">Shërbime dorëzimi nga restorante</translation>
@@ -1861,7 +1861,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="485902285759009870">Po verifikon kodin...</translation>
 <translation id="4862630594858951805">Dëshiron të marrësh email-e kur të ulet çmimi?</translation>
 <translation id="4864406669374375262">Vargu i versionit u kopjua te kujtesa e fragmenteve</translation>
-<translation id="486459320933704969">Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë sajt uebi</translation>
+<translation id="486459320933704969">Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë uebsajt</translation>
 <translation id="4866506163384898554">Shtyp |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| për të shfaqur kursorin</translation>
 <translation id="4873616204573862158">Syze</translation>
 <translation id="4876188919622883022">Pamja e thjeshtuar</translation>
@@ -2161,7 +2161,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5487426985799386720">Ushqimi dhe pijet</translation>
 <translation id="5488590678320979185">Butoni "Krijo shënim". Aktivizoje për të krijuar me shpejtësi një shënim të ri në Google Keep</translation>
 <translation id="5490432419156082418">Adresat dhe të tjera</translation>
-<translation id="5492298309214877701">Ky sajt në intranetin e kompanisë, organizatës ose shkollës ka të njëjtën URL si një sajt uebi i jashtëm.
+<translation id="5492298309214877701">Ky sajt në intranetin e kompanisë, organizatës ose shkollës ka të njëjtën URL si një uebsajt i jashtëm.
     <ph name="LINE_BREAK" />
     Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="549333378215107354">Madhësia 3</translation>
@@ -2430,7 +2430,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6049056807983403918">Zarf B4</translation>
 <translation id="6049488691372270142">Dorëzimi i faqes</translation>
 <translation id="6049975101166779351">Përkujdesje për fëmijët</translation>
-<translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
+<translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse uebsajti përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6051898664905071243">Numri i faqeve:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6053584886670442526">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë ruhet në "Llogarinë tënde të Google", <ph name="ACCOUNT" />.</translation>
@@ -3374,7 +3374,7 @@ Detaje shtesë:
 <translation id="7981129096182302364">Muzika kërcimi dhe elektronike</translation>
 <translation id="798134797138789862">Mund të kërkojë të përdorë të dhënat dhe pajisjet e realitetit virtual</translation>
 <translation id="7983008347525536475">SUV-të</translation>
-<translation id="7984945080620862648">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse sajti i uebit dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chrome. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
+<translation id="7984945080620862648">Nuk mund ta vizitosh <ph name="SITE" /> tani sepse uebsajti dërgoi kredenciale të koduara që nuk mund të përpunohen nga Chrome. Gabimet dhe sulmet në rrjet zakonisht janë të përkohshme, kështu që kjo faqe ndoshta do të punojë më vonë.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Lidhje</translation>
 <translation id="7992044431894087211">U riaktivizua ndarja e ekranit me <ph name="APPLICATION_TITLE" /></translation>
@@ -3907,7 +3907,7 @@ Detaje shtesë:
 <translation id="9096679202588811390">Shfaqjet dhe programet televizive</translation>
 <translation id="9101630580131696064">Tabakaja 1</translation>
 <translation id="9103537084693478942">Softuerët e videove</translation>
-<translation id="9103872766612412690"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacioneve të tua. Kur Chromium u përpoq të lidhej me <ph name="SITE" /> këtë herë, sajti i uebit dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues pretendon se është <ph name="SITE" /> ose kur lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacionet e tua janë ende të sigurta sepse Chromium e ndaloi lidhjen përpara se të shkëmbeheshin të dhënat.</translation>
+<translation id="9103872766612412690"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacioneve të tua. Kur Chromium u përpoq të lidhej me <ph name="SITE" /> këtë herë, uebsajti dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues pretendon se është <ph name="SITE" /> ose kur lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacionet e tua janë ende të sigurta sepse Chromium e ndaloi lidhjen përpara se të shkëmbeheshin të dhënat.</translation>
 <translation id="9107467864910557787">Shfletuesi yt menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Politika e administratorit çaktivizon ndarjen e ekranit me <ph name="APPLICATION_TITLE" /> kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="9114524666733003316">Karta po konfirmohet…</translation>

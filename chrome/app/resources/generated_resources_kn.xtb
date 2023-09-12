@@ -1425,6 +1425,7 @@
 <translation id="2102495993840063010">Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="2104166991923847969">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> ಮರೆ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> ಸಮಯದ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ಫೋನ್ ಸಂಖ್ಯೆ}one{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}other{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}}</translation>
 <translation id="2110941575868943054">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಹುಡುಕುವ ಅನುಮತಿಯಿದೆ</translation>
 <translation id="211144231511833662">ಪ್ರಕಾರಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
@@ -2466,6 +2467,7 @@
 <translation id="2907619724991574506">ಸ್ಟಾರ್ಟಪ್ URL ಗಳು</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' ಗೆ ಸಂಪರ್ಕಪಡಿಸಲು ವಿಫಲವಾಗಿದೆ: <ph name="DETAILS" />
     ಸರ್ವರ್ ಸಂದೇಶ: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel ಮತ್ತು PowerPoint ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2908162660801918428">ಡೈರೆಕ್ಟರಿಯ ಮೂಲಕ ಮಾಧ್ಯಮ ಗ್ಯಾಲರಿ ಸೇರಿಸಿ</translation>
 <translation id="2908358077082926882">ನಿಯೋಜನೆಯನ್ನು ತೆಗೆದುಹಾಕಲು “<ph name="CURRENTKEY" />” ಅನ್ನು ಪುನಃ ಒತ್ತಿರಿ ಮತ್ತು <ph name="RESPONSE" /> ಆಗಿರಿ</translation>
 <translation id="2909506265808101667">Google ಸೇವೆಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
@@ -6109,6 +6111,7 @@
 <translation id="5920543303088087579">ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸುವುದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="5921257443092182237">ಈ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಅಂದಾಜು ಮಾಡುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Google ನ ಸ್ಥಳ ಸೇವೆಯು ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳಂತಹ ಮೂಲಗಳನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="5924047253200400718">ಸಹಾಯ ಪಡೆಯಿರಿ<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Microsoft ಫೈಲ್‌ಗಳನ್ನು Google Drive ಗೆ ಕಾಪಿ ಮಾಡುವ ಅಥವಾ ಸರಿಸುವ ಮೊದಲು ಕೇಳಿ</translation>
 <translation id="5924527146239595929">ಹೊಸ ಫೋಟೋ ಒಂದನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ ಅಥವಾ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಫೋಟೊ ಅಥವಾ ಐಕಾನ್‌ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.
     <ph name="LINE_BREAK" />
     ಈ ಚಿತ್ರವನ್ನು Chromebook ನ ಸೈನ್‌ ಇನ್‌ ಪರದೆ ಮತ್ತು ಲಾಕ್‌ ಪರದೆಯ ಮೇಲೆ ತೋರಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -6527,6 +6530,7 @@
 <translation id="6263284346895336537">ಗಂಭೀರವಲ್ಲ</translation>
 <translation id="6264365405983206840">&amp;ಎಲ್ಲ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6264376385120300461">ಹೇಗಿದ್ದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
+<translation id="6265159465845424232">Microsoft ಫೈಲ್‌ಗಳನ್ನು Microsoft OneDrive ಗೆ ಕಾಪಿ ಮಾಡುವ ಅಥವಾ ಸರಿಸುವ ಮೊದಲು ಕೇಳಿ</translation>
 <translation id="6265687851677020761">ಪೋರ್ಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> ಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> ಗೆ ನಿಮ್ಮನ್ನು ಪ್ರಮಾಣೀಕರಿಸಲು ಒಂದು ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
@@ -7288,6 +7292,7 @@
 <translation id="6897363604023044284">ಸೈಟ್‌ಗಳನ್ನು ತೆರವುಗೊಳಿಸಲು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6897688156970667447">ಕಡಿಮೆ ಬೆಳಕಿದ್ದಾಗ ಉಪಯುಕ್ತ ಮತ್ತು ಬ್ಯಾಟರಿ ಉಳಿಸುತ್ತದೆ</translation>
 <translation id="6897972855231767338">ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸಿಂಗ್ ಮಾಡುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="6898438890765871056">OneDrive ಫೋಲ್ಡರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="6898440773573063262">ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಇದೀಗ ಈ ಸಾಧನದಲ್ಲಿ ಸ್ವಯಂ-ಪ್ರಾರಂಭಿಸಲು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="6899427698619335650">ಹೊಂದಿಕೊಳ್ಳುವ ಡಯಾಕ್ರಿಟಿಕ್ ಕಾರ್ಯನಿಯೋಜನೆಯನ್ನು ಅನುಮತಿಸಿ. ಉದಾಹರಣೆಗೆ, "ánh" ಪಡೆಯಲು ನೀವು "anh1" ಅಥವಾ "a1nh" ಎಂದು ಟೈಪ್ ಮಾಡಬಹುದು.</translation>
 <translation id="6900284862687837908">ಹಿನ್ನೆಲೆ ಅಪ್ಲಿಕೇಶನ್: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8042,6 +8047,7 @@
 <translation id="7517959947270534934">ಇದೀಗ ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವಂತೆ ಮತ್ತು ಅವರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡುವಂತೆ ಅವರಿಗೆ ತಿಳಿಸಿ.</translation>
 <translation id="7520766081042531487">ಅಜ್ಞಾತ ಪೋರ್ಟಲ್: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="7521430434164837205">Microsoft 365 ಫೈಲ್‌ಗಳು</translation>
 <translation id="7522255036471229694">"Ok Google" ಎಂದು ಹೇಳಿ</translation>
 <translation id="7523117833414447032">ದೊಡ್ಡಕ್ಷರಗಳನ್ನು ಓದುವಾಗ</translation>
 <translation id="7523585675576642403">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮರುಹೆಸರಿಸಿ</translation>
@@ -9767,6 +9773,7 @@
 <translation id="8896830132794747524">ನಿಮ್ಮ ಮೌಸ್‌ನ ವೇಗವಾದ ಮೂವ್‌ಗಳು ಕರ್ಸರ್ ಅನ್ನು ದೂರಕ್ಕೆ ತಳ್ಳುತ್ತವೆ</translation>
 <translation id="8898140163781851592">ಪ್ರಾಥಮಿಕ ಮೌಸ್ ಬಟನ್</translation>
 <translation id="8898786835233784856">ಮುಂದೆ ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="8898790559170352647">ನಿಮ್ಮ Microsoft ಖಾತೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8898822736010347272">ಹೊಸ ಅಪಾಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಲು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರನ್ನು ರಕ್ಷಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳು, ಸೀಮಿತ ಸಿಸ್ಟಂ ಮಾಹಿತಿ ಮತ್ತು ಪುಟಗಳಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="8899851313684471736">ಹೊಸ &amp;ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8900413463156971200">ಸೆಲ್ಯುಲರ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>

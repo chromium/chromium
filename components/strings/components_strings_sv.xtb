@@ -388,6 +388,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1733762317901693627">Även webbplatser som vanligtvis är säkra utsätts ibland för angripare. Besök bara <ph name="BEGIN_LINK" />den här osäkra webbplatsen<ph name="END_LINK" /> om du är säker på att du är medveten om riskerna.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Kontakta systemadministratören.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Dator</translation>
 <translation id="1741613555002899862">Måste anges och vara en giltig sträng när DnsOverHttpsMode är <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sängutrustning och sängkläder</translation>
@@ -682,6 +683,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2366689192918515749">Kött och fisk</translation>
 <translation id="2367567093518048410">Nivå</translation>
 <translation id="23703388716193220">Golfutrustning</translation>
+<translation id="2378084239755710604">Uppmaningen till att spara kortet har stängts.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Anpassa tillgänglighetsverktygen i Chrome-inställningarna</translation>
 <translation id="2384307209577226199">Standardinställning i företaget</translation>
@@ -2260,6 +2262,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5689199277474810259">Exportera som JSON</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="569000877158168851">Värdet på DnsOverHttpsTemplates är inte relevant och kommer inte att användas såvida inte principen DnsOverHttpsMode ställs in på <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Uppmaningen till att spara kortet har öppnats över hela skärmen.</translation>
 <translation id="5695542892312572833">Vill du verifiera och slutföra köpet med Windows Hello?</translation>
 <translation id="5699628521141772782">Mejeriprodukter och ägg</translation>
 <translation id="5701381305118179107">Centrera</translation>
@@ -3236,6 +3239,7 @@ Mer information.
 <translation id="7676643023259824263">Sök efter texten i Urklipp, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Öppna och hantera webbhistoriken i Chrome-inställningarna</translation>
 <translation id="7679947978757153706">Baseboll</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantasysporter</translation>
 <translation id="7682287625158474539">Frakt</translation>
 <translation id="7682451652090915298">Rugby</translation>

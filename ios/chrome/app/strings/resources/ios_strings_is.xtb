@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">ÁÁÁÁ</translation>
 <translation id="1013952917065545813">Þú getur farið aftur hingað til að opna flipa sem þú lokaðir nýlega</translation>
 <translation id="1016495303386450659">Atriði uppfært</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Vista aðgangsorð á reikningi}one{Vista aðgangsorð á reikningi}other{Vista aðgangsorð á reikningi}}</translation>
 <translation id="1035980983510608210">Ef öllum flipum er lokað verður festum flipum einnig lokað.</translation>
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1044891598689252897">Vefsvæði virka sem skyldi</translation>
@@ -72,6 +73,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="132683371494960526">Ýttu tvisvar til að breyta yfirmöppu.</translation>
 <translation id="1332723353863236763">Einhver gögn hafa ekki enn verið vistuð</translation>
 <translation id="1335348992705722518">Stjórna stillingum...</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{Vista {COUNT} aðgangsorð á Google-reikningi}one{Vista {COUNT} aðgangsorð á Google-reikningi}other{Vista {COUNT} aðgangsorð á Google-reikningi}}</translation>
 <translation id="1340643665687018190">Loka valmynd</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Opna tengil sem þú afritaðir</translation>
@@ -316,6 +318,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Ekki er hægt að búa til tengil</translation>
 <translation id="2786701870377699570">Leitaðu á flipum í öllum samstilltum tækjum</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Aðgangsorð vistað á Google-reikningnum þínum, {EMAIL}}one{Aðgangsorð vistuð á Google-reikningnum þínum, {EMAIL}}other{Aðgangsorð vistuð á Google-reikningnum þínum, {EMAIL}}}</translation>
 <translation id="2797029671965852011">Sýna feril</translation>
 <translation id="2800683595868705743">Fara úr flipavali</translation>
 <translation id="2815198996063984598">2. Ýttu á „Sjálfgefið vafraforrit“</translation>
@@ -652,6 +655,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, aðeins í þessu tæki, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nýr huliðsflipi</translation>
 <translation id="4766112107778026136">Tillögur og fylgir</translation>
+<translation id="47677902929517676">Til að vista aðgangsorð á reikningnum þínum þarftu fyrst að stilla aðgangskóða í tækinu.</translation>
 <translation id="4775879719735953715">Sjálfgefinn vafri</translation>
 <translation id="4778644898150334464">Nota annað aðgangsorð</translation>
 <translation id="478808905805139173">Opna í huliðsstillingu?</translation>
@@ -1119,6 +1123,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7265758999917665941">Aldrei fyrir þetta vefsvæði</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="7291368939935408496">Undirbýr aðgangsorð...</translation>
+<translation id="7302503784943202842">Nota aðgangsorð í öllum tækjum</translation>
 <translation id="730958329302570991">Bættu aðgangsorðum vefsvæða við Google-aðgangsorðastjórnun hvenær sem er á einfaldan hátt.</translation>
 <translation id="7313347584264171202">Þú finnur huliðsflipana þína hér</translation>
 <translation id="7331371412779932885">Sýnir þér flipatillögur sem byggjast á vafranotkun þinni í öðrum tækjum sem nota Google-reikninginn þinn. Tækin þín verða að vera innskráð og samstillt með sama Google-reikningi.</translation>
@@ -1468,6 +1473,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="953008885340860025">Chrome er útskráður</translation>
 <translation id="959066944189734975">Þú fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Sýna flipatillögur úr öðrum tækjum</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{Þú getur vistað aðgangsorðið fyrir {DOMAIN_ONE} á Google-reikningnum þínum, {EMAIL}}=2{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE} og {DOMAIN_TWO} á Google-reikningnum þínum, {EMAIL}}=3{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}}one{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}}other{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}}}</translation>
 <translation id="97300214378190234">Notaðu Chrome þegar þú ýtir á tengla í öðrum forritum.</translation>
 <translation id="973493300226275298">Vaktaðu vöruverð í netverslunum. Þú færð tilkynningu ef verð lækkar.</translation>
 <translation id="981498610235328462">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir.</translation>

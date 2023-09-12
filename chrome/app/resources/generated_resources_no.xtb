@@ -1426,6 +1426,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2102495993840063010">Android-apper</translation>
 <translation id="2104166991923847969">Slå av wifi-sonen automatisk</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> er skjult</translation>
+<translation id="2108204112555497972">Sjekket for <ph name="NUM_DAYS_HOURS_MINUTES" /> siden</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnumre}}</translation>
 <translation id="2110941575868943054">Nettsteder som har lov til å se etter Bluetooth-enheter</translation>
 <translation id="211144231511833662">Nullstill typer</translation>
@@ -2468,6 +2469,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2907619724991574506">Nettadresser for oppstart</translation>
 <translation id="2907798539022650680">Kunne ikke koble til «<ph name="NAME" />»: <ph name="DETAILS" />
     Tjenermelding: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Åpne Word-, Excel- og PowerPoint-filer</translation>
 <translation id="2908162660801918428">Legg til mediegalleri etter katalog</translation>
 <translation id="2908358077082926882">Trykk på «<ph name="CURRENTKEY" />» på nytt for å fjerne tilordningen og <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Kunne ikke koble til Google-tjenester. Kontroller nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
@@ -6105,6 +6107,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5920543303088087579">Administratoren din har slått av muligheten for å koble til dette nettverket</translation>
 <translation id="5921257443092182237">Googles posisjonstjeneste bruker kilder som wifi, mobilnettverk og sensorer til å estimere posisjonen til enheten.</translation>
 <translation id="5924047253200400718">Få hjelp<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Spør før Microsoft-filer flyttes eller kopieres til Google Disk</translation>
 <translation id="5924527146239595929">Ta et nytt bilde eller velg et eksisterende bilde eller ikon.
    <ph name="LINE_BREAK" />
    Dette bildet vises på låse- og påloggingsskjermen på Chromebooken.</translation>
@@ -6523,6 +6526,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6263284346895336537">Ikke kritisk</translation>
 <translation id="6264365405983206840">Velg &amp;alle</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
+<translation id="6265159465845424232">Spør før Microsoft-filer flyttes eller kopieres til Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjern porten</translation>
 <translation id="6266532094411434237">Kobler til <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Velg sertifikat for å autentisere deg selv til <ph name="HOST_NAME" /></translation>
@@ -7282,6 +7286,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6897363604023044284">Velg nettsteder å slette data fra</translation>
 <translation id="6897688156970667447">Nyttig i svakt lys og sparer batteri</translation>
 <translation id="6897972855231767338">Finn ut mer om å surfe som gjest</translation>
+<translation id="6898438890765871056">Åpne OneDrive-mappen</translation>
 <translation id="6898440773573063262">Nå kan kioskapper konfigureres til å starte automatisk på denne enheten.</translation>
 <translation id="6899427698619335650">Tillat fleksibel diakritisk tilordning. Du kan for eksempel skrive «anh1» eller «a1nh» for å få «ánh».</translation>
 <translation id="6900284862687837908">Bakgrunnsapp: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8036,6 +8041,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7517959947270534934">Familiemedlemmet ditt kan ikke motta passord akkurat nå. Be vedkommende om å oppdatere Chrome og synkronisere passordene sine.</translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Vis snarveier</translation>
+<translation id="7521430434164837205">Microsoft 365-filer</translation>
 <translation id="7522255036471229694">Si «Ok Google»</translation>
 <translation id="7523117833414447032">Ved lesing av store bokstaver</translation>
 <translation id="7523585675576642403">Gi nytt navn til profilen</translation>
@@ -9764,6 +9770,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8896830132794747524">Raskere bevegelser med musen flytter markøren lenger</translation>
 <translation id="8898140163781851592">Primær museknapp</translation>
 <translation id="8898786835233784856">Velg neste fane</translation>
+<translation id="8898790559170352647">Legg til Microsoft-kontoen din</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="8899851313684471736">Å&amp;pne linken i et nytt vindu</translation>
 <translation id="8900413463156971200">Slå på mobildata</translation>

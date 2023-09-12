@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">평소에 안전한 사이트도 가끔은 공격자에 의해 해킹당할 수 있습니다. 이러한 위험에 대해 제대로 알고 있다고 생각하는 경우에만 <ph name="BEGIN_LINK" />안전하지 않은 사이트<ph name="END_LINK" />를 방문하세요.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">시스템 관리자에게 문의하세요.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, 만료일: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">컴퓨터</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
 <translation id="1743393865165844832">침구</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">육류 및 해산물</translation>
 <translation id="2367567093518048410">수준</translation>
 <translation id="23703388716193220">골프 장비</translation>
+<translation id="2378084239755710604">저장 카드가 닫혔습니다.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome 설정에서 접근성 도구 맞춤설정</translation>
 <translation id="2384307209577226199">엔터프라이즈 기본값</translation>
@@ -2260,6 +2262,7 @@
 <translation id="5689199277474810259">JSON 형식으로 내보내기</translation>
 <translation id="5689516760719285838">위치</translation>
 <translation id="569000877158168851">DnsOverHttpsMode 정책이 <ph name="SECURE_DNS_MODE_AUTOMATIC" /> 또는 <ph name="SECURE_DNS_MODE_SECURE" />(으)로 설정되지 않는 한 DnsOverHttpsTemplates 값은 관련성이 없어 앞으로 사용되지 않습니다.</translation>
+<translation id="5691848789297492617">저장 카드가 전체 높이로 열렸습니다.</translation>
 <translation id="5695542892312572833">Windows Hello를 사용해 구매를 확인하고 완료하시겠습니까?</translation>
 <translation id="5699628521141772782">유제품 및 계란</translation>
 <translation id="5701381305118179107">가운데</translation>
@@ -3235,6 +3238,7 @@
 <translation id="7676643023259824263">클립보드 텍스트 <ph name="TEXT" /> 검색</translation>
 <translation id="7679367271685653708">Chrome 설정에서 방문 기록 보기 및 관리</translation>
 <translation id="7679947978757153706">야구</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, 만료일: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">판타지 스포츠</translation>
 <translation id="7682287625158474539">배송</translation>
 <translation id="7682451652090915298">럭비</translation>

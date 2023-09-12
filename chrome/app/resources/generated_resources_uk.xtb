@@ -1435,6 +1435,7 @@
 <translation id="2102495993840063010">Додатки Android</translation>
 <translation id="2104166991923847969">Вимикати точку доступу автоматично</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> сховано</translation>
+<translation id="2108204112555497972">Перевірено <ph name="NUM_DAYS_HOURS_MINUTES" /> тому</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
 <translation id="2110941575868943054">Дозволено шукати пристрої з Bluetooth</translation>
 <translation id="211144231511833662">Очистити типи</translation>
@@ -2476,6 +2477,7 @@
 <translation id="2907619724991574506">URL-адреси автозавантаження</translation>
 <translation id="2907798539022650680">Не вдалося під’єднатися до мережі "<ph name="NAME" />": <ph name="DETAILS" />
     Повідомлення сервера: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Відкривайте файли Word, Excel і PowerPoint</translation>
 <translation id="2908162660801918428">Додати медіа-галерею за каталогами</translation>
 <translation id="2908358077082926882">Натисніть клавішу "<ph name="CURRENTKEY" />" ще раз, щоб видалити призначену дію та <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Не вдалося підключитися до сервісів Google. Перевірте з’єднання з мережею та повторіть спробу. Код помилки: <ph name="ERROR_CODE" />.</translation>
@@ -6115,6 +6117,7 @@
 <translation id="5920543303088087579">Ваш адміністратор заборонив під’єднуватися до цієї мережі</translation>
 <translation id="5921257443092182237">Служба локації Google використовує такі джерела, як Wi-Fi, мобільні мережі та датчики, щоб визначати місцезнаходження цього пристрою.</translation>
 <translation id="5924047253200400718">Довідка<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Запитувати, перш ніж копіювати або переміщувати файли Microsoft на Google Диск</translation>
 <translation id="5924527146239595929">Зробіть новий знімок або виберіть наявне фото чи значок.
     <ph name="LINE_BREAK" />
     Це зображення з’являтиметься на екрані входу й заблокованому екрані Chromebook.</translation>
@@ -6532,6 +6535,7 @@
 <translation id="6263284346895336537">Не вирішальні</translation>
 <translation id="6264365405983206840">Вибрати &amp;всі</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
+<translation id="6265159465845424232">Запитувати, перш ніж копіювати або переміщувати файли Microsoft у Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Вилучити порт</translation>
 <translation id="6266532094411434237">Підключення до пристрою "<ph name="DEVICE" />"</translation>
 <translation id="6267166720438879315">Виберіть сертифікат, щоб ідентифікувати себе на <ph name="HOST_NAME" /></translation>
@@ -7297,6 +7301,7 @@
 <translation id="6897363604023044284">Вибрати, дані яких сайтів видалити</translation>
 <translation id="6897688156970667447">Підходить в умовах поганого освітлення й заощаджує заряд акумулятора</translation>
 <translation id="6897972855231767338">Докладніше про перегляд у режимі гостя</translation>
+<translation id="6898438890765871056">Відкрити папку OneDrive</translation>
 <translation id="6898440773573063262">Тепер на цьому пристрої можна налаштувати автозапуск додатків для терміналів.</translation>
 <translation id="6899427698619335650">Дозволити гнучке призначення діакритичних знаків. Наприклад, щоб отримати "ánh", можна ввести "anh1" або "a1nh".</translation>
 <translation id="6900284862687837908">Фоновий додаток: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8050,6 +8055,7 @@
 <translation id="7517959947270534934">Зараз учасник вашої сімейної групи не може отримувати паролі. Попросіть його оновити Chrome і синхронізувати паролі.</translation>
 <translation id="7520766081042531487">Портал анонімного режиму: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Показувати ярлики</translation>
+<translation id="7521430434164837205">Файли Microsoft 365</translation>
 <translation id="7522255036471229694">Скажіть "Ok Google"</translation>
 <translation id="7523117833414447032">Озвучення великих літер</translation>
 <translation id="7523585675576642403">Перейменувати профіль</translation>
@@ -9781,6 +9787,7 @@
 <translation id="8896830132794747524">Якщо рухати мишу швидше, курсор переміщуватиметься далі</translation>
 <translation id="8898140163781851592">Основна кнопка миші</translation>
 <translation id="8898786835233784856">Вибрати наступну вкладку</translation>
+<translation id="8898790559170352647">Додайте свій обліковий запис Microsoft</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>
 <translation id="8899851313684471736">Відкрити посилання у новому &amp;вікні</translation>
 <translation id="8900413463156971200">Увімкнути мобільну мережу</translation>

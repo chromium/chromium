@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">Іноді зловмисники зламують навіть зазвичай безпечні сайти. Відвідуйте <ph name="BEGIN_LINK" />цей небезпечний сайт<ph name="END_LINK" />, лише якщо ви впевнені, що розумієте ризики.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Зв’яжіться із системним адміністратором.</translation>
+<translation id="1736163675982669961">Картка "<ph name="CARD_NICKNAME" />", <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, дійсна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Комп'ютер</translation>
 <translation id="1741613555002899862">Якщо параметр DnsOverHttpsMode має значення <ph name="SECURE_DNS_MODE_SECURE" />, потрібно вказати правило, яке має бути дійсним рядком.</translation>
 <translation id="1743393865165844832">Постільна білизна</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">М’ясо й морепродукти</translation>
 <translation id="2367567093518048410">Рівень</translation>
 <translation id="23703388716193220">Обладнання для гольфу</translation>
+<translation id="2378084239755710604">Зберегти картку в закритому вигляді.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Персоналізуйте інструменти спеціальних можливостей у налаштуваннях Chrome</translation>
 <translation id="2384307209577226199">Стандартне корпоративне правило</translation>
@@ -2260,6 +2262,7 @@
 <translation id="5689199277474810259">Експортувати у формат JSON</translation>
 <translation id="5689516760719285838">Місцезнаходження</translation>
 <translation id="569000877158168851">Значення DnsOverHttpsTemplates невідповідне й не використовуватиметься, якщо для правила DnsOverHttpsMode не буде вибрано значення <ph name="SECURE_DNS_MODE_AUTOMATIC" /> або <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Зберегти картку у відкритому вигляді на всю висоту.</translation>
 <translation id="5695542892312572833">Підтвердити й завершити покупку за допомогою Windows Hello?</translation>
 <translation id="5699628521141772782">Молоко і яйця</translation>
 <translation id="5701381305118179107">По центру</translation>
@@ -3236,6 +3239,7 @@
 <translation id="7676643023259824263">Пошук тексту з буфера обміну: <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Переглянути історію веб-перегляду та керувати нею в налаштуваннях Chrome</translation>
 <translation id="7679947978757153706">Бейсбол</translation>
+<translation id="7680990533995586733">Картка <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, дійсна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Фентезі-спорт</translation>
 <translation id="7682287625158474539">Адреса для надсилання</translation>
 <translation id="7682451652090915298">Регбі</translation>

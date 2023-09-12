@@ -58,6 +58,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="124678866338384709">Loka núverandi flipa</translation>
 <translation id="1246905108078336582">Fjarlægja tillögu af klippiborði?</translation>
 <translation id="1258753120186372309">Google dúlla: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Nú sérðu efni frá og um <ph name="SITE_NAME" /> í „Fylgir“. Vefsvæði og leitir sem þú fylgir eru vistuð á Google-reikningnum þínum. Þú getur stjórnað stillingum „Fylgir“ hvenær sem er.</translation>
 <translation id="1263231323834454256">Leslisti</translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Þú finnur ferilinn þinn hér</translation>
@@ -136,6 +137,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1671236975893690980">Niðurhal í bið…</translation>
 <translation id="1672586136351118594">Ekki sýna þetta aftur</translation>
 <translation id="1680919990519905526">Kaupa með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Bráðlega sérðu efni frá og um <ph name="SITE_NAME" /> í „Fylgir“. Vefsvæði og leitir sem þú fylgir eru vistuð á Google-reikningnum þínum. Þú getur stjórnað stillingum „Fylgir“ hvenær sem er.</translation>
 <translation id="1702543251015153180">Breyta stillingum dökka þemans?</translation>
 <translation id="1702907158640575240">Stýrður vafri</translation>
 <translation id="1710099199314114079">Skipta um eða loka flipum</translation>
@@ -310,6 +312,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="265156376773362237">Hefðbundin forhleðsla</translation>
 <translation id="2656405586795711023">Vefforrit</translation>
 <translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
+<translation id="2673169232805572412">Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome sent vefslóðir til Google, þar á meðal hluta af efni síðna</translation>
 <translation id="2702516483241149200">Nýtt: Deildu tengli sem flettir að þessum texta</translation>
 <translation id="2708051474374549906">Forvirk vörn í rauntíma gegn hættulegum vefsvæðum, niðurhali og viðbótum sem byggir á vefskoðunargögnunum þínum sem eru send til Google</translation>
 <translation id="2708226184420201102">Opna í <ph name="PRODUCT_NAME" />-vafranum</translation>

@@ -4,7 +4,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">已更新項目</translation>
-<translation id="1025514696883950875">{COUNT,plural, =1{將密碼儲存到帳戶中}other{將密碼儲存到帳戶中}}</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{將密碼儲存至帳戶中}other{將密碼儲存至帳戶中}}</translation>
 <translation id="1035980983510608210">如果關閉所有分頁，系統亦會關閉固定分頁。</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
@@ -73,7 +73,7 @@
 <translation id="132683371494960526">扲兩下就可以更改上層資料夾。</translation>
 <translation id="1332723353863236763">部分資料尚未儲存</translation>
 <translation id="1335348992705722518">管理設定…</translation>
-<translation id="1338381578078138897">{COUNT,plural, =1{將 {COUNT} 組密碼儲存到 Google 帳戶}other{將 {COUNT} 組密碼儲存到 Google 帳戶}}</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{將 {COUNT} 個密碼儲存至 Google 帳戶中}other{將 {COUNT} 個密碼儲存至 Google 帳戶中}}</translation>
 <translation id="1340643665687018190">閂選單</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">前往您複製的連結</translation>
@@ -318,7 +318,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">無法建立連結</translation>
 <translation id="2786701870377699570">搜尋所有已同步裝置的分頁</translation>
-<translation id="2789552044937754463">{COUNT,plural, =1{密碼已儲存到 Google 帳戶 ({EMAIL})}other{密碼已儲存到 Google 帳戶 ({EMAIL})}}</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{密碼已儲存至 Google 帳戶 ({EMAIL})}other{密碼已儲存至 Google 帳戶 ({EMAIL})}}</translation>
 <translation id="2797029671965852011">顯示記錄</translation>
 <translation id="2800683595868705743">退出分頁切換工具</translation>
 <translation id="2815198996063984598">2. 輕按 [預設瀏覽器應用程式]</translation>
@@ -655,7 +655,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />，<ph name="STATE" />，只係喺呢部裝置上面，<ph name="URL" /></translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
-<translation id="47677902929517676">如要將密碼儲存到帳戶中，請先在裝置上設定密碼。</translation>
+<translation id="47677902929517676">如要將密碼儲存至帳戶中，請先在裝置上設定密碼。</translation>
 <translation id="4775879719735953715">預設瀏覽器</translation>
 <translation id="4778644898150334464">使用其他密碼</translation>
 <translation id="478808905805139173">要以無痕模式開啟嗎？</translation>
@@ -1471,7 +1471,7 @@
 <translation id="953008885340860025">您已登出 Chrome</translation>
 <translation id="959066944189734975">您正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="96615566463761848">顯示來自其他裝置的分頁建議</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{你可以將 {DOMAIN_ONE} 的密碼儲存到 Google 帳戶 ({EMAIL})}=2{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼儲存到 Google 帳戶 ({EMAIL})}=3{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})}other{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})}}</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{你可將 {DOMAIN_ONE} 的密碼儲存至 Google 帳戶 ({EMAIL})}=2{你可將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼儲存至 Google 帳戶 ({EMAIL})}=3{你可將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 個密碼儲存至 Google 帳戶 ({EMAIL})}other{你可將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 個密碼儲存至 Google 帳戶 ({EMAIL})}}</translation>
 <translation id="97300214378190234">隨時使用 Chrome 開啟其他應用程式中的連結。</translation>
 <translation id="973493300226275298">追蹤產品在網上商店中的價格。如果產品降價，系統將通知您。</translation>
 <translation id="981498610235328462">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。</translation>

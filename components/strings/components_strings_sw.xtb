@@ -388,6 +388,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1733762317901693627">Wakati mwingine, wadukuzi huathiri hata tovuti ambazo kwa kawaida huwa salama. Tembelea tu <ph name="BEGIN_LINK" />tovuti hii isiyo salama<ph name="END_LINK" /> ikiwa una uhakika kuwa unaelewa hatari ya kufanya hivyo.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Kuwasiliana na msimamizi wa mfumo.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, muda wake utakwisha <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Kompyuta</translation>
 <translation id="1741613555002899862">Lazima ibainishwe na iwe mfuatano sahihi wakati DnsOverHttpsMode ni <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Mashuka na Mapambo ya Vitandani</translation>
@@ -682,6 +683,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2366689192918515749">Nyama na Vyakula vya Baharini</translation>
 <translation id="2367567093518048410">Kiwango</translation>
 <translation id="23703388716193220">Vifaa vya Gofu</translation>
+<translation id="2378084239755710604">Kidokezo cha kuhifadhi kadi kimefungwa.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Weka mapendeleo ya zana zako za ufikivu katika mipangilio ya Chrome</translation>
 <translation id="2384307209577226199">Biashara chaguomsingi</translation>
@@ -2260,6 +2262,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5689199277474810259">Tuma katika mfumo wa JSON</translation>
 <translation id="5689516760719285838">Mahali</translation>
 <translation id="569000877158168851">Thamani ya DnsOverHttpsTemplates haifai na haitatumika, isipokuwa sera ya DnsOverHttpsMode iwekwe kuwa <ph name="SECURE_DNS_MODE_AUTOMATIC" /> au <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Kidokezo cha kuhifadhi kadi kimefunguliwa katika skrini nzima.</translation>
 <translation id="5695542892312572833">Ungependa kutumia Windows Hello kuthibitisha na kukamilisha ununuzi wako?</translation>
 <translation id="5699628521141772782">Bidhaa za Maziwa na Mayai</translation>
 <translation id="5701381305118179107">Katikati</translation>
@@ -3234,6 +3237,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7676643023259824263">Tafuta maandishi ya ubao wa kunakili, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Angalia na udhibiti historia yako ya kuvinjari katika mipangilio ya Chrome</translation>
 <translation id="7679947978757153706">Mpira wa besiboli</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, muda wake utakwisha <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Michezo ya kubuni</translation>
 <translation id="7682287625158474539">Anwani ya Kufikishia</translation>
 <translation id="7682451652090915298">Raga</translation>

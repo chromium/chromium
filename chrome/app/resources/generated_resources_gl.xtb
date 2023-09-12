@@ -1419,6 +1419,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2102495993840063010">Aplicacións para Android</translation>
 <translation id="2104166991923847969">Desactivar a zona wifi automaticamente</translation>
 <translation id="2105809836724866556">Ocultouse <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Comprobáronse hai <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="2110941575868943054">Sitios que teñen permiso para buscar dispositivos Bluetooth</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
@@ -2457,6 +2458,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2907619724991574506">URL de inicio</translation>
 <translation id="2907798539022650680">Non se puido conectar con "<ph name="NAME" />": <ph name="DETAILS" />
     Mensaxe do servidor: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Abre ficheiros de Word, Excel e PowerPoint</translation>
 <translation id="2908162660801918428">Engadir galería multimedia por directorio</translation>
 <translation id="2908358077082926882">Preme de novo <ph name="CURRENTKEY" /> para quitar a asignación e <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Non se puido establecer a conexión cos servizos de Google. Comproba a túa conexión de rede e téntao de novo. Código de erro: <ph name="ERROR_CODE" />.</translation>
@@ -6098,6 +6100,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5920543303088087579">O administrador desactivou a conexión a esta rede</translation>
 <translation id="5921257443092182237">O servizo de localización de Google utiliza fontes como a wifi, as redes de telefonía móbil e os sensores para calcular a localización deste dispositivo.</translation>
 <translation id="5924047253200400718">Obter axuda<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Preguntar antes de copiar ficheiros de Microsoft ou movelos a Google Drive</translation>
 <translation id="5924527146239595929">Saca unha foto. Se o prefires, podes escoller unha das imaxes ou iconas que xa teñas.
     <ph name="LINE_BREAK" />
     Aparecerá na pantalla de bloqueo e na de inicio de sesión do dispositivo Chromebook.</translation>
@@ -6515,6 +6518,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6263284346895336537">Non crítica</translation>
 <translation id="6264365405983206840">Seleccionar &amp;todo</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
+<translation id="6265159465845424232">Preguntar antes de copiar ficheiros de Microsoft e movelos a Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Quitar porto</translation>
 <translation id="6266532094411434237">Conectando co dispositivo (<ph name="DEVICE" />)</translation>
 <translation id="6267166720438879315">Selecciona un certificado para autenticarte en <ph name="HOST_NAME" /></translation>
@@ -7274,6 +7278,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6897363604023044284">Escoller sitios dos que borrar datos</translation>
 <translation id="6897688156970667447">Resulta útil cando hai pouca luz e aforra batería</translation>
 <translation id="6897972855231767338">Máis información sobre a navegación como convidado</translation>
+<translation id="6898438890765871056">Abrir o cartafol de OneDrive</translation>
 <translation id="6898440773573063262">Xa se poden configurar as aplicacións de quiosco para que se inicien automaticamente neste dispositivo.</translation>
 <translation id="6899427698619335650">Permite a asignación flexible de acentos diacríticos. Por exemplo, podes escribir "anh1" ou "a1nh" para obter “ánh”.</translation>
 <translation id="6900284862687837908">Aplicación en segundo plano: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8027,6 +8032,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7517959947270534934">O membro da túa familia non pode recibir contrasinais agora mesmo. Pídelle que actualice Chrome e sincronice os seus contrasinais.</translation>
 <translation id="7520766081042531487">Portal do modo de incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostrar atallos</translation>
+<translation id="7521430434164837205">Ficheiros de Microsoft 365</translation>
 <translation id="7522255036471229694">Di "Ok Google"</translation>
 <translation id="7523117833414447032">Ao ler letras maiúsculas</translation>
 <translation id="7523585675576642403">Cambiar o nome do perfil</translation>
@@ -9754,6 +9760,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8896830132794747524">Os movementos rápidos co rato desprazarán o cursor máis lonxe</translation>
 <translation id="8898140163781851592">Botón principal do rato</translation>
 <translation id="8898786835233784856">Seleccionar pestana seguinte</translation>
+<translation id="8898790559170352647">Engadir a túa conta de Microsoft</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8899851313684471736">Abrir a ligazón nunha &amp;ventá nova</translation>
 <translation id="8900413463156971200">Activar rede móbil</translation>

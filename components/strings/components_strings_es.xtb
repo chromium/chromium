@@ -388,6 +388,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1733762317901693627">En ocasiones, los atacantes vulneran sitios que normalmente son seguros. Solo accede a <ph name="BEGIN_LINK" />este sitio no seguro<ph name="END_LINK" /> si tienes la certeza de entender los riesgos.</translation>
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Intenta ponerte en contacto con el administrador del sistema.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordenador</translation>
 <translation id="1741613555002899862">Se debe especificar y debe ser una cadena válida cuando DnsOverHttpsMode sea <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sábanas y ropa de cama</translation>
@@ -682,6 +683,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2366689192918515749">Carne y pescado o marisco</translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="23703388716193220">Equipamiento de golf</translation>
+<translation id="2378084239755710604">Diálogo para guardar tarjeta cerrado.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personaliza las herramientas de accesibilidad desde la configuración de Chrome</translation>
 <translation id="2384307209577226199">Empresa (con valores predeterminados)</translation>
@@ -2260,6 +2262,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="569000877158168851">El valor DnsOverHttpsTemplates no es relevante y no se utilizará salvo que la política DnsOverHttpsMode esté configurada en <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Diálogo para guardar tarjeta abierto a altura completa.</translation>
 <translation id="5695542892312572833">¿Usar Windows Hello para verificar y completar la compra?</translation>
 <translation id="5699628521141772782">Lácteos y huevos</translation>
 <translation id="5701381305118179107">Centrar</translation>
@@ -3236,6 +3239,7 @@ Más información:
 <translation id="7676643023259824263">Buscar texto <ph name="TEXT" /> del portapapeles</translation>
 <translation id="7679367271685653708">Consulta y gestiona tu historial de navegación desde la configuración de Chrome</translation>
 <translation id="7679947978757153706">Béisbol</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantasy sports</translation>
 <translation id="7682287625158474539">Dirección de envío</translation>
 <translation id="7682451652090915298">Rugby</translation>

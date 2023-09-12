@@ -1419,6 +1419,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2102495993840063010">Android uygulamaları</translation>
 <translation id="2104166991923847969">Hotspot'u otomatik olarak kapat</translation>
 <translation id="2105809836724866556">Gösterilmiyor: <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> önce kontrol edildi</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefon numarası}other{# telefon numarası}}</translation>
 <translation id="2110941575868943054">Bluetooth cihazları aramasına izin verilen siteler</translation>
 <translation id="211144231511833662">Türleri Temizle</translation>
@@ -2456,6 +2457,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2907619724991574506">Başlangıç URL'leri</translation>
 <translation id="2907798539022650680">"<ph name="NAME" />" ile bağlantı kurulamadı: <ph name="DETAILS" />
 Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel ve PowerPoint dosyalarını açın</translation>
 <translation id="2908162660801918428">Medya Galerisini Dizine Göre Ekle</translation>
 <translation id="2908358077082926882">Atamayı kaldırıp <ph name="RESPONSE" /> için tekrar "<ph name="CURRENTKEY" />" tuşuna basın</translation>
 <translation id="2909506265808101667">Google hizmetlerine bağlanılamadı. Ağ bağlantınızı kontrol edip tekrar deneyin Hata kodu: <ph name="ERROR_CODE" />.</translation>
@@ -6097,6 +6099,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5920543303088087579">Bu ağa bağlanma, yöneticiniz tarafından devre dışı bırakıldı</translation>
 <translation id="5921257443092182237">Google'ın konum hizmeti, bu cihazın konumunu tahmin etmeye yardımcı olması için kablosuz bağlantı, mobil ağlar ve sensörler gibi kaynakları kullanır.</translation>
 <translation id="5924047253200400718">Yardım alın<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Microsoft dosyalarını Google Drive'a kopyalamadan veya taşımadan önce sor</translation>
 <translation id="5924527146239595929">Yeni bir fotoğraf çekin veya mevcut bir fotoğrafı ya da simgeyi seçin.
     <ph name="LINE_BREAK" />
     Bu resim, Chromebook oturum açma ekranında ve kilit ekranında gösterilir.</translation>
@@ -6515,6 +6518,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6263284346895336537">Çok önemli değil</translation>
 <translation id="6264365405983206840">&amp;Tümünü Seç</translation>
 <translation id="6264376385120300461">Yine de indir</translation>
+<translation id="6265159465845424232">Microsoft dosyalarını Microsoft OneDrive'a kopyalamadan veya taşımadan önce sor</translation>
 <translation id="6265687851677020761">Bağlantı noktasını kaldır</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> cihazına bağlanılıyor</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> sunucusunda kimliğinizi doğrulamak için bir sertifika seçin</translation>
@@ -7274,6 +7278,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6897363604023044284">Temizlenecek siteleri seçin</translation>
 <translation id="6897688156970667447">Düşük ışıkta faydalıdır ve pilden tasarruf eder</translation>
 <translation id="6897972855231767338">Misafir olarak göz atma hakkında daha fazla bilgi</translation>
+<translation id="6898438890765871056">OneDrive klasörünü açın</translation>
 <translation id="6898440773573063262">Kiosk uygulamaları artık bu cihazda otomatik olarak başlatılacak şekilde yapılandırılabilir.</translation>
 <translation id="6899427698619335650">Esnek aksan atamasına izin verin. Örneğin, "anh1" veya "a1nh" ile "ánh" yazabilirsiniz.</translation>
 <translation id="6900284862687837908">Arka Plan Uygulaması: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8027,6 +8032,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7517959947270534934">Aile üyeniz şu anda şifre alamıyor. Bu kişiden Chrome'u güncellemesini ve şifrelerini senkronize etmesini isteyin.</translation>
 <translation id="7520766081042531487">Gizli Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Kısayolları göster</translation>
+<translation id="7521430434164837205">Microsoft 365 dosyaları</translation>
 <translation id="7522255036471229694">"Ok Google" deyin</translation>
 <translation id="7523117833414447032">Büyük harfleri okurken</translation>
 <translation id="7523585675576642403">Profili Yeniden Adlandırın</translation>
@@ -9755,6 +9761,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8896830132794747524">Farenizi daha hızlı hareket ettirmeniz, imleci daha uzağa taşır</translation>
 <translation id="8898140163781851592">Birincil fare düğmesi</translation>
 <translation id="8898786835233784856">Sonraki Sekmeyi Seç</translation>
+<translation id="8898790559170352647">Microsoft hesabınızı ekleyin</translation>
 <translation id="8898822736010347272">Yeni tehditleri keşfetmeye ve web'deki herkesi korumaya yardımcı olmak için, ziyaret ettiğiniz bazı sayfaların URL'lerini, sınırlı sistem bilgilerini ve bazı sayfa içeriklerini Google'a gönderir.</translation>
 <translation id="8899851313684471736">Bağlantıyı yeni &amp;pencerede aç</translation>
 <translation id="8900413463156971200">Hücresel bağlantıyı etkinleştir</translation>

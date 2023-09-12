@@ -388,6 +388,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1733762317901693627">Anche i siti che in genere sono sicuri possono essere compromessi da utenti malintenzionati. Visita <ph name="BEGIN_LINK" />questo sito non sicuro<ph name="END_LINK" /> soltanto se hai davvero compreso i rischi.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Prova a contattare l'amministratore di sistema.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, scade il giorno <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1741613555002899862">Deve essere specificato e corrispondere a una stringa valida quando DnsOverHttpsMode è <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Biancheria da letto e per la casa</translation>
@@ -472,7 +473,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Nessuno}=1{1 sito}other{# siti}}</translation>
 <translation id="192095259937375524">Pulsante Condividi questa scheda, attiva per condividere questa scheda tramite link, creando un codice QR, mediante trasmissione e altro ancora</translation>
-<translation id="1924727005275031552">Nuovi</translation>
+<translation id="1924727005275031552">Nuovo</translation>
 <translation id="1935995810530254458">Copia comunque</translation>
 <translation id="1939175642807587452">Può chiedere di inviare notifiche</translation>
 <translation id="1940441167050915935">Elimina i codici di sicurezza salvati</translation>
@@ -682,6 +683,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2366689192918515749">Carne e frutti di mare</translation>
 <translation id="2367567093518048410">Livello</translation>
 <translation id="23703388716193220">Attrezzature e articoli da golf</translation>
+<translation id="2378084239755710604">Salva scheda chiusa.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizza i tuoi strumenti di accessibilità nelle impostazioni di Chrome</translation>
 <translation id="2384307209577226199">Valore predefinito aziendale</translation>
@@ -696,7 +698,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2397836504670957718">Laptop e notebook</translation>
 <translation id="2400600116338235695">Può chiedere di connettersi alle porte seriali</translation>
 <translation id="2404884497378469141">Prova a copiare di nuovo i file</translation>
-<translation id="2413155254802890957">Precedenti</translation>
+<translation id="2413155254802890957">Precedente</translation>
 <translation id="2413528052993050574">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere revocato. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2429716554270894715">Tessuto (impermeabile)</translation>
@@ -2257,6 +2259,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5689199277474810259">Esporta in JSON</translation>
 <translation id="5689516760719285838">Posizione</translation>
 <translation id="569000877158168851">Il valore DnsOverHttpsTemplates non è pertinente e non verrà utilizzato a meno che il criterio DnsOverHttpsMode non venga impostato su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o su <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Salva carta aperta a schermo intero.</translation>
 <translation id="5695542892312572833">Vuoi usare Windows Hello per verificare e completare l'acquisto?</translation>
 <translation id="5699628521141772782">Latticini e uova</translation>
 <translation id="5701381305118179107">Centra</translation>
@@ -3232,6 +3235,7 @@ Ulteriori dettagli:
 <translation id="7676643023259824263">Cerca testo negli appunti, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Visualizza e gestisci la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
 <translation id="7679947978757153706">Baseball</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, scade il giorno <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantasport</translation>
 <translation id="7682287625158474539">Spedizione</translation>
 <translation id="7682451652090915298">Rugby</translation>

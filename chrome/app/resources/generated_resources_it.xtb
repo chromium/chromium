@@ -1420,6 +1420,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2102495993840063010">App Android</translation>
 <translation id="2104166991923847969">Disattiva hotspot automaticamente</translation>
 <translation id="2105809836724866556">Modulo nascosto: <ph name="MODULE_TITLE" /></translation>
+<translation id="2108204112555497972">Eseguito <ph name="NUM_DAYS_HOURS_MINUTES" /> fa</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Numero di telefono}other{# numeri di telefono}}</translation>
 <translation id="2110941575868943054">Autorizzati a cercare dispositivi Bluetooth</translation>
 <translation id="211144231511833662">Cancella Tipi</translation>
@@ -2458,6 +2459,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2907619724991574506">URL di avvio</translation>
 <translation id="2907798539022650680">Connessione a "<ph name="NAME" />" non riuscita: <ph name="DETAILS" />
     Messaggio del server: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Apri file di Word, Excel e PowerPoint</translation>
 <translation id="2908162660801918428">Aggiungi Galleria Media per directory</translation>
 <translation id="2908358077082926882">Premi di nuovo "<ph name="CURRENTKEY" />" per rimuovere l'assegnazione e <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Impossibile connettersi ai servizi Google. Controlla la connessione di rete e riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
@@ -6096,6 +6098,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5920543303088087579">La connessione a questa rete è stata disattivata dall'amministratore</translation>
 <translation id="5921257443092182237">Il servizio di geolocalizzazione di Google utilizza fonti quali le reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa di questo dispositivo.</translation>
 <translation id="5924047253200400718">Richiedi assistenza<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Chiedi prima di copiare o spostare i file Microsoft su Google Drive</translation>
 <translation id="5924527146239595929">Scatta una foto oppure scegli una foto esistente o un'icona.
     <ph name="LINE_BREAK" />
     Questa immagine verrà mostrata nelle schermate di accesso e di blocco del Chromebook.</translation>
@@ -6513,6 +6516,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6263284346895336537">Non critica</translation>
 <translation id="6264365405983206840">Seleziona &amp;tutto</translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
+<translation id="6265159465845424232">Chiedi prima di copiare o spostare i file Microsoft su Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Rimuovi porta</translation>
 <translation id="6266532094411434237">Connessione a <ph name="DEVICE" /> in corso…</translation>
 <translation id="6267166720438879315">Seleziona un certificato per autenticarti a <ph name="HOST_NAME" /></translation>
@@ -7272,6 +7276,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6897363604023044284">Seleziona i siti da cancellare</translation>
 <translation id="6897688156970667447">Utile in condizioni di scarsa illuminazione e di risparmio energetico</translation>
 <translation id="6897972855231767338">Scopri di più sulla navigazione come ospite</translation>
+<translation id="6898438890765871056">Apri la cartella OneDrive</translation>
 <translation id="6898440773573063262">Ora è possibile configurare l'avvio automatico delle applicazioni kiosk su questo dispositivo.</translation>
 <translation id="6899427698619335650">Consenti l'assegnazione diacritica flessibile. Ad esempio, puoi digitare "anh1" o "a1nh" per ottenere "ánh".</translation>
 <translation id="6900284862687837908">App in background: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8026,6 +8031,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7517959947270534934">Al momento il tuo membro del gruppo Famiglia non può ricevere password. Chiedi di aggiornare Chrome e sincronizzare le sue password.</translation>
 <translation id="7520766081042531487">Portale in modalità di navigazione in incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostra scorciatoie</translation>
+<translation id="7521430434164837205">File di Microsoft 365</translation>
 <translation id="7522255036471229694">Di' "Ok Google"</translation>
 <translation id="7523117833414447032">Durante la lettura delle lettere maiuscole</translation>
 <translation id="7523585675576642403">Rinomina profilo</translation>
@@ -9754,6 +9760,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8896830132794747524">Con movimenti più rapidi del mouse, il cursore verrà spostato più lontano</translation>
 <translation id="8898140163781851592">Tasto principale del mouse</translation>
 <translation id="8898786835233784856">Seleziona scheda successiva</translation>
+<translation id="8898790559170352647">Aggiungi il tuo account Microsoft</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
 <translation id="8899851313684471736">Apri link in un'altra &amp;finestra</translation>
 <translation id="8900413463156971200">Abilita rete mobile</translation>

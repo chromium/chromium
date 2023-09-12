@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">Bəzən hücumçular təhlükəsiz saytları da ələ keçirir. Yalnız riskləri anladıqdan sonra <ph name="BEGIN_LINK" />bu təhlükəli sayta<ph name="END_LINK" /> daxil olun.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Sistem admini ilə əlaqə yaratmağa çalışın.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, vaxtı bitir: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Kompüter</translation>
 <translation id="1741613555002899862">Təyin edilməli və DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduqda, doğru dəyər olmalıdır.</translation>
 <translation id="1743393865165844832">Yataq və yataq örtükləri</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">Ət və dəniz məhsulları</translation>
 <translation id="2367567093518048410">Səviyyə</translation>
 <translation id="23703388716193220">Qolf ləvazimatları</translation>
+<translation id="2378084239755710604">Kartın yadda saxlanması bağlandı.</translation>
 <translation id="2380886658946992094">Hüquqi</translation>
 <translation id="2383455408879745299">Chrome ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
 <translation id="2384307209577226199">Korporativ defolt</translation>
@@ -2256,6 +2258,7 @@
 <translation id="5689199277474810259">JSON-a eksport edin</translation>
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates dəyəri uyğun deyil və DnsOverHttpsMode siyasəti <ph name="SECURE_DNS_MODE_AUTOMATIC" /> və ya <ph name="SECURE_DNS_MODE_SECURE" /> kimi ayarlanana qədər istifadə edilməyəcək.</translation>
+<translation id="5691848789297492617">Kartın yadda saxlanması tam hündürlükdə açıldı.</translation>
 <translation id="5695542892312572833">Doğrulamaq və alışı tamamlamaq üçün Windows Hello istifadə edilsin?</translation>
 <translation id="5699628521141772782">Süd məhsulları və yumurta</translation>
 <translation id="5701381305118179107">Mərkəzi edin</translation>
@@ -3232,6 +3235,7 @@
 <translation id="7676643023259824263">Mübadilə buferində mətni axtarın, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Chrome ayarlarında brauzer tarixçənizə baxın və idarə edin</translation>
 <translation id="7679947978757153706">Beysbol</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, vaxtı bitir: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantaziya idmanı</translation>
 <translation id="7682287625158474539">Göndəriş</translation>
 <translation id="7682451652090915298">Reqbi</translation>

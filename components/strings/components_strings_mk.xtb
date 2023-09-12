@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">Дури и сајтовите што се обично безбедни понекогаш се компромитирани од напаѓачи. Одете на <ph name="BEGIN_LINK" />овој небезбеден сајт<ph name="END_LINK" /> само ако сте сигурни дека ги разбирате ризиците.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Обидете се да контактирате со системскиот администратор.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, истекува на <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компјутер</translation>
 <translation id="1741613555002899862">Мора да е одредена и важечка низа кога DnsOverHttpsMode е <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Постелнина и креветски чаршави</translation>
@@ -682,6 +683,7 @@
 <translation id="2366689192918515749">Месо и морска храна</translation>
 <translation id="2367567093518048410">Ниво</translation>
 <translation id="23703388716193220">Опрема за голф</translation>
+<translation id="2378084239755710604">Долниот лист со барање за зачувување картичка е затворен.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Персонализирајте ги алатките за пристапност во поставките за Chrome</translation>
 <translation id="2384307209577226199">Стандард на компанијата</translation>
@@ -2260,6 +2262,7 @@
 <translation id="5689199277474810259">Изврши извоз во формат .JSON</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="569000877158168851">Вредноста DnsOverHttpsTemplates не е важна и нема да се користи, освен ако правилото DnsOverHttpsMode не е поставено на<ph name="SECURE_DNS_MODE_AUTOMATIC" /> или <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Долниот лист со барање за зачувување картичка е отворен на цел екран.</translation>
 <translation id="5695542892312572833">Дали сакате да користите Windows Hello за да го потврдите и завршите купувањето?</translation>
 <translation id="5699628521141772782">Млечни производи и јајца</translation>
 <translation id="5701381305118179107">Центар</translation>
@@ -3236,6 +3239,7 @@
 <translation id="7676643023259824263">Пребарајте текст во привремената меморија, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Прегледајте ја и управувајте со историјата на прелистувањето во поставките за Chrome</translation>
 <translation id="7679947978757153706">Бејзбол</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, истекува на <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Виртуелни спортови</translation>
 <translation id="7682287625158474539">Испорака</translation>
 <translation id="7682451652090915298">Рагби</translation>

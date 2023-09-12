@@ -312,6 +312,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="265156376773362237">Normál előtöltés</translation>
 <translation id="2656405586795711023">Webalkalmazások</translation>
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
+<translation id="2673169232805572412">Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chrome elküldheti az URL-eket (az oldaltartalmak egyes részleteivel együtt) a Google-nak.</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
 <translation id="2708051474374549906">Valós idejű, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen, amelyek az Ön Google-nak küldött böngészési adatain alapulnak.</translation>
 <translation id="2708226184420201102">Megnyitás a(z) <ph name="PRODUCT_NAME" /> böngészőben</translation>

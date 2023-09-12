@@ -1432,6 +1432,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2102495993840063010">Android-appar</translation>
 <translation id="2104166991923847969">Inaktivera surfzon automatiskt</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> har dolts</translation>
+<translation id="2108204112555497972">Genomsöktes för <ph name="NUM_DAYS_HOURS_MINUTES" /> sedan</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# telefonnummer}}</translation>
 <translation id="2110941575868943054">Tillåts att söka efter Bluetooth-enheter</translation>
 <translation id="211144231511833662">Rensa typer</translation>
@@ -2473,6 +2474,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2907619724991574506">Webbadresser för start</translation>
 <translation id="2907798539022650680">Det gick inte att ansluta till <ph name="NAME" />: <ph name="DETAILS" />
     Meddelande från servern: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Öppna Word-, Excel- och PowerPoint-filer</translation>
 <translation id="2908162660801918428">Lägg till mediegalleri efter katalog</translation>
 <translation id="2908358077082926882">Tryck på <ph name="CURRENTKEY" /> igen för att ta bort tilldelningen och <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Det gick inte att ansluta till Googles tjänster. Kontrollera nätverksanslutningen och försök igen. Felkod: <ph name="ERROR_CODE" />.</translation>
@@ -6114,6 +6116,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5920543303088087579">Administratören har inaktiverat möjligheten att ansluta till det här nätverket</translation>
 <translation id="5921257443092182237">Med Googles platstjänst används källor som wifi, mobila nätverk och sensorer för att avgöra enhetens plats.</translation>
 <translation id="5924047253200400718">Få hjälp <ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Fråga innan Microsoft-filer kopieras eller flyttas till Google Drive</translation>
 <translation id="5924527146239595929">Ta ett nytt foto eller välj ett foto eller en ikon som redan finns.
           <ph name="LINE_BREAK" />
           Bilden visas på inloggnings- och låsskärmen på Chromebook.</translation>
@@ -6532,6 +6535,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6263284346895336537">Inte kritiskt</translation>
 <translation id="6264365405983206840">Markera &amp;alla</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
+<translation id="6265159465845424232">Fråga innan Microsoft-filer kopieras eller flyttas till Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ta bort port</translation>
 <translation id="6266532094411434237">Ansluter till <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Välj ett certifikat för att styrka din identitet för <ph name="HOST_NAME" /></translation>
@@ -7291,6 +7295,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6897363604023044284">Välj vilka webbplatser du vill rensa</translation>
 <translation id="6897688156970667447">Användbart vid svag belysning och sparar batteri</translation>
 <translation id="6897972855231767338">Läs mer om att surfa som gäst</translation>
+<translation id="6898438890765871056">Öppna OneDrive-mappen</translation>
 <translation id="6898440773573063262">Nu går det att konfigurera kioskappar så att de startas automatiskt på den här enheten.</translation>
 <translation id="6899427698619335650">Tillåt flexibla diakritiska tecken. Du kan till exempel skriva ”anh1” eller ”a1nh” om du vill få ”ánh”.</translation>
 <translation id="6900284862687837908">Bakgrundsapp: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8045,6 +8050,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7517959947270534934">Dina familjemedlemmar kan inte ta emot lösenord just nu. Be dem att uppdatera Chrome och synkronisera sina lösenord.</translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Visa genvägar</translation>
+<translation id="7521430434164837205">Microsoft 365-filer</translation>
 <translation id="7522255036471229694">Säg ”Ok Google”</translation>
 <translation id="7523117833414447032">När stora bokstäver läses upp</translation>
 <translation id="7523585675576642403">Byt namn på profil</translation>
@@ -9773,6 +9779,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8896830132794747524">Snabbare rörelser med musen flyttar markören längre</translation>
 <translation id="8898140163781851592">Primär musknapp</translation>
 <translation id="8898786835233784856">Välj nästa flik</translation>
+<translation id="8898790559170352647">Lägg till ditt Microsoft-konto</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8899851313684471736">Öppna länk i nytt f&amp;önster</translation>
 <translation id="8900413463156971200">Aktivera mobilnätverk</translation>

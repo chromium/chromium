@@ -1422,6 +1422,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2102495993840063010">Android lietotnes</translation>
 <translation id="2104166991923847969">Automātiski izslēgt tīklāju</translation>
 <translation id="2105809836724866556">Modulis “<ph name="MODULE_TITLE" />” ir paslēpts.</translation>
+<translation id="2108204112555497972">Pārbaudītas pirms šāda laika: <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Tālruņa numurs}zero{# tālruņa numuru}one{# tālruņa numurs}other{# tālruņa numuri}}</translation>
 <translation id="2110941575868943054">Atļauts meklēt Bluetooth ierīces</translation>
 <translation id="211144231511833662">Notīrīt veidus</translation>
@@ -2460,6 +2461,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2907619724991574506">Startēšanas vietrāži URL</translation>
 <translation id="2907798539022650680">Neizdevās izveidot savienojumu ar “<ph name="NAME" />”: <ph name="DETAILS" />
 Servera ziņojums: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Atvērt Word, Excel un PowerPoint failus</translation>
 <translation id="2908162660801918428">Multivides galerijas pievienošana pēc direktorija</translation>
 <translation id="2908358077082926882">Nospiediet “<ph name="CURRENTKEY" />” vēlreiz, lai noņemtu piešķiršanu un <ph name="RESPONSE" />.</translation>
 <translation id="2909506265808101667">Nevarēja izveidot savienojumu ar Google pakalpojumiem. Pārbaudiet tīkla savienojumu un mēģiniet vēlreiz. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
@@ -6098,6 +6100,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5920543303088087579">Jūsu administrators atspējoja savienojuma izveidi ar šo tīklu.</translation>
 <translation id="5921257443092182237">Google atrašanās vietu pakalpojumos tiek izmantoti tādi avoti kā Wi-Fi, mobilais tīkls un sensori, lai palīdzētu noteikt šīs ierīces atrašanās vietu.</translation>
 <translation id="5924047253200400718">Saņemt palīdzību<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Jautāt pirms Microsoft failu kopēšanas vai pārvietošanas uz Google disku</translation>
 <translation id="5924527146239595929">Uzņemiet jaunu fotoattēlu vai izvēlieties kādu no esošajiem fotoattēliem vai ikonām.
     <ph name="LINE_BREAK" />
     Šis attēls būs redzams Chromebook datorā pierakstīšanās ekrānā un bloķēšanas ekrānā.</translation>
@@ -6515,6 +6518,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6263284346895336537">Nav kritisks</translation>
 <translation id="6264365405983206840">&amp;Atlasīt visu</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
+<translation id="6265159465845424232">Jautāt pirms Microsoft failu kopēšanas vai pārvietošanas uz pakalpojumu Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Noņemt portu</translation>
 <translation id="6266532094411434237">Notiek savienojuma izveide ar ierīci “<ph name="DEVICE" />”…</translation>
 <translation id="6267166720438879315">Atlasiet sertifikātu, lai autentificētu sevi vietnē <ph name="HOST_NAME" /></translation>
@@ -7278,6 +7282,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6897363604023044284">Izvēlēties, kuru vietņu datus notīrīt</translation>
 <translation id="6897688156970667447">Vājā apgaismojumā noderīgs motīvs, kas taupa akumulatora enerģiju</translation>
 <translation id="6897972855231767338">Uzzināt vairāk par pārlūkošanu viesa režīmā</translation>
+<translation id="6898438890765871056">Atvērt OneDrive mapi</translation>
 <translation id="6898440773573063262">Kioska lietojumprogrammas tagad var konfigurēt automātiskai palaišanai šajā ierīcē.</translation>
 <translation id="6899427698619335650">Atļaujiet elastīgu diakritisko zīmju ievadi. Piemēram, varat ievadīt “anh1” vai “a1nh”, lai iegūtu “ánh”.</translation>
 <translation id="6900284862687837908">Fona lietotne: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8032,6 +8037,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7517959947270534934">Jūsu ģimenes loceklis pašlaik nevar saņemt paroles. Lūdziet viņam atjaunināt pārlūku Chrome un sinhronizēt paroles.</translation>
 <translation id="7520766081042531487">Inkognito režīma portāls: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Rādīt saīsnes</translation>
+<translation id="7521430434164837205">Microsoft 365 faili</translation>
 <translation id="7522255036471229694">Sakiet frāzi “Ok Google”</translation>
 <translation id="7523117833414447032">Lasot lielos burtus</translation>
 <translation id="7523585675576642403">Profila pārdēvēšana</translation>
@@ -9761,6 +9767,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8896830132794747524">Ātrākas kustības ar peli pārvietos kursoru tālāk</translation>
 <translation id="8898140163781851592">Primārā peles poga</translation>
 <translation id="8898786835233784856">Atlasīt nākamo cilni</translation>
+<translation id="8898790559170352647">Pievienot Microsoft kontu</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="8899851313684471736">Atvērt saiti jaunā logā</translation>
 <translation id="8900413463156971200">Mobilā tīkla iespējošana</translation>
