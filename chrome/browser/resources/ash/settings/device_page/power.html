@@ -61,46 +61,20 @@
     no-set-pref>
 </settings-toggle-button>
 
-<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+<template is="dom-if" if="[[!batteryStatus_.present]]" restamp>
   <div class$="[[getClassForRow_(batteryStatus_.present, 'idle')]]">
     <div id="powerIdleLabel" class="flex" aria-label="true">
       $i18n{powerIdleLabel}
     </div>
-    <template is="dom-if" if="[[!batteryStatus_.present]]" restamp>
-      <template is="dom-if" if="[[acIdleManaged_]]" restamp>
-        <cr-policy-indicator id="noBatteryAcIdleManagedIndicator"
-            indicator-type="devicePolicy"
-            icon-aria-label="$i18n{powerIdleWhileChargingAriaLabel}">
-        </cr-policy-indicator>
-      </template>
-      <select id="noBatteryAcIdleSelect" class="md-select"
-          on-change="onAcIdleSelectChange_"
-          disabled="[[shouldAcIdleSelectBeDisabled_]]"
-          aria-label="$i18n{powerIdleWhileChargingAriaLabel}"
-          deep-link-focus-id$="[[Setting.kPowerIdleBehaviorWhileCharging]]">
-        <template is="dom-repeat" items="[[acIdleOptions_]]">
-          <option value="[[item.value]]" selected="[[item.selected]]">
-            [[item.name]]
-          </option>
-        </template>
-      </select>
-    </template>
-  </div>
-</template>
 
-<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-  <div class$="[[getClassForRow_(batteryStatus_.present, 'idle')]]"
-      hidden="[[batteryStatus_.present]]">
-    <div id="powerIdleLabel" class="flex" aria-label="true">
-      $i18n{powerIdleLabel}
-    </div>
     <template is="dom-if" if="[[acIdleManaged_]]" restamp>
       <cr-policy-indicator id="noBatteryAcIdleManagedIndicator"
           indicator-type="devicePolicy"
           icon-aria-label="$i18n{powerIdleWhileChargingAriaLabel}">
       </cr-policy-indicator>
     </template>
-    <select id="noBatteryAcIdleSelect" class="md-select"
+    <select id="noBatteryAcIdleSelect"
+        class="md-select"
         on-change="onAcIdleSelectChange_"
         disabled="[[shouldAcIdleSelectBeDisabled_]]"
         aria-label="$i18n{powerIdleWhileChargingAriaLabel}"
@@ -115,6 +89,14 @@
 </template>
 
 <template is="dom-if" if="[[batteryStatus_.present]]" restamp>
+  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+    <div class$="[[getClassForRow_(batteryStatus_.present, 'idle')]]">
+      <div id="powerIdleLabel" class="flex" aria-label="true">
+        $i18n{powerIdleLabel}
+      </div>
+    </div>
+  </template>
+
   <div id="acIdleSettingBox"
       class$="[[getClassForRow_(batteryStatus_.present, 'acIdle')]]">
     <div class="flex" aria-hidden="true">

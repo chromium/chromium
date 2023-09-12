@@ -106,6 +106,7 @@ build_webui_tests("build") {
     "device_page/per_device_pointing_stick_test.ts",
     "device_page/per_device_touchpad_subsection_test.ts",
     "device_page/per_device_touchpad_test.ts",
+    "device_page/power_test.ts",
     "device_page/test_device_page_browser_proxy.ts",
 
     "guest_os/guest_os_shared_paths_test.ts",

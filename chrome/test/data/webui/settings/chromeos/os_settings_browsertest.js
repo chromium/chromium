@@ -307,13 +307,25 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
  ],
  [
-   'DevicePageFKeyRow', 'device_page/fkey_row_test.js', {
+   'DevicePageFKeyRow',
+   'device_page/fkey_row_test.js',
+   {
      enabled: [
        'ash::features::kInputDeviceSettingsSplit',
        'ash::features::kAltClickAndSixPackCustomization',
        'features::kSupportF11AndF12KeyShortcuts',
-     ]
-   }
+     ],
+   },
+ ],
+ [
+   'DevicePagePower',
+   'device_page/power_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
+ [
+   'DevicePagePowerRevamp',
+   'device_page/power_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],

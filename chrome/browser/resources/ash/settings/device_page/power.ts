@@ -38,7 +38,7 @@ interface IdleOption {
   selected: boolean;
 }
 
-interface SettingsPowerElement {
+export interface SettingsPowerElement {
   $: {
     adaptiveChargingToggle: SettingsToggleButtonElement,
     batterySaverToggle: SettingsToggleButtonElement,
@@ -50,7 +50,7 @@ interface SettingsPowerElement {
 const SettingsPowerElementBase = DeepLinkingMixin(RouteObserverMixin(
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsPowerElement extends SettingsPowerElementBase {
+export class SettingsPowerElement extends SettingsPowerElementBase {
   static get is() {
     return 'settings-power';
   }
