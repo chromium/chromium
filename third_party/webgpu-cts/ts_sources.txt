@@ -337,6 +337,7 @@ src/webgpu/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
 src/webgpu/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/fragment_state.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/shader_module.spec.ts
+src/webgpu/compat/api/validation/render_pipeline/vertex_state.spec.ts
 src/webgpu/compat/api/validation/texture/createTexture.spec.ts
 src/webgpu/compat/api/validation/texture/cubeArray.spec.ts
 src/webgpu/idl/exposed.html.ts
