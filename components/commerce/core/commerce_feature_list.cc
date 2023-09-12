@@ -236,7 +236,7 @@ BASE_FEATURE(kShoppingPageTypes,
 
 BASE_FEATURE(kShoppingPageTypesRegionLaunched,
              "ShoppingPageTypesRegionLaunched",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRetailCoupons, "RetailCoupons", base::FEATURE_ENABLED_BY_DEFAULT);
 
