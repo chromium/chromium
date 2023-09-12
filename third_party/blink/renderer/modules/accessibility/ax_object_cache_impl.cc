@@ -1530,6 +1530,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(
     parent = GetOrCreate(layout_text_parent);
     if (!parent) {
       DCHECK(inline_text_box->GetText().ContainsOnlyWhitespaceOrEmpty() ||
+             IsFrozen() ||
              !IsRelevantPseudoElementDescendant(*layout_text_parent))
           << "No parent for non-whitespace inline textbox: "
           << layout_text_parent
@@ -1567,6 +1568,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(
 #endif
     DCHECK(obj->ParentObject() == parent);
     return obj;
+  }
+
+  // New AXObjects cannot be created when the tree is frozen.
+  if (IsFrozen()) {
+    return nullptr;
   }
 
   AXObject* new_obj = CreateFromInlineTextBox(inline_text_box);
