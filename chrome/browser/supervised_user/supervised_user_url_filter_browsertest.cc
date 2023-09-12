@@ -78,9 +78,8 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
         {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
          supervised_user::kSupervisedPrefsControlledBySupervisedStore},
         {features::kHttpsUpgrades});
-    supervision_mixin_.InitFeatures();
   }
-  ~SupervisedUserURLFilterTest() override = default;
+  ~SupervisedUserURLFilterTest() override { feature_list_.Reset(); }
 
   bool ShownPageIsInterstitial(Browser* browser) {
     WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
@@ -112,10 +111,6 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
 
  protected:
-  void SetUpOnMainThread() override {
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-  }
-
   // Acts like a synchronous call to history's QueryHistory. Modified from
   // history_querying_unittest.cc.
   void QueryHistory(history::HistoryService* history_service,
@@ -137,7 +132,6 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
-
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
@@ -481,8 +475,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 
   GURL test_url("http://www.example.com/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
   // Set the host as blocked and wait for the interstitial to appear.

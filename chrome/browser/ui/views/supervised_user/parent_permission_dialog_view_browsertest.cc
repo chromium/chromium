@@ -243,9 +243,6 @@ class ParentPermissionDialogViewHarness
 // internal logic that orchestrates the parental permission process.
 class ParentPermissionDialogViewTest
     : public SupportsTestDialog<MixinBasedInProcessBrowserTest> {
- public:
-  ParentPermissionDialogViewTest() { supervision_mixin_.InitFeatures(); }
-
  protected:
   void ShowUi(const std::string& name) override {
     if (name == "default") {

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,20 +31,6 @@ std::unique_ptr<net::test_server::HttpResponse> FromProtoData(
   return http_response;
 }
 
-// TODO(b/294793274): Stop sharing embedded test server with other services to
-// obsolete this check.
-bool IsKidsManagementApiRequest(base::StringPiece path) {
-  static std::vector<FetcherConfig> configs{kClassifyUrlConfig,
-                                            kListFamilyMembersConfig,
-                                            kCreatePermissionRequestConfig};
-  for (const FetcherConfig& config : configs) {
-    if (config.service_path == path) {
-      return true;
-    }
-  }
-  return false;
-}
-
 kids_chrome_management::ClassifyUrlResponse ClassifyUrlResponse(
     kids_chrome_management::ClassifyUrlResponse::DisplayClassification
         classification) {
@@ -57,10 +42,10 @@ kids_chrome_management::ClassifyUrlResponse ClassifyUrlResponse(
 
 void SetHttpEndpointsForKidsManagementApis(
     base::test::ScopedFeatureList& feature_list,
-    base::StringPiece endpoint) {
+    base::StringPiece hostname) {
   feature_list.InitAndEnableFeatureWithParameters(
       kSupervisedUserProtoFetcherConfig,
-      {{"service_endpoint", base::StrCat({"http://", endpoint})}});
+      {{"service_endpoint", base::StrCat({"http://", hostname})}});
 }
 
 KidsManagementApiServerMock::KidsManagementApiServerMock() = default;
@@ -73,15 +58,16 @@ KidsManagementApiServerMock::~KidsManagementApiServerMock() {
 }
 
 void KidsManagementApiServerMock::InstallOn(
-    raw_ptr<net::test_server::EmbeddedTestServer> test_server_) {
-  CHECK(!test_server_->Started());
+    net::test_server::EmbeddedTestServer& test_server_) {
+  CHECK(!test_server_.Started())
+      << "Cannot install handlers onto running server.";
 
-  test_server_->RegisterRequestHandler(base::BindRepeating(
+  test_server_.RegisterRequestHandler(base::BindRepeating(
       &KidsManagementApiServerMock::ClassifyUrl, base::Unretained(this)));
-  test_server_->RegisterRequestHandler(base::BindRepeating(
+  test_server_.RegisterRequestHandler(base::BindRepeating(
       &KidsManagementApiServerMock::ListFamilyMembers, base::Unretained(this)));
 
-  test_server_->RegisterRequestMonitor(base::BindRepeating(
+  test_server_.RegisterRequestMonitor(base::BindRepeating(
       &KidsManagementApiServerMock::RequestMonitorDispatcher,
       base::Unretained(this)));
 }
@@ -119,7 +105,9 @@ KidsManagementApiServerMock::ClassifyUrl(
     return nullptr;
   }
 
-  CHECK(!classifications_.empty()) << "Expected classification.";
+  CHECK(!classifications_.empty())
+      << "Expected classification. Perhaps no classifications are queued? "
+         "Consult ::Queue*UrlClassification.";
 
   kids_chrome_management::ClassifyUrlResponse::DisplayClassification
       classification = classifications_.front();
@@ -149,10 +137,6 @@ base::CallbackListSubscription KidsManagementApiServerMock::Subscribe(
 
 void KidsManagementApiServerMock::RequestMonitorDispatcher(
     const net::test_server::HttpRequest& request) {
-  if (!IsKidsManagementApiRequest(request.GetURL().path())) {
-    return;
-  }
-
   request_monitors_.Notify(request.GetURL().path(), request.content);
 }
 

@@ -590,16 +590,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class ContextMenuForSupervisedUsersBrowserTest : public ContextMenuBrowserTest {
- public:
-  ContextMenuForSupervisedUsersBrowserTest() {
-    supervision_mixin_.InitFeatures();
-  }
-
+ protected:
   supervised_user::SupervisedUserService* GetSupervisedUserService() {
     return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   }
 
- protected:
   // Supervision mixin hooks kids management api (including ClassifyUrl) onto
   // given embedded test server. This server is run in separate process and is
   // responding to all requests as configured in this mixin.
@@ -659,8 +654,8 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
-    supervision_mixin_.embedded_test_server_setup_mixin()
-        .GetApiMock()
+    supervision_mixin_.api_mock_setup_mixin()
+        .api_mock()
         .QueueRestrictedUrlClassification();
   }
 
@@ -710,8 +705,8 @@ IN_PROC_BROWSER_TEST_F(
   ContextMenuWaiter menu_observer;
 
   if (GetSupervisedUserService()->IsURLFilteringEnabled()) {
-    supervision_mixin_.embedded_test_server_setup_mixin()
-        .GetApiMock()
+    supervision_mixin_.api_mock_setup_mixin()
+        .api_mock()
         .QueueAllowedUrlClassification();
   }
 
@@ -793,8 +788,8 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  supervision_mixin_.embedded_test_server_setup_mixin()
-      .GetApiMock()
+  supervision_mixin_.api_mock_setup_mixin()
+      .api_mock()
       .QueueRestrictedUrlClassification();
   base::RunLoop().RunUntilIdle();
 
@@ -834,8 +829,8 @@ IN_PROC_BROWSER_TEST_F(
     SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
-  supervision_mixin_.embedded_test_server_setup_mixin()
-      .GetApiMock()
+  supervision_mixin_.api_mock_setup_mixin()
+      .api_mock()
       .QueueAllowedUrlClassification();
 
   base::RunLoop().RunUntilIdle();

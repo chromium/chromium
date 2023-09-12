@@ -66,6 +66,7 @@ SupervisionMixin::SupervisionMixin(
     : InProcessBrowserTestMixin(&test_mixin_host),
       test_base_(test_base),
       fake_gaia_mixin_(&test_mixin_host),
+      api_mock_setup_mixin_(test_mixin_host, test_base),
       consent_level_(options.consent_level),
       email_(options.email),
       sign_in_mode_(options.sign_in_mode) {}
@@ -80,8 +81,10 @@ SupervisionMixin::SupervisionMixin(
       fake_gaia_mixin_(&test_mixin_host),
       embedded_test_server_setup_mixin_(absl::in_place,
                                         test_mixin_host,
+                                        test_base,
                                         embedded_test_server,
                                         options.embedded_test_server_options),
+      api_mock_setup_mixin_(test_mixin_host, test_base),
       consent_level_(options.consent_level),
       email_(options.email),
       sign_in_mode_(options.sign_in_mode) {}
@@ -158,12 +161,6 @@ signin::IdentityTestEnvironment* SupervisionMixin::GetIdentityTestEnvironment()
 void SupervisionMixin::SetNextReAuthStatus(
     GaiaAuthConsumer::ReAuthProofTokenStatus status) {
   fake_gaia_mixin_.fake_gaia()->SetNextReAuthStatus(status);
-}
-
-void SupervisionMixin::InitFeatures() {
-  if (embedded_test_server_setup_mixin_.has_value()) {
-    embedded_test_server_setup_mixin_->InitFeatures();
-  }
 }
 
 FamilyFetchedLock::FamilyFetchedLock(

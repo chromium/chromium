@@ -9889,6 +9889,8 @@ if (!is_android) {
 
     if (enable_supervised_users) {
       sources += [
+        "supervised_user/api_mock_setup_mixin.cc",
+        "supervised_user/api_mock_setup_mixin.h",
         "supervised_user/embedded_test_server_setup_mixin.cc",
         "supervised_user/embedded_test_server_setup_mixin.h",
         "supervised_user/supervision_mixin.cc",

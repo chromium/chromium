@@ -23,27 +23,32 @@ namespace supervised_user {
 
 // Configures the scoped feature list so that the related feature is initialized
 // with right parameters to divert kids management api traffic to an http
-// endpoint.
+// endpoint. See supervised_user::FetcherConfig::service_endpoint for details.
 void SetHttpEndpointsForKidsManagementApis(
     base::test::ScopedFeatureList& feature_list,
-    base::StringPiece endpoint);
+    base::StringPiece hostname);
 
 // Simplified implementation of the real Kids Management API server, purposed to
 // serve as request handlers for the net::test_server::EmbeddedTestServer.
 class KidsManagementApiServerMock {
  public:
-  using RequestMonitor = void(base::StringPiece, base::StringPiece);
+  // Introduce a signature that is nicer to use with gtest/gmock expectations.
+  using RequestMonitor = void(base::StringPiece request_path,
+                              base::StringPiece request_content);
 
   KidsManagementApiServerMock();
   KidsManagementApiServerMock(KidsManagementApiServerMock&& other) = delete;
   KidsManagementApiServerMock& operator=(KidsManagementApiServerMock&& other) =
       delete;
   ~KidsManagementApiServerMock();
+
   // Installs this mock on a given Embedded Test Server. The server must outlive
   // this instance and must not be started prior to calling this method.
   // Caution: installed handlers are executed until one matches the request.
+  void InstallOn(net::test_server::EmbeddedTestServer& test_server_);
 
-  void InstallOn(raw_ptr<net::test_server::EmbeddedTestServer> test_server_);
+  // Subscribes a monitor to this api server. The monitor will be notified about
+  // every request, to all of its endpoints.
   base::CallbackListSubscription Subscribe(
       base::RepeatingCallback<RequestMonitor> monitor);
 
