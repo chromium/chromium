@@ -73,6 +73,19 @@
       "use_remoteexec": true
     }
   },
+  "chromeos-brya-chrome-skylab": {
+    "args_file": "//build/args/chromeos/brya.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "use_remoteexec": true
+    }
+  },
   "chromeos-eve-arc-r-chrome": {
     "args_file": "//build/args/chromeos/eve-arc-r.gni",
     "gn_args": {
