@@ -46,6 +46,7 @@ js_type_check("closure_compile") {
     ":reimaging_firmware_update_page_test",
     ":reimaging_provisioning_page_test",
     ":repair_component_chip_test",
+    ":shimless_3p_diag_test",
 
     # TODO(gavindodd): shimless_rma_app_test causes closure errors e.g.
     # onc_mojo.js:492:4: ERROR - [JSC_NOT_FUNCTION_TYPE]
@@ -306,6 +307,16 @@ js_library("repair_component_chip_test") {
     "$externs_path/mocha-2.5.js",
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
   ]
+}
+
+js_library("shimless_3p_diag_test") {
+  deps = [
+    "..:chai_assert",
+    "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
+    "//ash/webui/shimless_rma/resources:mojo_interface_provider",
+    "//ash/webui/shimless_rma/resources:shimless_rma_types",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("wrapup_finalize_page_test") {

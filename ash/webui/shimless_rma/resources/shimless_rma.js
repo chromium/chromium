@@ -34,6 +34,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
+import {Shimless3pDiagnostics} from './shimless_3p_diagnostics.js';
 import {ErrorObserverInterface, ErrorObserverReceiver, ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, RmadErrorCode, SaveLogResponse, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma_types.js';
 
 /**
@@ -504,7 +505,7 @@ export class ShimlessRma extends ShimlessRmaBase {
 
     /** @private {?Function} */
     this.onKeyDownCallback_ = (event) => {
-      this.isOpenLogsKeyboardShortcut_(event);
+      this.handleKeyboardShortcut_(event);
     };
   }
 
@@ -905,6 +906,17 @@ export class ShimlessRma extends ShimlessRmaBase {
     }
   }
 
+  /** @protected */
+  launch3pDiagnostics_() {
+    if (this.allButtonsDisabled_) {
+      return;
+    }
+
+    const diagnostics = /** @type {!Shimless3pDiagnostics} */ (
+        this.shadowRoot.querySelector('#shimless3pDiagnostics'));
+    diagnostics.launch3pDiagnostics();
+  }
+
   /** @private */
   saveLog_() {
     this.shimlessRmaService_.saveLog().then(
@@ -1005,18 +1017,20 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
-   * Opens the logs dialog if the `Alt + Shift + L` keyboard shortcut is
-   * pressed.
    * @param {Event} event
    * @private
    */
-  isOpenLogsKeyboardShortcut_(event) {
-    const altKeyPressed = event.altKey;
-    const shiftKeyPressed = event.shiftKey;
-    const lKeyPressed = event.key.toLowerCase() === 'l';
-
-    if (altKeyPressed && shiftKeyPressed && lKeyPressed) {
-      this.openLogsDialog_();
+  handleKeyboardShortcut_(event) {
+    // Handle `Alt + Shift + {key}` shortcuts.
+    if (event.altKey && event.shiftKey) {
+      switch (event.key.toLowerCase()) {
+        case 'l':
+          this.openLogsDialog_();
+          break;
+        case 'd':
+          this.launch3pDiagnostics_();
+          break;
+      }
     }
   }
 }

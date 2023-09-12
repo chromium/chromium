@@ -40,6 +40,7 @@ polymer_element_files = [
   "reimaging_firmware_update_page.js",
   "reimaging_provisioning_page.js",
   "repair_component_chip.js",
+  "shimless_3p_diagnostics.js",
   "shimless_rma.js",
   "shimless_rma_fonts_css.js",
   "shimless_rma_shared_css.js",
@@ -129,6 +130,7 @@ js_type_check("closure_compile_module") {
     ":reimaging_firmware_update_page",
     ":reimaging_provisioning_page",
     ":repair_component_chip",
+    ":shimless_3p_diagnostics",
     ":shimless_rma",
     ":shimless_rma_types",
     ":shimless_rma_util",
@@ -168,6 +170,7 @@ js_library("shimless_rma") {
     ":reimaging_device_information_page",
     ":reimaging_firmware_update_page",
     ":reimaging_provisioning_page",
+    ":shimless_3p_diagnostics",
     ":shimless_rma_types",
     ":splash_screen",
     ":wrapup_finalize_page",
@@ -445,6 +448,17 @@ js_library("splash_screen") {
   deps = [
     ":base_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("shimless_3p_diagnostics") {
+  deps = [
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]
 }
 
