@@ -535,19 +535,6 @@ void ScalableIph::OnHasSavedPrintersChanged(bool has_saved_printers) {
   }
 }
 
-void ScalableIph::OnPhoneHubOnboardingEligibleChanged(
-    bool phonehub_onboarding_eligible) {
-  DCHECK_NE(phonehub_onboarding_eligible_, phonehub_onboarding_eligible);
-
-  SCALABLE_IPH_LOG(GetLogger())
-      << "Phonehub onboarding eligible state has "
-         "changed: Phone hub onboarding eligible: from: "
-      << phonehub_onboarding_eligible_
-      << " to: " << phonehub_onboarding_eligible;
-
-  phonehub_onboarding_eligible_ = phonehub_onboarding_eligible;
-}
-
 void ScalableIph::PerformActionForIphSession(ActionType action_type) {
   SCALABLE_IPH_LOG(GetLogger())
       << "Performing an action for an iph session. Action type:" << action_type;
@@ -800,8 +787,7 @@ bool ScalableIph::CheckCustomConditions(const base::Feature& feature) {
   SCALABLE_IPH_LOG(GetLogger())
       << "Checking custom conditions for " << feature.name;
   return CheckNetworkConnection(feature) && CheckClientAge(feature) &&
-         CheckHasSavedPrinters(feature) &&
-         CheckPhoneHubOnboardingEligible(feature);
+         CheckHasSavedPrinters(feature);
 }
 
 bool ScalableIph::CheckNetworkConnection(const base::Feature& feature) {
@@ -899,39 +885,6 @@ bool ScalableIph::CheckHasSavedPrinters(const base::Feature& feature) {
       << ". Current has saved printers value is " << has_saved_printers_
       << ". Result is " << result;
   return result;
-}
-
-bool ScalableIph::CheckPhoneHubOnboardingEligible(
-    const base::Feature& feature) {
-  SCALABLE_IPH_LOG(GetLogger())
-      << "Checking phone hub onboarding eligible for " << feature.name;
-
-  std::string phonehub_onboarding_eligible_value = GetParamValue(
-      feature, kCustomConditionPhoneHubOnboardingEligibleParamName);
-  if (phonehub_onboarding_eligible_value.empty()) {
-    SCALABLE_IPH_LOG(GetLogger())
-        << "No phone hub onboarding eligible condition specified.";
-    return true;
-  }
-
-  if (phonehub_onboarding_eligible_value !=
-      kCustomConditionPhoneHubOnboardingEligibleValueTrue) {
-    SCALABLE_IPH_LOG(GetLogger())
-        << "Only " << kCustomConditionPhoneHubOnboardingEligibleValueTrue
-        << " is a valid value for "
-        << kCustomConditionPhoneHubOnboardingEligibleParamName
-        << ". Provided value: " << phonehub_onboarding_eligible_value
-        << ". Condition not satisfied for a fail-safe behavior.";
-    return false;
-  }
-
-  SCALABLE_IPH_LOG(GetLogger())
-      << "Expected value is "
-      << kCustomConditionPhoneHubOnboardingEligibleValueTrue
-      << ". Current phone hub onboarding eligible value is "
-      << phonehub_onboarding_eligible_ << ". Result is "
-      << phonehub_onboarding_eligible_;
-  return phonehub_onboarding_eligible_;
 }
 
 const std::vector<const base::Feature*>& ScalableIph::GetFeatureList() const {

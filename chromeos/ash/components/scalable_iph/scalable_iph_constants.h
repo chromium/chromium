@@ -148,14 +148,6 @@ constexpr char kCustomConditionHasSavedPrintersParamName[] =
 constexpr char kCustomConditionHasSavedPrintersValueTrue[] = "True";
 constexpr char kCustomConditionHasSavedPrintersValueFalse[] = "False";
 
-// `PhoneHubOnboardingEligible` condition is true if feature status of phone hub
-// is either `kEligiblePhoneButNotSetUp` or `kDisabled`. Note that `kDisabled`
-// is a state where a user can enable it from settings. It means that the user
-// can set up phone hub. Only `True` is the supported value for now.
-constexpr char kCustomConditionPhoneHubOnboardingEligibleParamName[] =
-    "x_CustomConditionPhoneHubOnboardingEligible";
-constexpr char kCustomConditionPhoneHubOnboardingEligibleValueTrue[] = "True";
-
 // `UiType` param indicates which IPH UI is used for an event config.
 constexpr char kCustomUiTypeParamName[] = "x_CustomUiType";
 constexpr char kCustomUiTypeValueNotification[] = "Notification";

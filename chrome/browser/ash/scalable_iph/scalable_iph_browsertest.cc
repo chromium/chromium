@@ -21,15 +21,12 @@
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
-#include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -93,39 +90,6 @@ void SendSuspendDone() {
       power_manager::SuspendImminent::IDLE);
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 }
-
-class IsOnlineValueWaiter {
- public:
-  IsOnlineValueWaiter(scalable_iph::ScalableIphDelegate* scalable_iph_delegate,
-                      bool expected)
-      : scalable_iph_delegate_(scalable_iph_delegate), expected_(expected) {}
-
-  void Wait() {
-    if (scalable_iph_delegate_->IsOnline() == expected_) {
-      return;
-    }
-
-    repeating_timer_.Start(FROM_HERE, base::Milliseconds(10),
-                           base::BindRepeating(&IsOnlineValueWaiter::Check,
-                                               weak_ptr_factory_.GetWeakPtr()));
-    run_loop_.Run();
-  }
-
- private:
-  void Check() {
-    if (scalable_iph_delegate_->IsOnline() != expected_) {
-      return;
-    }
-
-    run_loop_.Quit();
-  }
-
-  raw_ptr<scalable_iph::ScalableIphDelegate> scalable_iph_delegate_;
-  bool expected_;
-  base::RepeatingTimer repeating_timer_;
-  base::RunLoop run_loop_;
-  base::WeakPtrFactory<IsOnlineValueWaiter> weak_ptr_factory_{this};
-};
 
 class AppListItemWaiter : public AppListModelUpdaterObserver {
  public:
@@ -239,11 +203,9 @@ class ScalableIphBrowserTestCustomConditionBase
 
     base::test::FeatureRefAndParams scalable_iph_feature(
         ash::features::kScalableIph, {});
-    base::test::FeatureRefAndParams scalable_iph_debug_feature(
-        ash::features::kScalableIphDebug, {});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {scalable_iph_feature, scalable_iph_debug_feature, test_config}, {});
+        {scalable_iph_feature, test_config}, {});
   }
 
   virtual void AppendCustomCondition(base::FieldTrialParams& params) = 0;
@@ -267,14 +229,6 @@ class ScalableIphBrowserTestNetworkConnectionOnline
     AddOnlineNetwork();
 
     ScalableIphBrowserTestNetworkConnection::SetUpOnMainThread();
-
-    // There is an async call for querying network status.
-    ash::ScalableIphDelegateImpl* scalable_iph_delegate_impl =
-        static_cast<ash::ScalableIphDelegateImpl*>(
-            mock_delegate()->fake_delegate());
-    IsOnlineValueWaiter is_online_value_waiter(scalable_iph_delegate_impl,
-                                               true);
-    is_online_value_waiter.Wait();
   }
 };
 
@@ -332,30 +286,6 @@ class ScalableIphBrowserTestHasSavedPrinters
         scalable_iph::kCustomConditionHasSavedPrintersParamName)] =
         scalable_iph::kCustomConditionHasSavedPrintersValueFalse;
   }
-};
-
-class ScalableIphBrowserTestPhoneHubOnboardingEligible
-    : public ScalableIphBrowserTestCustomConditionBase {
- public:
-  void SetUpOnMainThread() override {
-    ScalableIphBrowserTestCustomConditionBase::SetUpOnMainThread();
-    ash::ScalableIphDelegateImpl* scalable_iph_delegate_impl =
-        static_cast<ash::ScalableIphDelegateImpl*>(
-            mock_delegate()->fake_delegate());
-
-    scalable_iph_delegate_impl->SetFakeFeatureStatusProviderForTesting(
-        &fake_feature_status_provider_);
-  }
-
- protected:
-  void AppendCustomCondition(base::FieldTrialParams& params) override {
-    params[FullyQualified(
-        TestIphFeature(),
-        scalable_iph::kCustomConditionPhoneHubOnboardingEligibleParamName)] =
-        scalable_iph::kCustomConditionPhoneHubOnboardingEligibleValueTrue;
-  }
-
-  ash::phonehub::FakeFeatureStatusProvider fake_feature_status_provider_;
 };
 
 class ScalableIphBrowserTestParameterized
@@ -837,41 +767,22 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestOobe, SessionState) {
-  // This is testing post login OOBE screens. In post login OOBE screens:
-  // - A profile should be loaded.
-  // - Session state should be OOBE.
-  // - `ScalableIph` should not have been initialized yet.
-  ASSERT_EQ(ash::Shell::Get()->session_controller()->GetSessionState(),
-            session_manager::SessionState::OOBE)
-      << "This is an assertion for the test framework. Session state must be "
-         "OOBE during post-login OOBE";
-
-  EXPECT_EQ(nullptr, ScalableIphFactory::GetForBrowserContext(
-                         ProfileManager::GetActiveUserProfile()));
-  ASSERT_EQ(nullptr, mock_delegate());
-
-  // Complete post login OOBE screens. With the completion:
-  // - Session state will transit from `OOBE` to `LOGGED_IN_NOT_ACTIVE`, and
-  //   then `ACTIVE`.
-  // - `ScalableIph` should be initialized.
-  ash::WizardController::default_controller()->SkipPostLoginScreensForTesting();
-  GetLoginManagerMixin()->WaitForActiveSession();
-  ASSERT_EQ(ash::Shell::Get()->session_controller()->GetSessionState(),
-            session_manager::SessionState::ACTIVE)
-      << "This is an assertion for the test framework. Session state must be "
-         "ACTIVE after post-login OOBE";
-
-  EXPECT_NE(nullptr, ScalableIphFactory::GetForBrowserContext(
-                         ProfileManager::GetActiveUserProfile()));
-  SetUpMocks();
   EnableTestIphFeature();
-  ASSERT_TRUE(mock_delegate());
 
+  // Confirm that no trigger condition check should happen during OOBE.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(0);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+
+  // Confirm that a trigger condition check happens immediately after OOBE.
   EXPECT_CALL(*mock_tracker(),
               ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
       .Times(1);
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  ash::WizardController::default_controller()->SkipPostLoginScreensForTesting();
+  GetLoginManagerMixin()->WaitForActiveSession();
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
@@ -1070,43 +981,6 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHasSavedPrinters,
     run_loop.Run();
   }
 
-  EXPECT_CALL(*mock_delegate(),
-              ShowNotification(::testing::_, ::testing::NotNull()))
-      .Times(1);
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
-  testing::Mock::VerifyAndClearExpectations(mock_delegate());
-}
-
-// Test config is x_CustomConditionPhoneHubOnboardingEligible: True.
-IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPhoneHubOnboardingEligible,
-                       Eligible) {
-  EnableTestIphFeature();
-
-  // The condition should not be satisfied for `kNotEligibleForFeature`.
-  fake_feature_status_provider_.SetStatus(
-      ash::phonehub::FeatureStatus::kNotEligibleForFeature);
-  EXPECT_CALL(*mock_delegate(),
-              ShowNotification(::testing::_, ::testing::NotNull()))
-      .Times(0);
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
-  testing::Mock::VerifyAndClearExpectations(mock_delegate());
-
-  // The condition should be satisfied for `kEligiblePhoneButNotSetUp`.
-  fake_feature_status_provider_.SetStatus(
-      ash::phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
-  EXPECT_CALL(*mock_delegate(),
-              ShowNotification(::testing::_, ::testing::NotNull()))
-      .Times(1);
-  TriggerConditionsCheckWithAFakeEvent(
-      scalable_iph::ScalableIph::Event::kFiveMinTick);
-  testing::Mock::VerifyAndClearExpectations(mock_delegate());
-
-  // The condition should be satisfied for `kDisabled`. See the comment of
-  // `FeatureStatus::kDisabled` about the meaning of the enum value.
-  fake_feature_status_provider_.SetStatus(
-      ash::phonehub::FeatureStatus::kDisabled);
   EXPECT_CALL(*mock_delegate(),
               ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(1);

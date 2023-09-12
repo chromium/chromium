@@ -155,6 +155,7 @@ void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
     InitializeCerts(profile);
     InitializeCRLSetFetcher();
     InitializePrimaryProfileServices(profile, user);
+    InitializeScalableIph(profile);
 
     FamilyUserMetricsServiceFactory::GetForBrowserContext(profile);
   }
@@ -297,10 +298,6 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     // primary profile.
     phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     eche_app::EcheAppManagerFactory::GetForProfile(profile);
-
-    // `ScalableIph` depends on `PhoneHubManager`. Initialize after
-    // `PhoneHubManager`.
-    InitializeScalableIph(profile);
 
     plugin_vm::PluginVmManager* plugin_vm_manager =
         plugin_vm::PluginVmManagerFactory::GetForProfile(primary_profile_);
