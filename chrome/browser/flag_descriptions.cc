@@ -2859,6 +2859,11 @@ const char kPrivacyGuide3Name[] = "Privacy Guide V3";
 const char kPrivacyGuide3Description[] =
     "Enables updates to the Privacy Guide flow.";
 
+const char kPrivacyGuidePreloadName[] = "Privacy Guide Preload";
+const char kPrivacyGuidePreloadDescription[] =
+    "Adds the preload card to the privacy guide 3 flow. "
+    "This requires #privacy-guide-3 to also be enabled.";
+
 const char kPrivacySandboxAdsAPIsOverrideName[] = "Privacy Sandbox Ads APIs";
 const char kPrivacySandboxAdsAPIsOverrideDescription[] =
     "Enables Privacy Sandbox APIs: Attribution Reporting, Fledge, Topics, "
