@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -20,6 +21,8 @@ using mojom::blink::PermissionName;
 using mojom::blink::PermissionService;
 
 namespace {
+
+const base::TimeDelta kDefaultDisableTimeout = base::Milliseconds(500);
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -75,6 +78,12 @@ void HTMLPermissionElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
+void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
+  Element::AttachLayoutTree(context);
+  DisableClickingTemporarily(DisableReason::kRecentlyAttachedToDOM,
+                             kDefaultDisableTimeout);
+}
+
 // static
 Vector<PermissionDescriptorPtr>
 HTMLPermissionElement::ParsePermissionDescriptorsForTesting(
@@ -111,7 +120,9 @@ void HTMLPermissionElement::AttributeChanged(
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     event.SetDefaultHandled();
-    RequestPageEmbededPermissions();
+    if (IsClickingEnabled()) {
+      RequestPageEmbededPermissions();
+    }
     return;
   }
 
@@ -138,6 +149,44 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
 scoped_refptr<base::SingleThreadTaskRunner>
 HTMLPermissionElement::GetTaskRunner() {
   return GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault);
+}
+
+bool HTMLPermissionElement::IsClickingEnabled() {
+  // Remove expired reasons. If a non-expired reason is found, then clicking is
+  // disabled.
+  base::TimeTicks now = base::TimeTicks::Now();
+  while (!clicking_disabled_reasons_.empty()) {
+    auto it = clicking_disabled_reasons_.begin();
+    if (it->value < now) {
+      clicking_disabled_reasons_.erase(it);
+    } else {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void HTMLPermissionElement::DisableClickingIndefinitely(DisableReason reason) {
+  clicking_disabled_reasons_.insert(reason, base::TimeTicks::Max());
+}
+
+void HTMLPermissionElement::DisableClickingTemporarily(
+    DisableReason reason,
+    const base::TimeDelta& duration) {
+  base::TimeTicks timeout_time = base::TimeTicks::Now() + duration;
+
+  // If there is already an entry that expires later, keep the existing one.
+  if (clicking_disabled_reasons_.Contains(reason) &&
+      clicking_disabled_reasons_.at(reason) > timeout_time) {
+    return;
+  }
+
+  clicking_disabled_reasons_.Set(reason, timeout_time);
+}
+
+void HTMLPermissionElement::EnableClicking(DisableReason reason) {
+  clicking_disabled_reasons_.erase(reason);
 }
 
 }  // namespace blink
