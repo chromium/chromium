@@ -84,6 +84,10 @@ source_set("browser_tests") {
     sources += [ "search_engine_choice/search_engine_choice_js_browsertest.cc" ]
   }
 
+  if (enable_print_preview) {
+    sources += [ "print_preview/print_preview_browsertest.cc" ]
+  }
+
   if (is_chromeos_ash) {
     sources +=
         [ "chromeos/personalization_app/personalization_app_browsertest.cc" ]

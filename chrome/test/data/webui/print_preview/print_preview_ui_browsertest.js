@@ -248,17 +248,6 @@ TEST_F('PrintPreviewPolicyTest', 'PrintPdfAsImageDefault', function() {
   this.runMochaTest(policy_tests.TestNames.PrintPdfAsImageDefault);
 });
 
-var PrintPreviewSettingsSelectTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/settings_select_test.js';
-  }
-};
-
-TEST_F('PrintPreviewSettingsSelectTest', 'All', function() {
-  mocha.run();
-});
-
 var PrintPreviewSelectMixinTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {
@@ -378,30 +367,6 @@ var PrintPreviewModelTestCros = class extends PrintPreviewTest {
 
 TEST_F('PrintPreviewModelTestCros', 'PrintToGoogleDriveCros', function() {
   this.runMochaTest(model_test.TestNames.PrintToGoogleDriveCros);
-});
-GEN('#endif');
-
-var PrintPreviewModelSettingsAvailabilityTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/model_settings_availability_test.js';
-  }
-};
-
-TEST_F('PrintPreviewModelSettingsAvailabilityTest', 'All', function() {
-  mocha.run();
-});
-
-GEN('#if BUILDFLAG(IS_CHROMEOS)');
-var PrintPreviewModelSettingsPolicyTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/model_settings_policy_test.js';
-  }
-};
-
-TEST_F('PrintPreviewModelSettingsPolicyTest', 'All', function() {
-  mocha.run();
 });
 GEN('#endif');
 
@@ -1626,126 +1591,3 @@ TEST_F(
       this.runMochaTest(
           scaling_settings_test.TestNames.InputNotDisabledOnValidityChange);
     });
-
-var PrintPreviewCopiesSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/copies_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewCopiesSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewMediaSizeSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/media_size_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewMediaSizeSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewMediaTypeSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/media_type_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewMediaTypeSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewDpiSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/dpi_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewDpiSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewOtherOptionsSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/other_options_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewOtherOptionsSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewLayoutSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/layout_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewLayoutSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewColorSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/color_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewColorSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewMarginsSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/margins_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewMarginsSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewPagesPerSheetSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/pages_per_sheet_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewPagesPerSheetSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-var PrintPreviewDuplexSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/duplex_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewDuplexSettingsTest', 'All', function() {
-  mocha.run();
-});
-
-GEN('#if BUILDFLAG(IS_CHROMEOS)');
-var PrintPreviewPinSettingsTest = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/pin_settings_test.js';
-  }
-};
-
-TEST_F('PrintPreviewPinSettingsTest', 'All', function() {
-  mocha.run();
-});
-GEN('#endif');
