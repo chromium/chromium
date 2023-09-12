@@ -1,5 +1,10 @@
 <style>
   button {
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-color: var(--cr-link-color);
+    --cr-icon-ripple-margin: 0;
+    --cr-icon-ripple-size: 16px;
+    --cr-icon-size: contain;
     --iron-icon-fill-color: var(--cr-link-color);
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
@@ -26,6 +31,7 @@
   }
 
   :host-context([chrome-refresh-2023]) button {
+    --cr-icon-color: var(--color-chip-icon, var(--cr-fallback-color-primary));
     --iron-icon-fill-color: var(--color-chip-icon,
         var(--cr-fallback-color-primary));
     border-color: var(--color-chip-border,
@@ -81,6 +87,7 @@
 
   @media (prefers-color-scheme: dark) {
     button[selected] {
+      --cr-icon-color: var(--google-grey-900);
       --iron-icon-fill-color: var(--google-grey-900);
       background-color: var(--google-blue-300);
       border-color: var(--google-blue-300);
@@ -89,6 +96,8 @@
   }
 
   :host-context([chrome-refresh-2023]) button[selected] {
+    --cr-icon-color: var(--color-chip-icon-selected,
+        var(--cr-fallback-color-on-tonal-container));
     --iron-icon-fill-color: var(--color-chip-icon-selected,
         var(--cr-fallback-color-on-tonal-container));
     background-color: var(--color-chip-background-selected,

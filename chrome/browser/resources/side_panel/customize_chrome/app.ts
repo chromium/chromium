@@ -4,6 +4,8 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './appearance.js';
 import './cards.js';

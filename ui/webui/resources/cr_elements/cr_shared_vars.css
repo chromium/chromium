@@ -330,6 +330,8 @@ html[chrome-refresh-2023] {
       var(--cr-fallback-color-on-surface));
   --cr-secondary-text-color: var(--color-secondary-foreground,
       var(--cr-fallback-color-on-surface-variant));
+  --cr-link-color: var(--color-link-foreground-default,
+      var(--cr-fallback-color-primary));
 
   /* Layout */
   --cr-button-height: 36px;

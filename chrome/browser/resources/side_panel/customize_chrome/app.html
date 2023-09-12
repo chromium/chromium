@@ -1,4 +1,4 @@
-<style include="sp-shared-style">
+<style include="cr-icons sp-shared-style">
   #container {
     box-sizing: border-box;
     color: var(--cr-primary-text-color);
@@ -64,6 +64,36 @@
   :host-context([chrome-refresh-2023]) customize-chrome-appearance {
     margin-bottom: 0;
   }
+
+  #extensions .description {
+    color: var(--cr-secondary-text-color);
+    font-weight: 400;
+    padding: 0 16px 4px;
+  }
+
+  .description a {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
+  #buttonContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 16px;
+  }
+
+  #couponsButton .cr-icon {
+    --cr-icon-image: url(icons/coupons.svg);
+  }
+
+  #writingButton .cr-icon {
+    --cr-icon-image: url(icons/writing.svg);
+  }
+
+  #productivityButton .cr-icon {
+    --cr-icon-image: url(icons/productivity.svg);
+  }
 </style>
 <iron-pages id="container"
     class="sp-scroller sp-scroller-top-of-page sp-scroller-bottom-of-page"
@@ -108,6 +138,23 @@
         <sp-heading hide-back-button>
           <h2 slot="heading">Extensions</h2>
         </sp-heading>
+        <div class="description">
+          Customize your browser even more with extensions from the <a href="#">Chrome Web Store</a>
+        </div>
+        <div id="buttonContainer">
+          <cr-chip id="couponsButton" chip-role="link">
+            <div class="cr-icon"></div>
+            Find coupons
+          </cr-chip>
+          <cr-chip id="writingButton" chip-role="link">
+            <div class="cr-icon"></div>
+            Get writing help
+          </cr-chip>
+          <cr-chip id="productivityButton" chip-role="link">
+            <div class="cr-icon"></div>
+            Increase your productivity
+          </cr-chip>
+        </div>
       </div>
     </template>
   </div>
