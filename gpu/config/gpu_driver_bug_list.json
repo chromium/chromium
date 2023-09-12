@@ -4216,6 +4216,24 @@
       "features": [
         "disable_accelerated_vp9_encode"
       ]
+    },
+    {
+      "id": 415,
+      "cr_bugs": [1464136],
+      "description": "Disable VP9 and H.264 video acceleration on Elkhart Lake Intel devices",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_series": [
+        "elkhartlake"
+      ],
+      "features": [
+        "disable_accelerated_h264_decode",
+        "disable_accelerated_h264_encode",
+        "disable_accelerated_vp9_decode",
+        "disable_accelerated_vp9_encode",
+        "disable_accelerated_vp9_profile2_decode"
+      ]
     }
   ]
 }
