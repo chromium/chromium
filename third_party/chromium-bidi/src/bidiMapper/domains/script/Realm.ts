@@ -16,6 +16,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {
   ChromiumBidi,
   type BrowsingContext,
@@ -454,7 +455,7 @@ export class Realm {
       // The check can be done on the `deserialization` step, but this approach
       // helps to save round-trips.
       if (
-        error.code === -32000 &&
+        error.code === CdpErrorConstants.GENERIC_ERROR &&
         [
           'Could not find object with given id',
           'Argument should belong to the same JavaScript world as target object',
@@ -515,7 +516,7 @@ export class Realm {
         // Heuristic to detect "no such node" exception. Based on the  specific
         // CDP implementation.
         if (
-          error.code === -32000 &&
+          error.code === CdpErrorConstants.GENERIC_ERROR &&
           error.message === 'No node with given id found'
         ) {
           throw new NoSuchNodeException(
@@ -761,7 +762,7 @@ export class Realm {
       // Ignore the error if so.
       if (
         !(
-          error.code === -32000 &&
+          error.code === CdpErrorConstants.GENERIC_ERROR &&
           (error as Error).message === 'Invalid remote object id'
         )
       ) {

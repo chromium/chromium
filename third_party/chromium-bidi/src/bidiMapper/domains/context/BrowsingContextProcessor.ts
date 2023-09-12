@@ -28,6 +28,7 @@ import type {EventManager} from '../events/EventManager.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
+import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 
 import {BrowsingContextImpl} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
@@ -237,7 +238,7 @@ export class BrowsingContextProcessor {
       // Example is navigating to faulty SSL certificate
       if (
         !(
-          error.code === -32000 &&
+          error.code === CdpErrorConstants.GENERIC_ERROR &&
           error.message === 'Not attached to an active page'
         )
       ) {
