@@ -19,13 +19,13 @@ namespace {
 std::string EncryptToken(const std::string& system_salt,
                          const std::string& dm_token) {
   ash::CryptohomeTokenEncryptor encryptor(system_salt);
-  return encryptor.EncryptWithSystemSalt(dm_token);
+  return encryptor.WeakEncryptWithSystemSalt(dm_token);
 }
 
 std::string DecryptToken(const std::string& system_salt,
                          const std::string encrypted_dm_token) {
   ash::CryptohomeTokenEncryptor encryptor(system_salt);
-  return encryptor.DecryptWithSystemSalt(encrypted_dm_token);
+  return encryptor.WeakDecryptWithSystemSalt(encrypted_dm_token);
 }
 
 }  // namespace

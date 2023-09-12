@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <vector>
 
 #include "base/logging.h"
@@ -16,6 +17,7 @@
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "crypto/encryptor.h"
 #include "crypto/nss_util.h"
+#include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/symmetric_key.h"
 
@@ -38,52 +40,105 @@ CryptohomeTokenEncryptor::~CryptohomeTokenEncryptor() {
 }
 
 std::string CryptohomeTokenEncryptor::EncryptWithSystemSalt(
-    const std::string& token) {
+    std::string_view token) {
   // Don't care about token encryption while debugging.
   if (!base::SysInfo::IsRunningOnChromeOS())
-    return token;
+    return std::string(token);
 
   if (!system_salt_key_) {
     LOG(WARNING) << "System salt key is not available for encrypt.";
     return std::string();
   }
-  return EncryptTokenWithKey(system_salt_key_.get(),
-                             system_salt_,
-                             token);
+
+  // Encrypt the token using the system salt as the key and a nonce as the
+  // counter.
+  crypto::Encryptor encryptor;
+  if (!encryptor.Init(system_salt_key_.get(), crypto::Encryptor::CTR,
+                      std::string())) {
+    LOG(WARNING) << "Failed to initialize Encryptor.";
+    return std::string();
+  }
+  std::array<uint8_t, kNonceSize> nonce;
+  crypto::RandBytes(nonce);
+  CHECK(encryptor.SetCounter(nonce));
+  std::string encoded_token;
+  if (!encryptor.Encrypt(token, &encoded_token)) {
+    LOG(WARNING) << "Failed to encrypt token.";
+    return std::string();
+  }
+
+  // Return a concatenation of the nonce (counter) and the encrypted data, both
+  // hex-encoded.
+  return base::ToLowerASCII(
+      base::HexEncode(nonce) +
+      base::HexEncode(encoded_token.data(), encoded_token.size()));
 }
 
 std::string CryptohomeTokenEncryptor::DecryptWithSystemSalt(
-    const std::string& encrypted_token_hex) {
+    std::string_view encrypted_token_hex) {
   // Don't care about token encryption while debugging.
-  if (!base::SysInfo::IsRunningOnChromeOS())
-    return encrypted_token_hex;
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return std::string(encrypted_token_hex);
+  }
 
   if (!system_salt_key_) {
     LOG(WARNING) << "System salt key is not available for decrypt.";
     return std::string();
   }
-  return DecryptTokenWithKey(system_salt_key_.get(),
-                             system_salt_,
-                             encrypted_token_hex);
-}
 
-std::unique_ptr<crypto::SymmetricKey> CryptohomeTokenEncryptor::PassphraseToKey(
-    const std::string& passphrase,
-    const std::string& salt) {
-  return crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
-      crypto::SymmetricKey::AES, passphrase, salt, 1000, 256);
-}
+  // Convert the encrypted token from hex to binary and then split out the
+  // counter at the start from the rest of the payload.
+  std::string encrypted_token;
+  if (!base::HexStringToString(encrypted_token_hex, &encrypted_token)) {
+    LOG(WARNING) << "Corrupt encrypted token found.";
+    return std::string();
+  }
+  if (encrypted_token.size() < kNonceSize) {
+    LOG(WARNING) << "Corrupt encrypted token found, too short.";
+    return std::string();
+  }
+  std::string_view encrypted_token_view = encrypted_token;
+  std::string_view counter = encrypted_token_view.substr(0, kNonceSize);
+  std::string_view payload = encrypted_token_view.substr(kNonceSize);
 
-std::string CryptohomeTokenEncryptor::EncryptTokenWithKey(
-    const crypto::SymmetricKey* key,
-    const std::string& salt,
-    const std::string& token) {
+  // Use the salt+nonce to decrypt the
   crypto::Encryptor encryptor;
-  if (!encryptor.Init(key, crypto::Encryptor::CTR, std::string())) {
+  if (!encryptor.Init(system_salt_key_.get(), crypto::Encryptor::CTR,
+                      std::string())) {
     LOG(WARNING) << "Failed to initialize Encryptor.";
     return std::string();
   }
-  std::string nonce = salt.substr(0, kNonceSize);
+  std::string token;
+  CHECK(encryptor.SetCounter(counter));
+  if (!encryptor.Decrypt(payload, &token)) {
+    LOG(WARNING) << "Failed to decrypt token.";
+    return std::string();
+  }
+  return token;
+}
+
+std::string CryptohomeTokenEncryptor::WeakEncryptWithSystemSalt(
+    const std::string& token) {
+  // Don't care about token encryption while debugging.
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return token;
+  }
+
+  if (!system_salt_key_) {
+    LOG(WARNING) << "System salt key is not available for encrypt.";
+    return std::string();
+  }
+
+  // Encrypt the token using the system salt as both the key and the counter.
+  // Note that using the salt for both of these things is problematic, which is
+  // why this encryption is "weak".
+  crypto::Encryptor encryptor;
+  if (!encryptor.Init(system_salt_key_.get(), crypto::Encryptor::CTR,
+                      std::string())) {
+    LOG(WARNING) << "Failed to initialize Encryptor.";
+    return std::string();
+  }
+  std::string nonce = system_salt_.substr(0, kNonceSize);
   std::string encoded_token;
   CHECK(encryptor.SetCounter(nonce));
   if (!encryptor.Encrypt(token, &encoded_token)) {
@@ -92,14 +147,21 @@ std::string CryptohomeTokenEncryptor::EncryptTokenWithKey(
   }
 
   return base::ToLowerASCII(
-      base::HexEncode(reinterpret_cast<const void*>(encoded_token.data()),
-                      encoded_token.size()));
+      base::HexEncode(encoded_token.data(), encoded_token.size()));
 }
 
-std::string CryptohomeTokenEncryptor::DecryptTokenWithKey(
-    const crypto::SymmetricKey* key,
-    const std::string& salt,
+std::string CryptohomeTokenEncryptor::WeakDecryptWithSystemSalt(
     const std::string& encrypted_token_hex) {
+  // Don't care about token encryption while debugging.
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return encrypted_token_hex;
+  }
+
+  if (!system_salt_key_) {
+    LOG(WARNING) << "System salt key is not available for decrypt.";
+    return std::string();
+  }
+
   std::string encrypted_token;
   if (!base::HexStringToString(encrypted_token_hex, &encrypted_token)) {
     LOG(WARNING) << "Corrupt encrypted token found.";
@@ -107,12 +169,13 @@ std::string CryptohomeTokenEncryptor::DecryptTokenWithKey(
   }
 
   crypto::Encryptor encryptor;
-  if (!encryptor.Init(key, crypto::Encryptor::CTR, std::string())) {
+  if (!encryptor.Init(system_salt_key_.get(), crypto::Encryptor::CTR,
+                      std::string())) {
     LOG(WARNING) << "Failed to initialize Encryptor.";
     return std::string();
   }
 
-  std::string nonce = salt.substr(0, kNonceSize);
+  std::string nonce = system_salt_.substr(0, kNonceSize);
   std::string token;
   CHECK(encryptor.SetCounter(nonce));
   if (!encryptor.Decrypt(encrypted_token, &token)) {
@@ -120,6 +183,13 @@ std::string CryptohomeTokenEncryptor::DecryptTokenWithKey(
     return std::string();
   }
   return token;
+}
+
+std::unique_ptr<crypto::SymmetricKey> CryptohomeTokenEncryptor::PassphraseToKey(
+    const std::string& passphrase,
+    const std::string& salt) {
+  return crypto::SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
+      crypto::SymmetricKey::AES, passphrase, salt, 1000, 256);
 }
 
 }  // namespace ash

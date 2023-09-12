@@ -5810,6 +5810,7 @@ source_set("unit_tests") {
     "settings/shutdown_policy_handler_unittest.cc",
     "settings/stats_reporting_controller_unittest.cc",
     "settings/stub_cros_settings_provider_unittest.cc",
+    "settings/token_encryptor_unittest.cc",
     "sharesheet/copy_to_clipboard_share_action_unittest.cc",
     "shimless_rma/chrome_shimless_rma_delegate_unittest.cc",
     "smb_client/discovery/fake_netbios_client.cc",
