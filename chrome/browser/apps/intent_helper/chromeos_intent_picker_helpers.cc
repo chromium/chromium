@@ -15,18 +15,12 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/visibility.h"
@@ -82,9 +76,6 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
-    chrome::FindBrowserWithWebContents(web_contents)
-        ->window()
-        ->NotifyFeatureEngagementEvent(kIntentChipOpensAppEvent);
     IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(profile, url);
   }
 

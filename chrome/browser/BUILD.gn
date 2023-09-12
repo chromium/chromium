@@ -3589,7 +3589,6 @@ static_library("browser") {
       "apps/intent_helper/apps_navigation_types.h",
       "apps/intent_helper/intent_picker_auto_display_prefs.cc",
       "apps/intent_helper/intent_picker_auto_display_prefs.h",
-      "apps/intent_helper/intent_picker_constants.cc",
       "apps/intent_helper/intent_picker_constants.h",
       "apps/intent_helper/intent_picker_features.cc",
       "apps/intent_helper/intent_picker_features.h",
