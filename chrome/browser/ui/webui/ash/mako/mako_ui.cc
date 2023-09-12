@@ -22,17 +22,22 @@
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 namespace {
-constexpr gfx::Size kExtensionWindowSize(420, 480);
+
 constexpr int kPaddingAroundCursor = 8;
 
 class MakoDialogView : public WebUIBubbleDialogView {
  public:
-  explicit MakoDialogView(
-      std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
+  MakoDialogView(std::unique_ptr<BubbleContentsWrapper> contents_wrapper,
+                 const gfx::Rect& anchor_rect,
+                 views::BubbleBorder::Arrow arrow)
+      : WebUIBubbleDialogView(nullptr,
+                              contents_wrapper.get(),
+                              anchor_rect,
+                              arrow),
         contents_wrapper_(std::move(contents_wrapper)) {
     set_has_parent(false);
     set_corner_radius(20);
+    set_adjust_if_offscreen(true);
   }
 
  private:
@@ -102,24 +107,17 @@ void MakoPageHandler::CloseUI() {
 }
 
 void MakoUntrustedUI::Show(Profile* profile) {
+  // Don't show mako if there is no input client.
   ui::InputMethod* input_method =
       IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   ui::TextInputClient* input_client =
       input_method ? input_method->GetTextInputClient() : nullptr;
-
-  // Does not show mako if there is no input client.
-  if (!(input_client)) {
+  if (!input_client) {
     return;
   }
 
-  gfx::Size window_size = kExtensionWindowSize;
-  gfx::Rect caret_bounds =
-      input_client ? input_client->GetCaretBounds() : gfx::Rect();
-
-  auto anchor_rect =
-      gfx::Rect(caret_bounds.x() + window_size.width(),
-                caret_bounds.y() - kPaddingAroundCursor, 0,
-                caret_bounds.height() + kPaddingAroundCursor * 2);
+  gfx::Rect anchor_rect = input_client->GetCaretBounds();
+  anchor_rect.Outset(kPaddingAroundCursor);
 
   // TODO(b/289969807): 3961 is emoji picker identifier for task manager - we
   // should have a better one for mako
@@ -128,14 +126,10 @@ void MakoUntrustedUI::Show(Profile* profile) {
           GURL(kChromeUIOrcaURL), profile, 3961);
   contents_wrapper->ReloadWebContents();
 
-  auto bubble_view =
-      std::make_unique<MakoDialogView>(std::move(contents_wrapper));
-  auto weak_ptr = bubble_view->GetWeakPtr();
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  weak_ptr->SetAnchorRect(anchor_rect);
-  weak_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
-      views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
-  weak_ptr->set_adjust_if_offscreen(true);
-  weak_ptr->ShowUI();
+  auto* widget = views::BubbleDialogDelegateView::CreateBubble(
+      std::make_unique<MakoDialogView>(std::move(contents_wrapper), anchor_rect,
+                                       views::BubbleBorder::TOP_LEFT));
+  widget->Show();
 }
+
 }  // namespace ash
