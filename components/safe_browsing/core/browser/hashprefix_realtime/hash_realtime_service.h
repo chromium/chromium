@@ -14,7 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom-forward.h"
@@ -296,15 +296,16 @@ class HashRealTimeService : public KeyedService {
       // complete.
       bool log_threat_info_size);
 
-  // Returns a number representing the severity of the threat type. The lower
-  // the number, the more severe it is. Severity is used to narrow down to a
-  // single threat type to report in cases where there are multiple.
-  static int GetThreatSeverity(const V5::ThreatType& threat_type);
+  // Returns a number representing the severity of the full hash detail. The
+  // lower the number, the more severe it is. Severity is used to narrow down to
+  // a single threat type to report in cases where there are multiple full hash
+  // details.
+  static int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail);
 
-  // Returns true if the |threat_type| is more severe than the
+  // Returns true if the |detail| is more severe than the
   // |baseline_severity|. Returns false if it's less severe or has equal
   // severity.
-  static bool IsThreatTypeMoreSevere(const V5::ThreatType& threat_type,
+  static bool IsHashDetailMoreSevere(const V5::FullHash::FullHashDetail& detail,
                                      int baseline_severity);
 
   // In addition to attempting to parse the |response_body| as described in the

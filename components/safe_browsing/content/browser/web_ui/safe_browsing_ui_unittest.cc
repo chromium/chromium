@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "base/test/values_test_util.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_ui.h"
@@ -92,7 +92,6 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   EXPECT_EQ(base::test::ParseJson(request_data[1].GetString()),
             base::test::ParseJson(R"!({
    "inner_request": {
-      "filter": "",
       "hash_prefixes (base64)": [ "aGFzaF9wcmVmaXhfMQ==", "aGFzaF9wcmVmaXhfMg==" ]
    },
    "ohttp_public_key (base64)": "dGVzdGluZ19vaHR0cF9rZXk=",

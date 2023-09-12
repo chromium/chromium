@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 
 namespace safe_browsing {
 
@@ -70,7 +70,7 @@ void HashRealTimeCache::CacheSearchHashesResponse(
     V5::FullHash full_hash_to_store;
     full_hash_to_store.set_full_hash(fh.full_hash());
     for (const auto& fhd : fh.full_hash_details()) {
-      if (hash_realtime_utils::IsThreatTypeRelevant(fhd.threat_type())) {
+      if (hash_realtime_utils::IsHashDetailRelevant(fhd)) {
         auto* fhd_to_store = full_hash_to_store.add_full_hash_details();
         fhd_to_store->set_threat_type(fhd.threat_type());
         for (auto i = 0; i < fhd.attributes_size(); ++i) {

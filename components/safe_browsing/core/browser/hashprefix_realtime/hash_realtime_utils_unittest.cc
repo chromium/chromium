@@ -10,7 +10,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,32 +54,69 @@ TEST(HashRealTimeUtilsTest, TestCanCheckUrl) {
   EXPECT_FALSE(can_check_url("https://e./path"));
 }
 
-TEST(HashRealTimeUtilsTest, TestIsThreatTypeRelevant) {
-  EXPECT_TRUE(
-      hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::MALWARE));
-  EXPECT_TRUE(hash_realtime_utils::IsThreatTypeRelevant(
-      V5::ThreatType::SOCIAL_ENGINEERING));
-  EXPECT_TRUE(hash_realtime_utils::IsThreatTypeRelevant(
-      V5::ThreatType::UNWANTED_SOFTWARE));
+TEST(HashRealTimeUtilsTest, TestIsHashDetailRelevant) {
+  auto create_hash_detail =
+      [](V5::ThreatType threat_type,
+         absl::optional<std::vector<V5::ThreatAttribute>> threat_attributes) {
+        V5::FullHash::FullHashDetail detail;
+        detail.set_threat_type(threat_type);
+        if (threat_attributes.has_value()) {
+          for (const auto& attribute : threat_attributes.value()) {
+            detail.add_attributes(attribute);
+          }
+        }
+        return detail;
+      };
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
+      create_hash_detail(V5::ThreatType::MALWARE, absl::nullopt)));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
+      create_hash_detail(V5::ThreatType::SOCIAL_ENGINEERING, absl::nullopt)));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
+      create_hash_detail(V5::ThreatType::UNWANTED_SOFTWARE, absl::nullopt)));
 #if BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(
-      hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::SUSPICIOUS));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::SOCIAL_ENGINEERING,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}))));
 #else
-  EXPECT_TRUE(
-      hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::SUSPICIOUS));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::SOCIAL_ENGINEERING,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}))));
 #endif
-  EXPECT_TRUE(
-      hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::TRICK_TO_BILL));
-  EXPECT_FALSE(hash_realtime_utils::IsThreatTypeRelevant(
-      V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION));
-  EXPECT_FALSE(
-      hash_realtime_utils::IsThreatTypeRelevant(V5::ThreatType::API_ABUSE));
-  EXPECT_FALSE(hash_realtime_utils::IsThreatTypeRelevant(
-      V5::ThreatType::SOCIAL_ENGINEERING_ADS));
-  EXPECT_FALSE(hash_realtime_utils::IsThreatTypeRelevant(
-      V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION));
-  EXPECT_FALSE(hash_realtime_utils::IsThreatTypeRelevant(
-      V5::ThreatType::BETTER_ADS_VIOLATION));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::MALWARE,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}))));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::UNWANTED_SOFTWARE,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}))));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::TRICK_TO_BILL,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::CANARY}))));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::SOCIAL_ENGINEERING,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::FRAME_ONLY}))));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::MALWARE,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::FRAME_ONLY}))));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::UNWANTED_SOFTWARE,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::FRAME_ONLY}))));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::TRICK_TO_BILL,
+      std::vector<V5::ThreatAttribute>({V5::ThreatAttribute::FRAME_ONLY}))));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::SOCIAL_ENGINEERING,
+      std::vector<V5::ThreatAttribute>(
+          {V5::ThreatAttribute::CANARY, V5::ThreatAttribute::FRAME_ONLY}))));
+  EXPECT_TRUE(hash_realtime_utils::IsHashDetailRelevant(
+      create_hash_detail(V5::ThreatType::TRICK_TO_BILL, absl::nullopt)));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION, absl::nullopt)));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(
+      create_hash_detail(V5::ThreatType::API_ABUSE, absl::nullopt)));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
+      V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION, absl::nullopt)));
+  EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(
+      create_hash_detail(V5::ThreatType::BETTER_ADS_VIOLATION, absl::nullopt)));
 }
 
 TEST(HashRealTimeUtilsTest, TestIsHashRealTimeLookupEligibleInSession_Yes) {

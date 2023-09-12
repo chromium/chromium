@@ -19,14 +19,7 @@ message SearchHashesRequest {
   // The hash prefixes to be looked up.
   repeated bytes hash_prefixes = 1;
 
-  // If the client is interested in filtering, such as only retrieving specific
-  // kinds of threats, this can be specified. If omitted, all matching threats
-  // are returned. It is highly recommended to omit this to get the most
-  // complete protection Safe Browsing can offer. See https://google.aip.dev/160
-  // for the filter expression syntax.
-  string filter = 2;
-
-  reserved 3;
+  reserved 2, 3;
 }
 
 // The response returned after searching threat hashes. Note that if nothing is
@@ -101,16 +94,10 @@ enum ThreatType {
   // API abuse threat type.
   API_ABUSE = 6;
 
-  reserved 5, 7 to 13, 16 to 18;
-
-  // Entities that are suspected to present a threat.
-  SUSPICIOUS = 14;
+  reserved 5, 7 to 13, 14, 16 to 19;
 
   // Trick-to-bill threat list.
   TRICK_TO_BILL = 15;
-
-  // Social engineering advertisements threat type.
-  SOCIAL_ENGINEERING_ADS = 19;
 
   // Abusive experience violation threat type.
   ABUSIVE_EXPERIENCE_VIOLATION = 20;
