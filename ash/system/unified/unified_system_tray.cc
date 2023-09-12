@@ -160,9 +160,7 @@ bool UnifiedSystemTray::UiDelegate::ShowPopups() {
   return true;
 }
 
-void UnifiedSystemTray::UiDelegate::HidePopups() {
-  message_popup_collection_->SetBaselineOffset(0);
-}
+void UnifiedSystemTray::UiDelegate::HidePopups() {}
 
 bool UnifiedSystemTray::UiDelegate::ShowMessageCenter() {
   if (owner_->IsBubbleShown()) {

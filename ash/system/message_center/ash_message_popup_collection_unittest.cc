@@ -349,24 +349,6 @@ TEST_P(AshMessagePopupCollectionTest, DockedMode) {
   EXPECT_LT(baseline, popup_collection->GetBaseline());
 }
 
-TEST_P(AshMessagePopupCollectionTest, BaselineOffset) {
-  const gfx::Rect popup_size(0, 0, 10, 10);
-  UpdateDisplay("601x600");
-  auto* popup_collection = GetPrimaryPopupCollection();
-
-  int origin_x = popup_collection->GetPopupOriginX(popup_size);
-  int baseline = popup_collection->GetBaseline();
-
-  // Simulate a secondary bubble (e.g. QS slider) being shown on screen.
-  const int kSecondaryBubbleHeight = 100;
-  popup_collection->SetBaselineOffset(kSecondaryBubbleHeight);
-
-  EXPECT_EQ(origin_x, popup_collection->GetPopupOriginX(popup_size));
-  EXPECT_EQ(
-      baseline - kSecondaryBubbleHeight - message_center::kMarginBetweenPopups,
-      popup_collection->GetBaseline());
-}
-
 TEST_P(AshMessagePopupCollectionTest, Extended) {
   UpdateDisplay("601x600,801x800");
 
@@ -621,52 +603,46 @@ TEST_P(AshMessagePopupCollectionTest, BaselineInTabletMode) {
             popup_collection->GetBaseline());
 }
 
-TEST_P(AshMessagePopupCollectionTest, BaselineUpdatesAfterSliderShown) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
+TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_OnSliderShown) {
+  auto* popup_collection = GetPrimaryPopupCollection();
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  int previous_baseline = popup_collection->GetBaseline();
 
+  // Add a notification.
   AddNotification();
   auto* popup = GetLastPopUpAdded();
   ASSERT_TRUE(popup);
 
-  auto* popup_collection = GetPrimaryPopupCollection();
-  auto* system_tray = GetPrimaryUnifiedSystemTray();
-
+  // Show a volume slider bubble, baseline should be updated if notifier
+  // collision is enabled.
   system_tray->ShowVolumeSliderBubble();
   auto* slider_view = system_tray->GetSliderView();
   ASSERT_TRUE(slider_view);
 
   if (IsNotifierCollisionEnabled()) {
-    // The added popup should appears on top of the slider bubble, separated by
+    // The added popup should appear on top of the slider bubble, separated by
     // a padding of `kMarginBetweenPopups`.
     EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               slider_view->GetBoundsInScreen().y());
     EXPECT_EQ(slider_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
   } else {
-    // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    // The popup stays the same if notifier collision is disabled.
     EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
   }
 
   // Baseline returns to previous value when the slider bubble is closed.
   system_tray->CloseSecondaryBubbles();
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
-
-  // The popup is adjusted to be at the baseline without the offset.
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
   EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
             popup_collection->GetBaseline());
 }
 
 TEST_P(AshMessagePopupCollectionTest,
-       BaselineUpdatesAfterSliderShownOnShelfAutohide) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
+       BaselineUpdates_OnSliderShownWithAutoHideShelf) {
   // Create a window, otherwise autohide doesn't work.
   Shelf* shelf = GetPrimaryShelf();
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
@@ -686,13 +662,13 @@ TEST_P(AshMessagePopupCollectionTest,
   int shelf_hide_popup_bottom = popup->GetBoundsInScreen().bottom();
 
   if (IsNotifierCollisionEnabled()) {
-    // On hidden shelf, the added popup should appears on top of the slider
+    // On hidden shelf, the added popup should appear on top of the slider
     // bubble, separated by a padding of `kMarginBetweenPopups`.
     EXPECT_EQ(shelf_hide_popup_bottom + message_center::kMarginBetweenPopups,
               slider_view->GetBoundsInScreen().y());
   }
 
-  // Move mouse to the shelf to make it shows.
+  // Move mouse to the shelf to make it show.
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
@@ -757,10 +733,16 @@ TEST_P(AshMessagePopupCollectionTest, PopupsAndTrayBubbleViewsZOrdering) {
   EXPECT_TRUE(popup->GetWidget()->IsStackedAbove(bubble_native_view));
 }
 
-TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
+TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_OnTrayBubbleShown) {
+  auto* popup_collection = GetPrimaryPopupCollection();
+  int previous_baseline = popup_collection->GetBaseline();
+
+  // Show a corner anchored shelf pod bubble. Baseline should update if notifier
+  // collision is enabled.
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
 
+  // Attempt showing a notification when Quick Settings is open.
   AddNotification();
   auto* popup = GetLastPopUpAdded();
 
@@ -770,24 +752,22 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
     EXPECT_FALSE(popup);
     return;
   }
-
   ASSERT_TRUE(popup);
 
   auto* bubble_widget = unified_system_tray->bubble()->GetBubbleWidget();
   auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
-  auto* popup_collection = GetPrimaryPopupCollection();
 
   if (IsNotifierCollisionEnabled()) {
-    // The added popup should appears on top of the tray bubble, separated by a
+    // The added popup should appear on top of the tray bubble, separated by a
     // padding of `kMarginBetweenPopups`.
     EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               unified_system_tray->GetBubbleBoundsInScreen().y());
     EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
   }
@@ -802,13 +782,13 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
     // The baseline for the popup should be adjusted based on the new bubble
     // height.
     EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
     EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               unified_system_tray->GetBubbleBoundsInScreen().y());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
   }
@@ -818,7 +798,7 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
   // `unified_system_tray` to avoid the delay in the message loop happen in
   // `Widget::Close()`.
   bubble_widget->CloseNow();
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
 
   // The popup is adjusted to be at the baseline without the offset.
   EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
@@ -826,7 +806,7 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
 }
 
 TEST_P(AshMessagePopupCollectionTest,
-       AdjustBaselineBasedOnTrayBubbleAutoHideShelf) {
+       BaselineUpdates_OnTrayBubbleShownWithAutoHideShelf) {
   if (!IsQsRevampEnabled()) {
     return;
   }
@@ -837,7 +817,10 @@ TEST_P(AshMessagePopupCollectionTest,
       nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
-  // Move mouse to the shelf to make it shows.
+  auto* popup_collection = GetPrimaryPopupCollection();
+  int previous_baseline = popup_collection->GetBaseline();
+
+  // Move mouse to the shelf to make it show.
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
@@ -872,8 +855,7 @@ TEST_P(AshMessagePopupCollectionTest,
 
   // The popup is moved down to be at the baseline without the offset.
   EXPECT_LT(old_popup_bottom, popup->GetBoundsInScreen().bottom());
-  auto* popup_collection = GetPrimaryPopupCollection();
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
   EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
             popup_collection->GetBaseline());
 }
@@ -881,7 +863,7 @@ TEST_P(AshMessagePopupCollectionTest,
 // Tests that the baseline will not be adjusted when a tray bubble that is not
 // anchored to the shelf corner opens (i.e. the IME tray bubble).
 TEST_P(AshMessagePopupCollectionTest,
-       NotAdjustBaselineForNonAnchoredTrayBubble) {
+       BaselineDoesNotUpdate_OnNonAnchoredTrayBubbleShown) {
   if (!IsQsRevampEnabled()) {
     return;
   }
@@ -893,15 +875,17 @@ TEST_P(AshMessagePopupCollectionTest,
   ASSERT_TRUE(ime_tray->GetVisible());
 
   auto* popup_collection = GetPrimaryPopupCollection();
+  int previous_baseline = popup_collection->GetBaseline();
 
   ime_tray->ShowBubble();
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
 
   ime_tray->GetBubbleWidget()->CloseNow();
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
 }
 
-TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
+TEST_P(AshMessagePopupCollectionTest,
+       BaselineUpdates_OnTrayBubbleShownWithMultiDisplay) {
   if (!IsQsRevampEnabled()) {
     return;
   }
@@ -915,9 +899,8 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
   UpdateWorkArea(&secondary_popup_collection, second_display);
 
   auto* primary_popup_collection = GetPrimaryPopupCollection();
-
-  EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
-  EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+  int previous_primary_baseline = primary_popup_collection->GetBaseline();
+  int previous_secondary_baseline = secondary_popup_collection.GetBaseline();
 
   // Add a notification popup.
   AddNotification();
@@ -937,21 +920,24 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
     auto* primary_bubble_view = primary_system_tray->bubble()->GetBubbleView();
     EXPECT_EQ(
         primary_bubble_view->height() + message_center::kMarginBetweenPopups,
-        primary_popup_collection->baseline_offset_for_test());
+        previous_primary_baseline - primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               primary_system_tray->GetBubbleBoundsInScreen().y());
 
-    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(previous_secondary_baseline,
+              secondary_popup_collection.GetBaseline());
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
               secondary_popup_collection.GetBaseline());
   } else {
     // The popup on both display should stay the same if the feature is
     // disabled.
-    EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_primary_baseline,
+              primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
               primary_popup_collection->GetBaseline());
-    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(previous_secondary_baseline,
+              secondary_popup_collection.GetBaseline());
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
               secondary_popup_collection.GetBaseline());
   }
@@ -964,7 +950,8 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
   if (IsNotifierCollisionEnabled()) {
     // The secondary popup collection should update the baseline and the primary
     // one should reset.
-    EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_primary_baseline,
+              primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
               primary_popup_collection->GetBaseline());
 
@@ -972,52 +959,46 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
         secondary_system_tray->bubble()->GetBubbleView();
     EXPECT_EQ(
         secondary_bubble_view->height() + message_center::kMarginBetweenPopups,
-        secondary_popup_collection.baseline_offset_for_test());
+        previous_secondary_baseline - secondary_popup_collection.GetBaseline());
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               secondary_system_tray->GetBubbleBoundsInScreen().y());
   } else {
     // The popup on both display should stay the same if the feature is
     // disabled.
-    EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_primary_baseline,
+              primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
               primary_popup_collection->GetBaseline());
-    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(previous_secondary_baseline,
+              secondary_popup_collection.GetBaseline());
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
               secondary_popup_collection.GetBaseline());
   }
 }
 
-TEST_P(AshMessagePopupCollectionTest, AdjustBaselineHistogramRecorded) {
+// TODO(b/300003350): Reenable test when metric is fixed.
+TEST_P(AshMessagePopupCollectionTest,
+       DISABLED_BaselineShiftedUpHistogramRecorded) {
   base::HistogramTester histogram_tester;
+  const std::string histogram_name = "Ash.NotificationPopup.BaselineShiftedUp";
+
+  AddNotification();
+
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
 
-  AddNotification();
-  auto* popup = GetLastPopUpAdded();
-
-  const std::string histogram_name = "Ash.NotificationPopup.OnTopOfBubbleCount";
-
+  // Notification popups will be closed on QS bubble open pre-QS revamp.
   if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(popup);
     histogram_tester.ExpectBucketCount(histogram_name, 1, 0);
     return;
   }
 
-  ASSERT_TRUE(popup);
-
-  auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
-  auto* popup_collection = GetPrimaryPopupCollection();
-
   if (IsNotifierCollisionEnabled()) {
-    // The added popup should appears on top of the tray bubble and histogram is
-    // recorded.
-    EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+    // The popup should appear on top of the bubble and histogram is recorded.
     histogram_tester.ExpectBucketCount(histogram_name, 1, 1);
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
     histogram_tester.ExpectBucketCount(histogram_name, 1, 0);
   }
 
@@ -1045,14 +1026,17 @@ TEST_P(AshMessagePopupCollectionTest, NotificationAddedOnTrayBubbleOpen) {
 
   UpdateDisplay("801x600");
 
+  auto* popup_collection = GetPrimaryPopupCollection();
+  int previous_baseline = popup_collection->GetBaseline();
+
+  // Show a tray bubble.
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
+  auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
 
+  // Add a notification with a tray bubble open.
   AddNotification();
   auto* popup1 = GetLastPopUpAdded();
-
-  auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
-  auto* popup_collection = GetPrimaryPopupCollection();
 
   if (IsNotifierCollisionEnabled()) {
     // The added popup should appears on top of the tray bubble, separated by a
@@ -1061,10 +1045,10 @@ TEST_P(AshMessagePopupCollectionTest, NotificationAddedOnTrayBubbleOpen) {
                   message_center::kMarginBetweenPopups,
               unified_system_tray->GetBubbleBoundsInScreen().y());
     ASSERT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup1->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
   }
@@ -1086,10 +1070,10 @@ TEST_P(AshMessagePopupCollectionTest, NotificationAddedOnTrayBubbleOpen) {
                   message_center::kMarginBetweenPopups,
               unified_system_tray->GetBubbleBoundsInScreen().y());
     EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup1->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
   }
@@ -1118,14 +1102,15 @@ TEST_P(AshMessagePopupCollectionTest, NotificationUpdatedOnTrayBubbleOpen) {
 
   UpdateDisplay("801x600");
 
+  auto* popup_collection = GetPrimaryPopupCollection();
+  int previous_baseline = popup_collection->GetBaseline();
+
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
+  auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
 
   AddNotification();
   auto* popup1 = GetLastPopUpAdded();
-
-  auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
-  auto* popup_collection = GetPrimaryPopupCollection();
 
   if (IsNotifierCollisionEnabled()) {
     // The added popup should appears on top of the tray bubble, separated by a
@@ -1134,10 +1119,10 @@ TEST_P(AshMessagePopupCollectionTest, NotificationUpdatedOnTrayBubbleOpen) {
                   message_center::kMarginBetweenPopups,
               unified_system_tray->GetBubbleBoundsInScreen().y());
     ASSERT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup1->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
   }
@@ -1153,10 +1138,6 @@ TEST_P(AshMessagePopupCollectionTest, NotificationUpdatedOnTrayBubbleOpen) {
   EXPECT_EQ(popup2->GetBoundsInScreen().bottom() +
                 message_center::kMarginBetweenPopups,
             popup1->GetBoundsInScreen().y());
-  EXPECT_EQ(IsNotifierCollisionEnabled()
-                ? bubble_view->height() + message_center::kMarginBetweenPopups
-                : 0,
-            popup_collection->baseline_offset_for_test());
 
   // Update the notification to have an image now, which increases the height of
   // the notification and make it not fit above the tray bubble anymore. In this
@@ -1169,7 +1150,7 @@ TEST_P(AshMessagePopupCollectionTest, NotificationUpdatedOnTrayBubbleOpen) {
   popup2 = popup_collection->GetPopupViewForNotificationID(id2);
   AnimateUntilIdle();
 
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
   EXPECT_EQ(popup1->GetBoundsInScreen().bottom(),
             popup_collection->GetBaseline());
   EXPECT_EQ(popup2->GetBoundsInScreen().bottom() +
@@ -1177,15 +1158,15 @@ TEST_P(AshMessagePopupCollectionTest, NotificationUpdatedOnTrayBubbleOpen) {
             popup1->GetBoundsInScreen().y());
 }
 
-TEST_P(AshMessagePopupCollectionTest, CloseBubbleWhenExpandNotification) {
+// Tests that a corner anchored shelf pod bubble closes when the popup
+// collection height expands and it needs more space for it to be displayed.
+TEST_P(AshMessagePopupCollectionTest,
+       BubbleCloses_OnPopupExpandedUsedAvailableSpace) {
   if (!IsQsRevampEnabled()) {
     return;
   }
 
   UpdateDisplay("801x800");
-
-  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
-  unified_system_tray->ShowBubble();
 
   AddNotification(/*has_image=*/true);
   auto* popup1 = GetLastPopUpAdded();
@@ -1195,6 +1176,11 @@ TEST_P(AshMessagePopupCollectionTest, CloseBubbleWhenExpandNotification) {
   auto* popup_collection = GetPrimaryPopupCollection();
   auto* popup2 = popup_collection->GetPopupViewForNotificationID(id2);
 
+  int previous_baseline = popup_collection->GetBaseline();
+
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
   if (IsNotifierCollisionEnabled()) {
     // The added popup should appears on top of the tray bubble, separated by a
     // padding of `kMarginBetweenPopups`.
@@ -1203,7 +1189,7 @@ TEST_P(AshMessagePopupCollectionTest, CloseBubbleWhenExpandNotification) {
               unified_system_tray->GetBubbleBoundsInScreen().y());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup1->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
     return;
@@ -1220,30 +1206,33 @@ TEST_P(AshMessagePopupCollectionTest, CloseBubbleWhenExpandNotification) {
   // display the popup collection when the popup is expanded, the bubble will be
   // closed to make room for it and we move down the baseline. Note that this
   // only works with screen height of 800 (set above), and the test might fail
-  // if we change the height of bubble width or notification width in the
-  // future.
+  // if we change the height of the bubble or notification in the future.
   EXPECT_FALSE(unified_system_tray->bubble());
-  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
 }
 
-TEST_P(AshMessagePopupCollectionTest, NotShowPopupWhenBubbleHeightChanged) {
+// Tests that popups will be closed when a tray bubble visibility or bounds
+// change and there is not enough space for the popups to be displayed.
+TEST_P(AshMessagePopupCollectionTest,
+       PopupsClose_OnBubbleHeightChangedUsedAvailableSpace) {
   if (!IsQsRevampEnabled()) {
     return;
   }
 
   UpdateDisplay("801x800");
 
+  AddNotification(/*has_image=*/true);
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+  int previous_baseline = popup_collection->GetBaseline();
+
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
 
-  AddNotification(/*has_image=*/true);
-  auto* popup = GetLastPopUpAdded();
-
-  ASSERT_TRUE(popup);
-
   auto* bubble_widget = unified_system_tray->bubble()->GetBubbleWidget();
   auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
-  auto* popup_collection = GetPrimaryPopupCollection();
 
   if (IsNotifierCollisionEnabled()) {
     // The added popup should appears on top of the tray bubble, separated by a
@@ -1252,16 +1241,20 @@ TEST_P(AshMessagePopupCollectionTest, NotShowPopupWhenBubbleHeightChanged) {
                   message_center::kMarginBetweenPopups,
               unified_system_tray->GetBubbleBoundsInScreen().y());
     ASSERT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
   }
 
+  // The popup collection height before the bubble height is increased.
+  int previous_popup_collection_height =
+      popup_collection->popup_collection_bounds().height();
+
   // Increase the bubble height so that there's not enough space to display the
-  // bubble on top of it. Note that this only works with screen height of 800
+  // popups on top of it. Note that this only works with screen height of 800
   // (set above), and the test might fail if we change the height of bubble
   // width or notification width in the future.
   auto bubble_bounds = bubble_widget->GetWindowBoundsInScreen();
@@ -1269,20 +1262,19 @@ TEST_P(AshMessagePopupCollectionTest, NotShowPopupWhenBubbleHeightChanged) {
                                      bubble_bounds.width(),
                                      bubble_bounds.height() + 100));
 
-  // Since there's not enough space to display the popup. It should disappear
-  // and the notification will go to the notification center tray. If the
-  // feature is disabled, the notification is still shown.
-  EXPECT_EQ(!IsNotifierCollisionEnabled(), !!GetLastPopUpAdded());
-
-  // Baseline offset should still be the same.
-  EXPECT_EQ(IsNotifierCollisionEnabled()
-                ? bubble_view->height() + message_center::kMarginBetweenPopups
-                : 0,
-            popup_collection->baseline_offset_for_test());
+  if (IsNotifierCollisionEnabled()) {
+    // Since there was not enough space to display the popup, all popups should
+    // be closed and will go to the notification center tray.
+    EXPECT_GT(previous_popup_collection_height,
+              popup_collection->GetBaseline());
+    EXPECT_FALSE(GetLastPopUpAdded());
+  } else {
+    EXPECT_TRUE(GetLastPopUpAdded());
+  }
 }
 
 TEST_P(AshMessagePopupCollectionTest,
-       PopupAndTrayBubbleOpenInVerticallyStackedDisplays) {
+       BaselineUpdates_OnPopupAndTrayBubbleOpenInVerticallyStackedDisplays) {
   if (!IsQsRevampEnabled()) {
     return;
   }
@@ -1292,6 +1284,7 @@ TEST_P(AshMessagePopupCollectionTest,
          AshMessagePopupCollection* popup_collection,
          message_center::MessagePopupView* popup,
          bool is_notifier_collision_enabled) {
+        int previous_baseline = popup_collection->GetBaseline();
         system_tray->ShowBubble();
 
         auto* bubble_widget = system_tray->bubble()->GetBubbleWidget();
@@ -1305,12 +1298,11 @@ TEST_P(AshMessagePopupCollectionTest,
                     system_tray->GetBubbleBoundsInScreen().y());
           ASSERT_EQ(
               bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
         } else {
           // The popup stays the same if the feature is disabled.
-          EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
-          EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
-                    popup_collection->GetBaseline());
+          EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
+          EXPECT_EQ(popup->GetBoundsInScreen().bottom(), previous_baseline);
         }
 
         // Increase the bubble height so that there's not enough space to
@@ -1329,13 +1321,6 @@ TEST_P(AshMessagePopupCollectionTest,
         // shown.
         EXPECT_EQ(is_notifier_collision_enabled ? 0u : 1u,
                   popup_collection->GetPopupItemsCount());
-
-        // Baseline offset should be the same.
-        EXPECT_EQ(
-            is_notifier_collision_enabled
-                ? bubble_view->height() + message_center::kMarginBetweenPopups
-                : 0,
-            popup_collection->baseline_offset_for_test());
       };
 
   UpdateDisplay("0+0-801x800,0+800-801x800");
@@ -1369,15 +1354,18 @@ TEST_P(AshMessagePopupCollectionTest,
 }
 
 // Tests that when a shelf pod bubble other than the main status area bubbles
-// (QS, calendar, notifications) is shown and a slider appears, the popup will
-// be on top of the shelf pod bubble, not the slider. We will use the phone hub
-// tray for this test.
-TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleAndSlider) {
+// (e.g. phone hub) is shown and a slider appears, the popup will be on top of
+// the shelf pod bubble, not the slider.
+TEST_P(AshMessagePopupCollectionTest,
+       BaselineUpdates_OnTrayBubbleAndSliderShown) {
   if (!IsQsRevampEnabled()) {
     return;
   }
 
   UpdateDisplay("1001x900");
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+  int previous_baseline = popup_collection->GetBaseline();
 
   phone_hub_manager()->fake_feature_status_provider()->SetStatus(
       phonehub::FeatureStatus::kEnabledAndConnected);
@@ -1397,59 +1385,48 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleAndSlider) {
   auto* popup = GetLastPopUpAdded();
   ASSERT_TRUE(popup);
 
-  auto* popup_collection = GetPrimaryPopupCollection();
   auto* bubble_view = phone_hub_tray->GetBubbleView();
+  auto* bubble_widget = phone_hub_tray->GetBubbleWidget();
 
   if (IsNotifierCollisionEnabled()) {
-    // The added popup should appears on top of the tray bubble, separated by a
+    // The added popup should appear on top of the tray bubble, separated by a
     // padding of `kMarginBetweenPopups` (not on top of the slider).
     EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               bubble_view->GetBoundsInScreen().y());
     ASSERT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
+              previous_baseline - popup_collection->GetBaseline());
   } else {
     // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
     EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
               popup_collection->GetBaseline());
   }
 
-  // Close the slider. Popup should stay the same.
+  // Close the phone hub bubble. Popup should sit above slider.
+  bubble_widget->CloseNow();
+
+  if (IsNotifierCollisionEnabled()) {
+    EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                  message_center::kMarginBetweenPopups,
+              slider_view->GetBoundsInScreen().y());
+    EXPECT_EQ(slider_view->height() + message_center::kMarginBetweenPopups,
+              previous_baseline - popup_collection->GetBaseline());
+  } else {
+    // The popup stays the same if notifier collision is disabled.
+    EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
+              popup_collection->GetBaseline());
+    EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
+  }
+
+  // Close the slider. Popup should go back to original baseline.
   system_tray->CloseSecondaryBubbles();
-
-  if (IsNotifierCollisionEnabled()) {
-    EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
-                  message_center::kMarginBetweenPopups,
-              bubble_view->GetBoundsInScreen().y());
-    ASSERT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
-  } else {
-    // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
-    EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
-              popup_collection->GetBaseline());
-  }
-
-  // Show the slider. Popup should stay the same.
-  system_tray->ShowVolumeSliderBubble();
-
-  if (IsNotifierCollisionEnabled()) {
-    EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
-                  message_center::kMarginBetweenPopups,
-              bubble_view->GetBoundsInScreen().y());
-    ASSERT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
-              popup_collection->baseline_offset_for_test());
-  } else {
-    // The popup stays the same if the feature is disabled.
-    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
-    EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
-              popup_collection->GetBaseline());
-  }
+  EXPECT_EQ(previous_baseline, popup_collection->GetBaseline());
 }
 
 // b/293660273
-TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForSliderMultiDisplay) {
+TEST_P(AshMessagePopupCollectionTest,
+       BaselineUpdates_OnSliderShownWithMultiDisplay) {
   UpdateDisplay("0+0-801x800,0+800-801x800");
 
   display::Display second_display = GetSecondaryDisplay();
@@ -1459,9 +1436,8 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForSliderMultiDisplay) {
   UpdateWorkArea(&secondary_popup_collection, second_display);
 
   auto* primary_popup_collection = GetPrimaryPopupCollection();
-
-  EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
-  EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+  int previous_primary_baseline = primary_popup_collection->GetBaseline();
+  int previous_secondary_baseline = secondary_popup_collection.GetBaseline();
 
   // Add a notification popup.
   AddNotification();
@@ -1471,9 +1447,8 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForSliderMultiDisplay) {
   EXPECT_TRUE(primary_popup);
   EXPECT_TRUE(secondary_popup);
 
-  // Open primary system tray bubble.
+  // Show a slider on the primary display only.
   auto* primary_system_tray = GetPrimaryUnifiedSystemTray();
-
   primary_system_tray->ShowVolumeSliderBubble();
   auto* slider_view = primary_system_tray->GetSliderView();
   ASSERT_TRUE(slider_view);
@@ -1481,26 +1456,31 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForSliderMultiDisplay) {
   if (IsNotifierCollisionEnabled()) {
     // Popup on primary display should move up, and popup on secondary display
     // stay the same.
-    EXPECT_EQ(slider_view->height() + message_center::kMarginBetweenPopups,
-              primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(
+        slider_view->height() + message_center::kMarginBetweenPopups,
+        previous_primary_baseline - primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               slider_view->GetBoundsInScreen().y());
 
-    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(previous_secondary_baseline,
+              secondary_popup_collection.GetBaseline());
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
               secondary_popup_collection.GetBaseline());
   } else {
     // The popup on both display should stay the same if the feature is
     // disabled.
-    EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_primary_baseline,
+              primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
               primary_popup_collection->GetBaseline());
-    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(previous_secondary_baseline,
+              secondary_popup_collection.GetBaseline());
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
               secondary_popup_collection.GetBaseline());
   }
 
+  // Show a slider on the secondary display.
   auto* secondary_system_tray =
       StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
           ->unified_system_tray();
@@ -1511,25 +1491,28 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForSliderMultiDisplay) {
   if (IsNotifierCollisionEnabled()) {
     // Popup on both displays should move up since there are sliders on both
     // displays.
-    EXPECT_EQ(slider_view->height() + message_center::kMarginBetweenPopups,
-              primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(
+        slider_view->height() + message_center::kMarginBetweenPopups,
+        previous_primary_baseline - primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               slider_view->GetBoundsInScreen().y());
 
     EXPECT_EQ(
         secondary_slider_view->height() + message_center::kMarginBetweenPopups,
-        secondary_popup_collection.baseline_offset_for_test());
+        previous_secondary_baseline - secondary_popup_collection.GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
                   message_center::kMarginBetweenPopups,
               secondary_slider_view->GetBoundsInScreen().y());
   } else {
     // The popup on both display should stay the same if the feature is
     // disabled.
-    EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(previous_primary_baseline,
+              primary_popup_collection->GetBaseline());
     EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
               primary_popup_collection->GetBaseline());
-    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(previous_secondary_baseline,
+              secondary_popup_collection.GetBaseline());
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
               secondary_popup_collection.GetBaseline());
   }

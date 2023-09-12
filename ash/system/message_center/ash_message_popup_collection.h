@@ -65,10 +65,6 @@ class ASH_EXPORT AshMessagePopupCollection
   // Start observing the system.
   void StartObserving(display::Screen* screen, const display::Display& display);
 
-  // Sets an offset from the baseline so that notification popups can shift up
-  // without overlapping with slider bubbles.
-  void SetBaselineOffset(int baseline_offset);
-
   // message_center::MessagePopupCollection:
   int GetPopupOriginX(const gfx::Rect& popup_bounds) const override;
   int GetBaseline() const override;
@@ -102,9 +98,6 @@ class ASH_EXPORT AshMessagePopupCollection
   // Sets `animation_idle_closure_`.
   void SetAnimationIdleClosureForTest(base::OnceClosure closure);
 
-  // Returns the current baseline offset.
-  int baseline_offset_for_test() const { return baseline_offset_; }
-
   int popups_animating_for_test() const { return popups_animating_; }
 
  private:
@@ -112,19 +105,25 @@ class ASH_EXPORT AshMessagePopupCollection
   friend class NotificationGroupingControllerTest;
   friend class TrayEventFilterTest;
 
-  // Handles the collision of popup notifications with shelf pod bubbles and
-  // slider bubbles. We will change the baseline offset for the popup collection
-  // and move up the popups so that it will not overlap with the bubbles.
+  // Handles the collision of popup notifications with corner anchored shelf pod
+  // bubbles, sliders and the extended hotseat by updating the popup baseline.
   class NotifierCollisionHandler : public SystemTrayObserver {
    public:
-    explicit NotifierCollisionHandler(
-        AshMessagePopupCollection* popup_collection);
+    NotifierCollisionHandler(AshMessagePopupCollection* popup_collection);
 
     NotifierCollisionHandler(const NotifierCollisionHandler&) = delete;
     NotifierCollisionHandler& operator=(const NotifierCollisionHandler&) =
         delete;
 
     ~NotifierCollisionHandler() override;
+
+    // Triggered whenever the height of the popup collection changes.
+    void OnPopupCollectionHeightChanged();
+
+    // Calculates the offset that is applied to the popup collection's baseline.
+    // It considers the extended hotseat, corner anchored shelf pod bubbles and
+    // slider bubbles.
+    int CalculateBaselineOffset() const;
 
     // SystemTrayObserver:
     void OnFocusLeavingSystemTray(bool reverse) override {}
@@ -133,26 +132,21 @@ class ASH_EXPORT AshMessagePopupCollection
         bool visible) override;
     void OnTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble) override;
 
-    // Makes changes to the baseline based on the visibility/bounds change of
-    // the current open bubble. Note that this function is only called by a
-    // change in the bubble (bubble size or visibility changed).
-    void AdjustBaselineBasedOnBubbleChange(TrayBubbleView* tray_bubble,
-                                           bool bubble_visible);
-
-    // Makes changes to the baseline based on the visibility/bounds change of
-    // the current open shelf pod bubble. `triggered_by_bubble_change` is true
-    // if this function is triggered by a change in the bubble (bubble size or
-    // visibility changed).
-    void AdjustBaselineBasedOnShelfPodBubble(bool triggered_by_bubble_change);
-
-    // Helper functions for `AdjustBaselineBaseOnBubble()`. Applied to secondary
-    // bubble.
-    void AdjustBaselineBasedOnSecondaryBubble(TrayBubbleView* tray_bubble,
-                                              bool visible);
-
    private:
-    // Records the metric for the count of popups that are on top of a bubble.
-    void RecordPopupOnTopOfBubbleCount();
+    // Handles bubble visibility or bounds changes.
+    void HandleBubbleVisibilityOrBoundsChanged();
+
+    // Calculates the baseline offset applied when the hotseat is extended in
+    // tablet mode and a corner anchored shelf pod bubble is not open.
+    int CalculateExtendedHotseatOffset() const;
+
+    // Calculates the baseline offset applied when a slider is visible and a
+    // corner anchored shelf pod bubble is not open.
+    int CalculateSliderOffset() const;
+
+    // Records the number of popups whose baseline was shifted up every time
+    // every time a baseline offset is applied.
+    void RecordBaselineShiftedUp(int popup_count);
 
     raw_ptr<AshMessagePopupCollection> const popup_collection_;
   };
@@ -163,13 +157,13 @@ class ASH_EXPORT AshMessagePopupCollection
   void OnSettingsButtonPressed(const std::string& notification_id) override;
   void OnSnoozeButtonPressed(const std::string& notification_id) override;
 
-  // Get the current alignment of the shelf.
+  // Gets the current alignment of the shelf.
   ShelfAlignment GetAlignment() const;
 
   // Utility function to get the display which should be care about.
   display::Display GetCurrentDisplay() const;
 
-  // Compute the new work area.
+  // Computes the new work area.
   void UpdateWorkArea();
 
   // ShelfObserver:
@@ -192,7 +186,6 @@ class ASH_EXPORT AshMessagePopupCollection
   raw_ptr<display::Screen, ExperimentalAsh> screen_;
   gfx::Rect work_area_;
   raw_ptr<Shelf, ExperimentalAsh> shelf_;
-  int baseline_offset_ = 0;
 
   std::set<views::Widget*> tracked_widgets_;
 

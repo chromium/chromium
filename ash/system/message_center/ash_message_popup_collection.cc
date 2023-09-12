@@ -25,6 +25,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
@@ -73,117 +74,123 @@ AshMessagePopupCollection::NotifierCollisionHandler::
 }
 
 void AshMessagePopupCollection::NotifierCollisionHandler::
-    OnStatusAreaAnchoredBubbleVisibilityChanged(TrayBubbleView* tray_bubble,
-                                                bool visible) {
-  AdjustBaselineBasedOnBubbleChange(tray_bubble, /*bubble_visible=*/visible);
-}
-
-void AshMessagePopupCollection::NotifierCollisionHandler::
-    OnTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble) {
-  AdjustBaselineBasedOnBubbleChange(tray_bubble, /*bubble_visible=*/true);
-}
-
-void AshMessagePopupCollection::NotifierCollisionHandler::
-    AdjustBaselineBasedOnBubbleChange(TrayBubbleView* tray_bubble,
-                                      bool bubble_visible) {
+    OnPopupCollectionHeightChanged() {
   if (!features::IsNotifierCollisionEnabled()) {
     return;
   }
 
-  if (tray_bubble && tray_bubble->GetBubbleType() ==
-                         TrayBubbleView::TrayBubbleType::kSecondaryBubble) {
-    AdjustBaselineBasedOnSecondaryBubble(tray_bubble, bubble_visible);
-    return;
-  }
-
-  AdjustBaselineBasedOnShelfPodBubble(/*triggered_by_bubble_change=*/true);
-}
-
-void AshMessagePopupCollection::NotifierCollisionHandler::
-    AdjustBaselineBasedOnShelfPodBubble(bool triggered_by_bubble_change) {
-  CHECK(features::IsNotifierCollisionEnabled());
-
+  // Do nothing if there's no open corner anchored shelf pod bubble.
   auto* status_area =
       StatusAreaWidget::ForWindow(popup_collection_->shelf_->GetWindow());
-  auto* shelf_pod_anchored_bubble =
+  auto* shelf_pod_bubble =
       status_area ? status_area->open_shelf_pod_bubble() : nullptr;
-
-  // The tray bubble might already be closed/deleted. We also only put the popup
-  // on top of tray bubble that is anchored to the shelf corner.
-  if (!shelf_pod_anchored_bubble ||
-      !shelf_pod_anchored_bubble->IsAnchoredToShelfCorner()) {
-    popup_collection_->SetBaselineOffset(0);
+  if (!shelf_pod_bubble || !shelf_pod_bubble->IsAnchoredToShelfCorner()) {
     return;
   }
 
-  // If there's not enough space above the tray bubble to display the entire
-  // popup collection, we will close the popups or the bubble since we want to
-  // avoid showing tray bubble and popups overlapping with each other.
-  if (shelf_pod_anchored_bubble->GetBoundsInScreen().y() -
-          message_center::kMarginBetweenPopups <
-      popup_collection_->popup_collection_bounds().height()) {
-    // When this function is triggered by a change that happens in the bubble
-    // (bubble size or visibility changed), we will close the popup. Otherwise,
-    // we will close the bubble.
-    if (triggered_by_bubble_change) {
-      popup_collection_->CloseAllPopupsNow();
-      popup_collection_->ResetBounds();
-    } else {
-      shelf_pod_anchored_bubble->CloseBubbleView();
+  // If the popups do not fit in the available space, close the bubble.
+  if (popup_collection_->popup_collection_bounds().height() >
+      popup_collection_->GetBaseline()) {
+    shelf_pod_bubble->CloseBubbleView();
+    popup_collection_->MoveDownPopups();
 
-      // Reset and move down popups if tray bubble is closed.
-      popup_collection_->SetBaselineOffset(0);
-      popup_collection_->MoveDownPopups();
-    }
-    return;
+    // Reset bounds so popup baseline is updated.
+    popup_collection_->ResetBounds();
   }
-
-  popup_collection_->SetBaselineOffset(shelf_pod_anchored_bubble->height());
-  RecordPopupOnTopOfBubbleCount();
 }
 
-void AshMessagePopupCollection::NotifierCollisionHandler::
-    AdjustBaselineBasedOnSecondaryBubble(TrayBubbleView* tray_bubble,
-                                         bool visible) {
-  CHECK(features::IsNotifierCollisionEnabled());
-
-  CHECK(tray_bubble);
-  CHECK_EQ(tray_bubble->GetBubbleType(),
-           TrayBubbleView::TrayBubbleType::kSecondaryBubble);
+int AshMessagePopupCollection::NotifierCollisionHandler::
+    CalculateBaselineOffset() const {
+  // Baseline pre-notifier collision does not consider corner anchored shelf pod
+  // bubbles or slider bubbles to set its offset.
+  if (!features::IsNotifierCollisionEnabled()) {
+    return CalculateExtendedHotseatOffset();
+  }
 
   auto* status_area =
       StatusAreaWidget::ForWindow(popup_collection_->shelf_->GetWindow());
   auto* current_open_shelf_pod_bubble =
       status_area ? status_area->open_shelf_pod_bubble() : nullptr;
 
-  // If there's a current open shelf pod bubble, the popup should be on top of
-  // that bubble, not on top of the secondary bubble, so do nothing here.
   if (current_open_shelf_pod_bubble &&
-      current_open_shelf_pod_bubble != tray_bubble) {
-    return;
+      current_open_shelf_pod_bubble->IsAnchoredToShelfCorner()) {
+    // Offset is calculated based on the height of the corner anchored shelf pod
+    // bubble, if one is open.
+    return current_open_shelf_pod_bubble->height() +
+           message_center::kMarginBetweenPopups;
+  } else {
+    // If no corner anchored shelf pod bubble is open, the offset is calculated
+    // based on the visibility of slider bubbles and the extended hotseat.
+    return CalculateSliderOffset() + CalculateExtendedHotseatOffset();
   }
-
-  // Only adjust the baseline if the secondary bubble is in the same display.
-  if (display::Screen::GetScreen()->GetDisplayNearestWindow(
-          tray_bubble->parent_window()) !=
-      popup_collection_->GetCurrentDisplay()) {
-    return;
-  }
-
-  popup_collection_->SetBaselineOffset(visible ? tray_bubble->height() : 0);
-  RecordPopupOnTopOfBubbleCount();
 }
 
 void AshMessagePopupCollection::NotifierCollisionHandler::
-    RecordPopupOnTopOfBubbleCount() {
-  int popup_items_count = popup_collection_->popup_items().size();
-  if (!features::IsNotifierCollisionEnabled() || popup_items_count == 0) {
+    OnStatusAreaAnchoredBubbleVisibilityChanged(TrayBubbleView* tray_bubble,
+                                                bool visible) {
+  HandleBubbleVisibilityOrBoundsChanged();
+}
+
+void AshMessagePopupCollection::NotifierCollisionHandler::
+    OnTrayBubbleBoundsChanged(TrayBubbleView* tray_bubble) {
+  HandleBubbleVisibilityOrBoundsChanged();
+}
+
+void AshMessagePopupCollection::NotifierCollisionHandler::
+    HandleBubbleVisibilityOrBoundsChanged() {
+  if (!features::IsNotifierCollisionEnabled()) {
     return;
   }
 
-  // Record the number of popups that are moved up.
-  base::UmaHistogramCounts100("Ash.NotificationPopup.OnTopOfBubbleCount",
-                              popup_items_count);
+  // If the popup collection does not fit in the available space when opening a
+  // bubble or updating its height, close all popups.
+  if (popup_collection_->popup_collection_bounds().height() >
+      popup_collection_->GetBaseline()) {
+    popup_collection_->CloseAllPopupsNow();
+  }
+
+  // Reset bounds so popup baseline is updated.
+  popup_collection_->ResetBounds();
+}
+
+int AshMessagePopupCollection::NotifierCollisionHandler::
+    CalculateExtendedHotseatOffset() const {
+  auto* hotseat_widget = popup_collection_->shelf_->hotseat_widget();
+
+  // `hotseat_widget` might be null since it dtor-ed before this class.
+  return (hotseat_widget && hotseat_widget->state() == HotseatState::kExtended)
+             ? hotseat_widget->GetHotseatSize()
+             : 0;
+}
+
+int AshMessagePopupCollection::NotifierCollisionHandler::CalculateSliderOffset()
+    const {
+  auto* root_window_controller =
+      RootWindowController::ForWindow(popup_collection_->shelf_->GetWindow());
+
+  if (!root_window_controller ||
+      !root_window_controller->GetStatusAreaWidget()) {
+    return 0;
+  }
+
+  auto* unified_system_tray =
+      root_window_controller->GetStatusAreaWidget()->unified_system_tray();
+
+  return (unified_system_tray && unified_system_tray->IsSliderBubbleShown() &&
+          unified_system_tray->GetSliderView())
+             ? unified_system_tray->GetSliderView()->height() +
+                   message_center::kMarginBetweenPopups
+             : 0;
+}
+
+// TODO(b/300003350): Record whenever a bubble or a slider shifts the pop-up
+// baseline up.
+void AshMessagePopupCollection::NotifierCollisionHandler::
+    RecordBaselineShiftedUp(int popup_count) {
+  if (popup_count != 0) {
+    base::UmaHistogramCounts100("Ash.NotificationPopup.BaselineShiftedUp",
+                                popup_count);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -212,24 +219,6 @@ void AshMessagePopupCollection::StartObserving(
   screen_ = screen;
   work_area_ = display.work_area();
   display_observer_.emplace(this);
-  if (baseline_offset_ > 0) {
-    UpdateWorkArea();
-  }
-}
-
-void AshMessagePopupCollection::SetBaselineOffset(int baseline_offset) {
-  const int old_baseline_offset = baseline_offset_;
-
-  baseline_offset_ = baseline_offset;
-
-  DCHECK_GE(baseline_offset_, 0);
-  if (baseline_offset_ != 0) {
-    baseline_offset_ += message_center::kMarginBetweenPopups;
-  }
-
-  if (old_baseline_offset != baseline_offset_) {
-    ResetBounds();
-  }
 }
 
 int AshMessagePopupCollection::GetPopupOriginX(
@@ -246,24 +235,15 @@ int AshMessagePopupCollection::GetPopupOriginX(
 int AshMessagePopupCollection::GetBaseline() const {
   gfx::Insets tray_bubble_insets = GetTrayBubbleInsets(shelf_->GetWindow());
 
-  // `hotseat_widget()` might be null since it dtor-ed before this class.
-  int hotseat_height =
-      shelf_->hotseat_widget() &&
-              shelf_->hotseat_widget()->state() == HotseatState::kExtended
-          ? shelf_->hotseat_widget()->GetHotseatSize()
-          : 0;
-
   // Decrease baseline by `kShelfDisplayOffset` to compensate for the adjustment
   // of edges in `Shelf::GetSystemTrayAnchorRect()`.
-  return work_area_.bottom() - tray_bubble_insets.bottom() - baseline_offset_ -
-         hotseat_height - kShelfDisplayOffset;
+  return work_area_.bottom() - tray_bubble_insets.bottom() -
+         notifier_collision_handler_->CalculateBaselineOffset() -
+         kShelfDisplayOffset;
 }
 
 gfx::Rect AshMessagePopupCollection::GetWorkArea() const {
-  gfx::Rect work_area_without_tray_bubble = work_area_;
-  work_area_without_tray_bubble.set_height(
-      work_area_without_tray_bubble.height() - baseline_offset_);
-  return work_area_without_tray_bubble;
+  return work_area_;
 }
 
 bool AshMessagePopupCollection::IsTopDown() const {
@@ -330,12 +310,7 @@ void AshMessagePopupCollection::NotifyPopupClosed(
 }
 
 void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {
-  if (!features::IsNotifierCollisionEnabled()) {
-    return;
-  }
-
-  notifier_collision_handler_->AdjustBaselineBasedOnShelfPodBubble(
-      /*triggered_by_bubble_change=*/false);
+  notifier_collision_handler_->OnPopupCollectionHeightChanged();
 }
 
 void AshMessagePopupCollection::AnimationStarted() {
