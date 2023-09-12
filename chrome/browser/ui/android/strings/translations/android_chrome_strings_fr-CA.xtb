@@ -337,6 +337,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée sera fermé}one{<ph name="TAB_COUNT_MANY" /> onglet de navigation privée sera fermé}other{<ph name="TAB_COUNT_MANY" /> onglets de navigation privée seront fermés}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Dernière vérification : il y a 1 jour}one{Dernière vérification : il y a # jour}other{Dernière vérification : il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
+<translation id="2853415089995957805">Chrome précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez</translation>
 <translation id="2856503607207334158">Échec de connexion</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application de téléphonie est activée sur cet appareil</translation>
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus offertes</translation>
@@ -581,6 +582,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fourni par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Vous pouvez utiliser cette tablette pour vous connecter à l'appareil qui affiche ce code QR.</translation>
 <translation id="4095146165863963773">Supprimer les données de l'application?</translation>
+<translation id="4095425503313512126">La navigation et la recherche sont plus rapides</translation>
 <translation id="4096227151372679484">Flux d'enregistrement des favoris ouvert à mi-hauteur</translation>
 <translation id="4101475238162928417">Synchronisez vos données pour ajouter vos mots de passe, vos favoris et plus sur vos autres appareils</translation>
 <translation id="4106587138345390261">Chrome explore de nouvelles fonctionnalités qui permettent aux sites d'offrir la même expérience de navigation tout en recourant dans une moindre mesure à vos renseignements personnels</translation>
@@ -831,6 +833,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
+<translation id="5320351714793324716">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement</translation>
 <translation id="5321849971085220133">Chrome trouve continuellement de nouvelles façons de réduire le suivi et d'encore mieux vous protéger lors de votre navigation. En outre, Chrome <ph name="BEGIN_LINK" />estime vos centres d'intérêt<ph name="END_LINK" /> tout en vous permettant de les gérer. Ainsi, les sites que vous visitez peuvent demander à Chrome vos centres d'intérêt pour vous montrer des annonces adaptées.</translation>
 <translation id="5326921373682845375">Comme les pages préchargées sont chiffrées et que le site qui renvoie à ces pages est un site Google, les serveurs de Google ne reçoivent pas de nouveaux renseignements lors du préchargement privé de ces pages.</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>

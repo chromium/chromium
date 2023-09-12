@@ -76,6 +76,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="452436063477828504">S'assurer de toujours pouvoir utiliser les données Chromium dans votre compte Google</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée, Chromium vous offre de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
+<translation id="459080529287102949">Rechercher des visuels dans Chromium</translation>
 <translation id="4633738821577273991">Bénéficiez également de la navigation sécurisée améliorée pour ce profil Chromium</translation>
 <translation id="4654936625574199632">Aux fins d'amélioration de l'application, Chromium envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activer le lecteur de Chromium</translation>
@@ -143,6 +144,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="7045244423563602563">Personnalisez Chromium</translation>
 <translation id="7055269218854630176">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chromium peut être utilisé. Votre administrateur peut configurer ou restreindre certaines fonctionnalités.</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue partagée</translation>
+<translation id="7163483974919055112">Recherchez des visuels dans Chromium.</translation>
 <translation id="7165402419892018581">Choisissez Chromium pour le remplissage automatique</translation>
 <translation id="7175400662502680481">Votre mot de passe a été exposé dans une violation de données. Le Gestionnaire de mots de passe vous recommande de le modifier maintenant.</translation>
 <translation id="7192111075364461693">Les notifications de Chromium sont désactivées dans les paramètres de votre appareil.</translation>

@@ -24,6 +24,7 @@
 
   • 將記錄同步至 Google 帳戶後，數據可能亦會包括先前瀏覽網址的資料。<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome 最強大的安全功能可協助防範有害網站</translation>
+<translation id="1657395063736185342">在 Chrome 中搜尋影像內容</translation>
 <translation id="1675955119303651351">部分 Chrome 資料尚未儲存至 Google 帳戶。
         請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="1682483655351012182">同步處理 Chromium 資料</translation>
@@ -125,7 +126,7 @@
 <translation id="571296537125272375">離線，Chrome 無法檢查更新</translation>
 <translation id="5716154293141027663">在您輕按其他應用程式內的連結時開啟 Chrome</translation>
 <translation id="5808435672482059465">查看 Chrome 記錄</translation>
-<translation id="589695154992054845">在 Chrome 中開啟密碼管理工具。</translation>
+<translation id="589695154992054845">在 Chrome 中開啟「密碼管理工具」。</translation>
 <translation id="5998675059699164418">您的機構要求您登入才能使用 Chrome。</translation>
 <translation id="6054613632208573261">預設為使用 Chrome</translation>
 <translation id="6063091872902370735">允許登入 Chrome</translation>
@@ -149,6 +150,7 @@
 <translation id="6916015246697034114">在 Chromium 中使用語音搜尋</translation>
 <translation id="6964931465519938134">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
+<translation id="7004159181872656283">在 Chrome 中搜尋影像內容。</translation>
 <translation id="7056826488869329999">在 Chrome 中開啟並執行安全檢查。</translation>
 <translation id="7059914902409643750">自訂屬於您的 Chrome</translation>
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
@@ -156,6 +158,7 @@
 <translation id="7165736900384873061">開始使用 Google Chrome 二維條碼掃描器</translation>
 <translation id="7173660919484573146">Chrome 透過 Face ID 確保只有獲授權人士才可存取您的密碼。</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
+<translation id="7200524487407690471">Chrome 每天都會自動執行安全檢查，防範資料侵害或不安全網站等等。你可以前往「設定」進一步瞭解安全檢查功能。</translation>
 <translation id="72119412072970160">您可在 iPad 上的其他應用程式使用您儲存到「Google 密碼管理工具」的密碼。</translation>
 <translation id="7254380941803999489">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="7261678641327190792">Chrome 無法檢查密碼</translation>
@@ -218,7 +221,7 @@
   • Chromium 當機時，有關當機詳情可能會包括部分個人資料。
 
   • 開啟同步處理功能後，數據可能亦會包括先前瀏覽網址的資料。<ph name="END_INDENT" /></translation>
-<translation id="9071207983537882274">在 Chrome 中開啟設定。</translation>
+<translation id="9071207983537882274">在 Chrome 中開啟「設定」。</translation>
 <translation id="9112744793181547300">要將 Chrome 設定為預設瀏覽器嗎？</translation>
 <translation id="9122931302567044771">這代表 Chrome 每次都會要求取得桌面版網站。</translation>
 <translation id="9181628561061032322">開啟 Chrome 最近開啟的分頁。</translation>

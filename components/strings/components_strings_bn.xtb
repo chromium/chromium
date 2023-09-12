@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">সাধারণত সুরক্ষিত আছে এমন সাইটও কখনও কখনও আক্রমণকারীদের মাধ্যমে হ্যাক হয়ে যায়। ঝুঁকির বিষয়টি যে আপনি বোঝেন সেই সম্পর্কে নিশ্চিত হলেই শুধুমাত্র <ph name="BEGIN_LINK" />এই অসুরক্ষিত সাইট<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">সিস্টেম প্রশাসকের সাথে যোগাযোগ করে দেখুন।</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-এ মেয়াদ শেষ হবে</translation>
 <translation id="1736420071277903564">কম্পিউটার</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> হলে অবশ্যই নির্দিষ্ট করে দিতে হবে এবং একটি সঠিক স্ট্রিং হতে হবে।</translation>
 <translation id="1743393865165844832">বেডিং ও বেড লিনেন</translation>
@@ -683,6 +684,7 @@
 <translation id="2366689192918515749">মাংস ও সিফুড</translation>
 <translation id="2367567093518048410">স্তর</translation>
 <translation id="23703388716193220">গলফ খেলার সরঞ্জাম</translation>
+<translation id="2378084239755710604">কার্ড সেভ করার সুবিধা বন্ধ করা হয়েছে।</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দমতো তৈরি করুন</translation>
 <translation id="2384307209577226199">এন্টারপ্রাইজ ডিফল্ট</translation>
@@ -2249,6 +2251,7 @@
 <translation id="5653432653077411130">জল সরবরাহ ও চিকিৎসা</translation>
 <translation id="5654927323611874862">আপলোড করা ক্র্যাশ রিপোর্টের আইডি:</translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
+<translation id="5660122698869360728">নতুন স্মার্ট ফোল্ডার, যা আপনাকে একই জায়গায় কেনাকাটা সম্পর্কিত সব পৃষ্ঠা সেভ করতে এবং অটোমেটিক দাম ট্র্যাক করতে, প্রাইস ইনসাইট পেতে এবং আরও অনেক কিছু করতে সাহায্য করে।</translation>
 <translation id="5663955426505430495">এই ডিভাইসের অ্যাডমিনিস্ট্রেটর অতিরিক্ত ক্রিয়াকলাপের জন্য এক্সটেনশন ইনস্টল করেছেন। এক্সটেনশন আপনার কিছু ডেটা অ্যাক্সেস করতে পারে।</translation>
 <translation id="5666606186680807225">সমুদ্রসৈকত ও দ্বীপপুঞ্জ</translation>
 <translation id="5667827081946850877">অডিওবুক</translation>
@@ -2261,6 +2264,7 @@
 <translation id="5689199277474810259">JSON এ রপ্তানি করুন</translation>
 <translation id="5689516760719285838">লোকেশন</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates মান প্রাসঙ্গিক নয় এবং DnsOverHttpsMode নীতি হয় <ph name="SECURE_DNS_MODE_AUTOMATIC" /> অথবা <ph name="SECURE_DNS_MODE_SECURE" />-এ সেট না করা পর্যন্ত ব্যবহার করা যাবে না।</translation>
+<translation id="5691848789297492617">সম্পূর্ণ স্ক্রিন জুড়ে খোলা কার্ড সেভ করুন।</translation>
 <translation id="5695542892312572833">আপনার কেনাকাটা যাচাই করা ও তা সম্পূর্ণ করার জন্য Windows Hello-এর সেন্সর ব্যবহার করতে চান?</translation>
 <translation id="5699628521141772782">ডেয়ারি ও ডিম</translation>
 <translation id="5701381305118179107">কেন্দ্র</translation>
@@ -3010,6 +3014,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">রিয়ার ট্রে</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> এ একটি ব্যক্তিগত সংযোগ স্থাপন করা যায়নি কারণ আপনার কম্পিউটারের তারিখ এবং সময় (<ph name="DATE_AND_TIME" />) সঠিক নয়৷</translation>
+<translation id="7260075294900977274">নতুন স্মার্ট ফোল্ডার, যা আপনাকে একই জায়গায় কেনাকাটা সম্পর্কিত সব পৃষ্ঠা সেভ করতে এবং অটোমেটিক দাম ট্র্যাক করতে, প্রাইস ইনসাইট পেতে এবং আরও অনেক কিছু করতে সাহায্য করে</translation>
 <translation id="7265608370113700582">শুধু এই ডিভাইসে ঠিকানা উপলভ্য হবে</translation>
 <translation id="7275334191706090484">পরিচালিত বুকমার্কগুলি</translation>
 <translation id="7277998515889183784">মেক-আপ ও প্রসাধন</translation>
@@ -3234,6 +3239,7 @@
 <translation id="7676643023259824263">ক্লিপবোর্ড টেক্সট <ph name="TEXT" /> সার্চ করুন</translation>
 <translation id="7679367271685653708">Chrome সেটিংস থেকে আপনার ব্রাউজিংয়ের ইতিহাস দেখুন এবং ম্যানেজ করুন</translation>
 <translation id="7679947978757153706">বেসবল</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-এ মেয়াদ শেষ হবে</translation>
 <translation id="7681273392938116652">কাল্পনিক খেলাধুলা</translation>
 <translation id="7682287625158474539">শিপিং</translation>
 <translation id="7682451652090915298">রাগবি</translation>
@@ -3311,6 +3317,7 @@
 <translation id="7822611063308883975">হ্যান্ডহেল্ড গেম কনসোল</translation>
 <translation id="7825558994363763489">মাইক্রোওয়েভ</translation>
 <translation id="782886543891417279">আপনি যে (<ph name="WIFI_NAME" />) ওয়াই-ফাই ব্যবহার করছেন সেটির জন্য অপনাকে এটির লগ-ইন পৃষ্ঠাতে যেতে হতে পরে৷</translation>
+<translation id="7831993212387676366">কেনাকাটার তালিকা কী?</translation>
 <translation id="7840103971441592723">'স্ক্রিন ক্যাপচার' করা শুরু হয়েছে</translation>
 <translation id="784137052867620416">কেনাকাটা সংক্রান্ত ইনসাইট</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{একটিও নয়}=1{১টি অ্যাপ (<ph name="EXAMPLE_APP_1" />)}=2{২টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{#টি অ্যাপ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>

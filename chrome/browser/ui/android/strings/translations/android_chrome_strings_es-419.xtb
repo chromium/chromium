@@ -312,6 +312,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="265156376773362237">Precarga estándar</translation>
 <translation id="2656405586795711023">Aplicaciones web</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
+<translation id="2673169232805572412">Si un sitio intenta robar tu contraseña, o si descargas un archivo dañino, es posible que Chrome envíe las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="2702516483241149200">Nuevo: Comparte un vínculo directo a este texto.</translation>
 <translation id="2708051474374549906">Protección proactiva y en tiempo real contra descargas, extensiones y sitios peligrosos que se basa en el envío de tus datos de navegación a Google</translation>
 <translation id="2708226184420201102">Abrir en el navegador <ph name="PRODUCT_NAME" /></translation>
@@ -337,6 +338,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Se cerrará <ph name="TAB_COUNT_ONE" /> pestaña de incógnito.}other{Se cerrarán <ph name="TAB_COUNT_MANY" /> pestañas de incógnito.}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Se verificó hace 1 día}other{Se verificó hace # días}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
+<translation id="2853415089995957805">Chrome precarga páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
 <translation id="2856503607207334158">No se pudo acceder.</translation>
 <translation id="2860954141821109167">Comprueba que este dispositivo tenga una app de teléfono habilitada</translation>
 <translation id="2861923151411510142">Algunas funciones de Chrome ya no estarán disponibles</translation>
@@ -581,6 +583,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />publicado por Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Puedes usar esta tablet para acceder en el dispositivo que muestra este código QR.</translation>
 <translation id="4095146165863963773">¿Borrar datos de app?</translation>
+<translation id="4095425503313512126">La navegación y la búsqueda son más rápidas</translation>
 <translation id="4096227151372679484">El flujo para guardar favoritos está abierto a media altura</translation>
 <translation id="4101475238162928417">Utiliza la función de sincronización para acceder a tus contraseñas, favoritos y más en tus otros dispositivos</translation>
 <translation id="4106587138345390261">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos información personal.</translation>
@@ -831,6 +834,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
+<translation id="5320351714793324716">Si permites las cookies, Chrome puede usarlas cuando realice la precarga</translation>
 <translation id="5321849971085220133">Chrome está buscando nuevas formas de reducir el seguimiento y protegerte aún más mientras navegas. Chrome también <ph name="BEGIN_LINK" />estima tus intereses<ph name="END_LINK" /> y te permite administrarlos. Luego, los sitios que visitas pueden consultar a Chrome sobre tus intereses para mostrarte anuncios.</translation>
 <translation id="5326921373682845375">Debido a que las páginas precargadas están encriptadas, y que el sitio vinculado a las páginas es un sitio de Google, los servidores de Google no recibirán información nueva cuando se precarguen estas páginas de forma privada.</translation>
 <translation id="5329858041417644019">Tu navegador no está administrado</translation>

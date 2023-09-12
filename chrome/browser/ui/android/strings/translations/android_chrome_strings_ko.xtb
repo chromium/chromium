@@ -312,6 +312,7 @@
 <translation id="265156376773362237">표준 미리 로드</translation>
 <translation id="2656405586795711023">웹 앱</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
+<translation id="2673169232805572412">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 Google에 보낼 수 있습니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2708051474374549906">Google로 전송되는 인터넷 사용 기록을 토대로 위험한 사이트, 다운로드 항목, 확장 프로그램에 대한 실시간 선제적 보호 조치를 적용합니다.</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> 브라우저에서 열기</translation>
@@ -337,6 +338,7 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
+<translation id="2853415089995957805">Chrome은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="2856503607207334158">로그인 실패</translation>
 <translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="2861923151411510142">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다.</translation>
@@ -581,6 +583,7 @@
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">이 태블릿을 사용하여 이 QR 코드가 표시된 기기에 로그인할 수 있습니다.</translation>
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
+<translation id="4095425503313512126">탐색과 검색이 더 빨라집니다.</translation>
 <translation id="4096227151372679484">북마크 저장 흐름이 절반 높이로 열림</translation>
 <translation id="4101475238162928417">동기화하여 다른 기기에서 비밀번호, 북마크 등을 가져오세요.</translation>
 <translation id="4106587138345390261">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다</translation>
@@ -831,6 +834,7 @@
 <translation id="5308380583665731573">연결</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
+<translation id="5320351714793324716">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="5321849971085220133">Chrome은 사용자 추적을 줄이고 안전은 강화하는 새로운 브라우징 방식을 모색 중입니다. 또한 Chrome은 <ph name="BEGIN_LINK" />관심분야를 추정<ph name="END_LINK" />하고 내가 직접 이를 관리할 수 있도록 합니다. 이후 방문하는 사이트에서는 Chrome이 알려주는 내 관심분야에 따라 광고를 표시할 수 있습니다.</translation>
 <translation id="5326921373682845375">미리 로드된 페이지는 암호화되어 있으며, 페이지로 연결하는 사이트가 Google 사이트이므로 이러한 페이지를 비공개로 미리 로드할 때 Google 서버에 새로운 정보가 수신되지 않습니다.</translation>
 <translation id="5329858041417644019">관리 대상 브라우저가 아닙니다</translation>

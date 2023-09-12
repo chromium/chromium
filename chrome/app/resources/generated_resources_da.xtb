@@ -429,6 +429,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1335929031622236846">Tilmeld din enhed</translation>
 <translation id="133660899895084533">Læs oplysninger og data fra eksterne Bluetooth-enheder</translation>
 <translation id="1336902454946927954">Din sikkerhedsnøgle er låst, fordi dit fingeraftryk ikke blev genkendt. Du kan låse den op ved at angive din pinkode.</translation>
+<translation id="1337066099824654054">Kontekstuel hjælp er deaktiveret</translation>
 <translation id="1338631221631423366">Parrer...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vil gerne åbne denne app.</translation>
 <translation id="1338950911836659113">Sletter...</translation>
@@ -940,7 +941,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1730989807608739928">Rul til sidste fane</translation>
 <translation id="1731520826054843792">Microsoft-certifikatskabelon</translation>
 <translation id="1731911755844941020">Sender anmodning...</translation>
-<translation id="1733383495376208985">Kryptér synkroniserede data med din egen <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" />. Dette omfatter ikke betalingsmetoder og adresser fra Google Pay.</translation>
 <translation id="1734212868489994726">Lyseblå</translation>
 <translation id="1734230530703461088">Udvidelserne blev ikke indlæst inden for tidsgrænsen. Kontakt din administrator.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> kan muligvis ikke holdes opdateret af sig selv</translation>
@@ -3464,6 +3464,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-data slettes om 24 timer</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vil du åbne <ph name="APPLICATION" />?</translation>
+<translation id="3740396996321407665">Få kontekstuel hjælp fra visse funktioner</translation>
 <translation id="3740945083753997630">Formindsk skærm- og tekststørrelse</translation>
 <translation id="3741056951918180319">Du kan altid klikke på udvidelsen for at bruge den på enhver side</translation>
 <translation id="3742235229730461951">Koreansk tastaturlayout</translation>
@@ -6426,6 +6427,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6173623053897475761">Angiv din pinkode igen</translation>
 <translation id="6175314957787328458">Microsoft-domæne-GUID</translation>
 <translation id="6175910054050815932">Få et link</translation>
+<translation id="6176701216248282552">Kontekstuel hjælp er aktiveret. Disse funktioner kan sende åbne sider til Google.</translation>
 <translation id="6177412385419165772">Fjerner...</translation>
 <translation id="6178664161104547336">Vælg et certifikat</translation>
 <translation id="6178682841350631965">Dine logindata er opdateret</translation>

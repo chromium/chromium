@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">送信</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2678468611080193228">サードパーティ Cookie を一時的に許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
+<translation id="2683434792633810741">削除してリセットしますか？</translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2717722538473713889">メールアドレス</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">特定のサイトの Cookie を許可します。</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
+<translation id="4149890623864272035">Cookie を含むすべてのローカルデータを削除し、このウェブサイトに対するすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4151930093518524179">デフォルトのズーム</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
 <translation id="4428065317363009941">広告のカスタマイズ</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
+<translation id="443552056913301231">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="ORIGIN" /> のすべての権限がリセットされます</translation>
 <translation id="4468959413250150279">特定のサイトの音声をミュートします。</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# 件の Cookie}other{# 件の Cookie}}</translation>
 <translation id="4478158430052450698">サイトごとにズーム設定をカスタマイズしやすくします</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
 <translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のパーソナライズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
+<translation id="4644713492825682049">削除してリセット</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
 <translation id="5234764350956374838">閉じる</translation>
+<translation id="5246825184569358663">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="DOMAIN" /> とその下にある全サイトの全権限がリセットされます</translation>
 <translation id="5264323282659631142"><ph name="CHIP_LABEL" /> を削除</translation>
 <translation id="528192093759286357">全画面表示を終了するには、上からドラッグして、戻るボタンをタップします。</translation>
 <translation id="5300589172476337783">表示</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">例外</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6205314730813004066">広告プライバシー</translation>
+<translation id="6207207788774442484">データを削除して権限をリセット</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> のオプション</translation>
 <translation id="6231752747840485235">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
 <translation id="6262191102408817757">最後のタブに基づく</translation>

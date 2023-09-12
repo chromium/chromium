@@ -338,6 +338,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab samaran akan ditutup}other{<ph name="TAB_COUNT_MANY" /> tab samaran akan ditutup}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Diperiksa 1 hari yang lalu}other{Diperiksa # hari yang lalu}}</translation>
 <translation id="2842985007712546952">Folder induk</translation>
+<translation id="2853415089995957805">Chrome melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="2856503607207334158">Login gagal</translation>
 <translation id="2860954141821109167">Pastikan aplikasi telepon diaktifkan di perangkat ini</translation>
 <translation id="2861923151411510142">Beberapa fitur Chrome tidak akan tersedia lagi</translation>
@@ -582,6 +583,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4084712963632273211">Dari <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />dikirim oleh Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Anda dapat menggunakan tablet ini untuk login di perangkat yang menampilkan kode QR ini.</translation>
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
+<translation id="4095425503313512126">Penjelajahan dan penelusuran lebih cepat</translation>
 <translation id="4096227151372679484">Alur penyimpanan bookmark terbuka setengah</translation>
 <translation id="4101475238162928417">Sinkronkan untuk mendapatkan sandi dan bookmark kamu serta data lain di perangkat lainnya</translation>
 <translation id="4106587138345390261">Chrome sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
@@ -832,6 +834,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5308380583665731573">Hubungkan</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319359161174645648">Google merekomendasikan Chrome</translation>
+<translation id="5320351714793324716">Jika Anda mengizinkan cookie, Chrome dapat menggunakannya saat melakukan pramuat</translation>
 <translation id="5321849971085220133">Chrome sedang mencari cara baru untuk mengurangi pelacakan dan membuat Anda lebih aman saat menjelajah. Chrome juga <ph name="BEGIN_LINK" />memperkirakan minat Anda<ph name="END_LINK" /> dan memungkinkan Anda mengelolanya. Kemudian, situs yang Anda buka dapat meminta minat Anda kepada Chrome untuk menampilkan iklan.</translation>
 <translation id="5326921373682845375">Karena halaman yang dipramuat terenkripsi dan situs yang ditautkan ke halaman tersebut adalah situs Google, server Google tidak menerima informasi baru saat melakukan pramuat halaman ini secara pribadi.</translation>
 <translation id="5329858041417644019">Browser Anda tidak dikelola</translation>

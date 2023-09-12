@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">Hierdie adres is tans in Chrome gestoor. Stoor dit in jou Google-rekening, <ph name="USER_EMAIL" />, om dit in alle Google-produkte te gebruik.</translation>
 <translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="1836891464494477513">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor}other{Boekmerke is in jou Google-rekening, {email}, gestoor}}</translation>
+<translation id="183878838231635348">Hierdie kaart wys enige privaatheid- of sekuriteitkwessies wat veiligheidskontrole outomaties vir jou bespeur.</translation>
 <translation id="1847795903283049083">Jy kan ook hierdie items in jou boekmerke, Leeslys of wagwoordbestuurder bekyk en bestuur.</translation>
 <translation id="1870148520156231997">Wys wagwoord</translation>
 <translation id="1872096359983322073">Flits</translation>
@@ -265,6 +266,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2523363575747517183">Hierdie webwerf probeer herhaaldelik 'n ander program oopmaak.</translation>
 <translation id="2529021024822217800">Maak almal oop</translation>
 <translation id="2536991091671391962">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word in Google Wagwoordbestuurder gestoor vir <ph name="EMAIL" /></translation>
+<translation id="2542268842667970959">Versteek “Veiligheidskontrole”</translation>
 <translation id="2547458583188611426">Sinkronisering werk nie tans nie. Voer jou wagfrase in om sinkronisering te begin.</translation>
 <translation id="2551153019974022505">Rekeningfout</translation>
 <translation id="2556092377360758201">Geen beskerming nie (nie aanbeveel nie)</translation>
@@ -556,6 +558,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4121993058175073134">Stel asseblief jou e-posrekening in die Instellingsprogram op om netto-uitvoerdata te stuur.</translation>
 <translation id="4124987746317609294">Tydreeks</translation>
 <translation id="4133265950310064865">Gevorderde Beskerming</translation>
+<translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4148023517926189160">Hierdie webwerf wil ’n lêer aflaai en dit by jou kalender voeg.</translation>
 <translation id="4152011295694446843">Jy sal jou boekmerke hier kry</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> wat met <ph name="LAST_FOUR_DIGITS" /> eindig</translation>
@@ -692,6 +695,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4881695831933465202">Maak oop</translation>
 <translation id="488785315393301722">Wys besonderhede</translation>
 <translation id="4894963374040315706">Dit maak dit vir jou moontlik om met jou stem te soek</translation>
+<translation id="489903206070130262">Jou laaste oop oortjie</translation>
 <translation id="4901778704868714008">Stoor …</translation>
 <translation id="4904877109095351937">Merk as gelees</translation>
 <translation id="4908869848243824489">Ontdek deur Google</translation>

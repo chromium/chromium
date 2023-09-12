@@ -305,6 +305,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="271033894570825754">Uusi</translation>
 <translation id="2712127207578915686">Tiedostoa ei voi avata</translation>
 <translation id="2718352093833049315">Vain Wi-Fillä</translation>
+<translation id="2738375676495545665">Piilota "Uutta"</translation>
 <translation id="2747003861858887689">Edellinen kenttä</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> seurannassa</translation>
 <translation id="2762000892062317888">äsken</translation>
@@ -487,8 +488,10 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi ({EMAIL}).}other{{COUNT} salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi ({EMAIL}).}}</translation>
 <translation id="3709582977625132201">Merkitse lukemattomaksi</translation>
 <translation id="371230970611282515">Ennustaa vaarallisia tapahtumia ja varoittaa niistä etukäteen.</translation>
+<translation id="371398631992790800">Piilota "Kirjanmerkit"</translation>
 <translation id="37207012422556617">Trendaavat haut</translation>
 <translation id="3740397331642243698">Avaa syötetyt URL-osoitteet Google Chromen incognito-tilassa.</translation>
+<translation id="374357899112510277">Piilota "Lataukset"</translation>
 <translation id="3745190878148784130">Piilota Zoomaa tekstiä</translation>
 <translation id="3762232513783804601">Suunniteltu iPadille</translation>
 <translation id="3768725474733206671">Avaa viimeksi suljettu välilehti uudelleen</translation>
@@ -553,6 +556,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4121993058175073134">Tee sähköp.tilin määritykset asetuksissa lähettääksesi nettovientitiet.</translation>
 <translation id="4124987746317609294">Aikaväli</translation>
 <translation id="4133265950310064865">Parannettu suojaus</translation>
+<translation id="4147897805161313378">Google Kuvat</translation>
 <translation id="4148023517926189160">Verkkosivusto haluaa ladata tiedoston ja lisätä sen kalenteriisi.</translation>
 <translation id="4152011295694446843">Näet kirjanmerkkisi täällä</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, jonka lopussa on <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -840,6 +844,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="581659025233126501">Laita synkronointi päälle</translation>
 <translation id="5817176759448082654">Salasanan tarkistus</translation>
 <translation id="5819208479324046259">Ylläpitäjä on <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">Piilota "Salasanat"</translation>
 <translation id="5833643789537100742">Tallenna salasanat, maksutavat ja osoitteet Chromen automaattista täyttöä varten.</translation>
 <translation id="5834415013958049700">Kopioimasi Lens-kuva</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
@@ -1310,6 +1315,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8286036467436129157">Kirjaudu sisään</translation>
 <translation id="8299417921174340354">Salasanojen käyttöä varten sinun on ensin asetettava laitteellesi tunnuskoodi.</translation>
 <translation id="8299613349954694191">Selaa verkkoa yksityisesti avaamalla incognito-välilehden.</translation>
+<translation id="8311853334103696030">Piilota "Hintaseuranta"</translation>
 <translation id="8316944564970119719">Lisää sivusto ja salasana ja sitten tallenna</translation>
 <translation id="8319076807703933069">Uusi haku</translation>
 <translation id="8328777765163860529">Sulje kaikki</translation>
@@ -1362,6 +1368,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="8588404856427128947">Pois päältä</translation>
 <translation id="8591976964826315682">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="8605219856220328675">Sulje välilehti.</translation>
+<translation id="8613883225817609844">Piilota "Viimeaikaiset välilehdet"</translation>
 <translation id="8620640915598389714">Muokkaa</translation>
 <translation id="8626393685701737946">Voit vaihtaa sivuston oletusnäkymän tietokonenäkymään kohdasta Asetukset &gt; Sisältöasetukset</translation>
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
@@ -1466,6 +1473,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="9120217828624527905">Vaihda koko sivun kääntämiseen</translation>
 <translation id="9124387962554796433">Google voi muokata Hakua ja muita Googlen palveluita historiasi perusteella.</translation>
 <translation id="9137526406337347448">Googlen palvelut</translation>
+<translation id="9144931028079269381">Piilota "Lukulista"</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9157836665414082580">Estä valintaikkunat</translation>
 <translation id="9162432979321511934">Laita Täytä salasanat automaattisesti päälle.</translation>

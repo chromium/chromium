@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Spila Chrome Dino leikinn</translation>
 <translation id="1352919863522755794">Google-aðgangsorðastjórnun gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
 <translation id="1407843355326180937">Skráðu þig inn á þetta vefsvæði og Chrome til að fá bókamerkin þín og fleira í öll tækin þín.</translation>
+<translation id="1436059927646026729">Opna nýjasta flipann minn í Chrome</translation>
 <translation id="1462727070346936664">Skráðu þig inn til að fá sem mest út úr Chrome.</translation>
 <translation id="1479202195792305274">Chrome getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum.</translation>
 <translation id="1491435845014430217">Kveiktu á „Læsa huliðsflipum þegar þú lokar Chrome“.</translation>
@@ -72,6 +73,7 @@ Hafðu í huga:
 <translation id="3655656110921623717">Þetta þýðir að Chrome biður alltaf um snjalltækjaútgáfu vefsvæðis.</translation>
 <translation id="3720541637541300822">Læsa huliðsflipum um leið og þú lokar Chrome</translation>
 <translation id="3741995255368156336">Opnar leslista Chrome.</translation>
+<translation id="3744018071945602754">Stjórna aðgangsorðum í Chrome</translation>
 <translation id="3827545470516145620">Þú er með staðlaða öryggisvörn í þessu tæki</translation>
 <translation id="384394811301901750">Google Chrome getur ekki notað myndavélina að svo stöddu</translation>
 <translation id="3901001113120561395">Fáðu sem mest út úr Chrome.</translation>
@@ -86,6 +88,7 @@ Hafðu í huga:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> notaði Chrome og skildi eftir bókamerki, aðgangsorð og aðrar stillingar í þessu tæki.</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4251174643044751591">Opnar stillingasíðu greiðslumáta í Chrome.</translation>
+<translation id="4453284704333523777">Stjórna stillingum Chrome</translation>
 <translation id="4508370294876102450">Opnaðu Chrome í hvaða forriti sem er</translation>
 <translation id="4523886039239821078">Einhverjar viðbætur valda því að Chrome hrynur. Fjarlægðu þær.</translation>
 <translation id="4633328489441962921">Chrome getur ekki leitað að uppfærslum.</translation>
@@ -122,6 +125,7 @@ Hafðu í huga:
 <translation id="571296537125272375">Ótengt, Chrome getur ekki leitað að uppfærslum.</translation>
 <translation id="5716154293141027663">Opna Chrome hvenær sem þú ýtir á tengil í öðrum forritum</translation>
 <translation id="5808435672482059465">Skoða Chrome ferilinn þinn</translation>
+<translation id="589695154992054845">Opnar aðgangsorðastjórnun í Chrome.</translation>
 <translation id="5998675059699164418">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome.</translation>
 <translation id="6054613632208573261">Notaðu Chrome sjálfgefið</translation>
 <translation id="6063091872902370735">Leyfa innskráningu í Chrome</translation>
@@ -171,6 +175,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
 <translation id="7897703007638178753">Sjá nýlega flipa Chrome</translation>
 <translation id="7925119591961387184">Veldu „Chrome“.</translation>
+<translation id="7933491483529363150">Opna nýjasta flipann minn í Chrome.</translation>
 <translation id="8022947259858476807">Notaðu Chrome sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="804638182476029347">Leyfa Chrome-tilkynningar til að fá tilkynningar um verðlækkanir</translation>
 <translation id="81358522153858150">Chrome styður nú notendareglur fyrir stýrða reikninginn þinn</translation>
@@ -211,6 +216,7 @@ Hafðu í huga:
 <ph name="BEGIN_INDENT" />  • Upplýsingar um notkun þína á Chrome eru sendar til Google en eru ekki tengdar við þig.
   • Ef Chrome hrynur gætu tilteknar persónuupplýsingar komið fram í upplýsingum um hrunið.
   • Ef þú kveikir að samstillingu gætu mæligildi innihaldið upplýsingar um vefslóðir sem þú ferð á.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Opnar stillingarnar í Chrome.</translation>
 <translation id="9112744793181547300">Stilla Chrome sem sjálfgefið?</translation>
 <translation id="9122931302567044771">Þetta þýðir að Chrome biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
 <translation id="9181628561061032322">Opnar nýlega flipa Chrome.</translation>

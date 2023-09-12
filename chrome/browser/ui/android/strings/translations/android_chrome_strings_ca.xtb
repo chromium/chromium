@@ -338,6 +338,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Es tancarà <ph name="TAB_COUNT_ONE" /> pestanya d'incògnit}other{Es tancaran <ph name="TAB_COUNT_MANY" /> pestanyes d'incògnit}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{S'ha comprovat fa 1 dia}other{S'ha comprovat fa # dies}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
+<translation id="2853415089995957805">Chrome precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan les visitis</translation>
 <translation id="2856503607207334158">No s'ha pogut iniciar la sessió</translation>
 <translation id="2860954141821109167">Comprova que hi hagi una aplicació de telèfon activada en aquest dispositiu</translation>
 <translation id="2861923151411510142">Algunes funcions de Chrome ja no estaran disponibles</translation>
@@ -582,6 +583,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4084712963632273211">Publicada originalment per <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />oferida per Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Pots utilitzar aquesta tauleta per iniciar la sessió al dispositiu que està mostrant aquest codi QR.</translation>
 <translation id="4095146165863963773">Vols suprimir les dades de l'aplicació?</translation>
+<translation id="4095425503313512126">Navegar i fer cerques és més ràpid</translation>
 <translation id="4096227151372679484">Flux per desar l'adreça d'interès obert a mitja alçada</translation>
 <translation id="4101475238162928417">Sincronitza per obtenir les contrasenyes, les adreces d'interès i altres elements als teus altres dispositius</translation>
 <translation id="4106587138345390261">Chrome està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
@@ -832,6 +834,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319359161174645648">Google recomana Chrome</translation>
+<translation id="5320351714793324716">Si permets les galetes, Chrome pot utilitzar-les en la precàrrega</translation>
 <translation id="5321849971085220133">Chrome està investigant noves maneres de reduir el seguiment i de protegir-te encara més quan navegues. Chrome també <ph name="BEGIN_LINK" />fa una estimació dels teus interessos<ph name="END_LINK" /> i et permet gestionar-los. Així, els llocs web que visitis poden demanar a Chrome els teus interessos per mostrar-te anuncis.</translation>
 <translation id="5326921373682845375">Com que les pàgines precarregades estan encriptades i el lloc que enllaça a les pàgines és un lloc web de Google, els servidors de Google no reben informació nova quan aquestes pàgines es precarreguen de manera privada.</translation>
 <translation id="5329858041417644019">El navegador no està gestionat</translation>

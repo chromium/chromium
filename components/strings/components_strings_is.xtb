@@ -388,6 +388,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1733762317901693627">Jafnvel vefsvæði sem eru almennt örugg lenda stundum í klóm árásaraðila. Ekki opna <ph name="BEGIN_LINK" />þetta ótrausta vefsvæði<ph name="END_LINK" /> nema þú skiljir áhættuna sem fylgir því.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Prófaðu að hafa samband við kerfisstjórann.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, rennur út <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Tölva</translation>
 <translation id="1741613555002899862">Verður að vera tilgreint og gildur strengur þegar DnsOverHttpsMode er <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Rúmföt</translation>
@@ -682,6 +683,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2366689192918515749">Kjöt og fiskmeti</translation>
 <translation id="2367567093518048410">Stig</translation>
 <translation id="23703388716193220">Golfbúnaður</translation>
+<translation id="2378084239755710604">„Vista kort“ lokað.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Þú getur sérsniðið aðgengisverkfærin þín í stillingum Chrome</translation>
 <translation id="2384307209577226199">Sjálfgildi fyrirtækis</translation>
@@ -2248,6 +2250,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5653432653077411130">Vatnsból og vatnshreinsun</translation>
 <translation id="5654927323611874862">Auðkenni sendrar hrunskýrslu:</translation>
 <translation id="5659593005791499971">Netfang</translation>
+<translation id="5660122698869360728">Ný snjallmappa sem auðveldar þér að vista allar verslunarsíður á einum stað, fylgjast sjálfkrafa með verði, fá upplýsingar um verð og fleira.</translation>
 <translation id="5663955426505430495">Kerfisstjóri þessa tækis hefur sett upp viðbætur fyrir fleiri aðgerðir. Viðbætur hafa aðgang að sumum af gögnunum þínum.</translation>
 <translation id="5666606186680807225">Strendur og eyjar</translation>
 <translation id="5667827081946850877">Hljóðbækur</translation>
@@ -2260,6 +2263,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5689199277474810259">Flytja út í JSON-snið</translation>
 <translation id="5689516760719285838">Staðsetning</translation>
 <translation id="569000877158168851">Gildið DnsOverHttpsTemplates á ekki við og verður ekki notað nema reglan DnsOverHttpsMode sé stillt á annaðhvort <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eða <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">„Vista kort“ opnað í fullri hæð.</translation>
 <translation id="5695542892312572833">Nota Windows Hello til að staðfesta og ljúka kaupunum?</translation>
 <translation id="5699628521141772782">Mjólkurafurðir og egg</translation>
 <translation id="5701381305118179107">Miðjujafna</translation>
@@ -3010,6 +3014,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Aftari bakki</translation>
 <translation id="725866823122871198">Ekki er hægt að koma á lokaðri tengingu við <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vegna þess að dag- og tímasetning tölvunnar (<ph name="DATE_AND_TIME" />) er röng.</translation>
+<translation id="7260075294900977274">Ný snjallmappa sem auðveldar þér að vista allar verslunarsíður á einum stað, fylgjast sjálfkrafa með verði, fá upplýsingar um verð og fleira</translation>
 <translation id="7265608370113700582">Heimilisfangið er eingöngu tiltækt í þessu tæki</translation>
 <translation id="7275334191706090484">Stýrð bókamerki</translation>
 <translation id="7277998515889183784">Förðun og snyrtivörur</translation>
@@ -3234,6 +3239,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7676643023259824263">Leita að texta á klippiborði, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Skoða og stjórna vafraferli í stillingum Chrome</translation>
 <translation id="7679947978757153706">Hafnabolti</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, rennur út <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Draumadeildir</translation>
 <translation id="7682287625158474539">Sending</translation>
 <translation id="7682451652090915298">Ruðningur</translation>
@@ -3311,6 +3317,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7822611063308883975">Leikjatölvur sem haldið er á</translation>
 <translation id="7825558994363763489">Örbylgjuofnar</translation>
 <translation id="782886543891417279">Wi-Fi netið sem þú notar (<ph name="WIFI_NAME" />) kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
+<translation id="7831993212387676366">Hvað er innkaupalistinn?</translation>
 <translation id="7840103971441592723">Skjáupptaka er hafin</translation>
 <translation id="784137052867620416">Shopping-innsýn</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ekkert}=1{1 forrit (<ph name="EXAMPLE_APP_1" />)}=2{2 forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# forrit (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

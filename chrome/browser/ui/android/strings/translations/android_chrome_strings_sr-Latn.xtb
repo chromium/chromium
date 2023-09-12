@@ -338,6 +338,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica bez arhiviranja će biti zatvorena}one{<ph name="TAB_COUNT_MANY" /> kartica bez arhiviranja će biti zatvorena}few{<ph name="TAB_COUNT_MANY" /> kartice bez arhiviranja će biti zatvorene}other{<ph name="TAB_COUNT_MANY" /> kartica bez arhiviranja će biti zatvoreno}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provereno pre 1 dan}one{Provereno pre # dan}few{Provereno pre # dana}other{Provereno pre # dana}}</translation>
 <translation id="2842985007712546952">Nadređeni folder</translation>
+<translation id="2853415089995957805">Chrome predučitava stranice koje ćete verovatno posetiti, kako bi se brže učitavale kada ih posetite</translation>
 <translation id="2856503607207334158">Prijavljivanje nije uspelo</translation>
 <translation id="2860954141821109167">Uverite se da je neka aplikacija za telefon omogućena na ovom uređaju</translation>
 <translation id="2861923151411510142">Neke Chrome funkcije više neće biti dostupne</translation>
@@ -582,6 +583,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="4084712963632273211">Od objavljivača <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />prikazuje Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Možete da koristite ovaj tablet da biste se prijavili na uređaju koji prikazuje ovaj QR kôd.</translation>
 <translation id="4095146165863963773">Želite li da izbrišete podatke aplikacije?</translation>
+<translation id="4095425503313512126">Pregledanje i pretraživanje su brži</translation>
 <translation id="4096227151372679484">Tok čuvanja obeleživača je otvoren do polovine ekrana</translation>
 <translation id="4101475238162928417">Sinhronizujte podatke da biste preuzeli lozinke, obeleživače i drugo na ostalim uređajima</translation>
 <translation id="4106587138345390261">Chrome istražuje nove funkcije koje omogućavaju sajtovima da pružaju isti doživljaj pregledanja, a da koriste manje podataka</translation>
@@ -832,6 +834,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
+<translation id="5320351714793324716">Ako dozvolite kolačiće, Chrome može da ih koristi kada predučitava stranice</translation>
 <translation id="5321849971085220133">Chrome pronalazi nove načine da smanji praćenje i dodatno vas zaštiti dok pregledate. Chrome takođe <ph name="BEGIN_LINK" />procenjuje interesovanja<ph name="END_LINK" /> i omogućava vam da upravljate njima. Sajtovi koje posećujete zatim mogu da traže od Chrome-a vaša interesovanja da bi vam prikazivali oglase.</translation>
 <translation id="5326921373682845375">Pošto su predučitane stranice šifrovane, a sajt koji vodi do stranica je Google sajt, Google serveri ne dobijaju nove informacije kada privatno predučitavaju te stranice.</translation>
 <translation id="5329858041417644019">Pregledačem niko ne upravlja</translation>

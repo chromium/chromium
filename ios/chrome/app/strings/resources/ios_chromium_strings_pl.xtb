@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">Otwiera nową kartę incognito w Chromium.</translation>
 <translation id="3805899903892079518">Chromium nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
+<translation id="3833326979834193417">Chromium codziennie automatycznie uruchamia kontrolę zabezpieczeń, aby chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami i innymi zagrożeniami. Więcej informacji o kontroli zabezpieczeń znajdziesz w Ustawieniach.</translation>
 <translation id="3886689467633467988">Zaloguj się na tej stronie i w Chromium, aby mieć dostęp do zakładek i innych opcji na wszystkich swoich urządzeniach.</translation>
 <translation id="394413318816989199">Szyfrowanie hasłem nie obejmuje form płatności ani adresów.
 
@@ -84,6 +85,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na s
 <translation id="4555020257205549924">Gdy ta funkcja jest włączona, Chromium oferuje tłumaczenie stron w innych językach przy użyciu Tłumacza Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Otwiera stronę ustawień form płatności w Chromium.</translation>
 <translation id="4585809515399340748">Teraz możesz używać Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
+<translation id="459080529287102949">Wyszukaj elementy wizualne w Chromium</translation>
 <translation id="4633738821577273991">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chromium</translation>
 <translation id="4654936625574199632">Aby pomóc nam ulepszać aplikację, Chromium wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Włącz skaner Chromium</translation>
@@ -152,6 +154,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="7045244423563602563">Dostosuj Chromium do swoich potrzeb</translation>
 <translation id="7055269218854630176">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, oraz sposobem korzystania z Chromium. Administrator może konfigurować lub ograniczać pewne funkcje.</translation>
 <translation id="7099326575020694068">Chromium nie może używać aparatu w trybie widoku dzielonego</translation>
+<translation id="7163483974919055112">Wyszukaj elementy wizualne w Chromium.</translation>
 <translation id="7165402419892018581">Wybieranie Chromium do autouzupełniania</translation>
 <translation id="7175400662502680481">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Menedżer haseł zaleca, aby jak najszybciej je zmienić.</translation>
 <translation id="7192111075364461693">Powiadomienia Chromium są aktualnie wyłączone w ustawieniach urządzenia.</translation>

@@ -940,7 +940,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1730989807608739928">Scroll towards the last tab</translation>
 <translation id="1731520826054843792">Microsoft Certificate Template</translation>
 <translation id="1731911755844941020">Sending request...</translation>
-<translation id="1733383495376208985">Encrypt synced data with your own <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" />. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="1734212868489994726">Light blue</translation>
 <translation id="1734230530703461088">Failed to load extensions within the time limit. Please contact your administrator.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> may not be able to keep itself updated</translation>

@@ -392,6 +392,7 @@
 <translation id="1733762317901693627">Երբեմն հաքերները կարող են կոտրել անգամ անվտանգ կայքերը։ Այցելեք <ph name="BEGIN_LINK" />այս ոչ անվտանգ կայք<ph name="END_LINK" />, միայն եթե վստահ եք, որ գիտակցում եք վտանգները։</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Փորձեք կապվել համակարգի ադմինիստրատորի հետ:</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, վավերականության ժամկետը՝ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Համակարգիչ</translation>
 <translation id="1741613555002899862">Պետք է լինի նշված և վավեր տող, եթե DnsOverHttpsMode կանոնի համար կարգավորված է <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
 <translation id="1743393865165844832">Անկողնային պարագաներ և սպիտակեղեն</translation>
@@ -686,6 +687,7 @@
 <translation id="2366689192918515749">Միս և ծովամթերք</translation>
 <translation id="2367567093518048410">Մակարդակ</translation>
 <translation id="23703388716193220">Գոլֆի պարագաներ</translation>
+<translation id="2378084239755710604">Քարտի տվյալների պահման պատուհանը փակված է։</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Անհատականացնել հատուկ գործառույթների գործիքները Chrome-ի կարգավորումներում</translation>
 <translation id="2384307209577226199">Կորպորատիվ կանխադրված</translation>
@@ -2259,6 +2261,7 @@
 <translation id="5653432653077411130">Ջրամատակարարում և մաքրում</translation>
 <translation id="5654927323611874862">Խափանման մասին թարմացված հաշվետվության ID՝</translation>
 <translation id="5659593005791499971">Էլփոստ</translation>
+<translation id="5660122698869360728">Նոր խելացի պանակ, որը կօգնի ձեզ պահել ձեր գնումների բոլոր էջերը մեկ տեղում և ավտոմատ կերպով հետևել գներին, ինչպես նաև ստանալ գների մասին տեղեկություններ և շատ ավելին։</translation>
 <translation id="5663955426505430495">Այս սարքի ադմինիստրատորը լրացուցիչ գործառույթների համար ընդլայնումներ է տեղադրել: Ձեր տվյալների մի մասը հասանելի է այդ ընդլայնումներին:</translation>
 <translation id="5666606186680807225">Ծովափեր և կղզիներ</translation>
 <translation id="5667827081946850877">Աուդիոգրքեր</translation>
@@ -2271,6 +2274,7 @@
 <translation id="5689199277474810259">Արտահանել JSON ձևաչափով</translation>
 <translation id="5689516760719285838">Տեղորոշում</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates կանոնի արժեքը անհամապատասխան է և չի կարող օգտագործվել, եթե DnsOverHttpsMode կանոնի համար չի կարգավորվել <ph name="SECURE_DNS_MODE_AUTOMATIC" /> կամ <ph name="SECURE_DNS_MODE_SECURE" /> արժեքը:</translation>
+<translation id="5691848789297492617">Քարտի տվյալների պահման պատուհանը բացված է ամբողջությամբ։</translation>
 <translation id="5695542892312572833">Հաստատե՞լ և ավարտել ձեր գնումը Windows Hello-ի միջոցով</translation>
 <translation id="5699628521141772782">Կաթնամթերք և ձու</translation>
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
@@ -3021,6 +3025,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Հետևի դարակ</translation>
 <translation id="725866823122871198">Չհաջողվեց մասնավոր կապակցում հաստատել <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> տիրույթի հետ, քանի որ ձեր համակարգչի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ են:</translation>
+<translation id="7260075294900977274">Նոր խելացի պանակ, որը կօգնի ձեզ պահել ձեր գնումների բոլոր էջերը մեկ տեղում և ավտոմատ կերպով հետևել գներին, ինչպես նաև ստանալ գների մասին տեղեկություններ և շատ ավելին</translation>
 <translation id="7265608370113700582">Հասցեն հասանելի է միայն այս սարքում</translation>
 <translation id="7275334191706090484">Կառավարվող էջանիշներ</translation>
 <translation id="7277998515889183784">Դիմահարդարում և կոսմետիկ միջոցներ</translation>
@@ -3245,6 +3250,7 @@
 <translation id="7676643023259824263">Սեղմատախտակին պահված տեքստի որոնում, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Դիտել և կառավարել այցելությունների պատմությունը Chrome-ի կարգավորումներում</translation>
 <translation id="7679947978757153706">Բեյսբոլ</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, վավերականության ժամկետը՝ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Երևակայական սպորտ</translation>
 <translation id="7682287625158474539">Առաքում</translation>
 <translation id="7682451652090915298">Ռեգբի</translation>
@@ -3322,6 +3328,7 @@
 <translation id="7822611063308883975">Դյուրակիր խաղային բարձակներ</translation>
 <translation id="7825558994363763489">Միկրոալիքային վառարաններ</translation>
 <translation id="782886543891417279">Անլար կապը (<ph name="WIFI_NAME" />), որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք նրա մուտքի էջը:</translation>
+<translation id="7831993212387676366">Ի՞նչ է գնումների ցուցակը</translation>
 <translation id="7840103971441592723">Էկրանի տեսագրումը սկսվել է</translation>
 <translation id="784137052867620416">Գնումների վիճակագրություն</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Չկա}=1{1 հավելված (<ph name="EXAMPLE_APP_1" />)}=2{2 հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

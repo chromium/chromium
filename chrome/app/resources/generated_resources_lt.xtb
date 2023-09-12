@@ -943,7 +943,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1730989807608739928">Slinkti į paskutinį skirtuką</translation>
 <translation id="1731520826054843792">„Microsoft“ sertifikato šablonas</translation>
 <translation id="1731911755844941020">Siunčiama užklausa...</translation>
-<translation id="1733383495376208985">Šifruokite sinchronizuojamus duomenis taikydami savo <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. Neįtraukiami mokėjimo metodai ir adresai iš „Google Pay“.</translation>
 <translation id="1734212868489994726">Šviesiai mėlyna</translation>
 <translation id="1734230530703461088">Nepavyko įkelti plėtinių per apribotą laiką. Susisiekite su administratoriumi.</translation>
 <translation id="1734824808160898225">„<ph name="PRODUCT_NAME" />“ gali nesugebėti atsinaujinti</translation>
@@ -6349,6 +6348,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6104796831253957966">Spausdintuvo eilė pilna</translation>
 <translation id="6104929924898022309">Naudodami paieškos klavišą pakeiskite funkcijų klavišų veikimą</translation>
 <translation id="6106167152849320869">Jei atlikdami ankstesnį veiksmą taip pat pasirinkote siųsti diagnostikos ir naudojimo duomenis, bus renkami įdiegtų programų duomenys.</translation>
+<translation id="6111718295497931251">Pašalinti „Google“ disko prieigą</translation>
 <translation id="6111972606040028426">Įgalinti „Google“ padėjėją</translation>
 <translation id="6112294629795967147">Palieskite, kad pakeistumėte dydį</translation>
 <translation id="6112727384379533756">Pridėti bilietą</translation>

@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">এই ঠিকনাটো বৰ্তমান Chromeত ছেভ কৰা হয়। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰক।</translation>
 <translation id="1832848789136765277">আপোনাৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="1836891464494477513">{count,plural, =1{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্ক, {email}}one{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্কসমূহ, {email}}other{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্ক, {email}}}</translation>
+<translation id="183878838231635348">এই কাৰ্ডখনে সুৰক্ষা পৰীক্ষাটোৱে আপোনাৰ বাবে স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা যিকোনো গোপনীয়তা অথবা সুৰক্ষা সম্পৰ্কীয় সমস্যা দেখুৱায়।</translation>
 <translation id="1847795903283049083">এই বস্তুবোৰ আপুনি আপোনাৰ বুকমাৰ্ক, পঢ়াৰ সূচী আৰু পাছৱৰ্ড পৰিচালকতো চাব আৰু পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
@@ -265,6 +266,7 @@
 <translation id="2523363575747517183">এই ৱেবছাইটটোৱে বাৰে বাৰে অন্য এটা এপ্লিকেশ্বন খুলিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="2529021024822217800">সকলো খোলক</translation>
 <translation id="2536991091671391962">আপুনি ছেভ হৈ থকা পাছৱৰ্ড যিকোনো ডিভাইচত ব্যৱহাৰ কৰিব পাৰে। সেইসমূহ <ph name="EMAIL" />ৰ Google Password Managerত ছেভ কৰা হয়।</translation>
+<translation id="2542268842667970959">"সুৰক্ষা পৰীক্ষা" লুকুৱাওক</translation>
 <translation id="2547458583188611426">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই। ছিংক আৰম্ভ কৰিবলৈ আপোনাৰ পাছফ্ৰে’জ দিয়ক।</translation>
 <translation id="2551153019974022505">একাউণ্টৰ আসোঁৱাহ</translation>
 <translation id="2556092377360758201">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
@@ -556,6 +558,7 @@
 <translation id="4121993058175073134">মুঠ ৰপ্তানি ডেটা পঠিয়াবলৈ, অনুগ্ৰহ কৰি ছেটিংসমূহৰ এপত আপোনাৰ ইমেইল একাউণ্ট কনফিগাৰ কৰক৷</translation>
 <translation id="4124987746317609294">সময় অৱধি</translation>
 <translation id="4133265950310064865">বৰ্ধিত সুৰক্ষা</translation>
+<translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">এই ৱেবছাইটটোৱে এটা ফাইল ডাউনল’ড কৰি সেইটো আপোনাৰ কেলেণ্ডাৰত যোগ দিবলৈ বিচাৰিছে।</translation>
 <translation id="4152011295694446843">ইয়াত আপুনি নিজৰ বুকমাৰ্কসমূহ বিচাৰি পাব</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />এৰে শেষ হোৱা <ph name="NETWORK_NAME" /></translation>
@@ -692,6 +695,7 @@
 <translation id="4881695831933465202">খোলক</translation>
 <translation id="488785315393301722">সবিশেষ দেখুৱাওক</translation>
 <translation id="4894963374040315706">এইটোৱে আপোনাক নিজৰ কণ্ঠস্বৰ ব্যৱহাৰ কৰি ক্ষিপ্ৰভাৱে সন্ধান কৰিবলৈ দিয়ে</translation>
+<translation id="489903206070130262">আপোনাৰ শেহতীয়া খোলা টেব</translation>
 <translation id="4901778704868714008">ছেভ কৰক...</translation>
 <translation id="4904877109095351937">পঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="4908869848243824489">Googleৰ Discover</translation>

@@ -339,6 +339,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito tab will be closed}other{<ph name="TAB_COUNT_MANY" /> incognito tabs will be closed}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Checked 1 day ago}other{Checked # days ago}}</translation>
 <translation id="2842985007712546952">Parent folder</translation>
+<translation id="2853415089995957805">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
 <translation id="2856503607207334158">Sign-in failed</translation>
 <translation id="2860954141821109167">Make sure that a phone app is enabled on this device</translation>
 <translation id="2861923151411510142">Some Chrome features won\u2019t be available anymore</translation>
@@ -583,6 +584,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4084712963632273211">From <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />delivered by Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">You can use this tablet to sign in on the device that’s displaying this QR code.</translation>
 <translation id="4095146165863963773">Delete app data?</translation>
+<translation id="4095425503313512126">Browsing and searching is faster</translation>
 <translation id="4096227151372679484">Bookmark save flow opened at half height</translation>
 <translation id="4101475238162928417">Sync to get your passwords, bookmarks and more on your other devices</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
@@ -833,6 +835,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
+<translation id="5320351714793324716">If you allow cookies, Chrome may use them when preloading.</translation>
 <translation id="5321849971085220133">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="BEGIN_LINK" />estimates your interests<ph name="END_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
 <translation id="5326921373682845375">Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.</translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>

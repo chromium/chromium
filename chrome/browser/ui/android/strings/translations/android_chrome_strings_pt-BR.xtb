@@ -338,6 +338,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia anônima será fechada}one{<ph name="TAB_COUNT_MANY" /> guia anônima será fechada}other{<ph name="TAB_COUNT_MANY" /> guias anônimas serão fechadas}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Verificado 1 dia atrás}one{Verificado # dia atrás}other{Verificado # dias atrás}}</translation>
 <translation id="2842985007712546952">Pasta mãe</translation>
+<translation id="2853415089995957805">O Chrome pré-carrega páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas.</translation>
 <translation id="2856503607207334158">Falha no login</translation>
 <translation id="2860954141821109167">Verifique se há um aplicativo para telefones ativado neste dispositivo</translation>
 <translation id="2861923151411510142">Você vai perder o acesso a alguns dos recursos do Chrome</translation>
@@ -582,6 +583,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />: <ph name="BEGIN_DEEMPHASIZED" />veiculado pelo Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Você pode usar o tablet para fazer login no dispositivo que está mostrando o código QR.</translation>
 <translation id="4095146165863963773">Excluir dados de apps?</translation>
+<translation id="4095425503313512126">A navegação e a pesquisa estão mais rápidas</translation>
 <translation id="4096227151372679484">Fluxo para adicionar aos favoritos aberto na metade da altura</translation>
 <translation id="4101475238162928417">Sincronize para acessar seus favoritos, senhas e muito mais em outros dispositivos</translation>
 <translation id="4106587138345390261">O Chrome está explorando novos recursos para permitir que os sites ofereçam a mesma experiência de navegação atual usando menos informações pessoais</translation>
@@ -833,6 +835,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5319359161174645648">O Google recomenda o Chrome</translation>
+<translation id="5320351714793324716">Se você permitir, o Chrome poderá usar cookies no pré-carregamento</translation>
 <translation id="5321849971085220133">O Chrome está buscando novas formas de reduzir o rastreamento e proteger você ainda mais durante a navegação. Ele também <ph name="BEGIN_LINK" />tenta prever seus interesses<ph name="END_LINK" /> e permite que você gerencie todos eles. Com isso, os sites que você visita podem solicitar seus interesses ao Chrome para mostrar anúncios.</translation>
 <translation id="5326921373682845375">As páginas pré-carregadas são criptografadas e o link que leva às páginas é de um site do Google. Portanto, os servidores do Google não recebem novas informações quando pré-carregam essas páginas de forma particular.</translation>
 <translation id="5329858041417644019">Seu navegador não é gerenciado</translation>

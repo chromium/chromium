@@ -539,6 +539,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2071692954027939183">Pranešimai automatiškai užblokuoti, nes įprastai jų neleidžiate</translation>
 <translation id="2071852865256799872">Jūsų naršyklę tvarko jūsų organizacija, o profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Mada ir stilius</translation>
+<translation id="2075497153347571252">Administratorius užblokavo <ph name="PERMISSION" /> svetainėje <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="20817612488360358">Sistemos įgaliotojo serverio nustatymai nustatyti kaip naudotini, bet taip pat nurodyta tiksli įgaliotojo serverio konfigūracija.</translation>
 <translation id="2082238445998314030">Rezultatų: <ph name="RESULT_NUMBER" /> iš <ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1881,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4885256590493466218">Mokėti naudojant <ph name="CARD_DETAIL" /> atsiskaitant</translation>
 <translation id="4887406273302438710">Slaptažodžių apsauga naudojant „Windows Hello“</translation>
 <translation id="4888600795924685526">Užsienio kalbų studijos</translation>
+<translation id="4890070067176768718">Jūsų administratorius leido <ph name="PERMISSION" /> svetainėje <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Galas</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpinės žaidynės</translation>
@@ -2326,6 +2328,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5830698870816298009">vaizdo kameros naudojimas ir judinimas</translation>
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5838278095973806738">Šioje svetainėje neturėtumėte pateikti neskelbtinos informacijos (pvz., slaptažodžių ar kredito kortelių numerių), nes ją gali pavogti užpuolikai.</translation>
+<translation id="5838732667866024867">Naudodami rodyklę kairėn ir dešinėn galite peržiūrėti kainų pakeitimus diagramoje</translation>
 <translation id="5840318881868981258">„Google“ paskyroje, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Išsaugoti paskyroje?</translation>
 <translation id="5847181246682413476">Maitinimo tiekimas</translation>

@@ -84,6 +84,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Apre la pagina delle impostazioni dei metodi di pagamento in Chromium.</translation>
 <translation id="4585809515399340748">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
+<translation id="459080529287102949">Cerca immagini in Chromium</translation>
 <translation id="4633738821577273991">Attiva la funzionalità Navigazione sicura avanzata anche per questo profilo Chromium</translation>
 <translation id="4654936625574199632">Per contribuire a migliorare l'app, Chromium invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Attiva lo scanner di Chromium</translation>
@@ -152,6 +153,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7045244423563602563">Personalizza Chromium</translation>
 <translation id="7055269218854630176">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chromium. L'amministratore può configurare o limitare determinate funzionalità.</translation>
 <translation id="7099326575020694068">Chromium non può utilizzare la videocamera in modalità Visualizzazione divisa</translation>
+<translation id="7163483974919055112">Cerca immagini in Chromium.</translation>
 <translation id="7165402419892018581">Scegli Chromium per la compilazione automatica</translation>
 <translation id="7175400662502680481">La tua password è stata compromessa nell'ambito di una violazione dei dati. Gestore delle password consiglia di cambiarla subito.</translation>
 <translation id="7192111075364461693">Le notifiche di Chromium sono attualmente disattivate nelle impostazioni del dispositivo.</translation>

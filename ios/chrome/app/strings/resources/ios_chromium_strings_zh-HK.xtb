@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">開啟新的 Chromium 無痕分頁。</translation>
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="3827545470516145620">此裝置即將啟用標準安全保護功能保護</translation>
+<translation id="3833326979834193417">Chromium 每天都會自動執行安全檢查，防範資料侵害或不安全網站等等。你可以前往「設定」進一步瞭解安全檢查功能。</translation>
 <translation id="3886689467633467988">登入此網站和 Chromium，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="394413318816989199">密碼短語加密的資料不包括付款方法和地址。
 
@@ -84,6 +85,7 @@
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用「Google 翻譯」來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">使用 Chromium 開啟「付款方式設定」頁面。</translation>
 <translation id="4585809515399340748">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
+<translation id="459080529287102949">在 Chromium 中搜尋影像內容</translation>
 <translation id="4633738821577273991">同時為此 Chromium 個人檔案取得「強化安全瀏覽」功能</translation>
 <translation id="4654936625574199632">Chromium 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">開啟 Chromium 掃瞄器</translation>
@@ -97,7 +99,7 @@
 <translation id="5048795749726991615">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chromium 的自動填入功能</translation>
 <translation id="5131565040785979529">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chromium 的方式。</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>
-<translation id="5213683223491576284">在 Chromium 中開啟密碼管理工具。</translation>
+<translation id="5213683223491576284">在 Chromium 中開啟「密碼管理工具」。</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5242782538551259282">部分 Chromium 資料尚未儲存至 Google 帳戶。
 
@@ -142,7 +144,7 @@
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6563921047760808519">進一步瞭解 <ph name="BEGIN_LINK" />Chromium 如何確保你的資料保密<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium 現在支援受管帳戶的使用者政策</translation>
-<translation id="6728350288669261079">在 Chromium 中開啟設定。</translation>
+<translation id="6728350288669261079">在 Chromium 中開啟「設定」。</translation>
 <translation id="6752854822223394465">您的機構正在設定 Chromium…</translation>
 <translation id="6794054469102824109">開啟 Chromium 恐龍遊戲。</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>
@@ -152,6 +154,7 @@
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="7055269218854630176">你的機構 (<ph name="DOMAIN" />) 會管理你正在登入的帳戶和可以使用 Chromium 的方式。管理員可設定或限制特定功能。</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>
+<translation id="7163483974919055112">在 Chromium 中搜尋影像內容。</translation>
 <translation id="7165402419892018581">選擇使用 Chromium 的自動填入功能</translation>
 <translation id="7175400662502680481">您的密碼因資料外洩而被洩露。密碼管理工具建議您立即變更密碼。</translation>
 <translation id="7192111075364461693">目前未在裝置設定中開啟 Chromium 通知。</translation>

@@ -926,7 +926,6 @@
 <translation id="1730989807608739928">स्क्रोल गरेर अन्तिम ट्याबमा लगियोस्</translation>
 <translation id="1731520826054843792">Microsoft सर्टिफिकेटको टेम्प्लेट</translation>
 <translation id="1731911755844941020">अनुरोध पठाउँदै...</translation>
-<translation id="1733383495376208985">सिंक गरिएको डेटालाई तपाईंको आफ्नै <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" />मार्फत इन्क्रिप्ट गर्नुहोस्। यसअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।</translation>
 <translation id="1734212868489994726">हल्का निलो</translation>
 <translation id="1734230530703461088">तोकिएको समयभित्र एक्स्टेन्सनहरू लोड गर्न सकिएन। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> ले आफैँलाई अद्यावधिक राख्न सक्षम नहुन सक्छ</translation>
@@ -976,7 +975,7 @@
 <translation id="1773329206876345543">अन्य डिभाइसहरूमा इन्टरनेट उपलब्ध गराउन आफ्नो <ph name="DEVICE_TYPE" /> को मोबाइल डेटा प्रयोग गरेर Wi-Fi हटस्पट बनाउनुहोस्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">होस्ट गरिएको एप लगत</translation>
 <translation id="177529472352014190">OneDrive मा कनेक्ट गर्नुहोस्</translation>
-<translation id="1776712937009046120">प्रयोगकर्ता थप्नुहोस्</translation>
+<translation id="1776712937009046120">प्रयोगकर्ता कनेक्ट गर्नुहोस्</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="177814385589420211">सर्च की थिचिराख्दा फङ्सन की र माथिल्लो लहरका सिस्टम कीका बिचमा अदलबदल हुने पारियोस्</translation>
 <translation id="1778457539567749232">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
@@ -9997,7 +9996,7 @@
 <translation id="9085256200913095638">चयन गरिएको ट्याबको प्रतिलिपि बनाउनुहोस्</translation>
 <translation id="9085446486797400519">क्यामेरा प्रयोग गर्ने अनुमति</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> चयन गरिएको छैन। भाषा चयन गर्न 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
-<translation id="9087949559523851360">प्रतिबन्धित प्रयोगकर्ता थप्नुहोस्</translation>
+<translation id="9087949559523851360">प्रतिबन्धित प्रयोगकर्ता कनेक्ट गर्नुहोस्</translation>
 <translation id="9088234649737575428">इन्टरप्राइजको नीतिले <ph name="PLUGIN_NAME" /> माथि अवरोध लगाएको छ</translation>
 <translation id="9088446193279799727">Linux कन्फिगर गर्न सकिएन। इन्टरनेट जोड्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>

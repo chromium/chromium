@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Hambisa</translation>
 <translation id="2677748264148917807">Hamba</translation>
 <translation id="2678468611080193228">Zama ukuvumela okwesikhashana amakhukhi enkampani yangaphandle, okusho ukuvikeleka okuncane kodwa izakhi zesayithi cishe zizosebenza</translation>
+<translation id="2683434792633810741">Sula futhi setha kabusha?</translation>
 <translation id="2687403674020088961">Vimbela wonke amakhukhi (akunconywa)</translation>
 <translation id="2713106313042589954">Vala ikhamera</translation>
 <translation id="2717722538473713889">Amakheli we-imeyili</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Vumela amakhukhi esayithi elithile.</translation>
 <translation id="4046123991198612571">Ithrekhi elandelayo</translation>
 <translation id="4053720452172726777">Yenza ngokwezifiso futhi lawula i-Google Chrome</translation>
+<translation id="4149890623864272035">Ingabe uqinisekile ukuthi ufuna ukusula yonke idatha yendawo, okuhlanganisa namakhukhi, futhi usethe kabusha zonke izimvume zale webhusayithi?</translation>
 <translation id="4149994727733219643">Ukubuka okwenziwe lula kwamakhasi ewebhu</translation>
 <translation id="4151930093518524179">Ukusondeza okuzenzakalelayo</translation>
 <translation id="4165986682804962316">Izilungiselelo zesayithi</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Vumela amakhukhi wezinkampani zangaphandle</translation>
 <translation id="4428065317363009941">Ukwenza ngezifiso izikhangiso</translation>
 <translation id="4434045419905280838">Okwesikhashana nokuqondiswa kabusha</translation>
+<translation id="443552056913301231">Lesi senzo sizosula yonke idatha yendawo, okuhlanganisa amakhukhi, futhi sisethe kabusha zonke izimvume ze-<ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Thulisa umsindo kusayithi elithile.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{Ikhukhi eli-#}one{Amakhukhi angu-#}other{Amakhukhi angu-#}}</translation>
 <translation id="4478158430052450698">Kwenze kube lula ukwenza ngokwezifiso ukusondeza kumasayithi ahlukene</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Thulisa imakrofoni</translation>
 <translation id="4570913071927164677">Imininingwane</translation>
 <translation id="4598549027014564149">Ngenkathi uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi akho ukuze abone umsebenzi wakho wokubhrawuza kuwo wonke amasayithi, ngisho namasayithi ahlobene. Umsebenzi wakho wokubhrawuza awusetshenziselwa izinto ezifana nokwenza izikhangiso ziqondane nomuntu siqu. Izakhi ezikwamanye amasayithi zingase zingasebenzi.</translation>
+<translation id="4644713492825682049">Sula futhi setha kabusha</translation>
 <translation id="4645575059429386691">Kuphethwe umzali wakho</translation>
 <translation id="4670064810192446073">Into engekho ngokoqobo</translation>
 <translation id="4751476147751820511">Izinzwa zokunyakaza noma zokukhanya</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Kugcine ukuvakashelwa namuhla</translation>
 <translation id="5225463052809312700">Vula ikhamera</translation>
 <translation id="5234764350956374838">Cashisa</translation>
+<translation id="5246825184569358663">Lesi senzo sizosula yonke idatha yendawo, okuhlanganisa amakhukhi, futhi sisethe kabusha zonke izimvume ze-<ph name="DOMAIN" /> nawo wonke amasayithi angaphansi kwayo</translation>
 <translation id="5264323282659631142">Susa i-'<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Hudula kusukela phezulu uphinde uthinte inkinobho yokubuyela emuva ukuze uphume kusikrini esigcwele.</translation>
 <translation id="5300589172476337783">Bonisa</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Okungaphandle</translation>
 <translation id="6196640612572343990">Vimba amakhukhi enkampani yangaphandle</translation>
 <translation id="6205314730813004066">Ubumfihlo besikhangiso</translation>
+<translation id="6207207788774442484">Sula idatha futhi usethe kabusha izimvume</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Izinketho</translation>
 <translation id="6231752747840485235">Khipha i-'<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">Ngokusekelwe kuthebhu yakho yokugcina</translation>

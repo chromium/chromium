@@ -85,6 +85,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Bubuksan ang Page ng Setting ng Mga Paraan ng Pagbabayad sa Chromium.</translation>
 <translation id="4585809515399340748">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
+<translation id="459080529287102949">Maghanap ng Mga Visual sa Chromium</translation>
 <translation id="4633738821577273991">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chromium na ito</translation>
 <translation id="4654936625574199632">Para makatulong na mapaganda ang app, nagpapadala ang Chromium ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
@@ -153,6 +154,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="7045244423563602563">Gawing Iyo ang Chromium</translation>
 <translation id="7055269218854630176">Pinapamahalaan ng iyong organisasyong <ph name="DOMAIN" /> ang account kung saan ka nagsa-sign in at kung paano magagamit ang Chromium. Puwedeng i-set up o paghigpitan ng iyong administrator ang ilang partikular na feature.</translation>
 <translation id="7099326575020694068">Hindi magamit ng Chromium ang iyong camera sa Split View mode</translation>
+<translation id="7163483974919055112">Maghanap ng Mga Visual sa Chromium.</translation>
 <translation id="7165402419892018581">Piliin ang Chromium para sa AutoFill</translation>
 <translation id="7175400662502680481">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Password Manager na palitan na ito ngayon.</translation>
 <translation id="7192111075364461693">Kasalukuyang naka-off ang mga notification sa Chromium sa mga setting ng iyong device.</translation>

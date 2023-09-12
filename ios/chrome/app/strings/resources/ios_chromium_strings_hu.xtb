@@ -29,6 +29,7 @@
 <translation id="2042889939382983733">A Chromium-előzmények megtekintése</translation>
 <translation id="2052320862053429062">A Chromium rendszeres időközönként online közzétett listák alapján ellenőrzi az Ön jelszavait. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
 <translation id="2054703085270098503">Gondoskodjon biztonságáról a Chromiummal</translation>
+<translation id="2098023844024447022">A legutóbbi lap megnyitása a Chromiumban.</translation>
 <translation id="2168108852149185974">Bizonyos bővítmények a Chromium összeomlását eredményezik. Távolítsa el a következőket:</translation>
 <translation id="2178608107313874732">A Chromium jelenleg nem tudja használni a kamerát</translation>
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
@@ -68,6 +69,7 @@
 <translation id="3784369638459513223">Új Chromium inkognitó lapot nyit meg.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>
+<translation id="3833326979834193417">A Chromium automatikusan futtat egy biztonsági ellenőrzést mindennap, hogy megvédje Önt az adatvédelmi incidensektől, a nem biztonságos webhelyektől és még sok mástól. A biztonsági ellenőrzésről a Beállításokban találhat további információt.</translation>
 <translation id="3886689467633467988">Jelentkezzen be erre a webhelyre és a Chromiumba, hogy az összes eszközén hozzáférhessen könyvjelzőihez és még sok minden máshoz.</translation>
 <translation id="394413318816989199">Az összetett jelszavas titkosítás nem tartalmazza a fizetési módokat és a címeket.
 
@@ -189,6 +191,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8663480472502753423">Chromium böngészője legyen mindig naprakész</translation>
 <translation id="8685813584220679697">Jelentkezzen be erre a webhelyre és a Chromiumba.</translation>
 <translation id="8730503818204408000">Megnyitja a Chromium beállításait a Chromium alapértelmezett böngészőként való beállításához.</translation>
+<translation id="8742300022028858275">A legutóbbi lap megnyitása a Chromiumban</translation>
 <translation id="8747378496147986285">Ha be van kapcsolva:
 <ph name="BEGIN_INDENT" />  • Segíthet, hogy továbbfejlesszük a Chromiumot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" />
 

@@ -338,6 +338,7 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ማንነት የማያሳውቅ ትር ይዘጋል}one{<ph name="TAB_COUNT_MANY" /> ማንነት የማያሳውቁ ትሮች ይዘጋሉ}other{<ph name="TAB_COUNT_MANY" /> ማንነት የማያሳውቁ ትሮች ይዘጋሉ}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ከ1 ቀን በፊት ተፈትሿል}one{ከ# ቀኖች በፊት ተፈትሿል}other{ከ# ቀኖች በፊት ተፈትሿል}}</translation>
 <translation id="2842985007712546952">ወላጅ አቃፊ</translation>
+<translation id="2853415089995957805">እርስዎ የመጎብኘት ዕድልዎ ከፍተኛ የሆኑባቸው ገፆች ሲጎበኟቸው ይበልጥ በፍጥነት እንዲጫኑ Chrome በቅድሚያ ይጭናቸዋል</translation>
 <translation id="2856503607207334158">በመለያ መግባት ተሰናክሏል</translation>
 <translation id="2860954141821109167">በዚህ መሣሪያ ላይ የስልክ መተግበሪያ እንደነቃ ያረጋግጡ</translation>
 <translation id="2861923151411510142">የተወሰኑ የChrome ባህሪዎች ከአሁን በኋላ \u2019 አይገኙም</translation>
@@ -582,6 +583,7 @@
 <translation id="4084712963632273211">ከ<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />በGoogle የተላከ<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">ይህን QR ኮድ በሚያሳየው መሣሪያ ላይ በመለያ ለመግባት ይህን ጡባዊ መጠቀም ይችላሉ።</translation>
 <translation id="4095146165863963773">የመተግበሪያ ውሂብ ይሰረዝ?</translation>
+<translation id="4095425503313512126">አሰሳ እና ፍለጋ የበለጠ ይፈጥናል</translation>
 <translation id="4096227151372679484">የዕልባት ማስቀመጥ ፍሰት በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="4101475238162928417">በእርስዎ ሌሎች መሣሪያዎች ላይ የእርስዎን የይለፍ ቃካት፣ እልባቶች እና ተጨማሪ ነገሮችን ለማግኘት ያስምሩ</translation>
 <translation id="4106587138345390261">Chrome ጣቢያዎች ያነሰ መረጃዎን ተጠቅመው ተመሳሳይ የአሰሳ ተሞክሮ እንዲያቀርቡ የሚያስችሏቸውን አዲስ ባህሪያት እያሰሰ ነው።</translation>
@@ -832,6 +834,7 @@
 <translation id="5308380583665731573">ይገናኙ</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319359161174645648">Google Chromeን ይመክራል</translation>
+<translation id="5320351714793324716">ኩኪዎችን ከፈቀዱ Chrome ቅድሚያ በመጫን ጊዜ ሊጠቀምባቸው ይችላል</translation>
 <translation id="5321849971085220133">Chrome ክትትልን ለመቀነስ እና እያሰሱ ባሉበት ጊዜ ይበልጥ ደህንነትዎን ለመጠበቅ አዲስ መንገዶችን እያገኘ ነው። እንዲሁም Chrome <ph name="BEGIN_LINK" />የእርስዎን ዝንባሌዎች ይገምታል<ph name="END_LINK" /> እና እነሱን እንዲያስተዳድሯቸው ያስችልዎታል። ከዚያ የሚጎበኟቸው ጣቢያዎች ማስታወቂያዎችን ለእርስዎ ለማሳየት Chromeን ስለእርስዎ ዝንባሌዎች መጠየቅ ይችላሉ።</translation>
 <translation id="5326921373682845375">ቅድሚያ የተጫኑ ገጾች የተመሠጠሩ ስለሆኑ እና ከገጾቹ ጋር የሚያገናኘው ጣቢያ የGoogle ጣቢያ ስለሆነ እነዚህ ገጾች በግል ቅድሚያ ሲጫኑ የGoogle አገልጋዮች አዲስ መረጃ አይደርሳቸውም።</translation>
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>

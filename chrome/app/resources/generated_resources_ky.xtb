@@ -428,6 +428,7 @@
 <translation id="1335929031622236846">Түзмөгүңүздү каттаңыз</translation>
 <translation id="133660899895084533">Bluetooth перифериялык түзүлүштөрүндөгү маалыматтар</translation>
 <translation id="1336902454946927954">Коопсуздук ачкычыңыз кулпуланды, анткени манжа изиңиз таанылган жок. Анын кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>
+<translation id="1337066099824654054">Контексттик жардам өчүк</translation>
 <translation id="1338631221631423366">Туташууда...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> бул колдонмону ачканы жатат.</translation>
 <translation id="1338950911836659113">Жок кылынууда…</translation>
@@ -939,7 +940,6 @@
 <translation id="1730989807608739928">Акыркы өтмөккө карай сыдыруу</translation>
 <translation id="1731520826054843792">Microsoft тастыктамасынын үлгүсү</translation>
 <translation id="1731911755844941020">Сурам жөнөтүлүүдө…</translation>
-<translation id="1733383495376208985">Шайкештирилген дайындарды өзүңүздүн <ph name="BEGIN_LINK" />шайкештирүүчү купуя сөз айкашыңыз<ph name="END_LINK" /> менен шифрлеңиз. Бул Google Pay'деги төлөм ыкмалары менен даректерге карата колдонулбайт.</translation>
 <translation id="1734212868489994726">Мала көк</translation>
 <translation id="1734230530703461088">Кеңейтүүлөр берилген убакыттын ичинде жүктөлбөй койду. Администраторуңузга кайрылыңыз.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> автоматтык түрдө жаңыртылбашы мүмкүн</translation>
@@ -3463,6 +3463,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> түзмөгүндөгү дайындар 24 сааттын ичинде өчүрүлөт</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> колдонмосун ачуу керекпи?</translation>
+<translation id="3740396996321407665">Айрым функциялар боюнча контексттик жардам алыңыз</translation>
 <translation id="3740945083753997630">Экрандын жана тексттин өлчөмүн азайтуу</translation>
 <translation id="3741056951918180319">Каалаган убакта кеңейтүүнү чыкылдатып, аны бардык сайттарда колдоно аласыз</translation>
 <translation id="3742235229730461951">Корейче баскычтоптун калыбы</translation>
@@ -6425,6 +6426,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6173623053897475761">PIN кодуңузду кайра териңиз</translation>
 <translation id="6175314957787328458">Microsoft Domain GUID</translation>
 <translation id="6175910054050815932">Шилтеме алуу</translation>
+<translation id="6176701216248282552">Контексттик жардам күйүк. Бул функциялар Google'га ачык барактарды жөнөтө алат.</translation>
 <translation id="6177412385419165772">Өчүрүлүүдө...</translation>
 <translation id="6178664161104547336">Тастыктама тандаңыз</translation>
 <translation id="6178682841350631965">Аккаунтка кирүү дайындары жаңыртылды</translation>

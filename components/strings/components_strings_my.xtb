@@ -388,6 +388,7 @@
 <translation id="1733762317901693627">ပုံမှန်အားဖြင့် ဘေးကင်းသည့် ဝဘ်ဆိုက်များသည်ပင်လျှင် တိုက်ခိုက်သူများကြောင့် တစ်ခါတစ်ရံ အန္တရာယ်ရှိနိုင်သည်။ အန္တရာယ်ကို သဘောပေါက်ကြောင်း သေချာမှသာ <ph name="BEGIN_LINK" />ဘေးမကင်းသော ဤဝဘ်ဆိုက်<ph name="END_LINK" /> သို့ ဝင်ကြည့်ပါ။</translation>
 <translation id="1734864079702812349">AmEx</translation>
 <translation id="1734878702283171397">စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ကြည့်ပါ။</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />၊ <ph name="CARD_NETWORK_NAME" />၊ <ph name="CARD_LAST_FOUR_DIGITS" />၊ သက်တမ်းကုန်ဆုံးချိန် <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">ကွန်ပျူတာ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode က <ph name="SECURE_DNS_MODE_SECURE" /> ဖြစ်သောအခါ သတ်မှတ်ထားပြီး မှန်ကန်သောလိုင်း ဖြစ်ရမည်။</translation>
 <translation id="1743393865165844832">မွေ့ရာနှင့် အိပ်ရာခင်း</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">အကြောင်းကြားချက်များကို သင်က ခွင့်ပြုလေ့မရှိသဖြင့် ၎င်းတို့ကို အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="2071852865256799872">သင့်အဖွဲ့အစည်းက သင့်ဘရောင်ဇာကို စီမံခန့်ခွဲပြီး <ph name="PROFILE_DOMAIN" /> က သင့်ပရိုဖိုင်ကို စီမံခန့်ခွဲသည်</translation>
 <translation id="2072275792380684364">ဖက်ရှင်နှင့် စတိုင်</translation>
+<translation id="2075497153347571252">သင့်စီမံသူက <ph name="ORIGIN" /> တွင် <ph name="PERMISSION" /> ကိုပိတ်ထားသည်</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="20817612488360358">စနစ် ပရောက်စီ ဆက်တင်များကို အသုံးပြုရန် သတ်မှတ် ပေးထားသော်လည်း အထူး ဖေါ်ပြပေးထားသည့် ပရောက်စီ စီစဉ်ဖွဲ့စည်းမှု တစ်ခုကိုပါ ဖေါ်ပြပေးထားသည်။</translation>
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
@@ -683,6 +685,7 @@
 <translation id="2366689192918515749">အသားနှင့် ပင်လယ်စာ</translation>
 <translation id="2367567093518048410">အဆင့်</translation>
 <translation id="23703388716193220">ဂေါက်ရိုက်ပစ္စည်း</translation>
+<translation id="2378084239755710604">သိမ်းသည့်ကတ် ပိတ်လိုက်သည်။</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome ဆက်တင်များတွင် သင့်အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ပါ</translation>
 <translation id="2384307209577226199">လုပ်ငန်းဆိုင်ရာ ပုံမှန်</translation>
@@ -1878,6 +1881,7 @@
 <translation id="4885256590493466218">ငွေရှင်းသည့်နေရာတွင် <ph name="CARD_DETAIL" /> ဖြင့် ပေးချေပါ</translation>
 <translation id="4887406273302438710">Windows Hello ဖြင့် စကားဝှက်များကို ကာကွယ်သည်</translation>
 <translation id="4888600795924685526">နိုင်ငံခြားဘာသာလေ့လာမှု</translation>
+<translation id="4890070067176768718">သင့်စီမံသူက <ph name="ORIGIN" /> တွင် <ph name="PERMISSION" /> ကိုဖွင့်ထားသည်</translation>
 <translation id="4892518386797173871">နောက်ဘက်</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">အိုလံပစ်</translation>
@@ -2249,6 +2253,7 @@
 <translation id="5653432653077411130">ရေပေးဝေရေးနှင့် သန့်စင်ရေး</translation>
 <translation id="5654927323611874862">အပ်လုဒ်လုပ်ထားသော ပျက်စီးမှု အစီရင်ခံစာ ID-</translation>
 <translation id="5659593005791499971">အီးမေးလ်</translation>
+<translation id="5660122698869360728">သင့်ဈေးဝယ်စာမျက်နှာအားလုံးကို တစ်နေရာတည်း သိမ်းခြင်း၊ ဈေးနှုန်းများ အလိုအလျောက် စောင့်ကြည့်ခြင်း၊ ဈေးနှုန်းအကြောင်း သိကောင်းစရာများ ရယူခြင်း စသည်တို့ကို အထောက်အပံ့ပေးနိုင်သည့် စမတ် ဖိုင်တွဲအသစ်။</translation>
 <translation id="5663955426505430495">ဤစက်၏ စီမံခန့်ခွဲသူက နောက်ထပ်ဝန်ဆောင်မှုများအတွက် နောက်ဆက်တွဲများကို စနစ်ထည့်သွင်းထားသည်။ နောက်ဆက်တွဲများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
 <translation id="5666606186680807225">ကမ်းခြေနှင့် ကျွန်းများ</translation>
 <translation id="5667827081946850877">အော်ဒီယိုစာအုပ်</translation>
@@ -2261,6 +2266,7 @@
 <translation id="5689199277474810259">JSON အဖြစ် ထုတ်ရန်</translation>
 <translation id="5689516760719285838">တည်နေရာ</translation>
 <translation id="569000877158168851">DnsOverHttpsMode မူဝါဒကို <ph name="SECURE_DNS_MODE_AUTOMATIC" /> သို့မဟုတ် <ph name="SECURE_DNS_MODE_SECURE" /> တစ်ခုခုသို့ သတ်မှတ်မထားပါက DnsOverHttpsTemplates တန်ဖိုး သက်ဆိုင်မှုမရှိသဖြင့် အသုံးပြုမည်မဟုတ်ပါ။</translation>
+<translation id="5691848789297492617">သိမ်းသည့်ကတ်ကို မြင်ကွင်းအပြည့်ဖွင့်လိုက်သည်။</translation>
 <translation id="5695542892312572833">သင့်ဝယ်ယူမှုကို စိစစ်ရန်နှင့် အပြီးသတ်ရန် Windows Hello ကို သုံးမလား။</translation>
 <translation id="5699628521141772782">နို့ထွက်ပစ္စည်းနှင့် ကြက်ဥ</translation>
 <translation id="5701381305118179107">အလယ်</translation>
@@ -2322,6 +2328,7 @@
 <translation id="5830698870816298009">ကင်မရာအသုံးပြုမှုနှင့် ရွေ့လျားမှု</translation>
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5838278095973806738">တိုက်ခိုက်သူများက ခိုးယူနိုင်သောကြောင့် ဤဝဘ်ဆိုက်တွင် အရေးကြီးသော မည်သည့်အချက်အလက်ကိုမျှ မဖြည့်ပါနှင့် (ဥပမာ - စကားဝှက်များ သို့မဟုတ် ခရက်ဒစ်ကတ်)။</translation>
+<translation id="5838732667866024867">ဂရပ်ဖ်တွင် ဈေးနှုန်းပြောင်းလဲမှုများကြည့်ရန် ဘယ်/ညာညွှန်မြား သုံးနိုင်သည်</translation>
 <translation id="5840318881868981258">သင့် Google Account <ph name="ACCOUNT" /> တွင်</translation>
 <translation id="5841338463993781099">အကောင့်တွင် သိမ်းမလား။</translation>
 <translation id="5847181246682413476">ပါဝါပင်ရင်း</translation>
@@ -3011,6 +3018,7 @@
 <translation id="7256634549594854023">အနောက်ဗန်း</translation>
 <translation id="725866823122871198">သင့်ကိရိယာ၏ ရက်စွဲ နှင့် အချိန် (<ph name="DATE_AND_TIME" />)မှာ မမှန်၍ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ထံသို့ ကိုယ်ရေး ချိတ်ဆက်မှုကို
 ထူထောင်မရနိုင်ပါ။</translation>
+<translation id="7260075294900977274">သင့်ဈေးဝယ်စာမျက်နှာအားလုံးကို တစ်နေရာတည်း သိမ်းခြင်း၊ ဈေးနှုန်းများ အလိုအလျောက် စောင့်ကြည့်ခြင်း၊ ဈေးနှုန်းအကြောင်း သိကောင်းစရာများ ရယူခြင်း စသည်တို့ကို အထောက်အပံ့ပေးနိုင်သည့် စမတ် ဖိုင်တွဲအသစ်</translation>
 <translation id="7265608370113700582">လိပ်စာကို ဤစက်တွင်သာ ရနိုင်သည်</translation>
 <translation id="7275334191706090484">စီမံကွပ်ကဲထားသည့် စာညှပ်များ</translation>
 <translation id="7277998515889183784">မိတ်ကပ်နှင့် အလှပြင်ပစ္စည်းများ</translation>
@@ -3235,6 +3243,7 @@
 <translation id="7676643023259824263">ကလစ်ဘုတ်စာသား <ph name="TEXT" /> အတွက် ရှာဖွေမှု</translation>
 <translation id="7679367271685653708">Chrome ဆက်တင်များတွင် သင့်ကြည့်ရှုခြင်းမှတ်တမ်းကို ကြည့်ရှုစီမံပါ</translation>
 <translation id="7679947978757153706">ဘေ့စ်ဘော</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />၊ <ph name="CARD_LAST_FOUR_DIGITS" />၊ သက်တမ်းကုန်ဆုံးချိန် <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">စိတ်ကူးယဉ် အားကစား</translation>
 <translation id="7682287625158474539">ပစ္စည်းပို့ရန်</translation>
 <translation id="7682451652090915298">ရဂ်ဘီ</translation>
@@ -3312,6 +3321,7 @@
 <translation id="7822611063308883975">လက်ကိုင် ဂိမ်းကွန်ဆိုးလ်</translation>
 <translation id="7825558994363763489">မိုက်ခရိုဝေ့မီးဖို</translation>
 <translation id="782886543891417279">သင်အသုံးပြုနေသော Wi-Fi ( <ph name="WIFI_NAME" /> ) ၏ login စာမျက်နှာသို့ သင်သွားရောက်ကြည့်ရှုရန် လိုမည်။</translation>
+<translation id="7831993212387676366">‘စျေးဝယ်စာရင်း‘ ဆိုတာ ဘာလဲ။</translation>
 <translation id="7840103971441592723">ဖန်သားပြင် ပုံဖမ်းခြင်း စတင်လိုက်သည်</translation>
 <translation id="784137052867620416">Shopping သိကောင်းစရာများ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{မရှိ}=1{အက်ပ် ၁ ခု (<ph name="EXAMPLE_APP_1" />)}=2{အက်ပ် ၂ ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />)}other{အက်ပ် # ခု (<ph name="EXAMPLE_APP_1" />၊ <ph name="EXAMPLE_APP_2" />၊ <ph name="AND_MORE" />)}}</translation>

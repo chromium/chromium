@@ -426,6 +426,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1335929031622236846">Gerät registrieren</translation>
 <translation id="133660899895084533">Informationen und Daten von Bluetooth-Peripheriegeräten lesen</translation>
 <translation id="1336902454946927954">Dein Sicherheitsschlüssel ist gesperrt, weil dein Fingerabdruck nicht erkannt werden konnte. Gib deine PIN ein, um ihn zu entsperren.</translation>
+<translation id="1337066099824654054">Kontextbezogene Hilfe ist deaktiviert</translation>
 <translation id="1338631221631423366">Wird gekoppelt…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> möchte diese Anwendung öffnen.</translation>
 <translation id="1338950911836659113">Wird gelöscht...</translation>
@@ -923,7 +924,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1730989807608739928">Zum letzten Tab scrollen</translation>
 <translation id="1731520826054843792">Microsoft-Zertifikatvorlage</translation>
 <translation id="1731911755844941020">Anfrage wird gesendet...</translation>
-<translation id="1733383495376208985">Alle synchronisierten Daten mit eigener <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsseln (außer Zahlungsmethoden oder Adressen von Google Pay)</translation>
 <translation id="1734212868489994726">Hellblau</translation>
 <translation id="1734230530703461088">Die Erweiterungen konnten nicht innerhalb der Zeitbeschränkung geladen werden. Bitte an den Administrator wenden.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> kann sich möglicherweise nicht selbst aktualisieren</translation>
@@ -3435,6 +3435,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3738632186060045350">Die <ph name="DEVICE_TYPE" />-Daten werden in 24 Stunden gelöscht</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> öffnen?</translation>
+<translation id="3740396996321407665">Kontextbezogene Hilfe von einigen Funktionen</translation>
 <translation id="3740945083753997630">Anzeige- und Textgröße verringern</translation>
 <translation id="3741056951918180319">Du kannst die Erweiterung jederzeit anklicken, um sie auf einer beliebigen Website zu verwenden</translation>
 <translation id="3742235229730461951">Koreanische Tastaturbelegung</translation>
@@ -6387,6 +6388,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6173623053897475761">PIN noch einmal eingeben</translation>
 <translation id="6175314957787328458">Microsoft-Domain-GUID</translation>
 <translation id="6175910054050815932">Link abrufen</translation>
+<translation id="6176701216248282552">Die kontextbezogene Hilfe ist aktiviert. Über diese Funktionen können geöffnete Seiten an Google gesendet werden.</translation>
 <translation id="6177412385419165772">Wird entfernt…</translation>
 <translation id="6178664161104547336">Zertifikat auswählen</translation>
 <translation id="6178682841350631965">Deine Anmeldedaten wurden aktualisiert</translation>
@@ -9462,6 +9464,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8680251145628383637">Melde dich an, um deine Lesezeichen, den Verlauf und deine anderen Einstellungen auf allen deinen Geräten zu sehen. Du wirst auch automatisch in deinen Google-Diensten angemeldet.</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ist verbunden und bereit</translation>
+<translation id="8684471948980641888">Synchronisierung in kostenpflichtigen Netzwerken zulassen</translation>
 <translation id="8685540043423825702">Mein Chrome-Profil</translation>
 <translation id="8686142379631285985">Angemeldet als <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">„<ph name="FILE_NAME" />“ abbrechen</translation>

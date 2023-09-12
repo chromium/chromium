@@ -338,6 +338,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Zatvorit će se <ph name="TAB_COUNT_ONE" /> anonimna kartica}one{Zatvorit će se <ph name="TAB_COUNT_MANY" /> anonimna kartica}few{Zatvorit će se <ph name="TAB_COUNT_MANY" /> anonimne kartice}other{Zatvorit će se <ph name="TAB_COUNT_MANY" /> anonimnih kartica}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provjera je izvršena jučer}one{Provjera je izvršena prije # dana}few{Provjera je izvršena prije # dana}other{Provjera je izvršena prije # dana}}</translation>
 <translation id="2842985007712546952">Nadređena mapa</translation>
+<translation id="2853415089995957805">Chrome predučitava stranice koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite</translation>
 <translation id="2856503607207334158">Prijava nije uspjela</translation>
 <translation id="2860954141821109167">Provjerite je li na uređaju omogućena aplikacija telefona</translation>
 <translation id="2861923151411510142">Neke Chromeove značajke više neće biti dostupne</translation>
@@ -582,6 +583,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="4084712963632273211">Objavio <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />omogućio Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Pomoću ovog tableta možete se prijaviti na uređaju na kojem se prikazuje ovaj QR kôd.</translation>
 <translation id="4095146165863963773">Želite li izbrisati podatke aplikacije?</translation>
+<translation id="4095425503313512126">Pregledavanje i pretraživanje je brže</translation>
 <translation id="4096227151372679484">Tijek spremanja oznake otvoren je na pola visine</translation>
 <translation id="4101475238162928417">Uključite sinkronizaciju za prikaz zaporki, oznaka i drugog na svojim ostalim uređajima</translation>
 <translation id="4106587138345390261">Chrome istražuje nove značajke koje web-lokacijama omogućuju pružanje istog doživljaja pregledavanja uz upotrebu manje količine vaših informacija</translation>
@@ -832,6 +834,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5319359161174645648">Google preporučuje Chrome</translation>
+<translation id="5320351714793324716">Ako dopustite kolačiće, Chrome ih može koristiti prilikom predučitavanja.</translation>
 <translation id="5321849971085220133">Chrome pronalazi nove načine za smanjivanje praćenja te vas dodatno štiti dok pregledavate. Chrome također <ph name="BEGIN_LINK" />procjenjuje vaše interese<ph name="END_LINK" /> i omogućuje vam da njima upravljate. Web-lokacije koje zatim posjetite mogu od Chromea tražiti vaše interese da bi vam prikazivale oglase.</translation>
 <translation id="5326921373682845375">Budući da se predučitane stranice šifriraju i da je web-lokacija s vezom na stranice Googleova web-lokacija, Googleovi poslužitelji ne primaju nove podatke kad se te stranice anonimno predučitavaju.</translation>
 <translation id="5329858041417644019">Preglednikom se ne upravlja</translation>

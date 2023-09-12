@@ -222,6 +222,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2189903024544168260">Érdeklődési kör eltávolítva</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2200113223741723867">Használati adatok megosztásának kezelése</translation>
+<translation id="221494669172414749">Ha profilzárolás nélkül nyitja meg a Chrome-ot, azzal eltávolítja a mentett jelszavakat és fizetési módokat az autóból. A profilzárolással biztonságban tudhatja adatait.</translation>
 <translation id="2218567645332692482">Minden navigációt HTTPS-re frissít, és figyelmezteti Önt a protokollt nem támogató webhelyek betöltése előtt</translation>
 <translation id="2227444325776770048">Folytatás mint <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Üres ablak</translation>
@@ -312,6 +313,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="265156376773362237">Normál előtöltés</translation>
 <translation id="2656405586795711023">Webalkalmazások</translation>
 <translation id="2669454659051515572">A letöltött fájlokat bárki láthatja, aki az eszközt használja</translation>
+<translation id="2673169232805572412">Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chrome elküldheti az URL-eket (az oldaltartalmak egyes részleteivel együtt) a Google-nak.</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
 <translation id="2708051474374549906">Valós idejű, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen, amelyek az Ön Google-nak küldött böngészési adatain alapulnak.</translation>
 <translation id="2708226184420201102">Megnyitás a(z) <ph name="PRODUCT_NAME" /> böngészőben</translation>
@@ -337,6 +339,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitó lap lesz bezárva}other{<ph name="TAB_COUNT_MANY" /> inkognitó lap lesz bezárva}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 napja ellenőrizve}other{# napja ellenőrizve}}</translation>
 <translation id="2842985007712546952">Szülőmappa</translation>
+<translation id="2853415089995957805">A Chrome előtölt olyan oldalakat, amelyeket Ön valószínűleg felkeres, így ha Ön valóban felkeresi őket, gyorsabban töltődnek be</translation>
 <translation id="2856503607207334158">Sikertelen bejelentkezés</translation>
 <translation id="2860954141821109167">Győződjön meg arról, hogy van engedélyezett telefonalkalmazás ezen az eszközön</translation>
 <translation id="2861923151411510142">A Chrome egyes funkcióihoz nem tud majd hozzáférni</translation>
@@ -581,6 +584,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4084712963632273211">A következőtől: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />megjelenítette a Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Ezzel a táblagéppel bejelentkezhet a QR-kódot megjelenítő eszközön.</translation>
 <translation id="4095146165863963773">Törli az alkalmazásadatokat?</translation>
+<translation id="4095425503313512126">A böngészés és a keresés gyorsabb</translation>
 <translation id="4096227151372679484">A könyvjelzőmentési folyamat félmagasságban van megnyitva</translation>
 <translation id="4101475238162928417">Szinkronizáljon, hogy a többi eszközén is hozzáférjen jelszavaihoz, könyvjelzőihez stb.</translation>
 <translation id="4106587138345390261">A Chrome olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
@@ -831,6 +835,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5308380583665731573">Csatlakozás</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5319359161174645648">A Google a Chrome-ot ajánlja</translation>
+<translation id="5320351714793324716">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chrome előtöltéskor felhasználja őket.</translation>
 <translation id="5321849971085220133">A Chrome új módokat keres a nyomon követés csökkentésére és a még biztonságosabb böngészésre. A Chrome <ph name="BEGIN_LINK" />megbecsüli az Ön érdeklődési köreit<ph name="END_LINK" />, és lehetővé teszi a kezelésüket is. Ezután a felkeresett webhelyek az Ön érdeklődési köreinek megosztására kérhetik a Chrome-ot, hogy hirdetéseket jelenítsenek meg.</translation>
 <translation id="5326921373682845375">Mivel az előre betöltött oldalak titkosítottak, az oldalakkal összekapcsolt webhely pedig Google-webhely, a Google-szerverek nem kapnak új információt a szóban forgó oldalak privát módon való előzetes betöltésekor.</translation>
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
@@ -1009,6 +1014,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6303969859164067831">Kijelentkezés, és a szinkronizálás kikapcsolása</translation>
 <translation id="6312687380483398334">Webalkalmazások (csendes)</translation>
+<translation id="6315386555979018699">Törlés és folytatás</translation>
 <translation id="6316139424528454185">Nem támogatott Android-verzió</translation>
 <translation id="6324916366299863871">Billentyűparancs szerkesztése</translation>
 <translation id="6324977638108296054">Nem sikerült linket létrehozni a kiemelt szöveghez</translation>
@@ -1571,6 +1577,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
 <translation id="8998729206196772491">Egy <ph name="MANAGED_DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chrome-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chrome-ból való kijelentkezéssel törli adatait erről az eszközről, de Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="9012585441087414258">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző elküldi az URL-eket és az oldal tartalmának egyes részeit a Google Biztonságos Böngészésnek.</translation>
+<translation id="9019199799064251516">Folytatja autóprofil-zárolás nélkül?</translation>
 <translation id="9022774213089566801">Gyakran látogatott webhelyek</translation>
 <translation id="9022871169049522985">A webhelyek és a hirdetők mérhetik a hirdetéseik teljesítményét.</translation>
 <translation id="9035378196785279980">Áthelyezés\u2026</translation>
@@ -1633,5 +1640,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="983192555821071799">Az összes lap bezárása</translation>
 <translation id="987264212798334818">Általános</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> lap</translation>
+<translation id="993520549480398880">A könyvjelzők, előzmények és egyebek törlése erről az autóról</translation>
 <translation id="996149300115483134">A hírcsatornakártya menüje be van csukva</translation>
 </translationbundle>

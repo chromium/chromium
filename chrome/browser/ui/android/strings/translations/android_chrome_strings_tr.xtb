@@ -312,6 +312,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="265156376773362237">Standart önceden yükleme</translation>
 <translation id="2656405586795711023">Web uygulamaları</translation>
 <translation id="2669454659051515572">Bu cihazı kullanan herkes indirilen dosyaları görebilir</translation>
+<translation id="2673169232805572412">Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir</translation>
 <translation id="2702516483241149200">Yeni: bu metne kaydıran bir bağlantı paylaşın</translation>
 <translation id="2708051474374549906">Tarama verilerinizin Google'a gönderilmesi aracılığıyla tehlikeli siteler, indirmeler ve uzantılara karşı gerçek zamanlı, proaktif koruma</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> tarayıcıda aç</translation>
@@ -337,6 +338,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> gizli sekme kapatılacak}other{<ph name="TAB_COUNT_MANY" /> gizli sekme kapatılacak}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 gün önce kontrol edildi}other{# gün önce kontrol edildi}}</translation>
 <translation id="2842985007712546952">Ana klasör</translation>
+<translation id="2853415089995957805">Chrome, ziyaret etme olasılığınızın yüksek olduğu sayfaları önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
 <translation id="2856503607207334158">Oturum açılamadı</translation>
 <translation id="2860954141821109167">Bu cihazda bir telefon uygulamasının etkinleştirildiğinden emin olun</translation>
 <translation id="2861923151411510142">Bazı Chrome özellikleri artık kullanılamayacak</translation>
@@ -581,6 +583,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> web sitesinden - <ph name="BEGIN_DEEMPHASIZED" />Google tarafından yayınlandı<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Bu QR kodunu gösteren cihazda oturum açmak için bu tableti kullanabilirsiniz.</translation>
 <translation id="4095146165863963773">Uygulama verileri silinsin mi?</translation>
+<translation id="4095425503313512126">Göz atma ve arama daha hızlıdır</translation>
 <translation id="4096227151372679484">Yer işareti kaydetme akışı ekranın yarısına kadar açıldı</translation>
 <translation id="4101475238162928417">Şifrelerinize, yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için senkronize edin</translation>
 <translation id="4106587138345390261">Chrome, sitelerin size ait daha az bilgiyi kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri keşfediyor</translation>
@@ -831,6 +834,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5308380583665731573">Bağlan</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5319359161174645648">Google, Chrome'u önerir</translation>
+<translation id="5320351714793324716">Çerezlere izin verirseniz Chrome bunları önceden yükleme işlemi için kullanabilir.</translation>
 <translation id="5321849971085220133">Chrome, siteler arası izlemeyi azaltmanın ve internette gezinirken daha da güvende olmanızı sağlamanın yeni yollarını buluyor. Chrome ayrıca <ph name="BEGIN_LINK" />ilgi alanlarınızı tahmin eder<ph name="END_LINK" /> ve bunları yönetmenize olanak verir. Ardından, ziyaret ettiğiniz siteler size reklam göstermek için Chrome'dan ilgi alanlarınız hakkında bilgi isteyebilir.</translation>
 <translation id="5326921373682845375">Önceden yüklenmiş sayfalar şifrelenmiş ve sayfalara bağlantı veren site bir Google sitesi olduğundan Google sunucuları bu sayfaları gizli olarak önceden yüklerken yeni bilgi almaz.</translation>
 <translation id="5329858041417644019">Tarayıcınız yönetilmemektedir</translation>

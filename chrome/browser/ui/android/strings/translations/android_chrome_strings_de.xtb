@@ -335,6 +335,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Inkognitotab wird geschlossen}other{<ph name="TAB_COUNT_MANY" /> Inkognitotabs werden geschlossen}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Zuletzt geprüft: vor 1 Tag}other{Zuletzt geprüft: vor # Tagen}}</translation>
 <translation id="2842985007712546952">Übergeordneter Ordner</translation>
+<translation id="2853415089995957805">Chrome lädt Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
 <translation id="2856503607207334158">Anmeldefehler</translation>
 <translation id="2860954141821109167">Prüfe, ob auf diesem Gerät eine Telefon-App aktiviert ist</translation>
 <translation id="2861923151411510142">Einige Chrome-Funktionen sind dann nicht mehr verfügbar</translation>
@@ -579,6 +580,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="4084712963632273211">Von <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />bereitgestellt durch Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kannst dich über dieses Tablet auf dem Gerät anmelden, auf dem dieser QR-Code angezeigt wird.</translation>
 <translation id="4095146165863963773">App-Daten löschen?</translation>
+<translation id="4095425503313512126">Surfen und Suchen ist schneller</translation>
 <translation id="4096227151372679484">Ablauf zum Speichern von Lesezeichen ist halb geöffnet</translation>
 <translation id="4101475238162928417">Mit der Synchronisierung kannst du beispielsweise Passwörter und Lesezeichen von deinen anderen Geräten abrufen</translation>
 <translation id="4106587138345390261">Wir testen neue Funktionen für Chrome, mit denen Websites weniger Nutzerdaten verwenden, ohne dabei die Nutzererfahrung einzuschränken</translation>
@@ -829,6 +831,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5308380583665731573">Verbinden</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5319359161174645648">Google empfiehlt Chrome</translation>
+<translation id="5320351714793324716">Wenn du Cookies erlaubst, kann Chrome diese beim Vorabladen verwenden</translation>
 <translation id="5321849971085220133">Chrome entwickelt neue Möglichkeiten, das Tracking zu reduzieren und beim Surfen zu deinem Schutz beizutragen. Chrome <ph name="BEGIN_LINK" />schätzt außerdem deine Interessen ein<ph name="END_LINK" /> und ermöglicht es dir, sie zu verwalten. Anschließend können Websites, die du besuchst, Chrome nach deinen Interessen fragen, um dir Werbung anzuzeigen.</translation>
 <translation id="5326921373682845375">Da die vorab geladenen Seiten verschlüsselt sind und es sich bei der Website, die zu den Seiten verlinkt, um eine Google Sites-Website handelt, erhalten die Google-Server beim privaten Vorabladen dieser Seiten keine neuen Informationen.</translation>
 <translation id="5329858041417644019">Dein Browser wird nicht verwaltet</translation>

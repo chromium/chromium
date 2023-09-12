@@ -426,6 +426,7 @@
 <translation id="1335929031622236846">註冊你的裝置</translation>
 <translation id="133660899895084533">讀取藍牙周邊裝置資訊和資料</translation>
 <translation id="1336902454946927954">系統無法辨識你的指紋，因此你的安全金鑰已遭到鎖定。如要解鎖，請輸入你的 PIN 碼。</translation>
+<translation id="1337066099824654054">內容相關說明已關閉</translation>
 <translation id="1338631221631423366">配對中...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想要開啟這個應用程式。</translation>
 <translation id="1338950911836659113">刪除中...</translation>
@@ -928,7 +929,6 @@
 <translation id="1730989807608739928">捲動至最後一個分頁</translation>
 <translation id="1731520826054843792">Microsoft 憑證範本</translation>
 <translation id="1731911755844941020">正在傳送要求...</translation>
-<translation id="1733383495376208985">使用你自己的<ph name="BEGIN_LINK" />同步通關密語<ph name="END_LINK" />，加密保護同步資料。這不包括 Google Pay 的付款方式和地址。</translation>
 <translation id="1734212868489994726">淺藍色</translation>
 <translation id="1734230530703461088">無法在時限內載入擴充功能，請與系統管理員聯絡。</translation>
 <translation id="1734824808160898225">「<ph name="PRODUCT_NAME" />」可能無法自動更新</translation>
@@ -3448,6 +3448,7 @@
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> 資料將在 24 小時後遭到刪除</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
 <translation id="3739254215541673094">要開啟「<ph name="APPLICATION" />」嗎？</translation>
+<translation id="3740396996321407665">取得部分功能的內容相關說明</translation>
 <translation id="3740945083753997630">縮小顯示和文字大小</translation>
 <translation id="3741056951918180319">只要在任何網站上點選擴充功能，即可隨時使用</translation>
 <translation id="3742235229730461951">韓文鍵盤配置</translation>
@@ -6404,6 +6405,7 @@
 <translation id="6173623053897475761">重新輸入 PIN 碼</translation>
 <translation id="6175314957787328458">Microsoft 網域 GUID</translation>
 <translation id="6175910054050815932">取得連結</translation>
+<translation id="6176701216248282552">內容相關說明已開啟。這些功能可能會將開啟的網頁傳送給 Google。</translation>
 <translation id="6177412385419165772">移除中...</translation>
 <translation id="6178664161104547336">選取憑證</translation>
 <translation id="6178682841350631965">已更新你的登入資料</translation>

@@ -312,6 +312,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="265156376773362237">Standardförinläsning</translation>
 <translation id="2656405586795711023">Webbappar</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
+<translation id="2673169232805572412">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Google tillsammans med delar av sidinnehållet</translation>
 <translation id="2702516483241149200">Nyhet: dela en länk som scrollar fram till den här texten</translation>
 <translation id="2708051474374549906">Proaktivt skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på din webbinformation som skickas till Google</translation>
 <translation id="2708226184420201102">Öppna i webbläsaren <ph name="PRODUCT_NAME" /></translation>
@@ -337,6 +338,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitoflik stängs}other{<ph name="TAB_COUNT_MANY" /> inkognitoflikar stängs}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Genomsöktes för 1 dag sedan}other{Genomsöktes för # dagar sedan}}</translation>
 <translation id="2842985007712546952">Överordnad mapp</translation>
+<translation id="2853415089995957805">Sidor som du troligen kommer att besöka läses in i förväg i Chrome så att de läses in snabbare när du besöker dem</translation>
 <translation id="2856503607207334158">Inloggningen misslyckades</translation>
 <translation id="2860954141821109167">Kontrollera att en telefonapp har aktiverats på enheten</translation>
 <translation id="2861923151411510142">Vissa funktioner i Chrome kommer inte längre att vara tillgängliga</translation>
@@ -582,6 +584,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4084712963632273211">Från <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />via Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kan logga in med surfplattans hjälp på den enhet där den här QR-koden visas.</translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
+<translation id="4095425503313512126">Det går snabbare att surfa och söka</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
 <translation id="4101475238162928417">Synkronisera om du vill få tillgång till lösenord, bokmärken med mera på dina andra enheter</translation>
 <translation id="4106587138345390261">Chrome utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
@@ -832,6 +835,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5319359161174645648">Google rekommenderar Chrome</translation>
+<translation id="5320351714793324716">Om du tillåter cookies kan Chrome använda dem när innehåll läses in i förväg</translation>
 <translation id="5321849971085220133">Chrome arbetar med nya sätt att minska spårning och skydda dig ännu mer när du surfar. Chrome <ph name="BEGIN_LINK" />uppskattar också dina intressen<ph name="END_LINK" /> och låter dig hantera dem. Sedan kan webbplatser du besöker be Chrome om dina intressen för att visa annonser.</translation>
 <translation id="5326921373682845375">Google får ingen ny information när de här sidorna läses in privat i förväg, eftersom de förinlästa sidorna är krypterade och webbplatsen som länkar till sidorna är en Google-webbplats.</translation>
 <translation id="5329858041417644019">Din webbläsare är inte hanterad</translation>

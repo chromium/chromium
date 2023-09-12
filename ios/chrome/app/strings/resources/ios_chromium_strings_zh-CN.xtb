@@ -77,6 +77,7 @@
 <translation id="452436063477828504">请确保您可以一直使用 Google 账号中的 Chromium 数据</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
+<translation id="459080529287102949">在 Chromium 中搜索可视化内容</translation>
 <translation id="4633738821577273991">同时也为这份 Chromium 个人资料启用“增强型安全浏览”功能</translation>
 <translation id="4654936625574199632">为帮助改进该应用，Chromium 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
@@ -145,6 +146,7 @@
 <translation id="7045244423563602563">定制您的专属 Chromium</translation>
 <translation id="7055269218854630176">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chromium 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="7099326575020694068">Chromium 无法在分割视图模式下使用您的相机</translation>
+<translation id="7163483974919055112">在 Chromium 中搜索可视化内容。</translation>
 <translation id="7165402419892018581">选择使用 Chromium 的自动填充功能</translation>
 <translation id="7175400662502680481">您的密码遭遇了数据泄露。密码管理器建议您立即更改此密码。</translation>
 <translation id="7192111075364461693">目前，在您的设备设置中，Chromium 通知功能处于关闭状态。</translation>

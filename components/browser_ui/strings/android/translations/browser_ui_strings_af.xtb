@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2678468611080193228">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder beskerming beteken, maar werfkenmerke is meer geneig om te werk</translation>
+<translation id="2683434792633810741">Vee uit en stel terug?</translation>
 <translation id="2687403674020088961">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2717722538473713889">E-posadresse</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Laat webkoekies vir 'n spesifieke werf toe.</translation>
 <translation id="4046123991198612571">Volgende snit</translation>
 <translation id="4053720452172726777">Pasmaak en beheer Google Chrome</translation>
+<translation id="4149890623864272035">Is jy seker jy wil alle plaaslike data, insluitend webkoekies, uitvee en alle toestemmings vir hierdie webwerf terugstel?</translation>
 <translation id="4149994727733219643">Vereenvoudigde aansig vir webbladsye</translation>
 <translation id="4151930093518524179">Verstekzoem</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Laat derdeparty-webkoekies toe</translation>
 <translation id="4428065317363009941">Advertensiepersonalisering</translation>
 <translation id="4434045419905280838">Opspringers en herleidings</translation>
+<translation id="443552056913301231">Hierdie handeling sal alle plaaslike data uitvee, webkoekies ingesluit, en alle toestemmings terugstel vir <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Demp klank vir 'n spesifieke werf.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# webkoekie}other{# webkoekies}}</translation>
 <translation id="4478158430052450698">Maak dit makliker om zoem vir verskillende werwe te pasmaak</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Demp mikrofoon</translation>
 <translation id="4570913071927164677">Besonderhede</translation>
 <translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
+<translation id="4644713492825682049">Vee uit en stel terug</translation>
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4670064810192446073">Virtuele realiteit</translation>
 <translation id="4751476147751820511">Beweging- of ligsensors</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Laas vandag besoek</translation>
 <translation id="5225463052809312700">Skakel kamera aan</translation>
 <translation id="5234764350956374838">Verwerp</translation>
+<translation id="5246825184569358663">Hierdie handeling sal alle plaaslike data uitvee, webkoekies ingesluit, en alle toestemmings terugstel vir <ph name="DOMAIN" /> en alle werwe onder dit</translation>
 <translation id="5264323282659631142">Verwyder "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Sleep van bo af en raak die terugknoppie om volskerm te verlaat.</translation>
 <translation id="5300589172476337783">Wys</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Uitsonderings</translation>
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
 <translation id="6205314730813004066">Advertensieprivaatheid</translation>
+<translation id="6207207788774442484">Vee data uit en stel toestemmings terug</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />-opsies</translation>
 <translation id="6231752747840485235">Deïnstalleer "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">Gegrond op jou laaste oortjie</translation>

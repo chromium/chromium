@@ -388,6 +388,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1733762317901693627">Även webbplatser som vanligtvis är säkra utsätts ibland för angripare. Besök bara <ph name="BEGIN_LINK" />den här osäkra webbplatsen<ph name="END_LINK" /> om du är säker på att du är medveten om riskerna.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Kontakta systemadministratören.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Dator</translation>
 <translation id="1741613555002899862">Måste anges och vara en giltig sträng när DnsOverHttpsMode är <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sängutrustning och sängkläder</translation>
@@ -682,6 +683,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2366689192918515749">Kött och fisk</translation>
 <translation id="2367567093518048410">Nivå</translation>
 <translation id="23703388716193220">Golfutrustning</translation>
+<translation id="2378084239755710604">Uppmaningen till att spara kortet har stängts.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Anpassa tillgänglighetsverktygen i Chrome-inställningarna</translation>
 <translation id="2384307209577226199">Standardinställning i företaget</translation>
@@ -2248,6 +2250,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5653432653077411130">Vattenförsörjning och vattenbehandling</translation>
 <translation id="5654927323611874862">Uppladdat kraschrapport-id:</translation>
 <translation id="5659593005791499971">E-post</translation>
+<translation id="5660122698869360728">En ny smart mapp som hjälper dig att spara alla shoppingsidor på ett ställe och automatiskt bevakar priser, samlar prisinformation med mera</translation>
 <translation id="5663955426505430495">Administratören för enheten har installerat tillägg för ytterligare funktioner. Tilläggen har åtkomst till en del av din data.</translation>
 <translation id="5666606186680807225">Stränder och öar</translation>
 <translation id="5667827081946850877">Ljudböcker</translation>
@@ -2260,6 +2263,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5689199277474810259">Exportera som JSON</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="569000877158168851">Värdet på DnsOverHttpsTemplates är inte relevant och kommer inte att användas såvida inte principen DnsOverHttpsMode ställs in på <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Uppmaningen till att spara kortet har öppnats över hela skärmen.</translation>
 <translation id="5695542892312572833">Vill du verifiera och slutföra köpet med Windows Hello?</translation>
 <translation id="5699628521141772782">Mejeriprodukter och ägg</translation>
 <translation id="5701381305118179107">Centrera</translation>
@@ -3010,6 +3014,7 @@ Mer information.
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Bakre fack</translation>
 <translation id="725866823122871198">Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom datorns datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.</translation>
+<translation id="7260075294900977274">En ny smart mapp som hjälper dig att spara alla shoppingsidor på ett ställe och automatiskt bevakar priser, samlar prisinformation med mera</translation>
 <translation id="7265608370113700582">Adressen är endast tillgänglig på den här enheten</translation>
 <translation id="7275334191706090484">Hanterade bokmärken</translation>
 <translation id="7277998515889183784">Makeup och kosmetika</translation>
@@ -3234,6 +3239,7 @@ Mer information.
 <translation id="7676643023259824263">Sök efter texten i Urklipp, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Öppna och hantera webbhistoriken i Chrome-inställningarna</translation>
 <translation id="7679947978757153706">Baseboll</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantasysporter</translation>
 <translation id="7682287625158474539">Frakt</translation>
 <translation id="7682451652090915298">Rugby</translation>
@@ -3311,6 +3317,7 @@ Mer information.
 <translation id="7822611063308883975">Handhållna spelkonsoler</translation>
 <translation id="7825558994363763489">Mikrovågsugnar</translation>
 <translation id="782886543891417279">wifi-nätverket du använder (<ph name="WIFI_NAME" />) kanske kräver att du besöker dess inloggningssida.</translation>
+<translation id="7831993212387676366">Vad är inköpslistan?</translation>
 <translation id="7840103971441592723">Skärmbild/skärminspelning har startats</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Inga}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

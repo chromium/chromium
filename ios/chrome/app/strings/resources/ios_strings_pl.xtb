@@ -156,6 +156,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1830634592642484976">Ten adres jest obecnie zapisany w Chrome. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
 <translation id="1836891464494477513">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{Zakładki zostały zapisane na Twoim koncie Google {email}}many{Zakładki zostały zapisane na Twoim koncie Google {email}}other{Zakładki zostały zapisane na Twoim koncie Google {email}}}</translation>
+<translation id="183878838231635348">Na tej karcie wyświetlają się wszelkie problemy związane z prywatnością i bezpieczeństwem, które zostały automatycznie wykryte przez kontrolę zabezpieczeń.</translation>
 <translation id="1847795903283049083">Elementy te możesz też wyświetlać i zarządzać nimi w zakładkach, na liście Do przeczytania i w Menedżerze haseł.</translation>
 <translation id="1870148520156231997">Pokaż hasło</translation>
 <translation id="1872096359983322073">Latarka</translation>
@@ -265,6 +266,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2523363575747517183">Ta strona internetowa wielokrotnie próbuje otworzyć inną aplikację.</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
 <translation id="2536991091671391962">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google zapisuje je na koncie <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Ukryj „Kontrolę zabezpieczeń”</translation>
 <translation id="2547458583188611426">Synchronizacja nie działa. Aby ją rozpocząć, wpisz hasło.</translation>
 <translation id="2551153019974022505">Błąd konta</translation>
 <translation id="2556092377360758201">Brak ochrony (niezalecane)</translation>
@@ -556,6 +558,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4121993058175073134">Aby wysłać dane net-export, skonfiguruj konto e-mail w aplikacji Ustawienia.</translation>
 <translation id="4124987746317609294">Zakres czasowy</translation>
 <translation id="4133265950310064865">Silniejsza ochrona</translation>
+<translation id="4147897805161313378">Zdjęcia Google</translation>
 <translation id="4148023517926189160">Ta witryna chce pobrać plik i dodać go do Twojego kalendarza.</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> – numer zakończony na: <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -692,6 +695,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="488785315393301722">Pokaż szczegóły</translation>
 <translation id="4894963374040315706">Umożliwia wyszukiwanie głosowe</translation>
+<translation id="489903206070130262">Ostatnio otwarta karta</translation>
 <translation id="4901778704868714008">Zapisz...</translation>
 <translation id="4904877109095351937">Oznacz jako przeczytane</translation>
 <translation id="4908869848243824489">Discover od Google</translation>

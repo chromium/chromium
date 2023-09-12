@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2678468611080193228">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu, ale funkcie webu budú s väčšou pravdepodobnosťou k dispozícii</translation>
+<translation id="2683434792633810741">Chcete odstrániť a resetovať?</translation>
 <translation id="2687403674020088961">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="2713106313042589954">Vypnúť kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Povoliť súbory cookie na konkrétnom webe.</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4053720452172726777">Prispôsobiť a ovládať Google Chrome</translation>
+<translation id="4149890623864272035">Naozaj chcete odstrániť všetky miestne údaje vrátane súborov cookie a resetovať všetky povolenia pre tento web?</translation>
 <translation id="4149994727733219643">Jednoduché zobrazenie webových stránok</translation>
 <translation id="4151930093518524179">Predvolená lupa</translation>
 <translation id="4165986682804962316">Nastavenia webu</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Povoliť súbory cookie tretích strán</translation>
 <translation id="4428065317363009941">Prispôsobenie reklám</translation>
 <translation id="4434045419905280838">Vyskakovacie okná a presmerovania</translation>
+<translation id="443552056913301231">Touto akciou odstránite všetky miestne údaje vrátane súborov cookie a resetujete všetky povolenia pre <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Vypnúť zvuk na konkrétnom webe.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# súbor cookie}few{# súbory cookie}many{# cookies}other{# súborov cookie}}</translation>
 <translation id="4478158430052450698">Zjednodušenie prispôsobenia lupy pre rôzne weby</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Vypnúť mikrofón</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
 <translation id="4598549027014564149">Keď ste v režime inkognito, weby nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania na nich (ani súvisiace weby). Aktivita prehliadania sa nepoužíva ani na prispôsobenie reklám. Funkcie na niektorých weboch nemusia fungovať.</translation>
+<translation id="4644713492825682049">Odstrániť a resetovať</translation>
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
 <translation id="4670064810192446073">Virtuálna realita</translation>
 <translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Naposledy navštívený dnes</translation>
 <translation id="5225463052809312700">Zapnúť kameru</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
+<translation id="5246825184569358663">Touto akciou odstránite všetky miestne údaje vrátane súborov cookie a resetujete všetky povolenia pre doménu <ph name="DOMAIN" /> aj všetky jej podradené weby</translation>
 <translation id="5264323282659631142">Odstrániť <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Režim celej obrazovky ukončíte potiahnutím z hornej časti a klepnutím na tlačidlo Späť.</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Výnimky</translation>
 <translation id="6196640612572343990">Blokovať súbory cookie tretích strán</translation>
 <translation id="6205314730813004066">Ochrana súkromia pri reklamách</translation>
+<translation id="6207207788774442484">Odstrániť údaje a resetovať povolenia</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – možnosti</translation>
 <translation id="6231752747840485235">Chcete odinštalovať aplikáciu <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Na základe vašej poslednej karty</translation>

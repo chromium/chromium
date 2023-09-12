@@ -84,6 +84,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Abre a página de configurações de formas de pagamento do Chromium.</translation>
 <translation id="4585809515399340748">Agora você poderá usar o Chromium sempre que tocar em links em mensagens, documentos e outros apps.</translation>
+<translation id="459080529287102949">Pesquisar recursos visuais no Chromium</translation>
 <translation id="4633738821577273991">Use também o recurso Navegação segura com maior proteção neste perfil do Chromium</translation>
 <translation id="4654936625574199632">Para ajudar a melhorar o app, o Chromium envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ativar o leitor do Chromium</translation>
@@ -152,6 +153,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7055269218854630176">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chromium pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="7099326575020694068">O Chromium não pode usar a câmera no modo Visualização dividida</translation>
+<translation id="7163483974919055112">Pesquise recursos visuais no Chromium.</translation>
 <translation id="7165402419892018581">Escolha o Chromium para o preenchimento automático</translation>
 <translation id="7175400662502680481">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas recomenda que ela seja mudada agora mesmo.</translation>
 <translation id="7192111075364461693">As notificações do Chromium estão desativadas nas configurações do dispositivo no momento.</translation>

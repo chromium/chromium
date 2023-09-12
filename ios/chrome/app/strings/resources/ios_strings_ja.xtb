@@ -156,6 +156,7 @@
 <translation id="1830634592642484976">この住所は現在、Chrome に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="1836891464494477513">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）にブックマークを保存しました}}</translation>
+<translation id="183878838231635348">このカードには、安全確認で自動検出されたプライバシーやセキュリティの問題が表示されます。</translation>
 <translation id="1847795903283049083">これらのアイテムは、ブックマーク、リーディング リスト、またはパスワード マネージャーで表示、管理することもできます。</translation>
 <translation id="1870148520156231997">パスワードを表示します</translation>
 <translation id="1872096359983322073">照明</translation>
@@ -265,6 +266,7 @@
 <translation id="2523363575747517183">このウェブサイトは別のアプリケーションを繰り返し開こうとしています。</translation>
 <translation id="2529021024822217800">すべて開く</translation>
 <translation id="2536991091671391962">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
+<translation id="2542268842667970959">[安全確認] を非表示にする</translation>
 <translation id="2547458583188611426">同期が機能していません。同期を開始するには、パスフレーズを入力してください。</translation>
 <translation id="2551153019974022505">アカウント エラー</translation>
 <translation id="2556092377360758201">保護なし（推奨されません）</translation>
@@ -556,6 +558,7 @@
 <translation id="4121993058175073134">エクスポート データのみを送信するには、設定アプリでメール アカウントを設定してください。</translation>
 <translation id="4124987746317609294">期間</translation>
 <translation id="4133265950310064865">保護強化機能</translation>
+<translation id="4147897805161313378">Google フォト</translation>
 <translation id="4148023517926189160">このウェブサイトがファイルをダウンロードしてカレンダーに追加する許可を求めています。</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />（末尾 4 桁: <ph name="LAST_FOUR_DIGITS" />）</translation>

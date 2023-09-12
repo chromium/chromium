@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2678468611080193228">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać</translation>
+<translation id="2683434792633810741">Usunąć i zresetować?</translation>
 <translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2717722538473713889">Adresy e-mail</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Zezwalaj na pliki cookie z określonej strony internetowej.</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
+<translation id="4149890623864272035">Czy na pewno chcesz usunąć wszystkie dane lokalne, w tym pliki cookie, i zresetować wszystkie uprawnienia tej witryny?</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4151930093518524179">Domyślne powiększenie</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Zezwalaj na pliki cookie innych firm</translation>
 <translation id="4428065317363009941">Personalizacja reklam</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
+<translation id="443552056913301231">Spowoduje to usunięcie wszystkich danych lokalnych, w tym plików cookie, oraz zresetowanie wszystkich uprawnień witryny <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# plik cookie}few{# pliki cookie}many{# plików cookie}other{# pliku cookie}}</translation>
 <translation id="4478158430052450698">Łatwiejsze dostosowywanie powiększenia w różnych witrynach</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
 <translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
+<translation id="4644713492825682049">Usuń i zresetuj</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
 <translation id="5225463052809312700">Włącz kamerę</translation>
 <translation id="5234764350956374838">Zamknij</translation>
+<translation id="5246825184569358663">Spowoduje to usunięcie wszystkich danych lokalnych (w tym plików cookie) oraz zresetowanie wszystkich uprawnień witryny <ph name="DOMAIN" /> i jej wszystkich podstron</translation>
 <translation id="5264323282659631142">Usuń: „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Przeciągnij od góry i kliknij przycisk Wstecz, by wyjść z trybu pełnoekranowego.</translation>
 <translation id="5300589172476337783">Pokaż</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Wyjątki</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
+<translation id="6207207788774442484">Usuwanie danych i resetowanie uprawnień</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – opcje</translation>
 <translation id="6231752747840485235">Odinstalować aplikację „<ph name="APP_NAME" />”?</translation>
 <translation id="6262191102408817757">Na podstawie ostatniej karty</translation>

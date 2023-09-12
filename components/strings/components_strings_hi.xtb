@@ -389,6 +389,7 @@
 <translation id="1733762317901693627">आम तौर पर, सुरक्षित रहने वाली साइटों के साथ भी, कभी-कभी हमलावर छेड़छाड़ कर देते हैं. <ph name="BEGIN_LINK" />इस असुरक्षित साइट<ph name="END_LINK" /> पर सिर्फ़ तब ही जाएं, जब आपने उससे होने वाले जोखिमों को पक्के तौर पर समझ लिया हो.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">सिस्टम व्यवस्थापक से संपर्क करने का प्रयास करें.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, समयसीमा खत्म होने की तारीख <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">कंप्यूटर</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> होने पर, नीति तय हाेनी चाहिए. साथ ही, इसकी एक मान्य स्ट्रिंग भी होनी चाहिए.</translation>
 <translation id="1743393865165844832">बेडिंग और बेड लिनन</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">सूचनाओं को अपने-आप ब्लॉक कर दिया गया, क्योंकि आम तौर पर आप उन्हें अनुमति नहीं देते हैं</translation>
 <translation id="2071852865256799872">आपके ब्राउज़र को आपका संगठन और आपकी प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="2072275792380684364">फ़ैशन और स्टाइल</translation>
+<translation id="2075497153347571252">आपके एडमिन ने <ph name="ORIGIN" /> पर <ph name="PERMISSION" /> को ब्लॉक कर दिया है</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
 <translation id="20817612488360358">सिस्‍टम प्रॉक्‍सी सेटिंग उपयोग किए जाने के लिए सेट हैं लेकिन कोई स्पष्‍ट प्रॉक्‍सी कॉन्फ़िगरेशन भी मौजूद है.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
@@ -683,6 +685,7 @@
 <translation id="2366689192918515749">मांस और सी-फ़ूड</translation>
 <translation id="2367567093518048410">स्तर</translation>
 <translation id="23703388716193220">गॉल्फ़ इक्विपमेंट</translation>
+<translation id="2378084239755710604">कार्ड सेव करने की सुविधा बंद हो गई है.</translation>
 <translation id="2380886658946992094">कानूनी</translation>
 <translation id="2383455408879745299">Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
 <translation id="2384307209577226199">एंटरप्राइज़ डिफ़ॉल्ट</translation>
@@ -1877,6 +1880,7 @@
 <translation id="4885256590493466218">चेकआउट के दौरान <ph name="CARD_DETAIL" /> से पैसे चुकाएं</translation>
 <translation id="4887406273302438710">Windows Hello की मदद से पासवर्ड सुरक्षित रखें</translation>
 <translation id="4888600795924685526">विदेशी भाषा की पढ़ाई से जुड़े संसाधन</translation>
+<translation id="4890070067176768718">आपके एडमिन ने <ph name="ORIGIN" /> को <ph name="PERMISSION" /> इस्तेमाल करने की अनुमति दी है</translation>
 <translation id="4892518386797173871">पीछे का हिस्सा</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ओलंपिक</translation>
@@ -2248,6 +2252,7 @@
 <translation id="5653432653077411130">पानी की सप्लाई और ट्रीटमेंट</translation>
 <translation id="5654927323611874862">क्रैश रिपोर्ट का आईडी अपलोड किया गया:</translation>
 <translation id="5659593005791499971">ईमेल</translation>
+<translation id="5660122698869360728">एक नया स्मार्ट फ़ोल्डर, जो खरीदारी वाले सभी पेजों को एक ही जगह पर सेव करने और कीमतों को अपने-आप ट्रैक करने की सुविधा देता है. इसकी मदद से, कीमत की अहम जानकारी पाने के साथ-साथ और भी बहुत कुछ किया जा सकता है.</translation>
 <translation id="5663955426505430495">इस डिवाइस के एडमिन ने और फ़ंक्शन के एक्सटेंशन इंस्टॉल किए हैं. एक्सटेंशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="5666606186680807225">बीच और टापू</translation>
 <translation id="5667827081946850877">ऑडियो बुक</translation>
@@ -2260,6 +2265,7 @@
 <translation id="5689199277474810259">JSON में एक्सपोर्ट करें</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates का मान सही नहीं है. इसका इस्तेमाल तब तक नहीं किया जाएगा, जब तक कि DnsOverHttpsMode नीति <ph name="SECURE_DNS_MODE_AUTOMATIC" /> या <ph name="SECURE_DNS_MODE_SECURE" /> पर सेट न हो.</translation>
+<translation id="5691848789297492617">कार्ड सेव करने की सुविधा पूरी स्क्रीन पर खुली है.</translation>
 <translation id="5695542892312572833">क्या आप खरीदारी की पुष्टि करने और उसे पूरा करने के लिए, Windows Hello का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="5699628521141772782">डेयरी प्रॉडक्ट और अंडे</translation>
 <translation id="5701381305118179107">मध्य</translation>
@@ -2321,6 +2327,7 @@
 <translation id="5830698870816298009">हलचल को कैप्चर करने के लिए, कैमरे का इस्तेमाल करें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5838278095973806738">आपको इस साइट पर कोई भी संवेदनशील जानकारी (उदाहरण के लिए, पासवर्ड या क्रेडिट कार्ड) नहीं डालनी चाहिए, क्योंकि उसे हमलावर चुरा सकते हैं.</translation>
+<translation id="5838732667866024867">ग्राफ़ पर कीमत में हुए बदलावों को देखने के लिए, लेफ़्ट/राइट ऐरो का इस्तेमाल किया जा सकता है</translation>
 <translation id="5840318881868981258">अपने Google खाते, <ph name="ACCOUNT" /> में</translation>
 <translation id="5841338463993781099">क्या खाते में सेव करना है?</translation>
 <translation id="5847181246682413476">पावर सप्लाई</translation>
@@ -3009,6 +3016,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">पीछे वाली ट्रे</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से एक निजी कनेक्‍शन स्‍थापित नहीं किया जा सकता क्‍योंकि आपके कंप्‍यूटर का तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.</translation>
+<translation id="7260075294900977274">एक नया स्मार्ट फ़ोल्डर, जो खरीदारी वाले सभी पेजों को एक ही जगह पर सेव करने और कीमतों को अपने-आप ट्रैक करने की सुविधा देता है. इसकी मदद से, कीमत की अहम जानकारी पाने के साथ-साथ और भी बहुत कुछ किया जा सकता है</translation>
 <translation id="7265608370113700582">पता सिर्फ़ इस डिवाइस पर उपलब्ध है</translation>
 <translation id="7275334191706090484">मैनेज किए गए बुकमार्क</translation>
 <translation id="7277998515889183784">मेकअप और कॉस्मेटिक</translation>
@@ -3232,6 +3240,7 @@
 <translation id="7676643023259824263">क्लिपबोर्ड टेक्स्ट, <ph name="TEXT" /> खोजें</translation>
 <translation id="7679367271685653708">Chrome की सेटिंग में अपने ब्राउज़िंग इतिहास को देखें और मैनेज करें</translation>
 <translation id="7679947978757153706">बेसबॉल</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, समयसीमा खत्म होने की तारीख <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">फ़ैंटेसी स्पोर्ट्स</translation>
 <translation id="7682287625158474539">शिपिंग</translation>
 <translation id="7682451652090915298">रग्बी</translation>
@@ -3309,6 +3318,7 @@
 <translation id="7822611063308883975">हैंडहेल्ड गेम कंसोल</translation>
 <translation id="7825558994363763489">माइक्रोवेव</translation>
 <translation id="782886543891417279">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं (<ph name="WIFI_NAME" />) आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
+<translation id="7831993212387676366">खरीदारी की सूची क्या है?</translation>
 <translation id="7840103971441592723">स्क्रीन कैप्चर करने की सुविधा चालू हो गई है</translation>
 <translation id="784137052867620416">खरीदारी के बारे में अहम जानकारी</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कोई नहीं}=1{एक ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />)}=2{दो ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

@@ -222,6 +222,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2189903024544168260">Belangstelling is verwyder</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
 <translation id="2200113223741723867">Bestuur deling van gebruikdata</translation>
+<translation id="221494669172414749">As jy Chrome sonder ’n profielsluit oopmaak, sal jou gestoorde wagwoorde en betaalmetodes uit die motor verwyder word. Die gebruik van ’n profielsluit hou hierdie data veilig.</translation>
 <translation id="2218567645332692482">Gradeer navigasie op na HTTPS en waarsku jou voordat werwe gelaai word wat dit nie ondersteun nie</translation>
 <translation id="2227444325776770048">Gaan voort as <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Leë venster</translation>
@@ -338,6 +339,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Incognito-oortjie sal toegemaak word}other{<ph name="TAB_COUNT_MANY" /> Incognito-oortjies sal toegemaak word}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 dag gelede nagegaan}other{# dae gelede nagegaan}}</translation>
 <translation id="2842985007712546952">Moedervouer</translation>
+<translation id="2853415089995957805">Chrome laai bladsye wat jy moontlik sal besoek vooraf, sodat hulle vinniger laai wanneer jy hulle wel besoek</translation>
 <translation id="2856503607207334158">Kon nie aanmeld nie</translation>
 <translation id="2860954141821109167">Maak seker dat 'n foonprogram op hierdie toestel geaktiveer is</translation>
 <translation id="2861923151411510142">Sommige Chrome-kenmerke sal nie meer beskikbaar wees nie</translation>
@@ -582,6 +584,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="4084712963632273211">Vanaf <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />afgelewer deur Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Jy kan hierdie tablet gebruik om op die toestel aan te meld wat hierdie QR-kode wys.</translation>
 <translation id="4095146165863963773">Vee programdata uit?</translation>
+<translation id="4095425503313512126">Blaai en soek is vinniger</translation>
 <translation id="4096227151372679484">Boekmerkstoorvloei is teen halwe hoogte oopgemaak</translation>
 <translation id="4101475238162928417">Sinkroniseer om jou wagwoorde, boekmerke en meer op al jou ander toestelle te kry</translation>
 <translation id="4106587138345390261">Chrome verken tans nuwe kenmerke wat werwe in staat stel om minder van jou inligting te gebruik om dieselfde blaai-ervaring te lewer</translation>
@@ -832,6 +835,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5308380583665731573">Koppel</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5319359161174645648">Google beveel Chrome aan</translation>
+<translation id="5320351714793324716">As jy webkoekies toelaat, kan Chrome hulle met vooraflaai gebruik</translation>
 <translation id="5321849971085220133">Chrome soek tans nuwe maniere om nasporing te verminder en jou selfs nog veiliger te hou terwyl jy blaai. Chrome <ph name="BEGIN_LINK" />skat ook jou belangstellings<ph name="END_LINK" /> en stel jou in staat om dit te bestuur. Werwe wat jy besoek, kan dan vir Chrome vra wat jou belangstellings is om vir jou advertensies te wys.</translation>
 <translation id="5326921373682845375">Google-bedieners ontvang nie nuwe inligting wanneer hierdie bladsye privaat vooraf gelaai word nie omdat die voorafgelaaide bladsye geënkripteer is en die werf wat na die bladsye skakel 'n Google-werf is.</translation>
 <translation id="5329858041417644019">Jou blaaier word nie bestuur nie</translation>
@@ -1010,6 +1014,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6295158916970320988">Alle werwe</translation>
 <translation id="6303969859164067831">Meld af en skakel sinkronisering af</translation>
 <translation id="6312687380483398334">Webprogramme (stil)</translation>
+<translation id="6315386555979018699">Vee uit en gaan voort</translation>
 <translation id="6316139424528454185">Steun nie Android-weergawe nie</translation>
 <translation id="6324916366299863871">Wysig kortpad</translation>
 <translation id="6324977638108296054">Kan nie skakel na hoogtepunt skep nie</translation>
@@ -1572,6 +1577,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
 <translation id="8998729206196772491">Jy meld tans aan met 'n rekening wat deur <ph name="MANAGED_DOMAIN" /> bestuur word en gee sy administrateur beheer oor jou Chrome-data. Jou data sal permanent met hierdie rekening verbind word. As jy by Chrome afmeld, sal jou data van hierdie toestel af uitgevee word, maar dit sal steeds in jou Google-rekening geberg word.</translation>
 <translation id="9012585441087414258">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. As ’n bladsy iets verdag doen, word URL’e en stukkies van die bladsyinhoud na Google Veiligblaai toe gestuur.</translation>
+<translation id="9019199799064251516">Gaan voort sonder ’n motorprofielsluitt?</translation>
 <translation id="9022774213089566801">Gereeld besoek</translation>
 <translation id="9022871169049522985">Werwe en adverteerders kan die werkverrigting van hul advertensies meet</translation>
 <translation id="9035378196785279980">Skuif na \u2026</translation>
@@ -1634,5 +1640,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="983192555821071799">Maak alle oortjies toe</translation>
 <translation id="987264212798334818">Algemeen</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> oortjies</translation>
+<translation id="993520549480398880">Vee ook boekmerke, geskiedenis en meer van hierdie motor uit</translation>
 <translation id="996149300115483134">Stroomkaartkieslys is toe</translation>
 </translationbundle>

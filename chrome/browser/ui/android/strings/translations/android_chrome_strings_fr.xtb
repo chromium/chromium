@@ -312,6 +312,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="265156376773362237">Préchargement standard</translation>
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
+<translation id="2673169232805572412">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut envoyer à Google les URL concernées, y compris des extraits du contenu des pages</translation>
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2708051474374549906">Protection proactive en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="2708226184420201102">Ouvrir <ph name="PRODUCT_NAME" /> dans le navigateur</translation>
@@ -337,6 +338,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée sera fermé}one{<ph name="TAB_COUNT_MANY" /> onglet de navigation privée sera fermé}other{<ph name="TAB_COUNT_MANY" /> onglets de navigation privée seront fermés}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Vérification effectuée il y a 1 jour}one{Vérification effectuée il y a # jour}other{Vérification effectuée il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
+<translation id="2853415089995957805">Chrome précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="2856503607207334158">Échec de la connexion</translation>
 <translation id="2860954141821109167">Assurez-vous qu'une application Téléphone est activée sur cet appareil</translation>
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus disponibles</translation>
@@ -581,6 +583,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />proposé par Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Vous pouvez utiliser cette tablette pour vous connecter sur l'appareil qui affiche le code QR.</translation>
 <translation id="4095146165863963773">Supprimer les données de l'application ?</translation>
+<translation id="4095425503313512126">La navigation et la recherche sont plus rapides</translation>
 <translation id="4096227151372679484">Flux d'enregistrement en tant que favori ouvert à mi-hauteur</translation>
 <translation id="4101475238162928417">Activez la synchronisation pour récupérer vos mots de passe, favoris et plus sur vos autres appareils</translation>
 <translation id="4106587138345390261">Chrome développe de nouvelles fonctionnalités qui permettent aux sites d'offrir la même expérience de navigation en utilisant moins de vos infos</translation>
@@ -831,6 +834,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5308380583665731573">Connexion</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
+<translation id="5320351714793324716">Si vous autorisez les cookies, Chrome peut les utiliser pour le préchargement</translation>
 <translation id="5321849971085220133">Chrome travaille à trouver de nouvelles façons de réduire le suivi et d'encore mieux vous protéger lorsque vous naviguez. De plus, il <ph name="BEGIN_LINK" />évalue quels sont vos centres d'intérêt<ph name="END_LINK" /> et vous permet de les gérer. Ensuite, les sites que vous consultez peuvent les lui demander afin de vous montrer des annonces.</translation>
 <translation id="5326921373682845375">Étant donné que les pages préchargées sont chiffrées et que le site lié aux pages est un site Google, les serveurs de Google ne reçoivent pas de nouvelles informations lors du préchargement de ces pages en mode privé.</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>

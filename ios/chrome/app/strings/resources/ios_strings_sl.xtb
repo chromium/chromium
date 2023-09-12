@@ -305,6 +305,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="271033894570825754">Novo</translation>
 <translation id="2712127207578915686">Datoteke ni mogoče odpreti</translation>
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
+<translation id="2738375676495545665">Skrij »Novosti«</translation>
 <translation id="2747003861858887689">Prejšnje polje</translation>
 <translation id="2749231692441336879">Spremljate <ph name="CHANNEL_NAME" /></translation>
 <translation id="2762000892062317888">pravkar</translation>
@@ -487,8 +488,10 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {EMAIL}.}one{{COUNT} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}two{{COUNT} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}few{{COUNT} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}other{{COUNT} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Označi kot neprebrano</translation>
 <translation id="371230970611282515">Predvideva nevarne dogodke, preden se zgodijo, in vas opozarja nanje.</translation>
+<translation id="371398631992790800">Skrij zaznamke</translation>
 <translation id="37207012422556617">Iskanja v trendu</translation>
 <translation id="3740397331642243698">Odpre vnesene URL-je v Google Chromu v anonimnem načinu.</translation>
+<translation id="374357899112510277">Skrij prenose</translation>
 <translation id="3745190878148784130">Skrij »Povečaj/pomanjšaj besedilo«</translation>
 <translation id="3762232513783804601">Ustvarjeno za vaš iPad</translation>
 <translation id="3768725474733206671">Vnovično odpiranje nazadnje zaprtega zavihka</translation>
@@ -553,6 +556,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4121993058175073134">Če želite pošiljati podatke net-export, v aplikaciji Nastavitve konfigurirajte e-poštni račun.</translation>
 <translation id="4124987746317609294">Časovno obdobje</translation>
 <translation id="4133265950310064865">Izboljšana zaščita</translation>
+<translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">To spletno mesto želi prenesti datoteko in jo dodati v vaš koledar.</translation>
 <translation id="4152011295694446843">Tukaj bodo prikazani zavihki</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> se konča z <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -840,6 +844,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="581659025233126501">Vklopi sinhronizacijo</translation>
 <translation id="5817176759448082654">Pregled gesel</translation>
 <translation id="5819208479324046259">Brskalnik upravlja podjetje <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">Skrij upravitelja gesel</translation>
 <translation id="5833643789537100742">Shranjevanje gesel, plačilnih sredstev in naslovov za Chrome za samodejno izpolnjevanje pozneje.</translation>
 <translation id="5834415013958049700">Iskanje slike, ki ste jo kopirali, z Googlom Lens</translation>
 <translation id="5844284118433003733">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
@@ -1310,6 +1315,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8286036467436129157">Prijava</translation>
 <translation id="8299417921174340354">Če želite uporabiti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="8299613349954694191">Odpiranje anonimnega zavihka za zasebno brskanje po spletu.</translation>
+<translation id="8311853334103696030">Skrij spremljanje cene</translation>
 <translation id="8316944564970119719">Vnesite spletno mesto in geslo, nato shranite.</translation>
 <translation id="8319076807703933069">Novo iskanje</translation>
 <translation id="8328777765163860529">Zapri vse</translation>
@@ -1362,6 +1368,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8588404856427128947">Izklop</translation>
 <translation id="8591976964826315682">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
 <translation id="8605219856220328675">Close tab.</translation>
+<translation id="8613883225817609844">Skrij nedavne zavihke</translation>
 <translation id="8620640915598389714">Uredi</translation>
 <translation id="8626393685701737946">V razdelku »Nastavitve &gt; Nastavitve vsebine« lahko spremenite privzeti pogled spletnega mesta na pogled za namizni računalnik.</translation>
 <translation id="8636825310635137004">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo.</translation>
@@ -1466,6 +1473,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="9120217828624527905">Preklop na prevajanje celotnih strani</translation>
 <translation id="9124387962554796433">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google in drugih Googlovih storitev.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>
+<translation id="9144931028079269381">Skrij bralni seznam</translation>
 <translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9157836665414082580">Onemogoči pogovorna okna</translation>
 <translation id="9162432979321511934">Vklopite AutoFill Passwords (Samodejno izpolnjevanje gesel).</translation>

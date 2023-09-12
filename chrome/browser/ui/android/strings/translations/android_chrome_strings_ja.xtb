@@ -223,6 +223,7 @@
 <translation id="2189903024544168260">興味 / 関心を削除しました</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2200113223741723867">使用状況データの共有の管理</translation>
+<translation id="221494669172414749">プロフィールのロックを設定せずに Chrome を開くと、保存したパスワードとお支払い方法が車から削除されます。プロフィールのロックを使用すると、このデータを安全に保護できます。</translation>
 <translation id="2218567645332692482">移動先を HTTPS にアップグレードし、HTTPS をサポートしていないサイトは読み込む前に警告を表示します</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> として続行</translation>
 <translation id="2230777942707397948">空のウィンドウ</translation>
@@ -339,6 +340,7 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のシークレット タブが閉じられます}other{<ph name="TAB_COUNT_MANY" /> 個のシークレット タブが閉じられます}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{前回の確認: 1 日前}other{前回の確認: # 日前}}</translation>
 <translation id="2842985007712546952">親フォルダ</translation>
+<translation id="2853415089995957805">アクセスする可能性の高いページはプリロードされるので、実際にアクセスしたときの読み込み時間が短縮されます</translation>
 <translation id="2856503607207334158">ログインできませんでした</translation>
 <translation id="2860954141821109167">このデバイスで通話アプリが有効になっていることを確認してください</translation>
 <translation id="2861923151411510142">Chrome の一部の機能は使用できなくなります</translation>
@@ -583,6 +585,7 @@
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> のコンテンツ - <ph name="BEGIN_DEEMPHASIZED" />Google により配信<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">この QR コードが表示されているデバイスに、このタブレットを使用してログインできます。</translation>
 <translation id="4095146165863963773">アプリデータを削除しますか？</translation>
+<translation id="4095425503313512126">ブラウジングと検索が高速になります</translation>
 <translation id="4096227151372679484">ブックマーク保存フローが画面の下半分に表示されています</translation>
 <translation id="4101475238162928417">同期すると、他のデバイスのパスワードやブックマークなどを使用できます。</translation>
 <translation id="4106587138345390261">Chrome では、使用するユーザー情報量を減らしながら、これまでと同様にブラウジングできる新機能をテストしています</translation>
@@ -833,6 +836,7 @@
 <translation id="5308380583665731573">接続</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google は Chrome を推奨しています</translation>
+<translation id="5320351714793324716">Cookie を許可した場合、Chrome はプリロードの際に Cookie を使用することがあります</translation>
 <translation id="5321849971085220133">Chrome では、ブラウジング時のトラッキングを抑制して、セキュリティを強化する新しい方法を検討しています。また、ユーザーの興味 / 関心を<ph name="BEGIN_LINK" />推定<ph name="END_LINK" />して管理できるようにします。これにより、アクセスしたサイトでユーザーの興味 / 関心を Chrome にリクエストして、広告を表示することができます。</translation>
 <translation id="5326921373682845375">プリロードされたページが暗号化されており、ページへリンクしているサイトが Google のサイトであるため、これらのページを非公開でプリロードする際に Google サーバーは新しい情報を受信しません。</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
@@ -1011,6 +1015,7 @@
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6303969859164067831">ログアウトして同期をオフにする</translation>
 <translation id="6312687380483398334">ウェブアプリ（サイレント）</translation>
+<translation id="6315386555979018699">削除して続行</translation>
 <translation id="6316139424528454185">Android のバージョンはサポートされていません</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
 <translation id="6324977638108296054">選択箇所へのリンクを作成できません</translation>
@@ -1574,6 +1579,7 @@
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> で管理されているアカウントでログインして、Chrome データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
 <translation id="9012585441087414258">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ページで不審な動作が検出された場合、URL と一部のページ コンテンツが Google セーフ ブラウジングに送信されます。</translation>
+<translation id="9019199799064251516">車のプロフィールをロックせずに続行しますか？</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
 <translation id="9022871169049522985">ウェブサイトと広告主が広告効果を測定することができます</translation>
 <translation id="9035378196785279980">\u2026 に移動</translation>
@@ -1636,5 +1642,6 @@
 <translation id="983192555821071799">すべてのタブを閉じる</translation>
 <translation id="987264212798334818">全般</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個のタブ</translation>
+<translation id="993520549480398880">この車のブックマーク、履歴、その他の設定も削除する</translation>
 <translation id="996149300115483134">フィードカード メニューは閉じています</translation>
 </translationbundle>

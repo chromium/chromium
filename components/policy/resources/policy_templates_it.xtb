@@ -2104,6 +2104,14 @@ Il criterio <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> potrebbe eseguire l'
 <translation id="2839294585867804686">Impostazioni di Condivisioni file di rete</translation>
 <translation id="2841911109921764691">Il pulsante destro è il principale nella schermata di accesso</translation>
 <translation id="284288632677954003">URL di un file XML che contiene URL che non devono mai attivare il cambio di browser.</translation>
+<translation id="28458742190197992">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" /> per uno specifico profilo gestito.
+
+Se il criterio non viene configurato o viene impostato su Disabled, i dati non vengono raccolti o caricati.
+Se il criterio viene impostato su Enabled, i dati vengono raccolti e caricati sulla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Il rapporto include informazioni sull'utilizzo e sullo stato del profilo, incluse, a titolo esemplificativo, la versione del sistema operativo, la versione del browser, le estensioni installate e i criteri applicati.
+
+Questo criterio può essere impostato soltanto come criterio relativo agli utenti cloud.</translation>
 <translation id="2846689894646472396">Velocità di controllo degli eventi di rete in millisecondi.</translation>
 <translation id="2847788524147474533">I criteri relativi al computer della piattaforma hanno la precedenza sui criteri relativi al cloud in ambito computer</translation>
 <translation id="2849275596224278787">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
@@ -5587,6 +5595,7 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 
       ECH è un protocollo in continua evoluzione, quindi l'implementazione di <ph name="PRODUCT_NAME" /> è soggetta a modifiche. Pertanto, questo criterio è una misura temporanea per controllare l'implementazione sperimentale iniziale. Verrà sostituito con i controlli finali una volta completato il protocollo.</translation>
 <translation id="5939656968921014919">Disattiva la modalità sviluppatore per app isolate.</translation>
+<translation id="5939873071468124100">Limita gli account che possono utilizzare l'integrazione <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="5945312246863177268">Non consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5946082169633555022">Canale Beta</translation>
 <translation id="5946329690214660966">Imposta una pianificazione personalizzata per verificare la presenza di aggiornamenti</translation>
@@ -5658,6 +5667,16 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
       Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6019162469732742754">Usa la Modalità automatica</translation>
 <translation id="6019606564278029236">Attiva l'interazione degli utenti remoti con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
+<translation id="602038990586229155">Questo criterio controlla le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /> consentendo agli utenti di inviare alla Console di amministrazione Google le richieste per l'approvazione.
+
+Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, questo criterio viene ignorato e le richieste di installazione delle estensioni non vengono create né caricate.
+Se questo criterio non viene configurato o viene disattivato, le richieste di installazione delle estensioni non vengono create né caricate.
+Se il criterio viene attivato, le richieste di installazione delle estensioni vengono create e caricate nella Console di amministrazione Google.
+
+Le richieste di installazione delle estensioni vengono create quando gli utenti tentano di installare un'estensione non autorizzata dal criterio <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" />.
+
+Questo criterio viene applicato soltanto se la macchina viene registrata con il criterio <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
+Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6022948604095165524">Azione all'avvio</translation>
 <translation id="602318745029752898">Consenti le voci di sintesi vocale di rete migliorate in di Seleziona per ascoltare</translation>
 <translation id="6026722971789064331">Controlla l'utilizzo dell'API file system per la scrittura</translation>
@@ -6578,6 +6597,13 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
       Se il criterio è attivato, Risposte rapide è abilitata.
       Se il criterio è disattivato, Risposte rapide è disabilitata.
       Se il criterio non viene impostato, gli utenti possono decidere se attivare o disattivare Risposte rapide.</translation>
+<translation id="6712624291905573620">Questo criterio consente di controllare il reporting su cloud di <ph name="PRODUCT_NAME" />, che consente di caricare informazioni sul funzionamento del browser nella <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se il criterio non viene configurato o viene impostato su Disabled, i dati non vengono raccolti o caricati.
+Se il criterio viene impostato su Enabled, i dati vengono raccolti e caricati sulla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</translation>
 <translation id="6720330829631914048">Le ore trascorse dall'inizio della giornata nel formato di 24 ore.</translation>
 <translation id="6721252203593581486">WebSQL in contesti di terze parti (ad es. iframe tra siti) è disattivato per impostazione predefinita a partire da M97 e verrà completamente rimosso in M101.
           Se il criterio viene impostato su Falso o se non viene configurato, WebSQL in contesti di terze parti rimarrà disattivato.
@@ -8095,6 +8121,13 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8062375903420954294">Questo criterio permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile. Consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Se il criterio non viene configurato, per impostazione predefinita vengono usate tutte le interfacce disponibili.</translation>
 <translation id="8062485064082966327">Usa un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="8071371098891664137">Se per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLOCKLIST" />, la configurazione del criterio <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. L'utente avrà a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
+<translation id="8072934771584553388">Questo criterio consente agli amministratori di limitare gli account autorizzati ad accedere a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando il criterio <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> è attivato.
+
+Se questo criterio non viene configurato o se viene impostato un valore vuoto, è possibile utilizzare qualsiasi account per accedere.
+
+Se questo criterio è impostato su un nome di dominio o su un ID tenant (vedi https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints), solo gli account con quel nome di dominio o ID tenant possono essere utilizzati per accedere.
+
+La modifica della limitazione potrebbe comportare la disconnessione degli utenti dal proprio account <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se non ottempera alla nuova limitazione.</translation>
 <translation id="8076521374016204899">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.
 
       Se viene impostato su Disattivato, gli utenti non possono bloccare lo schermo e possono soltanto uscire dalla sessione utente.</translation>
@@ -8716,6 +8749,12 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se il criterio viene impostato su true, le schede che sono in secondo piano da almeno cinque minuti potrebbero essere bloccate. Il blocco delle schede riduce l'utilizzo di CPU, batteria e memoria. <ph name="PRODUCT_NAME" /> usa l'euristica per evitare di bloccare le schede in secondo piano che hanno una funzione utile (ad esempio visualizzare notifiche, riprodurre audio, riprodurre video in streaming). Gli sviluppatori web possono anche disattivare il blocco nei loro siti (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
+<translation id="8612188068319977428">Controlla la frequenza dei caricamenti di report sullo stato di Chrome.
+
+Sono inclusi i report attivati da <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />.
+
+Quando il criterio non è configurato, i report vengono caricati ogni 24 ore.
+Quando il criterio è configurato, il numero di ore tra due caricamenti di report consecutivi viene definito da questo criterio.</translation>
 <translation id="8619748440665904084">Disabilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
 <translation id="8623672932476443039">Se il criterio viene impostato su enabled, gli utenti possono accedere alla modalità sviluppatore per le app isolate.
       Se viene impostato su disabled, gli utenti non possono accedere a queste funzionalità.

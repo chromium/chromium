@@ -156,6 +156,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1830634592642484976">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
 <translation id="1836891464494477513">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{Záložky boli uložené do vášho účtu Google {email}}many{Záložky boli uložené do vášho účtu Google {email}}other{Záložky boli uložené do vášho účtu Google {email}}}</translation>
+<translation id="183878838231635348">Na tejto karte sa zobrazujú všetky problémy s ochranou súkromia alebo zabezpečením, ktoré pre vás kontrola bezpečnosti automaticky zistí.</translation>
 <translation id="1847795903283049083">Tieto položky si môžete zobraziť a spravovať aj v záložkách, čitateľskom zozname alebo Správcovi hesiel.</translation>
 <translation id="1870148520156231997">Odhaliť heslo</translation>
 <translation id="1872096359983322073">Baterka</translation>
@@ -265,6 +266,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2523363575747517183">Tento web sa opakovane pokúša otvoriť ďalšiu aplikáciu.</translation>
 <translation id="2529021024822217800">Otvoriť všetky</translation>
 <translation id="2536991091671391962">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v Správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Skryť položku Kontrola bezpečnosti</translation>
 <translation id="2547458583188611426">Synchronizácia nefunguje. Ak ju chcete spustiť, zadajte prístupovú frázu</translation>
 <translation id="2551153019974022505">Chyba účtu</translation>
 <translation id="2556092377360758201">Bez ochrany (neodporúča sa)</translation>
@@ -556,6 +558,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4121993058175073134">Ak chcete odoslať údaje čistého exportu, v aplikácii Nastavenia nakonfigurujte svoj e-mailový účet.</translation>
 <translation id="4124987746317609294">Obdobie</translation>
 <translation id="4133265950310064865">Rozšírená ochrana</translation>
+<translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4148023517926189160">Tento web chce stiahnuť súbor a pridať ho do vášho kalendára.</translation>
 <translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> s koncovým štvorčíslím <ph name="LAST_FOUR_DIGITS" /></translation>

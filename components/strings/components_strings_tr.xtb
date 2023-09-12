@@ -388,6 +388,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1733762317901693627">Normalde güvenli olan siteler bile bazen saldırganlar tarafından ele geçirilebilir. <ph name="BEGIN_LINK" />Güvenli olmayan bu siteyi<ph name="END_LINK" /> yalnızca riskleri anladığınızdan eminseniz ziyaret edin.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Sistem yöneticisiyle iletişime geçmeyi deneyin.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, geçerlilik sonu <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Bilgisayar</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduğunda, DnsOverHttpsTemplate belirtilmeli ve geçerli bir dize olmalıdır.</translation>
 <translation id="1743393865165844832">Yatak Takımı ve Nevresimler</translation>
@@ -682,6 +683,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2366689192918515749">Et ve Deniz Ürünleri</translation>
 <translation id="2367567093518048410">Düzey</translation>
 <translation id="23703388716193220">Golf Gereçleri</translation>
+<translation id="2378084239755710604">Kartı kaydet seçeneği kapatıldı.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirin</translation>
 <translation id="2384307209577226199">Kuruluşun varsayılan ayarı</translation>
@@ -2248,6 +2250,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5653432653077411130">Su temini ve arıtma</translation>
 <translation id="5654927323611874862">Yüklenen Kilitlenme Raporu Kimliği:</translation>
 <translation id="5659593005791499971">E-posta</translation>
+<translation id="5660122698869360728">Tüm alışveriş sayfalarınızı tek bir yere kaydetmenizi, fiyatları otomatik olarak takip etmenizi, fiyat analizleri almanızı ve daha pek çok şey yapmanızı sağlayan yeni bir akıllı klasör.</translation>
 <translation id="5663955426505430495">Bu cihazın yöneticisi diğer işlevler için uzantılar yüklemiş. Söz konusu uzantıların bazı verilerinize erişimi bulunuyor.</translation>
 <translation id="5666606186680807225">Plajlar ve adalar</translation>
 <translation id="5667827081946850877">Sesli kitaplar</translation>
@@ -2260,6 +2263,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5689199277474810259">JSON'a aktar</translation>
 <translation id="5689516760719285838">Konum</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates değeri alakalı olmadığından kullanılmayacak. Bu durum DnsOverHttpsMode politikası <ph name="SECURE_DNS_MODE_AUTOMATIC" /> veya <ph name="SECURE_DNS_MODE_SECURE" /> olarak ayarlanmadığı sürece geçerlidir.</translation>
+<translation id="5691848789297492617">Kartı kaydet seçeneği tam ekranda açıldı.</translation>
 <translation id="5695542892312572833">Satın alma işleminizi doğrulayıp tamamlamak için Windows Hello kullanılsın mı?</translation>
 <translation id="5699628521141772782">Süt Ürünleri ve Yumurta</translation>
 <translation id="5701381305118179107">Ortala</translation>
@@ -3010,6 +3014,7 @@ Ek ayrıntılar:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Arka Tepsi</translation>
 <translation id="725866823122871198">Bilgisayarınızın tarih ve saati (<ph name="DATE_AND_TIME" />) yanlış olduğundan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alan adına gizli bir bağlantı kurulamıyor.</translation>
+<translation id="7260075294900977274">Tüm alışveriş sayfalarınızı tek bir yere kaydetmenizi, fiyatları otomatik olarak takip etmenizi, fiyat analizleri almanızı ve daha pek çok şey yapmanızı sağlayan yeni bir akıllı klasör</translation>
 <translation id="7265608370113700582">Adres yalnızca bu cihazda kullanılabilir</translation>
 <translation id="7275334191706090484">Yönetilen Yer İşaretleri</translation>
 <translation id="7277998515889183784">Makyaj malzemeleri ve kozmetik ürünler</translation>
@@ -3234,6 +3239,7 @@ Ek ayrıntılar:
 <translation id="7676643023259824263">Panoda metni (<ph name="TEXT" />) ara</translation>
 <translation id="7679367271685653708">Chrome ayarlarında tarama geçmişinizi görüntüleyin ve yönetin</translation>
 <translation id="7679947978757153706">Beyzbol</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, geçerlilik sonu <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantezi sporlar</translation>
 <translation id="7682287625158474539">Sevkiyat</translation>
 <translation id="7682451652090915298">Ragbi</translation>
@@ -3311,6 +3317,7 @@ Ek ayrıntılar:
 <translation id="7822611063308883975">Avuç İçi Oyun Konsolları</translation>
 <translation id="7825558994363763489">Mikrodalga Fırınlar</translation>
 <translation id="782886543891417279">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
+<translation id="7831993212387676366">Alışveriş listesi nedir?</translation>
 <translation id="7840103971441592723">Ekran görüntüsü başlatıldı</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

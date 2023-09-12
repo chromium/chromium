@@ -312,6 +312,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="265156376773362237">Standardní předběžné načítání</translation>
 <translation id="2656405586795711023">Webové aplikace</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
+<translation id="2673169232805572412">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat adresy URL, včetně částí obsahu stránky</translation>
 <translation id="2702516483241149200">Nové: Sdílení odkazu, který obsah posune na tento text</translation>
 <translation id="2708051474374549906">Proaktivní ochrana v reálném čase před nebezpečnými weby, soubory ke stažení a rozšířeními, která je založena na odesílání údajů o prohlížení do Googlu</translation>
 <translation id="2708226184420201102">Otevřít v prohlížeči <ph name="PRODUCT_NAME" /></translation>
@@ -337,6 +338,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Zavře se <ph name="TAB_COUNT_ONE" /> anonymní karta}few{Zavřou se <ph name="TAB_COUNT_MANY" /> anonymní karty}many{Zavře se <ph name="TAB_COUNT_MANY" /> anonymní karty}other{Zavře se <ph name="TAB_COUNT_MANY" /> anonymních karet}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Zkontrolováno před 1 dnem}few{Zkontrolováno před # dny}many{Zkontrolováno před # dne}other{Zkontrolováno před # dny}}</translation>
 <translation id="2842985007712546952">Nadřazená složka</translation>
+<translation id="2853415089995957805">Chrome předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji.</translation>
 <translation id="2856503607207334158">Přihlášení se nezdařilo</translation>
 <translation id="2860954141821109167">Zkontrolujte zda je na tomto zařízení povolená aplikace k telefonování</translation>
 <translation id="2861923151411510142">Některé funkce Chromu už nebudou dostupné</translation>
@@ -581,6 +583,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4084712963632273211">Zdroj: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />poskytováno společností Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Tento tablet můžete použít k přihlášení na počítači, na kterém se zobrazuje tento QR kód.</translation>
 <translation id="4095146165863963773">Smazat data aplikace?</translation>
+<translation id="4095425503313512126">Procházení a vyhledávání je rychlejší.</translation>
 <translation id="4096227151372679484">Postup uložení záložky otevřený na poloviční výšku</translation>
 <translation id="4101475238162928417">Pokud svá hesla, záložky a další položky chcete mít na ostatních zařízeních, zapněte synchronizaci.</translation>
 <translation id="4106587138345390261">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně vašich dat a údajů</translation>
@@ -831,6 +834,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5308380583665731573">Připojení</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319359161174645648">Google doporučuje prohlížeč Chrome</translation>
+<translation id="5320351714793324716">Pokud máte povolené soubory cookie, může je Chrome při předběžném načítání použít</translation>
 <translation id="5321849971085220133">Chrome hledá nové způsoby, jak snížit míru sledování a chránit vás na internetu ještě lépe. Chrome také <ph name="BEGIN_LINK" />odhaduje vaše zájmy<ph name="END_LINK" /> a umožňuje vám je spravovat. Navštívené weby pak mohou Chrome požádat o sdílení vašich zájmů, aby vám mohly zobrazovat reklamy.</translation>
 <translation id="5326921373682845375">Protože jsou předběžně načítané stránky zašifrované a web, který na ně odkazuje, je webem Google, servery Google při soukromém načítání těchto stránek neobdrží nové informace.</translation>
 <translation id="5329858041417644019">Prohlížeč není spravován</translation>

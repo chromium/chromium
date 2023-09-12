@@ -312,6 +312,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="265156376773362237">Rhaglwytho safonol</translation>
 <translation id="2656405586795711023">Apiau gwe</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
+<translation id="2673169232805572412">Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome anfon URL, gan gynnwys darnau o gynnwys tudalen, at Google</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
 <translation id="2708051474374549906">Amddiffyniad amser real, rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus sy'n seiliedig ar anfon eich data pori i Google</translation>
 <translation id="2708226184420201102">Agor yn y porwr <ph name="PRODUCT_NAME" /></translation>
@@ -337,6 +338,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Bydd <ph name="TAB_COUNT_ONE" /> tab anhysbys yn cael ei gau}zero{Bydd <ph name="TAB_COUNT_MANY" /> tab anhysbys yn cael eu cau}two{Bydd <ph name="TAB_COUNT_MANY" /> dab anhysbys yn cael eu cau}few{Bydd <ph name="TAB_COUNT_MANY" /> thab anhysbys yn cael eu cau}many{Bydd <ph name="TAB_COUNT_MANY" /> thab anhysbys yn cael eu cau}other{Bydd <ph name="TAB_COUNT_MANY" /> tab anhysbys yn cael eu cau}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Gwiriwyd 1 diwrnod yn ôl}zero{Gwiriwyd # diwrnod yn ôl}two{Gwiriwyd # ddiwrnod yn ôl}few{Gwiriwyd # diwrnod yn ôl}many{Gwiriwyd # diwrnod yn ôl}other{Gwiriwyd # diwrnod yn ôl}}</translation>
 <translation id="2842985007712546952">Ffolder rhiant</translation>
+<translation id="2853415089995957805">Mae Chrome yn rhaglwytho tudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn ymweld â nhw</translation>
 <translation id="2856503607207334158">Wedi methu â mewngofnodi</translation>
 <translation id="2860954141821109167">Gwnewch yn siŵr bod ap ffôn wedi'i alluogi ar y ddyfais hon</translation>
 <translation id="2861923151411510142">Ni fydd rhai nodweddion Chrome ar gael mwyach</translation>
@@ -581,6 +583,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="4084712963632273211">Gan <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />darparwyd gan Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Gallwch ddefnyddio'r llechen hon i fewngofnodi ar y ddyfais sy'n dangos y cod QR hwn.</translation>
 <translation id="4095146165863963773">Dileu data yr ap?</translation>
+<translation id="4095425503313512126">Mae pori a chwilio yn gyflymach</translation>
 <translation id="4096227151372679484">Llif cadw nodau tudalen wedi'i hagor ar hanner uchder</translation>
 <translation id="4101475238162928417">Cysonwch i gael eich cyfrineiriau, nodau tudalen a rhagor ar eich dyfeisiau eraill</translation>
 <translation id="4106587138345390261">Mae Chrome yn archwilio nodweddion newydd sy'n caniatáu i wefannau roi'r un profiad pori gan ddefnyddio llai o'ch gwybodaeth</translation>
@@ -831,6 +834,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5308380583665731573">Cysylltu</translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5319359161174645648">Mae Google yn argymell Chrome</translation>
+<translation id="5320351714793324716">Os ydych yn caniatáu cwcis, gall Chrome eu defnyddio ar gyfer rhaglwytho</translation>
 <translation id="5321849971085220133">Mae Chrome yn dod o hyd i ffyrdd newydd o leihau olrhain a'ch cadw hyd yn oed yn fwy diogel wrth i chi bori. Mae Chrome hefyd yn <ph name="BEGIN_LINK" />amcangyfrif eich diddordebau<ph name="END_LINK" /> ac yn eich galluogi i'w rheoli. Yna, gall gwefannau rydych yn ymweld â nhw ofyn i Chrome am eich diddordebau i ddangos hysbysebion i chi.</translation>
 <translation id="5326921373682845375">Oherwydd bod y tudalennau sydd wedi'u rhaglwytho wedi'u hamgryptio, a bod y wefan sy'n cysylltu â'r tudalennau yn wefan Google, nid yw gweinyddion Google yn derbyn gwybodaeth newydd wrth raglwytho'r tudalennau hyn yn breifat.</translation>
 <translation id="5329858041417644019">Nid yw eich porwr yn cael ei reoli</translation>

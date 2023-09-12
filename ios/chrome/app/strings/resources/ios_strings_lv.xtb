@@ -305,6 +305,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="271033894570825754">Jauns</translation>
 <translation id="2712127207578915686">Nevar atvērt failu</translation>
 <translation id="2718352093833049315">Tikai Wi-Fi</translation>
+<translation id="2738375676495545665">Paslēpt vienumu “Jaunumi”</translation>
 <translation id="2747003861858887689">Iepriekšējais lauks</translation>
 <translation id="2749231692441336879">Jūs sekojat kanālam <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2762000892062317888">tikko</translation>
@@ -486,8 +487,10 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} parole ir saglabāta tikai šajā ierīcē. Lai varētu šo paroli izmantot citās ierīcēs, saglabājiet to savā Google kontā ({EMAIL}).}zero{{COUNT} paroles ir saglabātas tikai šajā ierīcē. Lai varētu šīs paroles izmantot citās ierīcēs, saglabājiet tās savā Google kontā ({EMAIL}).}one{{COUNT} parole ir saglabāta tikai šajā ierīcē. Lai varētu šīs paroles izmantot citās ierīcēs, saglabājiet tās savā Google kontā ({EMAIL}).}other{{COUNT} paroles ir saglabātas tikai šajā ierīcē. Lai varētu šīs paroles izmantot citās ierīcēs, saglabājiet tās savā Google kontā ({EMAIL}).}}</translation>
 <translation id="3709582977625132201">Atzīmēt kā nelasītu</translation>
 <translation id="371230970611282515">Bīstami notikumi tiek prognozēti, un jūs jau iepriekš saņemat brīdinājumus.</translation>
+<translation id="371398631992790800">Paslēpt vienumu “Grāmatzīmes”</translation>
 <translation id="37207012422556617">Populārākie meklēšanas vaicājumi</translation>
 <translation id="3740397331642243698">Atver ievadītos vietrāžus URL inkognito režīmā pārlūkā Chrome.</translation>
+<translation id="374357899112510277">Paslēpt vienumu “Lejupielādes”</translation>
 <translation id="3762232513783804601">Izstrādāts jūsu iPad planšetdatoram</translation>
 <translation id="3768725474733206671">Vēlreiz atvērt pēdējo aizvērto cilni</translation>
 <translation id="3771033907050503522">Inkognito režīma cilnes</translation>
@@ -551,6 +554,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4121993058175073134">Neto eksporta datu sūtīšanai konfigurējiet e-pasta kontu iestatījumos.</translation>
 <translation id="4124987746317609294">Laika periods</translation>
 <translation id="4133265950310064865">Uzlabota aizsardzība</translation>
+<translation id="4147897805161313378">Google fotoattēli</translation>
 <translation id="4148023517926189160">Šī vietne vēlas lejupielādēt failu un pievienot to jūsu kalendāram.</translation>
 <translation id="4152011295694446843">Šeit varēsiet skatīt savas grāmatzīmes</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, pēdējie cipari ir <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -835,6 +839,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="581659025233126501">Ieslēgt sinhronizāciju</translation>
 <translation id="5817176759448082654">Paroļu pārbaude</translation>
 <translation id="5819208479324046259">Pārvalda <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">Paslēpt vienumu “Paroļu pārvaldnieks”</translation>
 <translation id="5833643789537100742">Saglabājiet paroles, maksājumu veidus un adreses, lai vēlāk varētu tās automātiski aizpildīt pārlūkā Chrome.</translation>
 <translation id="5834415013958049700">Attēls, ko nokopējāt pakalpojumā Lens</translation>
 <translation id="5844284118433003733">Kad esat pierakstījies, šie dati tiek saistīti ar jūsu Google kontu, lai aizsargātu jūs dažādos Google pakalpojumos, piemēram, palielinot aizsardzību pakalpojumā Gmail pēc drošības incidenta.</translation>
@@ -1300,6 +1305,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8286036467436129157">Pierakstīties</translation>
 <translation id="8299417921174340354">Lai izmantotu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="8299613349954694191">Atveriet inkognito cilni, lai privāti pārlūkotu tīmekli.</translation>
+<translation id="8311853334103696030">Paslēpt vienumu “Cenas izsekošana”</translation>
 <translation id="8316944564970119719">Aizpildiet laukus Vietne un Parole, pēc tam izvēlieties Saglabāt.</translation>
 <translation id="8319076807703933069">Jauns meklēšanas vaicājums</translation>
 <translation id="8328777765163860529">Aizvērt visu</translation>
@@ -1351,6 +1357,7 @@ Jūsu dati tika šifrēti, izmantojot jūsu ieejas frāzi, šādā datumā: <ph 
 <translation id="8588404856427128947">Izslēgts</translation>
 <translation id="8591976964826315682">Inkognito režīmā bloķēt trešo pušu sīkfailus</translation>
 <translation id="8605219856220328675">Aizvērt cilni.</translation>
+<translation id="8613883225817609844">Paslēpt vienumu “Nesen atvērtās cilnes”</translation>
 <translation id="8620640915598389714">Rediģēt</translation>
 <translation id="8626393685701737946">Sadaļā Iestatījumi &gt; Satura iestatījumi varat mainīt noklusējuma vietnes skatu uz skatu datorā.</translation>
 <translation id="8636825310635137004">Ieslēdziet sinhronizāciju, lai būtu pieejamas cilnes no citām jūsu ierīcēm.</translation>
@@ -1450,6 +1457,7 @@ Jūsu dati tika šifrēti, izmantojot jūsu ieejas frāzi, šādā datumā: <ph 
 <translation id="9120217828624527905">Pārslēgšanās uz visas lapas tulkošanu</translation>
 <translation id="9124387962554796433">Google var izmantot jūsu vēsturi, lai personalizētu pakalpojumu Meklēšana un citus Google pakalpojumus.</translation>
 <translation id="9137526406337347448">Google pakalpojumi</translation>
+<translation id="9144931028079269381">Paslēpt vienumu “Lasīšanas saraksts”</translation>
 <translation id="9148126808321036104">Pierakstieties vēlreiz</translation>
 <translation id="9157836665414082580">Nerādīt dialoglodziņus</translation>
 <translation id="9162432979321511934">Ieslēdziet paroļu automātisko aizpildi</translation>

@@ -313,6 +313,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="265156376773362237">Standard forhåndslasting</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
+<translation id="2673169232805572412">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome sende nettadresser, inkludert deler av sideinnholdet, til Google</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
 <translation id="2708051474374549906">Proaktiv sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="2708226184420201102">Åpne i <ph name="PRODUCT_NAME" />-nettleseren</translation>
@@ -338,6 +339,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitofane blir lukket}other{<ph name="TAB_COUNT_MANY" /> inkognitofaner blir lukket}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Sjekket for en dag siden}other{Sjekket for # dager siden}}</translation>
 <translation id="2842985007712546952">Overordnet mappe</translation>
+<translation id="2853415089995957805">Chrome forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="2856503607207334158">Pålogging mislyktes</translation>
 <translation id="2860954141821109167">Kontroller at en telefon-app er påslått på denne enheten</translation>
 <translation id="2861923151411510142">Enkelte Chrome-funksjoner kommer ikke til å være tilgjengelige lenger</translation>
@@ -582,6 +584,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />levert av Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kan bruke dette nettbrettet til å logge på enheten som viser denne QR-koden.</translation>
 <translation id="4095146165863963773">Slette appdataene?</translation>
+<translation id="4095425503313512126">Surfing og søk er raskere</translation>
 <translation id="4096227151372679484">Flyt for lagring av bokmerke er åpnet i halv høyde</translation>
 <translation id="4101475238162928417">Synkroniser for å få passordene dine, bokmerkene dine med mer på andre enheter du bruker.</translation>
 <translation id="4106587138345390261">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen</translation>
@@ -832,6 +835,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5308380583665731573">Koble til</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
+<translation id="5320351714793324716">Hvis du tillater informasjonskapsler, kan Chrome bruke dem ved forhåndslasting</translation>
 <translation id="5321849971085220133">Chrome prøver ut nye måter å redusere sporing på for å holde deg tryggere når du surfer. Chrome <ph name="BEGIN_LINK" />anslår også interessene dine<ph name="END_LINK" /> og lar deg administrere dem. Deretter kan nettsteder du besøker, spørre Chrome om interessene dine for å vise deg annonser.</translation>
 <translation id="5326921373682845375">Siden de forhåndslastede sidene er krypterte og nettstedet som linker til sidene, er et Google-nettsted, får ikke Googles tjenere noen ny informasjon ved privat forhåndslasting av disse sidene.</translation>
 <translation id="5329858041417644019">Nettleseren din administreres ikke</translation>

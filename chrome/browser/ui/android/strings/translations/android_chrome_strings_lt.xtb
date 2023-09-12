@@ -339,6 +339,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito skirtukas bus uždarytas}one{<ph name="TAB_COUNT_MANY" /> inkognito skirtukas bus uždarytas}few{<ph name="TAB_COUNT_MANY" /> inkognito skirtukai bus uždaryti}many{<ph name="TAB_COUNT_MANY" /> inkognito skirtuko bus uždaryta}other{<ph name="TAB_COUNT_MANY" /> inkognito skirtukų bus uždaryta}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tikrinta prieš 1 dieną}one{Tikrinta prieš # dieną}few{Tikrinta prieš # dienas}many{Tikrinta prieš # dienos}other{Tikrinta prieš # dienų}}</translation>
 <translation id="2842985007712546952">Viršaplankis</translation>
+<translation id="2853415089995957805">„Chrome“ iš anksto įkelia puslapius, kuriuose galite apsilankyti, kad jie būtų sparčiau įkeliami juose lankantis.</translation>
 <translation id="2856503607207334158">Nepavyko prisijungti</translation>
 <translation id="2860954141821109167">Įsitikinkite, kad šiame įrenginyje įgalinta telefono programa</translation>
 <translation id="2861923151411510142">Kai kurios „Chrome“ funkcijos nebebus pasiekiamos</translation>
@@ -583,6 +584,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4084712963632273211">Nuo <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />pateikė „Google“<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Naudodami šį planšetinį kompiuterį galite prisijungti prie įrenginio, kuriame rodomas šis QR kodas.</translation>
 <translation id="4095146165863963773">Ištrinti programos duomenis?</translation>
+<translation id="4095425503313512126">Spartesnis naršymas ir paieška</translation>
 <translation id="4096227151372679484">Žymių išsaugojimo srautas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="4101475238162928417">Sinchronizuokite, kad gautumėte slaptažodžius, žymes ir kitą turinį visuose kituose įrenginiuose</translation>
 <translation id="4106587138345390261">„Chrome“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų informacijos</translation>
@@ -833,6 +835,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5308380583665731573">Prisijungti</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5319359161174645648">„Google“ rekomenduoja „Chrome“</translation>
+<translation id="5320351714793324716">Jei leisite slapukus, „Chrome“ gali naudoti juos iš anksto įkeldama puslapius</translation>
 <translation id="5321849971085220133">„Chrome“ ieško naujų būdų sumažinti stebėjimą ir užtikrinti dar didesnę jūsų saugą naršant. Be to, „Chrome“ <ph name="BEGIN_LINK" />numato jūsų pomėgius<ph name="END_LINK" /> ir leidžia juos tvarkyti. Tada svetainėse, kuriose lankotės, gali būti prašoma „Chrome“ jūsų pomėgių skelbimams rodyti.</translation>
 <translation id="5326921373682845375">Kadangi iš anksto įkelti puslapiai yra šifruoti ir su puslapiais susieta „Google“ svetainė, „Google“ serveriai negauna naujos informacijos privačiai iš naujo įkeliant šiuos puslapius.</translation>
 <translation id="5329858041417644019">Jūsų naršyklė nėra tvarkoma</translation>

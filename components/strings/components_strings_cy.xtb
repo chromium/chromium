@@ -388,6 +388,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1733762317901693627">Mae hyd yn oed y gwefannau sydd fel arfer yn ddiogel yn cael eu peryglu gan ymosodwyr weithiau. Ymwelwch â'r <ph name="BEGIN_LINK" />wefan anniogel hon<ph name="END_LINK" /> dim ond os ydych yn siŵr eich bod yn deall y risgiau.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Rhowch gynnig ar gysylltu â gweinyddwr y system.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, yn darfod <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Cyfrifiadur</translation>
 <translation id="1741613555002899862">Rhaid iddo wedi'i nodi ac iddo fod yn llinyn dilys pan fydd DnsOverHttpsMode yn <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Dillad Gwely</translation>
@@ -682,6 +683,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2366689192918515749">Cig a Bwyd Môr</translation>
 <translation id="2367567093518048410">Lefel</translation>
 <translation id="23703388716193220">Offer Golff</translation>
+<translation id="2378084239755710604">Cadw cerdyn wedi'i gau.</translation>
 <translation id="2380886658946992094">Cyfreithiol</translation>
 <translation id="2383455408879745299">Personoleiddio'ch offer hygyrchedd yn y gosodiadau Chrome</translation>
 <translation id="2384307209577226199">Menter ddiofyn</translation>
@@ -2248,6 +2250,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5653432653077411130">Cyflenwi a thrin dŵr</translation>
 <translation id="5654927323611874862">Rhif Adnabod yr Adroddiad am Doriad a Uwchlwythwyd:</translation>
 <translation id="5659593005791499971">E-bost</translation>
+<translation id="5660122698869360728">Ffolder smart newydd sy'n eich helpu i gadw'ch holl dudalennau siopa mewn un lle, olrhain prisiau yn awtomatig, cael mewnwelediadau pris, a rhagor.</translation>
 <translation id="5663955426505430495">Mae gweinyddwr y ddyfais hon wedi gosod estyniadau ar gyfer swyddogaethau ychwanegol. Mae gan estyniadau fynediad at rywfaint o'ch data.</translation>
 <translation id="5666606186680807225">Traethau ac ynysoedd</translation>
 <translation id="5667827081946850877">Llyfrau Llafar</translation>
@@ -2260,6 +2263,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5689199277474810259">Allforio i JSON</translation>
 <translation id="5689516760719285838">Lleoliad</translation>
 <translation id="569000877158168851">Nid yw'r gwerth DnsOverHttpsTemplates yn berthnasol, ac ni chaiff ei ddefnyddio, oni bai bod y polisi DnsOverHttpsMode wedi'i osod naill ai i <ph name="SECURE_DNS_MODE_AUTOMATIC" /> neu <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Cadw cerdyn wedi'i agor ar uchder llawn.</translation>
 <translation id="5695542892312572833">Defnyddio Windows Hello i ddilysu a chwblhau eich pryniad?</translation>
 <translation id="5699628521141772782">Llaeth ac Wyau</translation>
 <translation id="5701381305118179107">Canoli</translation>
@@ -3010,6 +3014,7 @@ Manylion ychwanegol:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Hambwrdd Cefn</translation>
 <translation id="725866823122871198">Ni ellir sefydlu cysylltiad preifat â <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> oherwydd bod dyddiad ac amser eich cyfrifiadur (<ph name="DATE_AND_TIME" />) yn anghywir.</translation>
+<translation id="7260075294900977274">Ffolder smart newydd sy'n eich helpu i gadw'ch holl dudalennau siopa mewn un lle, olrhain prisiau yn awtomatig, cael mewnwelediadau pris, a rhagor</translation>
 <translation id="7265608370113700582">Mae'r cyfeiriad ar gael ar y ddyfais hon yn unig</translation>
 <translation id="7275334191706090484">Nodau tudalen a Reolir</translation>
 <translation id="7277998515889183784">Colur a chosmetig</translation>
@@ -3234,6 +3239,7 @@ Manylion ychwanegol:
 <translation id="7676643023259824263">Chwilio am destun clipfwrdd, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Gweld a rheoli eich hanes pori yng ngosodiadau Chrome</translation>
 <translation id="7679947978757153706">Pêl fas</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, yn darfod <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Chwaraeon ffantasi</translation>
 <translation id="7682287625158474539">Anfon</translation>
 <translation id="7682451652090915298">Rygbi</translation>
@@ -3311,6 +3317,7 @@ Manylion ychwanegol:
 <translation id="7822611063308883975">Consolau Gêm Llaw</translation>
 <translation id="7825558994363763489">Meicrodonnau</translation>
 <translation id="782886543891417279">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio (<ph name="WIFI_NAME" />) yn gofyn i chi fynd i'w dudalen fewngofnodi.</translation>
+<translation id="7831993212387676366">Beth yw'r Rhestr siopa?</translation>
 <translation id="7840103971441592723">Wedi dechrau recordio'r sgrîn</translation>
 <translation id="784137052867620416">Mewnwelediadau Siopa</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Dim}=1{1 ap (<ph name="EXAMPLE_APP_1" />)}=2{2 ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ap (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

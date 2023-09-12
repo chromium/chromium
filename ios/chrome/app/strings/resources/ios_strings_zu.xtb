@@ -156,6 +156,7 @@ Ukuze ushintshel lawa masethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-C
 <translation id="1830634592642484976">Leli kheli okwamanje lilondolozwa ku-Chrome. Ukuze uyisebenzise emikhiqizweni ye-Google, yilondoloze ku-Google Account yakho, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Ukuze uqiniseke ukuthi uhlala ufinyelela idatha yakho yokuvumelanisa, qinisekisa ukuthi uwena</translation>
 <translation id="1836891464494477513">{count,plural, =1{Ibhukhimakhi ilondolozwe ku-Google Account yakho, {email}}one{Amabhukhimakhi alondolozwe ku-Google Account yakho, {email}}other{Amabhukhimakhi alondolozwe ku-Google Account yakho, {email}}}</translation>
+<translation id="183878838231635348">Leli khadi libonisa noma yiziphi izinkinga eziyimfihlo noma ezokuvikela Ukuhlola Ukuphepha okukutholela zona ngokuzenzakalelayo.</translation>
 <translation id="1847795903283049083">Ungakwazi futhi ukubuka futhi uphathe lezi zinto kumabhukhimakhi akho, Uhlu Lokufunda, noma isiphathi sephasiwedi.</translation>
 <translation id="1870148520156231997">Bonisa iphasiwedi</translation>
 <translation id="1872096359983322073">Ithoshi</translation>
@@ -265,6 +266,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 <translation id="2523363575747517183">Le webhusayithi izama kaningi ukuvula olunye uhlelo lokusebenza.</translation>
 <translation id="2529021024822217800">Vula konke</translation>
 <translation id="2536991091671391962">Ungasebenzisa amaphasiwedi alondoloziwe kunoma iyiphi idivayisi. Alondolozwe Kumphathi Wephasiwedi Ye-Google ka-<ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Fihla okuthi "Sukuhlola Ukuphepha"</translation>
 <translation id="2547458583188611426">Ukuvumelanisa akusebenzi. Ukuze uqale ukuvumelanisa, faka umushwana wakho wokungena.</translation>
 <translation id="2551153019974022505">Iphutha le-akhawunti</translation>
 <translation id="2556092377360758201">Asikho Isivikelo (akunconywa)</translation>
@@ -556,6 +558,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="4121993058175073134">Ukuze uthumele idatha yakho konke ukuthumela, sicela ulungiselele i-akhawunti yakho ye-imeyili kuhlelo lokusebenza lwezilungiselelo.</translation>
 <translation id="4124987746317609294">Ibanga lesikhathi</translation>
 <translation id="4133265950310064865">Isivikelo Esigqnyisiwe</translation>
+<translation id="4147897805161313378">Izithombe ze-Google</translation>
 <translation id="4148023517926189160">Le webhusayithi ifuna ukudawuniloda ifayela futhi ilifake ekhalendeni lakho.</translation>
 <translation id="4152011295694446843">Uzothola amabhukhimakhi wakho lapha</translation>
 <translation id="4168651806173792090">I-<ph name="NETWORK_NAME" /> egcina ngo-<ph name="LAST_FOUR_DIGITS" /></translation>

@@ -223,6 +223,7 @@
 <translation id="2189903024544168260">已移除感興趣的主題</translation>
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="2200113223741723867">管理使用資料分享項目</translation>
+<translation id="221494669172414749">如果不鎖定設定檔就開啟 Chrome，系統將移除車上儲存的密碼和付款方式。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
 <translation id="2218567645332692482">將瀏覽路徑升級至 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
 <translation id="2227444325776770048">以「<ph name="USER_FULL_NAME" />」的身分繼續</translation>
 <translation id="2230777942707397948">空白視窗</translation>
@@ -339,6 +340,7 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{即將關閉 <ph name="TAB_COUNT_ONE" /> 個無痕分頁}other{即將關閉 <ph name="TAB_COUNT_MANY" /> 個無痕分頁}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{已在 1 天前檢查}other{已在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
+<translation id="2853415089995957805">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="2856503607207334158">登入失敗</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
 <translation id="2861923151411510142">系統將不再提供部分 Chrome 功能</translation>
@@ -583,6 +585,7 @@
 <translation id="4084712963632273211">發布者：<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />由 Google 所提供<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">你可以使用這部平板電腦登入顯示這個 QR code 的裝置。</translation>
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
+<translation id="4095425503313512126">瀏覽及搜尋內容時，載入速度更快了</translation>
 <translation id="4096227151372679484">書籤儲存流程已開啟，目前顯示半個版面的內容</translation>
 <translation id="4101475238162928417">進行同步處理，取得你在其他裝置上的密碼、書籤和其他資料</translation>
 <translation id="4106587138345390261">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗。</translation>
@@ -831,6 +834,7 @@
 <translation id="5308380583665731573">連線</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 推薦使用 Chrome</translation>
+<translation id="5320351714793324716">如果你允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁</translation>
 <translation id="5321849971085220133">Chrome 正在尋找減少追蹤使用者活動的新方式，讓你上網時更安全。此外，Chrome 也會<ph name="BEGIN_LINK" />推測你的興趣喜好<ph name="END_LINK" />，同時讓你自行管理這些資訊。你造訪的網站可在之後要求 Chrome 提供這類資訊，以便向你顯示廣告。</translation>
 <translation id="5326921373682845375">由於預先載入的網頁已經過加密，且連到這些網頁的網站為 Google 網站，因此以私密方式預先載入這些網頁時，Google 伺服器不會接收新資訊。</translation>
 <translation id="5329858041417644019">你的瀏覽器未受管理</translation>
@@ -1009,6 +1013,7 @@
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6303969859164067831">登出並關閉同步處理功能</translation>
 <translation id="6312687380483398334">網頁應用程式 (安靜模式)</translation>
+<translation id="6315386555979018699">刪除並繼續</translation>
 <translation id="6316139424528454185">系統不支援目前的 Android 版本</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6324977638108296054">無法建立醒目顯示文字的連結</translation>
@@ -1571,6 +1576,7 @@
 <translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
 <translation id="8998729206196772491">您即將使用由 <ph name="MANAGED_DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
+<translation id="9019199799064251516">不鎖定汽車設定檔就繼續嗎？</translation>
 <translation id="9022774213089566801">經常造訪</translation>
 <translation id="9022871169049522985">網站和廣告商可評估廣告成效</translation>
 <translation id="9035378196785279980">移至\u2026</translation>
@@ -1633,5 +1639,6 @@
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個分頁</translation>
+<translation id="993520549480398880">一併清除車上的書籤、歷史記錄和其他資料</translation>
 <translation id="996149300115483134">已關閉動態消息資訊卡選單</translation>
 </translationbundle>

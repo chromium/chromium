@@ -761,6 +761,7 @@
 <translation id="1596780725094407793">- সাবডোমেন অন্তর্ভুক্ত করে</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করুন</translation>
 <translation id="1598233202702788831">আপনার প্রশাসক দ্বারা আপডেট অক্ষম করা হয়েছে।</translation>
+<translation id="1600541617401655593">ChromeOS Flex-এর ফিচার ও পারফর্ম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন। ডেটা একত্রিত করা হয় এবং খুব সুরক্ষিত।</translation>
 <translation id="1600857548979126453">পৃষ্ঠা ডিবাগার ব্যাকএন্ড অ্যাক্সেস করুন</translation>
 <translation id="1601481906560916994">সাইট বাদ দিন</translation>
 <translation id="1601560923496285236">প্রয়োগ করুন</translation>
@@ -940,7 +941,6 @@
 <translation id="1730989807608739928">শেষ ট্যাবের দিকে স্ক্রল করুন</translation>
 <translation id="1731520826054843792">Microsoft সার্টিফিকেট টেমপ্লেট</translation>
 <translation id="1731911755844941020">অনুরোধ পাঠানো হচ্ছে...</translation>
-<translation id="1733383495376208985">আপনার নিজস্ব <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন। এতে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।</translation>
 <translation id="1734212868489994726">হালকা নীল</translation>
 <translation id="1734230530703461088">নির্দিষ্ট সময়সীমার মধ্যে এক্সটেনশন লোড করা যায়নি। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> নিজেকে আপডেট রাখতে হয়ত সক্ষম নয়</translation>
@@ -1175,6 +1175,7 @@
 <translation id="1906181697255754968">আপনার কাজ অটোমেটিক সেভ করার মতো ফিচারের জন্য সাইট সাধারণত আপনার ডিভাইসের ফাইল ও ফোল্ডারগুলি অ্যাক্সেস করে</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> থেকে আরও এক্সটেনশন ও থিম সম্পর্কে আরও জানুন</translation>
 <translation id="1907044622262489040">আপনার ভয়েস ব্যবহার করে টাইপ করুন। 'Search + D' কী ব্যবহার করে, কথা বলা শুরু করুন।</translation>
+<translation id="1907659324308286326">কিছু Thunderbolt বা USB4 অ্যাক্সেসরিজের ক্ষেত্রে সঠিকভাবে কাজ করার জন্য মেমরি অ্যাক্সেস করার প্রয়োজন হতে পারে।</translation>
 <translation id="1908591798274282246">বন্ধ হওয়া গ্রুপ আবার খুলুন</translation>
 <translation id="1909880997794698664">আপনি কি এই ডিভাইসটিকে কিয়স্ক মোডে স্থায়ীভাবে রাখার বিষয়ে নিশ্চিত?</translation>
 <translation id="1910721550319506122">স্বাগতম!</translation>
@@ -1433,6 +1434,7 @@
 <translation id="2102495993840063010">Android অ্যাপ্লিকেশানগুলি</translation>
 <translation id="2104166991923847969">হটস্পট অটোমেটিক বন্ধ করুন</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> লুকানো আছে</translation>
+<translation id="2108204112555497972"><ph name="NUM_DAYS_HOURS_MINUTES" /> আগে চেক করা হয়েছে</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{ফোন নম্বর}one{#টি ফোন নম্বর}other{#টি ফোন নম্বর}}</translation>
 <translation id="2110941575868943054">ব্লুটুথ ডিভাইস খোঁজার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="211144231511833662">টাইপগুলি মুছে দিন</translation>
@@ -1905,6 +1907,7 @@
 <translation id="2462332841984057083">Steam আগে থেকেই সেট-আপ করা হচ্ছে। সেট-আপ সম্পূর্ণ হওয়ার জন্য অপেক্ষা করুন।</translation>
 <translation id="2462724976360937186">শংসাপত্র কর্তৃত্ব কী ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> যোগ করা হয়েছে</translation>
+<translation id="2464046291463112461">এক্সটার্নাল অ্যাক্সেসরিজ যাতে মেমরি অ্যাক্সেস ও শেয়ার (RAM) না করতে পারে, তার জন্য ব্লক করুন</translation>
 <translation id="2467755475704469005">কোনও ডিভাইস শনাক্ত করা যায়নি। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">টাচপ্যাডের মাধ্যমে স্ক্রল করার অ্যাক্সিলারেশন</translation>
 <translation id="2468205691404969808">আপনার পছন্দ মনে রাখার জন্য কুকি ব্যবহার করুন, সেই সমস্ত পৃষ্ঠায় যদি না যান, তাহলেও</translation>
@@ -2114,6 +2117,7 @@
 <translation id="2636266464805306348">উইন্ডো টাইটেল</translation>
 <translation id="2637313651144986786">ট্যাব সার্চ করুন...</translation>
 <translation id="2637400434494156704">ভুল পিন। আপনি আর একবার চেষ্টা করতে পারবেন।</translation>
+<translation id="2637594967780188166">ChromeOS-এ ক্র্যাশ রিপোর্ট ও ডায়াগনস্টিকস এবং ব্যবহারের ডেটা পাঠান</translation>
 <translation id="2638662041295312666">সাইন-ইন স্ক্রিনের ছবি</translation>
 <translation id="2640299212685523844">GTK ব্যবহার করুন</translation>
 <translation id="264083724974021997">আপনার ফোনে কানেক্ট করুন - ডায়ালগ</translation>
@@ -2473,6 +2477,7 @@
 <translation id="2907619724991574506">প্রারম্ভিক URLগুলি</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' এর সাথে সংযোগ করা ব্যর্থ হয়েছে: <ph name="DETAILS" />
     সার্ভার বার্তা: <ph name="SERVER_MSG" /></translation>
+<translation id="2908122561561557160">Word, Excel, ও PowerPoint ফাইল খুলুন</translation>
 <translation id="2908162660801918428">ডিরেক্টরি অনুসারে মিডিয়া গ্যালারি জুড়ুন</translation>
 <translation id="2908358077082926882">অ্যাসাইনমেন্ট সরিয়ে দিতে, "<ph name="CURRENTKEY" />" আবার প্রেস করুন এবং <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Google পরিষেবার সাথে কানেক্ট করা যায়নি। আপনার নেটওয়ার্ক কানেকশন চেক করে আবার চেষ্টা করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
@@ -2569,6 +2574,7 @@
 <translation id="2989786307324390836">DER-এনকোডেড বাইনারি, একক সার্টিফিকেট</translation>
 <translation id="2989805286512600854">নতুন ট্যাবে খুলুন</translation>
 <translation id="2990313168615879645">Google অ্যাকাউন্ট যোগ করুন</translation>
+<translation id="2990375978470734995">এই পরিবর্তন যাতে প্রয়োগ করা যায়, আপনার এক্সটার্নাল অ্যাক্সেসরিজ আবার কানেক্ট করুন।</translation>
 <translation id="2990583317361835189">সাইটগুলিকে মোশন সেন্সর ব্যবহার করতে দেয় না</translation>
 <translation id="2992931425024192067">সব বিজ্ঞপ্তি দেখতে চাই</translation>
 <translation id="2993517869960930405">অ্যাপ্লিকেশানের তথ্য</translation>
@@ -3363,6 +3369,7 @@
 <translation id="3672681487849735243">একটি ফ্যাক্টরি ত্রুটি শনাক্ত করা হয়েছে</translation>
 <translation id="3673097791729989571">সাইন-ইন ফিচারটি <ph name="SAML_DOMAIN" /> দ্বারা হোস্ট করা হয়েছে</translation>
 <translation id="3673622964532248901">আপনার এই ডিভাইসে কাস্ট করার অনুমতি নেই।</translation>
+<translation id="3675683621636519363">ChromeOS Flex-এ ক্র্যাশ রিপোর্ট ও ডায়াগনস্টিকস এবং ব্যবহারের ডেটা পাঠান</translation>
 <translation id="367645871420407123">যদি আপনি ডিফল্ট টেস্ট ছবি মানে রুট পাসওয়ার্ড সেট করতে চান তবে খালি ছাড়ুন</translation>
 <translation id="3677106374019847299">কাস্টম প্রদানকারীর নাম লিখুন</translation>
 <translation id="3677911431265050325">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
@@ -4323,6 +4330,7 @@
 <translation id="4426464032773610160">শুরু করতে আপনার Chromebook-এর সাথে USB বা ব্লুটুথ সুইচ কানেক্ট করা আছে কিনা ভাল করে দেখে নিন। আপনি কীবোর্ডের কী ব্যবহার করেও করতে পারেন।</translation>
 <translation id="4426490308207168518">মতামত শেয়ার করুন অথবা কোনও সমস্যা সংক্রান্ত অভিযোগ জানান</translation>
 <translation id="4426508677408162512">সকল বুকমার্ক</translation>
+<translation id="4426513927906544654">কন্টেন্ট সম্পর্কিত সাজেশন পান</translation>
 <translation id="4427306783828095590">ফিশিং ও ম্যালওয়্যার ব্লক করার ব্যাপারে উন্নত সুরক্ষা আরও সাহায্য করে</translation>
 <translation id="4427365070557649936">কনফার্মেশন কোড যাচাই করা হচ্ছে...</translation>
 <translation id="4429163740524851942">ফিজিক্যাল কীবোর্ড লেআউট</translation>
@@ -4996,6 +5004,7 @@
 <translation id="4991420928586866460">উপরের-সারির কীগুলিকে ফাংশন কী হিসেবে ব্যবহার করুন</translation>
 <translation id="4992458225095111526">পাওয়ারওয়াশ নিশ্চিত করুন</translation>
 <translation id="4992473555164495036">আপনার অ্যাডমিনিস্ট্রেটর উপলভ্য ইনপুট পদ্ধতিগুলি সীমাবদ্ধ করেছেন।</translation>
+<translation id="4992869834339068470">ChromeOS-এর ফিচার ও পারফরম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন। ডেটা একত্রিত করা হয় এবং খুব সুরক্ষিত।</translation>
 <translation id="4994426888044765950">কোনও 'কী' প্রেস করে ধরে রাখলে, 'কী'-এর অক্ষর রিপিট হবে</translation>
 <translation id="4994754230098574403">সেট-আপ করা হচ্ছে</translation>
 <translation id="4995293419989417004">বিজ্ঞাপনের বিষয় সম্পর্কে আরও জানুন</translation>
@@ -6031,6 +6040,7 @@
 <translation id="5862109781435984885">শেল্ফে স্টাইলাস টুল দেখান</translation>
 <translation id="5862319196656206789">কানেক্ট থাকা ডিভাইসগুলি সেট আপ করুন</translation>
 <translation id="5862731021271217234">আপনার অন্যান্য ডিভাইস থেকে ট্যাবগুলি পেতে সিঙ্ক বিকল্প চালু করুন</translation>
+<translation id="5863195274347579748">এক্সটার্নাল অ্যাক্সেসরিজ আপনার ব্যক্তিগত ডেটা অ্যাক্সেস বা শেয়ার করতে পারে।</translation>
 <translation id="5863445608433396414">ডিবাগিং বৈশিষ্ট্যাবলী চালু করুন</translation>
 <translation id="5863515189965725638">IBAN এডিট করুন</translation>
 <translation id="5864195618110239517">মিটার্ড ইন্টারনেট কানেকশন ব্যবহার করুন</translation>
@@ -6108,6 +6118,7 @@
 <translation id="5920543303088087579">এই নেটওয়ার্কের সাথে সংযোগ আপনার প্রশাসক দ্বারা অক্ষম করা হয়েছে</translation>
 <translation id="5921257443092182237">Google-এর লোকেশন ভিত্তিক পরিষেবা ওয়াই-ফাই, মোবাইল নেটওয়ার্ক এবং সেন্সরের মতো সোর্স ব্যবহার করে আপনার ডিভাইসের লোকেশন খুঁজে নেয়।</translation>
 <translation id="5924047253200400718">সাহায্য পান<ph name="SCANNING_STATUS" /></translation>
+<translation id="5924438086390153180">Google Drive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
 <translation id="5924527146239595929">একটি নতুন ফটো তুলুন বা আগে থেকে আছে এমন একটি ফটো বা আইকন বেছে নিন।
     <ph name="LINE_BREAK" />
     এই ফটোটি Chromebook সাইন-ইন স্ক্রিন এবং লক স্ক্রিনে প্রদর্শিত হবে।</translation>
@@ -6528,6 +6539,7 @@
 <translation id="6263284346895336537">জটিল নয়</translation>
 <translation id="6264365405983206840">&amp;সকল বেছে নিন</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
+<translation id="6265159465845424232">Microsoft OneDrive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
 <translation id="6265687851677020761">পোর্ট সরান</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-এর সাথে কানেক্ট করা হচ্ছে</translation>
 <translation id="6267166720438879315">নিজেকে <ph name="HOST_NAME" /> এ প্রমাণীকৃত করতে একটি সার্টিফিকেট বেছে নিন</translation>
@@ -7289,6 +7301,7 @@
 <translation id="6897363604023044284">কোন কোন সাইটের ডেটা মুছবেন তা বেছে নিন</translation>
 <translation id="6897688156970667447">কম আলোতে সহায়ক এবং ব্যাটারি সাশ্রয় করে</translation>
 <translation id="6897972855231767338">গেস্ট হিসেবে ব্রাউজ করার বিষয়ে আরও জানুন</translation>
+<translation id="6898438890765871056">OneDrive ফোল্ডার খুলুন</translation>
 <translation id="6898440773573063262">Kiosk অ্যাপ্লিকেশনগুলিকে এখন এই ডিভাইসে স্বয়ংক্রিয়ভাবে লঞ্চ করতে কনফিগার করা যাবে৷</translation>
 <translation id="6899427698619335650">ফ্লেক্সিবল ডায়াক্রিটিক অ্যাসাইনমেন্টের অনুমতি দিন। যেমন, আপনি “ánh” পেতে “anh1” বা “a1nh” টাইপ করতে পারবেন।</translation>
 <translation id="6900284862687837908">পটভূমিতে কাজ করা অ্যাপ্লিকেশান: <ph name="BACKGROUND_APP_URL" /></translation>
@@ -8042,6 +8055,7 @@
 <translation id="7517959947270534934">আপনার পরিবারের সদস্য এই মুহূর্তে পাসওয়ার্ড রিসিভ করতে পারবেন না। তাকে Chrome আপডেট করে পাসওয়ার্ড সিঙ্ক করতে বলুন।</translation>
 <translation id="7520766081042531487">ছদ্মবেশী পোর্টাল: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">শর্টকাট দেখান</translation>
+<translation id="7521430434164837205">Microsoft 365 ফাইল</translation>
 <translation id="7522255036471229694">"Ok Google" বলুন</translation>
 <translation id="7523117833414447032">বড় হাতের অক্ষর পড়ার সময়</translation>
 <translation id="7523585675576642403">প্রোফাইলের নাম পরিবর্তন করুন</translation>
@@ -8642,6 +8656,7 @@
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7982878511129296052">বন্ধ করা হচ্ছে...</translation>
 <translation id="7984068253310542383">মিরর <ph name="DISPLAY_NAME" /></translation>
+<translation id="7985528042147759910">মেমরি অ্যাক্সেস করার জন্য এক্সটার্নাল অ্যাক্সেসরিজকে অনুমতি দেবেন?</translation>
 <translation id="7986295104073916105">সংরক্ষিত পাসওয়ার্ড সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="7987814697832569482">সবসময় এই ভিপিএনের মাধ্যমে কানেক্ট করুন</translation>
 <translation id="7988355189918024273">ব্যবহারযোগ্যতার বৈশিষ্ট্যগুলি চালু করুন</translation>
@@ -9767,6 +9782,7 @@
 <translation id="8896830132794747524">আপনার মাউস দিয়ে দ্রুততর নড়াচড়া, কার্সর আরও সরিয়ে দেবে</translation>
 <translation id="8898140163781851592">প্রাথমিক মাউসের বোতাম</translation>
 <translation id="8898786835233784856">পরবর্তী ট্যাব বেছে নিন</translation>
+<translation id="8898790559170352647">আপনার Microsoft অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
 <translation id="8899851313684471736">নতুন &amp;উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="8900413463156971200">মোবাইল নেটওয়ার্ক চালু করুন</translation>
@@ -10093,6 +10109,7 @@
 <translation id="9151249085738989067">ভাষার ভিত্তিতে ChromeVox-এর ভয়েস অটোমেটিক বদল করুন</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Lacros সিস্টেম সংক্রান্ত তথ্য</translation>
+<translation id="9153367754133725216">লঞ্চার ও সার্চ ফলাফলে ওয়েব কন্টেন্ট ও নতুন অ্যাপের জন্য সাজেশন দেখুন। ChromeOS-এ ক্র্যাশ রিপোর্ট ও ডায়াগনস্টিকস এবং ব্যবহারের ডেটা পাঠানোর বিকল্প বেছে নিয়ে থাকলেই শুধুমাত্র সাজেশন উন্নত করতে পরিসংখ্যান পাঠান।</translation>
 <translation id="9154082578438716291">আপনি ভিজিট করেছেন এমন পেজ এবং সাজেস্ট করা সার্চ দেখতে পাচ্ছেন যাতে Chrome অ্যাক্টিভিটির সিরিজে আপনার সাম্প্রতিকতম অ্যাক্টিভিটিতে সহজেই ফিরে যেতে পারেন।
         <ph name="BREAK" />
         <ph name="BREAK" />

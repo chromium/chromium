@@ -338,6 +338,7 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{系统将会关闭 <ph name="TAB_COUNT_ONE" /> 个无痕式标签页}other{系统将会关闭 <ph name="TAB_COUNT_MANY" /> 个无痕式标签页}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 天前检查过}other{# 天前检查过}}</translation>
 <translation id="2842985007712546952">父文件夹</translation>
+<translation id="2853415089995957805">Chrome 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="2856503607207334158">登录失败</translation>
 <translation id="2860954141821109167">请确保已在此设备上启用了一款电话应用</translation>
 <translation id="2861923151411510142">部分 Chrome 功能将不再可用</translation>
@@ -582,6 +583,7 @@
 <translation id="4084712963632273211">来自 <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">您可以使用此平板电脑在显示该二维码的设备上登录。</translation>
 <translation id="4095146165863963773">要删除应用数据吗？</translation>
+<translation id="4095425503313512126">浏览和搜索速度更快</translation>
 <translation id="4096227151372679484">书签保存流程已半屏打开</translation>
 <translation id="4101475238162928417">同步即可获取您在其他设备上的密码、书签和其他设置</translation>
 <translation id="4106587138345390261">Chrome 团队正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
@@ -832,6 +834,7 @@
 <translation id="5308380583665731573">连接</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319359161174645648">Google 推荐使用 Chrome</translation>
+<translation id="5320351714793324716">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载</translation>
 <translation id="5321849971085220133">Chrome 正在寻找新方法来减少跟踪，让您在浏览时更安全。Chrome 还会<ph name="BEGIN_LINK" />推测您的兴趣<ph name="END_LINK" />，并允许您管理它们。然后，您访问的网站可请求 Chrome 提供您的兴趣以据之向您展示广告。</translation>
 <translation id="5326921373682845375">由于预加载的网页均已加密，并且链接到这些网页的网站是一个 Google 网站，因此当以私密方式预加载这些网页时，Google 服务器不会收到新信息。</translation>
 <translation id="5329858041417644019">您的浏览器不受管理</translation>

@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2678468611080193228">Tashqi cookie fayllarga vaqtincha ruxsat bering, bunda himoya pasayadi, lekin saytdagi aksariyat funksiyalar ishlaydi</translation>
+<translation id="2683434792633810741">Oʻchirib, tiklansinmi?</translation>
 <translation id="2687403674020088961">Barcha cookie fayllarini taqiqlash (tavsiya etilmaydi)</translation>
 <translation id="2713106313042589954">Kamerani faolsizlantirish</translation>
 <translation id="2717722538473713889">Email manzillar</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Muayyan saytlar uchun cookie-fayllarga ruxsat berish</translation>
 <translation id="4046123991198612571">Keyingi musiqa</translation>
 <translation id="4053720452172726777">Google Chrome’ni sozlash va boshqarish</translation>
+<translation id="4149890623864272035">Qurilmadagi cookie fayllar kabi maʼlumotlarni oʻchirilib, bu saytning ruxsatlari asliga qaytarilsinmi?</translation>
 <translation id="4149994727733219643">Veb sahifalarni ko‘rish uchun oddiy rejim</translation>
 <translation id="4151930093518524179">Asosiy masshtab</translation>
 <translation id="4165986682804962316">Sayt sozlamalari</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Tashqi saytlarga cookie fayllarni saqlashga ruxsat berish</translation>
 <translation id="4428065317363009941">Reklamalarni moslashtirish</translation>
 <translation id="4434045419905280838">Qalquvchi oyna va yo‘naltirishlar</translation>
+<translation id="443552056913301231">Bunda qurilmadagi cookie fayllar kabi barcha maʼlumotlar oʻchib ketadi va <ph name="ORIGIN" /> saytining barcha ruxsatlari tiklanadi</translation>
 <translation id="4468959413250150279">Muayyan saytdagi ovozni o‘chirish.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# ta cookie}other{# ta cookie}}</translation>
 <translation id="4478158430052450698">Foydalanuvchilarga turli saytlar masshtabini oʻzgartirishni osonlashtirish</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Mikrofonni ovozsiz qilish</translation>
 <translation id="4570913071927164677">Tafsilotlar</translation>
 <translation id="4598549027014564149">Inkognito rejimida saytlar hatto aloqador saytlarda ham cookie fayllar yordamida harakatlaringizni kuzata olmaydi. Brauzer faoliyati haqidagi maʼlumotlar, masalan, moslashtirilgan reklamalarni koʻrsatish uchun ishlatilmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
+<translation id="4644713492825682049">Oʻchirish va tiklash</translation>
 <translation id="4645575059429386691">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="4670064810192446073">Virtual reallik</translation>
 <translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Oxirgi tashrif: bugun</translation>
 <translation id="5225463052809312700">Kamerani yoqish</translation>
 <translation id="5234764350956374838">Yopish</translation>
+<translation id="5246825184569358663">Bunda qurilmadagi cookie fayllar kabi barcha maʼlumotlar oʻchib ketadi va <ph name="DOMAIN" /> va uning barcha quyi saytlari ruxsatlari tiklanadi</translation>
 <translation id="5264323282659631142">Olib tashlash: <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">To‘liq ekran rejimidan chiqish uchun ekranni tepadan pastga torting va “Orqaga” tugmasini bosing.</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Istisno saytlar</translation>
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6205314730813004066">Reklamalardagi maxfiylik</translation>
+<translation id="6207207788774442484">Maʼlumotlarni oʻchirish va ruxsatlarni tiklash</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> parametrlar</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" /> oʻchirib tashlansinmi?</translation>
 <translation id="6262191102408817757">Oxirgi varaq asosida</translation>

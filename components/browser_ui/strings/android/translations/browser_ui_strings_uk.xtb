@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2678468611080193228">Спробуйте тимчасово дозволити сторонні файли cookie. Це зменшить рівень захисту, але функції сайту з більшою імовірністю працюватимуть.</translation>
+<translation id="2683434792633810741">Видалити дані й скинути дозволи?</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2717722538473713889">Електронні адреси</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Дозволити файли cookie для конкретного сайту.</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="4053720452172726777">Налаштування та керування Google Chrome</translation>
+<translation id="4149890623864272035">Ви хочете видалити всі локальні дані (зокрема файли cookie) і скинути всі дозволи для цього веб-сайту?</translation>
 <translation id="4149994727733219643">Спрощений перегляд веб-сторінок</translation>
 <translation id="4151930093518524179">Масштаб за умовчанням</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Дозволити сторонні файли cookie</translation>
 <translation id="4428065317363009941">Персоналізація реклами</translation>
 <translation id="4434045419905280838">Спливаючі вікна/переспрямування</translation>
+<translation id="443552056913301231">У результаті буде видалено всі локальні дані (зокрема файли cookie) і скинуто всі дозволи для сайту <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Вимкнути звук для певного сайту.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файли cookie}many{# файлів cookie}other{# файлу cookie}}</translation>
 <translation id="4478158430052450698">Спростити налаштування масштабування для різних сайтів</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Вимкнути мікрофон</translation>
 <translation id="4570913071927164677">Деталі</translation>
 <translation id="4598549027014564149">В анонімному режимі сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, навіть на пов’язаних сайтах. Дані про дії у веб-переглядачі не використовуються для персоналізації реклами. Функції на деяких сайтах можуть не працювати.</translation>
+<translation id="4644713492825682049">Видалити й скинути</translation>
 <translation id="4645575059429386691">Керується одним із батьків</translation>
 <translation id="4670064810192446073">Віртуальна реальність</translation>
 <translation id="4751476147751820511">Датчики руху та світла</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Останнє відвідування: сьогодні</translation>
 <translation id="5225463052809312700">Увімкнути камеру</translation>
 <translation id="5234764350956374838">Закрити</translation>
+<translation id="5246825184569358663">У результаті буде видалено всі локальні дані (зокрема файли cookie) і скинуто всі дозволи для домену <ph name="DOMAIN" /> та всіх сайтів у ньому</translation>
 <translation id="5264323282659631142">Видалити запит "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Щоб вийти з повноекранного режиму, проведіть пальцем по екрану згори вниз і торкніться кнопки "Назад".</translation>
 <translation id="5300589172476337783">Показати</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Винятки</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
 <translation id="6205314730813004066">Конфіденційність у рекламі</translation>
+<translation id="6207207788774442484">Видалити дані й скинути дозволи</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: опції</translation>
 <translation id="6231752747840485235">Видалити додаток <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">На основі даних останньої використаної вкладки</translation>

@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">Mở thẻ ẩn danh mới trên Chromium.</translation>
 <translation id="3805899903892079518">Chromium không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
 <translation id="3827545470516145620">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn trên thiết bị này</translation>
+<translation id="3833326979834193417">Chromium tự động chạy tính năng Kiểm tra an toàn hằng ngày để bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác. Bạn có thể tìm thêm thông tin về tính năng Kiểm tra an toàn trong phần Cài đặt.</translation>
 <translation id="3886689467633467988">Đăng nhập vào trang web này và Chromium để sử dụng dấu trang và các nội dung khác trên tất cả thiết bị của bạn.</translation>
 <translation id="394413318816989199">Quy trình mã hoá bằng cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán.
 
@@ -84,6 +85,7 @@
 <translation id="4555020257205549924">Khi tính năng này được bật, Chromium sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Mở trang Cài đặt phương thức thanh toán trên Chromium.</translation>
 <translation id="4585809515399340748">Giờ đây, bạn có thể dùng Chromium bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
+<translation id="459080529287102949">Tìm kiếm hình ảnh trong Chromium</translation>
 <translation id="4633738821577273991">Bạn có thể dùng tính năng Duyệt web an toàn có tăng cường bảo vệ cho cả hồ sơ Chromium này</translation>
 <translation id="4654936625574199632">Để giúp cải thiện ứng dụng, Chromium sẽ gửi dữ liệu về sự cố và mức sử dụng cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Bật trình quét của Chromium</translation>
@@ -152,6 +154,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7055269218854630176">Tổ chức <ph name="DOMAIN" /> của bạn quản lý tài khoản mà bạn hiện đang đăng nhập và cách bạn sử dụng Chromium. Quản trị viên có thể thiết lập hoặc hạn chế một số tính năng.</translation>
 <translation id="7099326575020694068">Chromium không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
+<translation id="7163483974919055112">Tìm kiếm hình ảnh trong Chromium.</translation>
 <translation id="7165402419892018581">Chọn Chromium làm dịch vụ tự động điền</translation>
 <translation id="7175400662502680481">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Trình quản lý mật khẩu khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="7192111075364461693">Thông báo của Chromium hiện đang tắt trong phần cài đặt của thiết bị.</translation>

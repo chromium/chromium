@@ -541,6 +541,7 @@
 <translation id="2071692954027939183">ការជូនដំណឹងត្រូវបានទប់ស្កាត់ដោយស្វ័យប្រវត្តិ ដោយសារជាធម្មតា អ្នកមិនអនុញ្ញាតការជូនដំណឹងទេ</translation>
 <translation id="2071852865256799872">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់​ស្ថាប័នអ្នក ហើយកម្រងព័ត៌មាន​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">ម៉ូត និង​ស្តាយល៍</translation>
+<translation id="2075497153347571252">អ្នកគ្រប់គ្រងរបស់អ្នកបានទប់ស្កាត់<ph name="PERMISSION" />នៅលើ <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="20817612488360358">ការកំណត់ប្រូកស៊ីប្រព័ន្ធត្រូវបានកំណត់ដើម្បីប្រើ ប៉ុន្តែការកំណត់ប្រូកស៊ីជាក់លាក់ក៏ត្រូវបានបញ្ជាក់ផងដែរ។</translation>
 <translation id="2082238445998314030">លទ្ធផល <ph name="RESULT_NUMBER" /> នៃ <ph name="TOTAL_RESULTS" /></translation>
@@ -1883,6 +1884,7 @@
 <translation id="4885256590493466218">បង់ប្រាក់ដោយប្រើ <ph name="CARD_DETAIL" /> នៅពេលបង់ប្រាក់ចេញ</translation>
 <translation id="4887406273302438710">ការពារ​ពាក្យសម្ងាត់​ដោយប្រើ Windows Hello</translation>
 <translation id="4888600795924685526">ការសិក្សា​ភាសា​បរទេស</translation>
+<translation id="4890070067176768718">អ្នកគ្រប់គ្រងរបស់អ្នកបានអនុញ្ញាតឱ្យប្រើ<ph name="PERMISSION" />នៅលើ <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">ខាងក្រោយ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ព្រឹត្តិការណ៍​កីឡាអូឡាំពិក​</translation>
@@ -2329,6 +2331,7 @@
 <translation id="5830698870816298009">ការផ្លាស់ទី និង​ការប្រើប្រាស់​កាមេរ៉ា</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5838278095973806738">អ្នកមិនគួរបញ្ចូលព័ត៌មានសំខាន់ៗនៅលើគេហទំព័រនេះទេ (ឧទាហរណ៍៖ ពាក្យសម្ងាត់ ឬកាតឥណទាន) ពីព្រោះអ្នកវាយប្រហារអាចនឹងលួចវា។</translation>
+<translation id="5838732667866024867">អ្នកអាចប្រើព្រួញទៅ​ឆ្វេង/ស្ដាំ ដើម្បីពិនិត្យមើលការប្រែប្រួលតម្លៃនៅលើក្រាហ្វ</translation>
 <translation id="5840318881868981258">នៅ​ក្នុង​គណនី Google របស់​អ្នក <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">រក្សាទុកនៅក្នុងគណនីឬ?</translation>
 <translation id="5847181246682413476">ប្រភព​ផ្គត់ផ្គង់​ថាមពល</translation>

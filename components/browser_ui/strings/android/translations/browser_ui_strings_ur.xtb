@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2678468611080193228">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب کم تحفظ ہے لیکن سائٹ کی خصوصیات کے کام کرنے کا زیادہ امکان ہے</translation>
+<translation id="2683434792633810741">حذف اور ری سیٹ کریں؟</translation>
 <translation id="2687403674020088961">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2717722538473713889">ای میل پتے</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">مخصوص سائٹ کے لیے کوکیز کی اجازت دیں۔</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
 <translation id="4053720452172726777">‏Google Chrome کو حسب ضرورت بنائیں اور کنٹرول کریں</translation>
+<translation id="4149890623864272035">کیا آپ واقعی کوکیز سمیت تمام مقامی ڈیٹا حذف اور اس ویب سائٹ کیلئے تمام اجازتیں ری سیٹ کرنا چاہتے ہیں؟</translation>
 <translation id="4149994727733219643">ویب صفحات کیلئے سادہ منظر</translation>
 <translation id="4151930093518524179">ڈیفالٹ زوم</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">فریق ثالث کی کوکیز کی اجازت دیں</translation>
 <translation id="4428065317363009941">اشتہارات کو ذاتی نوعیت کا بنانا</translation>
 <translation id="4434045419905280838">پوپ اپس اور ری ڈائریکٹس</translation>
+<translation id="443552056913301231">اس کارروائی سے کوکیز سمیت تمام مقامی ڈیٹا حذف ہو جائے گا اور <ph name="ORIGIN" /> کیلئے تمام اجازتیں ری سیٹ ہو جائیں گی</translation>
 <translation id="4468959413250150279">کسی مخصوص سائٹ کیلئے آواز بند کریں۔</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# کوکی}other{# کوکیز}}</translation>
 <translation id="4478158430052450698">مختلف سائٹس کے لیے زوم کو حسب ضرورت بنانا آسان بنائیں</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">مائیکروفون کو خاموش کریں</translation>
 <translation id="4570913071927164677">تفاصیل</translation>
 <translation id="4598549027014564149">پوشیدگی موڈ میں ہونے پر سائٹس تمام سائٹس یہاں تک کہ متعلقہ سائٹس میں آپ کی براؤزنگ سرگرمی کو دیکھنے کے لیے کوکیز کا استعمال نہیں کر سکتی ہیں۔ آپ کی براؤزنگ کی سرگرمی اشتہارات کو ذاتی نوعیت کا بنانے جیسی چیزوں کے لیے استعمال نہیں کی جاتی ہے۔ ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
+<translation id="4644713492825682049">حذف اور ری سیٹ کریں</translation>
 <translation id="4645575059429386691">آپ کے والدین کے زیر انتظام</translation>
 <translation id="4670064810192446073">ورچوئل رئیلٹی</translation>
 <translation id="4751476147751820511">موشن یا لائٹ سینسرز</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
 <translation id="5225463052809312700">کیمرا آن کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
+<translation id="5246825184569358663">اس کارروائی سے کوکیز سمیت تمام مقامی ڈیٹا حذف ہو جائے گا اور <ph name="DOMAIN" /> اور اس کے تحت موجود تمام سائٹس کیلئے تمام اجازتیں ری سیٹ ہو جائیں گی</translation>
 <translation id="5264323282659631142">’<ph name="CHIP_LABEL" />‘ ہٹائیں</translation>
 <translation id="528192093759286357">پوری اسکرین سے باہر نکلنے کیلئے اوپر سے گھسیٹیں اور پیچھے جائیں بٹن کو ٹچ کریں۔</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">استثناء</translation>
 <translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
+<translation id="6207207788774442484">ڈیٹا حذف اور اجازتیں ری سیٹ کریں</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> اختیارات</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" />' اَن انسٹال کریں؟</translation>
 <translation id="6262191102408817757">آپ کے آخری ٹیب کی بنیاد پر</translation>

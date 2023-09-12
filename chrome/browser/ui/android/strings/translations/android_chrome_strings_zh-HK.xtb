@@ -58,7 +58,7 @@
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263063910731171689">你現在會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
+<translation id="1263063910731171689">你現在會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中。隨時可前往設定管理追蹤項目。</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">您可在此查看記錄</translation>
@@ -137,7 +137,7 @@
 <translation id="1671236975893690980">正在等待下載…</translation>
 <translation id="1672586136351118594">不要再顯示</translation>
 <translation id="1680919990519905526">使用「Google 智能鏡頭」購買圖片<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
-<translation id="1687482373098770139">不久後，你會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中，隨時可以前往設定管理追蹤項目。</translation>
+<translation id="1687482373098770139">你即將會在「追蹤中」分頁看到「<ph name="SITE_NAME" />」的內容和簡介。你追蹤的網站和搜尋內容會儲存在 Google 帳戶中。隨時可前往設定管理追蹤項目。</translation>
 <translation id="1702543251015153180">要變更深色主題背景設定嗎？</translation>
 <translation id="1702907158640575240">受管理的瀏覽器</translation>
 <translation id="1710099199314114079">切換或關閉分頁</translation>
@@ -222,6 +222,7 @@
 <translation id="2189903024544168260">已移除興趣</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2200113223741723867">管理使用情況資料分享設定</translation>
+<translation id="221494669172414749">如果不鎖定設定檔就開啟 Chrome，系統將移除車上儲存的密碼和付款方式。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
 <translation id="2218567645332692482">將瀏覽升級為採用 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身分繼續</translation>
 <translation id="2230777942707397948">空白視窗</translation>
@@ -312,7 +313,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2656405586795711023">網絡應用程式</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
-<translation id="2673169232805572412">如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能</translation>
+<translation id="2673169232805572412">如果有網站試圖盜取你的密碼，或當你下載有害檔案時，Chrome 可能將網址 (包括部分網頁內容) 傳送至 Google</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
 <translation id="2708051474374549906">系統會根據你向 Google 傳送的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充程式</translation>
 <translation id="2708226184420201102">在 <ph name="PRODUCT_NAME" /> 瀏覽器中開啟</translation>
@@ -338,6 +339,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{即將關閉 <ph name="TAB_COUNT_ONE" /> 個無痕式分頁}other{即將關閉 <ph name="TAB_COUNT_MANY" /> 個無痕式分頁}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
+<translation id="2853415089995957805">Chrome 會預先載入你可能瀏覽的頁面，以便在你瀏覽時更快載入</translation>
 <translation id="2856503607207334158">登入失敗</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
 <translation id="2861923151411510142">部分 Chrome 功能將無法再使用</translation>
@@ -582,6 +584,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4084712963632273211">發佈者：<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">您可使用此平板電腦登入顯示此 QR 碼的裝置。</translation>
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
+<translation id="4095425503313512126">瀏覽及搜尋內容時，載入速度更快</translation>
 <translation id="4096227151372679484">書籤儲存流程宜家顯示喺畫面下半部</translation>
 <translation id="4101475238162928417">進行同步處理，取得您在其他裝置上的密碼、書籤和其他資料</translation>
 <translation id="4106587138345390261">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
@@ -832,6 +835,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5308380583665731573">連線</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 建議使用 Chrome</translation>
+<translation id="5320351714793324716">如果你允許 Cookie，Chrome 可能會在預先載入時使用 Cookie</translation>
 <translation id="5321849971085220133">Chrome 正在尋找新方法，以減少追蹤，並進一步提高瀏覽時的安全性。Chrome 亦會<ph name="BEGIN_LINK" />推斷您的興趣<ph name="END_LINK" />，並讓您管理這些興趣。然後，您瀏覽的網站便可要求 Chrome 提供您的興趣，以向您展示廣告。</translation>
 <translation id="5326921373682845375">由於預先載入的網頁已經過加密，且連至這些網頁的網站為 Google 網站，因此以私密方式預先載入這些網頁時，Google 伺服器不會接收新資料。</translation>
 <translation id="5329858041417644019">您的瀏覽器未受管理</translation>
@@ -1010,6 +1014,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
 <translation id="6312687380483398334">網絡應用程式 (安靜模式)</translation>
+<translation id="6315386555979018699">刪除並繼續</translation>
 <translation id="6316139424528454185">此 Android 版本不受支援</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6324977638108296054">無法建立突顯文字的連結</translation>
@@ -1572,6 +1577,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
 <translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
+<translation id="9019199799064251516">不鎖定汽車設定檔就繼續嗎？</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9022871169049522985">網站和廣告客戶可評估廣告的效益</translation>
 <translation id="9035378196785279980">移至\u2026</translation>
@@ -1634,5 +1640,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個分頁</translation>
+<translation id="993520549480398880">一併清除車上的書籤、歷史記錄和其他資料</translation>
 <translation id="996149300115483134">資訊提供卡選單閂咗</translation>
 </translationbundle>

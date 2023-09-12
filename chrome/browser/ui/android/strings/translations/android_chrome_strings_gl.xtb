@@ -312,6 +312,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="265156376773362237">Precarga estándar</translation>
 <translation id="2656405586795711023">Aplicacións web</translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
+<translation id="2673169232805572412">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome pode enviarlle a Google os URL, así como fragmentos do contido das páxinas</translation>
 <translation id="2702516483241149200">Novidade: Comparte unha ligazón que leve directamente a este texto</translation>
 <translation id="2708051474374549906">Protección proactiva e en tempo real contra sitios, descargas e extensións perigosos baseada nos teus datos de navegación enviados a Google</translation>
 <translation id="2708226184420201102">Abrir no navegador <ph name="PRODUCT_NAME" /></translation>
@@ -337,6 +338,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{Pecharase <ph name="TAB_COUNT_ONE" /> pestana do modo de incógnito}other{Pecharanse <ph name="TAB_COUNT_MANY" /> pestanas do modo de incógnito}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{A comprobación realizouse hai 1 día}other{A comprobación realizouse hai # días}}</translation>
 <translation id="2842985007712546952">Cartafol principal</translation>
+<translation id="2853415089995957805">Chrome precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="2856503607207334158">Produciuse un erro ao iniciar sesión</translation>
 <translation id="2860954141821109167">Asegúrate de que haxa unha aplicación de teléfono activada neste dispositivo</translation>
 <translation id="2861923151411510142">Algunhas funcións de Chrome non estarán dispoñibles</translation>
@@ -581,6 +583,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4084712963632273211">Contido publicado por <ph name="PUBLISHER_ORIGIN" /> e <ph name="BEGIN_DEEMPHASIZED" />ofrecido por Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Podes utilizar esta tableta para iniciar sesión no dispositivo no que se mostra este código QR.</translation>
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
+<translation id="4095425503313512126">A navegación e a busca son máis rápidas</translation>
 <translation id="4096227151372679484">Fluxo para gardar marcadores aberto a media pantalla</translation>
 <translation id="4101475238162928417">Sincroniza os datos para ter todos os teus contrasinais, marcadores e máis nos teus outros dispositivos</translation>
 <translation id="4106587138345390261">Chrome está probando novas funcións que lles permitan aos sitios ofrecer a mesma experiencia de navegación usando menos información túa</translation>
@@ -831,6 +834,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5319359161174645648">Google recomenda Chrome</translation>
+<translation id="5320351714793324716">Se permites o uso de cookies, Chrome poderá utilizalas para as precargas</translation>
 <translation id="5321849971085220133">Chrome está investigando novas formas de reducir o seguimento e protexerte aínda máis mentres navegas pola Web. Ademais, <ph name="BEGIN_LINK" />fai unha estimación dos teus intereses<ph name="END_LINK" /> e permite que os xestiones. Así, os sitios que visites poderán solicitarlle información a Chrome sobre os teus intereses para mostrarche anuncios.</translation>
 <translation id="5326921373682845375">Como as páxinas precargadas están encriptadas e o sitio ao que están vinculadas é de Google, os nosos servidores non reciben información nova cando se precargan de forma privada.</translation>
 <translation id="5329858041417644019">O teu navegador non está xestionado</translation>

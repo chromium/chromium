@@ -339,6 +339,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab inkognito akan ditutup}other{<ph name="TAB_COUNT_MANY" /> tab inkognito akan ditutup}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Disemak 1 hari yang lalu}other{Disemak # hari yang lalu}}</translation>
 <translation id="2842985007712546952">Folder induk</translation>
+<translation id="2853415089995957805">Chrome mempramuat halaman yang mungkin anda lawati supaya halaman tersebut dimuatkan dengan lebih pantas apabila dilawati</translation>
 <translation id="2856503607207334158">Log masuk gagal</translation>
 <translation id="2860954141821109167">Pastikan apl telefon didayakan pada peranti ini</translation>
 <translation id="2861923151411510142">Sesetengah ciri Chrome tidak akan tersedia lagi</translation>
@@ -583,6 +584,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="4084712963632273211">Daripada <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />disampaikan oleh Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Anda boleh menggunakan tablet ini untuk log masuk pada peranti yang memaparkan kod QR ini.</translation>
 <translation id="4095146165863963773">Padam data apl?</translation>
+<translation id="4095425503313512126">Menyemak imbas dan mencari adalah lebih pantas</translation>
 <translation id="4096227151372679484">Aliran penyimpanan penanda halaman dibuka pada ketinggian separuh</translation>
 <translation id="4101475238162928417">Segerakkan untuk mendapatkan kata laluan, penanda halaman dan pelbagai lagi pada peranti anda yang lain</translation>
 <translation id="4106587138345390261">Chrome sedang meneroka ciri baharu yang membolehkan laman menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang maklumat anda</translation>
@@ -833,6 +835,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319359161174645648">Google mengesyorkan Chrome</translation>
+<translation id="5320351714793324716">Jika anda membenarkan kuki, Chrome boleh menggunakan kuki tersebut semasa prapemuatan</translation>
 <translation id="5321849971085220133">Chrome sedang mencari cara baharu untuk mengurangkan penjejakan dan memastikan anda lebih selamat semasa anda menyemak imbas. Chrome juga <ph name="BEGIN_LINK" />menganggarkan minat anda<ph name="END_LINK" /> dan membenarkan anda mengurusnya. Kemudian, laman yang anda lawati boleh menanyakan Chrome tentang minat anda untuk memaparkan iklan kepada anda.</translation>
 <translation id="5326921373682845375">Oleh kerana halaman pramuat disulitkan dan pemautan laman ke halaman tersebut ialah laman Google, pelayan Google tidak menerima maklumat baharu apabila mempramuat halaman ini secara peribadi.</translation>
 <translation id="5329858041417644019">Penyemak imbas anda tidak diurus</translation>

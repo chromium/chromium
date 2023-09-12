@@ -388,6 +388,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1733762317901693627">Napadalci včasih ogrozijo tudi spletna mesta, ki so običajno varna. <ph name="BEGIN_LINK" />To spletno mesto, ki ni varno<ph name="END_LINK" />, obiščite samo, če res razumete tveganja.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Poskusite se obrniti na skrbnika sistema.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, poteče <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Računalnik</translation>
 <translation id="1741613555002899862">Mora biti navedeno in veljaven niz, ko je način pravilnika DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Posteljnina</translation>
@@ -682,6 +683,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2366689192918515749">Meso in morska hrana</translation>
 <translation id="2367567093518048410">Raven</translation>
 <translation id="23703388716193220">Oprema za golf</translation>
+<translation id="2378084239755710604">Shranjevanje kartice je zaprto.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Osebno prilagajanje orodij za ljudi s posebnimi potrebami v Chromovih nastavitvah</translation>
 <translation id="2384307209577226199">Privzeto za podjetja</translation>
@@ -2248,6 +2250,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5653432653077411130">Oskrba in ravnanje z vodo</translation>
 <translation id="5654927323611874862">Naloženi ID poročila o zrušitvah:</translation>
 <translation id="5659593005791499971">E-pošta</translation>
+<translation id="5660122698869360728">Nova pametna mapa, ki vam pomaga shraniti vse strani za nakupovanje na enem mestu in samodejno spremljati cene, pridobiti vpoglede v cene in drugo.</translation>
 <translation id="5663955426505430495">Skrbnik te naprave je namestil razširitve zaradi dodatnih funkcij. Razširitve imajo dostop do nekaterih vaših podatkov.</translation>
 <translation id="5666606186680807225">Plaže in otoki</translation>
 <translation id="5667827081946850877">Zvočne knjige</translation>
@@ -2260,6 +2263,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5689199277474810259">Izvozi v JSON</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="569000877158168851">Vrednost pravilnika DnsOverHttpsTemplates ni ustrezna in ne bo uporabljena, razen če je pravilnik DnsOverHttpsMode nastavljen na nastavitev <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ali <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">Shranjevanje kartice je odprto pri polni višini.</translation>
 <translation id="5695542892312572833">Ali želite za potrditev in dokončanje nakupa uporabiti Windows Hello?</translation>
 <translation id="5699628521141772782">Mlečni izdelki in jajca</translation>
 <translation id="5701381305118179107">Na sredino</translation>
@@ -3010,6 +3014,7 @@ Dodatne podrobnosti:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Zadnji pladenj</translation>
 <translation id="725866823122871198">Zasebne povezave z domeno <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ni mogoče vzpostaviti, ker sta datum in ura (<ph name="DATE_AND_TIME" />) v računalniku nepravilna.</translation>
+<translation id="7260075294900977274">Nova pametna mapa, ki vam pomaga shraniti vse strani za nakupovanje na enem mestu in samodejno spremljati cene, pridobiti vpoglede v cene in drugo</translation>
 <translation id="7265608370113700582">Naslov je na voljo samo v tej napravi</translation>
 <translation id="7275334191706090484">Upravljani zaznamki</translation>
 <translation id="7277998515889183784">Ličila in kozmetika</translation>
@@ -3234,6 +3239,7 @@ Dodatne podrobnosti:
 <translation id="7676643023259824263">Iskanje besedila v odložišču, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Ogled in upravljanje zgodovine brskanja v Chromovih nastavitvah</translation>
 <translation id="7679947978757153706">Bejzbol</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, poteče <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantazijski športi</translation>
 <translation id="7682287625158474539">Pošiljanje</translation>
 <translation id="7682451652090915298">Ragbi</translation>
@@ -3311,6 +3317,7 @@ Dodatne podrobnosti:
 <translation id="7822611063308883975">Prenosne konzole</translation>
 <translation id="7825558994363763489">Mikrovalovne pečice</translation>
 <translation id="782886543891417279">Omrežje Wi-Fi, ki ga uporabljate (<ph name="WIFI_NAME" />), morda zahteva, da obiščete stran za prijavo.</translation>
+<translation id="7831993212387676366">Kaj je nakupovalni seznam?</translation>
 <translation id="7840103971441592723">Začel se je zajem zaslonske slike.</translation>
 <translation id="784137052867620416">Vpogledi v Nakupovanje</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

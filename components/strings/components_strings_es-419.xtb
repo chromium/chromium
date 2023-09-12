@@ -388,6 +388,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1733762317901693627">A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. Visita <ph name="BEGIN_LINK" />este sitio no seguro<ph name="END_LINK" /> únicamente si estás seguro de que comprendes los riesgos.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Intenta comunicarte con el administrador del sistema.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computadora</translation>
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Ropa de cama</translation>
@@ -682,6 +683,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2366689192918515749">Carne y mariscos</translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="23703388716193220">Equipo para golf</translation>
+<translation id="2378084239755710604">Se cerró el mensaje para guardar la tarjeta.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personaliza tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="2384307209577226199">Empresa (predeterminada)</translation>
@@ -2249,6 +2251,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5653432653077411130">Tratamiento y suministro de agua</translation>
 <translation id="5654927323611874862">ID del informe de fallas subido:</translation>
 <translation id="5659593005791499971">Correo</translation>
+<translation id="5660122698869360728">Una nueva carpeta inteligente que te ayuda a guardar todas tus páginas de compras en un solo lugar, realizar un seguimiento automático de los precios, obtener información sobre los precios y mucho más.</translation>
 <translation id="5663955426505430495">El administrador de este dispositivo instaló extensiones para funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
 <translation id="5666606186680807225">Islas y playas</translation>
 <translation id="5667827081946850877">Audiolibros</translation>
@@ -2261,6 +2264,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="569000877158168851">El valor de la política DnsOverHttpsTemplates no es relevante y no se usará, a menos que se establezca la política DnsOverHttpsMode como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> o <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5691848789297492617">El mensaje para guardar la tarjeta está totalmente abierto.</translation>
 <translation id="5695542892312572833">¿Deseas usar Windows Hello para verificar y completar tu compra?</translation>
 <translation id="5699628521141772782">Productos lácteos y huevos</translation>
 <translation id="5701381305118179107">Centrar</translation>
@@ -3011,6 +3015,7 @@ Detalles adicionales:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Bandeja trasera</translation>
 <translation id="725866823122871198">No se puede establecer una conexión privada a <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque la fecha y la hora del equipo (<ph name="DATE_AND_TIME" />) son incorrectas.</translation>
+<translation id="7260075294900977274">Una nueva carpeta inteligente que te ayuda a guardar todas tus páginas de compras en un solo lugar, realizar un seguimiento automático de los precios, obtener información sobre los precios y mucho más</translation>
 <translation id="7265608370113700582">La dirección solo está disponible en este dispositivo</translation>
 <translation id="7275334191706090484">Favoritos administrados</translation>
 <translation id="7277998515889183784">Maquillaje y cosméticos</translation>
@@ -3235,6 +3240,7 @@ Detalles adicionales:
 <translation id="7676643023259824263">Buscar el texto <ph name="TEXT" /> en el portapapeles</translation>
 <translation id="7679367271685653708">Ver y administrar tu historial de navegación en la configuración de Chrome</translation>
 <translation id="7679947978757153706">Béisbol</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Deportes de fantasía</translation>
 <translation id="7682287625158474539">Envío</translation>
 <translation id="7682451652090915298">Rugby</translation>
@@ -3312,6 +3318,7 @@ Detalles adicionales:
 <translation id="7822611063308883975">Consolas de juegos portátiles</translation>
 <translation id="7825558994363763489">Microondas</translation>
 <translation id="782886543891417279">Es posible que la red Wi-Fi que estás usando (<ph name="WIFI_NAME" />) requiera que visites la página de acceso.</translation>
+<translation id="7831993212387676366">¿Qué es la lista de compras?</translation>
 <translation id="7840103971441592723">Comenzó la captura de pantalla</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

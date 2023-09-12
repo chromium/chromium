@@ -338,12 +338,13 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë "e fshehtë" do të mbyllet}other{<ph name="TAB_COUNT_MANY" /> skeda "të fshehta" do të mbyllen}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrolluar 1 ditë më parë}other{Kontrolluar # ditë më parë}}</translation>
 <translation id="2842985007712546952">Dosja mëmë</translation>
+<translation id="2853415089995957805">Chrome ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
 <translation id="2856503607207334158">Identifikimi dështoi</translation>
 <translation id="2860954141821109167">Sigurohu që një aplikacion i telefonit të jetë i aktivizuar në këtë pajisje</translation>
 <translation id="2861923151411510142">Disa veçori të Chrome nuk do të ofrohen më</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2871733351037274014">Ngarkimi paraprak i faqeve</translation>
-<translation id="2876136027428473467"><ph name="CHILD_NAME" /> dëshiron që të miratosh këtë sajt uebi:</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> dëshiron që të miratosh këtë uebsajt:</translation>
 <translation id="2876628302275096482">Mëso më shumë se <ph name="BEGIN_LINK" />si Chrome i mban private të dhënat e tua<ph name="END_LINK" /></translation>
 <translation id="2886836735871983413">Një listë sajtesh do të shfaqet këtu ndërsa shfleton uebin</translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
@@ -362,7 +363,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="2932150158123903946">Hapësira ruajtëse e Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tastiera jote nuk do të ndryshojë</translation>
 <translation id="2936980480904111527">Njoftimet e Chrome i bëjnë gjërat më të lehta</translation>
-<translation id="2940075786175545812">Opsioni për të miratuar ose jo një sajt uebi</translation>
+<translation id="2940075786175545812">Opsioni për të miratuar ose jo një uebsajt</translation>
 <translation id="2942036813789421260">Skeda e shikimit paraprak është e mbyllur</translation>
 <translation id="2946420957526726953">Chrome po përditësohet për t'u lidhur me pajisjet e tjera</translation>
 <translation id="2951071800649516099">Shto faqe në listën tënde të leximit për më vonë</translation>
@@ -502,7 +503,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
 <translation id="3631987586758005671">Po ndahet te <ph name="DEVICE_NAME" /></translation>
-<translation id="363596933471559332">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një sajt uebi.</translation>
+<translation id="363596933471559332">Identifikohu automatikisht në uebsajte duke përdorur kredencialet e ruajtura. Kur veçoria është e çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një uebsajt.</translation>
 <translation id="3636940436873918441">Gjuhët e preferuara</translation>
 <translation id="3677911431265050325">Kërko sajtin për celular</translation>
 <translation id="3687645719033307815">Po shikon një pamje paraprake të kësaj faqeje</translation>
@@ -582,6 +583,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="4084712963632273211">Nga <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />dërguar nga Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Mund ta përdorësh këtë tablet për t'u identifikuar në pajisjen që po shfaq këtë kod QR.</translation>
 <translation id="4095146165863963773">Të fshihen të dhënat e aplikacioneve?</translation>
+<translation id="4095425503313512126">Shfletimi dhe kërkimi është më i shpejtë</translation>
 <translation id="4096227151372679484">Fluksi i ruajtjes së faqeshënuesve i hapur në gjysmë lartësi</translation>
 <translation id="4101475238162928417">Sinkronizoje për të marrë fjalëkalimet, faqeshënuesit etj. në pajisjet e tua të tjera</translation>
 <translation id="4106587138345390261">Chrome po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua</translation>
@@ -775,7 +777,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4985248278475639481">Rreth personalizimit të reklamave</translation>
 <translation id="4987271110129728827">Faqja nuk mund të gjendet. Kontrollo drejtshkrimin ose provo të kërkosh në ueb.</translation>
 <translation id="4988526792673242964">Faqet</translation>
-<translation id="4991110219272367918">Opsioni për të miratuar ose jo një sajt uebi u mbyll</translation>
+<translation id="4991110219272367918">Opsioni për të miratuar ose jo një uebsajt u mbyll</translation>
 <translation id="499724277181351974">Navigo: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Ndiqe këtë sajt këtu</translation>
 <translation id="5004416275253351869">Kontrollet e aktivitetit të Google</translation>
@@ -832,6 +834,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
+<translation id="5320351714793324716">Nëse lejon kukit, Chrome mund t'i përdorë ato gjatë ngarkimit paraprak</translation>
 <translation id="5321849971085220133">Chrome po gjen mënyra të reja për të zvogëluar gjurmimin dhe për të të mbajtur edhe më të sigurt kur shfleton. Chrome <ph name="BEGIN_LINK" />përllogarit po ashtu interesat e tu<ph name="END_LINK" /> dhe bën të mundur që t'i menaxhosh ato. Më pas, sajtet që viziton mund të pyesin Chrome për interesat e tu për të të shfaqur reklama.</translation>
 <translation id="5326921373682845375">Për shkak se faqet e ngarkuara paraprakisht janë të enkriptuara dhe lidhja e sajtit në faqe është një sajt i Google, serverët e Google nuk marrin informacione të reja kur ngarkojnë paraprakisht këto faqe në mënyrë private.</translation>
 <translation id="5329858041417644019">Shfletuesi yt nuk është i menaxhuar</translation>
@@ -997,9 +1000,9 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6210748933810148297">Nuk je <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Po shikon paraprakisht këtë faqe</translation>
 <translation id="6221633008163990886">Shkyç për të eksportuar fjalëkalimet e tua</translation>
-<translation id="6232535412751077445">Aktivizimi i funksionit "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një sajt uebi i përgjigjet kërkesës dhe se si interpretohet kërkesa.
+<translation id="6232535412751077445">Aktivizimi i veçorisë "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një uebsajt i përgjigjet kërkesës dhe se si interpretohet kërkesa.
 
-Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në sajtet e tjera të uebit që ke vizituar. Shumë sajte uebi do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
+Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në uebsajtet e tjera që ke vizituar. Shumë uebsajte do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
 <translation id="6233974827872475843">Ruaj fjalëkalimet në këtë pajisje në "Llogarinë tënde të Google" duke aktivizuar sinkronizimin</translation>
 <translation id="6255794742848779505">Ne po ndryshojmë mënyrën se si ruhen fjalëkalimet në këtë pajisje</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
@@ -1152,7 +1155,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
-<translation id="6908998565271542516">Opsioni për të miratuar ose jo një sajt uebi të hapur në gjatësinë e plotë</translation>
+<translation id="6908998565271542516">Opsioni për të miratuar ose jo një uebsajt të hapur në gjatësinë e plotë</translation>
 <translation id="6909589135458168665">Ngarkimi paraprak i faqeve</translation>
 <translation id="6910211073230771657">Fshirë</translation>
 <translation id="6942665639005891494">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit duke përdorur opsionin e menysë "Cilësimet"</translation>
