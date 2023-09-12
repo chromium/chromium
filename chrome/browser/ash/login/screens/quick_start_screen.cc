@@ -138,10 +138,6 @@ void QuickStartScreen::OnStatusChanged(
       view_->SetPIN(status.pin);
       return;
     }
-    case Step::GAIA_CREDENTIALS: {
-      SavePhoneInstanceID();
-      return;
-    }
     case Step::ERROR:
       NOTIMPLEMENTED();
       return;
@@ -162,6 +158,7 @@ void QuickStartScreen::OnStatusChanged(
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
       CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
       OnTransferredGoogleAccountDetails(status);
+      SavePhoneInstanceID();
       break;
     case Step::NONE:
     case Step::ADVERTISING_WITHOUT_QR_CODE:
