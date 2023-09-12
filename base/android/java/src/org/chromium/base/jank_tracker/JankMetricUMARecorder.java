@@ -19,12 +19,12 @@ public class JankMetricUMARecorder {
         }
 
         JankMetricUMARecorderJni.get().recordJankMetrics(metric.durationsNs, metric.isJanky,
-                reportingIntervalStartTime, reportingIntervalDuration);
+                metric.isScrolling, reportingIntervalStartTime, reportingIntervalDuration);
     }
 
     @NativeMethods
     public interface Natives {
-        void recordJankMetrics(long[] durationsNs, boolean[] jankStatus,
+        void recordJankMetrics(long[] durationsNs, boolean[] jankStatus, boolean[] scrollingStatus,
                 long reportingIntervalStartTime, long reportingIntervalDuration);
     }
 }

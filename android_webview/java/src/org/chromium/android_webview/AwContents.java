@@ -840,6 +840,16 @@ public class AwContents implements SmartClipProvider {
         @Override
         public void onScrollStarted(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
             mZoomControls.invokeZoomPicker();
+            if (mAwFrameMetricsListener != null) {
+                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(/*isScrolling=*/true);
+            }
+        }
+
+        @Override
+        public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
+            if (mAwFrameMetricsListener != null) {
+                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(/*isScrolling=*/false);
+            }
         }
 
         @Override
@@ -1048,6 +1058,10 @@ public class AwContents implements SmartClipProvider {
 
         public FrameMetricsListener getFrameMetricsListener() {
             return mFrameMetricsListener;
+        }
+
+        public void onWebContentsScrollStateUpdate(boolean isScrolling) {
+            mFrameMetricsListener.onWebContentsScrollStateUpdate(isScrolling);
         }
     }
 

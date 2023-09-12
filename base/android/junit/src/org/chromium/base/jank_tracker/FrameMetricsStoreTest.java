@@ -23,10 +23,11 @@ public class FrameMetricsStoreTest {
     public void addFrameMeasurementTest() {
         FrameMetricsStore store = new FrameMetricsStore();
 
-        store.addFrameMeasurement(10_000_000L, false);
-        store.addFrameMeasurement(12_000_000L, false);
-        store.addFrameMeasurement(20_000_000L, true);
-        store.addFrameMeasurement(8_000_000L, true);
+        long frame_start_vsync_ts = 0;
+        store.addFrameMeasurement(10_000_000L, false, frame_start_vsync_ts);
+        store.addFrameMeasurement(12_000_000L, false, frame_start_vsync_ts);
+        store.addFrameMeasurement(20_000_000L, true, frame_start_vsync_ts);
+        store.addFrameMeasurement(8_000_000L, true, frame_start_vsync_ts);
 
         JankMetrics metrics = store.takeMetrics();
 

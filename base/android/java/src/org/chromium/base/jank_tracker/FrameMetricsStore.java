@@ -17,13 +17,20 @@ public class FrameMetricsStore {
     // Array of boolean values denoting whether a given frame is janky or not. Must always be the
     // same size as mTotalDurationsNs.
     private final ArrayList<Boolean> mIsJanky = new ArrayList<>();
+    private final ArrayList<Boolean> mIsScrolling = new ArrayList<>();
+    // Tracks whether we are in a web contents scroll or not.
+    private long mScrollStartTime = Long.MAX_VALUE;
+    private long mScrollEndTime;
 
     /**
      * Records the total draw duration and jankiness for a single frame.
      */
-    void addFrameMeasurement(long totalDurationNs, boolean isJanky) {
+    void addFrameMeasurement(long totalDurationNs, boolean isJanky, long frameStartVsyncTs) {
         mTotalDurationsNs.add(totalDurationNs);
         mIsJanky.add(isJanky);
+        boolean isScrollFrame =
+                mScrollStartTime < frameStartVsyncTs && frameStartVsyncTs < mScrollEndTime;
+        mIsScrolling.add(isScrollFrame);
     }
 
     /**
@@ -32,12 +39,15 @@ public class FrameMetricsStore {
     JankMetrics takeMetrics() {
         Long[] longDurations;
         Boolean[] booleanIsJanky;
+        Boolean[] booleanIsScrolling;
 
         longDurations = mTotalDurationsNs.toArray(new Long[mTotalDurationsNs.size()]);
         mTotalDurationsNs.clear();
 
         booleanIsJanky = mIsJanky.toArray(new Boolean[mIsJanky.size()]);
         mIsJanky.clear();
+        booleanIsScrolling = mIsScrolling.toArray(new Boolean[mIsScrolling.size()]);
+        mIsScrolling.clear();
 
         long[] durations = new long[longDurations.length];
         for (int i = 0; i < longDurations.length; i++) {
@@ -49,7 +59,21 @@ public class FrameMetricsStore {
             isJanky[i] = booleanIsJanky[i].booleanValue();
         }
 
-        JankMetrics jankMetrics = new JankMetrics(durations, isJanky);
+        boolean[] isScrolling = new boolean[booleanIsScrolling.length];
+        for (int i = 0; i < booleanIsScrolling.length; i++) {
+            isScrolling[i] = booleanIsScrolling[i].booleanValue();
+        }
+
+        JankMetrics jankMetrics = new JankMetrics(durations, isJanky, isScrolling);
         return jankMetrics;
+    }
+
+    public void onWebContentsScrollStateUpdate(boolean isScrolling) {
+        if (isScrolling) {
+            mScrollStartTime = System.nanoTime();
+            mScrollEndTime = Long.MAX_VALUE;
+        } else {
+            mScrollEndTime = System.nanoTime();
+        }
     }
 }

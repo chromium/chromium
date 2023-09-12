@@ -1588,6 +1588,29 @@ chromium-metrics-reviews@google.com.
   <token key="ActivityType" variants="ActivityType"/>
 </histogram>
 
+<histogram name="Android.FrameTimelineJank.WebScroll.FrameJankStatus"
+    enum="FrameJankStatus" expires_after="2024-04-30">
+  <owner>kartarsingh@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Note: This metric doesn't capture web contents scrolling quality on chrome,
+    it is only emitted on Webview. For scroll jank metrics in chrome please
+    check Event.ScrollJank.DelayedFramesPercentage* and
+    Event.ScrollJank.MissedVsyncs* histograms.
+
+    This metric measures jankiness of frames during scrolls according to the
+    Android's FrameMetrics API. Samples are recorded into the Janky bucket for
+    frames for which their total duration exceeded the given deadline and into
+    the NonJanky bucket for all other frames. This metric is recorded at the
+    same time as Android.Jank.FrameDuration histogram.
+
+    Known caveats of this metric: 1) During a staggered scroll where finger
+    could be stationary for some time, any janks during the period when finger
+    was stationary would still be marked as scroll janks even when we wouldn't
+    have been producing frames during that time.
+  </summary>
+</histogram>
+
 <histogram base="true"
     name="Android.GridTabSwitcher.Animation.FirstFrameLatency" units="ms"
     expires_after="2024-07-25">

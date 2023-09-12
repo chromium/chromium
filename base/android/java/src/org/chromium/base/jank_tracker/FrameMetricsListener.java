@@ -64,12 +64,14 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
         }
 
         long frameTotalDurationNs = frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION);
+        long frame_start_vsync_ts = frameMetrics.getMetric(FrameMetrics.VSYNC_TIMESTAMP);
 
         try (TraceEvent e = TraceEvent.scoped(
                      "onFrameMetricsAvailable", Long.toString(frameTotalDurationNs))) {
             long deadlineNs = frameMetrics.getMetric(FrameMetrics.DEADLINE);
             boolean isJanky = frameTotalDurationNs >= deadlineNs;
-            mFrameMetricsStore.addFrameMeasurement(frameTotalDurationNs, isJanky);
+            mFrameMetricsStore.addFrameMeasurement(
+                    frameTotalDurationNs, isJanky, frame_start_vsync_ts);
         }
     }
 
@@ -78,5 +80,9 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
                 mReportingIntervalStartTime, mReportingIntervalDurationMillis);
         mReportingIntervalStartTime = 0;
         mReportingIntervalDurationMillis = 0;
+    }
+
+    public void onWebContentsScrollStateUpdate(boolean isScrolling) {
+        mFrameMetricsStore.onWebContentsScrollStateUpdate(isScrolling);
     }
 }

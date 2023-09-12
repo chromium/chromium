@@ -11,9 +11,11 @@ package org.chromium.base.jank_tracker;
 class JankMetrics {
     public final long[] durationsNs;
     public final boolean[] isJanky;
+    public final boolean[] isScrolling;
 
-    public JankMetrics(long[] durationsNs, boolean[] isJanky) {
+    public JankMetrics(long[] durationsNs, boolean[] isJanky, boolean[] isScrolling) {
         this.durationsNs = durationsNs;
         this.isJanky = isJanky;
+        this.isScrolling = isScrolling;
     }
 }

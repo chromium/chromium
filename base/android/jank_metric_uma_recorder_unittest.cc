@@ -57,8 +57,12 @@ jbooleanArray GenerateJavaBooleanArray(JNIEnv* env,
 const bool kJankStatus[] = {
     false, false, true, false, true, false, false, false,
 };
-
 const size_t kJankStatusLen = kDurationsLen;
+
+const bool kIsScrolling[] = {
+    false, false, false, true, true, true, false, false,
+};
+const size_t kIsScrollingLen = kDurationsLen;
 
 }  // namespace
 
@@ -73,12 +77,17 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
   jbooleanArray java_jank_status =
       GenerateJavaBooleanArray(env, kJankStatus, kJankStatusLen);
 
+  jbooleanArray java_is_scrolling =
+      GenerateJavaBooleanArray(env, kIsScrolling, kIsScrollingLen);
+
   RecordJankMetrics(
       env,
       /* java_durations_ns= */
       base::android::JavaParamRef<jlongArray>(env, java_durations),
       /* java_jank_status = */
       base::android::JavaParamRef<jbooleanArray>(env, java_jank_status),
+      /* java_is_scrolling = */
+      base::android::JavaParamRef<jbooleanArray>(env, java_is_scrolling),
       /* java_reporting_interval_start_time = */ 0,
       /* java_reporting_interval_duration = */ 1000);
 
@@ -87,7 +96,13 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
                           Bucket(20, 1), Bucket(29, 1), Bucket(57, 1)));
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Android.Jank.FrameJankStatus"),
-              ElementsAre(Bucket(0, 2), Bucket(1, 6)));
+              ElementsAre(Bucket(FrameJankStatus::kJanky, 2),
+                          Bucket(FrameJankStatus::kNonJanky, 6)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Android.FrameTimelineJank.WebScroll.FrameJankStatus"),
+              ElementsAre(Bucket(FrameJankStatus::kJanky, 1),
+                          Bucket(FrameJankStatus::kNonJanky, 2)));
 }
 
 }  // namespace base::android

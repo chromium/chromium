@@ -10,10 +10,19 @@
 
 namespace base::android {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FrameJankStatus {
+  kJanky = 0,
+  kNonJanky = 1,
+  kMaxValue = kNonJanky,
+};
+
 BASE_EXPORT void RecordJankMetrics(
     JNIEnv* env,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
     const base::android::JavaParamRef<jbooleanArray>& java_jank_status,
+    const base::android::JavaParamRef<jbooleanArray>& java_is_scrolling,
     jlong java_reporting_interval_start_time,
     jlong java_reporting_interval_duration);
 }  // namespace base::android
