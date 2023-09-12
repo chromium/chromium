@@ -936,7 +936,7 @@
 <translation id="1771075623623424448">ब्राउजरसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="177336675152937177">होस्ट गरिएको एप लगत</translation>
 <translation id="177529472352014190">OneDrive मा कनेक्ट गर्नुहोस्</translation>
-<translation id="1776712937009046120">प्रयोगकर्ता थप्नुहोस्</translation>
+<translation id="1776712937009046120">प्रयोगकर्ता कनेक्ट गर्नुहोस्</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="177814385589420211">सर्च की थिचिराख्दा फङ्सन की र माथिल्लो लहरका सिस्टम कीका बिचमा अदलबदल हुने पारियोस्</translation>
 <translation id="1778457539567749232">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
@@ -9509,7 +9509,7 @@
 <translation id="9085256200913095638">चयन गरिएको ट्याबको प्रतिलिपि बनाउनुहोस्</translation>
 <translation id="9085446486797400519">क्यामेरा प्रयोग गर्ने अनुमति</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> चयन गरिएको छैन। भाषा चयन गर्न 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
-<translation id="9087949559523851360">प्रतिबन्धित प्रयोगकर्ता थप्नुहोस्</translation>
+<translation id="9087949559523851360">प्रतिबन्धित प्रयोगकर्ता कनेक्ट गर्नुहोस्</translation>
 <translation id="9088234649737575428">इन्टरप्राइजको नीतिले <ph name="PLUGIN_NAME" /> माथि अवरोध लगाएको छ</translation>
 <translation id="9088446193279799727">Linux कन्फिगर गर्न सकिएन। इन्टरनेट जोड्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9089416786594320554">आगत विधिहरू</translation>
