@@ -30,10 +30,6 @@ async function run() {
     reportGlitch(GlitchType.CAUGHT_EXCEPTION);
     console.warn('Failed to get the app ID', e);
   }
-
-  console.warn(
-      '%cYou are running Files System Web App',
-      'font-size: 2em; background-color: #ff0; color: #000;');
 }
 
 run().then(() => {
