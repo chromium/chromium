@@ -87,7 +87,8 @@ class IndexedDBTransactionTest : public testing::Test {
         storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
-        std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());
+        std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_->proxy(),
+        base::DoNothing());
 
     // DB is created here instead of the constructor to workaround a
     // "peculiarity of C++". More info at

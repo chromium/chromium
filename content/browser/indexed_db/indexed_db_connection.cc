@@ -18,6 +18,7 @@
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
@@ -45,6 +46,8 @@ IndexedDBConnection::IndexedDBConnection(
       callbacks_(callbacks),
       client_state_checker_(std::move(client_state_checker)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
+      bucket_context_handle_->bucket_locator(), base::Time::Now());
 }
 
 IndexedDBConnection::~IndexedDBConnection() {
@@ -83,6 +86,8 @@ void IndexedDBConnection::AbortTransactionsAndClose(
 
   std::move(on_close_).Run(this);
   client_keep_active_remotes_.Clear();
+  bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
+      bucket_context_handle_->bucket_locator(), base::Time::Now());
   if (!status.ok()) {
     bucket_context_handle_->delegate().on_fatal_error.Run(status);
   }

@@ -756,7 +756,7 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
       /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
       &class_factory_->transactional_leveldb_factory(), std::move(lock_manager),
       std::move(bucket_delegate), std::move(backing_store),
-      for_each_bucket_context_);
+      context_->quota_manager_proxy(), for_each_bucket_context_);
 
   it = bucket_contexts_.emplace(bucket_locator.id, std::move(bucket_context))
            .first;
@@ -992,6 +992,7 @@ void IndexedDBFactory::RunTasksForBucket(
   if (!bucket_context) {
     return;
   }
+  storage::BucketLocator bucket_locator = bucket_context->bucket_locator();
   IndexedDBBucketContext::RunTasksResult result;
   leveldb::Status status;
   std::tie(result, status) = bucket_context->RunTasks();
@@ -999,10 +1000,10 @@ void IndexedDBFactory::RunTasksForBucket(
     case IndexedDBBucketContext::RunTasksResult::kDone:
       return;
     case IndexedDBBucketContext::RunTasksResult::kError:
-      OnDatabaseError(bucket_context->bucket_locator(), status, nullptr);
+      OnDatabaseError(bucket_locator, status, nullptr);
       return;
     case IndexedDBBucketContext::RunTasksResult::kCanBeDestroyed:
-      bucket_contexts_.erase(bucket_context->bucket_locator().id);
+      bucket_contexts_.erase(bucket_locator.id);
       return;
   }
 }

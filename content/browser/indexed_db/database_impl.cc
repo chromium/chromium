@@ -61,7 +61,6 @@ DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
       indexed_db_context_(dispatcher_host->context()),
       connection_(std::move(connection)) {
   DCHECK(connection_);
-  indexed_db_context_->ConnectionOpened(GetBucketLocator());
 }
 
 DatabaseImpl::~DatabaseImpl() {
@@ -71,12 +70,8 @@ DatabaseImpl::~DatabaseImpl() {
     return;
   }
 
-  // Calling `GetBucketLocator` after aborting the transaction would be an
-  // error.
-  const storage::BucketLocator bucket_locator = GetBucketLocator();
   connection_->AbortTransactionsAndClose(
       IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
-  indexed_db_context_->ConnectionClosed(bucket_locator);
 }
 
 void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
@@ -164,9 +159,6 @@ void DatabaseImpl::Close() {
   if (!connection_->IsConnected())
     return;
 
-  // Calling `GetBucketLocator` after aborting the transaction would be an
-  // error.
-  const storage::BucketLocator bucket_locator = GetBucketLocator();
   connection_->AbortTransactionsAndClose(
       IndexedDBConnection::CloseErrorHandling::kReturnOnFirstError);
 }

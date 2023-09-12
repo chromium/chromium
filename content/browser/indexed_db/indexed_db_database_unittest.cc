@@ -42,6 +42,7 @@
 #include "content/browser/indexed_db/mock_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -63,8 +64,12 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*special_storage_policy=*/nullptr);
 
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get());
+
     indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_->proxy(),
+        temp_dir_.GetPath(), quota_manager_proxy_,
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -80,7 +85,8 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
-        std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());
+        std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
+        base::DoNothing());
 
     db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", *bucket_context_, IndexedDBDatabase::Identifier());
@@ -123,6 +129,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   std::unique_ptr<IndexedDBDatabase> db_;
   bool error_called_ = false;
 
@@ -468,9 +475,12 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         /*is_incognito=*/false, temp_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*special_storage_policy=*/nullptr);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(),
+        base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
     indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
-        temp_dir_.GetPath(), quota_manager_->proxy(),
+        temp_dir_.GetPath(), quota_manager_proxy_,
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -486,7 +496,8 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         storage::BucketInfo(), false, base::DefaultClock::GetInstance(),
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
-        std::make_unique<IndexedDBFakeBackingStore>(), base::DoNothing());
+        std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
+        base::DoNothing());
 
     db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", *bucket_context_, IndexedDBDatabase::Identifier());
@@ -556,6 +567,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
   std::unique_ptr<IndexedDBDatabase> db_;
   MockIndexedDBFactoryClient request_;

@@ -438,7 +438,6 @@ class ForceCloseFactoryClient : public IndexedDBFactoryClient {
   void OnOpenSuccess(std::unique_ptr<IndexedDBConnection> connection,
                      const IndexedDBDatabaseMetadata& metadata) override {
     connection_ = std::move(connection);
-    idb_context_->ConnectionOpened(bucket_locator_);
   }
 
   IndexedDBConnection* connection() { return connection_.get(); }
@@ -638,9 +637,6 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
 
   ASSERT_TRUE(callbacks->connection());
 
-  // ConnectionOpened() is usually called by the dispatcher.
-  context()->ConnectionOpened(bucket_locator);
-
   EXPECT_TRUE(factory->IsBackingStoreOpen(bucket_locator));
 
   // Simulate the write failure.
@@ -678,9 +674,6 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
   RunPostedTasks();
 
   ASSERT_TRUE(callbacks->connection());
-
-  // ConnectionOpened() is usually called by the dispatcher.
-  context()->ConnectionOpened(bucket_locator);
 
   EXPECT_TRUE(factory->IsBackingStoreOpen(bucket_locator));
 

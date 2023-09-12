@@ -33,7 +33,6 @@
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
-#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"

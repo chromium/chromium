@@ -25,6 +25,10 @@
 #include "content/common/content_export.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
+namespace storage {
+class QuotaManagerProxy;
+}
+
 namespace content {
 class IndexedDBBackingStore;
 class IndexedDBDatabase;
@@ -145,6 +149,7 @@ class CONTENT_EXPORT IndexedDBBucketContext {
       std::unique_ptr<PartitionedLockManager> lock_manager,
       Delegate&& delegate,
       std::unique_ptr<IndexedDBBackingStore> backing_store,
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       InstanceClosure initialization_closure);
 
   IndexedDBBucketContext(const IndexedDBBucketContext&) = delete;
@@ -213,6 +218,10 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   base::WeakPtr<IndexedDBBucketContext> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
+  }
+
+  storage::QuotaManagerProxy* quota_manager() {
+    return quota_manager_proxy_.get();
   }
 
  private:
@@ -286,6 +295,7 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   base::OneShotTimer close_timer_;
   const std::unique_ptr<PartitionedLockManager> lock_manager_;
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
+  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   DBMap databases_;
   // This is the refcount for the number of IndexedDBBucketContextHandle's

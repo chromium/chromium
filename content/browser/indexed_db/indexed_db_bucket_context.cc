@@ -29,6 +29,7 @@
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
@@ -131,6 +132,7 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     std::unique_ptr<PartitionedLockManager> lock_manager,
     Delegate&& delegate,
     std::unique_ptr<IndexedDBBackingStore> backing_store,
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     InstanceClosure initialize_closure)
     : bucket_info_(std::move(bucket_info)),
       persist_for_incognito_(persist_for_incognito),
@@ -138,6 +140,7 @@ IndexedDBBucketContext::IndexedDBBucketContext(
       transactional_leveldb_factory_(transactional_leveldb_factory),
       lock_manager_(std::move(lock_manager)),
       backing_store_(std::move(backing_store)),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       delegate_(std::move(delegate)) {
   DCHECK(clock_);
 
@@ -227,7 +230,7 @@ IndexedDBBucketContext::RunTasks() {
         running_tasks_ = false;
         return {RunTasksResult::kError, status};
       case IndexedDBDatabase::RunTasksResult::kCanBeDestroyed:
-        db_it = databases_.erase(db_it);
+        databases_.erase(db_it);
         break;
     }
   }

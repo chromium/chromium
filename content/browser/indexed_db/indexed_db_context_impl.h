@@ -168,8 +168,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // Methods called by IndexedDBFactory or IndexedDBDispatcherHost for
   // quota support.
   void FactoryOpened(const storage::BucketLocator& bucket_locator);
-  void ConnectionOpened(const storage::BucketLocator& bucket_locator);
-  void ConnectionClosed(const storage::BucketLocator& bucket_locator);
   void TransactionComplete(const storage::BucketLocator& bucket_locator);
   void DatabaseDeleted(const storage::BucketLocator& bucket_locator);
 

@@ -12,7 +12,6 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"

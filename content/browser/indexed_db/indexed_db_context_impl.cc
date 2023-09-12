@@ -943,29 +943,6 @@ void IndexedDBContextImpl::FactoryOpened(
   }
 }
 
-void IndexedDBContextImpl::ConnectionOpened(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  quota_manager_proxy()->NotifyBucketAccessed(bucket_locator,
-                                              base::Time::Now());
-  if (bucket_set_.insert(bucket_locator).second) {
-    // A newly created db, notify the quota system.
-    QueryDiskAndUpdateQuotaUsage(bucket_locator);
-  } else {
-    EnsureDiskUsageCacheInitialized(bucket_locator);
-  }
-}
-
-void IndexedDBContextImpl::ConnectionClosed(
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  quota_manager_proxy()->NotifyBucketAccessed(bucket_locator,
-                                              base::Time::Now());
-  if (indexeddb_factory_.get() &&
-      indexeddb_factory_->GetConnectionCount(bucket_locator.id) == 0)
-    QueryDiskAndUpdateQuotaUsage(bucket_locator);
-}
-
 void IndexedDBContextImpl::TransactionComplete(
     const storage::BucketLocator& bucket_locator) {
   DCHECK(!indexeddb_factory_.get() ||
