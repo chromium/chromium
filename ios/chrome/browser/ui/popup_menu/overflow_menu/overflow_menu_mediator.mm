@@ -496,6 +496,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                   systemSymbol:NO
                               monochromeSymbol:NO
                                accessibilityID:kToolsMenuReload
+                                  hideItemText:nil
                                        handler:^{
                                          [weakSelf reload];
                                        }];
@@ -507,6 +508,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                   systemSymbol:YES
                               monochromeSymbol:NO
                                accessibilityID:kToolsMenuStop
+                                  hideItemText:nil
                                        handler:^{
                                          [weakSelf stopLoading];
                                        }];
@@ -518,6 +520,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                   systemSymbol:YES
                               monochromeSymbol:NO
                                accessibilityID:kToolsMenuNewTabId
+                                  hideItemText:nil
                                        handler:^{
                                          [weakSelf openTab];
                                        }];
@@ -530,6 +533,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:NO
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuNewIncognitoTabId
+                            hideItemText:nil
                                  handler:^{
                                    [weakSelf openIncognitoTab];
                                  }];
@@ -541,6 +545,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuNewWindowId
+                            hideItemText:nil
                                  handler:^{
                                    [weakSelf openNewWindow];
                                  }];
@@ -556,6 +561,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.addBookmarkAction = [self newAddBookmarkAction];
 
+  NSString* editBookmarkHideItemText =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_EDIT_BOOKMARK);
   self.editBookmarkAction = [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK
                               actionType:overflow_menu::ActionType::Bookmark
@@ -563,6 +570,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuEditBookmark
+                            hideItemText:editBookmarkHideItemText
                                  handler:^{
                                    [weakSelf addOrEditBookmark];
                                  }];
@@ -573,6 +581,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.requestDesktopAction = [self newRequestDesktopAction];
 
+  NSString* requestMobileHideItemText =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_MOBILE_SITE);
   self.requestMobileAction = [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE
                               actionType:overflow_menu::ActionType::DesktopSite
@@ -580,6 +590,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:YES
                          accessibilityID:kToolsMenuRequestMobileId
+                            hideItemText:requestMobileHideItemText
                                  handler:^{
                                    [weakSelf requestMobileSite];
                                  }];
@@ -596,6 +607,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                   systemSymbol:YES
                               monochromeSymbol:NO
                                accessibilityID:kToolsMenuReportAnIssueId
+                                  hideItemText:nil
                                        handler:^{
                                          [weakSelf reportAnIssue];
                                        }];
@@ -607,6 +619,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                   systemSymbol:YES
                               monochromeSymbol:NO
                                accessibilityID:kToolsMenuHelpId
+                                  hideItemText:nil
                                        handler:^{
                                          [weakSelf openHelp];
                                        }];
@@ -618,6 +631,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuShareChromeId
+                            hideItemText:nil
                                  handler:^{
                                    [weakSelf shareChromeApp];
                                  }];
@@ -629,6 +643,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:NO
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuEditActionsId
+                            hideItemText:nil
                                  handler:^{
                                    [weakSelf beginCustomization];
                                  }];
@@ -672,20 +687,25 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 - (OverflowMenuAction*)newFollowAction {
-  return
-      [self createOverflowMenuActionWithName:l10n_util::GetNSStringF(
-                                                 IDS_IOS_TOOLS_MENU_FOLLOW, u"")
-                                  actionType:overflow_menu::ActionType::Follow
-                                  symbolName:kPlusSymbol
-                                systemSymbol:YES
-                            monochromeSymbol:NO
-                             accessibilityID:kToolsMenuFollow
-                                     handler:^{
-                                     }];
+  return [self
+      createOverflowMenuActionWithName:l10n_util::GetNSStringF(
+                                           IDS_IOS_TOOLS_MENU_FOLLOW, u"")
+                            actionType:overflow_menu::ActionType::Follow
+                            symbolName:kPlusSymbol
+                          systemSymbol:YES
+                      monochromeSymbol:NO
+                       accessibilityID:kToolsMenuFollow
+                          hideItemText:
+                              l10n_util::GetNSStringF(
+                                  IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW, u"")
+                               handler:^{
+                               }];
 }
 
 - (OverflowMenuAction*)newAddBookmarkAction {
   __weak __typeof(self) weakSelf = self;
+  NSString* hideItemText = l10n_util::GetNSString(
+      IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_ADD_TO_BOOKMARKS);
   return [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS
                               actionType:overflow_menu::ActionType::Bookmark
@@ -693,6 +713,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuAddToBookmarks
+                            hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf addOrEditBookmark];
                                  }];
@@ -700,6 +721,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (OverflowMenuAction*)newReadLaterAction {
   __weak __typeof(self) weakSelf = self;
+  NSString* hideItemText =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_READING_LIST);
   return [self
       createOverflowMenuActionWithNameID:
           IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST
@@ -708,6 +731,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuReadLater
+                            hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf addToReadingList];
                                  }];
@@ -715,6 +739,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (OverflowMenuAction*)newClearBrowsingDataAction {
   __weak __typeof(self) weakSelf = self;
+  NSString* hideItemText = l10n_util::GetNSString(
+      IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_CLEAR_BROWSING_DATA);
   return [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA
                               actionType:overflow_menu::ActionType::
@@ -723,6 +749,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuClearBrowsingData
+                            hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf openClearBrowsingData];
                                  }];
@@ -737,6 +764,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:NO
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuTranslateId
+                            hideItemText:
+                                l10n_util::GetNSString(
+                                    IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TRANSLATE)
                                  handler:^{
                                    [weakSelf translatePage];
                                  }];
@@ -744,6 +774,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (OverflowMenuAction*)newRequestDesktopAction {
   __weak __typeof(self) weakSelf = self;
+  NSString* hideItemText =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_MOBILE_SITE);
   return [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE
                               actionType:overflow_menu::ActionType::DesktopSite
@@ -751,6 +783,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:YES
                          accessibilityID:kToolsMenuRequestDesktopId
+                            hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf requestDesktopSite];
                                  }];
@@ -758,6 +791,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 - (OverflowMenuAction*)newFindInPageAction {
   __weak __typeof(self) weakSelf = self;
+  NSString* hideItemText =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FIND_IN_PAGE);
   return [self
       createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_FIND_IN_PAGE
                               actionType:overflow_menu::ActionType::FindInPage
@@ -765,6 +800,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuFindInPageId
+                            hideItemText:hideItemText
                                  handler:^{
                                    [weakSelf openFindInPage];
                                  }];
@@ -779,6 +815,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             systemSymbol:YES
                         monochromeSymbol:NO
                          accessibilityID:kToolsMenuTextZoom
+                            hideItemText:
+                                l10n_util::GetNSString(
+                                    IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TEXT_ZOOM)
                                  handler:^{
                                    [weakSelf openTextZoom];
                                  }];
@@ -960,44 +999,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 }
 
-- (NSString*)hideItemTextForActionType:(overflow_menu::ActionType)actionType {
-  switch (actionType) {
-    case overflow_menu::ActionType::Reload:
-    case overflow_menu::ActionType::NewTab:
-    case overflow_menu::ActionType::NewIncognitoTab:
-    case overflow_menu::ActionType::NewWindow:
-    case overflow_menu::ActionType::ReportAnIssue:
-    case overflow_menu::ActionType::Help:
-    case overflow_menu::ActionType::ShareChrome:
-    case overflow_menu::ActionType::EditActions:
-      // These items are unhideable
-      return nil;
-    case overflow_menu::ActionType::Follow:
-      return l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW);
-    case overflow_menu::ActionType::Bookmark:
-      return l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_BOOKMARK);
-    case overflow_menu::ActionType::ReadingList:
-      return l10n_util::GetNSString(
-          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_READING_LIST);
-    case overflow_menu::ActionType::ClearBrowsingData:
-      return l10n_util::GetNSString(
-          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_CLEAR_BROWSING_DATA);
-    case overflow_menu::ActionType::Translate:
-      return l10n_util::GetNSString(
-          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TRANSLATE);
-    case overflow_menu::ActionType::DesktopSite:
-      return l10n_util::GetNSString(
-          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_DESKTOP_SITE);
-    case overflow_menu::ActionType::FindInPage:
-      return l10n_util::GetNSString(
-          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FIND_IN_PAGE);
-    case overflow_menu::ActionType::TextZoom:
-      return l10n_util::GetNSString(
-          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TEXT_ZOOM);
-  }
-}
-
-#pragma mark - Private
+#pragma mark - Model Creation Utilities
 
 // Creates an OverflowMenuDestination to be displayed in the destinations
 // carousel.
@@ -1068,6 +1070,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                         systemSymbol:(BOOL)systemSymbol
                     monochromeSymbol:(BOOL)monochromeSymbol
                      accessibilityID:(NSString*)accessibilityID
+                        hideItemText:(NSString*)hideItemText
                              handler:(Handler)handler {
   OverflowMenuAction* action =
       [[OverflowMenuAction alloc] initWithName:name
@@ -1080,28 +1083,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                        handler:handler];
   action.actionType = static_cast<NSInteger>(actionType);
 
-  __weak __typeof(self) weakSelf = self;
   ActionRanking reorderableActions = [self basePageActions];
   // If this action is not reorderable, then don't add any longpress items.
   bool actionIsReorderable =
       std::find(reorderableActions.begin(), reorderableActions.end(),
                 actionType) != reorderableActions.end();
   if (IsOverflowMenuCustomizationEnabled() && actionIsReorderable) {
-    action.longPressItems = @[
-      [[OverflowMenuLongPressItem alloc]
-          initWithTitle:[self hideItemTextForActionType:actionType]
-             symbolName:@"eye.slash"
-                handler:^{
-                  [weakSelf hideActionType:actionType];
-                }],
-      [[OverflowMenuLongPressItem alloc]
-          initWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
-             symbolName:@"pencil"
-                handler:^{
-                  [weakSelf beginCustomizationFromActionType:actionType];
-                }],
-    ];
+    action.longPressItems =
+        [self actionLongPressItemsForActionType:actionType
+                                   hideItemText:hideItemText];
   }
   return action;
 }
@@ -1115,6 +1105,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                           systemSymbol:(BOOL)systemSymbol
                       monochromeSymbol:(BOOL)monochromeSymbol
                        accessibilityID:(NSString*)accessibilityID
+                          hideItemText:(NSString*)hideItemText
                                handler:(Handler)handler {
   NSString* name = l10n_util::GetNSString(nameID);
 
@@ -1124,8 +1115,40 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                    systemSymbol:systemSymbol
                                monochromeSymbol:monochromeSymbol
                                 accessibilityID:accessibilityID
+                                   hideItemText:hideItemText
                                         handler:handler];
 }
+
+// Returns the LongPress items for the given action and hide item text. Can
+// be used if actions need to update their name after action creation, as
+// the hide item text should correspond to the name.
+- (NSArray<OverflowMenuLongPressItem*>*)
+    actionLongPressItemsForActionType:(overflow_menu::ActionType)actionType
+                         hideItemText:(NSString*)hideItemText {
+  __weak __typeof(self) weakSelf = self;
+  NSMutableArray<OverflowMenuLongPressItem*>* longPressItems =
+      [[NSMutableArray alloc] init];
+  if (hideItemText) {
+    [longPressItems addObject:[[OverflowMenuLongPressItem alloc]
+                                  initWithTitle:hideItemText
+                                     symbolName:@"eye.slash"
+                                        handler:^{
+                                          [weakSelf hideActionType:actionType];
+                                        }]];
+  }
+  [longPressItems
+      addObject:[[OverflowMenuLongPressItem alloc]
+                    initWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
+                       symbolName:@"pencil"
+                          handler:^{
+                            [weakSelf
+                                beginCustomizationFromActionType:actionType];
+                          }]];
+  return [longPressItems copy];
+}
+
+#pragma mark - Private
 
 // Creates an OverflowMenuDestination for the Spotlight debugger.
 - (OverflowMenuDestination*)destinationForSpotlightDebugger:(Handler)handler {
@@ -1566,6 +1589,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.followAction.handler = ^{
       [weakSelf unfollowWebPage:webPageURLs];
     };
+    if (IsOverflowMenuCustomizationEnabled()) {
+      NSString* hideItemText =
+          l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_UNFOLLOW,
+                                  base::SysNSStringToUTF16(domainName));
+      self.followAction.longPressItems = [self
+          actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
+                               hideItemText:hideItemText];
+    }
   } else {
     __weak __typeof(self) weakSelf = self;
     self.followAction.name = l10n_util::GetNSStringF(
@@ -1574,6 +1605,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.followAction.handler = ^{
       [weakSelf followWebPage:webPageURLs];
     };
+    if (IsOverflowMenuCustomizationEnabled()) {
+      NSString* hideItemText =
+          l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW,
+                                  base::SysNSStringToUTF16(domainName));
+      self.followAction.longPressItems = [self
+          actionLongPressItemsForActionType:overflow_menu::ActionType::Follow
+                               hideItemText:hideItemText];
+    }
   }
 }
 
