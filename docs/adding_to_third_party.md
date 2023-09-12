@@ -241,6 +241,15 @@ dependency includes a license you should also use the "Licence File" field to
 reference it, regardless of whether it is shipped or not.
 
 
+**Multiple packages**
+Each package should have its own README.chromium. However, if this is not
+possible and the information for multiple packages must be placed in a single
+README.chromium, use the below line to separate the data for each package:
+```
+-------------------- DEPENDENCY DIVIDER --------------------
+```
+
+
 ### Add a LICENSE file and run related checks
 
 You need a LICENSE file. Example:
