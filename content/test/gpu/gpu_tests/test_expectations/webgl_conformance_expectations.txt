@@ -231,6 +231,7 @@ crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtens
 [ fuchsia web-engine-shell ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 [ fuchsia web-engine-shell passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 [ fuchsia web-engine-shell passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
+[ fuchsia web-engine-shell passthrough angle-vulkan ] WebglExtension_EXT_blend_func_extended [ Skip ]
 
 # Disabling as they cannot pass with protected memory.
 crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
