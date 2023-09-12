@@ -39,6 +39,14 @@ BASE_FEATURE(kAdAuctionReportingWithMacroApi,
              "AdAuctionReportingWithMacroApi",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls the capturing of the Ad-Auction-Signals header, and the maximum
+// allowed Ad-Auction-Signals header value.
+BASE_FEATURE(kAdAuctionSignals,
+             "AdAuctionSignals",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAdAuctionSignalsMaxSizeBytes{
+    &kAdAuctionSignals, "ad-auction-signals-max-size-bytes", 10000};
+
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Changes default Permissions Policy for features join-ad-interest-group and
 // run-ad-auction to a more restricted EnableForSelf.

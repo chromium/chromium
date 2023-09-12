@@ -39,6 +39,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionReportingWithMacroApi);
 
+// Controls the capturing of the Ad-Auction-Signals header, and the maximum
+// allowed Ad-Auction-Signals header value.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionSignals);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kAdAuctionSignalsMaxSizeBytes;
+
 // Runtime flag that changes default Permissions Policy for features
 // join-ad-interest-group and run-ad-auction to a more restricted EnableForSelf.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

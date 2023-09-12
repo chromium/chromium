@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/ad_auction_url_loader_interceptor.h"
 
+#include <stddef.h>
+
 #include "base/base64url.h"
 #include "base/strings/string_split.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -127,8 +129,12 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
   net::HttpResponseHeaders* headers = head->headers.get();
 
   std::string ad_auction_signals;
-  bool found_ad_auction_signals_header = headers->GetNormalizedHeader(
-      kAdAuctionSignalsResponseHeaderKey, &ad_auction_signals);
+  bool found_ad_auction_signals_header = false;
+
+  if (base::FeatureList::IsEnabled(blink::features::kAdAuctionSignals)) {
+    found_ad_auction_signals_header = headers->GetNormalizedHeader(
+        kAdAuctionSignalsResponseHeaderKey, &ad_auction_signals);
+  }
 
   if (found_ad_auction_signals_header) {
     headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
@@ -192,7 +198,10 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
     }
   }
 
-  if (found_ad_auction_signals_header && ad_auction_signals.size() <= 1000) {
+  if (found_ad_auction_signals_header &&
+      ad_auction_signals.size() <=
+          static_cast<size_t>(
+              blink::features::kAdAuctionSignalsMaxSizeBytes.Get())) {
     ad_auction_page_data->AddAuctionSignalsWitnessForOrigin(request_origin_,
                                                             ad_auction_signals);
   }

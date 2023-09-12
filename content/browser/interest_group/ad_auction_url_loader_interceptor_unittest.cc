@@ -1070,7 +1070,7 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   pending_request->client->OnReceiveResponse(
       CreateResponseHead(
           /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
-          /*ad_auction_signals_header_value=*/std::string(1001, '0')),
+          /*ad_auction_signals_header_value=*/std::string(10001, '0')),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
