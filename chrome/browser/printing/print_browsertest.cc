@@ -1033,22 +1033,23 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetchedScriptedPrint) {
 
 // Before invoking print preview, page scale is changed to a different value.
 // Test that when print preview is ready, in other words when printing is
-// finished, the page scale factor gets reset to initial scale.
+// finished, the page scale factor is still the same, and that it hasn't been
+// messed up by printing.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, ResetPageScaleAfterPrintPreview) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  contents->SetPageScale(1.5);
+  constexpr double kScaleFactor = 1.5;
+  contents->SetPageScale(kScaleFactor);
 
   PrintAndWaitUntilPreviewIsReady();
 
   double contents_page_scale_after_print =
       content::EvalJs(contents, "window.visualViewport.scale").ExtractDouble();
 
-  constexpr double kContentsInitialScale = 1.0;
-  EXPECT_EQ(kContentsInitialScale, contents_page_scale_after_print);
+  EXPECT_EQ(kScaleFactor, contents_page_scale_after_print);
 }
 
 // Printing frame content for the main frame of a generic webpage.

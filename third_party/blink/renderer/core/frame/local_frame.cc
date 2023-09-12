@@ -3041,6 +3041,7 @@ void LocalFrame::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
 }
 
 void LocalFrame::SetScaleFactor(float scale_factor) {
+  DCHECK(!GetDocument() || !GetDocument()->Printing());
   DCHECK(IsMainFrame());
 
   const PageScaleConstraints& constraints =

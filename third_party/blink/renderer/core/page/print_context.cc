@@ -26,12 +26,10 @@
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -170,11 +168,6 @@ void PrintContext::EndPrintMode() {
   is_printing_ = false;
   if (IsFrameValid()) {
     frame_->EndPrinting();
-
-    // Printing changes the viewport and content size which may result in
-    // changing the page scale factor. Call SetNeedsReset() so that we reset
-    // back to the initial page scale factor when we exit printing mode.
-    frame_->GetPage()->GetPageScaleConstraintsSet().SetNeedsReset(true);
   }
   linked_destinations_.clear();
   linked_destinations_valid_ = false;
