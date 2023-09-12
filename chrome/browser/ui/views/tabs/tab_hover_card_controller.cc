@@ -602,6 +602,12 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
     return;
   }
 
+  // Discarded tabs that don't already have a thumbnail won't get one.
+  if (tab->IsDiscarded() && !tab->HasThumbnail()) {
+    thumbnail_observer_->Observe(nullptr);
+    return;
+  }
+
   auto thumbnail = tab->data().thumbnail;
   if (!thumbnail) {
     hover_card_->SetPlaceholderImage();

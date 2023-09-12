@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 
@@ -79,6 +83,73 @@ TEST_F(TabHoverCardControllerTest, DisablePreviewsForTab) {
 
   controller->CreateHoverCard(target_tab);
   EXPECT_FALSE(controller->ArePreviewsEnabled());
+}
+
+TEST_F(TabHoverCardControllerTest, HidePreviewsForDiscardedTab) {
+  g_browser_process->local_state()->SetBoolean(prefs::kHoverCardImagesEnabled,
+                                               true);
+
+  AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+  AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+
+  auto controller =
+      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+
+  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  TabRendererData data;
+  data.is_tab_discarded = true;
+  target_tab->SetData(std::move(data));
+  controller->target_tab_ = target_tab;
+
+  controller->CreateHoverCard(target_tab);
+  controller->UpdateCardContent(target_tab);
+
+  EXPECT_EQ(controller->thumbnail_observer_.get()->current_image(), nullptr);
+  EXPECT_EQ(controller->thumbnail_wait_state_,
+            TabHoverCardController::kNotWaiting);
+}
+
+class TestThumbnailImageDelegate : public ThumbnailImage::Delegate {
+ public:
+  TestThumbnailImageDelegate() = default;
+  ~TestThumbnailImageDelegate() override = default;
+
+  void ThumbnailImageBeingObservedChanged(bool is_being_observed) override {
+    is_being_observed_ = is_being_observed;
+  }
+
+  bool is_being_observed() const { return is_being_observed_; }
+
+ private:
+  bool is_being_observed_ = false;
+};
+
+TEST_F(TabHoverCardControllerTest, ShowPreviewsForDiscardedTabWithThumbnail) {
+  g_browser_process->local_state()->SetBoolean(prefs::kHoverCardImagesEnabled,
+                                               true);
+
+  AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+  AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+
+  auto controller =
+      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+
+  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  TabRendererData data;
+  data.is_tab_discarded = true;
+  target_tab->SetData(std::move(data));
+  controller->target_tab_ = target_tab;
+
+  TestThumbnailImageDelegate delegate;
+  auto image = base::MakeRefCounted<ThumbnailImage>(&delegate);
+  controller->CreateHoverCard(target_tab);
+  controller->thumbnail_observer_.get()->Observe(image);
+
+  EXPECT_NE(controller->thumbnail_observer_.get()->current_image(), nullptr);
+  EXPECT_EQ(controller->thumbnail_wait_state_,
+            TabHoverCardController::kNotWaiting);
 }
 
 class TabHoverCardPreviewsEnabledPrefTest : public TestWithBrowserView {

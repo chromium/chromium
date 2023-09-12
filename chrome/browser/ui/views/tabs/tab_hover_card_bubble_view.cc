@@ -467,9 +467,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // Note that this code has to go after CreateBubble() above, since setting up
   // the placeholder image and background color require a ColorProvider, which
   // is only available once this View has been added to its widget.
-  if (thumbnail_view_ &&
-      (!tab->data().thumbnail || !tab->data().thumbnail->has_data()) &&
-      !tab->IsActive()) {
+  if (thumbnail_view_ && !tab->HasThumbnail() && !tab->IsActive()) {
     thumbnail_view_->SetPlaceholderImage();
   }
 
@@ -485,10 +483,11 @@ TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   // Preview image is never visible for the active tab.
   if (thumbnail_view_) {
-    if (tab->IsActive())
+    if (tab->IsActive() || (tab->IsDiscarded() && !tab->HasThumbnail())) {
       thumbnail_view_->ClearImage();
-    else
+    } else {
       thumbnail_view_->SetWaitingForImage();
+    }
   }
 
   std::u16string title;

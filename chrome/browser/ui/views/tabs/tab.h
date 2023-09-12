@@ -130,6 +130,12 @@ class Tab : public gfx::AnimationDelegate,
   // Returns true if the tab is selected.
   bool IsSelected() const;
 
+  // Returns true if this tab is discarded.
+  bool IsDiscarded() const;
+
+  // Returns true if this tab has captured a thumbnail.
+  bool HasThumbnail() const;
+
   // Sets the data this tabs displays. Should only be called after Tab is added
   // to widget hierarchy.
   void SetData(TabRendererData data);

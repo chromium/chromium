@@ -841,6 +841,14 @@ bool Tab::IsSelected() const {
   return controller_->IsTabSelected(this);
 }
 
+bool Tab::IsDiscarded() const {
+  return data().is_tab_discarded;
+}
+
+bool Tab::HasThumbnail() const {
+  return data().thumbnail && data().thumbnail->has_data();
+}
+
 void Tab::SetData(TabRendererData data) {
   DCHECK(GetWidget());
 

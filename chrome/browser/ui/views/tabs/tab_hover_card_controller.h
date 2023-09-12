@@ -73,6 +73,10 @@ class TabHoverCardController
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, DisablePreviewsForTab);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
+                           HidePreviewsForDiscardedTab);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
+                           ShowPreviewsForDiscardedTabWithThumbnail);
   class EventSniffer;
 
   enum ThumbnailWaitState {
