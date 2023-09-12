@@ -5,6 +5,13 @@
 module ash.settings.mojom;
 
 import "ash/public/mojom/input_device_settings.mojom";
+import "ash/public/mojom/accelerator_actions.mojom";
+
+// Represents the options for user in the dropdown of button customization.
+struct ActionChoice {
+  ash.mojom.AcceleratorAction action_id;
+  string name;
+};
 
 // Interface for observing keyboard settings changes in OSSettings SWA.
 interface KeyboardSettingsObserver {
@@ -80,4 +87,12 @@ interface InputDeviceSettingsProvider {
   StartObserving(uint32 device_id);
   // Stops observing customizable button presses for all devices.
   StopObserving();
+
+  // Returns the set of actions that are valid for mouse button customization.
+  GetActionsForMouseButtonCustomization() => (array<ActionChoice> options);
+
+  // Returns the set of actions that are valid for graphics tablet button
+  // customization.
+  GetActionsForGraphicsTabletButtonCustomization() =>
+      (array<ActionChoice> options);
 };

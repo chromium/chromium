@@ -81,6 +81,10 @@ class InputDeviceSettingsProvider
       const ::ash::mojom::MousePolicies& mouse_policies) override;
   void StartObserving(uint32_t device_id) override;
   void StopObserving() override;
+  void GetActionsForMouseButtonCustomization(
+      GetActionsForMouseButtonCustomizationCallback callback) override;
+  void GetActionsForGraphicsTabletButtonCustomization(
+      GetActionsForGraphicsTabletButtonCustomizationCallback callback) override;
 
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;

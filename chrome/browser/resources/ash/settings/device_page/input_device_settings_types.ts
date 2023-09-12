@@ -130,10 +130,8 @@ export type InputDeviceSettingsPolicy =
     InputDeviceSettingsTypes.InputDeviceSettingsPolicy;
 export type KeyboardPolicies = InputDeviceSettingsTypes.KeyboardPolicies;
 export type MousePolicies = InputDeviceSettingsTypes.MousePolicies;
-export interface ActionChoice {
-  actionId: AcceleratorAction;
-  name: string;
-}
+
+export type ActionChoice = InputDeviceSettingsProviderTypes.ActionChoice;
 
 /** Enumeration of accelerator types. */
 export type Vkey = AcceleratorKeysTypes.VKey;
@@ -198,15 +196,7 @@ export interface GraphicsTabletObserverInterface {
 }
 
 interface FakeInputDeviceSettingsProviderInterface extends
-    InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface {
-  RestoreDefaultKeyboardRemappings(id: number): void;
-  setKeyboardSettings(id: number, settings: KeyboardSettings): void;
-  setMouseSettings(id: number, settings: MouseSettings): void;
-  setTouchpadSettings(id: number, settings: TouchpadSettings): void;
-  setPointingStickSettings(id: number, settings: PointingStickSettings): void;
-  getActionsForMouseButtonCustomization(): Promise<ActionChoice[]>;
-  getActionsForGraphicsTabletButtonCustomization(): Promise<ActionChoice[]>;
-}
+    InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface {}
 
 // Type alias to enable use of in-progress InputDeviceSettingsProvider api.
 export type InputDeviceSettingsProviderInterface = Required<

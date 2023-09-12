@@ -101,13 +101,9 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
    * initializing the page and pref with the mouse data.
    */
   private async initializeMouse(): Promise<void> {
-    // TODO(yyhyyh@): Remove the if condition after getActions functions is
-    // added in the mojo.
-    if (this.inputDeviceSettingsProvider_
-            .getActionsForMouseButtonCustomization) {
-      this.buttonActionList_ = await this.inputDeviceSettingsProvider_
-                                   .getActionsForMouseButtonCustomization();
-    }
+    this.buttonActionList_ = (await this.inputDeviceSettingsProvider_
+                                  .getActionsForMouseButtonCustomization())
+                                 ?.options;
     const mouseId = this.getMouseIdFromUrl();
     const searchedMouse =
         this.mouseList.find((mouse: Mouse) => mouse.id === mouseId);

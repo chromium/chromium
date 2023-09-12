@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/views/widget/widget.h"
@@ -16,6 +18,40 @@
 namespace ash::settings {
 
 namespace {
+
+// Used to represent a constant version of the mojom::ActionChoice struct.
+struct ActionChoice {
+  const char* name;
+  AcceleratorAction action_id;
+};
+
+// TODO(dpad): Update list to official list of actions.
+// TODO(b/286930911): Translate action string names.
+constexpr ActionChoice kMouseButtonOptions[] = {
+    {"Volume mute", AcceleratorAction::kVolumeMute},
+    {"Microphone mute", AcceleratorAction::kMicrophoneMuteToggle},
+    {"Play/Pause media", AcceleratorAction::kMediaPlayPause},
+    {"Overview", AcceleratorAction::kToggleOverview},
+    {"Screenshot", AcceleratorAction::kTakeScreenshot},
+    {"Emoji Picker", AcceleratorAction::kShowEmojiPicker},
+    {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
+    {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
+    {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
+};
+
+// TODO(dpad): Update list to official list of actions.
+// TODO(b/286930911): Translate action string names.
+constexpr ActionChoice kGraphicsTabletOptions[] = {
+    {"Volume mute", AcceleratorAction::kVolumeMute},
+    {"Microphone mute", AcceleratorAction::kMicrophoneMuteToggle},
+    {"Play/Pause media", AcceleratorAction::kMediaPlayPause},
+    {"Overview", AcceleratorAction::kToggleOverview},
+    {"Screenshot", AcceleratorAction::kTakeScreenshot},
+    {"Emoji Picker", AcceleratorAction::kShowEmojiPicker},
+    {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
+    {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
+    {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
+};
 
 template <typename T>
 struct CustomDeviceKeyComparator {
@@ -360,6 +396,25 @@ void InputDeviceSettingsProvider::SetWidgetForTesting(views::Widget* widget) {
   widget_ = widget;
   widget_->AddObserver(this);
   HandleObserving();
+}
+
+void InputDeviceSettingsProvider::
+    GetActionsForGraphicsTabletButtonCustomization(
+        GetActionsForGraphicsTabletButtonCustomizationCallback callback) {
+  std::vector<mojom::ActionChoicePtr> choices;
+  for (const auto& choice : kGraphicsTabletOptions) {
+    choices.push_back(mojom::ActionChoice::New(choice.action_id, choice.name));
+  }
+  std::move(callback).Run(std::move(choices));
+}
+
+void InputDeviceSettingsProvider::GetActionsForMouseButtonCustomization(
+    GetActionsForMouseButtonCustomizationCallback callback) {
+  std::vector<mojom::ActionChoicePtr> choices;
+  for (const auto& choice : kMouseButtonOptions) {
+    choices.push_back(mojom::ActionChoice::New(choice.action_id, choice.name));
+  }
+  std::move(callback).Run(std::move(choices));
 }
 
 }  // namespace ash::settings

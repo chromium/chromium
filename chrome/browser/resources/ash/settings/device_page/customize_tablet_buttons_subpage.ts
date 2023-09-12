@@ -99,15 +99,10 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
    */
   private async initializeTablet(): Promise<void> {
     const tabletId = this.getGraphicsTabletIdFromUrl();
-
-    // TODO(yyhyyh@): Remove the if condition after getActions functions is
-    // added in the mojo.
-    if (this.inputDeviceSettingsProvider_
-            .getActionsForGraphicsTabletButtonCustomization) {
-      this.buttonActionList_ =
-          await this.inputDeviceSettingsProvider_
-              .getActionsForGraphicsTabletButtonCustomization();
-    }
+    this.buttonActionList_ =
+        (await this.inputDeviceSettingsProvider_
+             .getActionsForGraphicsTabletButtonCustomization())
+            ?.options;
     const searchedGraphicsTablet = this.graphicsTablets.find(
         (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
     this.selectedTablet = castExists(searchedGraphicsTablet);

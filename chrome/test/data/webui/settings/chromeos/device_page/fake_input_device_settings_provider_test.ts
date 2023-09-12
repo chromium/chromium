@@ -155,11 +155,12 @@ suite('FakeInputDeviceSettings', () => {
   test('getActionsForButtonCustomization', async () => {
     provider.setFakeActionsForMouseButtonCustomization(fakeMouseButtonActions);
     const mouseActions = await provider.getActionsForMouseButtonCustomization();
-    assertDeepEquals(mouseActions, fakeMouseButtonActions);
+    assertDeepEquals(mouseActions.options, fakeMouseButtonActions);
     provider.setFakeActionsForGraphicsTabletButtonCustomization(
         fakeGraphicsTabletButtonActions);
     const graphicsTabletActions =
         await provider.getActionsForGraphicsTabletButtonCustomization();
-    assertDeepEquals(graphicsTabletActions, fakeGraphicsTabletButtonActions);
+    assertDeepEquals(
+        graphicsTabletActions.options, fakeGraphicsTabletButtonActions);
   });
 });

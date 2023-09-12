@@ -19,8 +19,8 @@ interface InputDeviceSettingsType {
   fakePointingSticks: PointingStick[];
   fakeStyluses: Stylus[];
   fakeGraphicsTablets: GraphicsTablet[];
-  fakeMouseButtonActions: ActionChoice[];
-  fakeGraphicsTabletButtonActions: ActionChoice[];
+  fakeMouseButtonActions: {options: ActionChoice[]};
+  fakeGraphicsTabletButtonActions: {options: ActionChoice[]};
 }
 
 class FakeMethodState {
@@ -318,22 +318,24 @@ export class FakeInputDeviceSettingsProvider implements
     this.notifyGraphicsTabletListUpdated();
   }
 
-  getActionsForMouseButtonCustomization(): Promise<ActionChoice[]> {
+  getActionsForMouseButtonCustomization(): Promise<{options: ActionChoice[]}> {
     return this.methods.resolveMethod('fakeMouseButtonActions');
   }
 
   setFakeActionsForMouseButtonCustomization(actionChoices: ActionChoice[]):
       void {
-    this.methods.setResult('fakeMouseButtonActions', actionChoices);
+    this.methods.setResult('fakeMouseButtonActions', {options: actionChoices});
   }
 
-  getActionsForGraphicsTabletButtonCustomization(): Promise<ActionChoice[]> {
+  getActionsForGraphicsTabletButtonCustomization():
+      Promise<{options: ActionChoice[]}> {
     return this.methods.resolveMethod('fakeGraphicsTabletButtonActions');
   }
 
   setFakeActionsForGraphicsTabletButtonCustomization(actionChoices:
                                                          ActionChoice[]): void {
-    this.methods.setResult('fakeGraphicsTabletButtonActions', actionChoices);
+    this.methods.setResult(
+        'fakeGraphicsTabletButtonActions', {options: actionChoices});
   }
 
   startObserving(id: number): void {
