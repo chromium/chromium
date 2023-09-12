@@ -79,7 +79,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         doReturn(mFolderItem).when(mBookmarkModel).getBookmarkById(mFolderId);
         doReturn(FOLDER_CHILD_COUNT).when(mBookmarkModel).getTotalBookmarkCount(mFolderId);
         doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
-        doReturn(UNREAD_CHILD_COUNT).when(mBookmarkModel).getUnreadCount(mReadingListFolderId);
+        doReturn(UNREAD_CHILD_COUNT).when(mBookmarkModel).getUnreadCount();
 
         // Setup BookmarkImageFetcher.
         doCallback(1,

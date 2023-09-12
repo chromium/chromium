@@ -1364,6 +1364,14 @@ void BookmarkBridge::ReorderChildren(
   bookmark_model_->ReorderChildren(bookmark_node, ordered_nodes);
 }
 
+int BookmarkBridge::GetUnreadCount(JNIEnv* env) {
+  int count = 0;
+  for (const auto& child_node : reading_list_manager_->GetRoot()->children()) {
+    count += reading_list_manager_->GetReadStatus(child_node.get()) ? 0 : 1;
+  }
+  return count;
+}
+
 // Should destroy the bookmark bridge, if OTR profile is destroyed not to delete
 // related resources twice.
 void BookmarkBridge::OnProfileWillBeDestroyed(Profile* profile) {

@@ -289,6 +289,8 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   std::u16string GetTitle(const bookmarks::BookmarkNode* node) const;
 
+  jint GetUnreadCount(JNIEnv* env);
+
   // ProfileObserver override
   void OnProfileWillBeDestroyed(Profile* profile) override;
 

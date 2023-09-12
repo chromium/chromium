@@ -814,6 +814,13 @@ class BookmarkBridge {
                 mNativeBookmarkBridge, BookmarkBridge.this);
     }
 
+    /** Returns the total number of unread reading list articles. */
+    public int getUnreadCount() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeBookmarkBridge == 0) return 0;
+        return BookmarkBridgeJni.get().getUnreadCount(mNativeBookmarkBridge);
+    }
+
     @CalledByNative
     private void bookmarkModelLoaded() {
         mIsNativeBookmarkModelLoaded = true;
@@ -1018,5 +1025,6 @@ class BookmarkBridge {
         void reorderChildren(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
                 long[] orderedNodes);
         boolean isBookmarked(long nativeBookmarkBridge, GURL url);
+        int getUnreadCount(long nativeBookmarkBridge);
     }
 }

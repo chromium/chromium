@@ -682,7 +682,7 @@ public class BookmarkUtils {
      */
     public static int getChildCountForDisplay(BookmarkId id, BookmarkModel bookmarkModel) {
         if (id.getType() == BookmarkType.READING_LIST) {
-            return bookmarkModel.getUnreadCount(id);
+            return bookmarkModel.getUnreadCount();
         } else {
             return bookmarkModel.getTotalBookmarkCount(id);
         }
