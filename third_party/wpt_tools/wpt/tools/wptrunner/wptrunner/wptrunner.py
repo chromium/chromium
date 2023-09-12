@@ -114,6 +114,7 @@ def get_loader(test_paths, product, **kwargs):
                                         include_h2=h2_enabled,
                                         include_webtransport_h3=kwargs["enable_webtransport_h3"],
                                         skip_timeout=kwargs["skip_timeout"],
+                                        skip_crash=kwargs["skip_crash"],
                                         skip_implementation_status=kwargs["skip_implementation_status"],
                                         chunker_kwargs=chunker_kwargs)
     return test_source, test_loader

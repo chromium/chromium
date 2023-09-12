@@ -767,7 +767,10 @@ class TestRunnerManager(threading.Thread):
             subsuite, test_type, test, test_group, group_metadata = self.get_next_test()
             if test is None:
                 return RunnerManagerState.stop(force_stop)
-            if test_type != self.state.test_type:
+            if subsuite != self.state.subsuite:
+                self.logger.info(f"Restarting browser for new subsuite:{subsuite}")
+                restart = True
+            elif test_type != self.state.test_type:
                 self.logger.info(f"Restarting browser for new test type:{test_type}")
                 restart = True
             elif self.restart_on_new_group and test_group is not self.state.test_group:

@@ -10,7 +10,7 @@ from datetime import timedelta
 from . import config
 from . import products
 from . import wpttest
-from .formatters import chromium, wptreport, wptscreenshot
+from .formatters import wptreport, wptscreenshot
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -158,6 +158,8 @@ scheme host and port.""")
                                       help="Path to json file containing a mapping {group_name: [test_ids]}")
     test_selection_group.add_argument("--skip-timeout", action="store_true",
                                       help="Skip tests that are expected to time out")
+    test_selection_group.add_argument("--skip-crash", action="store_true",
+                                      help="Skip tests that are expected to crash")
     test_selection_group.add_argument("--skip-implementation-status",
                                       action="append",
                                       choices=["not-implementing", "backlog", "implementing"],
@@ -442,7 +444,6 @@ scheme host and port.""")
                                       "Cache API (default: %s)" % wptscreenshot.DEFAULT_API,
                                       {"wptscreenshot"}, "store")
 
-    commandline.log_formatters["chromium"] = (chromium.ChromiumFormatter, "Chromium Layout Tests format")
     commandline.log_formatters["wptreport"] = (wptreport.WptreportFormatter, "wptreport format")
     commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 

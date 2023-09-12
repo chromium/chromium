@@ -107,9 +107,9 @@ def check_args(**kwargs):
 def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
     browser_kwargs = {"binary": kwargs["binary"],
                       "webdriver_binary": kwargs["webdriver_binary"],
-                      "webdriver_args": kwargs["webdriver_args"],
+                      "webdriver_args": kwargs["webdriver_args"].copy(),
                       "prefs_root": kwargs["prefs_root"],
-                      "extra_prefs": kwargs["extra_prefs"],
+                      "extra_prefs": kwargs["extra_prefs"].copy(),
                       "test_type": test_type,
                       "debug_info": kwargs["debug_info"],
                       "symbols_path": kwargs["symbols_path"],
@@ -119,7 +119,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "e10s": kwargs["gecko_e10s"],
                       "enable_fission": run_info_data["fission"],
                       "stackfix_dir": kwargs["stackfix_dir"],
-                      "binary_args": kwargs["binary_args"],
+                      "binary_args": kwargs["binary_args"].copy(),
                       "timeout_multiplier": get_timeout_multiplier(test_type,
                                                                    run_info_data,
                                                                    **kwargs),
@@ -216,8 +216,7 @@ def run_info_extras(**kwargs):
           "fission": enable_fission,
           "sessionHistoryInParent": (enable_fission or
                                      not get_bool_pref("fission.disableSessionHistoryInParent")),
-          "swgl": get_bool_pref("gfx.webrender.software"),
-          "editorLegacyDirectionMode": get_bool_pref_if_exists("editor.join_split_direction.compatible_with_the_other_browsers") is False}
+          "swgl": get_bool_pref("gfx.webrender.software")}
 
     rv.update(run_info_browser_version(**kwargs))
 
@@ -247,8 +246,7 @@ def update_properties():
         "swgl",
         "asan",
         "tsan",
-        "subsuite",
-        "editorLegacyDirectionMode"], {
+        "subsuite"], {
         "os": ["version"],
         "processor": ["bits"]})
 
@@ -915,11 +913,6 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
                           headless,
                           chaos_mode_flags)
         env["RUST_BACKTRACE"] = "1"
-        # This doesn't work with wdspec tests
-        # In particular tests can create a session without passing in the capabilites
-        # and in those cases we get the default geckodriver profile which doesn't
-        # guarantee zero network access
-        del env["MOZ_DISABLE_NONLOCAL_CONNECTIONS"]
         return env
 
     def create_output_handler(self, cmd):
