@@ -61,6 +61,7 @@ bool FieldCanFitDataForFieldType(int max_length, ServerFieldType type) {
 // static
 std::unique_ptr<FormField> CreditCardField::Parse(
     AutofillScanner* scanner,
+    const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     PatternSource pattern_source,
     LogManager* log_manager) {

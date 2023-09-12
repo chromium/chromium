@@ -78,6 +78,7 @@ class FormField {
   // in the form, which is why its parsing logic is extracted to its own method.
   static void ParseStandaloneCVCFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source,
       FieldCandidatesMap& field_candidates,
@@ -202,6 +203,7 @@ class FormField {
   // ParseFormFieldsPass() helper function.
   typedef std::unique_ptr<FormField> ParseFunction(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       PatternSource pattern_source,
       LogManager* log_manager);
@@ -268,6 +270,7 @@ class FormField {
   static void ParseFormFieldsPass(ParseFunction parse,
                                   const std::vector<AutofillField*>& fields,
                                   FieldCandidatesMap& field_candidates,
+                                  const GeoIpCountryCode& client_country,
                                   const LanguageCode& page_language,
                                   PatternSource pattern_source,
                                   LogManager* log_manager);

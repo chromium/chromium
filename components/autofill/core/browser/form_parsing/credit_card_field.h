@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/language_code.h"
 
@@ -29,10 +30,12 @@ class CreditCardField : public FormField {
   CreditCardField& operator=(const CreditCardField&) = delete;
 
   ~CreditCardField() override;
-  static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
-                                          const LanguageCode& page_language,
-                                          PatternSource pattern_source,
-                                          LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(
+      AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
+      const LanguageCode& page_language,
+      PatternSource pattern_source,
+      LogManager* log_manager);
 
   // Instructions for how to format an expiration date for a text field.
   struct ExpirationDateFormat {

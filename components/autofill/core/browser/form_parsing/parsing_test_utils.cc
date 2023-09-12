@@ -98,7 +98,7 @@ void FormFieldTestBase::AddTextFormFieldData(
 void FormFieldTestBase::ClassifyAndVerify(ParseResult parse_result,
                                           const LanguageCode& page_language) {
   AutofillScanner scanner(list_);
-  field_ = Parse(&scanner, page_language);
+  field_ = Parse(&scanner, GeoIpCountryCode(""), page_language);
 
   if (parse_result == ParseResult::NOT_PARSED) {
     ASSERT_EQ(nullptr, field_.get());

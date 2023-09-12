@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/language_code.h"
 
@@ -20,10 +21,12 @@ class LogManager;
 // Numeric quantities that are not eligible to be filled by Autofill.
 class NumericQuantityField : public FormField {
  public:
-  static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
-                                          const LanguageCode& page_language,
-                                          PatternSource pattern_source,
-                                          LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(
+      AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
+      const LanguageCode& page_language,
+      PatternSource pattern_source,
+      LogManager* log_manager);
 
   NumericQuantityField(const NumericQuantityField&) = delete;
   NumericQuantityField& operator=(const NumericQuantityField&) = delete;

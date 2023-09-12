@@ -19,8 +19,10 @@ class IbanFieldTest
  protected:
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language = LanguageCode("en")) override {
-    return IbanField::Parse(scanner, page_language, *GetActivePatternSource(),
+    return IbanField::Parse(scanner, client_country, page_language,
+                            *GetActivePatternSource(),
                             /*log_manager=*/nullptr);
   }
 };

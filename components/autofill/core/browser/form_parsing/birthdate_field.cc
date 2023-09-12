@@ -37,6 +37,7 @@ BirthdateField::BirthdateField(const AutofillField* day,
 // static
 std::unique_ptr<FormField> BirthdateField::Parse(
     AutofillScanner* scanner,
+    const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     PatternSource pattern_source,
     LogManager* log_manager) {

@@ -21,8 +21,9 @@ class StandaloneCvcFieldTest
  protected:
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language = LanguageCode("en")) override {
-    return StandaloneCvcField::Parse(scanner, page_language,
+    return StandaloneCvcField::Parse(scanner, client_country, page_language,
                                      *GetActivePatternSource(),
                                      /*log_manager=*/nullptr);
   }

@@ -83,60 +83,67 @@ void FormField::ParseFormFields(
 
   // Email pass.
   ParseFormFieldsPass(EmailField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
   bool found_email_field = !field_candidates.empty();
 
   // Phone pass.
   ParseFormFieldsPass(PhoneField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
 
   // Travel pass.
   ParseFormFieldsPass(TravelField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
 
   // Address pass.
   ParseFormFieldsPass(AddressField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
 
   // Birthdate pass.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableBirthdateParsing)) {
     ParseFormFieldsPass(BirthdateField::Parse, processed_fields,
-                        field_candidates, page_language, pattern_source,
-                        log_manager);
+                        field_candidates, client_country, page_language,
+                        pattern_source, log_manager);
   }
 
   // Numeric quantity pass.
   ParseFormFieldsPass(NumericQuantityField::Parse, processed_fields,
-                      field_candidates, page_language, pattern_source,
-                      log_manager);
+                      field_candidates, client_country, page_language,
+                      pattern_source, log_manager);
 
   const size_t candidates_size = field_candidates.size();
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,
-                      field_candidates, page_language, pattern_source,
-                      log_manager);
+                      field_candidates, client_country, page_language,
+                      pattern_source, log_manager);
   bool found_cc_fields = candidates_size != field_candidates.size();
   if (base::FeatureList::IsEnabled(
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields) &&
       !found_email_field && !found_cc_fields) {
     // No email or cc fields found. Standalone CVC field pass for the VCN card
     // on file case.
-    ParseStandaloneCVCFields(fields, page_language, pattern_source,
-                             field_candidates, log_manager);
+    ParseStandaloneCVCFields(fields, client_country, page_language,
+                             pattern_source, field_candidates, log_manager);
     // Any detected standalone cvc fields are considered fillable single fields.
   }
 
   // Price pass.
   ParseFormFieldsPass(PriceField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
 
   // Name pass.
   ParseFormFieldsPass(NameField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
 
   // Search pass.
   ParseFormFieldsPass(SearchField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
 
   // Deduce `field_candidates` for the `processed_fields` by parsing their
   // `parsable_name()` as an autocomplete attribute.
@@ -271,32 +278,34 @@ void FormField::ParseSingleFieldForms(
 
   // Merchant promo code pass.
   ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
-                      field_candidates, page_language, pattern_source,
-                      log_manager);
+                      field_candidates, client_country, page_language,
+                      pattern_source, log_manager);
 
   // IBAN pass.
   ParseFormFieldsPass(IbanField::Parse, processed_fields, field_candidates,
-                      page_language, pattern_source, log_manager);
+                      client_country, page_language, pattern_source,
+                      log_manager);
 
   if (AddressField::IsStandaloneZipSupported(client_country)) {
     // In some countries we observe address forms that are particularly small
     // (e.g. only a zip code.)
     ParseFormFieldsPass(AddressField::ParseStandaloneZip, processed_fields,
-                        field_candidates, page_language, pattern_source,
-                        log_manager);
+                        field_candidates, client_country, page_language,
+                        pattern_source, log_manager);
   }
 }
 
 void FormField::ParseStandaloneCVCFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     PatternSource pattern_source,
     FieldCandidatesMap& field_candidates,
     LogManager* log_manager) {
   std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
   ParseFormFieldsPass(StandaloneCvcField::Parse, processed_fields,
-                      field_candidates, page_language, pattern_source,
-                      log_manager);
+                      field_candidates, client_country, page_language,
+                      pattern_source, log_manager);
 }
 
 // static
@@ -562,13 +571,14 @@ bool FormField::Match(const AutofillField* field,
 void FormField::ParseFormFieldsPass(ParseFunction parse,
                                     const std::vector<AutofillField*>& fields,
                                     FieldCandidatesMap& field_candidates,
+                                    const GeoIpCountryCode& client_country,
                                     const LanguageCode& page_language,
                                     PatternSource pattern_source,
                                     LogManager* log_manager) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {
-    std::unique_ptr<FormField> form_field =
-        parse(&scanner, page_language, pattern_source, log_manager);
+    std::unique_ptr<FormField> form_field = parse(
+        &scanner, client_country, page_language, pattern_source, log_manager);
     if (form_field == nullptr) {
       scanner.Advance();
     } else {

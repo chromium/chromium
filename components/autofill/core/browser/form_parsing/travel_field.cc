@@ -15,10 +15,12 @@ namespace autofill {
 TravelField::~TravelField() = default;
 
 // static
-std::unique_ptr<FormField> TravelField::Parse(AutofillScanner* scanner,
-                                              const LanguageCode& page_language,
-                                              PatternSource pattern_source,
-                                              LogManager* log_manager) {
+std::unique_ptr<FormField> TravelField::Parse(
+    AutofillScanner* scanner,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    LogManager* log_manager) {
   if (!scanner || scanner->IsEnd())
     return nullptr;
 

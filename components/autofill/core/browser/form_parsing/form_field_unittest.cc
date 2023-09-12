@@ -51,9 +51,9 @@ class FormFieldTest
   }
 
   int ParseStandaloneCVCFields() {
-    FormField::ParseStandaloneCVCFields(list_, LanguageCode(""),
-                                        GetActivePatternSource().value(),
-                                        field_candidates_map_);
+    FormField::ParseStandaloneCVCFields(
+        list_, GeoIpCountryCode(""), LanguageCode(""),
+        GetActivePatternSource().value(), field_candidates_map_);
     return field_candidates_map_.size();
   }
 
@@ -61,6 +61,7 @@ class FormFieldTest
   // This function is unused in these unit tests, because FormField is not a
   // parser itself, but the infrastructure combining them.
   std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                   const GeoIpCountryCode& client_country,
                                    const LanguageCode& page_language) override {
     return nullptr;
   }

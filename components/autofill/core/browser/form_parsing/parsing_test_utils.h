@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -95,6 +96,7 @@ class FormFieldTestBase {
   // Apply the parsing with a specific parser.
   virtual std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language) = 0;
 
   FieldRendererId MakeFieldRendererId();

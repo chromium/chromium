@@ -27,8 +27,10 @@ class NameFieldTest
  protected:
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language = LanguageCode("us")) override {
-    return NameField::Parse(scanner, page_language, *GetActivePatternSource(),
+    return NameField::Parse(scanner, client_country, page_language,
+                            *GetActivePatternSource(),
                             /*log_manager=*/nullptr);
   }
 };

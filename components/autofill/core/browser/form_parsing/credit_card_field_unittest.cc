@@ -90,8 +90,9 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
  protected:
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language = LanguageCode("us")) override {
-    return CreditCardField::Parse(scanner, page_language,
+    return CreditCardField::Parse(scanner, client_country, page_language,
                                   *GetActivePatternSource(), nullptr);
   }
 
@@ -102,7 +103,7 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
     while (!scanner.IsEnd()) {
       // An empty page_language means the language is unknown and patterns of
       // all languages are used.
-      field_ = Parse(&scanner, page_language);
+      field_ = Parse(&scanner, GeoIpCountryCode(""), page_language);
       if (field_ == nullptr) {
         scanner.Advance();
       } else {

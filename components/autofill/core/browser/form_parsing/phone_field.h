@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/common/language_code.h"
@@ -33,10 +34,12 @@ class PhoneField : public FormField {
   PhoneField(const PhoneField&) = delete;
   PhoneField& operator=(const PhoneField&) = delete;
 
-  static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
-                                          const LanguageCode& page_language,
-                                          PatternSource pattern_source,
-                                          LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(
+      AutofillScanner* scanner,
+      const GeoIpCountryCode& client_country,
+      const LanguageCode& page_language,
+      PatternSource pattern_source,
+      LogManager* log_manager);
 
 #if defined(UNIT_TEST)
   // Assign types to the fields for the testing purposes.

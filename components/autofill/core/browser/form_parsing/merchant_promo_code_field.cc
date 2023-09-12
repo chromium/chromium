@@ -14,6 +14,7 @@ namespace autofill {
 // static
 std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
     AutofillScanner* scanner,
+    const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     PatternSource pattern_source,
     LogManager* log_manager) {
