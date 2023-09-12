@@ -186,6 +186,8 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   VkImageCreateFlags vk_create = 0;
 
+  // Using external sampling is only possible when creating from GMBs.
+  CHECK(!format.PrefersExternalSampler());
   int num_planes = format.NumberOfPlanes();
   std::vector<TextureHolderVk> textures;
   textures.reserve(num_planes);
@@ -708,6 +710,15 @@ bool ExternalVkImageBacking::MakeGLContextCurrent() {
 }
 
 bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
+  // It is not possible to import into GL when using external sampling.
+  // Short-circuit out if this is requested (it should not be requested in
+  // production, but might be in fuzzing flows).
+  if (format().PrefersExternalSampler()) {
+    LOG(ERROR)
+        << "Importing textures with external sampling into GL is not possible";
+    return false;
+  }
+
   gl_textures_.reserve(vk_textures_.size());
   for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
     if (!CreateGLTexture(is_passthrough, plane)) {
