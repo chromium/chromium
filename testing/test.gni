@@ -10,7 +10,6 @@ import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
-import("//build/config/rts.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build_overrides/build.gni")
 
@@ -196,24 +195,6 @@ template("mixed_test") {
 #   allow_cleartext_traffic: (Android, optional) whether to allow cleartext
 #      network requests during the test.
 template("test") {
-  # Ensures the rts file exists and if not, creates a dummy file
-  if (use_rts) {
-    action("${target_name}__rts_filters") {
-      script = "//build/add_rts_filters.py"
-      rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
-      inverted_rts_file =
-          "${root_build_dir}/gen/rts/${invoker.target_name}_inverted.filter"
-      args = [
-        rebase_path(rts_file, root_build_dir),
-        rebase_path(inverted_rts_file, root_build_dir),
-      ]
-      outputs = [
-        rts_file,
-        inverted_rts_file,
-      ]
-    }
-  }
-
   testonly = true
   if (!is_ios) {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
@@ -308,10 +289,6 @@ template("test") {
 
         # Don't output to the root or else conflict with the group() below.
         output_name = rebase_path(_exec_output, root_out_dir)
-
-        if (use_rts) {
-          data_deps += [ ":${invoker.target_name}__rts_filters" ]
-        }
       }
 
       create_native_executable_dist(_dist_target) {
@@ -320,13 +297,6 @@ template("test") {
         deps = [ ":$_exec_target" ]
         if (defined(invoker.extra_dist_files)) {
           extra_files = invoker.extra_dist_files
-        }
-
-        if (use_rts) {
-          if (!defined(data_deps)) {
-            data_deps = []
-          }
-          data_deps += [ ":${invoker.target_name}__rts_filters" ]
         }
       }
     } else {
@@ -453,10 +423,6 @@ template("test") {
         if (defined(_unwind_table_asset_name)) {
           deps += [ ":${_unwind_table_asset_name}" ]
         }
-
-        if (use_rts) {
-          data_deps = [ ":${invoker.target_name}__rts_filters" ]
-        }
       }
     }
 
@@ -477,10 +443,6 @@ template("test") {
       test_name = _output_name
       test_suite = _output_name
       test_type = "gtest"
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
 
     # Create a wrapper script rather than using a group() in order to ensure
@@ -514,10 +476,6 @@ template("test") {
 
       if (tests_have_location_tags) {
         data = [ "//testing/location_tags.json" ]
-      }
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
   } else if (is_fuchsia) {
@@ -690,10 +648,6 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
-
-      if (use_rts) {
-        data_deps += [ ":${target_name}__rts_filters" ]
-      }
     }
 
     mixed_test(_exec_target) {
@@ -805,10 +759,6 @@ template("test") {
       # Include the generate_wrapper as part of data_deps
       data_deps += [ ":${_wrapper_output_name}" ]
       write_runtime_deps = _runtime_deps_file
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
   } else if ((is_chromeos_ash || (is_chromeos_lacros && is_chromeos_device)) &&
              cros_board != "") {
@@ -841,10 +791,6 @@ template("test") {
         if (tests_have_location_tags) {
           data = [ "//testing/location_tags.json" ]
         }
-
-        if (use_rts) {
-          data_deps = [ ":${invoker.target_name}__rts_filters" ]
-        }
       }
     }
 
@@ -871,10 +817,6 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
   } else if (is_chromeos_lacros && !is_chromeos_device) {
     _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
@@ -942,10 +884,6 @@ template("test") {
       }
 
       data += [ "//build/lacros/test_runner.py" ]
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
 
     mixed_test(target_name) {
@@ -966,10 +904,6 @@ template("test") {
       deps += [ ":$_gen_runner_target" ]
       if (_use_ash_chrome && also_build_ash_chrome) {
         data_deps += [ "//chrome/test:test_ash_chrome(//build/toolchain/linux:ash_clang_x64)" ]
-      }
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
   } else if (!is_nacl) {
@@ -1021,10 +955,6 @@ template("test") {
       if (fail_on_san_warnings) {
         executable_args += [ "--fail-san=1" ]
       }
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
 
     mixed_test(target_name) {
@@ -1050,10 +980,6 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
   } else {
     # This is a catch-all clause for NaCl toolchains and other random
@@ -1074,10 +1000,6 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
   }
 }
@@ -1096,23 +1018,6 @@ template("test") {
 # $root_build_dir/${target_name}.runtime_deps, as per the conventions listed in
 # the [test wrapper API](//docs/testing/test_wrapper_api.md).
 template("script_test") {
-  if (use_rts) {
-    action("${target_name}__rts_filters") {
-      script = "//build/add_rts_filters.py"
-      rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
-      inverted_rts_file =
-          "${root_build_dir}/gen/rts/${invoker.target_name}_inverted.filter"
-      args = [
-        rebase_path(rts_file, root_build_dir),
-        rebase_path(inverted_rts_file, root_build_dir),
-      ]
-      outputs = [
-        rts_file,
-        inverted_rts_file,
-      ]
-    }
-  }
-
   generate_wrapper(target_name) {
     testonly = true
     wrapper_script = "${root_build_dir}/bin/run_${target_name}"
@@ -1150,10 +1055,6 @@ template("script_test") {
     forward_variables_from(invoker, [ "visibility" ])
 
     write_runtime_deps = "${root_build_dir}/${target_name}.runtime_deps"
-
-    if (use_rts) {
-      data_deps += [ ":${invoker.target_name}__rts_filters" ]
-    }
   }
 }
 

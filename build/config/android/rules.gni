@@ -12,7 +12,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/profiling/profiling.gni")
 import("//build/config/python.gni")
-import("//build/config/rts.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
@@ -3489,22 +3488,6 @@ if (enable_java_templates && is_android) {
   #     apk_under_test: ":bar"
   #   }
   template("instrumentation_test_runner") {
-    if (use_rts) {
-      action("${invoker.target_name}__rts_filters") {
-        script = "//build/add_rts_filters.py"
-        rts_file = "${root_build_dir}/gen/rts/${invoker.target_name}.filter"
-        inverted_rts_file =
-            "${root_build_dir}/gen/rts/${invoker.target_name}_inverted.filter"
-        args = [
-          rebase_path(rts_file, root_build_dir),
-          rebase_path(inverted_rts_file, root_build_dir),
-        ]
-        outputs = [
-          rts_file,
-          inverted_rts_file,
-        ]
-      }
-    }
     _incremental_apk = !(defined(invoker.never_incremental) &&
                          invoker.never_incremental) && incremental_install
     _apk_operations_target_name = "${target_name}__apk_operations"
@@ -3617,12 +3600,6 @@ if (enable_java_templates && is_android) {
       }
       if (defined(invoker.additional_apks)) {
         public_deps += invoker.additional_apks
-      }
-      if (use_rts) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
   }
