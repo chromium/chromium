@@ -64,6 +64,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -172,6 +173,13 @@ bool LoggedInSpokenFeedbackTest::PerformAcceleratorAction(
   return AcceleratorController::Get()->PerformActionIfEnabled(action, {});
 }
 
+void LoggedInSpokenFeedbackTest::RunJSForChromeVox(const std::string& script) {
+  extensions::BackgroundScriptExecutor::ExecuteScriptAsync(
+      AccessibilityManager::Get()->profile(),
+      extension_misc::kChromeVoxExtensionId, script,
+      extensions::browsertest_util::ScriptUserActivation::kDontActivate);
+}
+
 void LoggedInSpokenFeedbackTest::DisableEarcons() {
   // Playing earcons from within a test is not only annoying if you're
   // running the test locally, but seems to cause crashes
@@ -188,7 +196,7 @@ void LoggedInSpokenFeedbackTest::ImportJSModuleForChromeVox(std::string name,
       browser()->profile(), extension_misc::kChromeVoxExtensionId,
       "import('" + path +
           "').then(mod => {"
-          "window." +
+          "globalThis." +
           name + " = mod." + name +
           ";"
           "window.domAutomationController.send('done')"
@@ -224,12 +232,11 @@ void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
 
 void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
     std::string command) {
-  extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId,
-      "import('/chromevox/background/"
-      "command_handler_interface.js').then(module => "
-      "module.CommandHandlerInterface.instance.onCommand('" +
-          command + "'));");
+  ImportJSModuleForChromeVox(
+      "CommandHandlerInterface",
+      "/chromevox/background/command_handler_interface.js");
+  RunJSForChromeVox("CommandHandlerInterface.instance.onCommand('" + command +
+                    "');");
 }
 
 // Flaky test, crbug.com/1081563
