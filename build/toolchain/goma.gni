@@ -8,11 +8,6 @@ declare_args() {
   # Set to true to enable distributed compilation using Goma.
   use_goma = false
 
-  # This flag is for ChromeOS compiler wrapper.
-  # By passing gomacc path via cmd-line arg, ChromeOS' compiler wrapper
-  # invokes gomacc inside it.
-  needs_gomacc_path_arg = false
-
   # Absolute directory containing the gomacc binary.
   goma_dir = ""
 }
