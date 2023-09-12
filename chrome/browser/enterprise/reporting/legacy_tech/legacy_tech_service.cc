@@ -27,6 +27,9 @@ void LegacyTechService::ReportEvent(const std::string& type,
                                     uint64_t line,
                                     uint64_t column) const {
   absl::optional<std::string> matched_url = url_matcher_.GetMatchedURL(url);
+  VLOG(2) << "Get report for URL " << url
+          << (matched_url ? " and matches a policy."
+                          : " without matching any policie.");
   if (!matched_url) {
     return;
   }

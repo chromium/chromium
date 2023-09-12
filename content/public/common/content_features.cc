@@ -644,6 +644,12 @@ BASE_FEATURE(kLazyInitializeMediaControls,
              "LazyInitializeMediaControls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Using top-level document URL when create an enterprise report for legacy
+// technologies usage
+BASE_FEATURE(kLegacyTechReportTopLevelUrl,
+             "LegacyTechReportTopLevelUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Configures whether Blink on Windows 8.0 and below should use out of process
 // API font fallback calls to retrieve a fallback font family name as opposed to
 // using a hard-coded font lookup table.

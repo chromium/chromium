@@ -1191,6 +1191,9 @@ extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
 extern const char kLargeFaviconFromGoogleName[];
 extern const char kLargeFaviconFromGoogleDescription[];
 
+extern const char kLegacyTechReportTopLevelUrlName[];
+extern const char kLegacyTechReportTopLevelUrlDescription[];
+
 extern const char kLensCameraAssistedSearchName[];
 extern const char kLensCameraAssistedSearchDescription[];
 
