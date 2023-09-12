@@ -27,6 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.FeatureList;
@@ -40,6 +41,7 @@ import org.chromium.components.browser_ui.contacts_picker.test.R;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.content.browser.contacts.ContactsPickerProperties;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.Visibility;
@@ -76,6 +78,8 @@ public class ContactsPickerDialogTest
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
+
+    @Mock
     private WebContents mWebContents;
 
     @Rule
@@ -108,6 +112,12 @@ public class ContactsPickerDialogTest
     // a bitmask, where the first bit is 1 if telephone numbers were requested,
     // second bit is for emails and third bit is for names.
     private int mLastPropertiesRequested;
+
+    // The properties (names, emails, telephone numbers) the user rejected be
+    // stripped from the data before sharing with the website. This is a bitmask, where the first
+    // bit is 1 if telephone numbers were rejected, second bit is for emails and third bit is for
+    // names.
+    private int mLastPropertiesRejected;
 
     // Whether the dialog is being closed as a result of an explicit user action.
     private boolean mClosing;
@@ -162,11 +172,12 @@ public class ContactsPickerDialogTest
     @Override
     public void onContactsPickerUserAction(@ContactsPickerAction int action,
             List<ContactsPickerListener.Contact> contacts, int percentageShared,
-            int propertiesRequested) {
+            int propertiesRequested, int propertiesRejected) {
         mLastActionRecorded = action;
         mLastSelectedContacts = (contacts != null) ? new ArrayList<>(contacts) : null;
         mLastPercentageShared = percentageShared;
         mLastPropertiesRequested = propertiesRequested;
+        mLastPropertiesRejected = propertiesRejected;
         onActionCallback.notifyCalled();
     }
 
@@ -200,7 +211,6 @@ public class ContactsPickerDialogTest
         mClosing = false;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ContactsPickerDialog dialog = null;
             ContactsPicker.setContactsPickerDelegate((WindowAndroid windowAndroid,
                                                              ContactsPickerListener listener,
                                                              boolean multiple, boolean names,
@@ -528,6 +538,7 @@ public class ContactsPickerDialogTest
                 mTestContacts.get(0).getDisplayName(), mLastSelectedContacts.get(0).names.get(0));
         Assert.assertEquals(12, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_NONE, mLastPropertiesRejected);
     }
 
     @Test
@@ -549,6 +560,7 @@ public class ContactsPickerDialogTest
                 mTestContacts.get(1).getDisplayName(), mLastSelectedContacts.get(0).names.get(0));
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_NONE, mLastPropertiesRejected);
     }
 
     @Test
@@ -575,6 +587,7 @@ public class ContactsPickerDialogTest
                 mTestContacts.get(0).getDisplayName(), mLastSelectedContacts.get(2).names.get(0));
         Assert.assertEquals(50, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_NONE, mLastPropertiesRejected);
     }
 
     @Test
@@ -609,6 +622,7 @@ public class ContactsPickerDialogTest
 
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_NAMES, mLastPropertiesRejected);
     }
 
     @Test
@@ -631,6 +645,7 @@ public class ContactsPickerDialogTest
         Assert.assertEquals(new ArrayList<String>(), mLastSelectedContacts.get(0).emails);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_EMAILS, mLastPropertiesRejected);
     }
 
     @Test
@@ -653,6 +668,7 @@ public class ContactsPickerDialogTest
         Assert.assertEquals(new ArrayList<String>(), mLastSelectedContacts.get(0).tel);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_TELS, mLastPropertiesRejected);
     }
 
     @Test
@@ -676,6 +692,7 @@ public class ContactsPickerDialogTest
                 new ArrayList<ByteBuffer>(), mLastSelectedContacts.get(0).serializedAddresses);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_ADDRESSES, mLastPropertiesRejected);
     }
 
     @Test
@@ -699,6 +716,7 @@ public class ContactsPickerDialogTest
                 new ArrayList<ByteBuffer>(), mLastSelectedContacts.get(0).serializedIcons);
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_ICONS, mLastPropertiesRejected);
     }
 
     @Test
@@ -830,6 +848,7 @@ public class ContactsPickerDialogTest
                 mTestContacts.get(3).getDisplayName(), mLastSelectedContacts.get(0).names.get(0));
         Assert.assertEquals(16, mLastPercentageShared);
         Assert.assertEquals(31, mLastPropertiesRequested);
+        Assert.assertEquals(ContactsPickerProperties.PROPERTIES_NONE, mLastPropertiesRejected);
     }
 
     @Test

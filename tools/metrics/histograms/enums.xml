@@ -18716,22 +18716,20 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContactsPickerProperties">
-  <int value="0" label="No properties requested"/>
-  <int value="1" label="Telephone numbers requested"/>
-  <int value="2" label="Emails requested"/>
-  <int value="3" label="Emails and Telephone numbers requested"/>
-  <int value="4" label="Names requested"/>
-  <int value="5" label="Names and Telephone numbers requested"/>
-  <int value="6" label="Names and Emails requested"/>
-  <int value="7" label="Names, Emails, and Telephone numbers requested"/>
-  <int value="13" label="Addresses, Names, and Telephone numbers requested"/>
-  <int value="15"
-      label="Addresses, Names, Emails, and Telephone numbers requested"/>
-  <int value="21" label="Icons, Names, and Telephone numbers requested"/>
-  <int value="23"
-      label="Icons, Names, Emails, and Telephone numbers requested"/>
+  <int value="0" label="No properties"/>
+  <int value="1" label="Telephone numbers"/>
+  <int value="2" label="Emails"/>
+  <int value="3" label="Emails and Telephone numbers"/>
+  <int value="4" label="Names"/>
+  <int value="5" label="Names and Telephone numbers"/>
+  <int value="6" label="Names and Emails"/>
+  <int value="7" label="Names, Emails, and Telephone numbers"/>
+  <int value="13" label="Addresses, Names, and Telephone numbers"/>
+  <int value="15" label="Addresses, Names, Emails, and Telephone numbers"/>
+  <int value="21" label="Icons, Names, and Telephone numbers"/>
+  <int value="23" label="Icons, Names, Emails, and Telephone numbers"/>
   <int value="31"
-      label="Icons, Addresses, Names, Emails, and Telephone numbers requested"/>
+      label="Icons, Addresses, Names, Emails, and Telephone numbers"/>
 </enum>
 
 <enum name="ContentClassification">

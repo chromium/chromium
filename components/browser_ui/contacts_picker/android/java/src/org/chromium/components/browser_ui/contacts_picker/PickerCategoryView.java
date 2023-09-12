@@ -24,7 +24,7 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.content.browser.contacts.ContactsPickerPropertiesRequested;
+import org.chromium.content.browser.contacts.ContactsPickerProperties;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.ui.base.WindowAndroid;
@@ -105,20 +105,20 @@ public class PickerCategoryView extends OptimizedFrameLayout
     // Whether the picker is in multi-selection mode.
     private boolean mMultiSelectionAllowed;
 
-    // Whether the contacts data returned includes names.
-    public final boolean includeNames;
+    // Whether the site is requesting names.
+    private final boolean mSiteWantsNames;
 
-    // Whether the contacts data returned includes emails.
-    public final boolean includeEmails;
+    // Whether the site is requesting emails.
+    private final boolean mSiteWantsEmails;
 
-    // Whether the contacts data returned includes telephone numbers.
-    public final boolean includeTel;
+    // Whether the site is requesting telephone numbers.
+    private final boolean mSiteWantsTel;
 
-    // Whether the contacts data returned includes addresses.
-    public final boolean includeAddresses;
+    // Whether the site is requesting addresses.
+    private final boolean mSiteWantsAddresses;
 
-    // Whether the contacts data returned includes icons.
-    public final boolean includeIcons;
+    // Whether the site is requesting icons.
+    private final boolean mSiteWantsIcons;
 
     /**
      * @param windowAndroid The Activity window the Contacts Picker is associated with.
@@ -145,11 +145,11 @@ public class PickerCategoryView extends OptimizedFrameLayout
         mWindowAndroid = windowAndroid;
         Context context = windowAndroid.getContext().get();
         mMultiSelectionAllowed = multiSelectionAllowed;
-        includeNames = shouldIncludeNames;
-        includeEmails = shouldIncludeEmails;
-        includeTel = shouldIncludeTel;
-        includeAddresses = shouldIncludeAddresses;
-        includeIcons = shouldIncludeIcons;
+        mSiteWantsNames = shouldIncludeNames;
+        mSiteWantsEmails = shouldIncludeEmails;
+        mSiteWantsTel = shouldIncludeTel;
+        mSiteWantsAddresses = shouldIncludeAddresses;
+        mSiteWantsIcons = shouldIncludeIcons;
 
         mSelectionDelegate = new SelectionDelegate<ContactDetails>();
         if (!multiSelectionAllowed) mSelectionDelegate.setSingleSelectionMode();
@@ -209,6 +209,26 @@ public class PickerCategoryView extends OptimizedFrameLayout
                         ContactsPickerListener.ContactsPickerAction.CANCEL, null, ACTION_CANCEL));
 
         mPickerAdapter.notifyDataSetChanged();
+    }
+
+    public boolean siteWantsNames() {
+        return mSiteWantsNames;
+    }
+
+    public boolean siteWantsEmails() {
+        return mSiteWantsEmails;
+    }
+
+    public boolean siteWantsTel() {
+        return mSiteWantsTel;
+    }
+
+    public boolean siteWantsAddresses() {
+        return mSiteWantsAddresses;
+    }
+
+    public boolean siteWantsIcons() {
+        return mSiteWantsIcons;
     }
 
     private void onStartSearch() {
@@ -286,13 +306,15 @@ public class PickerCategoryView extends OptimizedFrameLayout
                     new HashSet<ContactDetails>(mPickerAdapter.getAllContacts()));
             mListener.onContactsPickerUserAction(
                     ContactsPickerListener.ContactsPickerAction.SELECT_ALL, /*contacts=*/null,
-                    /*percentageShared=*/0, /*propertiesRequested=*/0);
+                    /*percentageShared=*/0, /*propertiesSiteRequested=*/0,
+                    /*propertiesUserRejected=*/0);
         } else {
             mSelectionDelegate.setSelectedItems(new HashSet<ContactDetails>());
             mPreviousSelection = null;
             mListener.onContactsPickerUserAction(
                     ContactsPickerListener.ContactsPickerAction.UNDO_SELECT_ALL, /*contacts=*/null,
-                    /*percentageShared=*/0, /*propertiesRequested=*/0);
+                    /*percentageShared=*/0, /*propertiesSiteRequested=*/0,
+                    /*propertiesUserRejected=*/0);
         }
     }
 
@@ -348,7 +370,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         List<ContactDetails> selectedContacts = mSelectionDelegate.getSelectedItemsAsList();
         Collections.sort(selectedContacts);
 
-        if (includeIcons && PickerAdapter.includesIcons()) {
+        if (mSiteWantsIcons && PickerAdapter.includesIcons()) {
             // Fetch missing icons and compress them first.
             new CompressContactIconsWorkerTask(
                     mWindowAndroid.getContext().get().getContentResolver(), mBitmapCache,
@@ -395,15 +417,15 @@ public class PickerCategoryView extends OptimizedFrameLayout
 
         for (ContactDetails contactDetails : selectedContacts) {
             contacts.add(new ContactsPickerListener.Contact(
-                    getContactPropertyValues(includeNames, PickerAdapter.includesNames(),
+                    getContactPropertyValues(mSiteWantsNames, PickerAdapter.includesNames(),
                             contactDetails.getDisplayNames()),
-                    getContactPropertyValues(includeEmails, PickerAdapter.includesEmails(),
+                    getContactPropertyValues(mSiteWantsEmails, PickerAdapter.includesEmails(),
                             contactDetails.getEmails()),
-                    getContactPropertyValues(includeTel, PickerAdapter.includesTelephones(),
+                    getContactPropertyValues(mSiteWantsTel, PickerAdapter.includesTelephones(),
                             contactDetails.getPhoneNumbers()),
-                    getContactPropertyValues(includeAddresses, PickerAdapter.includesAddresses(),
+                    getContactPropertyValues(mSiteWantsAddresses, PickerAdapter.includesAddresses(),
                             contactDetails.getAddresses()),
-                    getContactPropertyValues(includeIcons, PickerAdapter.includesIcons(),
+                    getContactPropertyValues(mSiteWantsIcons, PickerAdapter.includesIcons(),
                             contactDetails.getIcons())));
         }
 
@@ -423,25 +445,45 @@ public class PickerCategoryView extends OptimizedFrameLayout
         int contactCount = mPickerAdapter.getAllContacts().size();
         int percentageShared = contactCount > 0 ? (100 * selectCount) / contactCount : 0;
 
-        int propertiesRequested = ContactsPickerPropertiesRequested.PROPERTIES_NONE;
-        if (includeNames) propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_NAMES;
-        if (includeEmails) {
-            propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_EMAILS;
+        int propertiesSiteRequested = ContactsPickerProperties.PROPERTIES_NONE;
+        int propertiesUserRejected = ContactsPickerProperties.PROPERTIES_NONE;
+        if (mSiteWantsNames) {
+            propertiesSiteRequested |= ContactsPickerProperties.PROPERTIES_NAMES;
+            propertiesUserRejected |=
+                    (!PickerAdapter.includesNames() ? ContactsPickerProperties.PROPERTIES_NAMES
+                                                    : ContactsPickerProperties.PROPERTIES_NONE);
         }
-        if (includeTel) propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_TELS;
-        if (includeAddresses) {
-            propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_ADDRESSES;
+        if (mSiteWantsEmails) {
+            propertiesSiteRequested |= ContactsPickerProperties.PROPERTIES_EMAILS;
+            propertiesUserRejected |=
+                    (!PickerAdapter.includesEmails() ? ContactsPickerProperties.PROPERTIES_EMAILS
+                                                     : ContactsPickerProperties.PROPERTIES_NONE);
         }
-        if (includeIcons) {
-            propertiesRequested |= ContactsPickerPropertiesRequested.PROPERTIES_ICONS;
+        if (mSiteWantsTel) {
+            propertiesSiteRequested |= ContactsPickerProperties.PROPERTIES_TELS;
+            propertiesUserRejected |= (!PickerAdapter.includesTelephones()
+                            ? ContactsPickerProperties.PROPERTIES_TELS
+                            : ContactsPickerProperties.PROPERTIES_NONE);
+        }
+        if (mSiteWantsAddresses) {
+            propertiesSiteRequested |= ContactsPickerProperties.PROPERTIES_ADDRESSES;
+            propertiesUserRejected |= (!PickerAdapter.includesAddresses()
+                            ? ContactsPickerProperties.PROPERTIES_ADDRESSES
+                            : ContactsPickerProperties.PROPERTIES_NONE);
+        }
+        if (mSiteWantsIcons) {
+            propertiesSiteRequested |= ContactsPickerProperties.PROPERTIES_ICONS;
+            propertiesUserRejected |=
+                    (!PickerAdapter.includesIcons() ? ContactsPickerProperties.PROPERTIES_ICONS
+                                                    : ContactsPickerProperties.PROPERTIES_NONE);
         }
 
-        mListener.onContactsPickerUserAction(
-                action, contacts, percentageShared, propertiesRequested);
+        mListener.onContactsPickerUserAction(action, contacts, percentageShared,
+                propertiesSiteRequested, propertiesUserRejected);
         mDialog.dismiss();
         ContactsPicker.onContactsPickerDismissed();
-        recordFinalUmaStats(
-                umaId, contactCount, selectCount, percentageShared, propertiesRequested);
+        recordFinalUmaStats(umaId, contactCount, selectCount, percentageShared,
+                propertiesSiteRequested, propertiesUserRejected);
     }
 
     /**
@@ -451,9 +493,10 @@ public class PickerCategoryView extends OptimizedFrameLayout
      * @param selectCount The number of contacts selected.
      * @param percentageShared The percentage shared (of the whole contact list).
      * @param propertiesRequested The properties (names/emails/tels) requested by the website.
+     * @param propertiesRejected The properties (names/emails/tels) rejected by the user.
      */
     private void recordFinalUmaStats(int action, int contactCount, int selectCount,
-            int percentageShared, int propertiesRequested) {
+            int percentageShared, int propertiesRequested, int propertiesRejected) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ContactsPicker.DialogAction", action, ACTION_BOUNDARY);
         RecordHistogram.recordCount1MHistogram("Android.ContactsPicker.ContactCount", contactCount);
@@ -461,7 +504,9 @@ public class PickerCategoryView extends OptimizedFrameLayout
         RecordHistogram.recordPercentageHistogram(
                 "Android.ContactsPicker.SelectPercentage", percentageShared);
         RecordHistogram.recordEnumeratedHistogram("Android.ContactsPicker.PropertiesRequested",
-                propertiesRequested, ContactsPickerPropertiesRequested.PROPERTIES_BOUNDARY);
+                propertiesRequested, ContactsPickerProperties.PROPERTIES_BOUNDARY);
+        RecordHistogram.recordEnumeratedHistogram("Android.ContactsPicker.PropertiesUserRejected",
+                propertiesRejected, ContactsPickerProperties.PROPERTIES_BOUNDARY);
     }
 
     public SelectionDelegate<ContactDetails> getSelectionDelegateForTesting() {

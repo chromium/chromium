@@ -151,9 +151,9 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
         sIncludeIcons = true;
 
         if (getAllContacts() == null && sTestContacts == null) {
-            mWorkerTask = new ContactsFetcherWorkerTask(context, this, mCategoryView.includeNames,
-                    mCategoryView.includeEmails, mCategoryView.includeTel,
-                    mCategoryView.includeAddresses);
+            mWorkerTask = new ContactsFetcherWorkerTask(context, this,
+                    mCategoryView.siteWantsNames(), mCategoryView.siteWantsEmails(),
+                    mCategoryView.siteWantsTel(), mCategoryView.siteWantsAddresses());
             mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             contactsRetrieved(sTestContacts);
@@ -262,9 +262,9 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
                 mTopView.registerSelectAllCallback(mCategoryView);
                 mTopView.registerChipToggledCallback(this);
                 mTopView.updateCheckboxVisibility(mCategoryView.multiSelectionAllowed());
-                mTopView.updateChipVisibility(mCategoryView.includeNames,
-                        mCategoryView.includeAddresses, mCategoryView.includeEmails,
-                        mCategoryView.includeTel, mCategoryView.includeIcons);
+                mTopView.updateChipVisibility(mCategoryView.siteWantsNames(),
+                        mCategoryView.siteWantsAddresses(), mCategoryView.siteWantsEmails(),
+                        mCategoryView.siteWantsTel(), mCategoryView.siteWantsIcons());
                 mCategoryView.setTopView(mTopView);
                 if (mContactDetails != null) mTopView.updateContactCount(mContactDetails.size());
                 return new TopViewHolder(mTopView);

@@ -758,6 +758,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ContactsPicker.PropertiesUserRejected"
+    enum="ContactsPickerProperties" expires_after="2024-06-01">
+  <owner>finnur@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The contact properties requested by the website but rejected by the user.
+    Measured once when the Contacts Picker dialog is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="Android.ContactsPicker.SelectCount" units="Contacts"
     expires_after="2024-06-01">
   <owner>finnur@chromium.org</owner>
