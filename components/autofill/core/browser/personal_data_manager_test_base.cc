@@ -30,10 +30,7 @@ PersonalDataProfileTaskWaiter::PersonalDataProfileTaskWaiter(
 
 PersonalDataProfileTaskWaiter::~PersonalDataProfileTaskWaiter() = default;
 
-void PersonalDataProfileTaskWaiter::Wait() {
-  CHECK(!was_wait_called_)
-      << "PersonalDataProfileTaskWaiter should not be reused.";
-  was_wait_called_ = true;
+void PersonalDataProfileTaskWaiter::Wait() && {
   run_loop_.Run();
 }
 

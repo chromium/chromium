@@ -57,7 +57,7 @@ class PersonalDataProfileTaskWaiter {
   // instance. This is because gMock doesn't support setting expectations after
   // a function (here the mock_observer_'s
   // `OnPersonalDataFinishedProfileTasks()`) was called.
-  void Wait();
+  void Wait() &&;
 
   PersonalDataLoadedObserverMock& mock_observer() { return mock_observer_; }
 
@@ -66,7 +66,6 @@ class PersonalDataProfileTaskWaiter {
   base::RunLoop run_loop_;
   base::ScopedObservation<PersonalDataManager, PersonalDataLoadedObserverMock>
       scoped_observation_{&mock_observer_};
-  bool was_wait_called_ = false;
 };
 
 class PersonalDataManagerTestBase {

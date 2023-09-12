@@ -101,7 +101,7 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
     PersonalDataProfileTaskWaiter waiter(*personal_data_);
     EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged()).Times(1);
     personal_data_->AddProfile(profile);
-    waiter.Wait();
+    std::move(waiter).Wait();
   }
 
   void SetServerCards(const std::vector<CreditCard>& server_cards) {
