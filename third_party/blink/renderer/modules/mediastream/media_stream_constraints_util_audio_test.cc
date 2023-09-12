@@ -1655,7 +1655,12 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
       system_echo_canceller_with_source->DeviceID());
   constraint_factory_.basic().echo_cancellation.SetExact(false);
   result = SelectSettings(true, capabilities);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS supports reopening a device with a different system AEC setting.
+  EXPECT_TRUE(result.HasValue());
+#else
   EXPECT_FALSE(result.HasValue());
+#endif
 }
 
 // Test advanced constraints sets that can be satisfied.
