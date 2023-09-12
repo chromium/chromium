@@ -278,6 +278,11 @@ class BrowsingDataModel {
       // TODO(crbug.com/1271155): Inject other dependencies.
   );
 
+  void GetAffectedDataKeyEntriesForRemovePartitionedBrowsingData(
+      const DataOwner& data_owner,
+      const net::SchemefulSite& top_level_site,
+      DataKeyEntries& affected_data_key_entries);
+
   // Pulls information from disk and populate the model.
   // Virtual to allow an in-memory only fake to be created.
   virtual void PopulateFromDisk(base::OnceClosure finished_callback);

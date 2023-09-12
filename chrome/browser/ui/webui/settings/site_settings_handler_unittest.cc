@@ -929,6 +929,25 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
               blink::mojom::AncestorChainBit::kCrossSite,
               /*third_party_partitioning_allowed=*/true),
           BrowsingDataModel::StorageType::kQuotaStorage, 100);
+
+      // Secure top level site.
+      models.browsing_data_model->AddBrowsingData(
+          blink::StorageKey::Create(
+              url::Origin::Create(GURL("https://www.example.com/")),
+              net::SchemefulSite(
+                  url::Origin::Create(GURL("https://www.google.com/"))),
+              blink::mojom::AncestorChainBit::kCrossSite,
+              /*third_party_partitioning_allowed=*/true),
+          BrowsingDataModel::StorageType::kQuotaStorage, 100);
+      // Insecure top level site.
+      models.browsing_data_model->AddBrowsingData(
+          blink::StorageKey::Create(
+              url::Origin::Create(GURL("https://www.example.com/")),
+              net::SchemefulSite(
+                  url::Origin::Create(GURL("http://www.google.com/"))),
+              blink::mojom::AncestorChainBit::kCrossSite,
+              /*third_party_partitioning_allowed=*/true),
+          BrowsingDataModel::StorageType::kQuotaStorage, 100);
     }));
   }
 
@@ -1602,7 +1621,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     EXPECT_EQ("https://www.example.com/",
               CHECK_DEREF(origin_info_2.FindString("origin")));
     EXPECT_EQ(0, origin_info_2.FindDouble("engagement"));
-    EXPECT_EQ(2, origin_info_2.FindDouble("usage"));
+    EXPECT_EQ(202, origin_info_2.FindDouble("usage"));
     EXPECT_EQ(1, origin_info_2.FindDouble("numCookies"));
     EXPECT_FALSE(origin_info_2.FindBool("isPartitioned").value_or(false));
   }
@@ -5512,7 +5531,7 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
                      ->GetCookiesTreeModelForTesting()
                      ->GetRoot()
                      ->GetTotalNodeCount());
-  EXPECT_EQ(2,
+  EXPECT_EQ(4,
             std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
                           handler()->GetBrowsingDataModelForTesting()->end()));
 
@@ -5776,7 +5795,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
                      ->GetCookiesTreeModelForTesting()
                      ->GetRoot()
                      ->GetTotalNodeCount());
-  EXPECT_EQ(2,
+  EXPECT_EQ(4,
             std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
                           handler()->GetBrowsingDataModelForTesting()->end()));
 
@@ -5811,9 +5830,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
     }
   }
 
-  // Should not have affected the browsing data model.
-  // TODO(crbug.com/1271155): Update when partitioned storage is represented
-  // by the browsing data model.
+  // Both of the storage keys under the "www.example.com" should have been
+  // removed.
   EXPECT_EQ(2,
             std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
                           handler()->GetBrowsingDataModelForTesting()->end()));
@@ -5962,7 +5980,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
                      ->GetCookiesTreeModelForTesting()
                      ->GetRoot()
                      ->GetTotalNodeCount());
-  EXPECT_EQ(2,
+  EXPECT_EQ(4,
             std::distance(handler()->GetBrowsingDataModelForTesting()->begin(),
                           handler()->GetBrowsingDataModelForTesting()->end()));
 
@@ -5970,7 +5988,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("http://www.example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("http://www.example.com", "2 B", "1 cookie",
+  ValidateUsageInfo("http://www.example.com", "202 B", "1 cookie",
                     "1 site in example.com's group", true);
 
   args.clear();

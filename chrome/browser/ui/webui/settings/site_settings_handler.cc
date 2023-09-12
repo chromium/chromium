@@ -1016,8 +1016,6 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     if (!entry.Matches(usage_origin)) {
       continue;
     }
-    // TODO(crbug.com/1468277): Step 5 - Check if the entry is backed by a
-    // StorageKey and count the size if the top-site matches too.
     size += entry.data_details->storage_size;
   }
 
@@ -1174,8 +1172,6 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
   RemoveNonTreeModelData(affected_origins);
 }
 
-// TODO(crbug.com/1468277): Step 5 - Handle clearing partitioned entries as
-// well where origin matches the top-site in the browsing data model.
 void SiteSettingsHandler::HandleClearPartitionedUsage(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
@@ -1183,6 +1179,23 @@ void SiteSettingsHandler::HandleClearPartitionedUsage(
   auto grouping_key = GroupingKey::Deserialize(args[1].GetString());
 
   RemoveMatchingNodes(cookies_tree_model_.get(), origin, grouping_key);
+  absl::optional<std::string> group_etld_plus1 = grouping_key.GetEtldPlusOne();
+
+  // The group key should always be an eTLD+1 because there aren't any
+  // partitioned entries for IWAs (which have a non-eTLD+1 grouping key).
+  DCHECK(group_etld_plus1);
+
+  net::SchemefulSite https_top_level_site(
+      ConvertEtldToOrigin(*group_etld_plus1, true));
+
+  browsing_data_model_->RemovePartitionedBrowsingData(
+      origin.host(), https_top_level_site, base::DoNothing());
+
+  net::SchemefulSite http_top_level_site =
+      net::SchemefulSite(ConvertEtldToOrigin(*group_etld_plus1, false));
+
+  browsing_data_model_->RemovePartitionedBrowsingData(
+      origin.host(), http_top_level_site, base::DoNothing());
 }
 
 void SiteSettingsHandler::HandleSetDefaultValueForContentType(
@@ -2376,6 +2389,8 @@ void SiteSettingsHandler::HandleClearSiteGroupDataAndCookies(
   for (const auto& origin_is_partitioned : all_sites_map_[grouping_key]) {
     // Ignore entries which are partitioned, as no non-cookie tree storage is
     // partitioned.
+    // TODO(crbug.com/1468277): Call RemovePartitionedBrowsingData() for this
+    // case using the {origin, grouping_key} pair.
     if (origin_is_partitioned.second)
       continue;
 
