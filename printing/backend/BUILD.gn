@@ -70,6 +70,7 @@ component("backend") {
       "xps_utils_win.cc",
       "xps_utils_win.h",
     ]
+    public_deps += [ "//printing/mojom" ]
     deps += [ "//services/data_decoder/public/cpp:safe_xml_parser" ]
   }
 

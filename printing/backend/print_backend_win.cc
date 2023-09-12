@@ -70,17 +70,6 @@ std::string ErrorMessageCheckSpooler(const std::string& base_message,
   return message;
 }
 
-// `GetResultCodeFromSystemErrorCode()` is only ever invoked when something has
-// gone wrong while interacting with the OS printing system.  If the cause of
-// the failure was not of the type to register and be and available from
-// `GetLastError()` then we should just use the general error result.
-mojom::ResultCode GetResultCodeFromSystemErrorCode(
-    logging::SystemErrorCode system_code) {
-  if (system_code == ERROR_ACCESS_DENIED)
-    return mojom::ResultCode::kAccessDenied;
-  return mojom::ResultCode::kFailed;
-}
-
 ScopedPrinterHandle GetPrinterHandle(const std::string& printer_name) {
   ScopedPrinterHandle handle;
   handle.OpenPrinterWithName(base::UTF8ToWide(printer_name).c_str());

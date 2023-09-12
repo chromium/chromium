@@ -133,30 +133,45 @@ mojom::ResultCode PrintingContextWin::UseDefaultSettings() {
   DWORD count_returned = 0;
   (void)::EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr,
                        2, nullptr, 0, &bytes_needed, &count_returned);
-  if (bytes_needed) {
-    DCHECK_GE(bytes_needed, count_returned * sizeof(PRINTER_INFO_2));
-    std::vector<BYTE> printer_info_buffer(bytes_needed);
-    BOOL ret = ::EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
-                              nullptr, 2, printer_info_buffer.data(),
-                              bytes_needed, &bytes_needed, &count_returned);
-    if (ret && count_returned) {  // have printers
-      // Open the first successfully found printer.
-      const PRINTER_INFO_2* info_2 =
-          reinterpret_cast<PRINTER_INFO_2*>(printer_info_buffer.data());
-      const PRINTER_INFO_2* info_2_end = info_2 + count_returned;
-      for (; info_2 < info_2_end; ++info_2) {
-        ScopedPrinterHandle printer;
-        if (!printer.OpenPrinterWithName(info_2->pPrinterName))
-          continue;
-        std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
-            CreateDevMode(printer.Get(), nullptr);
-        if (InitializeSettings(info_2->pPrinterName, dev_mode.get()) ==
-            mojom::ResultCode::kSuccess) {
-          return mojom::ResultCode::kSuccess;
-        }
+  logging::SystemErrorCode code = logging::GetLastSystemErrorCode();
+  if (code == ERROR_SUCCESS) {
+    // If EnumPrinters() succeeded, that means there are no printer drivers
+    // installed because 0 bytes was sufficient.
+    DCHECK_EQ(bytes_needed, 0u);
+    VLOG(1) << "Found no printers";
+    return mojom::ResultCode::kSuccess;
+  }
+
+  if (code != ERROR_INSUFFICIENT_BUFFER) {
+    LOG(ERROR) << "Error enumerating printers: "
+               << logging::SystemErrorCodeToString(code);
+    return GetResultCodeFromSystemErrorCode(code);
+  }
+
+  DCHECK_GE(bytes_needed, count_returned * sizeof(PRINTER_INFO_2));
+  std::vector<BYTE> printer_info_buffer(bytes_needed);
+  BOOL ret = ::EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS,
+                            nullptr, 2, printer_info_buffer.data(),
+                            bytes_needed, &bytes_needed, &count_returned);
+  if (ret && count_returned) {  // have printers
+    // Open the first successfully found printer.
+    const PRINTER_INFO_2* info_2 =
+        reinterpret_cast<PRINTER_INFO_2*>(printer_info_buffer.data());
+    const PRINTER_INFO_2* info_2_end = info_2 + count_returned;
+    for (; info_2 < info_2_end; ++info_2) {
+      ScopedPrinterHandle printer;
+      if (!printer.OpenPrinterWithName(info_2->pPrinterName)) {
+        continue;
       }
-      if (context_)
+      std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
+          CreateDevMode(printer.Get(), nullptr);
+      if (InitializeSettings(info_2->pPrinterName, dev_mode.get()) ==
+          mojom::ResultCode::kSuccess) {
         return mojom::ResultCode::kSuccess;
+      }
+    }
+    if (context_) {
+      return mojom::ResultCode::kSuccess;
     }
   }
 

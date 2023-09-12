@@ -672,4 +672,12 @@ std::string GetDriverVersionStringForTesting(DWORDLONG version_number) {
   return GetDriverVersionString(version_number);
 }
 
+mojom::ResultCode GetResultCodeFromSystemErrorCode(
+    logging::SystemErrorCode system_code) {
+  if (system_code == ERROR_ACCESS_DENIED) {
+    return mojom::ResultCode::kAccessDenied;
+  }
+  return mojom::ResultCode::kFailed;
+}
+
 }  // namespace printing
