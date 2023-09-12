@@ -279,8 +279,7 @@ class MockMediaDevicesDispatcherHost
 class MediaDevicesManagerTest : public ::testing::Test {
  public:
   MediaDevicesManagerTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        video_capture_device_factory_(nullptr) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   MediaDevicesManagerTest(const MediaDevicesManagerTest&) = delete;
   MediaDevicesManagerTest& operator=(const MediaDevicesManagerTest&) = delete;
@@ -395,6 +394,8 @@ class MediaDevicesManagerTest : public ::testing::Test {
         std::make_unique<MediaDevicesPermissionChecker>(true));
   }
 
+  void TearDown() override { video_capture_device_factory_ = nullptr; }
+
   void EnableCache(MediaDeviceType type) {
     media_devices_manager_->SetCachePolicy(
         type, MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
@@ -419,14 +420,14 @@ class MediaDevicesManagerTest : public ::testing::Test {
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
-  raw_ptr<MockVideoCaptureDeviceFactory, DanglingUntriaged>
-      video_capture_device_factory_;
+  raw_ptr<MockVideoCaptureDeviceFactory> video_capture_device_factory_ =
+      nullptr;
   std::unique_ptr<MockAudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   testing::StrictMock<MockMediaDevicesManagerClient>
       media_devices_manager_client_;
   std::set<std::string> removed_device_ids_;
-  raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_;
+  raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_ = nullptr;
   std::unique_ptr<InProcessVideoCaptureProvider>
       in_process_video_capture_provider_;
   HistogramTester histogram_tester_;
