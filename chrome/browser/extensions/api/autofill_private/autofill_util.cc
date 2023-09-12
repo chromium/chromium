@@ -343,15 +343,4 @@ absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   return std::move(api_account);
 }
 
-void AuthenticateUser(
-    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator,
-    const std::u16string& prompt_message,
-    CallbackAfterSuccessfulUserAuth callback) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  CHECK(device_authenticator);
-  device_authenticator->AuthenticateWithMessage(prompt_message,
-                                                std::move(callback));
-#endif
-}
-
 }  // namespace extensions::autofill_util

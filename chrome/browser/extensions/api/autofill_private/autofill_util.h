@@ -46,15 +46,6 @@ IbanEntryList GenerateIbanList(
 absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
     const autofill::PersonalDataManager& personal_data);
 
-// Use the available device authentication to auth the user. `callback` is a
-// method which is triggered with the result of the user auth. `prompt_message`
-// stores the text/prompt that will be displayed on the authentication window to
-// the user.
-void AuthenticateUser(
-    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator,
-    const std::u16string& prompt_message,
-    CallbackAfterSuccessfulUserAuth callback);
-
 }  // namespace autofill_util
 
 }  // namespace extensions
