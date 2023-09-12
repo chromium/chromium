@@ -171,6 +171,8 @@ source_set("chromeos") {
     "reporting/network/network_bandwidth_sampler.h",
     "reporting/user_reporting_settings.cc",
     "reporting/user_reporting_settings.h",
+    "reporting/websites/website_events_observer.cc",
+    "reporting/websites/website_events_observer.h",
     "reporting/websites/website_metrics_retriever_interface.h",
     "smart_reader/smart_reader_client_impl.cc",
     "smart_reader/smart_reader_client_impl.h",
@@ -503,6 +505,7 @@ source_set("unit_tests") {
     "reporting/metric_reporting_prefs_unittest.cc",
     "reporting/network/network_bandwidth_sampler_unittest.cc",
     "reporting/user_reporting_settings_unittest.cc",
+    "reporting/websites/website_events_observer_unittest.cc",
     "video_conference/video_conference_ukm_helper_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
