@@ -1445,6 +1445,25 @@
             ]
         }
     ],
+    "AutofillFeedback": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230913",
+                    "enable_features": [
+                        "AutofillFeedback"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillKeyboardAccessory": [
         {
             "platforms": [
