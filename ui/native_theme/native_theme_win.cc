@@ -293,6 +293,9 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
     : NativeTheme(should_only_use_dark_colors),
       supports_windows_dark_mode_(base::win::IsDarkModeAvailable()),
       color_change_listener_(this) {
+  // By default UI should not use the system accent color.
+  set_should_use_system_accent_color(false);
+
   // If there's no sequenced task runner handle, we can't be called back for
   // dark mode changes. This generally happens in tests. As a result, ignore
   // dark mode in this case.
@@ -355,6 +358,8 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_prefers_reduced_transparency(
       GetPrefersReducedTransparency());
   web_instance->set_system_colors(GetSystemColors());
+  web_instance->set_should_use_system_accent_color(
+      should_use_system_accent_color());
 }
 
 NativeThemeWin::~NativeThemeWin() {

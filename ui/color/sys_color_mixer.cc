@@ -353,12 +353,11 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
 
   // If grayscale is specified the design intention is to apply the grayscale
   // overrides over the baseline palette.
-  if (key.is_grayscale) {
+  if (key.user_color_source == ColorProviderKey::UserColorSource::kGrayscale) {
     AddGrayscaleSysColorOverrides(mixer, key);
-    return;
-  }
-
-  if (key.user_color.has_value()) {
+  } else if (key.user_color_source ==
+                 ColorProviderKey::UserColorSource::kAccent &&
+             key.user_color.has_value()) {
     AddThemedSysColorOverrides(mixer, key);
   }
 }

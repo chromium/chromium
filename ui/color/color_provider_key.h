@@ -49,6 +49,12 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     kVibrant,
     kExpressive,
   };
+  // The source of the color used to generate the material color palette.
+  enum class UserColorSource {
+    kBaseline,
+    kGrayscale,
+    kAccent,
+  };
 
   class COMPONENT_EXPORT(COLOR_PROVIDER_KEY) InitializerSupplier {
    public:
@@ -99,9 +105,9 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
       ContrastMode contrast_mode,
       SystemTheme system_theme,
       FrameType frame_type,
+      UserColorSource user_color_source = UserColorSource::kAccent,
       absl::optional<SkColor> user_color = absl::nullopt,
       absl::optional<SchemeVariant> scheme_variant = absl::nullopt,
-      bool is_grayscale = false,
       scoped_refptr<ThemeInitializerSupplier> custom_theme = nullptr);
 
   ColorProviderKey(const ColorProviderKey&);
@@ -114,9 +120,9 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
   ElevationMode elevation_mode;
   SystemTheme system_theme;
   FrameType frame_type;
+  UserColorSource user_color_source;
   absl::optional<SkColor> user_color;
   absl::optional<SchemeVariant> scheme_variant;
-  bool is_grayscale;
   scoped_refptr<ThemeInitializerSupplier> custom_theme;
   // Only dereferenced when populating the ColorMixer. After that, used to
   // compare addresses during lookup.
@@ -127,12 +133,13 @@ struct COMPONENT_EXPORT(COLOR_PROVIDER_KEY) ColorProviderKey {
     auto* lhs_app_controller = app_controller.get();
     auto* rhs_app_controller = other.app_controller.get();
     return std::tie(color_mode, contrast_mode, elevation_mode, system_theme,
-                    frame_type, user_color, scheme_variant, is_grayscale,
+                    frame_type, user_color_source, user_color, scheme_variant,
                     custom_theme, lhs_app_controller) <
            std::tie(other.color_mode, other.contrast_mode, other.elevation_mode,
-                    other.system_theme, other.frame_type, other.user_color,
-                    other.scheme_variant, other.is_grayscale,
-                    other.custom_theme, rhs_app_controller);
+                    other.system_theme, other.frame_type,
+                    other.user_color_source, other.user_color,
+                    other.scheme_variant, other.custom_theme,
+                    rhs_app_controller);
   }
 };
 

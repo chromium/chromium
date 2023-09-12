@@ -58,8 +58,10 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
       system_theme_,
       use_custom_frame ? ui::ColorProviderKey::FrameType::kChromium
                        : ui::ColorProviderKey::FrameType::kNative,
-      user_color_, scheme_variant_, /*is_grayscale=*/false,
-      std::move(custom_theme));
+      should_use_system_accent_color_
+          ? ui::ColorProviderKey::UserColorSource::kAccent
+          : ui::ColorProviderKey::UserColorSource::kBaseline,
+      user_color_, scheme_variant_, std::move(custom_theme));
 }
 
 SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {
