@@ -1,1 +1,5 @@
+# QuickAnswers owners.
+file://chromeos/components/quick_answers/OWNERS
+
+# EditorMenu owners.
 file://chromeos/components/editor_menu/OWNERS
