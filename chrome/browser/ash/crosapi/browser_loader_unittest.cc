@@ -76,7 +76,7 @@ class FakeLacrosSelectionLoader : public LacrosSelectionLoader {
 
   ~FakeLacrosSelectionLoader() override = default;
 
-  void Load(LoadCompletionCallback callback) override {
+  void Load(LoadCompletionCallback callback, bool forced) override {
     if (!callback) {
       return;
     }

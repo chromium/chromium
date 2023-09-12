@@ -39,14 +39,14 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
   ~StatefulLacrosLoader() override;
 
   // LacrosSelectionLoader:
-  void Load(LoadCompletionCallback callback) override;
+  void Load(LoadCompletionCallback callback, bool forced) override;
   void Unload() override;
   void Reset() override;
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
 
  private:
-  void LoadInternal(LoadCompletionCallback callback);
+  void LoadInternal(LoadCompletionCallback callback, bool forced);
 
   // Returns true if the stateful lacros-chrome is already loaded and both
   // `version_` and `path_` are ready.

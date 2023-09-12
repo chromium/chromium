@@ -62,7 +62,8 @@ TEST_F(RootfsLacrosLoaderTest, LoadRootfsLacros) {
 
   base::test::TestFuture<base::Version, const base::FilePath&> future;
   rootfs_lacros_loader_->Load(
-      future.GetCallback<base::Version, const base::FilePath&>());
+      future.GetCallback<base::Version, const base::FilePath&>(),
+      /*forced=*/false);
   EXPECT_EQ(base::Version(version_str), future.Get<0>());
   EXPECT_TRUE(callback_called);
 }

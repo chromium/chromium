@@ -82,7 +82,8 @@ void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
 
   rootfs_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
-                     std::move(callback), LacrosSelection::kRootfs));
+                     std::move(callback), LacrosSelection::kRootfs),
+      source == LacrosSelectionSource::kPolicy);
 }
 
 void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback,
@@ -91,7 +92,8 @@ void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback,
 
   stateful_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
-                     std::move(callback), LacrosSelection::kStateful));
+                     std::move(callback), LacrosSelection::kStateful),
+      source == LacrosSelectionSource::kPolicy);
 
   // Unmount the rootfs lacros-chrome when using stateful lacros-chrome.
   // This will keep stateful lacros-chrome only mounted and not hold the rootfs

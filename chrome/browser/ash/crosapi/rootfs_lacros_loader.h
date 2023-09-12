@@ -32,7 +32,7 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
   ~RootfsLacrosLoader() override;
 
   // LacrosSelectionLoader:
-  void Load(LoadCompletionCallback callback) override;
+  void Load(LoadCompletionCallback callback, bool forced) override;
   void Unload() override;
   void Reset() override;
   void GetVersion(

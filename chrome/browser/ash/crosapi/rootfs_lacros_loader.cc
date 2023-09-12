@@ -50,7 +50,7 @@ RootfsLacrosLoader::RootfsLacrosLoader(ash::UpstartClient* upstart_client,
 
 RootfsLacrosLoader::~RootfsLacrosLoader() = default;
 
-void RootfsLacrosLoader::Load(LoadCompletionCallback callback) {
+void RootfsLacrosLoader::Load(LoadCompletionCallback callback, bool forced) {
   LOG(WARNING) << "Loading rootfs lacros.";
 
   // Make sure to calculate `version_` before start loading.
