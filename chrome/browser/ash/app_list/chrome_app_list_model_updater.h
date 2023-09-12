@@ -88,6 +88,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   void ActivateChromeItem(const std::string& id, int event_flags) override;
   void LoadAppIcon(const std::string& id) override;
+  void UpdateProgress(const std::string& id, float progress) override;
 
   // Methods for item querying.
   ChromeAppListItem* FindItem(const std::string& id) override;

@@ -103,6 +103,14 @@ void AppListModel::SetItemMetadata(const std::string& id,
     SetItemName(item, data->name);
   }
 
+  if (data->progress > item->progress()) {
+    item->SetProgress(data->progress);
+    DVLOG(2) << "AppListModel::SetProgress: " << item->ToDebugString();
+    for (auto& observer : observers_) {
+      observer.OnAppListItemUpdated(item);
+    }
+  }
+
   if (data->icon.isNull()) {
     // Folder icons are generated on ash side so the icon of the metadata passed
     // from chrome side is null. Do not alter `item` default icon in this case.

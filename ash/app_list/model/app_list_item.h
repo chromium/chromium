@@ -75,6 +75,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   const std::string& id() const { return metadata_->id; }
   const std::string& folder_id() const { return metadata_->folder_id; }
   const syncer::StringOrdinal& position() const { return metadata_->position; }
+  float progress() const { return metadata_->progress; }
+
+  void SetProgress(float progress);
 
   void SetMetadata(std::unique_ptr<AppListItemMetadata> metadata) {
     metadata_ = std::move(metadata);

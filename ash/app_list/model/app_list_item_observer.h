@@ -39,6 +39,9 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
   // Invoked when the item is about to be destroyed.
   virtual void ItemBeingDestroyed() {}
 
+  // Invoked when the item progress is updated.
+  virtual void ItemProgressUpdated() {}
+
  protected:
   ~AppListItemObserver() override;
 };

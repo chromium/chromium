@@ -229,6 +229,11 @@ void ChromeAppListItem::SetPromisePackageId(
 
 void ChromeAppListItem::SetProgress(float progress) {
   metadata_->progress = progress;
+
+  AppListModelUpdater* updater = model_updater();
+  if (updater) {
+    updater->UpdateProgress(id(), progress);
+  }
 }
 
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {

@@ -97,6 +97,7 @@ class AppListModelUpdater {
                                         const gfx::ImageSkia& badge_icon) {}
   virtual void ActivateChromeItem(const std::string& id, int event_flags) {}
   virtual void LoadAppIcon(const std::string& id) {}
+  virtual void UpdateProgress(const std::string& id, float progress) {}
 
   // For AppListModel:
   virtual ChromeAppListItem* FindItem(const std::string& id) = 0;

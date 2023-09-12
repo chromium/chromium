@@ -138,6 +138,13 @@ size_t AppListItem::ChildItemCount() const {
   return 0;
 }
 
+void AppListItem::SetProgress(float progress) {
+  metadata_->progress = progress;
+  for (auto& observer : observers_) {
+    observer.ItemProgressUpdated();
+  }
+}
+
 bool AppListItem::IsFolderFull() const {
   return is_folder() && ChildItemCount() >= kMaxFolderChildren;
 }
