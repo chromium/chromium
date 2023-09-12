@@ -483,6 +483,15 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 
     self.searchText = nil;
+  } else if (mode == TabGridModeSelection) {
+    // The selected state is not visible in TabGridModeSelection mode, but
+    // VoiceOver surfaces it. Deselects all the collection view items.
+    // The selection will be reinstated when moving off of TabGridModeSelection.
+    NSArray<NSIndexPath*>* indexPathsForSelectedItems =
+        [self.collectionView indexPathsForSelectedItems];
+    for (NSIndexPath* itemIndexPath in indexPathsForSelectedItems) {
+      [self.collectionView deselectItemAtIndexPath:itemIndexPath animated:NO];
+    }
   }
 }
 
