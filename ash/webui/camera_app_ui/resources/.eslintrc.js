@@ -764,6 +764,8 @@ module.exports = {
 
     'no-invalid-this': 'off',
     '@typescript-eslint/no-invalid-this': 'error',
+
+    'no-constant-condition': ['error', {checkLoops: false}],
   }),
   overrides: [{
     files: ['**/*.ts'],

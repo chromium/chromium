@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertNotReached} from '../assert.js';
-import {AsyncJobQueue} from '../async_job_queue.js';
+import {AsyncJobWithResultQueue} from '../async_job_queue.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import {isLocalDev} from '../models/load_time_data.js';
@@ -121,7 +121,7 @@ let instance: DeviceOperator|null|undefined = undefined;
 /**
  * Job queue to sequentialize devices operations.
  */
-const operationQueue = new AsyncJobQueue();
+const operationQueue = new AsyncJobWithResultQueue();
 
 /**
  * Operates video capture device through CrOS Camera App Mojo interface.

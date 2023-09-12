@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../assert.js';
-import {AsyncJobQueue} from '../async_job_queue.js';
+import {AsyncJobWithResultQueue} from '../async_job_queue.js';
 import {isFileSystemDirectoryHandle, isFileSystemFileHandle} from '../util.js';
 
 import {AsyncWriter} from './async_writer.js';
@@ -83,7 +83,7 @@ export class FileAccessEntry {
 /**
  * Guards from name collision when creating files.
  */
-const createFileJobs = new AsyncJobQueue();
+const createFileJobs = new AsyncJobWithResultQueue();
 
 /**
  * The abstract interface for the directory entry.
