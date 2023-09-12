@@ -66,7 +66,9 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
     if (!HasVkFormat(format)) {
       return;
     }
-    VkFormat vk_format = ToVkFormatSinglePlanar(format);
+    VkFormat vk_format = format.PrefersExternalSampler()
+                             ? ToVkFormatExternalSampler(format)
+                             : ToVkFormatSinglePlanar(format);
     DCHECK_NE(vk_format, VK_FORMAT_UNDEFINED);
     VkFormatProperties format_props = {};
     vkGetPhysicalDeviceFormatProperties(vk_physical_device, vk_format,
@@ -82,6 +84,14 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
   for (auto format : viz::LegacyMultiPlaneFormat::kAll) {
     add_to_cache_if_supported(format);
   }
+
+#if BUILDFLAG(IS_OZONE)
+  // Support multiplanar formats with external sampling.
+  for (auto format : viz::MultiPlaneFormat::kAll) {
+    format.SetPrefersExternalSampler();
+    add_to_cache_if_supported(format);
+  }
+#endif
 
   return image_usage_cache;
 }

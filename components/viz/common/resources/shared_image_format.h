@@ -346,6 +346,10 @@ inline constexpr SharedImageFormat kI420 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_U_V,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k8);
+
+// All known multiplanar formats.
+static constexpr SharedImageFormat kAll[5] = {kYV12, kNV12, kNV12A, kP010,
+                                              kI420};
 }  // namespace MultiPlaneFormat
 
 }  // namespace viz
