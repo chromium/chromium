@@ -68,9 +68,6 @@ void Gradient::AddColorStop(const Gradient::ColorStop& stop) {
   }
 
   stops_.push_back(stop);
-  if (stop.color.HasNoneParams()) {
-    color_stops_have_none_parameters_ = true;
-  }
   cached_shader_.reset();
 }
 
@@ -92,111 +89,25 @@ void Gradient::SortStopsIfNecessary() const {
   std::stable_sort(stops_.begin(), stops_.end(), CompareStops);
 }
 
-bool Gradient::HasNonLegacyColor() const {
-  for (const auto& stop : stops_) {
-    if (!stop.color.IsLegacyColor())
-      return true;
+static SkColor4f ResolveStopColorWithMissingParams(
+    Color color,
+    Color neighbor,
+    Color::ColorSpace color_space,
+    sk_sp<cc::ColorFilter> color_filter) {
+  absl::optional<float> param0 =
+      color.Param0IsNone() ? neighbor.Param0() : color.Param0();
+  absl::optional<float> param1 =
+      color.Param1IsNone() ? neighbor.Param1() : color.Param1();
+  absl::optional<float> param2 =
+      color.Param2IsNone() ? neighbor.Param2() : color.Param2();
+  absl::optional<float> alpha =
+      color.AlphaIsNone() ? neighbor.Alpha() : color.Alpha();
+  Color resolved_color =
+      Color::FromColorSpace(color_space, param0, param1, param2, alpha);
+  if (color_filter) {
+    return color_filter->FilterColor(resolved_color.toSkColor4f());
   }
-  return false;
-}
-
-// Gradients with color stops with "none" need to interpolate as if said color
-// stop were not there. This is accomplished by looking at nearby color stops
-// and doing a simple linear interpolation for that channel.
-// TODO(crbug.com/1462612): Take into account hue interpolation and none
-// component carry-forward.
-void Gradient::ResolveNoneParametersForColorStops() {
-  // If "none" does not appear anywhere, we can skip this step and avoid
-  // breaking legacy behavior.
-  if (!color_stops_have_none_parameters_) {
-    return;
-  }
-
-  // If there is only one stop and the parameters are none, we can just let
-  // toSkColor4f turn the none parameters to zero.
-  if (stops_.size() == 1) {
-    return;
-  }
-
-  // Convert all colors to their final colorspace.
-  for (auto stop : stops_) {
-    stop.color.ConvertToColorSpace(color_space_interpolation_space_);
-  }
-
-  // Collect all params that are not none.
-  absl::optional<float> params[4][stops_.size()];
-  for (wtf_size_t i = 0; i < stops_.size(); i++) {
-    if (!stops_[i].color.Param0IsNone()) {
-      params[0][i] = stops_[i].color.Param0();
-    }
-    if (!stops_[i].color.Param1IsNone()) {
-      params[1][i] = stops_[i].color.Param1();
-    }
-    if (!stops_[i].color.Param2IsNone()) {
-      params[2][i] = stops_[i].color.Param2();
-    }
-    if (!stops_[i].color.AlphaIsNone()) {
-      params[3][i] = stops_[i].color.Alpha();
-    }
-  }
-
-  // Loop through again and fill in the blanks.
-  int num_stops = static_cast<int>(stops_.size());
-  for (int channel = 0; channel < 4; channel++) {
-    for (int i = 0; i < num_stops; i++) {
-      if (params[channel][i].has_value()) {
-        continue;
-      }
-
-      // Find the two nearest non-none values to interpolate between.
-      int left_index = i - 1;
-      int right_index = i + 1;
-      while (left_index >= 0) {
-        if (params[channel][left_index].has_value()) {
-          break;
-        }
-        left_index -= 1;
-      }
-      while (right_index < num_stops) {
-        if (params[channel][right_index].has_value()) {
-          break;
-        }
-        right_index += 1;
-      }
-
-      // All to the left are "none", just use the right.
-      if (left_index < 0 && right_index < num_stops) {
-        params[channel][i] = params[channel][right_index];
-        continue;
-      }
-      // All to the right are "none", just use the left.
-      if (left_index >= 0 && right_index >= num_stops) {
-        params[channel][i] = params[channel][left_index];
-        continue;
-      }
-
-      // Both are out of bounds, so the whole channel is "none".
-      if (left_index < 0 && right_index >= num_stops) {
-        continue;
-      }
-
-      float interpolation_percent =
-          (float(i - left_index) / float(right_index - left_index));
-      // Otherwise, interpolate between the two boundaries with values.
-      params[channel][i] = blink::Blend(params[channel][left_index].value(),
-                                        params[channel][right_index].value(),
-                                        interpolation_percent);
-    }
-  }
-
-  // Finally, recreate the color stops without any nones.
-  for (wtf_size_t i = 0; i < stops_.size(); i++) {
-    if (stops_[i].color.HasNoneParams()) {
-      stops_[i].color =
-          Color::FromColorSpace(stops_[i].color.GetColorSpace(), params[0][i],
-                                params[1][i], params[2][i], params[3][i]);
-    }
-  }
+  return resolved_color.toSkColor4f();
 }
 
 // Collect sorted stop position and color information into the pos and colors
@@ -223,12 +134,34 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     }
   }
 
-  for (const auto& stop : stops_) {
-    pos.push_back(WebCoreDoubleToSkScalar(stop.stop));
-    if (color_filter_) {
-      colors.push_back(color_filter_->FilterColor(stop.color.toSkColor4f()));
+  // Deal with none parameters.
+  for (wtf_size_t i = 0; i < stops_.size(); i++) {
+    Color color = stops_[i].color;
+    color.ConvertToColorSpace(color_space_interpolation_space_);
+    if (color.HasNoneParams()) {
+      if (i != 0) {
+        // Fill left
+        pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+        colors.push_back(ResolveStopColorWithMissingParams(
+            color, stops_[i - 1].color, color_space_interpolation_space_,
+            color_filter_));
+      }
+
+      if (i != stops_.size() - 1) {
+        // Fill right
+        pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+        colors.push_back(ResolveStopColorWithMissingParams(
+            color, stops_[i + 1].color, color_space_interpolation_space_,
+            color_filter_));
+      }
     } else {
-      colors.push_back(stop.color.toSkColor4f());
+      pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
+      if (color_filter_) {
+        colors.push_back(
+            color_filter_->FilterColor(stops_[i].color.toSkColor4f()));
+      } else {
+        colors.push_back(stops_[i].color.toSkColor4f());
+      }
     }
   }
 
@@ -246,6 +179,7 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
   using sk_hue_method = SkGradientShader::Interpolation::HueMethod;
   SkGradientShader::Interpolation sk_interpolation;
 
+  bool has_non_legacy_color = false;
   switch (color_space_interpolation_space_) {
     case Color::ColorSpace::kXYZD65:
     case Color::ColorSpace::kXYZD50:
@@ -275,7 +209,12 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
       sk_interpolation.fColorSpace = sk_colorspace::kHWB;
       break;
     case Color::ColorSpace::kNone:
-      if (HasNonLegacyColor()) {
+      for (const auto& stop : stops_) {
+        if (!stop.color.IsLegacyColor()) {
+          has_non_legacy_color = true;
+        }
+      }
+      if (has_non_legacy_color) {
         // If no colorspace is provided and the gradient is not entirely
         // composed of legacy colors, Oklab is the default interpolation space.
         sk_interpolation.fColorSpace = sk_colorspace::kOKLab;
@@ -325,7 +264,6 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   OffsetBuffer pos;
   pos.reserve(stops_.size());
 
-  ResolveNoneParametersForColorStops();
   FillSkiaStops(colors, pos);
   DCHECK_GE(colors.size(), 2ul);
   DCHECK_EQ(pos.size(), colors.size());

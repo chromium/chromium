@@ -146,10 +146,6 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   SkGradientShader::Interpolation ResolveSkInterpolation() const;
 
   void SortStopsIfNecessary() const;
-  // If a color parameter is "none", the gradient should interpolate as if that
-  // stop is not there for that parameter.
-  // https://www.w3.org/TR/css-color-4/#interpolation-missing
-  void ResolveNoneParametersForColorStops();
   void FillSkiaStops(ColorBuffer&, OffsetBuffer&) const;
   bool HasNonLegacyColor() const;
 
@@ -159,7 +155,6 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   const DegenerateHandling degenerate_handling_;
 
   mutable Vector<ColorStop, 2> stops_;
-  bool color_stops_have_none_parameters_ = false;
   mutable bool stops_sorted_;
   bool is_dark_mode_enabled_ = false;
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
