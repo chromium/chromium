@@ -19,12 +19,14 @@ import './multidevice_feature_item.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrosNetworkConfigInterface, FilterType, InhibitReason, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {Constructor} from '../common/types';
 import {routes} from '../router.js';
 
@@ -73,6 +75,13 @@ class SettingsMultideviceTetherItemElement extends
         readonly: true,
       },
 
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
+
       /**
        * Whether to show technology badge on mobile network icon.
        */
@@ -88,6 +97,7 @@ class SettingsMultideviceTetherItemElement extends
 
   private activeNetworkState_: OncMojo.NetworkStateProperties|undefined;
   private deviceState_: OncMojo.DeviceStateProperties|undefined;
+  private isRevampWayfindingEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
   private showTechnologyBadge_: boolean;
 
@@ -197,6 +207,36 @@ class SettingsMultideviceTetherItemElement extends
 
   private getTetherNetworkUrlSearchParams_(): URLSearchParams {
     return new URLSearchParams('type=Tether');
+  }
+
+  private getInstantTetheringDescription_(): string {
+    const deviceState = this.deviceState_;
+    // If the `deviceState` is enabled, the description depends on the
+    // `connectionState`, otherwise return the disabled description directly.
+    if (deviceState && deviceState.deviceState === DeviceStateType.kEnabled) {
+      assert(deviceState.type === NetworkType.kTether);
+      if (this.activeNetworkState_) {
+        const connectionState = this.activeNetworkState_.connectionState;
+        const deviceName = this.pageContentData.hostDeviceName || '';
+        if (OncMojo.connectionStateIsConnected(connectionState)) {
+          return this.i18n(
+              'multideviceInstantTetheringItemConnectedDescription',
+              deviceName);
+        }
+        if (connectionState === ConnectionStateType.kConnecting) {
+          return this.i18n(
+              'multideviceInstantTetheringItemConnectingDescription',
+              deviceName);
+        }
+        if (connectionState === ConnectionStateType.kNotConnected) {
+          return this.i18n(
+              'multideviceInstantTetheringItemNoNetworkDescription',
+              deviceName);
+        }
+      }
+    }
+
+    return this.i18n('multideviceInstantTetheringItemDisabledDescription');
   }
 }
 

@@ -4478,11 +4478,17 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_ITEM_HEADING" desc="Heading for settings item that allows the user to connect their phone to their Chromebook.">
     Android phone
   </message>
+   <message name="IDS_OS_SETTINGS_MULTIDEVICE_SUBPAGE_TITLE" desc="Title for the multidevice detail subpage.">
+    Android phone (<ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>)
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_ENABLED" desc="Text to tell user multidevice features are turned on">
     Enabled
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_DISABLED" desc="Text to tell user multidevice features are turned off">
     Disabled
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_TOGGLE_LABEL" desc="Label for the top level toggle button on the Connected Devices details subpage">
+    Connect to your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_SUITE_TOGGLE_A11Y_LABEL" desc="Accessibility label for toggle button that enables/disables connected phone features.">
     Connected phone features enable.
@@ -4491,6 +4497,18 @@ Press an assigned switch or key to remove assignment.
     Instant Tethering
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_SUMMARY" desc="Description of for the 'Instant Tethering' setting. This feature automatically offers the user to tether to their phone if their Chromebook is offline and their phone supports tethering.">
+    Connect to the internet through your phone
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_CONNECTED_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's connected. This feature automatically offers the user to tether to their phone if their Chromebook is offline and their phone supports tethering.">
+    Connected to internet through <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_CONNECTING_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's being connected.">
+    Connecting to <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_NO_NETWORK_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's not connected.">
+    No network through <ph name="HOST_DEVICE_NAME">$1<ex>Android phone</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_DISABLED_DESCRIPTION" desc="Description of for the 'Instant Tethering' setting when it's diabled.">
     Connect to the internet through your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_ANDROID_MESSAGES" desc="Name of a feature. This feature lets the user read and reply to text messages from their Chromebook. New text messages will appear as notifications.">

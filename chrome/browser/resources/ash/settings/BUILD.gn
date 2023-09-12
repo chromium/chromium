@@ -152,6 +152,7 @@ build_webui("build") {
     "multidevice_page/multidevice_combined_setup_item.ts",
     "multidevice_page/multidevice_feature_item.ts",
     "multidevice_page/multidevice_feature_toggle.ts",
+    "multidevice_page/multidevice_forget_device_dialog.ts",
     "multidevice_page/multidevice_notification_access_setup_dialog.ts",
     "multidevice_page/multidevice_page.ts",
     "multidevice_page/multidevice_permissions_setup_dialog.ts",

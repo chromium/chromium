@@ -39,7 +39,7 @@
                   if="[[!isSuiteAllowedByPolicy(pageContentData)]]"
                   restamp>
           <cr-policy-indicator id="suitePolicyIndicator"
-                                indicator-type="userPolicy">
+              indicator-type="userPolicy">
           </cr-policy-indicator>
           <settings-multidevice-feature-toggle
               class="margin-matches-padding"
@@ -161,7 +161,16 @@
   </div>
 
   <template is="dom-if" route-path="/multidevice/features" restamp>
-    <os-settings-subpage page-title="[[getLabelText_(pageContentData)]]">
+    <os-settings-subpage
+        page-title="[[getMultideviceSubpageTitle_(pageContentData)]]">
+      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+        <div slot="subpage-title-extra">
+          <cr-button id="forgetDeviceButton" on-click="showForgetDeviceDialog_"
+              deep-link-focus-id$="[[Setting.kForgetPhone]]">
+            $i18n{multideviceForgetDeviceDisconnect}
+          </cr-button>
+        </div>
+      </template>
       <settings-multidevice-subpage tabindex="-1"
           page-content-data="[[pageContentData]]">
       </settings-multidevice-subpage>
@@ -210,4 +219,13 @@
                                           pageContentData)]]"
       on-close="onHidePhonePermissionsSetupDialog_">
   </settings-multidevice-permissions-setup-dialog>
+</template>
+
+<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+  <template is="dom-if"
+      if="[[shouldShowForgetDeviceDialog_]]" restamp>
+    <settings-multidevice-forget-device-dialog
+        on-close="closeForgetDeviceDialog_">
+    </settings-multidevice-forget-device-dialog>
+  </template>
 </template>
