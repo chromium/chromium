@@ -2792,8 +2792,12 @@ void LocalFrame::LoadJavaScriptURL(const KURL& url) {
   // Protect privileged pages against bookmarklets and other JavaScript
   // manipulations.
   if (SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
-          GetDocument()->Url().Protocol()))
+          GetSecurityContext()
+              ->GetSecurityOrigin()
+              ->GetOriginOrPrecursorOriginIfOpaque()
+              ->Protocol())) {
     return;
+  }
 
   // TODO(mustaq): This is called only through the user typing a javascript URL
   // into the omnibox.  See https://crbug.com/1082900

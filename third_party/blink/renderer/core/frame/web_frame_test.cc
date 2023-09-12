@@ -320,7 +320,12 @@ class WebFrameTest : public testing::Test {
   WebFrameTest()
       : base_url_("http://internal.test/"),
         not_base_url_("http://external.test/"),
-        chrome_url_("chrome://") {}
+        chrome_url_("chrome://test/") {
+    // This is needed so that a chrome: URL's origin is computed correctly,
+    // which is needed for Javascript URL security checks to work properly in
+    // tests below.
+    url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+  }
 
   ~WebFrameTest() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
@@ -499,6 +504,7 @@ class WebFrameTest : public testing::Test {
   std::string chrome_url_;
 
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
+  url::ScopedSchemeRegistryForTests scoped_registry_;
 };
 
 TEST_F(WebFrameTest, ContentText) {
