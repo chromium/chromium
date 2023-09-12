@@ -6,11 +6,50 @@ source_set("parcel_tracking") {
   sources = [
     "parcel_tracking_opt_in_coordinator.h",
     "parcel_tracking_opt_in_coordinator.mm",
+    "parcel_tracking_opt_in_mediator.h",
+    "parcel_tracking_opt_in_mediator.mm",
   ]
   deps = [
+    ":parcel_tracking_ui",
     "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/web/public",
     "//ios/web/public/annotations:custom_text_check_result",
+  ]
+}
+
+source_set("parcel_tracking_ui") {
+  sources = [
+    "parcel_tracking_opt_in_view_controller.h",
+    "parcel_tracking_opt_in_view_controller.mm",
+  ]
+  deps = [
+    "resources:parcel_tracking_icon_new",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "parcel_tracking_opt_in_coordinator_unittest.mm" ]
+  deps = [
+    ":parcel_tracking",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//ios/chrome/browser/parcel_tracking:util",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }

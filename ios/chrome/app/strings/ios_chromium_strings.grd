@@ -433,6 +433,12 @@ Things to consider:
       <message name="IDS_IOS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY" desc="The text of the identity section for iOS.">
         Chromium verified that <ph name="ISSUER">$1<ex>VeriSign</ex></ph> issued this website's certificate.
       </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TITLE" desc="Text for the title string of the parcel tracking opt-in half-sheet screen.">
+        Auto-Track Your Packages on Chromium
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE" desc="Text for the subtitle string of the parcel tracking opt-in half-sheet screen.">
+        Chromium can detect the tracking numbers you input and track your packages on the New Tab Page while helping other shopping experiences from Chromium.
+      </message>
       <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PROMO_TITLE" desc="The text of the title for the post restore default browser promo.">
         Make Chromium Your Default Browser?
       </message>

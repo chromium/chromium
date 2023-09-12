@@ -4,9 +4,19 @@
 
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
 
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_mediator.h"
+#import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_view_controller.h"
+
 @implementation ParcelTrackingOptInCoordinator {
   web::WebState* _webState;
   NSArray<CustomTextCheckingResult*>* _parcels;
+  ParcelTrackingOptInMediator* _mediator;
+  ParcelTrackingOptInViewController* _viewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -22,6 +32,59 @@
   return self;
 }
 
-// TODO(crbug.com/1473449): override start and stop methods.
+- (void)start {
+  [super start];
+  _mediator = [[ParcelTrackingOptInMediator alloc] initWithWebState:_webState];
+  _viewController = [[ParcelTrackingOptInViewController alloc] init];
+  _viewController.actionHandler = self;
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
+  self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
+      prefs::kIosParcelTrackingOptInPromptDisplayed, true);
+}
+
+- (void)stop {
+  [self dismissPrompt];
+  _mediator = nil;
+  _viewController = nil;
+  [super stop];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [self dismissPrompt];
+  self.browser->GetBrowserState()->GetPrefs()->SetInteger(
+      prefs::kIosParcelTrackingOptInStatus,
+      static_cast<int>(IOSParcelTrackingOptInStatus::kAlwaysTrack));
+  [_mediator didTapPrimaryActionButton:_parcels];
+  // TODO(crbug.com/1473449): record metric.
+}
+
+- (void)confirmationAlertSecondaryAction {
+  [self dismissPrompt];
+  self.browser->GetBrowserState()->GetPrefs()->SetInteger(
+      prefs::kIosParcelTrackingOptInStatus,
+      static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack));
+  // TODO(crbug.com/1473449): record metric.
+}
+
+- (void)confirmationAlertTertiaryAction {
+  [self dismissPrompt];
+  self.browser->GetBrowserState()->GetPrefs()->SetInteger(
+      prefs::kIosParcelTrackingOptInStatus,
+      static_cast<int>(IOSParcelTrackingOptInStatus::kAskToTrack));
+  [_mediator didTapTertiaryActionButton:_parcels];
+  // TODO(crbug.com/1473449): record metric.
+}
+
+#pragma mark - Private
+
+// Dismisses the view controller.
+- (void)dismissPrompt {
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+}
 
 @end
