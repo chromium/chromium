@@ -1388,18 +1388,6 @@
       ]
     },
     {
-      "id": 177,
-      "description": "glGetFragData{Location|Index} works incorrectly on Mac OpenGL drivers",
-      "cr_bugs": [638340, 1473838],
-      "os": {
-        "type": "macosx"
-      },
-      "gl_renderer": "ANGLE.*OpenGL.*",
-      "features": [
-        "get_frag_data_info_bug"
-      ]
-    },
-    {
       "id": 179,
       "description": "glResumeTransformFeedback works incorrectly on Intel GPUs",
       "cr_bugs": [638514],

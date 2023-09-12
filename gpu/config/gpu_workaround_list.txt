@@ -94,7 +94,6 @@ force_low_power_gpu
 force_nv12_overlay_support
 force_rgb10a2_overlay_support
 force_update_scissor_state_when_binding_fbo0
-get_frag_data_info_bug
 gl_clear_broken
 init_gl_position_in_vertex_shader
 init_one_cube_map_level_before_copyteximage

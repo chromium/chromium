@@ -1577,7 +1577,7 @@ void FeatureInfo::InitializeFeatures() {
       gl_version_info_->IsAtLeastGL(3, 3) ||
       (gl_version_info_->IsAtLeastGL(3, 2) &&
        gfx::HasExtension(extensions, "GL_ARB_blend_func_extended"));
-  if (!disable_shader_translator_ && !workarounds_.get_frag_data_info_bug &&
+  if (!disable_shader_translator_ &&
       ((gl_version_info_->IsAtLeastGL(3, 2) &&
         has_opengl_dual_source_blending) ||
        (gl_version_info_->IsAtLeastGLES(3, 0) &&
@@ -1774,6 +1774,7 @@ void FeatureInfo::InitializeFeatures() {
 
   if (is_passthrough_cmd_decoder_ &&
       gfx::HasExtension(extensions, "GL_EXT_blend_func_extended")) {
+    feature_flags_.ext_blend_func_extended = true;
     AddExtensionString("GL_EXT_blend_func_extended");
   }
 
