@@ -1165,7 +1165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PlaceholderTabResyncResult"
-    enum="SyncPlaceholderTabResyncResult" expires_after="2024-01-01">
+    enum="SyncPlaceholderTabResyncResult" expires_after="2024-03-10">
   <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <component>Services&gt;Sync</component>
