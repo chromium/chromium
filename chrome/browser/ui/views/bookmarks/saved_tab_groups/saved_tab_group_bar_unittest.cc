@@ -161,6 +161,11 @@ TEST_F(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
   // Verify that the overflow button is visible when a 5th button is added and
   // that the 5th button is not visible.
   saved_tab_group_model()->Add(kSavedTabGroup5);
+
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
+
   EXPECT_TRUE(overflow_button->GetVisible());
   EXPECT_FALSE(saved_tab_group_bar()->children()[4]->GetVisible());
   EXPECT_EQ(6u, saved_tab_group_bar()->children().size());
@@ -179,11 +184,20 @@ TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
   // that the 5th button is not visible.
   Add4Groups();
   saved_tab_group_model()->Add(kSavedTabGroup5);
+
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
+
   EXPECT_TRUE(overflow_button->GetVisible());
   EXPECT_FALSE(saved_tab_group_bar()->children()[4]->GetVisible());
   EXPECT_EQ(6u, saved_tab_group_bar()->children().size());
 
   saved_tab_group_model()->Remove(kSavedTabGroup5.saved_guid());
+
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
 
   EXPECT_FALSE(overflow_button->GetVisible());
   EXPECT_EQ(5u, saved_tab_group_bar()->children().size());
@@ -202,11 +216,20 @@ TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
   // that the 5th button is not visible.
   Add4Groups();
   saved_tab_group_model()->Add(kSavedTabGroup5);
+
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
+
   EXPECT_TRUE(overflow_button->GetVisible());
   EXPECT_FALSE(saved_tab_group_bar()->children()[4]->GetVisible());
   EXPECT_EQ(6u, saved_tab_group_bar()->children().size());
 
   saved_tab_group_model()->Remove(kSavedTabGroup5.saved_guid());
+
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
 
   EXPECT_FALSE(overflow_button->GetVisible());
   EXPECT_TRUE(saved_tab_group_bar()->children()[3]->GetVisible());
@@ -320,22 +343,26 @@ TEST_F(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
   Add4Groups();
 
   int exact_width = GetWidthOfButtonsAndPadding();
-
-  EXPECT_EQ(
-      exact_width,
-      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(exact_width));
+  int calculated_width =
+      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(exact_width);
+  EXPECT_EQ(exact_width, calculated_width);
 
   // After 4 buttons have been added (excluding the invisible overflow), all
   // subsequent buttons will be hidden. Instead an overflow menu will appear
   // which will house the hidden buttons.
   saved_tab_group_model()->Add(kSavedTabGroup5);
 
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
+
+  // Update the `new_width` to take the buttons into account
   int new_width = GetWidthOfButtonsAndPadding();
+  calculated_width =
+      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(new_width);
 
   EXPECT_LT(exact_width, new_width);
-  EXPECT_EQ(
-      new_width,
-      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(new_width));
+  EXPECT_EQ(new_width, calculated_width);
 }
 
 // If the restriction is more than the expected size all should be visible
@@ -353,12 +380,15 @@ TEST_F(SavedTabGroupBarUnitTest,
   // which will house the hidden buttons.
   saved_tab_group_model()->Add(kSavedTabGroup5);
 
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
   int new_width = GetWidthOfButtonsAndPadding();
+  int actual_width =
+      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(new_width + 1);
 
   EXPECT_LT(exact_width, new_width);
-  EXPECT_EQ(new_width,
-            saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
-                new_width + 1));
+  EXPECT_EQ(new_width, actual_width);
 }
 
 // If the restriction is 1 less than the size the last button should not be
@@ -377,10 +407,13 @@ TEST_F(SavedTabGroupBarUnitTest,
   // which will house the hidden buttons.
   saved_tab_group_model()->Add(kSavedTabGroup5);
 
+  // Layout the buttons.
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
   int new_width = GetWidthOfButtonsAndPadding();
+  int actual_width =
+      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(new_width - 1);
 
   EXPECT_LT(exact_width, new_width);
-  EXPECT_GT(new_width,
-            saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
-                new_width - 1));
+  EXPECT_GT(new_width, actual_width);
 }

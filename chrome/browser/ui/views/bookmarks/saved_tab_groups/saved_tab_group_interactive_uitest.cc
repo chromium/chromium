@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       SaveGroupAndCloseEditorBubble(group_4), FinishTabstripAnimations(),
       EnsureNotPresent(kSavedTabGroupOverflowButtonElementId),
       SaveGroupAndCloseEditorBubble(group_5), FinishTabstripAnimations(),
-      EnsurePresent(kSavedTabGroupOverflowButtonElementId),
+      WaitForShow(kSavedTabGroupOverflowButtonElementId), FlushEvents(),
 
       // Verify there is only 1 button in the overflow menu
       PressButton(kSavedTabGroupOverflowButtonElementId),
