@@ -1170,8 +1170,9 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
     mock_factory_client_->CallOnDBSuccess(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
     EXPECT_TRUE(mock_factory_client_->connection());
-    mock_factory_client_->connection()->database()->Commit(
-        mock_factory_client_->connection()->GetTransaction(transaction_id));
+    mock_factory_client_->connection()
+        ->GetTransaction(transaction_id)
+        ->SetCommitFlag();
     loop.Run();
     mock_factory_client_->connection()->AbortTransactionsAndClose(
         IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
@@ -1263,8 +1264,7 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
           base::RunLoop inner_loop;
           callbacks->CallOnDBSuccess(
               base::BindLambdaForTesting([&]() { inner_loop.Quit(); }));
-          connection->database()->Commit(
-              connection->GetTransaction(transaction_id));
+          connection->GetTransaction(transaction_id)->SetCommitFlag();
           inner_loop.Run();
         }
       }

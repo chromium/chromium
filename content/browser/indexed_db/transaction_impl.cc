@@ -249,7 +249,7 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
 
   // Always allow empty or delete-only transactions.
   if (transaction_->size() == 0) {
-    connection->database()->Commit(transaction_.get());
+    transaction_->SetCommitFlag();
     return;
   }
 
@@ -273,7 +273,7 @@ void TransactionImpl::OnQuotaCheckDone(
   }
 
   if (space_left.has_value() && space_left.value() >= transaction_->size()) {
-    connection->database()->Commit(transaction_.get());
+    transaction_->SetCommitFlag();
   } else {
     connection->AbortTransactionAndTearDownOnError(
         transaction_.get(),

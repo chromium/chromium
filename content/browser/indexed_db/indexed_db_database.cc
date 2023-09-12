@@ -350,16 +350,6 @@ leveldb::Status IndexedDBDatabase::ForceCloseAndRunTasks() {
   return status;
 }
 
-void IndexedDBDatabase::Commit(IndexedDBTransaction* transaction) {
-  // The frontend suggests that we commit, but we may have previously initiated
-  // an abort, and so have disposed of the transaction. on_abort has already
-  // been dispatched to the frontend, so it will find out about that
-  // asynchronously.
-  if (transaction) {
-    transaction->SetCommitFlag();
-  }
-}
-
 void IndexedDBDatabase::TransactionCreated() {
   ++transaction_count_;
 }

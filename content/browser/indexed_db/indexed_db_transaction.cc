@@ -163,6 +163,12 @@ IndexedDBTransaction::~IndexedDBTransaction() {
 }
 
 void IndexedDBTransaction::SetCommitFlag() {
+  // The frontend suggests that we commit, but we may have previously initiated
+  // an abort.
+  if (!IsAcceptingRequests()) {
+    return;
+  }
+
   is_commit_pending_ = true;
   bucket_context_->delegate().on_tasks_available.Run();
 }

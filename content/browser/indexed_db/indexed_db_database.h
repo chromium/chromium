@@ -96,8 +96,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
   // IndexedDBBucketContextHandle while calling this methods.
   leveldb::Status ForceCloseAndRunTasks();
 
-  void Commit(IndexedDBTransaction* transaction);
-
   void TransactionCreated();
   void TransactionFinished(blink::mojom::IDBTransactionMode mode,
                            bool committed);
