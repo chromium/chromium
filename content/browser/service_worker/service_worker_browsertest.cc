@@ -6575,6 +6575,103 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOptOutBrowserTest,
   EXPECT_EQ(0, GetRequestCount(relative_url));
 }
 
+class CacheStorageDataChecker
+    : public base::RefCounted<CacheStorageDataChecker> {
+ public:
+  enum class Status {
+    kUnknown,
+    kExist,
+    kNotExist,
+  };
+  static Status Exist(
+      storage::mojom::CacheStorageControl* cache_storage_control,
+      const GURL& origin,
+      const std::string& cache_name,
+      const GURL& url) {
+    mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage_remote;
+    network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+    cache_storage_control->AddReceiver(
+        cross_origin_embedder_policy, mojo::NullRemote(),
+        storage::BucketLocator::ForDefaultBucket(
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(origin))),
+        storage::mojom::CacheStorageOwner::kCacheAPI,
+        cache_storage_remote.InitWithNewPipeAndPassReceiver());
+
+    auto checker = base::MakeRefCounted<CacheStorageDataChecker>(
+        std::move(cache_storage_remote), cache_name, url);
+    return checker->ExistImpl();
+  }
+
+  CacheStorageDataChecker(
+      mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage,
+      const std::string& cache_name,
+      const GURL& url)
+      : cache_storage_(std::move(cache_storage)),
+        cache_name_(cache_name),
+        url_(url) {}
+
+  CacheStorageDataChecker(const CacheStorageDataChecker&) = delete;
+  CacheStorageDataChecker& operator=(const CacheStorageDataChecker&) = delete;
+
+ private:
+  friend class base::RefCounted<CacheStorageDataChecker>;
+
+  virtual ~CacheStorageDataChecker() = default;
+
+  Status ExistImpl() {
+    Status result = Status::kUnknown;
+    base::RunLoop loop;
+    cache_storage_->Open(
+        base::UTF8ToUTF16(cache_name_), /*trace_id=*/0,
+        base::BindOnce(&CacheStorageDataChecker::OnCacheStorageOpenCallback,
+                       this, &result, loop.QuitClosure()));
+    loop.Run();
+    return result;
+  }
+
+  void OnCacheStorageOpenCallback(Status* result,
+                                  base::OnceClosure continuation,
+                                  blink::mojom::OpenResultPtr open_result) {
+    ASSERT_TRUE(open_result->is_cache());
+
+    auto scoped_request = blink::mojom::FetchAPIRequest::New();
+    scoped_request->url = url_;
+
+    // Preserve lifetime of this remote across the Match call.
+    cache_storage_cache_.emplace(std::move(open_result->get_cache()));
+
+    (*cache_storage_cache_)
+        ->Match(std::move(scoped_request),
+                blink::mojom::CacheQueryOptions::New(),
+                /*in_related_fetch_event=*/false,
+                /*in_range_fetch_event=*/false, /*trace_id=*/0,
+                base::BindOnce(
+                    &CacheStorageDataChecker::OnCacheStorageCacheMatchCallback,
+                    this, result, std::move(continuation)));
+  }
+
+  void OnCacheStorageCacheMatchCallback(
+      Status* result,
+      base::OnceClosure continuation,
+      blink::mojom::MatchResultPtr match_result) {
+    if (match_result->is_status()) {
+      ASSERT_EQ(match_result->get_status(), CacheStorageError::kErrorNotFound);
+      *result = Status::kNotExist;
+      std::move(continuation).Run();
+      return;
+    }
+    ASSERT_TRUE(match_result->is_response());
+    *result = Status::kExist;
+    std::move(continuation).Run();
+  }
+
+  mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
+  absl::optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
+      cache_storage_cache_;
+  const std::string cache_name_;
+  const GURL url_;
+};
+
 // Test class for static routing API (crbug.com/1420517) browsertest.
 class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
  public:
@@ -6638,6 +6735,41 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  void WaitUntilRelativeUrlStoredInCache(const std::string& relative_url) {
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    int retries = 10;
+    while (retries-- > 0) {
+      if (CacheStorageDataChecker::Exist(
+              partition->GetCacheStorageControl(),
+              embedded_test_server()->base_url(), std::string("test"),
+              embedded_test_server()->GetURL(relative_url)) ==
+          CacheStorageDataChecker::Status::kExist) {
+        return;
+      }
+      EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(),
+                         R"(
+          caches.open("test").then((c) => {
+              const headers = new Headers();
+              headers.append('Content-Type', 'text/html');
+              headers.append('X-Response-From', 'cache');
+              const options = {
+                  status: 200,
+                  statusText: 'Custom response from cache',
+                  headers
+              };
+              const response = new Response(
+                  '[ServiceWorkerStaticRouter] Response from the cache',
+                  options);
+              c.put("/service_worker/cache_hit", response.clone());
+              c.put("/service_worker/cache_with_name", response.clone());
+              c.put("/service_worker/cache_with_wrong_name", response.clone());
+          });)"));
+    }
+  }
+
  private:
   void RegisterRequestHandlerForTest() {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
@@ -6683,6 +6815,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
   void MonitorRequestHandler(const net::test_server::HttpRequest& request) {
     request_log_[request.relative_url].push_back(request);
   }
+
   std::map<std::string, std::vector<net::test_server::HttpRequest>>
       request_log_;
   base::test::ScopedFeatureList feature_list_;
@@ -6865,8 +6998,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   }
 }
 
-// TODO(crbug.com/1371756) Add a test for the "cache" enum. The test
-// is flaky now.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageHit) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_hit";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            GetInnerText());
+  // The result should be got from the cache.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        MainResourceCacheStorageMissThenNetworkFallback) {
@@ -6881,8 +7025,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
-// TODO(crbug.com/1371756) Add a test for the "cacheName" field.
-// The test is flaky now.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageHitWithName) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_with_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            GetInnerText());
+  // The result should be got from the cache.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        MainResourceCacheStorageMissDueToNameMismatch) {
@@ -6890,10 +7045,76 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
   const std::string relative_url = "/service_worker/cache_with_wrong_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
             GetInnerText());
+  // Due to the cache miss, the result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageHit) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_hit";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // The result should be got from the cache, and no network access is
+  // expected.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageMiss) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_miss";
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // Due to the cache miss, the result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageHitWithName) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_with_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the cache",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
+  // The result should be got from the cache, and no network access is
+  // expected.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceCacheStorageMissDueToNameMissmatch) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+
+  const std::string relative_url = "/service_worker/cache_with_wrong_name";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                              "').then(response => "
+                                              "response.text())"));
   // Due to the cache miss, the result should be got from the network.
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }

@@ -59,6 +59,7 @@ self.addEventListener('install', e => {
         options);
     c.put("/service_worker/cache_hit", response.clone());
     c.put("/service_worker/cache_with_name", response.clone());
+    c.put("/service_worker/cache_with_wrong_name", response.clone());
   });
   self.skipWaiting();
 });
