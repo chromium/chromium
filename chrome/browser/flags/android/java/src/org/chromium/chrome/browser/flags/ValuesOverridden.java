@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.HashMap;
@@ -15,60 +13,41 @@ import java.util.Map;
  * Keeps track of values overridden for testing for cached flags and field trial parameters.
  */
 class ValuesOverridden {
-    @CheckDiscard("Validation is performed in tests and in debug builds.")
-    private Map<String, String> mOverridesTestFeatures;
+    @CheckDiscard("Should only exist in tests and in debug builds, should be optimized out in "
+            + "Release.")
+    private static Map<String, String> sOverridesTestFeatures;
 
-    @VisibleForTesting
-    void setOverrideForTesting(String preferenceKey, String overrideValue) {
-        enableOverrides();
-        mOverridesTestFeatures.put(preferenceKey, overrideValue);
-    }
-
-    void enableOverrides() {
-        // Do not overwrite if there are already existing overridden features in
-        // sOverridesTestFeatures.
-        if (mOverridesTestFeatures == null) {
-            mOverridesTestFeatures = new HashMap<>();
+    static void setOverrideForTesting(String preferenceKey, String overrideValue) {
+        if (sOverridesTestFeatures == null) {
+            sOverridesTestFeatures = new HashMap<>();
         }
+        sOverridesTestFeatures.put(preferenceKey, overrideValue);
     }
 
-    boolean isEnabled() {
-        return mOverridesTestFeatures != null;
+    static Boolean getBool(String preferenceName) {
+        if (sOverridesTestFeatures == null) return null;
+        String stringValue = sOverridesTestFeatures.get(preferenceName);
+        return stringValue != null ? Boolean.valueOf(stringValue) : null;
     }
 
-    boolean getBool(String preferenceName, boolean defaultValue) {
-        String value = mOverridesTestFeatures.get(preferenceName);
-        if (value != null) {
-            return Boolean.valueOf(value);
-        }
-        return defaultValue;
+    static String getString(String preferenceName) {
+        if (sOverridesTestFeatures == null) return null;
+        return sOverridesTestFeatures.get(preferenceName);
     }
 
-    String getString(String preferenceName, String defaultValue) {
-        String stringValue = mOverridesTestFeatures.get(preferenceName);
-        if (stringValue != null) {
-            return stringValue;
-        }
-        return defaultValue;
+    static Integer getInt(String preferenceName) {
+        if (sOverridesTestFeatures == null) return null;
+        String stringValue = sOverridesTestFeatures.get(preferenceName);
+        return stringValue != null ? Integer.valueOf(stringValue) : null;
     }
 
-    int getInt(String preferenceName, int defaultValue) {
-        String stringValue = mOverridesTestFeatures.get(preferenceName);
-        if (stringValue != null) {
-            return Integer.valueOf(stringValue);
-        }
-        return defaultValue;
+    static Double getDouble(String preferenceName) {
+        if (sOverridesTestFeatures == null) return null;
+        String stringValue = sOverridesTestFeatures.get(preferenceName);
+        return stringValue != null ? Double.valueOf(stringValue) : null;
     }
 
-    double getDouble(String preferenceName, double defaultValue) {
-        String stringValue = mOverridesTestFeatures.get(preferenceName);
-        if (stringValue != null) {
-            return Double.valueOf(stringValue);
-        }
-        return defaultValue;
-    }
-
-    void removeOverrides() {
-        mOverridesTestFeatures = null;
+    static void removeOverrides() {
+        sOverridesTestFeatures = null;
     }
 }

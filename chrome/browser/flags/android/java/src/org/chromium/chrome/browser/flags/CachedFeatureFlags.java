@@ -31,8 +31,6 @@ import java.util.Map;
  * value in shared preferences.
  */
 public class CachedFeatureFlags {
-    private static ValuesOverridden sValuesOverridden = new ValuesOverridden();
-
     /**
      * Sets the feature flags to use in JUnit and instrumentation tests.
      *
@@ -42,8 +40,6 @@ public class CachedFeatureFlags {
     @Deprecated
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
         assert features != null;
-
-        sValuesOverridden.enableOverrides();
 
         CachedFlag.setFeaturesForTesting(features);
     }
@@ -95,11 +91,11 @@ public class CachedFeatureFlags {
     static boolean getConsistentBooleanValue(String preferenceName, boolean defaultValue) {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        if (sValuesOverridden.isEnabled()) {
-            return sValuesOverridden.getBool(preferenceName, defaultValue);
+        Boolean value = ValuesOverridden.getBool(preferenceName);
+        if (value != null) {
+            return value;
         }
 
-        Boolean value;
         synchronized (ValuesReturned.sBoolValues) {
             value = ValuesReturned.sBoolValues.get(preferenceName);
             if (value != null) {
@@ -122,11 +118,11 @@ public class CachedFeatureFlags {
     static String getConsistentStringValue(String preferenceName, String defaultValue) {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        if (sValuesOverridden.isEnabled()) {
-            return sValuesOverridden.getString(preferenceName, defaultValue);
+        String value = ValuesOverridden.getString(preferenceName);
+        if (value != null) {
+            return value;
         }
 
-        String value;
         synchronized (ValuesReturned.sStringValues) {
             value = ValuesReturned.sStringValues.get(preferenceName);
             if (value != null) {
@@ -149,11 +145,11 @@ public class CachedFeatureFlags {
     static int getConsistentIntValue(String preferenceName, int defaultValue) {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        if (sValuesOverridden.isEnabled()) {
-            return sValuesOverridden.getInt(preferenceName, defaultValue);
+        Integer value = ValuesOverridden.getInt(preferenceName);
+        if (value != null) {
+            return value;
         }
 
-        Integer value;
         synchronized (ValuesReturned.sIntValues) {
             value = ValuesReturned.sIntValues.get(preferenceName);
             if (value != null) {
@@ -176,11 +172,11 @@ public class CachedFeatureFlags {
     static double getConsistentDoubleValue(String preferenceName, double defaultValue) {
         CachedFlagsSafeMode.getInstance().onFlagChecked();
 
-        if (sValuesOverridden.isEnabled()) {
-            return sValuesOverridden.getDouble(preferenceName, defaultValue);
+        Double value = ValuesOverridden.getDouble(preferenceName);
+        if (value != null) {
+            return value;
         }
 
-        Double value;
         synchronized (ValuesReturned.sDoubleValues) {
             value = ValuesReturned.sDoubleValues.get(preferenceName);
             if (value != null) {
@@ -201,11 +197,11 @@ public class CachedFeatureFlags {
 
     public static void resetFlagsForTesting() {
         ValuesReturned.clearForTesting();
-        sValuesOverridden.removeOverrides();
+        ValuesOverridden.removeOverrides();
         CachedFlagsSafeMode.getInstance().clearMemoryForTesting();
     }
 
     static void setOverrideForTesting(String preferenceKey, String overrideValue) {
-        sValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
+        ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
     }
 }
