@@ -1729,7 +1729,17 @@ bool GpuImageDecodeCache::TryFlushPendingWork() {
   // happen).
   RunPendingContextThreadOperations();
   context_->ContextSupport()->FlushPendingWork();
-
+  // Transfer cache entries may have been deleted above (if
+  // `ids_pending_deletion_` is not empty). But calling `FlushPendingWork()`
+  // above is not enough, because it only deals with deferred messages, and
+  // transfer cache entry deletion is *not* a deferred message. Rather, it is a
+  // command buffer command, so we need to flush it. Otherwise if the page is
+  // fully static, then no flush will come, and no entries will actually be
+  // deleted. We only need a shallow flush because no glFlush() is required, we
+  // merely need the deletion commands to be processed service-side.
+  if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
+    context_->RasterInterface()->ShallowFlushCHROMIUM();
+  }
   if (context_->GetLock()) {
     CheckContextLockAcquiredIfNecessary();
     context_->GetLock()->Release();
