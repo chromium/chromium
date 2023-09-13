@@ -76,9 +76,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         // Setup BookmarkModel.
-        doReturn(mFolderItem).when(mBookmarkModel).getBookmarkById(mFolderId);
         doReturn(FOLDER_CHILD_COUNT).when(mBookmarkModel).getTotalBookmarkCount(mFolderId);
-        doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
         doReturn(UNREAD_CHILD_COUNT).when(mBookmarkModel).getUnreadCount();
 
         // Setup BookmarkImageFetcher.
@@ -98,7 +96,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
 
     @Test
     public void testSetView() {
-        mCoordinator.setBookmarkId(mFolderId);
+        mCoordinator.setBookmarkItem(mFolderItem);
         mCoordinator.setView(mView);
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR));
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_TINT));
@@ -111,7 +109,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
 
     @Test
     public void testSetView_readingList() {
-        mCoordinator.setBookmarkId(mReadingListFolderId);
+        mCoordinator.setBookmarkItem(mReadingListFolderItem);
         mCoordinator.setView(mView);
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_AREA_BACKGROUND_COLOR));
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_TINT));
@@ -126,7 +124,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
     public void testSetView_noImages() {
         doReturn(mFolderId).when(mBookmarkModel).getDesktopFolderId();
         createCoordinator();
-        mCoordinator.setBookmarkId(mFolderId);
+        mCoordinator.setBookmarkItem(mFolderItem);
 
         mCoordinator.setView(mView);
         assertEquals(new Pair<>(null, null),
@@ -136,7 +134,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
     @Test
     public void testSetView_rebindView() {
         mCoordinator.setView(mView);
-        mCoordinator.setBookmarkId(mFolderId);
+        mCoordinator.setBookmarkItem(mFolderItem);
         assertEquals(mView, mCoordinator.getViewForTesting());
 
         mCoordinator.setView(mSubstitueView);

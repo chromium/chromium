@@ -115,7 +115,7 @@ public class ImprovedBookmarkRowCoordinator {
                         new ImprovedBookmarkFolderViewCoordinator(
                                 mContext, mBookmarkImageFetcher, mBookmarkModel));
                 propertyModel.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR)
-                        .setBookmarkId(item.getId());
+                        .setBookmarkItem(item);
             }
             propertyModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                     BookmarkUtils.getIconBackground(mContext, mBookmarkModel, item));
