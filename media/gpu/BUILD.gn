@@ -322,6 +322,8 @@ source_set("common") {
     "h264_decoder.h",
     "h264_dpb.cc",
     "h264_dpb.h",
+    "hrd_buffer.cc",
+    "hrd_buffer.h",
     "macros.h",
     "vp9_decoder.cc",
     "vp9_decoder.h",
@@ -577,7 +579,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gl:test_support",
   ]
-  sources = [ "h264_decoder_unittest.cc" ]
+  sources = [
+    "h264_decoder_unittest.cc",
+    "hrd_buffer_unittest.cc",
+  ]
   if (enable_hevc_parser_and_hw_decoder) {
     sources += [ "h265_decoder_unittest.cc" ]
   }
