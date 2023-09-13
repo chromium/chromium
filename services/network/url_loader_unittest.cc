@@ -4278,9 +4278,6 @@ TEST_F(URLLoaderTest, SetAuth) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(url_loader);
 
   client()->RunUntilResponseBodyArrived();
   EXPECT_TRUE(client()->has_received_response());
@@ -4318,9 +4315,6 @@ TEST_F(URLLoaderTest, CancelAuth) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(url_loader);
 
   client()->RunUntilResponseBodyArrived();
   EXPECT_TRUE(client()->has_received_response());
@@ -4358,9 +4352,6 @@ TEST_F(URLLoaderTest, TwoChallenges) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(url_loader);
 
   client()->RunUntilResponseBodyArrived();
   EXPECT_TRUE(client()->has_received_response());
@@ -4399,9 +4390,6 @@ TEST_F(URLLoaderTest, NoAuthRequiredForFavicon) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(url_loader);
 
   client()->RunUntilResponseBodyArrived();
   EXPECT_TRUE(client()->has_received_response());
@@ -4439,9 +4427,6 @@ TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(url_loader);
 
   client()->RunUntilResponseBodyArrived();
 
@@ -4619,9 +4604,6 @@ TEST_F(URLLoaderTest, ClientAuthDestroyResponder) {
       loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
   client_cert_observer.set_url_loader_remote(&loader);
 
-  RunUntilIdle();
-  ASSERT_TRUE(url_loader);
-
   client()->RunUntilComplete();
 
   EXPECT_EQ(net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED,
@@ -4656,9 +4638,6 @@ TEST_F(URLLoaderTest, ClientAuthCancelConnection) {
       loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
   client_cert_observer.set_url_loader_remote(&loader);
 
-  RunUntilIdle();
-  ASSERT_TRUE(url_loader);
-
   client()->RunUntilComplete();
 
   EXPECT_EQ(net::ERR_FAILED, client()->completion_status().error_code);
@@ -4691,11 +4670,6 @@ TEST_F(URLLoaderTest, ClientAuthCancelCertificateSelection) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-
-  RunUntilIdle();
-  ASSERT_TRUE(url_loader);
-
-  EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
 
   client()->RunUntilComplete();
 
@@ -4737,11 +4711,6 @@ TEST_F(URLLoaderTest, ClientAuthNoCertificate) {
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), request,
       client()->CreateRemote());
-
-  RunUntilIdle();
-  ASSERT_TRUE(url_loader);
-
-  EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
 
   client()->RunUntilComplete();
 
