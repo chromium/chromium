@@ -23,6 +23,33 @@ extern const size_t kMaxSuggestedProfilesCount;
 extern const size_t kMaxUniqueSuggestionsCount;
 extern const size_t kMaxPrunedUniqueSuggestionsCount;
 
+// Sets the `popup_item_id` for `suggestion` depending on
+// `last_filling_granularity`. If the `last_filling_granularity` for a certain
+// form was group filling, also add labels to give users feedback about the next
+// filling behaviour.
+// TODO(crbug.com/1466116): Add tests when this is actually used.
+// TODO(crbug.com/1466116): Add labels when `last_filling_granularity` is group
+// filling.
+void AddSuggestionDetailsForCurrentFillingGranularity(
+    const ServerFieldTypeSet& last_targetted_fields,
+    const AutofillType& triggering_field_type,
+    Suggestion& suggestion);
+
+// Creates nested/child suggestions for `suggestion` with the `profile`
+// information. Uses `type` to define what group filling suggestion to add
+// (name, address or phone). The existence of child suggestions defines whether
+// the autofill popup will have submenus.
+void AddGranularFillingChildSuggestions(const AutofillType& type,
+                                        const AutofillProfile& profile,
+                                        const std::string& app_locale,
+                                        Suggestion& suggestion);
+
+// In addition to just getting the values out of the autocomplete profile, this
+// function handles formatting of the street addresses and phone numbers.
+std::u16string GetSuggestionMainText(const AutofillProfile* profile,
+                                     const AutofillType& type,
+                                     const std::string& app_locale);
+
 // Normalizes text for comparison based on the type of the field `text` was
 // entered into.
 std::u16string NormalizeForComparisonForType(const std::u16string& text,

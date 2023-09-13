@@ -37,68 +37,6 @@ using ::i18n::addressinput::AddressField;
 using ::i18n::addressinput::GetStreetAddressLinesAsSingleLine;
 using ::i18n::addressinput::STREET_ADDRESS;
 
-// In addition to just getting the values out of the autocomplete profile, this
-// function handles formatting of the street address into a single string.
-std::u16string GetInfoInOneLine(const AutofillProfile* profile,
-                                const AutofillType& type,
-                                const std::string& app_locale) {
-  AddressField address_field;
-  if (i18n::FieldForType(type.GetStorableType(), &address_field) &&
-      address_field == STREET_ADDRESS) {
-    std::string street_address_line;
-    GetStreetAddressLinesAsSingleLine(
-        *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale),
-        &street_address_line);
-    return base::UTF8ToUTF16(street_address_line);
-  }
-
-  return profile->GetInfo(type, app_locale);
-}
-
-// Sets the `popup_item_id` for `suggestion` depending on
-// `last_targetted_fields`. If the `last_targetted_fields` for a
-// certain form section matches one of the group filling fields set, for
-// granular filling, this method also adds labels to give users feedback about
-// the next filling behaviour.
-// TODO(crbug.com/1466116): Add tests when this is actually used.
-// TODO(crbug.com/1466116): Add labels when `last_targetted_fields`
-// matches group one of the filling groups.
-void AddSuggestionDetailsForCurrentFillingGranularity(
-    const ServerFieldTypeSet& last_targetted_fields,
-    const AutofillType& triggering_field_type,
-    Suggestion& suggestion) {
-  if (AreFieldsGranularFillingGroup(last_targetted_fields)) {
-    switch (triggering_field_type.group()) {
-      case FieldTypeGroup::kName:
-        suggestion.popup_item_id = PopupItemId::kFillFullName;
-        break;
-      case FieldTypeGroup::kAddress:
-        suggestion.popup_item_id = PopupItemId::kFillFullAddress;
-        break;
-      case FieldTypeGroup::kPhone:
-        suggestion.popup_item_id = PopupItemId::kFillFullPhoneNumber;
-        break;
-      default:
-        // If the 'current_granularity' is group filling, BUT the current
-        // focused field is not one for which group we offer group filling
-        // (kName, kAddress and kPhone), we default back to fill full form
-        // behaviour/pre-granular filling popup id.
-        suggestion.popup_item_id = PopupItemId::kAddressEntry;
-    }
-  } else if (last_targetted_fields == kAllServerFieldTypes) {
-    suggestion.popup_item_id = PopupItemId::kAddressEntry;
-  } else if (last_targetted_fields.size() == 1) {
-    // Note: This does not affect SingleFieldFormFillers such
-    // Autocomplete, IBANs and merchand promo. Even though they also fill only
-    // one field, they have different code paths, therefore their suggestions
-    // are not generated here. Furthermore, we do not store
-    // `last_targetted_fields` for them.
-    suggestion.popup_item_id = PopupItemId::kFieldByFieldFilling;
-  } else {
-    NOTREACHED_NORETURN();
-  }
-}
-
 Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
@@ -336,20 +274,6 @@ void AddFooterChildSuggestions(const AutofillProfile& profile,
       GetDeleteAddressProfileSuggestion(Suggestion::BackendId(profile.guid())));
 }
 
-// Creates nested/child suggestions for `suggestion` with the `profile`
-// information. Uses `type` to define what group filling suggestion to add
-// (name, address or phone). The existence of child suggestions defines whether
-// the autofill popup will have submenus.
-void AddGranularFillingChildSuggestions(const AutofillType& type,
-                                        const AutofillProfile& profile,
-                                        const std::string& app_locale,
-                                        Suggestion& suggestion) {
-  AddNameChildSuggestions(type, profile, app_locale, suggestion);
-  AddAddressChildSuggestions(type, profile, app_locale, suggestion);
-  AddContactChildSuggestions(type, profile, app_locale, suggestion);
-  AddFooterChildSuggestions(profile, suggestion);
-}
-
 }  // namespace
 
 // As of November 2018, 50 profiles should be more than enough to cover at least
@@ -359,6 +283,91 @@ constexpr size_t kMaxSuggestedProfilesCount = 50;
 // As of November 2018, displaying 10 suggestions cover at least 99% of the
 // indices clicked by our users. The suggestions will also refine as they type.
 constexpr size_t kMaxUniqueSuggestionsCount = 10;
+
+std::u16string GetSuggestionMainText(const AutofillProfile* profile,
+                                     const AutofillType& type,
+                                     const std::string& app_locale) {
+  AddressField address_field;
+  if (i18n::FieldForType(type.GetStorableType(), &address_field) &&
+      address_field == STREET_ADDRESS) {
+    std::string street_address_line;
+    GetStreetAddressLinesAsSingleLine(
+        *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale),
+        &street_address_line);
+    return base::UTF8ToUTF16(street_address_line);
+  }
+
+  std::u16string value = profile->GetInfo(type, app_locale);
+
+  if (type.group() == FieldTypeGroup::kPhone) {
+    bool format_phone;
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    format_phone = base::FeatureList::IsEnabled(
+        features::kAutofillUseMobileLabelDisambiguation);
+#else
+    format_phone = base::FeatureList::IsEnabled(
+        features::kAutofillUseImprovedLabelDisambiguation);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+    if (format_phone) {
+      // Formats, e.g., the US phone numbers 15084880800, 508 488 0800, and
+      // +15084880800, as (508) 488-0800, and the Brazilian phone numbers
+      // 21987650000 and +55 11 2648-0254 as (21) 98765-0000 and
+      // (11) 2648-0254, respectively.
+      value = base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
+          base::UTF16ToUTF8(value),
+          data_util::GetCountryCodeWithFallback(*profile, app_locale)));
+    }
+  }
+  return value;
+}
+
+void AddSuggestionDetailsForCurrentFillingGranularity(
+    const ServerFieldTypeSet& last_targetted_fields,
+    const AutofillType& triggering_field_type,
+    Suggestion& suggestion) {
+  if (AreFieldsGranularFillingGroup(last_targetted_fields)) {
+    switch (triggering_field_type.group()) {
+      case FieldTypeGroup::kName:
+        suggestion.popup_item_id = PopupItemId::kFillFullName;
+        break;
+      case FieldTypeGroup::kAddress:
+        suggestion.popup_item_id = PopupItemId::kFillFullAddress;
+        break;
+      case FieldTypeGroup::kPhone:
+        suggestion.popup_item_id = PopupItemId::kFillFullPhoneNumber;
+        break;
+      default:
+        // If the 'current_granularity' is group filling, BUT the current
+        // focused field is not one for which group we offer group filling
+        // (kName, kAddress and kPhone), we default back to fill full form
+        // behaviour/pre-granular filling popup id.
+        suggestion.popup_item_id = PopupItemId::kAddressEntry;
+    }
+  } else if (last_targetted_fields == kAllServerFieldTypes) {
+    suggestion.popup_item_id = PopupItemId::kAddressEntry;
+  } else if (last_targetted_fields.size() == 1) {
+    // Note: This does not affect SingleFieldFormFillers such
+    // Autocomplete, IBANs and merchand promo. Even though they also fill only
+    // one field, they have different code paths, therefore their suggestions
+    // are not generated here. Furthermore, we do not store
+    // `last_targetted_fields` for them.
+    suggestion.popup_item_id = PopupItemId::kFieldByFieldFilling;
+  } else {
+    NOTREACHED_NORETURN();
+  }
+}
+
+void AddGranularFillingChildSuggestions(const AutofillType& type,
+                                        const AutofillProfile& profile,
+                                        const std::string& app_locale,
+                                        Suggestion& suggestion) {
+  AddNameChildSuggestions(type, profile, app_locale, suggestion);
+  AddAddressChildSuggestions(type, profile, app_locale, suggestion);
+  AddContactChildSuggestions(type, profile, app_locale, suggestion);
+  AddFooterChildSuggestions(profile, suggestion);
+}
 
 std::u16string NormalizeForComparisonForType(const std::u16string& text,
                                              ServerFieldType type) {
@@ -398,7 +407,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    std::u16string value = GetInfoInOneLine(profile, type, app_locale);
+    std::u16string value = GetSuggestionMainText(profile, type, app_locale);
     if (value.empty())
       continue;
 
@@ -410,28 +419,6 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
             /* is_masked_server_card= */ false, field_is_autofilled,
             &prefix_matched_suggestion)) {
       matched_profiles->push_back(profile);
-
-      if (type.group() == FieldTypeGroup::kPhone) {
-        bool format_phone;
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-        format_phone = base::FeatureList::IsEnabled(
-            features::kAutofillUseMobileLabelDisambiguation);
-#else
-        format_phone = base::FeatureList::IsEnabled(
-            features::kAutofillUseImprovedLabelDisambiguation);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-        if (format_phone) {
-          // Formats, e.g., the US phone numbers 15084880800, 508 488 0800, and
-          // +15084880800, as (508) 488-0800, and the Brazilian phone numbers
-          // 21987650000 and +55 11 2648-0254 as (21) 98765-0000 and
-          // (11) 2648-0254, respectively.
-          value = base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
-              base::UTF16ToUTF8(value),
-              data_util::GetCountryCodeWithFallback(*profile, app_locale)));
-        }
-      }
 
       suggestions.emplace_back(value);
       suggestions.back().payload = Suggestion::BackendId(profile->guid());
