@@ -1,9 +1,4 @@
-lamzin@google.com
-mgawad@google.com
-kerker@chromium.org
-chungsheng@google.com
-byronlee@chromium.org
+file://chromeos/ash/services/cros_healthd/OWNERS
 
 # Backup reviewers:
-pbond@chromium.org
-pmarko@chromium.org
+lamzin@google.com
