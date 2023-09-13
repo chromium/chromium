@@ -1502,9 +1502,6 @@ virtual/oopr-canvas2d/fast/canvas/canvas-text-baseline.html
 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html
 virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml
 virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html
-virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-browser-navigate.js
-virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-js-navigate.js
-virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-js-subresource.js
 virtual/plz-dedicated-worker/external/wpt/content-security-policy/inside-worker/serviceworker-report-only.https.sub.html
 virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/http-response-code.any.html
 virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.html

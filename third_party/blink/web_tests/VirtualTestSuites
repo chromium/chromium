@@ -1365,17 +1365,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "partitioned-cookies",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/cookies/partitioned-cookies/",
-              "external/wpt/html/anonymous-iframe/",
-              "http/tests/cookies/partitioned-cookies",
-              "http/tests/inspector-protocol/network/"],
-    "args": ["--enable-features=PartitionedCookies",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "no-different-origin-dialogs",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html",

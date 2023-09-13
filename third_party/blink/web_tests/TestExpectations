@@ -2933,7 +2933,6 @@ crbug.com/626703 external/wpt/shape-detection/single-face-detection.https.html [
 crbug.com/626703 external/wpt/shape-detection/single-text-detection.https.html [ Failure Timeout ]
 crbug.com/626703 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-img.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/font-access/font_access_query_select.tentative.https.window.html [ Timeout ]
@@ -5190,11 +5189,6 @@ crbug.com/1284572 virtual/threaded/http/tests/devtools/isolated-code-cache/same-
 # Incomplete support for mouse wheel in test_driver.
 crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Timeout ]
 
-# Sheriff 2022-01-07
-crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-browser-navigate.js [ Crash Failure Pass Timeout ]
-crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-navigate.js [ Crash Failure Pass Timeout ]
-crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-subresource.js [ Crash Failure Pass Timeout ]
-
 
 # Interop PE 2022-2023 investigation
 crbug.com/269917 external/wpt/uievents/mouse/cancel-mousedown-in-subframe.html [ Timeout ]
@@ -5683,7 +5677,6 @@ crbug.com/1479108 [ Mac13-arm64 ] virtual/threaded-no-composited-antialiasing/an
 crbug.com/1479003 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?mouse [ Timeout ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
-crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
 crbug.com/1413112 [ Mac10.15 ] virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
 crbug.com/1413726 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
 crbug.com/1395412 [ Mac ] virtual/first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
@@ -6490,7 +6483,6 @@ crbug.com/1459159 [ Linux ] fast/events/touch/gesture/gesture-tap-mouse-events.h
 # Flaky
 crbug.com/1459333 [ Mac11 ] virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-viewport-resize.html [ Failure Pass ]
 # Slightly flaky
-crbug.com/1459304 [ Linux ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/request-will-be-sent-extra-info-connect-timing.js [ Failure Pass ]
 crbug.com/1459304 [ Linux ] fast/filesystem/workers/file-writer-events.html [ Failure Pass ]
 crbug.com/1459304 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrolling-container-moves-offscreen.html [ Failure Pass ]
 crbug.com/1459304 [ Linux ] virtual/plz-dedicated-worker/http/tests/devtools/indexeddb/database-structure.js [ Failure Pass ]
