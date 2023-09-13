@@ -353,8 +353,6 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
   await joinInterestGroup(test, uuid, interestGroupOverrides);
   await runBasicFledgeAuctionAndNavigate(
       test, uuid,
-    {
-      decisionLogicURL: createDecisionScriptURL(
-                              uuid, decisionScriptURLParams) });
+      { decisionLogicURL: createDecisionScriptURL(uuid, decisionScriptURLParams) });
   await waitForObservedRequests(uuid, expectedReportURLs);
 }
