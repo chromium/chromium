@@ -73,7 +73,6 @@ struct HistoryDatabaseParams;
 class HistoryDBTask;
 class HistorySyncBridge;
 class InMemoryHistoryBackend;
-class TypedURLSyncBridge;
 class URLDatabase;
 
 // Returns a formatted version of `url` with the HTTP/HTTPS scheme, port,
@@ -626,9 +625,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // For each element in `urls`, updates the pre-existing URLRow in the database
   // with the same ID; or ignores the element if no such row exists. Returns the
   // number of records successfully updated.
+  // TODO(crbug.com/1365291): This method is only used in tests. Ideally migrate
+  // those tests to other APIs and delete this, or failing that, at least
+  // rename it to *ForTest.
   size_t UpdateURLs(const URLRows& urls);
 
   // While adding visits in batch, the source needs to be provided.
+  // TODO(crbug.com/1365291): This method is only used in tests. Ideally migrate
+  // those tests to other APIs and delete this, or failing that, at least
+  // rename it to *ForTest.
   bool AddVisits(const GURL& url,
                  const std::vector<VisitInfo>& visits,
                  VisitSource visit_source);
@@ -707,11 +712,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // redirect chain.
   bool GetLastVisitByTime(base::Time visit_time, VisitRow* visit_row) override;
 
-  // Returns the sync controller delegate for syncing typed urls. The returned
-  // delegate is owned by `this` object.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetTypedURLSyncControllerDelegate();
-
   // Returns the sync controller delegate for syncing history. The returned
   // delegate is owned by `this` object.
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -786,6 +786,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // added for each given URL at the last visit time in the URLRow if the
   // passed visit type != SOURCE_SYNCED (the sync code manages visits itself).
   // Each visit will have the visit_source type set.
+  // TODO(crbug.com/1365291): This method is only used in tests. Ideally migrate
+  // those tests to other APIs and delete this, or failing that, at least
+  // rename it to *ForTest.
   void AddPagesWithDetails(const URLRows& info, VisitSource visit_source);
 
 #if defined(UNIT_TEST)
@@ -793,8 +796,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   ExpireHistoryBackend* expire_backend() { return &expirer_; }
 #endif
-
-  void SetTypedURLSyncBridgeForTest(std::unique_ptr<TypedURLSyncBridge> bridge);
 
   // Returns true if the passed visit time is already expired (used by the sync
   // code to avoid syncing visits that would immediately be expired).
@@ -1110,11 +1111,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // List of observers
   base::ObserverList<HistoryBackendObserver>::Unchecked observers_;
-
-  // Used to manage syncing of the typed urls datatype. It will be null before
-  // HistoryBackend::Init() is called. Defined after `observers_` because
-  // it unregisters itself as observer during destruction.
-  std::unique_ptr<TypedURLSyncBridge> typed_url_sync_bridge_;
 
   // Used to manage syncing of the history datatype. It will be null before
   // HistoryBackend::Init() is called. Defined after `observers_` because

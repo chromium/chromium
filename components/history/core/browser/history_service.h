@@ -765,11 +765,6 @@ class HistoryService : public KeyedService,
   base::WeakPtr<syncer::SyncableService> GetDeleteDirectivesSyncableService();
 
   // For sync codebase only: instantiates a controller delegate to interact with
-  // TypedURLSyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
-  GetTypedURLSyncControllerDelegate();
-
-  // For sync codebase only: instantiates a controller delegate to interact with
   // HistorySyncBridge. Must be called from the UI thread.
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   GetHistorySyncControllerDelegate();

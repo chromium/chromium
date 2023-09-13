@@ -45,7 +45,6 @@
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/page_usage_data.h"
-#include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/history_client_fake_bookmarks.h"
 #include "components/history/core/test/test_history_database.h"
@@ -3367,7 +3366,6 @@ TEST_F(HistoryBackendTest, DeleteFTSIndexDatabases) {
 TEST_F(HistoryBackendTest, DatabaseError) {
   base::HistogramTester histogram_tester;
 
-  backend_->SetTypedURLSyncBridgeForTest(nullptr);
   backend_->DatabaseErrorCallback(SQLITE_CANTOPEN, nullptr);
   // Run loop to let any posted callbacks run before TearDown().
   base::RunLoop().RunUntilIdle();

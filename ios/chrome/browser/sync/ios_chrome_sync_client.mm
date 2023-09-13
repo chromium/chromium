@@ -21,7 +21,6 @@
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/dom_distiller/core/dom_distiller_service.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/password_manager/core/browser/password_store_interface.h"

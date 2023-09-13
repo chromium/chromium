@@ -54,9 +54,7 @@ class HistoryServiceObserver {
   //
   // These metadata-only updates happen in these scenarios:
   //  1. When the Page Title is updated shortly after the page loads.
-  //  2. When `TypedURLSyncBridge` updates the `URLRow` data. This often happens
-  //     in addition to adding new visits, so `OnURLVisited` will be called too.
-  //  3. When History expiration expires some, but not all visits related to
+  //  2. When History expiration expires some, but not all visits related to
   //     a URL. In that case, the URL's metadata is updated.
   //
   // `changed_urls` lists the information for each of the URLs affected. The
