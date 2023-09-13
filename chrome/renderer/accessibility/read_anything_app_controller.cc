@@ -416,7 +416,6 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   if (tree_id == model_.active_tree_id()) {
     return;
   }
-  ui::AXTreeID previous_active_tree_id = model_.active_tree_id();
   model_.SetActiveTreeId(tree_id);
   model_.SetActiveUkmSourceId(ukm_source_id);
   model_.SetActiveTreeSelectable(GetSelectable(url));
