@@ -416,14 +416,16 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     try_restore_context_event_timer_.Stop();
     Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
     DispatchContextRestoredEvent(nullptr);
+    return;
+  }
 
-    // If lost mode is |kRealLostContext|, it means the context was not lost due
-    // to surface failure but rather due to a an eviction, which means image
-    // buffer exists.
-  } else if (context_lost_mode_ == kRealLostContext &&
-             GetOrCreatePaintCanvas()) {
+  // If lost mode is |kRealLostContext|, it means the context was not lost due
+  // to surface failure but rather due to a an eviction, which means image
+  // buffer exists.
+  if (context_lost_mode_ == kRealLostContext && GetOrCreatePaintCanvas()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
+    return;
   }
 
   // It gets here if lost mode is |kRealLostContext| and it fails to create a
