@@ -44,6 +44,8 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * Integration test for {@link HomepagePolicyManager}.
  * Checking if enabling HomepageLocation policy will reflect the expected behaviors for
@@ -178,8 +180,14 @@ public class HomepagePolicyIntegrationTest {
 
         // Start a new ChromeActivity.
         mActivityTestRule.startActivityCompletely(intent);
-        Assert.assertEquals("Start up page is not homepage", HomepageManager.getHomepageUri(),
+        Assert.assertEquals("Start up page is not homepage", getHomepageUrlOnUiThread(),
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
+    }
+
+    private String getHomepageUrlOnUiThread() {
+        AtomicReference<String> res = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> { res.set(HomepageManager.getHomepageUri()); });
+        return res.get();
     }
 }

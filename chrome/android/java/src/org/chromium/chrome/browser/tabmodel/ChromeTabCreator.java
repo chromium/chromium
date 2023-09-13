@@ -303,7 +303,7 @@ public class ChromeTabCreator extends TabCreator {
 
             GURL url = UrlFormatter.fixupUrl(loadUrlParams.getUrl());
             if (mDseNewTabUrlManager != null) {
-                url = mDseNewTabUrlManager.maybeGetOverrideUrl(url, mIncognito);
+                url = mDseNewTabUrlManager.maybeGetOverrideUrl(url);
             }
 
             // Sanitize the url.

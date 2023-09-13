@@ -68,4 +68,9 @@ public class ProfileManager {
             observer.onProfileDestroyed(profile);
         }
     }
+
+    public static void resetForTesting() {
+        sInitialized = false;
+        sObservers.clear();
+    }
 }

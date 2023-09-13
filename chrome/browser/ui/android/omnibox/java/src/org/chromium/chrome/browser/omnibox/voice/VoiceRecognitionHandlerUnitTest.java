@@ -149,7 +149,7 @@ public class VoiceRecognitionHandlerUnitTest {
         mHandler.removeObserver(mObserver);
         FeatureList.setTestValues(null);
         mProfileSupplier.set(null);
-        ProfileManager.onProfileAdded(null);
+        ProfileManager.resetForTesting();
     }
 
     /**

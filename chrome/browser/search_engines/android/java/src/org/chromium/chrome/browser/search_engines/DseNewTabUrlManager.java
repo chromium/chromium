@@ -36,17 +36,17 @@ public class DseNewTabUrlManager {
 
     /**
      * Returns the new Tab URL of the default search engine if should override any NTP's URL.
-     * Returns null if don't need to override.
-     * @param gUrl  The GURL to check.
-     * @param isIncognito Whether it is an incognito Tab.
+     * Returns the given URL if don't need to override.
+     * @param gurl The GURL to check.
      */
-    public GURL maybeGetOverrideUrl(GURL gurl, boolean isIncognito) {
-        if (isIncognito || !isNewTabSearchEngineUrlAndroidEnabled() || isDefaultSearchEngineGoogle()
-                || !UrlUtilities.isNTPUrl(gurl)) {
+    public GURL maybeGetOverrideUrl(GURL gurl) {
+        if (isIncognito() || !isNewTabSearchEngineUrlAndroidEnabled()
+                || isDefaultSearchEngineGoogle() || !UrlUtilities.isNTPUrl(gurl)) {
             return gurl;
         }
 
-        return new GURL(getDSENewTabUrl(mTemplateUrlService));
+        String newTabUrl = getDSENewTabUrl(mTemplateUrlService);
+        return newTabUrl != null ? new GURL(newTabUrl) : gurl;
     }
 
     /**
@@ -67,6 +67,25 @@ public class DseNewTabUrlManager {
             mTemplateUrlService.removeObserver(this::onTemplateURLServiceChanged);
             mTemplateUrlService = null;
         }
+    }
+
+    /**
+     * Returns the new Tab URL of the default search engine if should override any NTP's URL.
+     * Returns the given URL if don't need to override.
+     * @param url The URL to check.
+     * @param profile The instance of the current {@link Profile}.
+     */
+    public static String maybeGetOverrideUrl(String url, Profile profile) {
+        if ((profile != null && profile.isOffTheRecord())
+                || !isNewTabSearchEngineUrlAndroidEnabled() || isDefaultSearchEngineGoogle()
+                || !UrlUtilities.isNTPUrl(url)) {
+            return url;
+        }
+
+        TemplateUrlService templateUrlService =
+                profile != null ? TemplateUrlServiceFactory.getForProfile(profile) : null;
+        String newTabUrl = getDSENewTabUrl(templateUrlService);
+        return newTabUrl != null ? newTabUrl : url;
     }
 
     /**
@@ -109,6 +128,11 @@ public class DseNewTabUrlManager {
     }
 
     @VisibleForTesting
+    public boolean isIncognito() {
+        return mProfileSupplier.hasValue() ? mProfileSupplier.get().isOffTheRecord() : false;
+    }
+
+    @VisibleForTesting
     void onProfileAvailable(Profile profile) {
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this::onTemplateURLServiceChanged);
@@ -116,7 +140,6 @@ public class DseNewTabUrlManager {
         onTemplateURLServiceChanged();
         mProfileSupplier.removeObserver(mProfileCallback);
         mProfileCallback = null;
-        mProfileSupplier = null;
     }
 
     private void onTemplateURLServiceChanged() {

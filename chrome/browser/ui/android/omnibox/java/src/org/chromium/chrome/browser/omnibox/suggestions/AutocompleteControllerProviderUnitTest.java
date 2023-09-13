@@ -250,5 +250,6 @@ public class AutocompleteControllerProviderUnitTest {
     public void controllersAreNotAutomaticallyCreatedWhenProfilesAreAdded() {
         ProfileManager.onProfileAdded(mProfile1);
         verifyNoMoreInteractions(mAutocompleteControllerJniMock);
+        ProfileManager.resetForTesting();
     }
 }

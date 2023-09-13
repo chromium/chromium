@@ -21,6 +21,9 @@ import org.chromium.chrome.browser.partnercustomizations.HomepageCharacterizatio
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.search_engines.DseNewTabUrlManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -127,7 +130,11 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     /**
      * Get the current homepage URI string. If the homepage is disabled, return null; otherwise it
      * will always return a non-empty string. In cases when the homepage is specifically set as
-     * empty, this function will fallback to return {@link UrlConstants.NTP_URL}.
+     * empty, this function will fallback to return {@link UrlConstants.NTP_URL}. If the default
+     * search engine (DSE) isn't Google, may fallback to the DSE's new Tab URL.
+     *
+     * This function needs to be called on UI thread since Profile.getLastUsedRegularProfile() is
+     * called.
      *
      * This function checks different source to get the current homepage, which listed below
      * according to their priority:
@@ -144,7 +151,16 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         if (!isHomepageEnabled()) return null;
 
         String homepageUri = getInstance().getHomepageUriIgnoringEnabledState();
-        return TextUtils.isEmpty(homepageUri) ? UrlConstants.NTP_URL : homepageUri;
+        if (TextUtils.isEmpty(homepageUri)) {
+            homepageUri = UrlConstants.NTP_URL;
+        }
+
+        // We have to use Profile.getLastUsedRegularProfile() to get the last used regular Profile
+        // before HomepageManager supports multiple Profiles. Thus, if DSE isn't Google, pressing
+        // the home button may redirect to the DSE's new Tab URL, rather than showing an incognito
+        // NTP.
+        return DseNewTabUrlManager.maybeGetOverrideUrl(homepageUri,
+                ProfileManager.isInitialized() ? Profile.getLastUsedRegularProfile() : null);
     }
 
     /**
