@@ -147,7 +147,6 @@ class CommandRecorder final {
   ComPtr<ID3D12Device> d3d12_device_;
   ComPtr<ID3D12CommandAllocator> command_allocator_;
   ComPtr<ID3D12GraphicsCommandList> command_list_;
-  ComPtr<IDMLOperatorInitializer> operator_initializer_;
   ComPtr<IDMLCommandRecorder> command_recorder_;
 };
 
