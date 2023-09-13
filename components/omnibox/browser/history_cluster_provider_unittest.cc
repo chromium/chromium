@@ -50,6 +50,9 @@ class HistoryClustersProviderTest : public testing::Test,
 
     config_.is_journeys_enabled_no_locale_check = true;
     config_.omnibox_history_cluster_provider = true;
+    // Setting this to false even though users see true behavior so that we do
+    // not need to register history clusters specific prefs in this test.
+    config_.persist_caches_to_prefs = false;
     history_clusters::SetConfigForTesting(config_);
 
     CHECK(history_dir_.CreateUniqueTempDir());

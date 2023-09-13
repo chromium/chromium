@@ -75,6 +75,9 @@ class HistoryClustersActionTest : public testing::Test {
     search_actions_config_.is_journeys_enabled_no_locale_check = true;
     search_actions_config_.omnibox_action = true;
     search_actions_config_.omnibox_action_on_navigation_intents = false;
+    // Setting this to false even though users see true behavior so that we do
+    // not need to register history clusters specific prefs in this test.
+    search_actions_config_.persist_caches_to_prefs = false;
     SetConfigForTesting(search_actions_config_);
   }
 

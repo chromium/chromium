@@ -371,7 +371,7 @@ struct Config {
   bool include_synced_visits = false;
 
   // Whether keyword caches should be written to and read from prefs.
-  bool persist_caches_to_prefs = false;
+  bool persist_caches_to_prefs = true;
 
   // Order consistently with features.h.
 
