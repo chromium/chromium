@@ -230,6 +230,14 @@ export class SettingsGoogleDriveSubpageElement extends
     return this.dialogType_;
   }
 
+  /**
+   * Returns the current bulk pinning stage, or 'unknown' if not defined.
+   * Used for testing.
+   */
+  get stage() {
+    return this.bulkPinningStatus_?.stage || 'unknown';
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.callbackRouter.onServiceUnavailable.addListener(
@@ -472,8 +480,41 @@ export class SettingsGoogleDriveSubpageElement extends
     const newValueAfterToggle =
         !this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value;
 
+    if (newValueAfterToggle) {
+      this.tryEnableBulkPinning_(target);
+      return;
+    }
+
+    // Turning the preference off should first spawn a dialog to have the user
+    // confirm that is what they want to do, leave the target as checked as the
+    // user must confirm before the preference gets updated.
+    target.checked = true;
+    this.dialogType_ = ConfirmationDialogType.BULK_PINNING_DISABLE;
+  }
+
+  /**
+   * Try to enable the bulk pinning toggle. If the `Stage` is in either in an
+   * error OR in a state that can't be enabled (e.g. PausedOffline or
+   * ListingFiles) then ensure the toggle isn't enabled, otherwise don't show a
+   * dialog and enable immediately.
+   */
+  private tryEnableBulkPinning_(target: SettingsToggleButtonElement) {
+    target.checked = false;
+
+    // When the device is offline, don't allow the user to enable the toggle.
+    if (this.bulkPinningStatus_?.stage === Stage.kPausedOffline) {
+      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_OFFLINE;
+      return;
+    }
+
+    // If currently enumerating the files, don't allow the user to enable file
+    // sync until we're certain the corpus will fit on the device.
+    if (this.bulkPinningStatus_?.stage === Stage.kListingFiles) {
+      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_LISTING_FILES;
+      return;
+    }
+
     if (this.bulkPinningStatus_?.isError) {
-      target.checked = false;
       // If there is not enough free space for the user to reliably turn on bulk
       // pinning, spawn a dialog.
       if (this.bulkPinningStatus_?.stage === Stage.kNotEnoughSpace) {
@@ -487,31 +528,7 @@ export class SettingsGoogleDriveSubpageElement extends
       return;
     }
 
-    // When the device is offline, don't allow the user to enable the toggle.
-    if (this.bulkPinningStatus_?.stage === Stage.kPausedOffline) {
-      target.checked = false;
-      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_OFFLINE;
-      return;
-    }
-
-    // If currently enumerating the files, don't allow the user to enable file
-    // sync until we're certain the corpus will fit on the device.
-    if (this.bulkPinningStatus_?.stage === Stage.kListingFiles) {
-      target.checked = false;
-      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_LISTING_FILES;
-      return;
-    }
-
     target.checked = true;
-
-    // Turning the preference off should first spawn a dialog to have the user
-    // confirm that is what they want to do, leave the target as checked as the
-    // user must confirm before the preference gets updated.
-    if (!newValueAfterToggle) {
-      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_DISABLE;
-      return;
-    }
-
     this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, true);
     this.proxy_.handler.recordBulkPinningEnabledMetric();
   }

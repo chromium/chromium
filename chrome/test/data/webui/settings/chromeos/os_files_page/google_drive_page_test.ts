@@ -537,5 +537,44 @@ suite('<settings-google-drive-subpage>', function() {
       testBrowserProxy.observerRemote.$.flushForTesting();
       await assertAsync(() => clearOfflineStorageButton.disabled);
     });
+
+    test(
+        'disabling bulk pinning whilst offline shows confirmation dialog',
+        async () => {
+          page.setPrefValue('drivefs.bulk_pinning_enabled', true);
+          flush();
+
+          // Mock space values and the `kPausedOffline` stage via the browser
+          // proxy.
+          testBrowserProxy.observerRemote.onProgress({
+            freeSpace: '512 MB',
+            requiredSpace: '1,024 MB',
+            stage: Stage.kPausedOffline,
+            listedFiles: BigInt(100),
+            isError: false,
+          });
+          testBrowserProxy.observerRemote.$.flushForTesting();
+          flush();
+
+          // Wait for the stage to propagate to the page.
+          await assertAsync(() => page.stage === Stage.kPausedOffline, 1000);
+
+          // Click the bulk pinning toggle.
+          bulkPinningToggle.click();
+
+          // Wait for the confirmation dialog to appear and click the "Turn off"
+          // button.
+          await assertAsync(
+              () => page.dialogType ===
+                  ConfirmationDialogType.BULK_PINNING_DISABLE,
+              5000);
+          await clickConfirmationDialogButton('.action-button');
+
+          assertFalse(
+              page.getPref('drivefs.bulk_pinning_enabled').value,
+              'Pinning pref should be false');
+          assertFalse(
+              bulkPinningToggle.checked, 'Pinning toggle should be false');
+        });
   });
 });
