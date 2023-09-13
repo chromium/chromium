@@ -67,6 +67,10 @@ class HeapMojoReceiverSet {
   }
 
   void Clear() { wrapper_->receiver_set().Clear(); }
+  void ClearWithReason(uint32_t custom_reason_code,
+                       const std::string& description) {
+    wrapper_->receiver_set().ClearWithReason(custom_reason_code, description);
+  }
 
   bool HasReceiver(mojo::ReceiverId id) {
     return wrapper_->receiver_set().HasReceiver(id);
