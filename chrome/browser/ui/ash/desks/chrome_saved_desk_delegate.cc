@@ -34,6 +34,7 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -56,10 +57,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-// Name for app not available toast.
-constexpr char kAppNotAvailableTemplateToastName[] =
-    "AppNotAvailableTemplateToast";
 
 // Returns the TabStripModel that associates with `window` if the given `window`
 // contains a browser frame, otherwise returns nullptr.
@@ -101,6 +98,26 @@ bool IsAppAvailable(const std::string& app_id,
   return app != nullptr;
 }
 
+// Updates `out_app_names` with titles of browser apps that aren't available
+// on this device.  This is confusingly determined by resolving the `app_name`
+// field to an app ID and running said ID through `IsAppAvailable`.  If the
+// app is unavailable we append the app_title to `out_app_names`.
+void GetUnavailableBrowserAppNames(
+    const app_restore::RestoreData::LaunchList& launch_list,
+    apps::AppServiceProxy* app_service_proxy,
+    std::vector<std::u16string>& out_app_names) {
+  for (const auto& [id, restore_data] : launch_list) {
+    if (restore_data->app_type_browser.value_or(false) &&
+        restore_data->app_name.has_value()) {
+      std::string app_id =
+          app_restore::GetAppIdFromAppName(restore_data->app_name.value());
+      if (!IsAppAvailable(app_id, app_service_proxy)) {
+        out_app_names.push_back(restore_data->title.value_or(u""));
+      }
+    }
+  }
+}
+
 // Returns a vector of human readable unavailable app names from
 // `desk_template`.
 std::vector<std::u16string> GetUnavailableAppNames(
@@ -118,6 +135,13 @@ std::vector<std::u16string> GetUnavailableAppNames(
   for (const auto& [app_id, launch_list] : launch_lists) {
     if (launch_list.empty()) {
       continue;
+    }
+
+    // If the app ID is a browser then we need to iterate through its windows
+    // to catch uninstalled PWAs.
+    if (app_id == app_constants::kChromeAppId ||
+        app_id == app_constants::kLacrosAppId) {
+      GetUnavailableBrowserAppNames(launch_list, app_service_proxy, app_names);
     }
 
     if (!IsAppAvailable(app_id, app_service_proxy)) {
@@ -155,9 +179,10 @@ void ShowUnavailableAppToast(
       break;
   }
 
-  ash::ToastData toast_data = {/*id=*/kAppNotAvailableTemplateToastName,
-                               ash::ToastCatalogName::kAppNotAvailable,
-                               /*text=*/toast_string};
+  ash::ToastData toast_data = {
+      /*id=*/chrome_desks_util::kAppNotAvailableTemplateToastName,
+      ash::ToastCatalogName::kAppNotAvailable,
+      /*text=*/toast_string};
   ash::ToastManager::Get()->Show(std::move(toast_data));
 }
 

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -45,6 +46,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/spin_wait.h"
 #include "base/uuid.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
@@ -70,6 +72,7 @@
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -98,7 +101,9 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/admin_template_service.h"
+#include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/saved_desk_builder.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/policy_constants.h"
@@ -149,6 +154,8 @@ constexpr char kTestAdminTemplateFormat[] =
     "\"1633535632\",\"desk\":{}}]";
 constexpr char kTestTabGroupNameFormat[] = "test_tab_group_%u";
 constexpr char kTestAppName[] = "test_app_name";
+constexpr char kUnknownTestAppName[] = "unknown_test_app_name";
+constexpr char kUnknownTestAppId[] = "07eb07d7-f338-48aa-a996-7beb76a5042c";
 
 Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -2991,6 +2998,101 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
       ash::GetZeroStateLibraryButton();
   ASSERT_TRUE(zero_state_templates_button);
   EXPECT_FALSE(zero_state_templates_button->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(DesksClientTest,
+                       DisplaysAppUnavailableToastForUnavailableBrowserApp) {
+  // Build a saved desk with an unsupoorted browser app.
+  std::unique_ptr<ash::DeskTemplate> unsupported_template =
+      desks_storage::SavedDeskBuilder()
+          .AddAppWindow(
+              desks_storage::SavedDeskBrowserBuilder()
+                  .SetIsApp(true)
+                  .SetIsLacros(false)
+                  .SetUrls({GURL(kExampleUrl1)})
+                  .SetGenericBuilder(desks_storage::SavedDeskGenericAppBuilder()
+                                         .SetWindowId(kTestWindowId)
+                                         .SetName(kUnknownTestAppName))
+                  .Build())
+          .Build();
+
+  // Programmatically add to storage, we do this because you cannot capture
+  // an unsupported app.
+  base::RunLoop loop;
+  DesksClient::Get()->GetDeskModel()->AddOrUpdateEntry(
+      std::move(unsupported_template),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+
+  // Enter overview and launch template
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickZeroStateTemplatesButton();
+  ClickFirstTemplateItem();
+
+  // Spin in case we need to wait for the toast to appear.
+  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
+      base::Seconds(45),
+      ash::ToastManager::Get()->IsRunning(
+          chrome_desks_util::kAppNotAvailableTemplateToastName));
+}
+
+IN_PROC_BROWSER_TEST_P(DesksClientTest,
+                       DisplaysAppUnavailableToastForUnavailableGenericApp) {
+  // Build a saved desk with an unsupoorted generic app.
+  std::unique_ptr<ash::DeskTemplate> unsupported_template =
+      desks_storage::SavedDeskBuilder()
+          .AddAppWindow(desks_storage::SavedDeskGenericAppBuilder()
+                            .SetWindowId(kTestWindowId)
+                            .SetAppId(kUnknownTestAppId)
+                            .Build())
+          .Build();
+
+  // We will need to add `kUnknownAppId` to the app registry cache so that
+  // it will be stored properly.  We will make sure that its readiness will
+  // trigger the toast on launch. We use kArc so that it will be a supported
+  // type for a template, however its readiness will remain kUnknown which
+  // should trigger the toast.
+  std::vector<apps::AppPtr> deltas;
+  deltas.push_back(
+      std::make_unique<apps::App>(apps::AppType::kArc, kUnknownTestAppId));
+  apps::AppRegistryCacheWrapper::Get()
+      .GetAppRegistryCache(
+          multi_user_util::GetAccountIdFromProfile(browser()->profile()))
+      ->OnApps(std::move(deltas), apps::AppType::kArc,
+               /*should_notify_initializied=*/false);
+
+  // Programmatically add to storage, we do this because you cannot capture
+  // an unsupported app.
+  base::RunLoop loop;
+  DesksClient::Get()->GetDeskModel()->AddOrUpdateEntry(
+      std::move(unsupported_template),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+
+  // Enter overview and launch template
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickZeroStateTemplatesButton();
+  ClickFirstTemplateItem();
+
+  // Spin in case we need to wait for the toast to appear.
+  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
+      base::Seconds(45),
+      ash::ToastManager::Get()->IsRunning(
+          chrome_desks_util::kAppNotAvailableTemplateToastName));
 }
 
 class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {

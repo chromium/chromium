@@ -11,7 +11,6 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
-#include "components/desks_storage/core/saved_desk_test_util.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
 namespace desks_storage {
@@ -143,6 +142,7 @@ BuiltApp SavedDeskGenericAppBuilder::Build() {
         absl::optional<int32_t>(static_cast<int32_t>(disposition_.value()));
   }
 
+  app_launch_info->app_name = name_;
   app_launch_info->window_id = window_id_;
 
   return BuiltApp(BuiltApp::Status::kOk, std::move(window_info),

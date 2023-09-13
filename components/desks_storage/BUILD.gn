@@ -62,6 +62,8 @@ static_library("test_support") {
     "core/fake_desk_sync_bridge.h",
     "core/fake_desk_sync_service.cc",
     "core/fake_desk_sync_service.h",
+    "core/saved_desk_builder.cc",
+    "core/saved_desk_builder.h",
   ]
 
   public_deps = [ ":desks_storage" ]
@@ -85,8 +87,6 @@ source_set("unit_tests") {
     "core/desk_template_util_unittests.cc",
     "core/desk_test_util_unittests.cc",
     "core/local_desk_data_manager_unittests.cc",
-    "core/saved_desk_builder.cc",
-    "core/saved_desk_builder.h",
     "core/saved_desk_test_util.cc",
     "core/saved_desk_test_util.h",
   ]
