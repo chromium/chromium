@@ -1063,6 +1063,11 @@ NGLayoutInputNode NGBlockNode::NextSibling() const {
 }
 
 NGLayoutInputNode NGBlockNode::FirstChild() const {
+  // If this layout is blocked by a display-lock, then we pretend this node has
+  // no children.
+  if (ChildLayoutBlockedByDisplayLock()) {
+    return nullptr;
+  }
   auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (UNLIKELY(!block))
     return NGBlockNode(box_->FirstChildBox());
