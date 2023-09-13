@@ -66,6 +66,7 @@
 #include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -2933,10 +2934,13 @@ void AppsGridView::DestroyLayerItemsIfNotNeeded() {
     return;
 
   for (const auto& entry : view_model_.entries()) {
+    AppListItemView* view = views::AsViewClass<AppListItemView>(entry.view);
     // When the item view has finished animating, then also delete the row
     // change layer if possible.
-    row_change_animator_->CancelAnimation(entry.view);
-    entry.view->DestroyLayer();
+    row_change_animator_->CancelAnimation(view);
+    if (!view->AlwaysPaintsToLayer()) {
+      view->DestroyLayer();
+    }
   }
 }
 

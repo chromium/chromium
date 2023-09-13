@@ -44,6 +44,7 @@ class AppListItem;
 class AppListMenuModelAdapter;
 class AppListViewDelegate;
 class DotIndicator;
+class ProgressIndicator;
 
 namespace test {
 class AppsGridViewTest;
@@ -284,6 +285,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // rows.
   void SetMostRecentGridIndex(GridIndex new_grid_index, int columns);
 
+  // Whether the app list items need to keep layers at all times.
+  bool AlwaysPaintsToLayer();
+
   GridIndex most_recent_grid_index() { return most_recent_grid_index_; }
 
   bool has_pending_row_change() { return has_pending_row_change_; }
@@ -296,7 +300,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
     return icon_background_layer_->layer();
   }
   bool is_icon_extended_for_test() const { return is_icon_extended_; }
+  bool is_promise_app() const { return is_promise_app_; }
   absl::optional<size_t> item_counter_count_for_test() const;
+  ProgressIndicator* GetProgressIndicatorForTest() const;
 
  private:
   class FolderIconView;
@@ -391,6 +397,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void ItemBadgeColorChanged() override;
   void ItemIsNewInstallChanged() override;
   void ItemBeingDestroyed() override;
+  void ItemProgressUpdated() override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -419,6 +426,14 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Initialize the item drag operation if it is available at `location`.
   bool MaybeStartTouchDrag(const gfx::Point& location);
+
+  // Updates the layer bounds for the `progress_indicator_` if any is currently
+  // active.
+  void UpdateProgressRingBounds();
+
+  // Returns the icon scale adjusted to fit for the `progress_indicator_` if any
+  // is currently active.
+  float GetAdjustedIconScaleForProgressRing();
 
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
@@ -541,6 +556,14 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Whether the icon background animation is being setup. Used to prevent the
   // background layer from being deleted during setup.
   bool setting_up_icon_animation_ = false;
+
+  // Whether the app is a promise app  (i.e. an app with pending or installing
+  // app status).
+  bool is_promise_app_ = false;
+
+  // An object that draws and updates the progress ring around promise app
+  // icons.
+  std::unique_ptr<ProgressIndicator> progress_indicator_;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };

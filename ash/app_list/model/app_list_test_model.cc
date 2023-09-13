@@ -248,6 +248,14 @@ AppListTestModel::AppListTestItem* AppListTestModel::CreateAndAddItem(
   return static_cast<AppListTestItem*>(item);
 }
 
+AppListTestModel::AppListTestItem* AppListTestModel::CreateAndAddPromiseItem(
+    const std::string& id) {
+  std::unique_ptr<AppListTestItem> test_item(CreateItem(id));
+  test_item->UpdateAppStatusForTesting(AppStatus::kPending);
+  AppListItem* item = AppListModel::AddItem(std::move(test_item));
+  return static_cast<AppListTestItem*>(item);
+}
+
 void AppListTestModel::ItemActivated(AppListTestItem* item) {
   last_activated_ = item;
   ++activate_count_;

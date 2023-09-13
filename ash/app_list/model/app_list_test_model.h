@@ -103,6 +103,11 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   // pointer to the created item.
   AppListTestItem* CreateAndAddItem(const std::string& id);
 
+  // Creates and adds a promise app item with id |id| to the model (i.e. item
+  // will be created with status as AppStatus::kPending). Returns an unowned
+  // pointer to the created item.
+  AppListTestItem* CreateAndAddPromiseItem(const std::string& id);
+
   int activate_count() { return activate_count_; }
   AppListItem* last_activated() { return last_activated_; }
 
