@@ -27,6 +27,13 @@ constexpr char kProtocolVersion[] = "3.1";
 // precision of integer numbers greater than 2^53 is lost.
 constexpr int64_t kProtocolMaxInt = 1LL << 53;
 
+// Event type codes as described in //docs/updater/protocol_3_1.md.
+constexpr int kEventInstall = 2;
+constexpr int kEventUpdate = 3;
+constexpr int kEventUninstall = 4;
+constexpr int kEventDownload = 14;
+constexpr int kEventAction = 42;
+
 namespace protocol_request {
 
 struct HW {

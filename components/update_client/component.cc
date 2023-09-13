@@ -455,10 +455,11 @@ void Component::ChangeState(std::unique_ptr<State> next_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   previous_state_ = state();
-  if (next_state)
+  if (next_state) {
     state_ = std::move(next_state);
-  else
+  } else {
     is_handled_ = true;
+  }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(callback_handle_complete_));
@@ -470,8 +471,9 @@ CrxUpdateItem Component::GetCrxUpdateItem() const {
   CrxUpdateItem crx_update_item;
   crx_update_item.state = state_->state();
   crx_update_item.id = id_;
-  if (crx_component_)
+  if (crx_component_) {
     crx_update_item.component = *crx_component_;
+  }
   crx_update_item.last_check = last_check_;
   crx_update_item.next_version = next_version_;
   crx_update_item.next_fp = next_fp_;
@@ -495,8 +497,9 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   action_run_ = result.action_run;
   custom_attrs_ = result.custom_attributes;
 
-  if (result.manifest.packages.empty())
+  if (result.manifest.packages.empty()) {
     return;
+  }
 
   next_version_ = base::Version(result.manifest.version);
   const auto& package = result.manifest.packages.front();
@@ -505,13 +508,15 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   // Resolve the urls by combining the base urls with the package names.
   for (const auto& crx_url : result.crx_urls) {
     const GURL url = crx_url.Resolve(package.name);
-    if (url.is_valid())
+    if (url.is_valid()) {
       crx_urls_.push_back(url);
+    }
   }
   for (const auto& crx_diffurl : result.crx_diffurls) {
     const GURL url = crx_diffurl.Resolve(package.namediff);
-    if (url.is_valid())
+    if (url.is_valid()) {
       crx_diffurls_.push_back(url);
+    }
   }
 
   hash_sha256_ = package.hash_sha256;
@@ -566,8 +571,9 @@ void Component::SetUpdateCheckResult(
   error_category_ = error_category;
   error_code_ = error;
 
-  if (result)
+  if (result) {
     SetParseResult(result.value());
+  }
 }
 
 void Component::NotifyWait() {
@@ -614,7 +620,8 @@ base::TimeDelta Component::GetUpdateDuration() const {
 
 base::Value::Dict Component::MakeEventUpdateComplete() const {
   base::Value::Dict event;
-  event.Set("eventtype", update_context_->is_install ? 2 : 3);
+  event.Set("eventtype",
+            update_context_->is_install ? kEventInstall : kEventUpdate);
   event.Set("eventresult",
             static_cast<int>(state() == ComponentState::kUpdated));
   if (error_category() != ErrorCategory::kNone) {
@@ -657,7 +664,7 @@ base::Value::Dict Component::MakeEventUpdateComplete() const {
 base::Value::Dict Component::MakeEventDownloadMetrics(
     const CrxDownloader::DownloadMetrics& dm) const {
   base::Value::Dict event;
-  event.Set("eventtype", 14);
+  event.Set("eventtype", kEventDownload);
   event.Set("eventresult", static_cast<int>(dm.error == 0));
   event.Set("downloader", DownloaderToString(dm.downloader));
   if (dm.error) {
@@ -686,7 +693,7 @@ base::Value::Dict Component::MakeEventDownloadMetrics(
 base::Value::Dict Component::MakeEventUninstalled() const {
   CHECK_EQ(state(), ComponentState::kUninstalled);
   base::Value::Dict event;
-  event.Set("eventtype", 4);
+  event.Set("eventtype", kEventUninstall);
   event.Set("eventresult", 1);
   if (extra_code1()) {
     event.Set("extracode1", extra_code1());
@@ -701,7 +708,7 @@ base::Value::Dict Component::MakeEventUninstalled() const {
 base::Value::Dict Component::MakeEventRegistration() const {
   CHECK_EQ(state(), ComponentState::kRegistration);
   base::Value::Dict event;
-  event.Set("eventtype", 2);
+  event.Set("eventtype", kEventInstall);
   event.Set("eventresult", 1);
   if (error_code()) {
     event.Set("errorcode", error_code());
@@ -718,7 +725,7 @@ base::Value::Dict Component::MakeEventActionRun(bool succeeded,
                                                 int error_code,
                                                 int extra_code1) const {
   base::Value::Dict event;
-  event.Set("eventtype", 42);
+  event.Set("eventtype", kEventAction);
   event.Set("eventresult", static_cast<int>(succeeded));
   if (error_code) {
     event.Set("errorcode", error_code);
@@ -731,8 +738,9 @@ base::Value::Dict Component::MakeEventActionRun(bool succeeded,
 
 std::vector<base::Value::Dict> Component::GetEvents() const {
   std::vector<base::Value::Dict> events;
-  for (const auto& event : events_)
+  for (const auto& event : events_) {
     events.push_back(event.Clone());
+  }
   return events;
 }
 
@@ -869,8 +877,9 @@ void Component::StateUpdateError::DoHandle() {
   CHECK_NE(0, component.error_code_);
 
   // Create an event only when the server response included an update.
-  if (component.IsUpdateAvailable())
+  if (component.IsUpdateAvailable()) {
     component.AppendEvent(component.MakeEventUpdateComplete());
+  }
 
   EndState();
   component.NotifyObservers(Events::COMPONENT_UPDATE_ERROR);
@@ -920,10 +929,11 @@ void Component::StateCanUpdate::DoHandle() {
   // Start computing the cost of the this update from here on.
   component.update_begin_ = base::TimeTicks::Now();
 
-  if (CanTryDiffUpdate())
+  if (CanTryDiffUpdate()) {
     TransitionState(std::make_unique<StateDownloadingDiff>(&component));
-  else
+  } else {
     TransitionState(std::make_unique<StateDownloading>(&component));
+  }
 }
 
 // Returns true if a differential update is available, it has not failed yet,
@@ -1002,8 +1012,9 @@ void Component::StateDownloadingDiff::DownloadComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
-  for (const auto& download_metrics : crx_downloader_->download_metrics())
+  for (const auto& download_metrics : crx_downloader_->download_metrics()) {
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
+  }
 
   crx_downloader_ = nullptr;
 
@@ -1075,8 +1086,9 @@ void Component::StateDownloading::DownloadComplete(
 
   auto& component = Component::State::component();
 
-  for (const auto& download_metrics : crx_downloader_->download_metrics())
+  for (const auto& download_metrics : crx_downloader_->download_metrics()) {
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
+  }
 
   crx_downloader_ = nullptr;
 
@@ -1160,8 +1172,9 @@ void Component::StateUpdatingDiff::InstallProgress(int install_progress) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
-  if (install_progress >= 0 && install_progress <= 100)
+  if (install_progress >= 0 && install_progress <= 100) {
     component.install_progress_ = install_progress;
+  }
   component.NotifyObservers(Events::COMPONENT_UPDATE_UPDATING);
 }
 
@@ -1189,10 +1202,11 @@ void Component::StateUpdatingDiff::InstallComplete(ErrorCategory error_category,
   CHECK_EQ(0, component.error_code_);
   CHECK_EQ(0, component.extra_code1_);
 
-  if (component.action_run_.empty())
+  if (component.action_run_.empty()) {
     TransitionState(std::make_unique<StateUpdated>(&component));
-  else
+  } else {
     TransitionState(std::make_unique<StateRun>(&component));
+  }
 }
 
 Component::StateUpdating::StateUpdating(Component* component)
@@ -1239,8 +1253,9 @@ void Component::StateUpdating::InstallProgress(int install_progress) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto& component = Component::State::component();
-  if (install_progress >= 0 && install_progress <= 100)
+  if (install_progress >= 0 && install_progress <= 100) {
     component.install_progress_ = install_progress;
+  }
   component.NotifyObservers(Events::COMPONENT_UPDATE_UPDATING);
 }
 
@@ -1264,10 +1279,11 @@ void Component::StateUpdating::InstallComplete(ErrorCategory error_category,
   CHECK_EQ(0, component.error_code_);
   CHECK_EQ(0, component.extra_code1_);
 
-  if (component.action_run_.empty())
+  if (component.action_run_.empty()) {
     TransitionState(std::make_unique<StateUpdated>(&component));
-  else
+  } else {
     TransitionState(std::make_unique<StateRun>(&component));
+  }
 }
 
 Component::StateUpdated::StateUpdated(Component* component)
