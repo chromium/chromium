@@ -208,6 +208,8 @@ WGPUTextureFormat AsDawnEnum(const V8GPUTextureFormat& webgpu_enum) {
       // Packed 32 bit formats
     case V8GPUTextureFormat::Enum::kRgb9E5Ufloat:
       return WGPUTextureFormat_RGB9E5Ufloat;
+    case V8GPUTextureFormat::Enum::kRgb10A2Uint:
+      return WGPUTextureFormat_RGB10A2Uint;
     case V8GPUTextureFormat::Enum::kRgb10A2Unorm:
       return WGPUTextureFormat_RGB10A2Unorm;
     case V8GPUTextureFormat::Enum::kRg11B10Ufloat:
@@ -420,6 +422,8 @@ const char* FromDawnEnum(WGPUTextureFormat dawn_enum) {
     // Packed 32 bit formats
     case WGPUTextureFormat_RGB9E5Ufloat:
       return "rgb9e5ufloat";
+    case WGPUTextureFormat_RGB10A2Uint:
+      return "rgb10a2uint";
     case WGPUTextureFormat_RGB10A2Unorm:
       return "rgb10a2unorm";
     case WGPUTextureFormat_RG11B10Ufloat:
