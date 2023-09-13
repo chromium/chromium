@@ -54,6 +54,10 @@ class AutofillType {
     // The most likely server-side prediction for the field's type.
     ServerFieldType server_type() const;
 
+    // Checks whether server-side prediction for the field's type is an
+    // override.
+    bool is_override() const;
+
     // Whether the server-side classification indicates that the field
     // may be pre-filled with a placeholder in the value attribute.
     bool may_use_prefilled_placeholder = false;

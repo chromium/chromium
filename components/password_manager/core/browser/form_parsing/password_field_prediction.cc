@@ -135,6 +135,7 @@ FormPredictions ConvertToFormPredictions(
     field_predictions.back().type = server_type;
     field_predictions.back().may_use_prefilled_placeholder =
         autofill_prediction.may_use_prefilled_placeholder;
+    field_predictions.back().is_override = autofill_prediction.is_override();
   }
 
   FormPredictions result;

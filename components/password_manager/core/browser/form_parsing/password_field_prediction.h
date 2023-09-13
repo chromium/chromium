@@ -37,6 +37,7 @@ struct PasswordFieldPrediction {
   autofill::FieldSignature signature;
   autofill::ServerFieldType type;
   bool may_use_prefilled_placeholder = false;
+  bool is_override = false;
 
   friend bool operator==(const PasswordFieldPrediction& lhs,
                          const PasswordFieldPrediction& rhs) = default;

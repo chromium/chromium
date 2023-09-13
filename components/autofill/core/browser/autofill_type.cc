@@ -264,6 +264,10 @@ ServerFieldType AutofillType::ServerPrediction::server_type() const {
                                      NO_SERVER_DATA);
 }
 
+bool AutofillType::ServerPrediction::is_override() const {
+  return server_predictions.empty() ? false : server_predictions[0].override();
+}
+
 AutofillType::AutofillType(ServerFieldType field_type)
     : server_type_(ToSafeServerFieldType(field_type, UNKNOWN_TYPE)) {}
 

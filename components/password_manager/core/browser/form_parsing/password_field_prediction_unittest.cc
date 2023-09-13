@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -211,6 +212,38 @@ TEST(FormPredictionsTest, DeriveFromServerFieldType) {
               DeriveFromServerFieldType(test_case.server_type));
   }
 }
+
+// Tests that if |AutofillType::ServerPrediction| has an override flag, it
+// will be propagated to |FormPredictions|.
+TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
+  constexpr int driver_id = 0;
+
+  FormData form;
+  FormFieldData single_username_field;
+  single_username_field.unique_renderer_id = autofill::FieldRendererId(1000);
+  form.fields.push_back(single_username_field);
+
+  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+      autofill_predictions;
+  AutofillType::ServerPrediction autofill_prediction;
+  autofill_prediction.server_predictions.push_back(
+      CreateFieldPrediction(autofill::SINGLE_USERNAME, /*is_override=*/true));
+  autofill_predictions.insert(
+      {single_username_field.global_id(), autofill_prediction});
+
+  FormPredictions expected_result;
+  expected_result.driver_id = driver_id;
+  expected_result.form_signature = CalculateFormSignature(form);
+  expected_result.fields.push_back(
+      {single_username_field.unique_renderer_id,
+       CalculateFieldSignatureForField(single_username_field),
+       autofill::SINGLE_USERNAME, /*may_use_prefilled_placeholder=*/false,
+       /*is_override=*/true});
+
+  EXPECT_EQ(ConvertToFormPredictions(driver_id, form, autofill_predictions),
+            expected_result);
+}
+
 }  // namespace
 
 }  // namespace password_manager
