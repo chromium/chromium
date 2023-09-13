@@ -112,8 +112,6 @@ source_set("unit_tests") {
     "ios_password_manager_driver_factory_unittest.mm",
     "ios_password_manager_driver_unittest.mm",
     "password_controller_driver_helper_unittest.mm",
-    "password_form_helper_unittest.mm",
-    "shared_password_controller_unittest.mm",
   ]
   deps = [
     ":account_select_fill_data",
@@ -145,8 +143,14 @@ source_set("unit_tests") {
   ]
 
   # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [ "password_form_helper_unittest.mm" ]
+  if (!use_blink) {
+    sources += [
+      "password_form_helper_unittest.mm",
+
+      # TODO(crbug.com/1481427): SharedPasswordControllerTest fails on iOS
+      # blink.
+      "shared_password_controller_unittest.mm",
+    ]
   }
 }
 
