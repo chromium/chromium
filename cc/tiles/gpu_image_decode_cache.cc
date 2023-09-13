@@ -93,30 +93,6 @@ constexpr base::FeatureParam<int> kPurgeMaxAge{&kPurgeOldCacheEntriesOnTimer,
 static const int kNormalMaxItemsInCacheForGpu = 2000;
 static const int kSuspendedMaxItemsInCacheForGpu = 0;
 
-// A feature to enable memory size-based limits on the cache in addition to the
-// normal count-based limit. The limit is determined by the kCacheSizeLimit
-// parameter defined below.
-BASE_FEATURE(kLimitImageDecodeCacheSize,
-             "LimitImageDecodeCacheSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The max size in MB allowed for the internal LRU cache of images when the
-// ImageDecodeCacheSize feature is enabled.
-constexpr base::FeatureParam<int> kCacheSizeLimitMb{&kLimitImageDecodeCacheSize,
-                                                    "mb", 128};
-
-// A feature to enable enforcement of an age-based limit on the internal LRU
-// cache any time new entries are added to it. The limit is determined by the
-// kCacheAgeLimitSeconds parameter defined below.
-BASE_FEATURE(kLimitImageDecodeCacheAge,
-             "LimitImageDecodeCacheAge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The max number of seconds since an LRUCache entry has been used before we
-// will try to evict it from the cache.
-constexpr base::FeatureParam<int> kCacheAgeLimitSeconds{
-    &kLimitImageDecodeCacheAge, "seconds", 10};
-
 // The maximum number of images that we can lock simultaneously in our working
 // set. This is separate from the memory limit, as keeping very large numbers
 // of small images simultaneously locked can lead to performance issues and
@@ -1657,17 +1633,9 @@ void GpuImageDecodeCache::RecordStats() {
 
 void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
                                                scoped_refptr<ImageData> data) {
-  if (base::FeatureList::IsEnabled(kLimitImageDecodeCacheSize)) {
-    // Make sure we're not over capacity. If we are, this will purge older cache
-    // entries until we're not.
-    EnsureCapacity(0);
-  }
-
   if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
     DCHECK(persistent_cache_.empty() || has_pending_purge_task());
     PostPurgeOldCacheEntriesTask();
-  } else {
-    MaybePurgeOldCacheEntries();
   }
 
   WillAddCacheEntry(draw_image);
@@ -1763,14 +1731,6 @@ bool GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
   }
 
   return TryFlushPendingWork();
-}
-
-void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
-  if (!base::FeatureList::IsEnabled(kLimitImageDecodeCacheAge)) {
-    return;
-  }
-
-  DoPurgeOldCacheEntries(base::Seconds(kCacheAgeLimitSeconds.Get()));
 }
 
 void GpuImageDecodeCache::PurgeOldCacheEntriesCallback() {
@@ -2343,10 +2303,7 @@ bool GpuImageDecodeCache::ExceedsCacheLimits() const {
     items_limit = kNormalMaxItemsInCacheForGpu;
   }
 
-  const size_t kMaxSizeInBytes = kCacheSizeLimitMb.Get() * 1024 * 1024;
-  return persistent_cache_.size() > items_limit ||
-         (base::FeatureList::IsEnabled(kLimitImageDecodeCacheSize) &&
-          persistent_cache_memory_size_ >= kMaxSizeInBytes);
+  return persistent_cache_.size() > items_limit;
 }
 
 void GpuImageDecodeCache::InsertTransferCacheEntry(
