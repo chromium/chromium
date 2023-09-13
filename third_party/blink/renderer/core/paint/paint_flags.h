@@ -31,6 +31,9 @@ enum : unsigned {
 
   // Used to paint SVG resource subtree for masks, filter images, etc.
   kPaintingResourceSubtree = 1 << 4,
+
+  // Used to paint SVG resource subtree for masks.
+  kPaintingSVGMask = 1 << 5,
 };
 }  // namespace PaintFlag
 

@@ -63,7 +63,8 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(
     if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object) ||
         layout_object->StyleRef().Display() == EDisplay::kNone)
       continue;
-    SVGObjectPainter(*layout_object).PaintResourceSubtree(builder->Context());
+    SVGObjectPainter(*layout_object)
+        .PaintResourceSubtree(builder->Context(), PaintFlag::kPaintingSVGMask);
   }
 
   cached_paint_record_ = builder->EndRecording();

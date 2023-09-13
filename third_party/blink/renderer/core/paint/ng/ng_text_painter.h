@@ -35,7 +35,7 @@ class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
     SvgTextPaintState(const LayoutSVGInlineText&,
                       const ComputedStyle&,
                       NGStyleVariant style_variant,
-                      bool is_rendering_clip_path_as_mask_image);
+                      PaintFlags paint_flags);
     SvgTextPaintState(const LayoutSVGInlineText&,
                       const ComputedStyle&,
                       Color text_match_color);
@@ -44,6 +44,7 @@ class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
     const LayoutObject& TextDecorationObject() const;
     const ComputedStyle& Style() const;
     bool IsPaintingSelection() const;
+    PaintFlags GetPaintFlags() const;
     bool IsRenderingClipPathAsMaskImage() const;
     bool IsPaintingTextMatch() const;
     // This is callable only if IsPaintingTextMatch().
@@ -58,8 +59,8 @@ class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
     absl::optional<AffineTransform> shader_transform_;
     absl::optional<Color> text_match_color_;
     NGStyleVariant style_variant_ = NGStyleVariant::kStandard;
+    PaintFlags paint_flags_ = PaintFlag::kNoFlag;
     bool is_painting_selection_ = false;
-    bool is_rendering_clip_path_as_mask_image_ = false;
     friend class NGTextPainter;
   };
 
@@ -116,7 +117,7 @@ class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,
                                  NGStyleVariant style_variant,
-                                 bool is_rendering_clip_path_as_mask_image);
+                                 PaintFlags paint_flags);
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText& svg_inline_text,
                                  const ComputedStyle& style,
                                  Color text_match_color);

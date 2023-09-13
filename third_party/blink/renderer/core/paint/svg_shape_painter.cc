@@ -81,8 +81,8 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
           case PT_FILL: {
             cc::PaintFlags fill_flags;
             if (!SVGObjectPainter(layout_svg_shape_)
-                     .PreparePaint(paint_info.IsRenderingClipPathAsMaskImage(),
-                                   style, kApplyToFillMode, fill_flags)) {
+                     .PreparePaint(paint_info.GetPaintFlags(), style,
+                                   kApplyToFillMode, fill_flags)) {
               break;
             }
             fill_flags.setAntiAlias(should_anti_alias);
@@ -107,7 +107,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
               cc::PaintFlags stroke_flags;
               if (!SVGObjectPainter(layout_svg_shape_)
                        .PreparePaint(
-                           paint_info.IsRenderingClipPathAsMaskImage(), style,
+                           paint_info.GetPaintFlags(), style,
                            kApplyToStrokeMode, stroke_flags,
                            base::OptionalToPtr(non_scaling_transform))) {
                 break;

@@ -33,13 +33,14 @@ class SVGObjectPainter {
   // object. Returns true if successful, and the caller can continue to paint
   // using |paint_flags|.
   bool PreparePaint(
-      bool is_rendering_clip_path_as_mask_image,
+      PaintFlags,
       const ComputedStyle&,
       LayoutSVGResourceMode,
       cc::PaintFlags& paint_flags,
       const AffineTransform* additional_paint_server_transform = nullptr);
 
-  void PaintResourceSubtree(GraphicsContext&);
+  void PaintResourceSubtree(GraphicsContext&,
+                            PaintFlags additional_flags = PaintFlag::kNoFlag);
 
  private:
   bool ApplyPaintResource(

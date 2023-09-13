@@ -14,21 +14,25 @@ namespace blink {
 
 namespace {
 
-void ApplyColorInterpolation(const ComputedStyle& style,
+void ApplyColorInterpolation(PaintFlags paint_flags,
+                             const ComputedStyle& style,
                              cc::PaintFlags& flags) {
-  if (style.ColorInterpolation() == EColorInterpolation::kLinearrgb) {
+  const bool is_rendering_svg_mask = paint_flags & PaintFlag::kPaintingSVGMask;
+  if (is_rendering_svg_mask &&
+      style.ColorInterpolation() == EColorInterpolation::kLinearrgb) {
     flags.setColorFilter(cc::ColorFilter::MakeSRGBToLinearGamma());
   }
 }
 
 }  // namespace
 
-void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
+void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context,
+                                            PaintFlags additional_flags) {
   DCHECK(!layout_object_.SelfNeedsFullLayout());
 
-  PaintInfo info(
-      context, CullRect::Infinite(), PaintPhase::kForeground,
-      PaintFlag::kOmitCompositingInfo | PaintFlag::kPaintingResourceSubtree);
+  PaintInfo info(context, CullRect::Infinite(), PaintPhase::kForeground,
+                 PaintFlag::kOmitCompositingInfo |
+                     PaintFlag::kPaintingResourceSubtree | additional_flags);
   layout_object_.Paint(info);
 }
 
@@ -54,12 +58,12 @@ bool SVGObjectPainter::ApplyPaintResource(
 }
 
 bool SVGObjectPainter::PreparePaint(
-    bool is_rendering_clip_path_as_mask_image,
+    PaintFlags paint_flags,
     const ComputedStyle& style,
     LayoutSVGResourceMode resource_mode,
     cc::PaintFlags& flags,
     const AffineTransform* additional_paint_server_transform) {
-  if (is_rendering_clip_path_as_mask_image) {
+  if (paint_flags & PaintFlag::kPaintingClipPathAsMask) {
     if (resource_mode == kApplyToStrokeMode)
       return false;
     flags.setColor(SK_ColorBLACK);
@@ -75,7 +79,7 @@ bool SVGObjectPainter::PreparePaint(
   if (paint.HasUrl()) {
     if (ApplyPaintResource(paint, additional_paint_server_transform, flags)) {
       flags.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
-      ApplyColorInterpolation(style, flags);
+      ApplyColorInterpolation(paint_flags, style, flags);
       return true;
     }
   }
@@ -87,7 +91,7 @@ bool SVGObjectPainter::PreparePaint(
     flag_color.SetAlpha(flag_color.Alpha() * alpha);
     flags.setColor(flag_color.toSkColor4f());
     flags.setShader(nullptr);
-    ApplyColorInterpolation(style, flags);
+    ApplyColorInterpolation(paint_flags, style, flags);
     return true;
   }
   return false;
