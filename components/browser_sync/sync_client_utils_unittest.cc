@@ -84,6 +84,16 @@ class LocalDataQueryHelperTest : public testing::Test {
   std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
 };
 
+TEST_F(LocalDataQueryHelperTest, ShouldHandleZeroTypes) {
+  base::MockOnceCallback<void(
+      std::map<syncer::ModelType, syncer::LocalDataDescription>)>
+      callback;
+
+  EXPECT_CALL(callback, Run(::testing::IsEmpty()));
+
+  local_data_query_helper_->Run(syncer::ModelTypeSet(), callback.Get());
+}
+
 TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalPasswordsViaCallback) {
   // Add test data to local store.
   local_password_store_->AddLogin(CreateTestPassword("https://www.amazon.de"));
@@ -455,6 +465,11 @@ class LocalDataMigrationHelperTest : public testing::Test {
   std::unique_ptr<browser_sync::LocalDataMigrationHelper>
       local_data_migration_helper_;
 };
+
+TEST_F(LocalDataMigrationHelperTest, ShouldHandleZeroTypes) {
+  // Just checks that there's no crash.
+  local_data_migration_helper_->Run(syncer::ModelTypeSet());
+}
 
 TEST_F(LocalDataMigrationHelperTest, ShouldMovePasswordsToAccountStore) {
   // Add test data to local store.

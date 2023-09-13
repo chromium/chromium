@@ -92,23 +92,32 @@ class LocalDataQueryHelper::LocalDataQueryRequest
       syncer::ModelTypeSet types,
       base::OnceCallback<void(
           std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback)
-      : helper_(helper),
-        types_(base::Intersection(types, kSupportedTypes)),
-        barrier_callback_(base::BarrierClosure(
-            types_.Size(),
-            base::BindOnce(&LocalDataQueryHelper::OnRequestComplete,
-                           base::Unretained(helper_),
-                           base::Unretained(this),
-                           std::move(callback)))) {
+      : helper_(helper), types_(base::Intersection(types, kSupportedTypes)) {
     if (types_ != types) {
       DVLOG(1) << "Only PASSWORDS, BOOKMARKS and READING_LIST are supported.";
     }
+
+    // Note that the BarrierClosure is initialized after all other data members.
+    // If `types_` is empty, the closure will get triggered right away and if
+    // the callback uses any of the other data members, this can lead to
+    // unexpected behaviour (see crbug.com/1482218).
+    barrier_callback_ = base::BarrierClosure(
+        types_.Size(),
+        base::BindOnce(&LocalDataQueryHelper::OnRequestComplete,
+                       base::Unretained(helper_), base::Unretained(this),
+                       std::move(callback)));
   }
 
   ~LocalDataQueryRequest() override = default;
 
   // This runs the query for the requested data types.
   void Run() {
+    // If no supported type is requested, return early. The BarrierClosure would
+    // have already called the result callback.
+    if (types_.Empty()) {
+      return;
+    }
+
     if (types_.Has(syncer::PASSWORDS)) {
       CHECK(helper_->profile_password_store_);
       helper_->profile_password_store_->GetAutofillableLogins(
