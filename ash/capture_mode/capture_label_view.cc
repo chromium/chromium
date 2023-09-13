@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -265,8 +266,10 @@ void CaptureLabelView::UpdateIconAndText() {
 
   const bool label_visibility = !text.empty();
   label_->SetVisible(label_visibility);
-  if (label_visibility)
+  if (label_visibility && (label_->GetText() != text)) {
     label_->SetText(text);
+    capture_mode_util::TriggerAccessibilityAlertSoon(base::UTF16ToUTF8(text));
+  }
 }
 
 bool CaptureLabelView::ShouldHandleEvent() {
