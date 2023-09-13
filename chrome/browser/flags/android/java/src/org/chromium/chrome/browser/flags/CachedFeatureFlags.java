@@ -86,6 +86,5 @@ public class CachedFeatureFlags {
     public static void resetFlagsForTesting() {
         ValuesReturned.clearForTesting();
         ValuesOverridden.removeOverrides();
-        CachedFlagsSafeMode.getInstance().clearMemoryForTesting();
     }
 }
