@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
@@ -245,7 +246,7 @@ std::unique_ptr<DisplayLinkMacSharedState> DisplayLinkMacSharedState::Create(
     return nullptr;
   }
 
-  return absl::WrapUnique(
+  return base::WrapUnique(
       new DisplayLinkMacSharedState(display_id, std::move(display_link)));
 }
 
