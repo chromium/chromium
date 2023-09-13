@@ -31,6 +31,8 @@ export type EventNames =
 export enum BiDiModule {
   // keep-sorted start
   BrowsingContext = 'browsingContext',
+  // XXX(#98): Implement `cdp`.
+  Cdp = 'cdp',
   Log = 'log',
   Network = 'network',
   Script = 'script',

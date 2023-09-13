@@ -20,6 +20,8 @@ import type Protocol from 'devtools-protocol';
 
 import type {BrowsingContext, JsUint} from './webdriver-bidi.js';
 
+export type EventNames = Event['method'];
+
 export type Message = CommandResponse | Event;
 
 export type Command = {
@@ -37,7 +39,7 @@ export type ResultData = SendCommandResult | GetSessionResult;
 export type Event = {
   type: 'event';
 } & EventData;
-export type EventData = EventReceivedEvent;
+export type EventData = EventDataFor<keyof ProtocolMapping.Events>;
 
 export type SendCommandCommand = {
   method: 'cdp.sendCommand';
@@ -70,18 +72,14 @@ export type GetSessionResult = {
   session?: Protocol.Target.SessionID;
 };
 
-export type EventReceivedEvent = {
-  method: EventNames;
-  params: EventParameters;
+export type EventDataFor<EventName extends keyof ProtocolMapping.Events> = {
+  method: `cdp.${EventName}`;
+  params: EventParametersFor<EventName>;
 };
 
-export type EventParameters<
-  EventName extends keyof ProtocolMapping.Events = keyof ProtocolMapping.Events,
-> = {
-  event: EventName;
-  params: ProtocolMapping.Events[EventName][0];
-  session: Protocol.Target.SessionID;
-};
-
-// XXX: Support `cdp` (all events)
-export type EventNames = 'cdp' | `cdp.${keyof ProtocolMapping.Events}`;
+export type EventParametersFor<EventName extends keyof ProtocolMapping.Events> =
+  {
+    event: EventName;
+    params: ProtocolMapping.Events[EventName][0];
+    session: Protocol.Target.SessionID;
+  };
