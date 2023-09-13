@@ -611,7 +611,6 @@ public class BookmarkUtils {
      * @return The list of top level bookmark folder ids.
      */
     public static List<BookmarkId> populateTopLevelFolders(BookmarkModel bookmarkModel) {
-        // TODO(crbug.com/1449020): Refactor this to not go through JNI so much.
         List<BookmarkId> topLevelFolders = new ArrayList<>();
         BookmarkId desktopNodeId = bookmarkModel.getDesktopFolderId();
         BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();
@@ -820,7 +819,6 @@ public class BookmarkUtils {
     /** Returns whether the given folder should display images. */
     public static boolean shouldShowImagesForFolder(
             BookmarkModel bookmarkModel, BookmarkId folder) {
-        // TODO(crbug.com/1449020): Refactor this to not go through JNI so much.
         BookmarkId rootNodeId = bookmarkModel.getRootFolderId();
         BookmarkId desktopNodeId = bookmarkModel.getDesktopFolderId();
         BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();

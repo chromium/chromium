@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.content_public.browser.WebContents;
@@ -43,12 +42,20 @@ import java.util.List;
  * bookmark model stored in native.
  */
 class BookmarkBridge {
+    private final ObserverList<BookmarkModelObserver> mObservers = new ObserverList<>();
+
     private long mNativeBookmarkBridge;
     private boolean mIsDestroyed;
     private boolean mIsDoingExtensiveChanges;
     private boolean mIsNativeBookmarkModelLoaded;
-    private final ObserverList<BookmarkModelObserver> mObservers = new ObserverList<>();
-    private ShoppingService mShoppingService;
+
+    // Lazily set pseudo-constants. These should never change at runtime. Used to avoid crossing
+    // JNI to fetch information.
+    private @Nullable BookmarkId mRootFolderId;
+    private @Nullable BookmarkId mMobileFolderId;
+    private @Nullable BookmarkId mOtherFolderId;
+    private @Nullable BookmarkId mDesktopFolderId;
+    private @Nullable BookmarkId mReadingListFolderId;
 
     /**
      * Handler to fetch the bookmarks, titles, urls and folder hierarchy.
@@ -248,7 +255,11 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getReadingListFolder(mNativeBookmarkBridge);
+        if (mReadingListFolderId == null) {
+            mReadingListFolderId =
+                    BookmarkBridgeJni.get().getReadingListFolder(mNativeBookmarkBridge);
+        }
+        return mReadingListFolderId;
     }
 
     /**
@@ -321,7 +332,10 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getRootFolderId(mNativeBookmarkBridge);
+        if (mRootFolderId == null) {
+            mRootFolderId = BookmarkBridgeJni.get().getRootFolderId(mNativeBookmarkBridge);
+        }
+        return mRootFolderId;
     }
 
     /**
@@ -331,7 +345,10 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getMobileFolderId(mNativeBookmarkBridge);
+        if (mMobileFolderId == null) {
+            mMobileFolderId = BookmarkBridgeJni.get().getMobileFolderId(mNativeBookmarkBridge);
+        }
+        return mMobileFolderId;
     }
 
     /**
@@ -341,7 +358,10 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getOtherFolderId(mNativeBookmarkBridge);
+        if (mOtherFolderId == null) {
+            mOtherFolderId = BookmarkBridgeJni.get().getOtherFolderId(mNativeBookmarkBridge);
+        }
+        return mOtherFolderId;
     }
 
     /**
@@ -351,7 +371,10 @@ class BookmarkBridge {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return null;
         assert mIsNativeBookmarkModelLoaded;
-        return BookmarkBridgeJni.get().getDesktopFolderId(mNativeBookmarkBridge);
+        if (mDesktopFolderId == null) {
+            mDesktopFolderId = BookmarkBridgeJni.get().getDesktopFolderId(mNativeBookmarkBridge);
+        }
+        return mDesktopFolderId;
     }
 
     /**
