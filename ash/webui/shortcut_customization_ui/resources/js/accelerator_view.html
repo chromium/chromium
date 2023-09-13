@@ -52,7 +52,8 @@
       <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
     <div class="edit-icon-container"
-        hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]">
+        hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]"
+        aria-label="[[i18n('edit')]]">
       <cr-icon-button class="edit-button" class="clickable-button" part="edit-icon"
           iron-icon="shortcut-customization:edit"
           on-click="onEditIconClicked">

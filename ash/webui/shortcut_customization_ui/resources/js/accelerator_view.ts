@@ -17,11 +17,10 @@ import {AcceleratorResultData, UserAction} from '../mojom-webui/ash/webui/shortc
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
-import {keyToIconNameMap} from './input_key.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
+import {createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -645,12 +644,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
                 modifier =>
                     modifier === META_KEY ? metaKeyAriaLabel : modifier);
 
-    return [...modifiers, this.getAriaKeyDisplay(keyOrIcon)].join(' ');
-  }
-
-  private getAriaKeyDisplay(keyOrIcon: string): string {
-    const iconName = keyToIconNameMap[keyOrIcon];
-    return iconName ? iconName : keyOrIcon;
+    return [...modifiers, getKeyDisplay(keyOrIcon)].join(' ');
   }
 
   static get template(): HTMLTemplateElement {

@@ -14,11 +14,9 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {keyToIconNameMap} from '../input_key.js';
 import {Router} from '../router.js';
 import {LayoutStyle, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
-import {getModifiersForAcceleratorInfo, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
-import {TextAcceleratorElement} from '../text_accelerator.js';
+import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getModifiersForAcceleratorInfo, getTextAcceleratorParts, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
 
 import {getBoldedDescription} from './search_result_bolding.js';
 import {getTemplate} from './search_result_row.html.js';
@@ -86,7 +84,7 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
 
   private getTextAcceleratorParts(): TextAcceleratorPart[] {
     assert(isTextAcceleratorInfo(this.searchResult.acceleratorInfos[0]));
-    return TextAcceleratorElement.getTextAcceleratorParts(
+    return getTextAcceleratorParts(
         this.searchResult.acceleratorInfos as TextAcceleratorInfo[]);
   }
 
@@ -168,59 +166,19 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
         this.searchResult.acceleratorLayoutInfo.description);
     let searchResultText;
     if (this.isStandardLayout()) {
-      searchResultText =
-          `${description}, ${this.getAriaLabelForStandardLayoutSearchResult()}`;
+      searchResultText = `${description}, ${
+          getAriaLabelForStandardAccelerators(
+              this.getStandardAcceleratorInfos(),
+              this.i18n('acceleratorTextDivider'))}`;
     } else {
-      searchResultText =
-          `${description}, ${this.getAriaLabelForTextLayoutSearchResult()}`;
+      searchResultText = `${description}, ${
+          getAriaLabelForTextAccelerators(
+              this.searchResult.acceleratorInfos as TextAcceleratorInfo[])}`;
     }
 
     return this.i18n(
         'searchResultSelectedAriaLabel', this.focusRowIndex + 1,
         this.listLength, searchResultText);
-  }
-
-  /**
-   * @returns the Aria label for the accelerators of this search result.
-   */
-  private getAriaLabelForStandardLayoutSearchResult(): string {
-    return this.getStandardAcceleratorInfos()
-        .map(
-            acceleratorInfo =>
-                this.getAriaLabelForStandardAcceleratorInfo(acceleratorInfo))
-        .join(` ${this.i18n('searchAcceleratorTextDivider')} `);
-  }
-
-  /**
-   * @returns the Aria label for the given StandardAcceleratorInfo.
-   */
-  private getAriaLabelForStandardAcceleratorInfo(
-      acceleratorInfo: StandardAcceleratorInfo): string {
-    const keyOrIcon =
-        acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay;
-    return getModifiersForAcceleratorInfo(acceleratorInfo)
-        .join(' ')
-        .concat(` ${this.getKeyDisplay(keyOrIcon)}`);
-  }
-
-  /**
-   *
-   * @param keyOrIcon the text for an individual accelerator key.
-   * @returns the associated icon name for the given `keyOrIcon` text if it
-   *     exists, otherwise returns `keyOrIcon` itself.
-   */
-  private getKeyDisplay(keyOrIcon: string): string {
-    const iconName = keyToIconNameMap[keyOrIcon];
-    return iconName ? iconName : keyOrIcon;
-  }
-
-  /**
-   * @returns the Aria label for the accelerators of this search result.
-   */
-  private getAriaLabelForTextLayoutSearchResult(): string {
-    return this.getTextAcceleratorParts()
-        .map(part => this.getKeyDisplay(mojoString16ToString(part.text)))
-        .join('');
   }
 
   private makeA11yAnnouncementIfSelectedAndUnfocused(): void {

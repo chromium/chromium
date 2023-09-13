@@ -13,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './input_key.html.js';
-import {LWIN_KEY, META_KEY} from './shortcut_utils.js';
+import {keyToIconNameMap, LWIN_KEY, META_KEY} from './shortcut_utils.js';
 
 /**
  * Refers to the state of an 'input-key' item.
@@ -23,50 +23,6 @@ export enum KeyInputState {
   MODIFIER_SELECTED = 'modifier-selected',
   ALPHANUMERIC_SELECTED = 'alpha-numeric-selected',
 }
-
-// The keys in this map are pulled from the file:
-// ui/events/keycodes/dom/dom_code_data.inc
-// TODO(cambickel): Add remaining missing icons.
-export const keyToIconNameMap: {[key: string]: string|undefined} = {
-  'ArrowDown': 'arrow-down',
-  'ArrowLeft': 'arrow-left',
-  'ArrowRight': 'arrow-right',
-  'ArrowUp': 'arrow-up',
-  'AudioVolumeDown': 'volume-down',
-  'AudioVolumeMute': 'volume-mute',
-  'AudioVolumeUp': 'volume-up',
-  'BrightnessDown': 'display-brightness-down',
-  'BrightnessUp': 'display-brightness-up',
-  'BrowserBack': 'back',
-  'BrowserForward': 'forward',
-  'BrowserHome': 'browser-home',
-  'BrowserRefresh': 'refresh',
-  'BrowserSearch': 'browser-search',
-  'ContextMenu': 'menu',
-  'EmojiPicker': 'emoji-picker',
-  'EnableOrToggleDictation': 'dictation-toggle',
-  'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
-  'KeyboardBrightnessUp': 'keyboard-brightness-up',
-  'KeyboardBrightnessDown': 'keyboard-brightness-down',
-  'LaunchApplication1': 'overview',
-  'LaunchApplication2': 'calculator',
-  'LaunchAssistant': 'assistant',
-  'LaunchMail': 'launch-mail',
-  'MediaFastForward': 'fast-forward',
-  'MediaPause': 'pause',
-  'MediaPlay': 'play',
-  'MediaPlayPause': 'play-pause',
-  'MediaTrackNext': 'next-track',
-  'MediaTrackPrevious': 'last-track',
-  'MicrophoneMuteToggle': 'microphone-mute',
-  'ModeChange': 'globe',
-  'ViewAllApps': 'view-all-apps',
-  'Power': 'power',
-  'PrintScreen': 'screenshot',
-  'PrivacyScreenToggle': 'electronic-privacy-screen',
-  'Settings': 'settings',
-  'ZoomToggle': 'fullscreen',
-};
 
 /**
  * @fileoverview

@@ -5,9 +5,10 @@
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
 
 // TODO(jimmyxgong): ChromeOS currently supports up to F24 but can be updated to
 // F32. Update here when F32 is available.
@@ -36,6 +37,49 @@ export const unidentifiedKeyCodeToKey: {[keyCode: number]: string} = {
   237: 'EmojiPicker',
   238: 'EnableOrToggleDictation',
   239: 'ViewAllApps',
+};
+
+// The keys in this map are pulled from the file:
+// ui/events/keycodes/dom/dom_code_data.inc
+export const keyToIconNameMap: {[key: string]: string|undefined} = {
+  'ArrowDown': 'arrow-down',
+  'ArrowLeft': 'arrow-left',
+  'ArrowRight': 'arrow-right',
+  'ArrowUp': 'arrow-up',
+  'AudioVolumeDown': 'volume-down',
+  'AudioVolumeMute': 'volume-mute',
+  'AudioVolumeUp': 'volume-up',
+  'BrightnessDown': 'display-brightness-down',
+  'BrightnessUp': 'display-brightness-up',
+  'BrowserBack': 'back',
+  'BrowserForward': 'forward',
+  'BrowserHome': 'browser-home',
+  'BrowserRefresh': 'refresh',
+  'BrowserSearch': 'browser-search',
+  'ContextMenu': 'menu',
+  'EmojiPicker': 'emoji-picker',
+  'EnableOrToggleDictation': 'dictation-toggle',
+  'KeyboardBacklightToggle': 'keyboard-brightness-toggle',
+  'KeyboardBrightnessUp': 'keyboard-brightness-up',
+  'KeyboardBrightnessDown': 'keyboard-brightness-down',
+  'LaunchApplication1': 'overview',
+  'LaunchApplication2': 'calculator',
+  'LaunchAssistant': 'assistant',
+  'LaunchMail': 'launch-mail',
+  'MediaFastForward': 'fast-forward',
+  'MediaPause': 'pause',
+  'MediaPlay': 'play',
+  'MediaPlayPause': 'play-pause',
+  'MediaTrackNext': 'next-track',
+  'MediaTrackPrevious': 'last-track',
+  'MicrophoneMuteToggle': 'microphone-mute',
+  'ModeChange': 'globe',
+  'ViewAllApps': 'view-all-apps',
+  'Power': 'power',
+  'PrintScreen': 'screenshot',
+  'PrivacyScreenToggle': 'electronic-privacy-screen',
+  'Settings': 'settings',
+  'ZoomToggle': 'fullscreen',
 };
 
 // Returns true if shortcut customization is disabled via the feature flag.
@@ -275,4 +319,64 @@ export const getSourceAndActionFromAcceleratorId =
       const action = parseInt(uuidSplit[1], 10);
 
       return {source, action};
+    };
+
+/**
+ *
+ * @param keyOrIcon the text for an individual accelerator key.
+ * @returns the associated icon name for the given `keyOrIcon` text if it
+ *     exists, otherwise returns `keyOrIcon` itself.
+ */
+export const getKeyDisplay = (keyOrIcon: string): string => {
+  const iconName = keyToIconNameMap[keyOrIcon];
+  return iconName ? iconName : keyOrIcon;
+};
+
+/**
+ * @returns the Aria label for the standard accelerators.
+ */
+export const getAriaLabelForStandardAccelerators =
+    (acceleratorInfos: StandardAcceleratorInfo[], dividerString: string):
+        string => {
+          return acceleratorInfos
+              .map(
+                  (acceleratorInfo: StandardAcceleratorInfo) =>
+                      getAriaLabelForStandardAcceleratorInfo(acceleratorInfo))
+              .join(` ${dividerString} `);
+        };
+
+/**
+ * @returns the Aria label for the text accelerators.
+ */
+export const getAriaLabelForTextAccelerators =
+    (acceleratorInfos: TextAcceleratorInfo[]): string => {
+      return getTextAcceleratorParts(acceleratorInfos as TextAcceleratorInfo[])
+          .map(part => getKeyDisplay(mojoString16ToString(part.text)))
+          .join('');
+    };
+
+/**
+ * @returns the Aria label for the given StandardAcceleratorInfo.
+ */
+export const getAriaLabelForStandardAcceleratorInfo =
+    (acceleratorInfo: StandardAcceleratorInfo): string => {
+      const keyOrIcon =
+          acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay;
+      return getModifiersForAcceleratorInfo(acceleratorInfo)
+          .join(' ')
+          .concat(` ${getKeyDisplay(keyOrIcon)}`);
+    };
+
+/**
+ * @returns the text accelerator parts for the given TextAcceleratorInfo.
+ */
+export const getTextAcceleratorParts =
+    (infos: TextAcceleratorInfo[]): TextAcceleratorPart[] => {
+      // For text based layout accelerators, we always expect this to be an
+      // array with a single element.
+      assert(infos.length === 1);
+      const textAcceleratorInfo = infos[0];
+
+      assert(isTextAcceleratorInfo(textAcceleratorInfo));
+      return textAcceleratorInfo.layoutProperties.textAccelerator.parts;
     };

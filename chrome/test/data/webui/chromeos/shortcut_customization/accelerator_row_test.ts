@@ -21,10 +21,12 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createTextAcceleratorInfo, createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 
-export function initAcceleratorRowElement(): AcceleratorRowElement {
+export function initAcceleratorRowElement(layoutStyle: LayoutStyle):
+    AcceleratorRowElement {
   const element = document.createElement('accelerator-row');
   document.body.appendChild(element);
   flush();
+  element.layoutStyle = layoutStyle;
   return element;
 }
 
@@ -51,7 +53,7 @@ suite('acceleratorRowTest', function() {
 
   test('LoadsBasicRow', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     const acceleratorInfo1 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
@@ -67,7 +69,6 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.layoutStyle = LayoutStyle.kDefault;
     await flush();
     const acceleratorElements =
         rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
@@ -103,7 +104,7 @@ suite('acceleratorRowTest', function() {
 
   test('ShowDialogOnClickWhenCustomizationEnabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     waitAfterNextRender(rowElement);
 
     const acceleratorInfo1 = createUserAcceleratorInfo(
@@ -118,7 +119,6 @@ suite('acceleratorRowTest', function() {
     rowElement.description = description;
     rowElement.source = AcceleratorSource.kAsh;
     rowElement.action = 0;
-    rowElement.layoutStyle = LayoutStyle.kDefault;
 
     let showDialogListenerCalled = false;
     rowElement.addEventListener('show-edit-dialog', () => {
@@ -143,7 +143,7 @@ suite('acceleratorRowTest', function() {
 
   test('EditIconHiddenWhenCustomizationDisabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: false});
-    rowElement = initAcceleratorRowElement();
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     waitAfterNextRender(rowElement);
 
     const acceleratorInfo1 = createUserAcceleratorInfo(
@@ -158,7 +158,6 @@ suite('acceleratorRowTest', function() {
     rowElement.description = description;
     rowElement.source = AcceleratorSource.kAsh;
     rowElement.action = 0;
-    rowElement.layoutStyle = LayoutStyle.kDefault;
 
     await flushTasks();
 
@@ -176,7 +175,7 @@ suite('acceleratorRowTest', function() {
 
   test('ShowTextAccelerator', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
+    rowElement = initAcceleratorRowElement(LayoutStyle.kText);
 
     const accelerators = [createTextAcceleratorInfo([{
       text: stringToMojoString16('ctrl'),
@@ -184,7 +183,6 @@ suite('acceleratorRowTest', function() {
     }])];
 
     rowElement.acceleratorInfos = accelerators;
-    rowElement.layoutStyle = LayoutStyle.kText;
     await flush();
 
     const acceleratorElements =
@@ -204,7 +202,7 @@ suite('acceleratorRowTest', function() {
 
   test('LoadBasicRowEvenWhenAccelTextIsPresent', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
     const acceleratorInfo1 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
@@ -220,7 +218,6 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.layoutStyle = LayoutStyle.kDefault;
     await flush();
 
     const acceleratorElements =
@@ -251,7 +248,7 @@ suite('acceleratorRowTest', function() {
 
   test('ElementFocusableWhenCustomizationEnabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
 
     const acceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL,
@@ -261,7 +258,6 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = [acceleratorInfo];
     rowElement.description = 'test shortcut';
-    rowElement.layoutStyle = LayoutStyle.kDefault;
     await flush();
 
     const containerElement =
@@ -271,7 +267,7 @@ suite('acceleratorRowTest', function() {
 
   test('ElementFocusableWhenCustomizationDisabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: false});
-    rowElement = initAcceleratorRowElement();
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
 
     const acceleratorInfo = createUserAcceleratorInfo(
         Modifier.CONTROL,
@@ -281,11 +277,93 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = [acceleratorInfo];
     rowElement.description = 'test shortcut';
-    rowElement.layoutStyle = LayoutStyle.kDefault;
     await flush();
 
     const containerElement =
         strictQuery('#container', rowElement.shadowRoot, HTMLTableRowElement);
     assertEquals(-1, containerElement.tabIndex);
+  });
+
+  test('GetAriaLabelForStandardRow', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
+
+    const acceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    acceleratorInfo.state = AcceleratorState.kEnabled;
+    rowElement.acceleratorInfos = [acceleratorInfo];
+    rowElement.description = 'Open notifications';
+
+    await flush();
+    assertEquals(
+        'Open notifications, ctrl c.',
+        rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
+            'aria-label'));
+  });
+
+  test('GetAriaLabelForStandardRowWithMultipleAccelerators', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    rowElement = initAcceleratorRowElement(LayoutStyle.kDefault);
+
+    const acceleratorInfo1 = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    const acceleratorInfo2 = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 68,
+        /*keyDisplay=*/ 'd');
+
+    const accelerators = [acceleratorInfo1, acceleratorInfo2];
+    const description = 'Open Calculator app';
+    rowElement.acceleratorInfos = accelerators;
+    rowElement.description = description;
+
+    await flush();
+    assertEquals(
+        'Open Calculator app, ctrl c or ctrl d.',
+        rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
+            'aria-label'));
+  });
+
+  test('GetAriaLabelForTextAcceleratorRow', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    rowElement = initAcceleratorRowElement(LayoutStyle.kText);
+
+    const accelerators = [createTextAcceleratorInfo(
+        [
+          {
+            text: stringToMojoString16('ctrl'),
+            type: TextAcceleratorPartType.kModifier,
+          },
+          {
+            text: stringToMojoString16(' + '),
+            type: TextAcceleratorPartType.kDelimiter,
+          },
+          {
+            text: stringToMojoString16('1 '),
+            type: TextAcceleratorPartType.kKey,
+          },
+          {
+            text: stringToMojoString16('through '),
+            type: TextAcceleratorPartType.kPlainText,
+          },
+          {
+            text: stringToMojoString16('8'),
+            type: TextAcceleratorPartType.kKey,
+          },
+        ],
+        )];
+
+    const description = 'Go through tabs 1 to 8';
+    rowElement.acceleratorInfos = accelerators;
+    rowElement.description = description;
+    await flush();
+    assertEquals(
+        'Go through tabs 1 to 8, ctrl + 1 through 8.',
+        rowElement!.shadowRoot!.querySelector('#container')!.getAttribute(
+            'aria-label'));
   });
 });
