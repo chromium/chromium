@@ -2069,7 +2069,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {}},
          {net::features::kThirdPartyStoragePartitioning, {}},
-         {net::features::kNoncedPartitionedCookies, {}},
+         {net::features::kPartitionedCookies, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {blink::features::kInterestGroupStorage, {}},
          {blink::features::kAdInterestGroupAPI, {}},

@@ -247,10 +247,6 @@ BASE_FEATURE(kPartitionedCookies,
              "PartitionedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNoncedPartitionedCookies,
-             "NoncedPartitionedCookies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kBlockTruncatedCookies,
              "BlockTruncatedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);

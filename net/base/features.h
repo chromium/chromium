@@ -304,12 +304,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
 // the cookie was set.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookies);
 
-// When enabled, then we allow partitioned cookies even if kPartitionedCookies
-// is disabled only if the cookie partition key contains a nonce. So far, this
-// is used to create temporary cookie jar partitions for fenced and anonymous
-// frames.
-NET_EXPORT BASE_DECLARE_FEATURE(kNoncedPartitionedCookies);
-
 // When enabled, cookie-related code will treat cookies containing '\0', '\r',
 // and '\n' as invalid and reject the cookie.
 NET_EXPORT BASE_DECLARE_FEATURE(kBlockTruncatedCookies);

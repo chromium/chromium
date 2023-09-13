@@ -1025,8 +1025,7 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
     base::test::ScopedFeatureList scope_feature_list;
     scope_feature_list.InitWithFeatures(
         {net::features::kThirdPartyStoragePartitioning},
-        {net::features::kPartitionedCookies,
-         net::features::kNoncedPartitionedCookies});
+        {net::features::kPartitionedCookies});
 
     TestCase test_cases[] = {
         {StorageKey::CreateFromStringForTesting("https://www.example.com"),
@@ -1038,28 +1037,6 @@ TEST_F(StorageKeyTest, ToCookiePartitionKey) {
         {StorageKey::CreateWithNonce(
              url::Origin::Create(GURL("https://www.example.com")), nonce),
          absl::nullopt},
-    };
-    for (const auto& test_case : test_cases) {
-      EXPECT_EQ(test_case.expected,
-                test_case.storage_key.ToCookiePartitionKey());
-    }
-  }
-
-  {
-    // Nonced partitioned cookies enabled only.
-    base::test::ScopedFeatureList scope_feature_list;
-    scope_feature_list.InitWithFeatures(
-        {net::features::kThirdPartyStoragePartitioning,
-         net::features::kNoncedPartitionedCookies},
-        {net::features::kPartitionedCookies});
-
-    TestCase test_cases[] = {
-        {StorageKey::CreateFromStringForTesting("https://www.example.com"),
-         absl::nullopt},
-        {StorageKey::CreateWithNonce(
-             url::Origin::Create(GURL("https://www.example.com")), nonce),
-         net::CookiePartitionKey::FromURLForTesting(GURL("https://example.com"),
-                                                    nonce)},
     };
     for (const auto& test_case : test_cases) {
       EXPECT_EQ(test_case.expected,
