@@ -238,7 +238,7 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   }
 
   void SetProcessCPUUsageError(const ProcessNodeImpl* process_node,
-                               base::TimeDelta usage_error) {
+                               absl::optional<base::TimeDelta> usage_error) {
     GetOrCreateCPUMeasurementDelegate(process_node).usage_error = usage_error;
   }
 
@@ -315,9 +315,11 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
                        base::TimeTicks expected_measurement_time =
                            base::TimeTicks::Now()) const {
     base::TimeDelta expected_cpu = expected_delta;
+    base::TimeTicks expected_start_time;
     const auto last_it = last_measurements_.find(context);
     if (last_it != last_measurements_.end()) {
       expected_cpu += last_it->second.cumulative_cpu;
+      expected_start_time = last_it->second.start_time;
     }
     return AllOf(
         Field("metadata", &CPUTimeResult::metadata,
@@ -326,10 +328,13 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
                     expected_measurement_time)),
         Field("cumulative_cpu", &CPUTimeResult::cumulative_cpu, expected_cpu),
         // `start_time` should not change. If this was the first measurement,
-        // allow any non-null `start_time`.
+        // allow any non-null `start_time`. Note Conditional() doesn't
+        // short-circuit, so the first branch will always be evaluated and can't
+        // dereference `last_it`, which is why `expected_start_time` is put in a
+        // temporary.
         Field("start_time", &CPUTimeResult::start_time,
               Conditional(last_it != last_measurements_.end(),
-                          last_it->second.start_time, Not(base::TimeTicks()))));
+                          expected_start_time, Not(base::TimeTicks()))));
   }
 
   // GMock matcher expecting that a given CPUTimeResult has the given
@@ -393,6 +398,10 @@ TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
   const SinglePageRendererNodes early_exit_renderer =
       CreateSimpleCPUTrackingRenderer();
   SetProcessId(early_exit_renderer.process_node.get());
+
+  // Advance the clock before monitoring starts, so that the process launch
+  // times can be distinguished from the start of monitoring.
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
   SetProcessExited(early_exit_renderer.process_node.get());
 
   // Renderer creation racing with StartMonitoring(). Its pid will not be
@@ -425,7 +434,8 @@ TEST_F(CPUMeasurementMonitorTest, CreateTiming) {
   SetProcessId(renderer4.process_node.get());
   const auto renderer4_start_time = base::TimeTicks::Now();
 
-  // `renderer1` existed for the entire measurement period.
+  // `renderer1` existed for the entire measurement period. The CPU it used
+  // before StartMonitoring() was called is ignored.
   // `renderer2` existed for all of it, but was only measured for the last half,
   // after its pid became available.
   // `renderer3` only existed for the last half.
@@ -798,11 +808,24 @@ TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
   const SinglePageRendererNodes renderer3 = CreateSimpleCPUTrackingRenderer();
   SetProcessId(renderer3.process_node.get());
 
+  // Advance the clock before monitoring starts, so that the process launch
+  // times can be distinguished from the start of monitoring.
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+
   StartMonitoring();
   const auto monitoring_start_time = base::TimeTicks::Now();
 
-  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  // `renderer1` and `renderer2` measure 100% CPU usage. `renderer3` and
+  // `renderer4` have errors before the first measurement. `renderer4` is
+  // created after monitoring starts.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  const SinglePageRendererNodes renderer4 = CreateSimpleCPUTrackingRenderer();
+  SetProcessId(renderer4.process_node.get());
+  SetProcessCPUUsageError(renderer3.process_node.get(), base::TimeDelta::Min());
+  SetProcessCPUUsageError(renderer4.process_node.get(), base::TimeDelta::Min());
 
+  // Finish the measurement period.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
   UpdateAndGetCPUMeasurements();
   const auto previous_measurement_time = base::TimeTicks::Now();
 
@@ -814,14 +837,8 @@ TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
       current_measurements_[renderer2.frame_context],
       AllOf(CPUDeltaMatches(renderer2.frame_context, kTimeBetweenMeasurements),
             StartTimeMatches(monitoring_start_time)));
-  EXPECT_THAT(
-      current_measurements_[renderer3.frame_context],
-      AllOf(CPUDeltaMatches(renderer3.frame_context, kTimeBetweenMeasurements),
-            StartTimeMatches(monitoring_start_time)));
-
-  SetProcessCPUUsage(renderer1.process_node.get(), 0.5);
-  SetProcessCPUUsage(renderer2.process_node.get(), 0.5);
-  SetProcessCPUUsage(renderer3.process_node.get(), 0.5);
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer3.frame_context));
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer4.frame_context));
 
   // Most platforms returns a zero TimeDelta on error.
   SetProcessCPUUsageError(renderer1.process_node.get(), base::TimeDelta());
@@ -829,19 +846,44 @@ TEST_F(CPUMeasurementMonitorTest, MeasurementError) {
   SetProcessCPUUsageError(renderer2.process_node.get(), base::TimeDelta::Min());
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
-
-  // After an error the previous measurement should be returned unchanged.
   UpdateAndGetCPUMeasurements();
 
+  // After an error the previous measurement should be returned unchanged.
   EXPECT_THAT(current_measurements_[renderer1.frame_context],
               CPUDeltaMatches(renderer1.frame_context, base::TimeDelta(),
                               previous_measurement_time));
   EXPECT_THAT(current_measurements_[renderer2.frame_context],
               CPUDeltaMatches(renderer2.frame_context, base::TimeDelta(),
                               previous_measurement_time));
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer3.frame_context));
+  EXPECT_FALSE(base::Contains(current_measurements_, renderer4.frame_context));
+
+  SetProcessCPUUsageError(renderer1.process_node.get(), absl::nullopt);
+  SetProcessCPUUsageError(renderer2.process_node.get(), absl::nullopt);
+  SetProcessCPUUsageError(renderer3.process_node.get(), absl::nullopt);
+  SetProcessCPUUsageError(renderer4.process_node.get(), absl::nullopt);
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+
+  // The cumulative CPU usage to date includes the previous intervals which
+  // weren't recorded due to the errors.
   EXPECT_THAT(
-      current_measurements_[renderer3.frame_context],
-      CPUDeltaMatches(renderer3.frame_context, kTimeBetweenMeasurements * 0.5));
+      current_measurements_[renderer1.frame_context],
+      CPUDeltaMatches(renderer1.frame_context, kTimeBetweenMeasurements * 2));
+  EXPECT_THAT(
+      current_measurements_[renderer2.frame_context],
+      CPUDeltaMatches(renderer2.frame_context, kTimeBetweenMeasurements * 2));
+  EXPECT_THAT(current_measurements_[renderer3.frame_context],
+              AllOf(CPUDeltaMatches(renderer3.frame_context,
+                                    kTimeBetweenMeasurements * 3),
+                    StartTimeMatches(monitoring_start_time)));
+  // `renderer4` was created halfway through the first interval.
+  EXPECT_THAT(current_measurements_[renderer4.frame_context],
+              AllOf(CPUDeltaMatches(renderer4.frame_context,
+                                    kTimeBetweenMeasurements * 2.5),
+                    StartTimeMatches(monitoring_start_time +
+                                     kTimeBetweenMeasurements / 2)));
 }
 
 // A test that creates real processes, to verify that measurement works with the

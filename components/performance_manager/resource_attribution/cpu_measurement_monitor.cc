@@ -96,10 +96,14 @@ void ValidateCPUTimeResult(const CPUTimeResult& result) {
       result.metadata.measurement_time - result.start_time;
   CHECK(interval.is_positive());
 
-  // Cumulative CPU must not be more than was actually available.
+  // Cumulative CPU must not be more than was actually available. Over very
+  // short intervals (on the order of 0.01 ms) rounding up after dividing CPU
+  // between frames can lead to `cumulative_cpu` being more than `interval`, so
+  // allow 0.1 ms of slack.
+  static constexpr base::TimeDelta kEpsilon = base::Milliseconds(0.1);
   static const int kNumProcessors = base::SysInfo::NumberOfProcessors();
   CHECK(!result.cumulative_cpu.is_negative());
-  CHECK_LE(result.cumulative_cpu, interval * kNumProcessors);
+  CHECK_LE(result.cumulative_cpu, interval * kNumProcessors + kEpsilon);
 }
 
 // Adds the measurement in `delta` to `result`. The start time of `delta` must
@@ -275,7 +279,8 @@ CPUMeasurementMonitor::CPUMeasurement::CPUMeasurement(
       // Record the CPU usage immediately on starting to measure a process, so
       // that the first call to MeasureAndDistributeCPUUsage() will cover the
       // time between the measurement starting and the snapshot.
-      most_recent_measurement_(delegate_->GetCumulativeCPUUsage()) {}
+      most_recent_measurement_(delegate_->GetCumulativeCPUUsage()),
+      last_measurement_time_(base::TimeTicks::Now()) {}
 
 CPUMeasurementMonitor::CPUMeasurement::~CPUMeasurement() = default;
 
@@ -325,28 +330,32 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // important to avoid under-estimating the CPU usage of pages that create a
   // lot of short-lived iframes.
 
-  // Assume a measurement period running from time A
-  // (`measurement_interval_start`) to time B (`measurement_interval_end`).
+  // Assume that the previous measurement was taken at time A
+  // (`last_measurement_time_`), and the current measurement is being taken at
+  // time B (TimeTicks::Now()). Since a measurement is taken in the
+  // CPUMeasurement constructor, there will always be a previous measurement.
   //
   // Let CPU(T) be the cpu measurement at time T.
   //
   // Note that the process is only measured after it's passed to the graph,
   // which is shortly after it's created, so at "process creation time" C,
   // CPU(C) may have a small value instead of 0. On the first call to
-  // MeasureAndDistributeCPUUsage(), `most_recent_measurement_` will be CPU(C).
+  // MeasureAndDistributeCPUUsage(), `most_recent_measurement_` will be CPU(C),
+  // from the measurement in the constructor.
   //
   // There are 4 cases:
   //
-  // 1. The process is created at time C, between A and B.
+  // 1. The process was created at time A (this is the first measurement.)
   //
-  // A    C         B
-  // |----+---------|
-  // | 0% |   X%    |
+  //      A         B
+  // |----|---------|
+  // | 0% |    X%   |
   //
-  // cumulative_cpu += CPU(B) - CPU(C)
+  //
+  // cumulative_cpu += CPU(B) - CPU(A)
   //
   // CPU(B) = GetCumulativeCPUUsage()
-  // CPU(C) = `most_recent_measurement_`
+  // CPU(A) = `most_recent_measurement_` (set in the constructor)
   //
   // 2. The process existed for the entire duration A..B.
   //
@@ -359,7 +368,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // CPU(B) = GetCumulativeCPUUsage()
   // CPU(A) = `most_recent_measurement_`
   //
-  // 3. Process created before time A, but exited at time D, between A and B.
+  // 3. The process existed at time A, but exited at time D, between A and B.
   //
   // A         D    B
   // |---------+----|
@@ -370,23 +379,21 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   // CPU(D) = ChildProcessTerminationInfo::cpu_usage (currently unavailable)
   // CPU(A) = `most_recent_measurement_`
   //
-  // 4. Process created at time C and exited at time D, both between A and B.
+  // 4. Process created at time A and exited at time D, between A and B.
   //
-  // A    C    D    B
+  //      A    D    B
   // |----+----+----|
   // | 0% | X% | 0% |
   //
-  // cumulative_cpu += CPU(D) - CPU(C)
+  // cumulative_cpu += CPU(D) - CPU(A)
   //
   // CPU(D) = ChildProcessTerminationInfo::cpu_usage (currently unavailable)
-  // CPU(C) = `most_recent_measurement_`
+  // CPU(A) = `most_recent_measurement_` (set in the constructor)
   //
   // In case 1 and case 2, `cumulative_cpu` increases by
   // `GetCumulativeCPUUsage() - most_recent_measurement_`. Case 3 and 4 can be
   // ignored because GetCumulativeCPUUsage() will return an error code.
-
-  const base::TimeTicks measurement_interval_start =
-      std::max(last_measurement_time_, process_node->GetLaunchTime());
+  const base::TimeTicks measurement_interval_start = last_measurement_time_;
   const base::TimeTicks measurement_interval_end = base::TimeTicks::Now();
   CHECK(!measurement_interval_start.is_null());
   CHECK(!measurement_interval_end.is_null());
