@@ -122,6 +122,11 @@ class InstallPlaceholderJobTest : public WebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
+  void TearDown() override {
+    shortcut_manager_ = nullptr;
+    WebAppTest::TearDown();
+  }
+
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
   FakeOsIntegrationManager& fake_os_integration_manager() {
@@ -132,7 +137,7 @@ class InstallPlaceholderJobTest : public WebAppTest {
   TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
 
  private:
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
+  raw_ptr<TestShortcutManager> shortcut_manager_;
 };
 
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
