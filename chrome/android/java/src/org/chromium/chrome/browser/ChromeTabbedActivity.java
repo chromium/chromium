@@ -728,7 +728,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mBackPressManager, mLayoutStateProviderSupplier));
     }
 
-    private void setupCompositorContentPostNative() {
+    private void setupCompositorContentPreNative() {
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPostNative")) {
             if (!isLayoutManagerCreated()) {
@@ -891,7 +891,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public void startNativeInitialization() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.startNativeInitialization")) {
             // This is on the critical path so don't delay.
-            setupCompositorContentPostNative();
+            setupCompositorContentPreNative();
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.SPLIT_COMPOSITOR_TASK)
                     && (!DeviceFormFactor.isTablet()
                             || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
