@@ -242,7 +242,6 @@ gfx::RenderText& DownloadToolbarButtonView::GetBadgeText(
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   DownloadDisplayController::ProgressInfo progress_info =
       controller_->GetProgress();
-  DownloadDisplayController::IconInfo icon_info = controller_->GetIconInfo();
   // Do not show the progress ring when there is no in progress download.
   if (progress_info.download_count == 0) {
     if (scanning_animation_.is_animating()) {
@@ -252,7 +251,7 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   }
 
   bool is_disabled = GetVisualState() == Button::STATE_DISABLED;
-  bool is_active = icon_info.is_active;
+  bool is_active = active_ == IconActive::kActive;
   SkColor background_color =
       is_disabled ? GetForegroundColor(ButtonState::STATE_DISABLED)
                   : GetColorProvider()->GetColor(
@@ -267,8 +266,7 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   int diameter = 2 * ring_radius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
 
-  if (icon_info.icon_state == download::DownloadIconState::kDeepScanning ||
-      !progress_info.progress_certain) {
+  if (state_ == IconState::kDeepScanning || !progress_info.progress_certain) {
     if (!scanning_animation_.is_animating()) {
       scanning_animation_.Reset();
       scanning_animation_.Show();
@@ -310,11 +308,18 @@ void DownloadToolbarButtonView::Disable() {
   SetEnabled(false);
 }
 
-void DownloadToolbarButtonView::UpdateDownloadIcon(bool show_animation) {
-  if (show_animation && show_download_started_animation_) {
+void DownloadToolbarButtonView::UpdateDownloadIcon(
+    const IconUpdateInfo& updates) {
+  if (updates.show_animation && show_download_started_animation_) {
     has_pending_download_started_animation_ = true;
     // Invalidate the layout to show the animation in Layout().
     PreferredSizeChanged();
+  }
+  if (updates.new_state) {
+    state_ = *updates.new_state;
+  }
+  if (updates.new_active) {
+    active_ = *updates.new_active;
   }
   UpdateIcon();
 }
@@ -383,12 +388,10 @@ void DownloadToolbarButtonView::UpdateIcon() {
   // Schedule paint to update the progress ring.
   SchedulePaint();
 
-  DownloadDisplayController::IconInfo icon_info = controller_->GetIconInfo();
   const gfx::VectorIcon* new_icon;
   SkColor icon_color = GetIconColor();
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
-  if (icon_info.icon_state == download::DownloadIconState::kProgress ||
-      icon_info.icon_state == download::DownloadIconState::kDeepScanning) {
+  if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning) {
     new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
                              : (features::IsChromeRefresh2023()
                                     ? &kDownloadInProgressChromeRefreshIcon
@@ -413,9 +416,9 @@ void DownloadToolbarButtonView::UpdateIcon() {
 
   int progress_download_count = controller_->GetProgress().download_count;
   badge_image_view_->SetImage(
-      GetBadgeImage(icon_info.is_active, progress_download_count,
+      GetBadgeImage(active_ == IconActive::kActive, progress_download_count,
                     GetProgressColor(GetVisualState() == Button::STATE_DISABLED,
-                                     icon_info.is_active),
+                                     active_ == IconActive::kActive),
                     GetColorProvider()->GetColor(kColorToolbar)));
 
   // Update the toolbar button's tooltip.
@@ -675,7 +678,7 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
 
 SkColor DownloadToolbarButtonView::GetIconColor() const {
   return icon_color_.value_or(
-      controller_->GetIconInfo().is_active ||
+      active_ == IconActive::kActive ||
               GetProperty(user_education::kHasInProductHelpPromoKey)
           ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
           : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
@@ -708,6 +711,10 @@ void DownloadToolbarButtonView::DisableAutoCloseTimerForTesting() {
 
 void DownloadToolbarButtonView::DisableDownloadStartedAnimationForTesting() {
   show_download_started_animation_ = false;
+}
+
+DownloadDisplay::IconState DownloadToolbarButtonView::GetIconState() const {
+  return state_;
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)

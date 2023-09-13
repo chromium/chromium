@@ -7,8 +7,8 @@
 
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/offline_item_model.h"
+#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "components/download/content/public/all_download_item_notifier.h"
@@ -21,8 +21,6 @@ namespace base {
 class TimeDelta;
 class OneShotTimer;
 }  // namespace base
-
-class DownloadDisplay;
 
 // Used to control the DownloadToolbar Button, through the DownloadDisplay
 // interface. Supports both regular Download and Offline items. When in the
@@ -70,21 +68,12 @@ class DownloadDisplayController : public FullscreenObserver,
     int download_count = 0;
   };
 
-  struct IconInfo {
-    download::DownloadIconState icon_state =
-        download::DownloadIconState::kComplete;
-    bool is_active = false;
-  };
-
   // Returns a ProgressInfo where |download_count| is the number of currently
   // active downloads. If we know the final size of all downloads,
   // |progress_certain| is true. |progress_percentage| is the percentage
   // complete of all in-progress downloads. Forwards to the
   // DownloadBubbleUpdateService.
   ProgressInfo GetProgress();
-
-  // Returns an IconInfo that contains current state of the icon.
-  IconInfo GetIconInfo();
 
   // Returns whether the display is showing details.
   bool IsDisplayShowingDetails();
@@ -172,7 +161,6 @@ class DownloadDisplayController : public FullscreenObserver,
       observation_{this};
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
-  IconInfo icon_info_;
   bool fullscreen_notification_shown_ = false;
   bool should_show_details_on_exit_fullscreen_ = false;
   // DownloadDisplayController and DownloadBubbleUIController have the same

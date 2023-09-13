@@ -3722,7 +3722,6 @@ static_library("browser") {
       "download/bubble/download_bubble_utils.h",
       "download/bubble/download_display_controller.cc",
       "download/bubble/download_display_controller.h",
-      "download/bubble/download_icon_state.h",
       "download/default_download_dir_policy_handler.cc",
       "download/default_download_dir_policy_handler.h",
       "download/download_auto_open_policy_handler.cc",

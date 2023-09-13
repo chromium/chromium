@@ -14,7 +14,6 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
-#include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -53,7 +52,6 @@ using ::testing::SetArgPointee;
 using ::testing::StrictMock;
 using StrictMockDownloadItem = testing::StrictMock<download::MockDownloadItem>;
 using DownloadDangerType = download::DownloadDangerType;
-using DownloadIconState = download::DownloadIconState;
 using DownloadState = download::DownloadItem::DownloadState;
 using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 using OfflineItemList =

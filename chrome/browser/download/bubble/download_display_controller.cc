@@ -13,7 +13,6 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
-#include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/download/download_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -33,7 +31,8 @@
 
 namespace {
 
-using DownloadIconState = download::DownloadIconState;
+using DownloadIconActive = DownloadDisplay::IconActive;
+using DownloadIconState = DownloadDisplay::IconState;
 using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 
 // The amount of time for the toolbar icon to be visible after a download is
@@ -99,7 +98,9 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
           /*force_update=*/true);
     }
   } else {
-    display_->UpdateDownloadIcon(show_animation);
+    DownloadDisplay::IconUpdateInfo updates;
+    updates.show_animation = true;
+    display_->UpdateDownloadIcon(updates);
   }
 }
 
@@ -148,10 +149,11 @@ void DownloadDisplayController::OnButtonPressed() {
 void DownloadDisplayController::HandleButtonPressed() {
   // If the current state is kComplete, set the icon to inactive because of the
   // user action.
-  if (icon_info_.icon_state == DownloadIconState::kComplete) {
-    icon_info_.is_active = false;
+  if (display_->GetIconState() == DownloadIconState::kComplete) {
+    DownloadDisplay::IconUpdateInfo updates;
+    updates.new_active = DownloadIconActive::kInactive;
+    display_->UpdateDownloadIcon(updates);
   }
-  display_->UpdateDownloadIcon(/*show_animation=*/false);
 }
 
 void DownloadDisplayController::ShowToolbarButton() {
@@ -211,11 +213,15 @@ void DownloadDisplayController::UpdateToolbarButtonState(
   }
   base::Time last_complete_time = GetLastCompleteTime(info.last_completed_time);
 
+  DownloadDisplay::IconUpdateInfo updates;
+
   if (info.in_progress_count > 0) {
-    icon_info_.icon_state = DownloadIconState::kProgress;
-    icon_info_.is_active = info.paused_count < info.in_progress_count;
+    updates.new_state = DownloadIconState::kProgress;
+    updates.new_active = info.paused_count < info.in_progress_count
+                             ? DownloadIconActive::kActive
+                             : DownloadIconActive::kInactive;
   } else {
-    icon_info_.icon_state = DownloadIconState::kComplete;
+    updates.new_state = DownloadIconState::kComplete;
     bool complete_unactioned =
         HasRecentCompleteDownload(kToolbarIconActiveTimeInterval,
                                   last_complete_time) &&
@@ -224,28 +230,29 @@ void DownloadDisplayController::UpdateToolbarButtonState(
         !display_->IsFullscreenWithParentViewHidden() &&
         should_show_details_on_exit_fullscreen_;
     if (complete_unactioned || exited_fullscreen_owed_details) {
-      icon_info_.is_active = true;
+      updates.new_active = DownloadIconActive::kActive;
       ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);
     } else {
-      icon_info_.is_active = false;
+      updates.new_active = DownloadIconActive::kInactive;
     }
   }
 
   if (info.has_deep_scanning) {
-    icon_info_.icon_state = DownloadIconState::kDeepScanning;
+    updates.new_state = DownloadIconState::kDeepScanning;
   }
 
-  if (icon_info_.icon_state != DownloadIconState::kComplete ||
+  if (updates.new_state != DownloadIconState::kComplete ||
       HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval,
                                 last_complete_time)) {
     ShowToolbarButton();
   }
-  display_->UpdateDownloadIcon(/*show_animation=*/false);
+  display_->UpdateDownloadIcon(updates);
 }
 
 void DownloadDisplayController::UpdateDownloadIconToInactive() {
-  icon_info_.is_active = false;
-  display_->UpdateDownloadIcon(/*show_animation=*/false);
+  DownloadDisplay::IconUpdateInfo updates;
+  updates.new_active = DownloadIconActive::kInactive;
+  display_->UpdateDownloadIcon(updates);
 }
 
 const DownloadDisplayController::AllDownloadUIModelsInfo&
@@ -302,10 +309,6 @@ bool DownloadDisplayController::HasRecentCompleteDownload(
   // time, this can happen if the system clock has moved backward.
   return time_since_last_completion < interval &&
          current_time >= last_complete_time;
-}
-
-DownloadDisplayController::IconInfo DownloadDisplayController::GetIconInfo() {
-  return icon_info_;
 }
 
 bool DownloadDisplayController::IsDisplayShowingDetails() {

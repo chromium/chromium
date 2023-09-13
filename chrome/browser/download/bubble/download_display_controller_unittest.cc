@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
-#include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -44,7 +43,8 @@ using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 using ::testing::StrictMock;
 using StrictMockDownloadItem = StrictMock<download::MockDownloadItem>;
-using DownloadIconState = download::DownloadIconState;
+using DownloadIconActive = DownloadDisplay::IconActive;
+using DownloadIconState = DownloadDisplay::IconState;
 using DownloadState = download::DownloadItem::DownloadState;
 using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 using OfflineItemList =
@@ -57,15 +57,11 @@ class FakeDownloadDisplay : public DownloadDisplay {
   FakeDownloadDisplay(const FakeDownloadDisplay&) = delete;
   FakeDownloadDisplay& operator=(const FakeDownloadDisplay&) = delete;
 
-  void SetController(DownloadDisplayController* controller) {
-    controller_ = controller;
-  }
-
   void ResetState() {
     shown_ = false;
     detail_shown_ = false;
-    icon_state_ = DownloadIconState::kComplete;
-    is_active_ = false;
+    state_ = DownloadIconState::kComplete;
+    active_ = DownloadIconActive::kInactive;
   }
 
   void Show() override { shown_ = true; }
@@ -81,9 +77,13 @@ class FakeDownloadDisplay : public DownloadDisplay {
 
   void Disable() override { enabled_ = false; }
 
-  void UpdateDownloadIcon(bool show_animation) override {
-    icon_state_ = controller_->GetIconInfo().icon_state;
-    is_active_ = controller_->GetIconInfo().is_active;
+  void UpdateDownloadIcon(const IconUpdateInfo& updates) override {
+    if (updates.new_state) {
+      state_ = *updates.new_state;
+    }
+    if (updates.new_active) {
+      active_ = *updates.new_active;
+    }
   }
 
   void ShowDetails() override { detail_shown_ = true; }
@@ -97,8 +97,8 @@ class FakeDownloadDisplay : public DownloadDisplay {
            should_show_exclusive_access_bubble_;
   }
 
-  DownloadIconState GetDownloadIconState() { return icon_state_; }
-  bool IsActive() { return is_active_; }
+  DownloadIconState GetIconState() const override { return state_; }
+  DownloadIconActive GetIconActive() const { return active_; }
   void SetIsFullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
   void SetShouldShowExclusiveAccessBubble(bool show) {
     should_show_exclusive_access_bubble_ = show;
@@ -109,12 +109,11 @@ class FakeDownloadDisplay : public DownloadDisplay {
  private:
   bool shown_ = false;
   bool enabled_ = false;
-  DownloadIconState icon_state_ = DownloadIconState::kComplete;
-  bool is_active_ = false;
+  DownloadIconState state_ = DownloadIconState::kComplete;
+  DownloadIconActive active_ = DownloadIconActive::kInactive;
   bool detail_shown_ = false;
   bool is_fullscreen_ = false;
   bool should_show_exclusive_access_bubble_ = true;
-  raw_ptr<DownloadDisplayController, DanglingUntriaged> controller_ = nullptr;
 };
 
 // TODO(chlily): Pull this and the very similar class in
@@ -280,7 +279,6 @@ class DownloadDisplayControllerTest : public testing::Test {
         browser_.get(), mock_update_service_.get());
     controller_ = std::make_unique<DownloadDisplayController>(
         display_.get(), browser_.get(), bubble_controller_.get());
-    display_->SetController(controller_.get());
   }
 
   void TearDown() override {
@@ -443,16 +441,19 @@ class DownloadDisplayControllerTest : public testing::Test {
                     << detail_shown << ", but found "
                     << display().IsShowingDetails();
     }
-    if (icon_state != display().GetDownloadIconState()) {
+    if (icon_state != display().GetIconState()) {
       success = false;
       ADD_FAILURE() << "Display should have detailed icon state "
                     << static_cast<int>(icon_state) << ", but found "
-                    << static_cast<int>(display().GetDownloadIconState());
+                    << static_cast<int>(display().GetIconState());
     }
-    if (is_active != display().IsActive()) {
+    if (is_active !=
+        (display().GetIconActive() == DownloadIconActive::kActive)) {
       success = false;
       ADD_FAILURE() << "Display should have is_active set to " << is_active
-                    << ", but found " << display().IsActive();
+                    << ", but found "
+                    << (display().GetIconActive() ==
+                        DownloadIconActive::kActive);
     }
     return success;
   }

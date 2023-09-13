@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_DISPLAY_H_
 #define CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_DISPLAY_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace offline_items_collection {
 struct ContentId;
 }
@@ -12,6 +14,30 @@ struct ContentId;
 // This interface defines the Download Toolbar Button (a.k.a. Download Bubble).
 class DownloadDisplay {
  public:
+  // Determines how to draw the icon, based on the state of the underlying
+  // downloads.
+  enum class IconState {
+    kProgress,
+    kComplete,
+    kDeepScanning,
+  };
+
+  // Whether the icon should be displayed in the active color (usually blue).
+  enum class IconActive {
+    kInactive,
+    kActive,
+  };
+
+  // Describes updates to be made to the icon.
+  struct IconUpdateInfo {
+    // Nullopt indicates no change.
+    absl::optional<IconState> new_state = absl::nullopt;
+    absl::optional<IconActive> new_active = absl::nullopt;
+
+    // Whether an animated icon will be shown.
+    bool show_animation = false;
+  };
+
   // Shows the download display.
   virtual void Show() = 0;
 
@@ -27,9 +53,9 @@ class DownloadDisplay {
   // Disables potential actions resulting from clicking the download display.
   virtual void Disable() = 0;
 
-  // Updates the download icon.
-  // If |show_animation| is true, an animated icon will be shown.
-  virtual void UpdateDownloadIcon(bool show_animation) = 0;
+  // Updates the download icon according to `new_state` and `new_active` and
+  // potentially shows an animation.
+  virtual void UpdateDownloadIcon(const IconUpdateInfo& updates) = 0;
 
   // Shows detailed information on the download display. It can be a popup or
   // dialog or partial view, essentially anything other than the main view.
@@ -57,6 +83,9 @@ class DownloadDisplay {
   // Open the security subpage for the download with `id`, if it exists.
   virtual void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) = 0;
+
+  // Gets the current icon state.
+  virtual IconState GetIconState() const = 0;
 
  protected:
   virtual ~DownloadDisplay() = default;

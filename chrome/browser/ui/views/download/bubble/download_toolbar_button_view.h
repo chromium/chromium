@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -73,7 +74,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool IsShowing() const override;
   void Enable() override;
   void Disable() override;
-  void UpdateDownloadIcon(bool show_animation) override;
+  void UpdateDownloadIcon(const IconUpdateInfo& updates) override;
   void ShowDetails() override;
   void HideDetails() override;
   bool IsShowingDetails() const override;
@@ -81,6 +82,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool ShouldShowExclusiveAccessBubble() const override;
   void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) override;
+  IconState GetIconState() const override;
 
   // ToolbarButton:
   void UpdateIcon() override;
@@ -166,6 +168,11 @@ class DownloadToolbarButtonView : public ToolbarButton,
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<DownloadBubbleContentsView> bubble_contents_ = nullptr;
+
+  // Current or pending state of the icon. If changing these, trigger
+  // UpdateIcon() afterwards.
+  IconState state_ = IconState::kComplete;
+  IconActive active_ = IconActive::kInactive;
 
   // Marks whether there is a pending download started animation. This is needed
   // because the animation should only be triggered after the view has been
