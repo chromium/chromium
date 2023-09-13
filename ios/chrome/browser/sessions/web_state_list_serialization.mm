@@ -12,8 +12,11 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/containers/contains.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -21,6 +24,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -34,10 +39,10 @@ namespace {
 // be other cases). This function creates a WebStateListRemovingIndexes that
 // records the indexes of the WebStates that should not be saved.
 WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
-    WebStateList* web_state_list) {
+    const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+  for (int index = 0; index < web_state_list.count(); ++index) {
+    web::WebState* web_state = web_state_list.GetWebStateAt(index);
     bool in_restore =
         web_state->IsRealized() && web_state->GetNavigationManager() &&
         web_state->GetNavigationManager()->IsRestoreSessionInProgress();
@@ -48,117 +53,372 @@ WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
   return WebStateListRemovingIndexes(std::move(web_state_to_skip_indexes));
 }
 
-// Returns pinned state for the provided `web_state`.
-bool GetPinnedStateForWebState(web::WebState* web_state) {
-  web::SerializableUserDataManager* user_data_manager =
-      web::SerializableUserDataManager::FromWebState(web_state);
-  NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
-      user_data_manager->GetValueForSerializationKey(
-          kLegacyWebStateListPinnedStateKey));
-  return [pinned_state boolValue];
-}
+// Represents the reference to a WebState's opener in a WebStateList
+// using indexes instead of a pointer to the opener WebState.
+struct OpenerReference {
+  const int index;
+  const int navigation_index;
 
-// Checks whether provided `web_state` is in the `session_restoration_scope`.
-bool IsWebStateInRestorationScope(
-    web::WebState* web_state,
-    SessionRestorationScope session_restoration_scope,
-    bool enable_pinned_web_states) {
-  switch (session_restoration_scope) {
-    case SessionRestorationScope::kAll:
-      return true;
-    case SessionRestorationScope::kPinnedOnly:
-      return enable_pinned_web_states ? GetPinnedStateForWebState(web_state)
-                                      : false;
-    case SessionRestorationScope::kRegularOnly:
-      return enable_pinned_web_states ? !GetPinnedStateForWebState(web_state)
-                                      : true;
+  // Use when the WebState has not opener.
+  static OpenerReference Invalid() {
+    return OpenerReference{.index = -1, .navigation_index = -1};
   }
-}
+};
 
-// Returns proper (e.g. "adjusted") selected index within the newly restored
-// WebStates taking into the account the `session_restoration_scope`.
-NSInteger GetAdjustedSelectedIndex(
+// Class abstracting getting required information from the serialized
+// WebStateList representation when restoring the state. This is used
+// to abstract the difference between restoring from the legacy and
+// optimized storage.
+class Deserializer {
+ public:
+  Deserializer() = default;
+  virtual ~Deserializer() = default;
+
+  // Returns the index of the active tab according to the serialized state.
+  virtual int GetActiveIndex() const = 0;
+
+  // Returns the total number of tabs in the serialized state.
+  virtual int GetRestoredTabsCount() const = 0;
+
+  // Returns the number of tabs that are considered as pinned according to
+  // the serialized state. They must come before all unpinned tabs. May be
+  // ignored if asked to restore the tabs without support of pinned tabs.
+  virtual int GetRestoredPinnedTabsCount() const = 0;
+
+  // Returns the reference to the opener of tab at `index`. If it has no
+  // opener, must return OpenerReference::Invalid().
+  virtual OpenerReference GetOpenerForTabAt(int index) const = 0;
+
+  // Creates and return the WebState at `index`.
+  virtual std::unique_ptr<web::WebState> RestoreTabAt(int index) const = 0;
+};
+
+// An implementation of Deserializer used to restore from legacy storage.
+class DeserializeFromSessionWindow : public Deserializer {
+ public:
+  DeserializeFromSessionWindow(SessionWindowIOS* session_window,
+                               const WebStateFactory& factory);
+
+  // Deserializer implementation.
+  int GetActiveIndex() const override;
+  int GetRestoredTabsCount() const override;
+  int GetRestoredPinnedTabsCount() const override;
+  OpenerReference GetOpenerForTabAt(int index) const override;
+  std::unique_ptr<web::WebState> RestoreTabAt(int index) const override;
+
+ private:
+  SessionWindowIOS* const session_window_;
+  WebStateFactory const factory_;
+};
+
+DeserializeFromSessionWindow::DeserializeFromSessionWindow(
     SessionWindowIOS* session_window,
-    NSInteger restored_sessions_count,
-    SessionRestorationScope session_restoration_scope) {
-  const NSInteger selected_index = session_window.selectedIndex;
-  const NSInteger dropped_sessions_count =
-      session_window.sessions.count - restored_sessions_count;
-
-  NSInteger adjusted_selected_index = NSNotFound;
-
-  if (dropped_sessions_count == 0) {
-    adjusted_selected_index = selected_index;
-
-    // Has dropped pinned sessions.
-  } else if (session_restoration_scope ==
-             SessionRestorationScope::kRegularOnly) {
-    adjusted_selected_index = selected_index - dropped_sessions_count;
-
-    // Has dropped regular sessions.
-  } else if (session_restoration_scope ==
-             SessionRestorationScope::kPinnedOnly) {
-    adjusted_selected_index =
-        selected_index < restored_sessions_count ? selected_index : NSNotFound;
-  }
-
-  if ((adjusted_selected_index < 0) ||
-      (adjusted_selected_index > restored_sessions_count)) {
-    adjusted_selected_index = NSNotFound;
-  }
-
-  return adjusted_selected_index;
+    const WebStateFactory& factory)
+    : session_window_(session_window), factory_(factory) {
+  DCHECK(factory_);
 }
+
+int DeserializeFromSessionWindow::GetActiveIndex() const {
+  if (!session_window_ || session_window_.selectedIndex == NSNotFound) {
+    return -1;
+  }
+  return static_cast<int>(session_window_.selectedIndex);
+}
+
+int DeserializeFromSessionWindow::GetRestoredTabsCount() const {
+  return session_window_.sessions.count;
+}
+
+int DeserializeFromSessionWindow::GetRestoredPinnedTabsCount() const {
+  int pinned_tabs_count = 0;
+  for (CRWSessionStorage* session in session_window_.sessions) {
+    CRWSessionUserData* user_data = session.userData;
+    NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
+        [user_data objectForKey:kLegacyWebStateListPinnedStateKey]);
+    if (!pinned_state || ![pinned_state boolValue]) {
+      // The pinned tabs are always at the beginning of the list,
+      // so stop iterating as soon as a non-pinned tab is found.
+      break;
+    }
+
+    ++pinned_tabs_count;
+  }
+  return pinned_tabs_count;
+}
+
+OpenerReference DeserializeFromSessionWindow::GetOpenerForTabAt(
+    int index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, static_cast<int>(session_window_.sessions.count));
+  CRWSessionStorage* session = session_window_.sessions[index];
+  CRWSessionUserData* user_data = session.userData;
+
+  NSNumber* opener_index = base::apple::ObjCCast<NSNumber>(
+      [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
+
+  NSNumber* opener_navigation_index = base::apple::ObjCCast<NSNumber>(
+      [user_data objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]);
+
+  if (!opener_index || !opener_navigation_index) {
+    return OpenerReference::Invalid();
+  }
+
+  return OpenerReference{
+      .index = [opener_index intValue],
+      .navigation_index = [opener_navigation_index intValue],
+  };
+}
+
+std::unique_ptr<web::WebState> DeserializeFromSessionWindow::RestoreTabAt(
+    int index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, static_cast<int>(session_window_.sessions.count));
+  return factory_.Run(session_window_.sessions[index]);
+}
+
+// An implementation of Deserializer used to restore from optimized storage.
+class DeserializeFromProto : public Deserializer {
+ public:
+  DeserializeFromProto(ios::proto::WebStateListStorage storage,
+                       const WebStateFactoryFromProto& factory);
+
+  // Deserializer implementation.
+  int GetActiveIndex() const override;
+  int GetRestoredTabsCount() const override;
+  int GetRestoredPinnedTabsCount() const override;
+  OpenerReference GetOpenerForTabAt(int index) const override;
+  std::unique_ptr<web::WebState> RestoreTabAt(int index) const override;
+
+ private:
+  ios::proto::WebStateListStorage const storage_;
+  WebStateFactoryFromProto const factory_;
+};
+
+DeserializeFromProto::DeserializeFromProto(
+    ios::proto::WebStateListStorage storage,
+    const WebStateFactoryFromProto& factory)
+    : storage_(std::move(storage)), factory_(factory) {
+  DCHECK(factory_);
+}
+
+int DeserializeFromProto::GetActiveIndex() const {
+  return storage_.active_index();
+}
+
+int DeserializeFromProto::GetRestoredTabsCount() const {
+  return storage_.items_size();
+}
+
+int DeserializeFromProto::GetRestoredPinnedTabsCount() const {
+  return storage_.pinned_item_count();
+}
+
+OpenerReference DeserializeFromProto::GetOpenerForTabAt(int index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, storage_.items_size());
+  const auto& item_storage = storage_.items(index);
+  if (!item_storage.has_opener()) {
+    return OpenerReference::Invalid();
+  }
+
+  const auto& opener_storage = item_storage.opener();
+  return OpenerReference{
+      .index = opener_storage.index(),
+      .navigation_index = opener_storage.navigation_index(),
+  };
+}
+
+std::unique_ptr<web::WebState> DeserializeFromProto::RestoreTabAt(
+    int index) const {
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, storage_.items_size());
+  const auto& item_storage = storage_.items(index);
+  return factory_.Run(
+      SessionID::FromSerializedValue(item_storage.identifier()));
+}
+
+// Used to store the range of tabs to restore.
+struct DeserializationRange {
+  const int min;
+  const int max;
+
+  // Returns whether the range contains any item.
+  bool empty() const { return min >= max; }
+
+  // Returns whether `index` is contained in the range.
+  bool contains(int index) const { return min <= index && index < max; }
+
+  // Returns a range for restoring tabs accoring to `scope`.
+  static DeserializationRange Create(int tabs_count,
+                                     int pinned_tabs_count,
+                                     SessionRestorationScope scope);
+};
+
+DeserializationRange DeserializationRange::Create(
+    int tabs_count,
+    int pinned_tabs_count,
+    SessionRestorationScope scope) {
+  switch (scope) {
+    case SessionRestorationScope::kAll:
+      return DeserializationRange{.min = 0, .max = tabs_count};
+
+    case SessionRestorationScope::kPinnedOnly:
+      return DeserializationRange{.min = 0, .max = pinned_tabs_count};
+
+    case SessionRestorationScope::kRegularOnly:
+      return DeserializationRange{.min = pinned_tabs_count, .max = tabs_count};
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+struct InsertionHelper {
+  const int pinned_tabs_count;
+  const int pinned_offset;
+  const int regular_offset;
+
+  int insertion_index(int index) const {
+    if (index < pinned_tabs_count) {
+      return pinned_offset + index;
+    }
+    return regular_offset + index;
+  }
+
+  int insertion_flags(int index, bool is_active) const {
+    int flags = WebStateList::INSERT_FORCE_INDEX;
+    if (index < pinned_tabs_count) {
+      flags |= WebStateList::INSERT_PINNED;
+    }
+    if (is_active) {
+      flags |= WebStateList::INSERT_ACTIVATE;
+    }
+    return flags;
+  }
+};
+
+void DeserializeWebStateList(WebStateList& web_state_list,
+                             SessionRestorationScope scope,
+                             bool enable_pinned_web_states,
+                             const Deserializer& deserializer) {
+  int restored_pinned_tabs_count = 0;
+  const int restored_tabs_count = deserializer.GetRestoredTabsCount();
+  if (enable_pinned_web_states) {
+    // Ensure that restored_pinned_tabs_count is smaller than
+    // restored_tabs_count (to avoid crashing if the storage
+    // on disk is partially invalid).
+    restored_pinned_tabs_count = std::min(
+        restored_tabs_count, deserializer.GetRestoredPinnedTabsCount());
+  }
+
+  // If the restoration range is empty, then there is nothing to do. This
+  // can happen if the storage is empty or if all items are out of `scope`.
+  const DeserializationRange range = DeserializationRange::Create(
+      restored_tabs_count, restored_pinned_tabs_count, scope);
+  if (range.empty()) {
+    return;
+  }
+
+  // Instantiate an InsertionHelper object that will help compute the indexes
+  // and flags used to insert the WebState in the WebStateList.
+  //
+  // The tabs will be inserted in order at the end of their section (pinned
+  // or not), so the insertion index is the offset to the end of the section
+  // plus their index in the stored. However, it is possible to ignore the
+  // first `range.min` items when restoring, in which case the index needs
+  // to be adjusted to compensate for that.
+  const InsertionHelper helper{
+      .pinned_tabs_count = restored_pinned_tabs_count,
+      .pinned_offset = web_state_list.pinned_tabs_count() - range.min,
+      .regular_offset = web_state_list.count() - range.min,
+  };
+
+  // Get the index of the active item according to storage. If it is in
+  // the restoration scope. Used to mark the WebState as active during
+  // the insertion, if in scope.
+  const int active_index = deserializer.GetActiveIndex();
+
+  // Restore all items in scope directly at their correct position in the
+  // WebStateList. The opener-opened relationship is not restored yet, as
+  // some WebState may have an opener that is stored after them.
+  for (int index = range.min; index < range.max; ++index) {
+    std::unique_ptr<web::WebState> web_state = deserializer.RestoreTabAt(index);
+    const int inserted_index = web_state_list.InsertWebState(
+        helper.insertion_index(index), std::move(web_state),
+        helper.insertion_flags(index, index == active_index), WebStateOpener{});
+
+    DCHECK_EQ(inserted_index, helper.insertion_index(index));
+  }
+
+  // Restore the opener-opened relationship while taking into account that
+  // some of the WebState have not been restored due to `scope`, and that
+  // the indexes have to be adjusted.
+  for (int index = range.min; index < range.max; ++index) {
+    const OpenerReference ref = deserializer.GetOpenerForTabAt(index);
+    if (!range.contains(ref.index)) {
+      continue;
+    }
+
+    // Use helper to compute the insertion index of the opener.
+    web::WebState* opener =
+        web_state_list.GetWebStateAt(helper.insertion_index(ref.index));
+
+    web_state_list.SetOpenerOfWebStateAt(
+        helper.insertion_index(index),
+        WebStateOpener(opener, ref.navigation_index));
+  }
+}
+
 }  // namespace
 
-SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
+SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
   const WebStateListRemovingIndexes removing_indexes =
-      GetIndexOfWebStatesToDrop(web_state_list);
+      GetIndexOfWebStatesToDrop(*web_state_list);
 
-  const int web_state_to_save_count =
-      web_state_list->count() - removing_indexes.count();
+  std::map<const web::WebState*, int> index_mapping;
+  for (int index = 0; index < web_state_list->count(); ++index) {
+    const web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    index_mapping.insert(std::make_pair(web_state, index));
+  }
 
   NSMutableArray<CRWSessionStorage*>* serialized_session =
-      [NSMutableArray arrayWithCapacity:web_state_to_save_count];
+      [[NSMutableArray alloc] init];
 
   for (int index = 0; index < web_state_list->count(); ++index) {
     if (removing_indexes.Contains(index)) {
       continue;
     }
 
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    WebStateOpener opener = web_state_list->GetOpenerOfWebStateAt(index);
-
-    web::SerializableUserDataManager* user_data_manager =
-        web::SerializableUserDataManager::FromWebState(web_state);
-
-    int opener_index = WebStateList::kInvalidIndex;
-    if (opener.opener) {
-      opener_index = web_state_list->GetIndexOfWebState(opener.opener);
-      DCHECK_NE(opener_index, WebStateList::kInvalidIndex);
-
-      opener_index = removing_indexes.IndexAfterRemoval(opener_index);
-    }
-
-    if (opener_index != WebStateList::kInvalidIndex) {
-      user_data_manager->AddSerializableData(@(opener_index),
-                                             kLegacyWebStateListOpenerIndexKey);
-      user_data_manager->AddSerializableData(
-          @(opener.navigation_index),
-          kLegacyWebStateListOpenerNavigationIndexKey);
-    } else {
-      user_data_manager->AddSerializableData([NSNull null],
-                                             kLegacyWebStateListOpenerIndexKey);
-      user_data_manager->AddSerializableData(
-          [NSNull null], kLegacyWebStateListOpenerNavigationIndexKey);
-    }
-
-    bool pinned_state = web_state_list->IsWebStatePinnedAt(index);
-    user_data_manager->AddSerializableData(@(pinned_state),
-                                           kLegacyWebStateListPinnedStateKey);
-
+    const web::WebState* web_state = web_state_list->GetWebStateAt(index);
     CRWSessionStorage* session_storage = web_state->BuildSessionStorage();
     [serialized_session addObject:session_storage];
+
+    CRWSessionUserData* user_data = session_storage.userData;
+    if (!user_data) {
+      user_data = [[CRWSessionUserData alloc] init];
+      session_storage.userData = user_data;
+    }
+
+    [user_data removeObjectForKey:kLegacyWebStateListPinnedStateKey];
+    [user_data removeObjectForKey:kLegacyWebStateListOpenerIndexKey];
+    [user_data removeObjectForKey:kLegacyWebStateListOpenerNavigationIndexKey];
+
+    const bool is_pinned = web_state_list->IsWebStatePinnedAt(index);
+    if (is_pinned) {
+      [user_data setObject:@YES forKey:kLegacyWebStateListPinnedStateKey];
+    }
+
+    WebStateOpener opener = web_state_list->GetOpenerOfWebStateAt(index);
+    if (opener.opener) {
+      DCHECK(base::Contains(index_mapping, opener.opener));
+      const int opener_index =
+          removing_indexes.IndexAfterRemoval(index_mapping[opener.opener]);
+      if (opener_index != WebStateList::kInvalidIndex) {
+        [user_data setObject:@(opener_index)
+                      forKey:kLegacyWebStateListOpenerIndexKey];
+        [user_data setObject:@(opener.navigation_index)
+                      forKey:kLegacyWebStateListOpenerNavigationIndexKey];
+      }
+    }
   }
 
   WebStateListOrderController order_controller(*web_state_list);
@@ -173,90 +433,73 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
                                       selectedIndex:selectedIndex];
 }
 
+void SerializeWebStateList(const WebStateList& web_state_list,
+                           ios::proto::WebStateListStorage& storage) {
+  const WebStateListRemovingIndexes removing_indexes =
+      GetIndexOfWebStatesToDrop(web_state_list);
+
+  std::map<const web::WebState*, int> index_mapping;
+  for (int index = 0; index < web_state_list.count(); ++index) {
+    const web::WebState* web_state = web_state_list.GetWebStateAt(index);
+    index_mapping.insert(std::make_pair(web_state, index));
+  }
+
+  int removed_pinned_tabs_count = 0;
+  const int pinned_tabs_count = web_state_list.pinned_tabs_count();
+  for (int index = 0; index < web_state_list.count(); ++index) {
+    if (removing_indexes.Contains(index)) {
+      if (index < pinned_tabs_count) {
+        ++removed_pinned_tabs_count;
+      }
+      continue;
+    }
+
+    const web::WebState* web_state = web_state_list.GetWebStateAt(index);
+    ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
+    item_storage.set_identifier(web_state->GetUniqueIdentifier().id());
+
+    WebStateOpener opener = web_state_list.GetOpenerOfWebStateAt(index);
+    if (!opener.opener) {
+      continue;
+    }
+
+    DCHECK(base::Contains(index_mapping, opener.opener));
+    const int opener_index =
+        removing_indexes.IndexAfterRemoval(index_mapping[opener.opener]);
+    if (opener_index == WebStateList::kInvalidIndex) {
+      continue;
+    }
+
+    ios::proto::OpenerStorage& opener_storage = *item_storage.mutable_opener();
+    opener_storage.set_index(opener_index);
+    opener_storage.set_navigation_index(opener.navigation_index);
+  }
+
+  DCHECK_LE(removed_pinned_tabs_count, pinned_tabs_count);
+  storage.set_pinned_item_count(pinned_tabs_count - removed_pinned_tabs_count);
+
+  WebStateListOrderController order_controller(web_state_list);
+  const int active_index = order_controller.DetermineNewActiveIndex(
+      web_state_list.active_index(), std::move(removing_indexes));
+  DCHECK_LT(active_index, web_state_list.count());
+  storage.set_active_index(active_index);
+}
+
 void DeserializeWebStateList(WebStateList* web_state_list,
                              SessionWindowIOS* session_window,
-                             SessionRestorationScope session_restoration_scope,
+                             SessionRestorationScope scope,
                              bool enable_pinned_web_states,
-                             const WebStateFactory& web_state_factory) {
-  const int old_count = web_state_list->count();
-  for (CRWSessionStorage* session in session_window.sessions) {
-    std::unique_ptr<web::WebState> web_state = web_state_factory.Run(session);
+                             const WebStateFactory& factory) {
+  DeserializeWebStateList(
+      *web_state_list, scope, enable_pinned_web_states,
+      DeserializeFromSessionWindow(session_window, factory));
+}
 
-    // Drop WebState that is not in the restoration scope.
-    if (!IsWebStateInRestorationScope(web_state.get(),
-                                      session_restoration_scope,
-                                      enable_pinned_web_states)) {
-      continue;
-    }
-
-    web_state_list->InsertWebState(
-        web_state_list->count(), std::move(web_state),
-        WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
-  }
-
-  const NSInteger restored_sessions_count = web_state_list->count() - old_count;
-
-  if (restored_sessions_count == 0) {
-    return;
-  }
-
-  // Restore the WebStates pinned state and opener-opened relationship.
-  for (int index = old_count; index < web_state_list->count(); ++index) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    web::SerializableUserDataManager* user_data_manager =
-        web::SerializableUserDataManager::FromWebState(web_state);
-
-    NSNumber* boxed_opener_index = base::apple::ObjCCast<NSNumber>(
-        user_data_manager->GetValueForSerializationKey(
-            kLegacyWebStateListOpenerIndexKey));
-
-    NSNumber* boxed_opener_navigation_index = base::apple::ObjCCast<NSNumber>(
-        user_data_manager->GetValueForSerializationKey(
-            kLegacyWebStateListOpenerNavigationIndexKey));
-
-    if (!boxed_opener_index || !boxed_opener_navigation_index) {
-      continue;
-    }
-
-    // If opener index is out of bound then assume there is no opener.
-    const int opener_index = [boxed_opener_index intValue] + old_count;
-    if (opener_index < old_count || opener_index >= web_state_list->count()) {
-      continue;
-    }
-
-    // A WebState cannot be its own opener. If this is the case, assume the
-    // serialized state has been tampered with and ignore the opener.
-    if (opener_index == index) {
-      continue;
-    }
-
-    web::WebState* opener = web_state_list->GetWebStateAt(opener_index);
-    web_state_list->SetOpenerOfWebStateAt(
-        index,
-        WebStateOpener(opener, [boxed_opener_navigation_index intValue]));
-  }
-
-  const NSInteger selected_index = GetAdjustedSelectedIndex(
-      session_window, restored_sessions_count, session_restoration_scope);
-
-  if (selected_index != NSNotFound) {
-    web_state_list->ActivateWebStateAt(old_count +
-                                       static_cast<int>(selected_index));
-  }
-
-  // By default all the restored tabs are not pinned.
-  if (enable_pinned_web_states) {
-    // Restore the WebStates pinned state. This should be done in a separate
-    // cycle, since pinning the WebStates may cause WebStates indexes to change.
-    for (int index = old_count; index < web_state_list->count(); ++index) {
-      web::WebState* web_state = web_state_list->GetWebStateAt(index);
-      web::SerializableUserDataManager* user_data_manager =
-          web::SerializableUserDataManager::FromWebState(web_state);
-
-      NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
-          user_data_manager->GetValueForSerializationKey(
-              kLegacyWebStateListPinnedStateKey));
-      web_state_list->SetWebStatePinnedAt(index, [pinned_state boolValue]);
-    }
-  }
+void DeserializeWebStateList(WebStateList& web_state_list,
+                             ios::proto::WebStateListStorage storage,
+                             SessionRestorationScope scope,
+                             bool enable_pinned_web_states,
+                             const WebStateFactoryFromProto& factory) {
+  DeserializeWebStateList(web_state_list, scope, enable_pinned_web_states,
+                          DeserializeFromProto(std::move(storage), factory));
 }

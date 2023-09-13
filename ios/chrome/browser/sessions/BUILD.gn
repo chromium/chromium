@@ -95,6 +95,7 @@ source_set("serialisation") {
     ":session_constants",
     "//base",
     "//components/sessions",
+    "//ios/chrome/browser/sessions/proto",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",

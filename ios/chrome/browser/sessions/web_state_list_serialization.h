@@ -11,13 +11,18 @@
 
 #include "base/functional/callback_forward.h"
 
+class SessionID;
 @class CRWSessionStorage;
 @class SessionWindowIOS;
 class WebStateList;
 
 namespace web {
 class WebState;
-}
+}  // namespace web
+
+namespace ios::proto {
+class WebStateListStorage;
+}  // namespace ios::proto
 
 enum class SessionRestorationScope {
   // The pinned sessions only.
@@ -32,15 +37,35 @@ enum class SessionRestorationScope {
 using WebStateFactory =
     base::RepeatingCallback<std::unique_ptr<web::WebState>(CRWSessionStorage*)>;
 
-// Returns an array of serialised sessions.
-SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list);
+// Factory for creating WebStates from proto.
+using WebStateFactoryFromProto =
+    base::RepeatingCallback<std::unique_ptr<web::WebState>(SessionID)>;
 
-// Restores a `web_state_list` from `session_window` using `web_state_factory`
-// to create the restored WebStates.
+// Serializes `web_state_list` to a SessionWindowIOS instance.
+SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list);
+
+// Serializes `web_state_list` metadata to `storage`.
+void SerializeWebStateList(const WebStateList& web_state_list,
+                           ios::proto::WebStateListStorage& storage);
+
+// Restores a `web_state_list` from `session_window` using `factory` to
+// create the restored WebStates. Use `scope` to limit which WebStates
+// are created. If `enable_pinned_web_states` is false, the tabs are not
+// marked as pinned upon restoration.
 void DeserializeWebStateList(WebStateList* web_state_list,
                              SessionWindowIOS* session_window,
-                             SessionRestorationScope session_restoration_scope,
+                             SessionRestorationScope scope,
                              bool enable_pinned_web_states,
-                             const WebStateFactory& web_state_factory);
+                             const WebStateFactory& factory);
+
+// Restores a `web_state_list` from `storage` using `factory` to create
+// the restored WebStates. Use `scope` to limit which WebStates are created.
+// If `enabled_pinned_web_states` is false, the tabs are not marked as
+// pinned upon restoration.
+void DeserializeWebStateList(WebStateList& web_state_list,
+                             ios::proto::WebStateListStorage storage,
+                             SessionRestorationScope scope,
+                             bool enable_pinned_web_states,
+                             const WebStateFactoryFromProto& factory);
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_WEB_STATE_LIST_SERIALIZATION_H_
