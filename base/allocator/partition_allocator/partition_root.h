@@ -1321,7 +1321,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object) {
   // 2. object -> slot_span (inside FreeInline)
   uintptr_t object_addr = internal::ObjectPtr2Addr(object);
   auto* root = FromAddrInFirstSuperpage(object_addr);
-  root->FreeInline<FreeFlags::kNoHooks>(object);
+  root->FreeInline<flags | FreeFlags::kNoHooks>(object);
 }
 
 template <unsigned int flags>

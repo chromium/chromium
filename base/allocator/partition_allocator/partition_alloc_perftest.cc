@@ -127,9 +127,11 @@ class PartitionAllocatorWithThreadCache : public Allocator {
     return allocator_.root()->AllocNoHooks(size, PartitionPageSize());
   }
   void Free(void* data) override {
-    // Even though it's easy to invoke the fast path with alloc_.Free(),
-    // we chose to use the slower path, because it's more common with PA-E.
-    PartitionRoot::FreeInUnknownRoot(data);
+    // Even though it's easy to invoke the fast path with
+    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
+    // more common with PA-E.
+    PartitionRoot::FreeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(data);
   }
 
  private:
@@ -162,9 +164,11 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
   void* Alloc(size_t size) override { return alloc_.AllocInline(size); }
 
   void Free(void* data) override {
-    // Even though it's easy to invoke the fast path with alloc_.Free(),
-    // we chose to use the slower path, because it's more common with PA-E.
-    PartitionRoot::FreeInUnknownRoot(data);
+    // Even though it's easy to invoke the fast path with
+    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
+    // more common with PA-E.
+    PartitionRoot::FreeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(data);
   }
 
  private:
