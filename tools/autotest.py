@@ -383,6 +383,7 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
         f' one of the following targets to _TEST_TARGET_ALLOWLIST within '
         f'{__file__}: \n' + '\n'.join(targets))
 
+  test_targets.sort()
   target_cache.Store(paths, test_targets)
   target_cache.Save()
 
@@ -396,7 +397,8 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
     else:
       test_targets = [HaveUserPickTarget(paths, test_targets)]
 
-  test_targets = list(set([t.split(':')[-1] for t in test_targets]))
+  # Remove the // prefix to turn GN label into ninja target.
+  test_targets = [t[2:] for t in test_targets]
 
   return (test_targets, used_cache)
 
@@ -405,13 +407,14 @@ def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run,
                    no_try_android_wrappers, no_fast_local_dev):
 
   for target in targets:
+    target_binary = target.split(':')[1]
 
     # Look for the Android wrapper script first.
-    path = os.path.join(out_dir, 'bin', f'run_{target}')
+    path = os.path.join(out_dir, 'bin', f'run_{target_binary}')
     if no_try_android_wrappers or not os.path.isfile(path):
       # If the wrapper is not found or disabled use the Desktop target
       # which is an executable.
-      path = os.path.join(out_dir, target)
+      path = os.path.join(out_dir, target_binary)
     elif not no_fast_local_dev:
       # Usually want this flag when developing locally.
       extra_args = extra_args + ['--fast-local-dev']
