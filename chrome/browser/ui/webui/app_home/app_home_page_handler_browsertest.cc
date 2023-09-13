@@ -272,7 +272,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN)
   // This is used as a fallback to prevent creating shortcuts in the startup
   // dir if tasks are still running when `override_registration_` is reset.
-  base::ScopedPathOverride override_start_dir_{base::DIR_USER_STARTUP};
+  base::ScopedPathOverride override_start_dir_{base::DIR_START_MENU};
 #endif  // BUILDFLAG(IS_WIN)
 };
 
