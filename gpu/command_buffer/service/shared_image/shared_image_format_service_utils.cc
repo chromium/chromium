@@ -16,6 +16,60 @@
 
 namespace gpu {
 
+namespace {
+
+#if BUILDFLAG(ENABLE_VULKAN)
+VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return VK_FORMAT_R8G8B8A8_UNORM;  // or VK_FORMAT_R8G8B8A8_SRGB
+  } else if (format == viz::SinglePlaneFormat::kRGBA_4444) {
+    return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return VK_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kR_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGB_565) {
+    return VK_FORMAT_R5G6B5_UNORM_PACK16;
+  } else if (format == viz::SinglePlaneFormat::kBGR_565) {
+    return VK_FORMAT_B5G6R5_UNORM_PACK16;
+  } else if (format == viz::SinglePlaneFormat::kRG_88) {
+    return VK_FORMAT_R8G8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return VK_FORMAT_R16G16B16A16_SFLOAT;
+  } else if (format == viz::SinglePlaneFormat::kR_16) {
+    return VK_FORMAT_R16_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+    return VK_FORMAT_R16G16_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return VK_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return VK_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+  } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == viz::LegacyMultiPlaneFormat::kYV12) {
+    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+  } else if (format == viz::LegacyMultiPlaneFormat::kNV12) {
+    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kETC1) {
+    return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
+  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+    return VK_FORMAT_R16_SFLOAT;
+  } else if (format == viz::LegacyMultiPlaneFormat::kP010) {
+    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
+  }
+  return VK_FORMAT_UNDEFINED;
+}
+#endif
+
+}  // namespace
+
 // Wraps functions from shared_image_format_utils.h that are made private with
 // friending to prevent their existing client-side usage (which is an
 // anti-pattern) from growing within a class that
@@ -129,16 +183,6 @@ class SharedImageFormatRestrictedUtilsAccessor {
         return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
     }
   }
-
-#if BUILDFLAG(ENABLE_VULKAN)
-  static bool HasVkFormat(viz::SharedImageFormat format) {
-    return viz::SharedImageFormatRestrictedSinglePlaneUtils::HasVkFormat(
-        format);
-  }
-  static VkFormat ToVkFormat(viz::SharedImageFormat format) {
-    return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToVkFormat(format);
-  }
-#endif
 };
 
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
@@ -242,7 +286,7 @@ GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
 #if BUILDFLAG(ENABLE_VULKAN)
 bool HasVkFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
-    return SharedImageFormatRestrictedUtilsAccessor::HasVkFormat(format);
+    return ToVkFormatSinglePlanarInternal(format) != VK_FORMAT_UNDEFINED;
   } else if (format == viz::MultiPlaneFormat::kYV12 ||
              format == viz::MultiPlaneFormat::kNV12 ||
              format == viz::MultiPlaneFormat::kP010 ||
@@ -270,7 +314,10 @@ VkFormat ToVkFormatExternalSampler(viz::SharedImageFormat format) {
 
 VkFormat ToVkFormatSinglePlanar(viz::SharedImageFormat format) {
   CHECK(format.is_single_plane());
-  return SharedImageFormatRestrictedUtilsAccessor::ToVkFormat(format);
+  auto result = ToVkFormatSinglePlanarInternal(format);
+  DCHECK_NE(result, VK_FORMAT_UNDEFINED)
+      << "Unsupported format " << format.ToString();
+  return result;
 }
 
 VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
