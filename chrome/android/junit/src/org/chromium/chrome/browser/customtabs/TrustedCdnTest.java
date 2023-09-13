@@ -16,11 +16,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -33,6 +33,7 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
  * Tests for showing the publisher URL for a trusted CDN.
@@ -44,11 +45,11 @@ import org.chromium.ui.base.WindowAndroid;
  *
  * TrustedCdnPublisherUrlTest (the instrumentation test) is still used to test native functionality.
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class TrustedCdnTest {
-    private static final String PUBLISHER_URL = "https://www.publisher.com/";
+    private static final GURL PUBLISHER_URL = new GURL("https://www.publisher.com/");
 
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();

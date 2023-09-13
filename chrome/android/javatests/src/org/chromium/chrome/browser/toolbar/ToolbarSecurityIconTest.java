@@ -166,11 +166,11 @@ public final class ToolbarSecurityIconTest {
         doReturn(ConnectionSecurityLevel.SECURE)
                 .when(mLocationBarModel)
                 .getSecurityLevelFromStateModel(any());
-        doReturn("https://example.com").when(mTrustedCdn).getPublisherUrl();
+        doReturn(new GURL("https://example.com")).when(mTrustedCdn).getPublisherUrl();
         assertEquals("Wrong security level returned for HTTPS publisher URL",
                 ConnectionSecurityLevel.SECURE,
                 mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
-        doReturn("http://example.com").when(mTrustedCdn).getPublisherUrl();
+        doReturn(new GURL("http://example.com")).when(mTrustedCdn).getPublisherUrl();
         assertEquals("Wrong security level returned for HTTP publisher URL",
                 ConnectionSecurityLevel.WARNING,
                 mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));

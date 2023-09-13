@@ -14,6 +14,7 @@
 #include "components/embedder_support/android/util/cdn_utils.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::ConvertUTF8ToJavaString;
@@ -54,11 +55,8 @@ void TrustedCdn::PrimaryPageChanged(content::Page& page) {
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_publisher_url;
-  if (publisher_url.is_valid())
-    j_publisher_url = ConvertUTF8ToJavaString(env, publisher_url.spec());
-
-  Java_TrustedCdn_setPublisherUrl(env, jobj_, j_publisher_url);
+  Java_TrustedCdn_setPublisherUrl(
+      env, jobj_, url::GURLAndroid::FromNativeGURL(env, publisher_url));
 }
 
 static jlong JNI_TrustedCdn_Init(JNIEnv* env,

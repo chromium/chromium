@@ -1257,7 +1257,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             // If the url is about:blank, we shouldn't show a title as it is prone to spoofing.
             if (!mLocationBarDataProvider.hasTab() || TextUtils.isEmpty(title)
-                    || ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(getUrl())) {
+                    || ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(getUrl().getSpec())) {
                 mTitleBar.setText("");
                 return;
             }
@@ -1292,8 +1292,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 }
             }
 
-            String publisherUrl = TrustedCdn.getPublisherUrl(tab);
-            String url = getUrl();
+            GURL publisherUrl = TrustedCdn.getPublisherUrl(tab);
+            GURL url = getUrl();
             // Don't show anything for Chrome URLs.
             if (NativePage.isNativePageUrl(url, getCurrentTab().isIncognito())) {
                 mUrlCoordinator.setUrlBarData(
@@ -1328,8 +1328,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 }
             }
 
-            mUrlCoordinator.setUrlBarData(
-                    UrlBarData.create(new GURL(url), displayText, originStart, originEnd, url),
+            mUrlCoordinator.setUrlBarData(UrlBarData.create(url, displayText, originStart,
+                                                  originEnd, url.getSpec().trim()),
                     UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
 
             WebContents webContents = tab.getWebContents();
@@ -1345,12 +1345,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         }
 
-        private String getUrl() {
+        private GURL getUrl() {
             Tab tab = getCurrentTab();
-            if (tab == null) return "";
+            if (tab == null) return GURL.emptyGURL();
 
-            String publisherUrl = TrustedCdn.getPublisherUrl(tab);
-            return publisherUrl != null ? publisherUrl : tab.getUrl().getSpec().trim();
+            GURL publisherUrl = TrustedCdn.getPublisherUrl(tab);
+            return publisherUrl != null ? publisherUrl : tab.getUrl();
         }
 
         private void updateColors() {

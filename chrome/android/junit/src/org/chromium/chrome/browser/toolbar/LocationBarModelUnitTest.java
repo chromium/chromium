@@ -67,7 +67,7 @@ public class LocationBarModelUnitTest {
     @Implements(TrustedCdn.class)
     static class ShadowTrustedCdn {
         @Implementation
-        public static String getPublisherUrl(@Nullable Tab tab) {
+        public static GURL getPublisherUrl(@Nullable Tab tab) {
             return null;
         }
     }
