@@ -39,6 +39,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.List;
+
 /**
  * Root component for the HistoryClusters UI component, which displays lists of related history
  * visits grouped into clusters.
@@ -92,6 +94,7 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
                                 .build();
         mMetricsLogger = metricsLogger;
         mSelectionDelegate = selectionDelegate;
+        mSelectionDelegate.addObserver((list) -> { updateTabGroupMenuItemVisibility(list); });
         mSnackbarManager = snackbarManager;
 
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
@@ -281,6 +284,19 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         TextView innerView = wrapper.findViewById(R.id.empty_view);
         innerView.setText(R.string.history_manager_empty);
         return wrapper;
+    }
+
+    private void updateTabGroupMenuItemVisibility(List<ClusterVisit> selectedItems) {
+        if (mToolbar == null || mToolbar.getMenu() == null) return;
+        if (selectedItems != null && selectedItems.size() > 1) {
+            if (mToolbar.getMenu().findItem(R.id.selection_mode_open_in_tab_group) == null) {
+                mToolbar.getMenu().add(R.id.selection_mode_menu_group,
+                        R.id.selection_mode_open_in_tab_group, 4,
+                        R.string.history_clusters_open_all_in_tabgroup);
+            }
+        } else {
+            mToolbar.getMenu().removeItem(R.id.selection_mode_open_in_tab_group);
+        }
     }
 
     // OnMenuItemClickListener implementation.
