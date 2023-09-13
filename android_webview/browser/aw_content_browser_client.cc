@@ -128,6 +128,7 @@
 
 using content::BrowserThread;
 using content::WebContents;
+using safe_browsing::hash_realtime_utils::HashRealTimeSelection;
 
 namespace android_webview {
 namespace {
@@ -628,6 +629,11 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
     int frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Set lookup mechanism based on feature flag
+  HashRealTimeSelection hash_real_time_selection =
+      (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups))
+          ? HashRealTimeSelection::kDatabaseManager
+          : HashRealTimeSelection::kNone;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindOnce(
@@ -643,7 +649,7 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       /* hash_realtime_service */ nullptr,
       /* ping_manager */ nullptr,
       /* hash_realtime_selection */
-      safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone));
+      hash_real_time_selection));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
@@ -681,6 +687,11 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     int frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Set lookup mechanism based on feature flag
+  HashRealTimeSelection hash_real_time_selection =
+      (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups))
+          ? HashRealTimeSelection::kDatabaseManager
+          : HashRealTimeSelection::kNone;
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
@@ -698,7 +709,7 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
       /* hash_realtime_service */ nullptr,
       /* ping_manager */ nullptr,
       /* hash_realtime_selection */
-      safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone));
+      hash_real_time_selection));
 
   return result;
 }
