@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_config.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/speculation_rules/speculation_host_impl.h"
@@ -562,7 +563,7 @@ class PrerenderHostRegistryNewLimitAndSchedulerTest
  public:
   PrerenderHostRegistryNewLimitAndSchedulerTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kPrerender2NewLimitAndScheduler,
+        {{features::kPrerender2NewLimitAndScheduler,
           {{"max_num_of_running_speculation_rules_eager_prerenders",
             base::NumberToString(
                 MaxNumOfRunningSpeculationRulesEagerPrerenders())},
