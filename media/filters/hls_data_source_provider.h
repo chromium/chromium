@@ -118,14 +118,12 @@ class MEDIA_EXPORT HlsDataSourceStream {
   void ReadChunk(base::PassKey<HlsManifestDemuxerEngine>,
                  HlsDataSource::ReadCb cb);
 
+  void UpdateBytes(size_t original_size, size_t bytes_read);
+
  private:
   // Read data in chunks.
   void ReadChunkInternal(HlsDataSource::ReadCb cb,
                          size_t read_size = kDefaultReadSize);
-
-  void DataSourceReadComplete(HlsDataSource::ReadCb cb,
-                              size_t original_size,
-                              HlsDataSource::ReadStatus::Or<size_t> result);
 
   // The data source to read from.
   std::unique_ptr<HlsDataSource> data_source_;

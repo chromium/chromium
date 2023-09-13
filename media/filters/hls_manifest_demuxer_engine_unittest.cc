@@ -92,6 +92,7 @@ using testing::Ref;
 using testing::Return;
 using testing::SaveArg;
 using testing::SetArgPointee;
+using testing::StrictMock;
 
 MATCHER_P2(CloseTo,
            Target,
@@ -124,6 +125,19 @@ class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
                          RequestCb request) override {
     mock_->RequestDataSource(url, range, std::move(request));
   }
+};
+
+class MockHlsDataSource : public HlsDataSource {
+ public:
+  MockHlsDataSource() : HlsDataSource(0) {}
+  ~MockHlsDataSource() override = default;
+  MOCK_METHOD(
+      void,
+      Read,
+      (uint64_t pos, size_t size, uint8_t* buf, HlsDataSource::ReadCb cb),
+      (override));
+  MOCK_METHOD(base::StringPiece, GetMimeType, (), (const, override));
+  MOCK_METHOD(void, Stop, (), (override));
 };
 
 class HlsManifestDemuxerEngineTest : public testing::Test {
@@ -301,6 +315,36 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
       base::Seconds(0), 0.0, base::BindOnce([](base::TimeDelta r) {
         EXPECT_THAT(r, CloseTo(base::Seconds(7), base::Milliseconds(1)));
       }));
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestAbortMidDownload) {
+  auto mock_data_source = std::make_unique<StrictMock<MockHlsDataSource>>();
+  auto* mock_ds_ptr = mock_data_source.get();
+  EXPECT_CALL(*mock_dsp_,
+              GetDataSource("http://media.example.com/manifest.m3u8"))
+      .Times(1)
+      .WillOnce(Return(ByMove(std::move(mock_data_source))));
+
+  HlsDataSource::ReadCb read_cb;
+  EXPECT_CALL(*mock_ds_ptr, Read(_, _, _, _))
+      .WillRepeatedly(
+          [&read_cb](uint64_t, size_t, uint8_t*, HlsDataSource::ReadCb cb) {
+            read_cb = std::move(cb);
+          });
+
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+  CHECK(read_cb);
+
+  EXPECT_CALL(*mock_ds_ptr, Stop());
+  engine_->AbortPendingReads();
+  task_environment_.RunUntilIdle();
+
+  // Return some random size.
+  EXPECT_CALL(*mock_mdeh_,
+              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_OPEN)));
+  std::move(read_cb).Run(55);
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media

@@ -319,7 +319,10 @@ void HlsManifestDemuxerEngine::ExchangeStreamId(
     HlsDataSource::ReadStatus::Or<size_t> result) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   auto it = stream_map_.find(ticket);
-  CHECK(it != stream_map_.end());
+  if (it == stream_map_.end()) {
+    std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
+    return;
+  }
   auto stream = std::move(it->second);
   stream_map_.erase(it);
   if (result.has_value()) {
