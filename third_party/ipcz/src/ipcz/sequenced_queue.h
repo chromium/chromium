@@ -7,10 +7,10 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <vector>
 
 #include "ipcz/sequence_number.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ipcz {
