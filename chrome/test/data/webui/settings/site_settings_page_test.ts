@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, NotificationSetting, SettingsSiteSettingsPageElement, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {CrLinkRowElement, Router, routes, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -300,18 +300,92 @@ suite('UnusedSitePermissionsReview', function() {
   let page: SettingsSiteSettingsPageElement;
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    await flushTasks();
   });
 
   test('VisibilityWithChangingPermissionList', async function() {
     // The element is not visible when there is nothing to review.
-    safetyHubBrowserProxy.setUnusedSitePermissions([]);
+    assertFalse(isChildVisible(page, '#safetyHubModule'));
+
+    // The element becomes visible if the list of permissions is no longer
+    // empty.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubModule'));
+
+    // Once visible, it remains visible regardless of list length.
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubModule'));
+
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#safetyHubModule'));
+  });
+
+  test('Button Click', async function() {
+    // The element becomes visible if the list of permissions isn't empty.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+
+    page.shadowRoot!.querySelector<HTMLElement>('#safetyHubButton')!.click();
+    // Ensure the safety hub page is shown.
+    assertEquals(routes.SAFETY_HUB, Router.getInstance().getCurrentRoute());
+  });
+
+  test('InvisibleWhenGuestMode', async function() {
+    loadTimeData.overrideValues({
+      isGuest: true,
+    });
+
+    // The element is not visible since it is guest mode.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertFalse(isChildVisible(page, '#safetyHubModule'));
+
+    // Reset loadTimeData values.
+    loadTimeData.overrideValues({
+      isGuest: false,
+    });
+  });
+});
+
+// TODO(crbug/1443466): Remove after crbug/1443466 launched.
+suite('UnusedSitePermissionsReviewSafetyHubDisabled', function() {
+  let page: SettingsSiteSettingsPageElement;
+  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSafetyHub: false,
+    });
+  });
+
+  setup(async function() {
+    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-site-settings-page');
     document.body.appendChild(page);
     await flushTasks();
+  });
+
+  test('VisibilityWithChangingPermissionList', async function() {
+    // The element is not visible when there is nothing to review.
     assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
 
     // The element becomes visible if the list of permissions is no longer
@@ -332,6 +406,24 @@ suite('UnusedSitePermissionsReview', function() {
         unusedSitePermissionMockData);
     await flushTasks();
     assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
+  });
+
+  test('InvisibleWhenGuestMode', async function() {
+    loadTimeData.overrideValues({
+      isGuest: true,
+    });
+
+    // The element is not visible since it is guest mode.
+    webUIListenerCallback(
+        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+        unusedSitePermissionMockData);
+    await flushTasks();
+    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
+
+    // Reset loadTimeData values.
+    loadTimeData.overrideValues({
+      isGuest: false,
+    });
   });
 });
 
@@ -355,26 +447,6 @@ suite('UnusedSitePermissionsReviewDisabled', function() {
     safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  });
-
-  test('InvisbleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({
-      safetyCheckUnusedSitePermissionsEnabled: true,
-      isGuest: true,
-    });
-    safetyHubBrowserProxy.setUnusedSitePermissions(
-        unusedSitePermissionMockData);
-    page = document.createElement('settings-site-settings-page');
-    document.body.appendChild(page);
-    await flushTasks();
-
-    assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
-
-    // Reset loadTimeData values.
-    loadTimeData.overrideValues({
-      safetyCheckUnusedSitePermissionsEnabled: false,
-      isGuest: false,
-    });
   });
 
   test('InvisibleWhenFeatureDisabled', async function() {

@@ -15,8 +15,21 @@
           src="chrome://settings/images/permissions_banner.svg">
     </picture>
     <template is="dom-if" if="[[showUnusedSitePermissions_]]">
-      <settings-unused-site-permissions>
-      </settings-unused-site-permissions>
+      <template is="dom-if" if="[[enableSafetyHub_]]">
+        <settings-safety-hub-module id="safetyHubModule"
+            header="[[unusedSitePermissionsHeader_]]"
+            subheader="[[unusedSitePermissionsSubheader_]]">
+          <cr-button id="safetyHubButton" slot="button-container"
+              on-click="onSafetyHubButtonClick_">
+            $i18n{safetyHubEntryPointButton}
+          </cr-button>
+        </settings-safety-hub-module>
+      </template>
+      <!-- TODO(crbug/1469277): Remove after SafetyHub launched. -->
+      <template is="dom-if" if="[[!enableSafetyHub_]]">
+        <settings-unused-site-permissions>
+        </settings-unused-site-permissions>
+      </template>
     </template>
     <div class="cr-row first">
       <h2>$i18n{siteSettingsRecentPermissionsSectionLabel}</h2>

@@ -1229,6 +1229,12 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
+                       UnusedSitePermissionsReviewSafetyHubDisabled) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('UnusedSitePermissionsReviewSafetyHubDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
                        PermissionStorageAccessApiDisabled) {
   RunTest("settings/site_settings_page_test.js",
           "runMochaSuite('PermissionStorageAccessApiDisabled')");
