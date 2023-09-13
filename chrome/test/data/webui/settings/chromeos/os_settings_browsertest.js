@@ -479,9 +479,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
      ],
    },
  ],
- [
-   'MultideviceFeatureItem', 'multidevice_page/multidevice_feature_item_test.js'
- ],
  ['MultidevicePage', 'multidevice_page/multidevice_page_tests.js'],
  [
    'MultidevicePageMultideviceFeatureItem',
