@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("browser_state_metrics") {
+source_set("model") {
   sources = [
     "browser_state_metrics.cc",
     "browser_state_metrics.h",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
+#include "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 
 #include <stddef.h>
 
@@ -19,12 +19,14 @@ bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
   counts->total = number_of_browser_states;
 
   // Ignore other metrics if we have no browser states.
-  if (!number_of_browser_states)
+  if (!number_of_browser_states) {
     return false;
+  }
 
   for (size_t i = 0; i < number_of_browser_states; ++i) {
-    if (info_cache->BrowserStateIsAuthenticatedAtIndex(i))
+    if (info_cache->BrowserStateIsAuthenticatedAtIndex(i)) {
       counts->signedin++;
+    }
   }
   return true;
 }

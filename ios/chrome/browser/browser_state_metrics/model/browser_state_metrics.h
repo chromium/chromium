@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_BROWSER_STATE_METRICS_H_
-#define IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_BROWSER_STATE_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_MODEL_BROWSER_STATE_METRICS_H_
+#define IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_MODEL_BROWSER_STATE_METRICS_H_
 
 namespace ios {
 class ChromeBrowserStateManager;
@@ -21,4 +21,4 @@ bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
 
 void LogNumberOfBrowserStates(ios::ChromeBrowserStateManager* manager);
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_BROWSER_STATE_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_METRICS_MODEL_BROWSER_STATE_METRICS_H_

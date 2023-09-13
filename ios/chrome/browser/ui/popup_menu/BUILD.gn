@@ -58,7 +58,7 @@ source_set("popup_menu") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/browser_state_metrics",
+    "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/feature_engagement",

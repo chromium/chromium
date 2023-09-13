@@ -49,7 +49,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/autofill:autofill_internal",
     "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/browser_state_metrics",
+    "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/commerce/price_notifications",
     "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/content_settings",

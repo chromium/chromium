@@ -75,7 +75,7 @@ source_set("browser_state") {
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bring_android_tabs/model",
-    "//ios/chrome/browser/browser_state_metrics",
+    "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/commerce:shopping_service",
     "//ios/chrome/browser/consent_auditor",
@@ -161,7 +161,7 @@ source_set("browser_state") {
     deps += [ "//ios/chrome/browser/credential_provider" ]
   }
   allow_circular_includes_from = [
-    "//ios/chrome/browser/browser_state_metrics",
+    "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/signin",

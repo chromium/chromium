@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state_impl.h"
 #import "ios/chrome/browser/browser_state/constants.h"
 #import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
-#import "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
+#import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_browser_state_service_factory.h"

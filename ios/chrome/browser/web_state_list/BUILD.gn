@@ -48,7 +48,7 @@ source_set("agents") {
     "//build:blink_buildflags",
     "//components/navigation_metrics",
     "//components/profile_metrics",
-    "//ios/chrome/browser/browser_state_metrics",
+    "//ios/chrome/browser/browser_state_metrics/model",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/sessions:restoration_agent",

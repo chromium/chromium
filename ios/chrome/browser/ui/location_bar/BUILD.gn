@@ -33,7 +33,7 @@ source_set("location_bar") {
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/autocomplete/model",
-    "//ios/chrome/browser/browser_state_metrics:browser_state_metrics",
+    "//ios/chrome/browser/browser_state_metrics/model:model",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/feature_engagement",
