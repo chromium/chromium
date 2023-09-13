@@ -107,6 +107,13 @@ enum class ConversionReportSendOutcome {
   kFailedToAssemble = 3,
   kMaxValue = kFailedToAssemble,
 };
+enum class ConversionReportSendRetryCount {
+  kNone = 0,
+  kOnce = 1,
+  kTwice = 2,
+  kFailed = 3,
+  kMaxValue = kFailed,
+};
 
 // This class consolidates logic regarding when to schedule the browser to send
 // attribution reports. It talks directly to the `AttributionStorage` to help
@@ -204,6 +211,21 @@ void RecordCreateReportStatus(CreateReportResult result) {
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus4",
       result.aggregatable_status());
+}
+
+// If `retry_attempts` <= 2, represents the number of retries before success.
+// If `retry_attempts == 3`, represents failure after two retries.
+void RecordReportRetriesEventLevel(int retry_attempts) {
+  DCHECK_LT(retry_attempts, 4);
+  base::UmaHistogramEnumeration(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure",
+      static_cast<ConversionReportSendRetryCount>(retry_attempts));
+}
+void RecordReportRetriesAggregatable(int retry_attempts) {
+  DCHECK_LT(retry_attempts, 4);
+  base::UmaHistogramEnumeration(
+      "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure",
+      static_cast<ConversionReportSendRetryCount>(retry_attempts));
 }
 
 ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
@@ -332,6 +354,8 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
       UMA_HISTOGRAM_COUNTS_1000(
           "Conversions.TimeFromTriggerToReportSentSuccessfully",
           time_from_conversion_to_report_sent.InHours());
+
+      RecordReportRetriesEventLevel(report.failed_send_attempts());
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -344,6 +368,8 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
           time_since_original_report_time, base::Seconds(1), base::Days(24),
           /*bucket_count=*/50);
+
+      RecordReportRetriesAggregatable(report.failed_send_attempts());
       break;
     case AttributionReport::Type::kNullAggregatable:
       break;
@@ -1072,9 +1098,21 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // therefore we could consider subjecting these failures to a different limit.
   if (info.status == SendResult::Status::kTransientFailure ||
       info.status == SendResult::Status::kTransientAssemblyFailure) {
+    int retry_attempts = report.failed_send_attempts() + 1;
     if (absl::optional<base::TimeDelta> delay =
-            GetFailedReportDelay(report.failed_send_attempts() + 1)) {
+            GetFailedReportDelay(retry_attempts)) {
       new_report_time = base::Time::Now() + *delay;
+    } else {
+      switch (report.GetReportType()) {
+        case AttributionReport::Type::kEventLevel:
+          RecordReportRetriesEventLevel(retry_attempts);
+          break;
+        case AttributionReport::Type::kAggregatableAttribution:
+          RecordReportRetriesAggregatable(retry_attempts);
+          break;
+        case AttributionReport::Type::kNullAggregatable:
+          break;
+      }
     }
   }
 

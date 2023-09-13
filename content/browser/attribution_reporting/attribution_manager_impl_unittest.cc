@@ -754,6 +754,9 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
 
   histograms.ExpectTotalCount(
       "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 3, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
@@ -1879,6 +1882,53 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
   histograms.ExpectUniqueSample(
       "Conversions.TimeFromTriggerToReportSentSuccessfully",
       kFirstReportingWindow.InHours() + 1, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 0, 1);
+}
+
+TEST_F(AttributionManagerImplTest, ReportRetriesTillSuccessHistogram) {
+  base::HistogramTester histograms;
+
+  ReportSentCallback report_sent_callback;
+  absl::optional<AttributionReport> sent_report;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce(
+            InvokeReportSentCallback(SendResult::Status::kTransientFailure));
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
+        .WillOnce([&](AttributionReport report, bool is_debug_report,
+                      ReportSentCallback callback) {
+          report_sent_callback = std::move(callback);
+          sent_report = std::move(report);
+        });
+  }
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  checkpoint.Call(1);
+
+  // First report delay.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  ASSERT_TRUE(report_sent_callback);
+  ASSERT_TRUE(sent_report);
+  std::move(report_sent_callback)
+      .Run(std::move(*sent_report), SendResult(SendResult::Status::kSent));
+
+  // kSuccess = 0.
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.EventLevelReport.ReportRetriesTillSuccessOrFailure", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
@@ -2530,6 +2580,8 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordReportDelay) {
   histograms.ExpectUniqueTimeSample(
       "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
       base::Days(3) + base::Minutes(1), 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure", 0, 1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -2616,6 +2668,8 @@ TEST_F(AttributionManagerImplTest,
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.ReportRetriesTillSuccessOrFailure", 3, 1);
 }
 
 TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {

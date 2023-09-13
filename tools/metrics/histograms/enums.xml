@@ -19899,6 +19899,13 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Failed to assemble"/>
 </enum>
 
+<enum name="ConversionReportSendRetryCount">
+  <int value="0" label="None"/>
+  <int value="1" label="One retry"/>
+  <int value="2" label="Two retries"/>
+  <int value="3" label="Failed"/>
+</enum>
+
 <enum name="ConversionReportStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Internal network error"/>

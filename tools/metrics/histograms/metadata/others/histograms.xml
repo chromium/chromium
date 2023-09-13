@@ -4321,6 +4321,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure"
+    enum="ConversionReportSendRetryCount" expires_after="M121">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of retries before a report is successfully sent or
+    records 'Failed' if report delivery fails after reaching the max number of
+    retries (2).
+  </summary>
+  <token key="ReportType">
+    <variant name="AggregatableReport"/>
+    <variant name="EventLevelReport"/>
+  </token>
+</histogram>
+
 <histogram name="CopylessPaste.CacheHit" enum="CopylessCacheHit"
     expires_after="2020-03-01">
   <owner>wychen@chromium.org</owner>
