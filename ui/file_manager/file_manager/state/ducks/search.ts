@@ -10,7 +10,7 @@ import {Slice} from '../../lib/base_store.js';
  * @suppress {checkTypes}
  */
 
-const slice = new Slice<State>('search');
+const slice = new Slice<State, State['search']>('search');
 export {slice as searchSlice};
 
 /**

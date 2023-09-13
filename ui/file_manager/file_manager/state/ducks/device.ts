@@ -10,7 +10,7 @@ import {Slice} from '../../lib/base_store.js';
  * @suppress {checkTypes}
  */
 
-const slice = new Slice<State>('device');
+const slice = new Slice<State, State['device']>('device');
 export {slice as deviceSlice};
 
 export const updateDeviceConnectionState = slice.addReducer(

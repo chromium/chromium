@@ -16,7 +16,7 @@ import {Slice} from '../../lib/base_store.js';
  * states that may occur.
  */
 
-const slice = new Slice<State>('bulkPinning');
+const slice = new Slice<State, State['bulkPinning']>('bulkPinning');
 export {slice as bulkPinningSlice};
 
 /** Create action to update the bulk pin progress. */

@@ -14,7 +14,7 @@ import {Slice} from '../../lib/base_store.js';
  * directory item in FilePicker mode.
  */
 
-const slice = new Slice<State>('androidApps');
+const slice = new Slice<State, State['androidApps']>('androidApps');
 export {slice as androidAppsSlice};
 
 /** Action factory to add all android app config to the store. */

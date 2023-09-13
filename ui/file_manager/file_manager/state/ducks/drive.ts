@@ -10,7 +10,7 @@ import {Slice} from '../../lib/base_store.js';
  * @suppress {checkTypes}
  */
 
-const slice = new Slice<State>('drive');
+const slice = new Slice<State, State['drive']>('drive');
 export {slice as driveSlice};
 
 export const updateDriveConnectionStatus = slice.addReducer(

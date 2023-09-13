@@ -21,7 +21,7 @@ import {getEntry, getFileData} from '../store.js';
  */
 
 
-const slice = new Slice<State>('uiEntries');
+const slice = new Slice<State, State['uiEntries']>('uiEntries');
 export {slice as uiEntriesSlice};
 
 const uiEntryRootTypesInMyFiles = new Set([
@@ -91,8 +91,7 @@ export function addUiEntryReducer(currentState: State, payload: {
 }
 
 /** Create action to remove an UI entry from the store. */
-export const removeUiEntry =
-    slice.addReducer('remove', removeUiEntryReducer);
+export const removeUiEntry = slice.addReducer('remove', removeUiEntryReducer);
 
 export function removeUiEntryReducer(currentState: State, payload: {
   key: FileKey,

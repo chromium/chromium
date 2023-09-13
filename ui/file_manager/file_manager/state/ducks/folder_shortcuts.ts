@@ -14,7 +14,7 @@ import {cacheEntries} from './all_entries.js';
  * @suppress {checkTypes}
  */
 
-const slice = new Slice<State>('folderShortcuts');
+const slice = new Slice<State, State['folderShortcuts']>('folderShortcuts');
 export {slice as folderShortcutsSlice};
 
 /** Create action to refresh all folder shortcuts with provided ones. */

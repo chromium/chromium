@@ -41,7 +41,7 @@ export class TestSubscriber {
 export function setupTestStore() {
   // All actions dispatched via the store and processed by the reducer.
   const dispatchedActions = Array<Action>(0);
-  const testSlice = new Slice<TestState>('test');
+  const testSlice = new Slice<TestState, any>('test');
   const createTestAction = testSlice.addReducer(
       'test', (state: TestState, payload: string|void): TestState => {
         dispatchedActions.push({type: 'test', payload});

@@ -38,8 +38,11 @@ type ReducersMap<State> = Map<Action['type'], Array<Reducer<State, any>>>;
 /**
  * Slices represent a part of the state that is nested directly under the root
  * state, aggregating its reducers and selectors.
+ * @template State The shape of the store's root state.
+ * @template _LocalState The shape of this slice.
  */
-export class Slice<State> {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export class Slice<State, _LocalState> {
   /**
    * Reducers registered with this slice.
    * Only one reducer per slice can be associated with a given action type.
@@ -152,7 +155,7 @@ export class BaseStore<State> {
    */
   private batchMode_: boolean = false;
 
-  constructor(state: State, slices: Array<Slice<State>>) {
+  constructor(state: State, slices: Array<Slice<State, any>>) {
     this.state_ = state;
     this.queuedActions_ = [];
     this.observers_ = [];

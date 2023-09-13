@@ -24,7 +24,7 @@ import {cacheEntries} from './all_entries.js';
  * @suppress {checkTypes}
  */
 
-const slice = new Slice<State>('currentDirectory');
+const slice = new Slice<State, State['currentDirectory']>('currentDirectory');
 export {slice as currentDirectorySlice};
 
 function getEmptySelection(keys: FileKey[] = []): Selection {

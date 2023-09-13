@@ -14,7 +14,7 @@ import {Slice} from '../../lib/base_store.js';
  * them updated on dynamic changes.
  */
 
-const slice = new Slice<State>('preferences');
+const slice = new Slice<State, State['preferences']>('preferences');
 export {slice as preferencesSlice};
 
 /**

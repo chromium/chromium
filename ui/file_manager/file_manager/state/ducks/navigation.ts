@@ -18,7 +18,7 @@ import {getEntry, getFileData} from '../store.js';
  * @suppress {checkTypes}
  */
 
-const slice = new Slice<State>('navigation');
+const slice = new Slice<State, State['navigation']>('navigation');
 export {slice as navigationSlice};
 
 const VolumeType = VolumeManagerCommon.VolumeType;

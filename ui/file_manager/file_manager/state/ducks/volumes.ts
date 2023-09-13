@@ -20,7 +20,7 @@ import {updateDeviceConnectionState} from './device.js';
  * @suppress {checkTypes}
  */
 
-const slice = new Slice<State>('volumes');
+const slice = new Slice<State, State['volumes']>('volumes');
 export {slice as volumesSlice};
 
 const VolumeType = VolumeManagerCommon.VolumeType;

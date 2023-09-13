@@ -242,8 +242,8 @@ export async function testStoreActionsProducerError(done: () => void) {
  * Tests that the Store throws when passed slices with colliding names.
  */
 export function testStoreErrorsOnSliceNameCollision() {
-  const slice1 = new Slice<TestState>('name');
-  const slice2 = new Slice<TestState>('name');
+  const slice1 = new Slice<TestState, any>('name');
+  const slice2 = new Slice<TestState, any>('name');
 
   let didError = false;
 
@@ -261,7 +261,7 @@ export function testStoreErrorsOnSliceNameCollision() {
  * the same name.
  */
 export function testSliceErrorsOnActionNameCollision() {
-  const slice = new Slice<TestState>('name');
+  const slice = new Slice<TestState, any>('name');
 
   let didError = false;
 
@@ -280,8 +280,8 @@ export function testSliceErrorsOnActionNameCollision() {
  * across slices to register other reducers.
  */
 export function testSliceReducerSplitting() {
-  const slice1 = new Slice<TestState>('name1');
-  const slice2 = new Slice<TestState>('name2');
+  const slice1 = new Slice<TestState, any>('name1');
+  const slice2 = new Slice<TestState, any>('name2');
 
   const doThing = slice1.addReducer(
       'do-thing',

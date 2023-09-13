@@ -27,7 +27,7 @@ import {getEntry, getFileData, getStore} from '../store.js';
  * @suppress {checkTypes} TS already checks this file.
  */
 
-const slice = new Slice<State>('allEntries');
+const slice = new Slice<State, State['allEntries']>('allEntries');
 export {slice as allEntriesSlice};
 
 /**
