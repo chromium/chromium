@@ -1439,10 +1439,6 @@ bool LocalFrameView::RunPostLayoutIntersectionObserverSteps() {
                                       frame_view.NeedsLayout();
       });
 
-  if (!needs_more_lifecycle_steps) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return needs_more_lifecycle_steps;
 }
 
@@ -2313,8 +2309,8 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
     // ScrollSnapshotClients may be associated with scrollers that never had a
     // chance to get a layout box at the time style was calculated; when this
-    // situation happens, RunScrollSnapshotClientSteps will re-snapshot all
-    // affected clients and may dirty the style for associated effect targets.
+    // situation happens, RunScrollTimelineSteps will re-snapshot all affected
+    // clients and dirty style for associated effect targets.
     //
     // https://github.com/w3c/csswg-drafts/issues/5261
     if (should_run_scroll_snapshot_client_steps) {
@@ -2323,11 +2319,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       if (needs_to_repeat_lifecycle)
         continue;
     }
-
-    // Scroll animations can result in `RunStyleAndLayoutLifecyclePhases`
-    // exiting with a dirty tree, but once we have successfully made it past
-    // `RunScrollSnapshotClientSteps`, the tree should be clean.
-    CheckStyleAndLayoutClean();
 
     if (!GetLayoutView())
       return;
@@ -2365,11 +2356,10 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
         continue;
     }
 
-    DCHECK(ShouldThrottleRendering() ||
-           Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
-    if (ShouldThrottleRendering() || !run_more_lifecycle_phases) {
-      return;
-    }
+      DCHECK(ShouldThrottleRendering() ||
+             Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
+      if (ShouldThrottleRendering() || !run_more_lifecycle_phases)
+        return;
 
     // Some features may require several passes over style and layout
     // within the same lifecycle update.
@@ -2451,10 +2441,6 @@ bool LocalFrameView::RunScrollSnapshotClientSteps() {
         bool valid = frame_view.GetFrame().ValidateScrollSnapshotClients();
         re_run_lifecycles |= !valid;
       });
-  if (!re_run_lifecycles) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return re_run_lifecycles;
 }
 
@@ -2499,10 +2485,6 @@ bool LocalFrameView::RunViewTransitionSteps(
                             frame_view.NeedsLayout();
       });
 
-  if (!re_run_lifecycle) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return re_run_lifecycle;
 }
 
@@ -2525,10 +2507,6 @@ bool LocalFrameView::RunResizeObserverSteps(
         bool result = frame_view.NotifyResizeObservers();
         re_run_lifecycles = re_run_lifecycles || result;
       });
-  if (!re_run_lifecycles) {
-    // When not re-running the lifecycle, we should not dirty style or layout.
-    CheckStyleAndLayoutClean();
-  }
   return re_run_lifecycles;
 }
 
@@ -2631,9 +2609,6 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
         DocumentLifecycle::kCompositingInputsClean);
   });
 
-  // The CompositingInputs lifecycle phase should not dirty style or layout.
-  CheckStyleAndLayoutClean();
-
   return target_state > DocumentLifecycle::kCompositingInputsClean;
 }
 
@@ -2689,9 +2664,6 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kPrePaintClean);
   });
-
-  // The PrePaint lifecycle phase should not dirty style or layout.
-  CheckStyleAndLayoutClean();
 
   return target_state > DocumentLifecycle::kPrePaintClean;
 }
@@ -2799,9 +2771,6 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
   if (GetPage())
     GetPage()->Animator().ReportFrameAnimations(GetCompositorAnimationHost());
-
-  // The Paint lifecycle phase should not dirty style or layout.
-  CheckStyleAndLayoutClean();
 }
 
 void LocalFrameView::RunAccessibilitySteps() {
@@ -4693,15 +4662,6 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
       hidden_for_throttling, subtree_throttled, display_locked, recurse);
   if (was_throttled != CanThrottleRendering())
     RenderThrottlingStatusChanged();
-}
-
-void LocalFrameView::CheckStyleAndLayoutClean() {
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    CHECK(frame_view.CheckDoesNotNeedLayout());
-    CHECK(!frame_view.GetFrame()
-               .GetDocument()
-               ->NeedsLayoutTreeUpdateForThisDocument());
-  });
 }
 
 void LocalFrameView::BeginLifecycleUpdates() {
