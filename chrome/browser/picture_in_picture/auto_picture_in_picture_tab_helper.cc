@@ -17,6 +17,7 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 
