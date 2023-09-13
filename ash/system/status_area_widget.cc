@@ -175,12 +175,6 @@ void StatusAreaWidget::Initialize() {
 
 StatusAreaWidget::~StatusAreaWidget() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  // If QsRevamp flag is enabled, `notification_center_tray_` may be null in
-  // some unittests. During the test environment tear-down, removing the
-  // observer will lead to a crash.
-  if (features::IsQsRevampEnabled() && notification_center_tray_) {
-    notification_center_tray_->RemoveObserver(this);
-  }
 
   // If QsRevamp flag is enabled, reset `animation_controller_` before
   // destroying `notification_center_tray_` so that we don't run into a UaF.
@@ -729,12 +723,14 @@ void StatusAreaWidget::SetOpenShelfPodBubble(
       /*bubble_shown=*/open_shelf_pod_bubble_);
 }
 
+void StatusAreaWidget::OnViewIsDeleting(views::View* observed_view) {
+  CHECK(observed_view == notification_center_tray_);
+  notification_center_tray_->RemoveObserver(this);
+}
+
 void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,
                                                views::View* starting_view) {
-  if (observed_view != notification_center_tray_) {
-    return;
-  }
-
+  CHECK(observed_view == notification_center_tray_);
   UpdateDateTrayRoundedCorners();
 }
 

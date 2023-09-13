@@ -235,6 +235,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   absl::optional<LayoutInputs> layout_inputs_;
 
   // views::ViewObserver:
+  void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
 
