@@ -304,7 +304,7 @@ should-not-be-flexbox{
     "isKeyboardFocusable": true,
     "accessibleName": "click",
     "accessibleRole": "button",
-    "layoutObjectName": "LayoutNGButton",
+    "layoutObjectName": "LayoutButton",
     "showAccessibilityInfo": true
   }
 }

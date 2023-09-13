@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_button.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_button.h"
 
 namespace blink {
 
-LayoutNGButton::LayoutNGButton(Element* element)
+LayoutButton::LayoutButton(Element* element)
     : LayoutNGFlexibleBox(element), inner_(nullptr) {}
 
-LayoutNGButton::~LayoutNGButton() = default;
+LayoutButton::~LayoutButton() = default;
 
-void LayoutNGButton::Trace(Visitor* visitor) const {
+void LayoutButton::Trace(Visitor* visitor) const {
   visitor->Trace(inner_);
   LayoutNGFlexibleBox::Trace(visitor);
 }
 
-void LayoutNGButton::AddChild(LayoutObject* new_child,
-                              LayoutObject* before_child) {
+void LayoutButton::AddChild(LayoutObject* new_child,
+                            LayoutObject* before_child) {
   if (!inner_) {
     // Create an anonymous block.
     DCHECK(!FirstChild());
@@ -28,7 +28,7 @@ void LayoutNGButton::AddChild(LayoutObject* new_child,
   inner_->AddChild(new_child, before_child);
 }
 
-void LayoutNGButton::RemoveChild(LayoutObject* old_child) {
+void LayoutButton::RemoveChild(LayoutObject* old_child) {
   if (old_child == inner_ || !inner_) {
     LayoutNGFlexibleBox::RemoveChild(old_child);
     inner_ = nullptr;
@@ -43,7 +43,7 @@ void LayoutNGButton::RemoveChild(LayoutObject* old_child) {
   }
 }
 
-void LayoutNGButton::UpdateAnonymousChildStyle(
+void LayoutButton::UpdateAnonymousChildStyle(
     const LayoutObject* child,
     ComputedStyleBuilder& child_style_builder) const {
   DCHECK_EQ(inner_, child);
@@ -64,10 +64,9 @@ void LayoutNGButton::UpdateAnonymousChildStyle(
   child_style_builder.SetAlignContent(parent_style.AlignContent());
 }
 
-bool LayoutNGButton::ShouldCountWrongBaseline(
-    const LayoutBox& button_box,
-    const ComputedStyle& style,
-    const ComputedStyle* parent_style) {
+bool LayoutButton::ShouldCountWrongBaseline(const LayoutBox& button_box,
+                                            const ComputedStyle& style,
+                                            const ComputedStyle* parent_style) {
   if (button_box.IsFloatingOrOutOfFlowPositioned()) {
     return false;
   }

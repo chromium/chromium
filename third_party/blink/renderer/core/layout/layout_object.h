@@ -961,7 +961,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsButton() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGButton);
+    return IsOfType(kLayoutObjectButton);
   }
   bool IsLayoutNGCustom() const {
     NOT_DESTROYED();
@@ -1816,7 +1816,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            SpannerPlaceholder();
   }
 
-  // We include LayoutNGButton in this check, because buttons are
+  // We include LayoutButton in this check, because buttons are
   // implemented using flex box but should still support things like
   // first-line, first-letter and text-overflow.
   // The flex box and grid specs require that flex box and grid do not
@@ -3509,6 +3509,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // The identifier name for blink::LayoutFoo should be kLayoutObjectFoo.
   enum LayoutObjectType {
     kLayoutObjectBr,
+    kLayoutObjectButton,
     kLayoutObjectCanvas,
     kLayoutObjectCounter,
     kLayoutObjectCustomScrollbarPart,
@@ -3523,7 +3524,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectMultiColumnSet,
     kLayoutObjectMultiColumnSpannerPlaceholder,
     kLayoutObjectNGBlockFlow,
-    kLayoutObjectNGButton,
     kLayoutObjectNGCustom,
     kLayoutObjectNGFieldset,
     kLayoutObjectNGFlexibleBox,

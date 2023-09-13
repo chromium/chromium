@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_button.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_button.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_baseline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
@@ -2115,7 +2115,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
   // We also have a difference in empty buttons. See crbug.com/304848.
 
   const LayoutObject* parent = Node().GetLayoutBox()->Parent();
-  if (!LayoutNGButton::ShouldCountWrongBaseline(
+  if (!LayoutButton::ShouldCountWrongBaseline(
           *Node().GetLayoutBox(), Style(),
           parent ? parent->Style() : nullptr)) {
     return;

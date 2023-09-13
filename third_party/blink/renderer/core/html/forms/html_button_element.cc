@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_button.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_button.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -59,7 +59,7 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(
       display == EDisplay::kInlineLayoutCustom ||
       display == EDisplay::kLayoutCustom)
     return HTMLFormControlElement::CreateLayoutObject(style);
-  return MakeGarbageCollected<LayoutNGButton>(this);
+  return MakeGarbageCollected<LayoutButton>(this);
 }
 
 const AtomicString& HTMLButtonElement::FormControlType() const {

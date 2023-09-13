@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_button.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_button.h"
 
 namespace blink {
 
@@ -81,7 +81,7 @@ ControlPart BaseButtonInputType::AutoAppearance() const {
 
 LayoutObject* BaseButtonInputType::CreateLayoutObject(
     const ComputedStyle&) const {
-  return MakeGarbageCollected<LayoutNGButton>(&GetElement());
+  return MakeGarbageCollected<LayoutButton>(&GetElement());
 }
 
 InputType::ValueMode BaseButtonInputType::GetValueMode() const {

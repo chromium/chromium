@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGButton INPUT id='control' class='composited'",
+      "name": "LayoutButton INPUT id='control' class='composited'",
       "bounds": [127, 22],
       "contentsOpaqueForText": true,
       "backgroundColor": "#EFEFEF",

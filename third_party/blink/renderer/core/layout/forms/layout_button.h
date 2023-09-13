@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_BUTTON_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_BUTTON_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_BUTTON_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_BUTTON_H_
 
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 
 namespace blink {
 
-class LayoutNGButton final : public LayoutNGFlexibleBox {
+class LayoutButton final : public LayoutNGFlexibleBox {
  public:
-  explicit LayoutNGButton(Element*);
-  ~LayoutNGButton() override;
+  explicit LayoutButton(Element*);
+  ~LayoutButton() override;
   void Trace(Visitor*) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGButton";
+    return "LayoutButton";
   }
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
@@ -39,7 +39,7 @@ class LayoutNGButton final : public LayoutNGFlexibleBox {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectNGButton || LayoutNGFlexibleBox::IsOfType(type);
+    return type == kLayoutObjectButton || LayoutNGFlexibleBox::IsOfType(type);
   }
 
   Member<LayoutBlock> inner_;
@@ -47,4 +47,4 @@ class LayoutNGButton final : public LayoutNGFlexibleBox {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_BUTTON_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_BUTTON_H_
