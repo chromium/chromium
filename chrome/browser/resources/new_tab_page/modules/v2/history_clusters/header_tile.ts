@@ -85,7 +85,7 @@ export class HistoryClustersHeaderElementV2 extends ElementBase {
         },
         {
           action: 'show-all',
-          icon: 'modules:right_panel_open',
+          icon: 'modules:dock_to_left',
           text: this.i18n('modulesJourneysShowAllButton'),
         },
         {
