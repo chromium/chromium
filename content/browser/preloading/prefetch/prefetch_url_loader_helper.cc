@@ -60,9 +60,18 @@ void OnComplete(int frame_tree_node_id,
                 GetPrefetchCallback get_prefetch_callback,
                 PrefetchContainer::Reader reader,
                 PrefetchProbeResult probe_result) {
-  if (!reader || !reader.IsPrefetchServable(PrefetchCacheableDuration())) {
+  if (!reader) {
     std::move(get_prefetch_callback).Run({});
     return;
+  }
+
+  switch (reader.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      std::move(get_prefetch_callback).Run({});
+      return;
+    case PrefetchContainer::ServableState::kServable:
+      break;
   }
 
   // Delay updating the prefetch with the probe result in case it becomes not
@@ -197,9 +206,18 @@ void OnGotPrefetchToServe(
   }
 #endif
 
-  if (!reader || !reader.IsPrefetchServable(PrefetchCacheableDuration())) {
+  if (!reader) {
     std::move(get_prefetch_callback).Run({});
     return;
+  }
+
+  switch (reader.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      std::move(get_prefetch_callback).Run({});
+      return;
+    case PrefetchContainer::ServableState::kServable:
+      break;
   }
 
   if (reader.HaveDefaultContextCookiesChanged()) {

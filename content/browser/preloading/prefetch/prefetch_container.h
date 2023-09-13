@@ -248,10 +248,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // resource.
   void OnPrefetchComplete();
 
-  // Whether or not |PrefetchService| should block until the head of |this| is
-  // received on a navigation to a matching URL.
-  bool ShouldBlockUntilHeadReceived() const;
-
   // Allows for a timer to be used to limit the maximum amount of time that a
   // navigation can be blocked waiting for the head of this prefetch to be
   // received.
@@ -259,13 +255,22 @@ class CONTENT_EXPORT PrefetchContainer {
       std::unique_ptr<base::OneShotTimer> block_until_head_timer);
   void ResetBlockUntilHeadTimer();
 
-  // Whether or not |this| is servable.
-  //
-  // Note: `IsPrefetchServable()` does NOT cover all servable condition checks.
+  // Note: `GetServableState()` does NOT cover all servable condition checks.
   // `HasPrefetchBeenConsideredToServe()` and
   // `Reader::HaveDefaultContextCookiesChanged()` also should be checked.
   // TODO(crbug.com/1449360): Make this requirement more explicit/checked.
-  bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
+  enum class ServableState {
+    // Not servable nor should block until head received.
+    kNotServable,
+
+    // Servable.
+    kServable,
+
+    // |PrefetchService| should block until the head of |this| is
+    // received on a navigation to a matching URL.
+    kShouldBlockUntilHeadReceived,
+  };
+  ServableState GetServableState(base::TimeDelta cacheable_duration) const;
 
   // Called once it is determined whether or not the prefetch is servable, i.e.
   // either when non-redirect response head is received, or when determined not
@@ -366,7 +371,8 @@ class CONTENT_EXPORT PrefetchContainer {
     explicit operator bool() const { return GetPrefetchContainer(); }
 
     // Methods redirecting to `prefetch_container_`.
-    bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
+    PrefetchContainer::ServableState GetServableState(
+        base::TimeDelta cacheable_duration) const;
     bool HasPrefetchStatus() const;
     PrefetchStatus GetPrefetchStatus() const;
 

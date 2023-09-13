@@ -1355,9 +1355,6 @@ void PrefetchService::PrepareToServe(
     return;
   }
 
-  bool is_servable =
-      prefetch_container->IsPrefetchServable(PrefetchCacheableDuration());
-
   // `url` might be different from
   // `prefetch_container->GetPrefetchContainerKey().second` due to
   // No-Vary-Search.
@@ -1377,11 +1374,17 @@ void PrefetchService::PrepareToServe(
   DVLOG(1) << *prefetch_container << ": promoted to ready";
   prefetches_ready_to_serve_[ready_key] = prefetch_container;
 
-  if (is_servable) {
-    // For prefetches that are already servable, start the process of copying
-    // cookies from the isolated network context used to make the prefetch to
-    // the default network context.
-    CopyIsolatedCookies(prefetch_container->CreateReader());
+  switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kServable:
+      // For prefetches that are already servable, start the process of copying
+      // cookies from the isolated network context used to make the prefetch to
+      // the default network context.
+      CopyIsolatedCookies(prefetch_container->CreateReader());
+      break;
+
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      break;
   }
 }
 
@@ -1488,12 +1491,15 @@ void PrefetchService::FindPrefetchContainerToServe(
         !nvs_expected->AreEquivalent(nav_url, prefetch->GetURL())) {
       continue;
     }
-    if (prefetch->IsPrefetchServable(PrefetchCacheableDuration()) ||
-        prefetch->ShouldBlockUntilHeadReceived()) {
-      prefetch_match_resolver.AddInexactPrefetchMatch(*prefetch);
-      // TODO(crbug.com/1462206): We'd like to continue matching here in a
-      // follow-up CL. At this time we only wait for one prefetch.
-      return;
+    switch (prefetch->GetServableState(PrefetchCacheableDuration())) {
+      case PrefetchContainer::ServableState::kNotServable:
+        break;
+      case PrefetchContainer::ServableState::kServable:
+      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+        prefetch_match_resolver.AddInexactPrefetchMatch(*prefetch);
+        // TODO(crbug.com/1462206): We'd like to continue matching here in a
+        // follow-up CL. At this time we only wait for one prefetch.
+        return;
     }
   }
   return;
@@ -1534,45 +1540,48 @@ void PrefetchService::HandlePrefetchContainerToServe(
     return;
   }
 
-  if (prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
-    DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << url
-             << "): PrefetchContainer is servable";
-    prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
-    ReturnPrefetchToServe(
-        prefetch_container->CreateReader(),
-        prefetch_match_resolver.ReleaseOnPrefetchToServeReadyCallback());
-    return;
-  }
+  switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kServable:
+      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << url
+               << "): PrefetchContainer is servable";
+      prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
+      ReturnPrefetchToServe(
+          prefetch_container->CreateReader(),
+          prefetch_match_resolver.ReleaseOnPrefetchToServeReadyCallback());
+      break;
 
-  if (prefetch_container->ShouldBlockUntilHeadReceived()) {
-    DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << url
-             << "): PrefetchContainer is blocked until head";
-    prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/true);
-    prefetch_container->SetOnReceivedHeadCallback(
-        base::BindOnce(&PrefetchService::WaitOnPrefetchToServeHead,
-                       weak_method_factory_.GetWeakPtr(), key,
-                       prefetch_match_resolver.GetWeakPtr(),
-                       prefetch_container->GetWeakPtr()));
-
-    base::TimeDelta block_until_head_timeout = PrefetchBlockUntilHeadTimeout(
-        prefetch_container->GetPrefetchType().GetEagerness());
-    if (block_until_head_timeout.is_positive()) {
-      std::unique_ptr<base::OneShotTimer> block_until_head_timer =
-          std::make_unique<base::OneShotTimer>();
-      block_until_head_timer->Start(
-          FROM_HERE, block_until_head_timeout,
-          base::BindOnce(&BlockUntilHeadTimeoutHelper,
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << url
+               << "): PrefetchContainer is blocked until head";
+      prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/true);
+      prefetch_container->SetOnReceivedHeadCallback(
+          base::BindOnce(&PrefetchService::WaitOnPrefetchToServeHead,
+                         weak_method_factory_.GetWeakPtr(), key,
+                         prefetch_match_resolver.GetWeakPtr(),
                          prefetch_container->GetWeakPtr()));
-      prefetch_container->TakeBlockUntilHeadTimer(
-          std::move(block_until_head_timer));
-    }
-    return;
-  }
 
-  DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe(" << key.second
-           << "): PrefetchContainer is not servable";
-  prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-  prefetch_match_resolver.ReleaseOnPrefetchToServeReadyCallback().Run({});
+      if (base::TimeDelta block_until_head_timeout =
+              PrefetchBlockUntilHeadTimeout(
+                  prefetch_container->GetPrefetchType().GetEagerness());
+          block_until_head_timeout.is_positive()) {
+        std::unique_ptr<base::OneShotTimer> block_until_head_timer =
+            std::make_unique<base::OneShotTimer>();
+        block_until_head_timer->Start(
+            FROM_HERE, block_until_head_timeout,
+            base::BindOnce(&BlockUntilHeadTimeoutHelper,
+                           prefetch_container->GetWeakPtr()));
+        prefetch_container->TakeBlockUntilHeadTimer(
+            std::move(block_until_head_timer));
+      }
+      break;
+
+    case PrefetchContainer::ServableState::kNotServable:
+      DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
+               << key.second << "): PrefetchContainer is not servable";
+      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+      prefetch_match_resolver.ReleaseOnPrefetchToServeReadyCallback().Run({});
+      break;
+  }
 }
 
 void PrefetchService::GetPrefetchToServe(
@@ -1619,11 +1628,15 @@ void PrefetchService::WaitOnPrefetchToServeHead(
 
   prefetch_container->ResetBlockUntilHeadTimer();
 
-  if (!prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
-    prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-    ReturnPrefetchToServe(
-        {}, prefetch_match_resolver->ReleaseOnPrefetchToServeReadyCallback());
-    return;
+  switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+      ReturnPrefetchToServe(
+          {}, prefetch_match_resolver->ReleaseOnPrefetchToServeReadyCallback());
+      return;
+    case PrefetchContainer::ServableState::kServable:
+      break;
   }
 
   if (nav_url == prefetch_container->GetURL()) {
@@ -1687,13 +1700,19 @@ void PrefetchService::ReturnPrefetchToServe(
     prefetch_container->UpdateServingPageMetrics();
   }
 
-  if (!prefetch_container ||
-      !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
-    if (prefetch_container) {
-      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-    }
+  if (!prefetch_container) {
     std::move(on_prefetch_to_serve_ready).Run({});
     return;
+  }
+
+  switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kNotServable:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+      std::move(on_prefetch_to_serve_ready).Run({});
+      return;
+    case PrefetchContainer::ServableState::kServable:
+      break;
   }
 
   if (reader.HaveDefaultContextCookiesChanged()) {
@@ -1759,10 +1778,16 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
         num_matching_eligible_prefetch++;
       }
 
-      if (prefetch_iter.second->IsPrefetchServable(
-              PrefetchCacheableDuration()) &&
-          !prefetch_iter.second->HasPrefetchBeenConsideredToServe()) {
-        num_matching_servable_prefetch++;
+      switch (
+          prefetch_iter.second->GetServableState(PrefetchCacheableDuration())) {
+        case PrefetchContainer::ServableState::kNotServable:
+        case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+          break;
+        case PrefetchContainer::ServableState::kServable:
+          if (!prefetch_iter.second->HasPrefetchBeenConsideredToServe()) {
+            num_matching_servable_prefetch++;
+          }
+          break;
       }
 
       if (prefetch_iter.second->GetReferrer().url ==

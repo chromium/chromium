@@ -869,17 +869,6 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
         completion_status->completion_time - head->load_timing.request_start;
 }
 
-bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
-  // Can only block until head if the request has been started using a
-  // streaming URL loader and head/failure/redirect hasn't been received yet.
-  if (!streaming_loader_ || redirect_chain_.empty() ||
-      !redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
-    return false;
-  }
-
-  return PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness());
-}
-
 void PrefetchContainer::TakeBlockUntilHeadTimer(
     std::unique_ptr<base::OneShotTimer> block_until_head_timer) {
   block_until_head_timer_ = std::move(block_until_head_timer);
@@ -892,12 +881,24 @@ void PrefetchContainer::ResetBlockUntilHeadTimer() {
   block_until_head_timer_.reset();
 }
 
-bool PrefetchContainer::IsPrefetchServable(
+PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     base::TimeDelta cacheable_duration) const {
-  // Whether or not the non-redirect response (either fully or partially
+  // Servable if the non-redirect response (either fully or partially
   // received body) is servable.
-  return GetNonRedirectResponseReader() &&
-         GetNonRedirectResponseReader()->Servable(cacheable_duration);
+  if (GetNonRedirectResponseReader() &&
+      GetNonRedirectResponseReader()->Servable(cacheable_duration)) {
+    return ServableState::kServable;
+  }
+
+  // Can only block until head if the request has been started using a
+  // streaming URL loader and head/failure/redirect hasn't been received yet.
+  if (streaming_loader_ && !redirect_chain_.empty() &&
+      redirect_chain_.back()->response_reader_->IsWaitingForResponse() &&
+      PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness())) {
+    return ServableState::kShouldBlockUntilHeadReceived;
+  }
+
+  return ServableState::kNotServable;
 }
 
 bool PrefetchContainer::Reader::DoesCurrentURLToServeMatch(
@@ -1041,9 +1042,9 @@ PrefetchContainer::Reader::GetCurrentResponseReaderToServeForTesting() {
   return GetCurrentSinglePrefetchToServe().response_reader_->GetWeakPtr();
 }
 
-bool PrefetchContainer::Reader::IsPrefetchServable(
+PrefetchContainer::ServableState PrefetchContainer::Reader::GetServableState(
     base::TimeDelta cacheable_duration) const {
-  return GetPrefetchContainer()->IsPrefetchServable(cacheable_duration);
+  return GetPrefetchContainer()->GetServableState(cacheable_duration);
 }
 bool PrefetchContainer::Reader::HasPrefetchStatus() const {
   return GetPrefetchContainer()->HasPrefetchStatus();

@@ -185,8 +185,10 @@ TEST_F(PrefetchContainerTest, Servable) {
 
   task_environment()->FastForwardBy(base::Minutes(2));
 
-  EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::Minutes(1)));
-  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::Minutes(3)));
+  EXPECT_NE(prefetch_container.GetServableState(base::Minutes(1)),
+            PrefetchContainer::ServableState::kServable);
+  EXPECT_EQ(prefetch_container.GetServableState(base::Minutes(3)),
+            PrefetchContainer::ServableState::kServable);
   EXPECT_TRUE(prefetch_container.GetHead());
 }
 
@@ -882,12 +884,14 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   EXPECT_EQ(prefetch_container->GetStreamingURLLoader(), nullptr);
 
-  EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_NE(prefetch_container->GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   EXPECT_FALSE(prefetch_container->GetHead());
 
   MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container.get(), kTestUrl1, kTestUrl2);
-  EXPECT_TRUE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetHead());
 
   // As the prefetch is already completed, the streaming loader is deleted
@@ -910,7 +914,8 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   // `CreateRequestHandler()` itself doesn't make the PrefetchContainer
   // non-servable.
-  EXPECT_TRUE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetHead());
 
   std::unique_ptr<PrefetchTestURLLoaderClient> first_serving_url_loader_client =
@@ -989,21 +994,24 @@ TEST_F(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   ASSERT_TRUE(prefetch_container.GetStreamingURLLoader());
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader =
       prefetch_container.GetStreamingURLLoader();
-  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(prefetch_container.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   prefetch_container.CancelStreamingURLLoaderIfNotServing();
 
   // `streaming_loader` is still alive and working.
   EXPECT_FALSE(prefetch_container.GetStreamingURLLoader());
   EXPECT_TRUE(streaming_loader);
-  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(prefetch_container.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   base::RunLoop().RunUntilIdle();
 
   // `streaming_loader` is deleted asynchronously and its prefetching URL loader
   // is canceled. This itself doesn't make PrefetchContainer non-servable.
   EXPECT_FALSE(streaming_loader);
-  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(prefetch_container.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 }
 
 // To test lifetime and ownership issues, all possible event orderings for
@@ -1089,7 +1097,8 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
                             std::move(producer), &producer_completed));
   }
 
-  EXPECT_FALSE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_NE(prefetch_container->GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   EXPECT_FALSE(prefetch_container->GetHead());
 
   pending_request.client->OnReceiveResponse(
@@ -1097,7 +1106,8 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       absl::nullopt);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetHead());
 
   PrefetchContainer::Reader reader = prefetch_container->CreateReader();

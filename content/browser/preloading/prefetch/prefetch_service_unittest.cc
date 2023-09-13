@@ -860,7 +860,8 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -1074,7 +1075,8 @@ TEST_F(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -1158,7 +1160,8 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -1291,7 +1294,8 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -1595,7 +1599,8 @@ TEST_F(PrefetchServiceTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -1714,7 +1719,8 @@ TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -1841,7 +1847,8 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -1907,7 +1914,8 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -1974,7 +1982,8 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegisteredAtThisPath) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -2092,7 +2101,8 @@ TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -2156,7 +2166,8 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -2305,7 +2316,8 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -2509,7 +2521,8 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 
@@ -2757,7 +2770,8 @@ TEST_F(PrefetchServiceTest, SuccessNonHTML) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   ExpectCorrectUkmLogs({});
 }
@@ -2907,7 +2921,8 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   EXPECT_TRUE(serveable_reader1.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader1.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader1.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader1.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   Navigate(GURL("https://example2.com"), main_rfh()->GetFrameToken());
 
@@ -2929,7 +2944,8 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   EXPECT_TRUE(serveable_reader2.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader2.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader2.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader2.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   Navigate(GURL("https://example3.com"), main_rfh()->GetFrameToken());
 
@@ -3552,7 +3568,8 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotFinishedInTime);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -3598,7 +3615,8 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -3653,7 +3671,8 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
@@ -3783,7 +3802,8 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -4150,7 +4170,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -4354,7 +4375,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -4463,7 +4485,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -4571,7 +4594,8 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -4701,7 +4725,8 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -4980,7 +5005,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
@@ -5097,7 +5123,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
-  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_EQ(serveable_reader.GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kServable);
   ASSERT_TRUE(serveable_reader.GetPrefetchContainer()->GetHead());
   EXPECT_TRUE(serveable_reader.GetPrefetchContainer()
                   ->GetHead()
