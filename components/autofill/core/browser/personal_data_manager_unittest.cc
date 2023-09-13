@@ -2411,6 +2411,49 @@ TEST_F(PersonalDataManagerTest,
   }
 }
 
+// Tests that phone number types are correctly deduplicated for suggestions.
+TEST_F(PersonalDataManagerTest,
+       GetProfileSuggestions_PhoneNumberDeduplication) {
+  // Set up 2 different profiles.
+  AutofillProfile profile1;
+  profile1.SetRawInfo(NAME_FULL, u"First Middle Last");
+  profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491601234567");
+  AddProfileToPersonalDataManager(profile1);
+
+  AutofillProfile profile2;
+  profile2.SetRawInfo(NAME_FULL, u"First Middle Last");
+  profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491607654321");
+  AddProfileToPersonalDataManager(profile2);
+
+  ResetPersonalDataManager();
+
+  {
+    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
+        AutofillType(NAME_FULL), std::u16string(), false,
+        {NAME_FULL, PHONE_HOME_WHOLE_NUMBER});
+    EXPECT_EQ(2U, suggestions.size());
+  }
+  {
+    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
+        AutofillType(NAME_FULL), std::u16string(), false,
+        {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_AND_NUMBER});
+    EXPECT_EQ(2U, suggestions.size());
+  }
+  {
+    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
+        AutofillType(NAME_FULL), std::u16string(), false,
+        {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE,
+         PHONE_HOME_NUMBER});
+    EXPECT_EQ(2U, suggestions.size());
+  }
+  {
+    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
+        AutofillType(NAME_FULL), std::u16string(), false,
+        {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE});
+    EXPECT_EQ(1U, suggestions.size());
+  }
+}
+
 // Test that local and server profiles are not shown if
 // |kAutofillProfileEnabled| is set to |false|.
 TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfileAutofillDisabled) {

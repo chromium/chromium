@@ -643,7 +643,6 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
           has_different_address ||
           (address.GetValueForComparisonForType(type, other_address) !=
            other_address.GetValueForComparisonForType(type, address));
-      continue;
     } else if (type == NAME_FULL) {
       if (!comparator.IsNameVariantOf(
               AutofillProfileComparator::NormalizeForComparison(
@@ -661,15 +660,12 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         // conditions that follow.
         return false;
       }
-    } else if (AutofillType(type).group() == FieldTypeGroup::kPhone) {
-      // Phone numbers should be canonicalized before comparing.
-      if (type != PHONE_HOME_WHOLE_NUMBER &&
-          type != PHONE_HOME_CITY_AND_NUMBER) {
-        continue;
-      } else if (!i18n::PhoneNumbersMatch(
-                     value, profile.GetInfo(type, app_locale),
-                     base::UTF16ToASCII(GetRawInfo(ADDRESS_HOME_COUNTRY)),
-                     app_locale)) {
+    } else if (type == PHONE_HOME_WHOLE_NUMBER ||
+               type == PHONE_HOME_CITY_AND_NUMBER) {
+      if (!i18n::PhoneNumbersMatch(
+              value, profile.GetInfo(type, app_locale),
+              base::UTF16ToASCII(GetRawInfo(ADDRESS_HOME_COUNTRY)),
+              app_locale)) {
         return false;
       }
     } else if (!comparator.Compare(value, profile.GetInfo(type, app_locale))) {
