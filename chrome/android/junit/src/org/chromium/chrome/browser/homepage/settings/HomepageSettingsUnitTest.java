@@ -123,7 +123,6 @@ public class HomepageSettingsUnitTest {
     public void setUp() {
         HomepagePolicyManager.setInstanceForTests(mMockHomepagePolicyManger);
         PartnerBrowserCustomizations.setInstanceForTesting(mMockPartnerBrowserCustomizations);
-        Profile.setLastUsedProfileForTesting(mProfile);
         mActivityScenario = ActivityScenario.launch(TestActivity.class);
         mActivityScenario.onActivity(activity -> {
             mActivity = activity;
@@ -140,17 +139,14 @@ public class HomepageSettingsUnitTest {
     }
 
     private void launchHomepageSettings() {
-        String tag = "HomepageSettings";
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(android.R.id.content, HomepageSettings.class, null, tag)
-                .commit();
+        HomepageSettings fragment =
+                (HomepageSettings) fragmentManager.getFragmentFactory().instantiate(
+                        HomepageSettings.class.getClassLoader(), HomepageSettings.class.getName());
+        fragment.setProfile(mProfile);
+        fragmentManager.beginTransaction().replace(android.R.id.content, fragment).commit();
 
         mActivityScenario.moveToState(State.STARTED);
-        HomepageSettings fragment =
-                (HomepageSettings) mActivity.getSupportFragmentManager().findFragmentById(
-                        android.R.id.content);
-
         mSwitch = (ChromeSwitchPreference) fragment.findPreference(
                 HomepageSettings.PREF_HOMEPAGE_SWITCH);
         mRadioGroupPreference = (RadioButtonGroupHomepagePreference) fragment.findPreference(

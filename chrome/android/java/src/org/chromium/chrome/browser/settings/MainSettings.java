@@ -83,15 +83,15 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_AUTOFILL_ADDRESSES = "autofill_addresses";
     public static final String PREF_AUTOFILL_PAYMENTS = "autofill_payment_methods";
 
-    private final ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
+
+    private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public MainSettings() {
         setHasOptionsMenu(true);
-        mManagedPreferenceDelegate = createManagedPreferenceDelegate();
     }
 
     @Override
@@ -156,6 +156,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void createPreferences() {
+        mManagedPreferenceDelegate = createManagedPreferenceDelegate();
+
         SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
 
         cachePreferences();

@@ -18,6 +18,7 @@ public abstract class ChromeManagedPreferenceDelegate implements ManagedPreferen
 
     /** Builds a ChromeManagedPreferenceDelegate for the given Profile. */
     public ChromeManagedPreferenceDelegate(Profile profile) {
+        assert profile != null : "Attempting to use a null profile for the managed delegate.";
         mProfile = profile;
     }
 
