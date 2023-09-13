@@ -180,6 +180,11 @@ constexpr int kDomainDiversityMaxBacktrackedDays = 7;
 // avoid other potential issues.
 constexpr int kDSTRoundingOffsetHours = 4;
 
+// When batch-deleting foreign visits (i.e. visits coming from other devices),
+// this specifies how many visits to delete in a single HistoryDBTask. This
+// usually happens when history sync was turned off.
+constexpr int kSyncHistoryForeignVisitsToDeletePerBatch = 100;
+
 // Merges `update` into `existing` by overwriting fields in `existing` that are
 // not the default value in `update`.
 void MergeUpdateIntoExistingModelAnnotations(
@@ -204,17 +209,13 @@ void MergeUpdateIntoExistingModelAnnotations(
   }
 }
 
-int GetForeignVisitsToDeletePerBatch() {
-  return syncer::kSyncHistoryForeignVisitsToDeletePerBatch.Get();
-}
-
 class DeleteForeignVisitsDBTask : public HistoryDBTask {
  public:
   ~DeleteForeignVisitsDBTask() override = default;
 
   bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override {
     VisitID max_visit_id = db->GetDeleteForeignVisitsUntilId();
-    int max_count = GetForeignVisitsToDeletePerBatch();
+    int max_count = kSyncHistoryForeignVisitsToDeletePerBatch;
 
     VisitVector visits;
     if (!db->GetSomeForeignVisits(max_visit_id, max_count, &visits)) {
@@ -1552,7 +1553,7 @@ bool HistoryBackend::IsExpiredVisitTime(const base::Time& time) const {
 
 // static
 int HistoryBackend::GetForeignVisitsToDeletePerBatchForTest() {
-  return GetForeignVisitsToDeletePerBatch();
+  return kSyncHistoryForeignVisitsToDeletePerBatch;
 }
 
 sql::Database& HistoryBackend::GetDBForTesting() {
