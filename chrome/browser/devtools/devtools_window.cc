@@ -1217,6 +1217,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
         url += "&targetType=tab";
       }
+      if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+        url += "&veLogging=true";
+      }
 #if defined(AIDA_SCOPE)
         url += "&enableAida=true";
 #endif

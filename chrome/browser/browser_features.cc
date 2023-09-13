@@ -46,6 +46,12 @@ BASE_FEATURE(kDevToolsTabTarget,
              "DevToolsTabTarget",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Let DevTools front-end log extensive VisualElements-style UMA metrics for
+// impressions and interactions.
+BASE_FEATURE(kDevToolsVeLogging,
+             "DevToolsVeLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Nukes profile directory before creating a new profile using
 // ProfileManager::CreateMultiProfileAsync().
 BASE_FEATURE(kNukeProfileBeforeCreateMultiAsync,

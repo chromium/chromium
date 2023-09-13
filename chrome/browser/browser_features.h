@@ -24,6 +24,7 @@ BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
 BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
+BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 

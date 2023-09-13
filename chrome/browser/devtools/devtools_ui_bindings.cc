@@ -365,6 +365,9 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
+  if (key == "veLogging" && value == "true") {
+    return value;
+  }
 #if defined(AIDA_SCOPE)
   if (key == "enableAida" && value == "true") {
     return value;
