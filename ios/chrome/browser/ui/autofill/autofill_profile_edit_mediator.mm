@@ -274,8 +274,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       case AutofillUITypeProfileHomeAddressLine2:
         [self.consumer setHomeAddressLine2:fieldValue];
         break;
+      case AutofillUITypeProfileHomeAddressDependentLocality:
+        [self.consumer setHomeAddressDependentLocality:fieldValue];
+        break;
       case AutofillUITypeProfileHomeAddressCity:
         [self.consumer setHomeAddressCity:fieldValue];
+        break;
+      case AutofillUITypeProfileHomeAddressAdminLevel2:
+        [self.consumer setHomeAddressAdminLevel2:fieldValue];
         break;
       case AutofillUITypeProfileHomeAddressState:
         [self.consumer setHomeAddressState:fieldValue];

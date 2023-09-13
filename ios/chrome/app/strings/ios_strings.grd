@@ -288,6 +288,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_AUTOFILL_ADDRESS2" desc="Title of the field of a profile address representing the second line of the address. [Length: 15em] [iOS only]">
         Address 2
       </message>
+      <message name="IDS_IOS_AUTOFILL_DEPENDENT_LOCALITY" desc="Title of the field of a profile address representing the neighborhood. A dependent locality is a subunit of a locality, where a 'locality' is roughly equivalent to a city. Examples of dependent localities include inner-city districts and suburbs. Only used in certain countries, like Brazil and Mexico, for example. [Length: 15em] [iOS only]">
+        Neighborhood
+      </message>
+      <message name="IDS_IOS_AUTOFILL_ADMIN_LEVEL2" desc="Title of the field of a profile address representing the administrative area level 2. A sub-division of a state, e.g. a Municipio in Brazil or Mexico. [Length: 15em] [iOS only]">
+        Municipality
+      </message>
       <message name="IDS_IOS_AUTOFILL_CARDHOLDER" desc="Title of the field representing the full name of a credit card holder. [Length: 15em] [iOS only]">
         Name on Card
       </message>

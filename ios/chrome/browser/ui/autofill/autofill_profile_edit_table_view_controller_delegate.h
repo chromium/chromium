@@ -31,6 +31,9 @@
 // the view hierarchy.
 - (void)viewDidDisappear;
 
+// The selected country' country code
+- (NSString*)selectedCountryCode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_

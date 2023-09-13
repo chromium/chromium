@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
 #import "base/notreached.h"
+#import "components/autofill/core/common/autofill_features.h"
 
 AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
   switch (type) {
@@ -34,6 +35,8 @@ AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
       return AutofillUITypeProfileHomeAddressDependentLocality;
     case autofill::ADDRESS_HOME_CITY:
       return AutofillUITypeProfileHomeAddressCity;
+    case autofill::ADDRESS_HOME_ADMIN_LEVEL2:
+      return AutofillUITypeProfileHomeAddressAdminLevel2;
     case autofill::ADDRESS_HOME_STATE:
       return AutofillUITypeProfileHomeAddressState;
     case autofill::ADDRESS_HOME_ZIP:
@@ -84,6 +87,8 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
       return autofill::ADDRESS_HOME_DEPENDENT_LOCALITY;
     case AutofillUITypeProfileHomeAddressCity:
       return autofill::ADDRESS_HOME_CITY;
+    case AutofillUITypeProfileHomeAddressAdminLevel2:
+      return autofill::ADDRESS_HOME_ADMIN_LEVEL2;
     case AutofillUITypeProfileHomeAddressState:
       return autofill::ADDRESS_HOME_STATE;
     case AutofillUITypeProfileHomeAddressZip:
@@ -115,4 +120,36 @@ std::vector<autofill::ServerFieldType> GetAutofillTypeForProfileEdit() {
     all_visible_types.push_back(row.autofillType);
 
   return all_visible_types;
+}
+
+bool FieldIsUsedInAddress(autofill::ServerFieldType autofillType,
+                          NSString* countryCode) {
+  // TODO(crbug.com/1482269): Replace all this with libaddressinput.
+
+  if (autofillType == autofill::ADDRESS_HOME_DEPENDENT_LOCALITY) {
+    // List of countries which require the dependent locality field.
+    NSArray<NSString*>* countryCodes = @[
+      @"BR", @"CN", @"CO", @"IE", @"IR", @"KR", @"MX", @"MY", @"NG", @"NZ",
+      @"PH", @"PK", @"TH", @"ZA"
+    ];
+
+    const bool is_enabled_dependent_locality_parsing =
+        base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableDependentLocalityParsing);
+
+    return is_enabled_dependent_locality_parsing &&
+           ([countryCodes indexOfObject:countryCode] != NSNotFound);
+  }
+
+  if (autofillType == autofill::ADDRESS_HOME_ADMIN_LEVEL2) {
+    const bool is_enabled_support_for_admin_level_2 =
+        base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableSupportForAdminLevel2);
+
+    // Admin Level 2 is only available in Mexico.
+    return is_enabled_support_for_admin_level_2 &&
+           [countryCode isEqualToString:@"MX"];
+  }
+
+  return true;
 }

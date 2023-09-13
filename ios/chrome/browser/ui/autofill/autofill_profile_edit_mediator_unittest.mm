@@ -48,7 +48,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, assign) NSString* fullName;
 @property(nonatomic, assign) NSString* homeAddressLine1;
 @property(nonatomic, assign) NSString* homeAddressLine2;
+@property(nonatomic, assign) NSString* homeAddressDependentLocality;
 @property(nonatomic, assign) NSString* homeAddressCity;
+@property(nonatomic, assign) NSString* homeAddressAdminLevel2;
 @property(nonatomic, assign) NSString* homeAddressState;
 @property(nonatomic, assign) NSString* homeAddressZip;
 @property(nonatomic, assign) NSString* homeAddressCountry;

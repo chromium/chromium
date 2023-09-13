@@ -82,8 +82,15 @@ class InfobarEditAddressProfileTableViewControllerTest
         setHomeAddressLine2:base::SysUTF16ToNSString(profile.GetRawInfo(
                                 autofill::ADDRESS_HOME_LINE2))];
     [autofill_profile_edit_table_view_controller_
+        setHomeAddressDependentLocality:
+            base::SysUTF16ToNSString(
+                profile.GetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY))];
+    [autofill_profile_edit_table_view_controller_
         setHomeAddressCity:base::SysUTF16ToNSString(profile.GetRawInfo(
                                autofill::ADDRESS_HOME_CITY))];
+    [autofill_profile_edit_table_view_controller_
+        setHomeAddressAdminLevel2:base::SysUTF16ToNSString(profile.GetRawInfo(
+                                      autofill::ADDRESS_HOME_ADMIN_LEVEL2))];
     [autofill_profile_edit_table_view_controller_
         setHomeAddressState:base::SysUTF16ToNSString(profile.GetRawInfo(
                                 autofill::ADDRESS_HOME_STATE))];
@@ -186,11 +193,19 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
                                NSString* expectedFooterText,
                                NSString* expectedButtonText) {
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
+    NSString* countryCode = base::SysUTF16ToNSString(
+        profile.GetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
+
     std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
         expected_values;
 
     for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
       const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
+
+      if (!FieldIsUsedInAddress(field.autofillType, countryCode)) {
+        continue;
+      }
+
       if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
           !base::FeatureList::IsEnabled(
               autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {

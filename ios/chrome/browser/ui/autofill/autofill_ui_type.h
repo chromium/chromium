@@ -28,6 +28,7 @@ typedef NS_ENUM(NSInteger, AutofillUIType) {
   AutofillUITypeProfileHomeAddressLine2,
   AutofillUITypeProfileHomeAddressDependentLocality,
   AutofillUITypeProfileHomeAddressCity,
+  AutofillUITypeProfileHomeAddressAdminLevel2,
   AutofillUITypeProfileHomeAddressState,
   AutofillUITypeProfileHomeAddressZip,
   AutofillUITypeProfileHomeAddressSortingCode,

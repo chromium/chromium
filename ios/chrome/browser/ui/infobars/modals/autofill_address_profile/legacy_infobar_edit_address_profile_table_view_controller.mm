@@ -113,8 +113,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
 
+  NSString* countryCode =
+      _profileData[@(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY)];
+
   [model addSectionWithIdentifier:SectionIdentifierFields];
   for (const AutofillProfileFieldDisplayInfo& field : kProfileFieldsToDisplay) {
+    if (!FieldIsUsedInAddress(field.autofillType, countryCode)) {
+      continue;
+    }
+
     if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
         !base::FeatureList::IsEnabled(
             autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {

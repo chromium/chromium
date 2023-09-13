@@ -36,8 +36,14 @@ static const AutofillProfileFieldDisplayInfo kProfileFieldsToDisplay[] = {
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_LINE2, IDS_IOS_AUTOFILL_ADDRESS2, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
+    {autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
+     IDS_IOS_AUTOFILL_DEPENDENT_LOCALITY, UIReturnKeyNext,
+     UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_CITY, IDS_IOS_AUTOFILL_CITY, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
+    {autofill::ADDRESS_HOME_ADMIN_LEVEL2, IDS_IOS_AUTOFILL_ADMIN_LEVEL2,
+     UIReturnKeyNext, UIKeyboardTypeDefault,
+     UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_STATE, IDS_IOS_AUTOFILL_STATE, UIReturnKeyNext,
      UIKeyboardTypeDefault, UITextAutocapitalizationTypeSentences},
     {autofill::ADDRESS_HOME_ZIP, IDS_IOS_AUTOFILL_ZIP, UIReturnKeyNext,
@@ -58,5 +64,9 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type);
 // Returns the list of autofill::ServerFieldType used by the edit profile
 // screens.
 std::vector<autofill::ServerFieldType> GetAutofillTypeForProfileEdit();
+
+// Returns whether the provided field is used in the provided country's address.
+bool FieldIsUsedInAddress(autofill::ServerFieldType autofillType,
+                          NSString* countryCode);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_UI_TYPE_UTIL_H_
