@@ -1165,7 +1165,7 @@ void ElementRuleCollector::DidMatchRule(
             selector.TagQName().Prefix() == g_star_atom;
       }
 
-      if (!universal) {
+      if (!universal || container_query != nullptr) {
         result_.SetHasNonUniversalHighlightPseudoStyles();
       }
 
