@@ -138,8 +138,7 @@ public class TabReparentingTest {
         };
         TestThreadUtils.runOnUiThreadBlocking(() -> tabToBeReparented.addObserver(observer));
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            getActivity().getComponent().resolveNavigationController().openCurrentUrlInBrowser(
-                    true);
+            getActivity().getComponent().resolveNavigationController().openCurrentUrlInBrowser();
             assertNull(getActivity().getActivityTab());
         });
         // Use the extended CriteriaHelper timeout to make sure we get an activity

@@ -29,6 +29,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
@@ -44,6 +46,10 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.ClientId;
@@ -53,6 +59,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -63,6 +70,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -77,13 +85,28 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TrustedCdnPublisherUrlTest {
-    @Rule
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
+                    (BrowserServicesIntentDataProvider intentDataProvider,
+                            CustomTabNightModeStateController nightModeController,
+                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                            TopUiThemeColorProvider topUiThemeColorProvider,
+                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                            -> new BaseCustomTabActivityModule(intentDataProvider,
+                                    nightModeController, intentIgnoringCriterion,
+                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
+
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
-    @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
                     .build();
+
+    @Rule
+    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
+                                          .around(mRenderTestRule)
+                                          .around(mCustomTabActivityTestRule)
+                                          .around(mModuleOverridesRule);
 
     private static final String PAGE_WITH_TITLE =
             "<!DOCTYPE html><html><head><title>Example title</title></head></html>";
@@ -138,7 +161,6 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttps() throws Exception {
         runTrustedCdnPublisherUrlTest("https://www.example.com/test", "com.example.test",
                 "example.com", R.drawable.omnibox_https_valid);
@@ -149,10 +171,9 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testHttp() throws Exception {
         runTrustedCdnPublisherUrlTest("http://example.com/test", "com.example.test", "example.com",
-                R.drawable.omnibox_info);
+                R.drawable.omnibox_not_secure_warning);
         mScreenShooter.shoot("trustedPublisherUrlHttp");
     }
 
@@ -160,13 +181,12 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testRtl() throws Exception {
         String publisher = "\u200e\u202b\u0645\u0648\u0642\u0639\u002e\u0648\u0632\u0627\u0631"
                 + "\u0629\u002d\u0627\u0644\u0623\u062a\u0635\u0627\u0644\u0627\u062a\u002e\u0645"
                 + "\u0635\u0631\u202c\u200e";
         runTrustedCdnPublisherUrlTest("http://xn--4gbrim.xn----rmckbbajlc6dj7bxne2c.xn--wgbh1c/",
-                "com.example.test", publisher, R.drawable.omnibox_info);
+                "com.example.test", publisher, R.drawable.omnibox_not_secure_warning);
         mScreenShooter.shoot("trustedPublisherUrlRtl");
     }
 
@@ -204,7 +224,6 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testPageInfo() throws Exception {
         runTrustedCdnPublisherUrlTest("https://example.com/test", "com.example.test", "example.com",
                 R.drawable.omnibox_https_valid);
@@ -240,9 +259,9 @@ public class TrustedCdnPublisherUrlTest {
     @OverrideTrustedCdn
     @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testReparent() throws Exception {
-        String publisherUrl = "https://example.com/test";
-        runTrustedCdnPublisherUrlTest(
-                publisherUrl, "com.example.test", "example.com", R.drawable.omnibox_https_valid);
+        GURL publisherUrl = new GURL("https://example.com/test");
+        runTrustedCdnPublisherUrlTest(publisherUrl.getSpec(), "com.example.test", "example.com",
+                R.drawable.omnibox_https_valid);
 
         final Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(
@@ -251,8 +270,9 @@ public class TrustedCdnPublisherUrlTest {
         final Tab tab = customTabActivity.getActivityTab();
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             Assert.assertEquals(publisherUrl, TrustedCdn.getPublisherUrl(tab));
-            customTabActivity.getComponent().resolveNavigationController()
-                    .openCurrentUrlInBrowser(true);
+            customTabActivity.getComponent()
+                    .resolveNavigationController()
+                    .openCurrentUrlInBrowser();
             Assert.assertNull(customTabActivity.getActivityTab());
         });
 
@@ -388,7 +408,6 @@ public class TrustedCdnPublisherUrlTest {
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());
         } else {
-            Assert.assertEquals(R.drawable.omnibox_info, expectedSecurityIcon);
             Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
 
             ColorStateList colorStateList = AppCompatResources.getColorStateList(

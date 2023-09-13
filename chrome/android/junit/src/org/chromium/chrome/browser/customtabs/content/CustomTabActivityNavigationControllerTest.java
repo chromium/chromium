@@ -212,7 +212,7 @@ public class CustomTabActivityNavigationControllerTest {
     @Test
     public void startsReparenting_WhenOpenInBrowserCalled_AndChromeCanHandleIntent() {
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
-        mNavigationController.openCurrentUrlInBrowser(false);
+        mNavigationController.openCurrentUrlInBrowser();
         verify(env.activity, never()).startActivity(any());
         verify(mTabController).detachAndStartReparenting(any(), any(), any());
     }
@@ -224,7 +224,7 @@ public class CustomTabActivityNavigationControllerTest {
         doNothing().when(mTabController).detachAndStartReparenting(any(), any(),
                 captor.capture());
 
-        mNavigationController.openCurrentUrlInBrowser(false);
+        mNavigationController.openCurrentUrlInBrowser();
 
         verify(mFinishHandler, never()).onFinish(anyInt());
         captor.getValue().run();
@@ -234,7 +234,7 @@ public class CustomTabActivityNavigationControllerTest {
     @Test
     public void startsNewActivity_WhenOpenInBrowserCalled_AndChromeCanNotHandleIntent() {
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
-        mNavigationController.openCurrentUrlInBrowser(false);
+        mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
         verify(mFinishHandler).onFinish(FinishReason.OPEN_IN_BROWSER);
@@ -246,7 +246,7 @@ public class CustomTabActivityNavigationControllerTest {
         when(env.intentDataProvider.getActivityType())
                 .thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
 
-        mNavigationController.openCurrentUrlInBrowser(false);
+        mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
     }
