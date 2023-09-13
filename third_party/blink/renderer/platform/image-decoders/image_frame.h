@@ -32,7 +32,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -80,8 +79,6 @@ class PLATFORM_EXPORT ImageFrame final {
   };
   typedef uint32_t PixelData;
   typedef uint64_t PixelDataF16;
-
-  typedef WebVector<char> ICCProfile;
 
   ImageFrame();
   ~ImageFrame();
