@@ -10,13 +10,17 @@
 #include "ui/events/event.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Label;
+}
+
 namespace arc::input_overlay {
 
 class DisplayOverlayController;
 
 // EditingList contains the list of controls.
 //    _________________________________
-//   |icon        "Editing"        icon|
+//   |icon|       "Editing"       |icon|
 //   |   ___________________________   |
 //   |  |                           |  |
 //   |  |    zero-state or          |  |
@@ -30,6 +34,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
   EditingList(const EditingList&) = delete;
   EditingList& operator=(const EditingList&) = delete;
   ~EditingList() override;
+
+  void UpdateWidget();
 
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -57,6 +63,15 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void OnAddButtonPressed();
   void OnDoneButtonPressed();
 
+  // Drag operations.
+  void OnDragStart(const ui::LocatedEvent& event);
+  void OnDragUpdate(const ui::LocatedEvent& event);
+  void OnDragEnd(const ui::LocatedEvent& event);
+
+  // The attached widget should be magnetic to the left or right and inside or
+  // outside of the attached sibling game window inside or outside.
+  gfx::Point GetWidgetMagneticPositionLocal();
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
@@ -67,27 +82,17 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void OnActionInputBindingUpdated(const Action& action) override;
   void OnActionNameUpdated(const Action& action) override;
 
-  // Drag operations.
-  void OnDragStart(const ui::LocatedEvent& event);
-  void OnDragUpdate(const ui::LocatedEvent& event);
-  void OnDragEnd(const ui::LocatedEvent& event);
-
-  // Clamp position.
-  void ClampPosition(gfx::Point& position);
-
   raw_ptr<DisplayOverlayController> controller_;
   // It wraps ActionViewListItem.
   raw_ptr<views::View> scroll_content_;
+  // Label for list header.
+  raw_ptr<views::Label> editing_header_label_;
 
   // For test. Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;
-  // Initial position when drag starts.
-  gfx::Point start_drag_pos_;
-  // Window bounds, relative to the initial position of the editing list.
-  gfx::Rect window_bounds_;
 };
 
 }  // namespace arc::input_overlay

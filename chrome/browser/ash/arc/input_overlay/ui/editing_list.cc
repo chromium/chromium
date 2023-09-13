@@ -21,10 +21,12 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace arc::input_overlay {
@@ -32,6 +34,9 @@ namespace arc::input_overlay {
 namespace {
 
 constexpr int kMainContainerWidth = 296;
+
+// Default offset when the attached widget inside of the game window.
+constexpr int kWidgetOffset = 24;
 
 }  // namespace
 
@@ -43,6 +48,14 @@ EditingList::EditingList(DisplayOverlayController* controller)
 
 EditingList::~EditingList() {
   controller_->RemoveTouchInjectorObserver(this);
+}
+
+void EditingList::UpdateWidget() {
+  auto* widget = GetWidget();
+  DCHECK(widget);
+
+  controller_->UpdateWidgetBoundsInRootWindow(
+      widget, gfx::Rect(GetWidgetMagneticPositionLocal(), GetPreferredSize()));
 }
 
 bool EditingList::OnMousePressed(const ui::MouseEvent& event) {
@@ -123,14 +136,21 @@ void EditingList::AddHeader(views::View* container) {
   auto* header_container =
       container->AddChildView(std::make_unique<views::View>());
   header_container->SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddColumn(views::LayoutAlignment::kStart,
-                  views::LayoutAlignment::kCenter, 1.0f,
-                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddColumn(views::LayoutAlignment::kCenter,
-                 views::LayoutAlignment::kCenter, 1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kCenter,
-                 1.0f, views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
+                  /*v_align=*/views::LayoutAlignment::kCenter,
+                  /*horizontal_resize=*/views::TableLayout::kFixedSize,
+                  /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                  /*fixed_width=*/0, /*min_width=*/0)
+      .AddColumn(/*h_align=*/views::LayoutAlignment::kStretch,
+                 /*v_align=*/views::LayoutAlignment::kStretch,
+                 /*horizontal_resize=*/1.0f,
+                 /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                 /*fixed_width=*/0, /*min_width=*/0)
+      .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
+                 /*v_align=*/views::LayoutAlignment::kCenter,
+                 /*horizontal_resize=*/views::TableLayout::kFixedSize,
+                 /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                 /*fixed_width=*/0, /*min_width=*/0)
       .AddRows(1, views::TableLayout::kFixedSize);
   header_container->SetProperty(views::kMarginsKey,
                                 gfx::Insets::TLBR(0, 0, 16, 0));
@@ -141,10 +161,11 @@ void EditingList::AddHeader(views::View* container) {
       ash::IconButton::Type::kMedium, &kBackArrowTouchIcon,
       // TODO(b/279117180): Update a11y string.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  header_container->AddChildView(ash::bubble_utils::CreateLabel(
-      ash::TypographyToken::kCrosTitle1,
-      // TODO(b/274690042): Replace it with localized strings.
-      u"Editing", cros_tokens::kCrosSysOnSurface));
+  editing_header_label_ =
+      header_container->AddChildView(ash::bubble_utils::CreateLabel(
+          ash::TypographyToken::kCrosTitle1,
+          // TODO(b/274690042): Replace it with localized strings.
+          u"Editing", cros_tokens::kCrosSysOnSurface));
   header_container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&EditingList::OnAddButtonPressed,
                           base::Unretained(this)),
@@ -214,6 +235,76 @@ void EditingList::OnDoneButtonPressed() {
   controller_->OnCustomizeSave();
 }
 
+void EditingList::OnDragStart(const ui::LocatedEvent& event) {
+  start_drag_event_pos_ = event.location();
+}
+
+void EditingList::OnDragUpdate(const ui::LocatedEvent& event) {
+  auto* widget = GetWidget();
+  DCHECK(widget);
+
+  auto widget_bounds = widget->GetNativeWindow()->GetBoundsInScreen();
+  widget_bounds.Offset(
+      /*horizontal=*/(event.location() - start_drag_event_pos_).x(),
+      /*vertical=*/0);
+  widget->SetBounds(widget_bounds);
+}
+
+void EditingList::OnDragEnd(const ui::LocatedEvent& event) {
+  UpdateWidget();
+}
+
+gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
+  auto* widget = GetWidget();
+  DCHECK(widget);
+
+  const auto width = GetPreferredSize().width();
+  const auto anchor_bounds = controller_->touch_injector()->content_bounds();
+  const auto root_window_bounds =
+      controller_->touch_injector()->window()->GetRootWindow()->bounds();
+
+  // Check if there is space on left and right side outside of the sibling game
+  // window.
+  bool has_space_on_left = anchor_bounds.x() - width >= 0;
+  bool has_space_on_right =
+      anchor_bounds.right() + width < root_window_bounds.width();
+
+  // Check if the attached widget should be inside or outside of the attached
+  // sibling game window.
+  bool should_be_outside = has_space_on_left || has_space_on_right;
+
+  // Check if the attached widget should be on left or right side of the
+  // attached sibling game window.
+  auto center = widget->GetNativeWindow()->bounds().CenterPoint();
+  auto anchor_center = anchor_bounds.CenterPoint();
+  bool should_be_on_left = center.x() < anchor_center.x();
+  // Prefer to have the attached widget outside of the sibling game window if
+  // there is enough space on left or right. Otherwise, apply the attached
+  // widget inside of the sibling game window.
+  bool on_left_side =
+      (should_be_outside &&
+       ((has_space_on_left && should_be_on_left) || !has_space_on_right)) ||
+      (!should_be_outside && should_be_on_left);
+
+  // Calculate attached widget origin in root window.
+  gfx::Point window_origin = anchor_bounds.origin();
+  if (on_left_side) {
+    window_origin.SetPoint(
+        should_be_outside ? anchor_bounds.x() - width
+                          : anchor_bounds.x() + kWidgetOffset,
+        should_be_outside ? window_origin.y()
+                          : window_origin.y() + kWidgetOffset);
+  } else {
+    window_origin.SetPoint(
+        should_be_outside ? anchor_bounds.right()
+                          : anchor_bounds.right() - width - kWidgetOffset,
+        should_be_outside ? window_origin.y()
+                          : window_origin.y() + kWidgetOffset);
+  }
+
+  return window_origin;
+}
+
 gfx::Size EditingList::CalculatePreferredSize() const {
   return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
 }
@@ -227,7 +318,7 @@ void EditingList::OnActionAdded(Action& action) {
   scroll_content_->AddChildView(
       std::make_unique<ActionViewListItem>(controller_, &action));
 
-  controller_->UpdateEditingListWidgetBounds();
+  UpdateWidget();
 }
 
 void EditingList::OnActionRemoved(const Action& action) {
@@ -245,13 +336,13 @@ void EditingList::OnActionRemoved(const Action& action) {
     AddZeroStateContent();
   }
 
-  controller_->UpdateEditingListWidgetBounds();
+  UpdateWidget();
 }
 
 void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
   OnActionRemoved(*action);
   OnActionAdded(*new_action);
-  controller_->UpdateEditingListWidgetBounds();
+  UpdateWidget();
 }
 
 void EditingList::OnActionInputBindingUpdated(const Action& action) {
@@ -276,31 +367,6 @@ void EditingList::OnActionNameUpdated(const Action& action) {
       break;
     }
   }
-}
-
-void EditingList::OnDragStart(const ui::LocatedEvent& event) {
-  start_drag_event_pos_ = event.location();
-  start_drag_pos_ = origin();
-  window_bounds_ = controller_->GetEditingListWidgetBoundsInRootWindow();
-}
-
-void EditingList::OnDragUpdate(const ui::LocatedEvent& event) {
-  auto target_position = origin() + (event.location() - start_drag_event_pos_);
-  ClampPosition(target_position);
-  SetPosition(target_position);
-}
-
-void EditingList::OnDragEnd(const ui::LocatedEvent& event) {
-  auto reposition_delta = origin() - start_drag_pos_;
-  controller_->UpdateEditingListWidgetPosition(reposition_delta);
-  SetPosition(gfx::Point(0, 0));
-}
-
-void EditingList::ClampPosition(gfx::Point& position) {
-  position.set_x(std::clamp(position.x(), window_bounds_.x(),
-                            window_bounds_.right() - width()));
-  position.set_y(std::clamp(position.y(), window_bounds_.y(),
-                            window_bounds_.bottom() - height()));
 }
 
 }  // namespace arc::input_overlay

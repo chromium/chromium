@@ -65,9 +65,11 @@ void GameControlsTestBase::SetUp() {
       new ArcInputOverlayManager(/*BrowserContext=*/nullptr,
                                  /*ArcBridgeService=*/nullptr));
 
+  // Create a GIO enabled ARC window in the middle of the primary root window.
+  ash::Shell::GetPrimaryRootWindow()->SetBounds(gfx::Rect(1000, 800));
   widget_ = CreateArcWindowSyncAndWait(
       task_environment(), ash::Shell::GetPrimaryRootWindow(),
-      gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
+      gfx::Rect(350, 300, 300, 200), kEnabledPackageName);
 
   touch_injector_ = GetTouchInjector(widget_->GetNativeWindow());
   controller_ = GetDisplayOverlayController();

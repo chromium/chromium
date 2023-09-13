@@ -19,10 +19,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ash {
-class GameDashboardWidget;
-}
-
 namespace views {
 class View;
 class Widget;
@@ -118,8 +114,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void UpdateButtonOptionsMenuWidgetBounds(Action* action);
   void UpdateInputMappingWidgetBounds();
   void UpdateEditingListWidgetBounds();
-  void UpdateEditingListWidgetPosition(const gfx::Vector2d& reposition_delta);
-  gfx::Rect GetEditingListWidgetBoundsInRootWindow();
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -207,7 +201,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
   // Used for the magnetic function of the editing list.
-  void SetMagneticPosition();
 
   // Close `MessageView` if `LocatedEvent` happens outside
   // of their view bounds.
@@ -232,7 +225,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // `widget` bounds is in screen coordinate. `bounds_in_root_window` is the
   // window bounds in root window. Convert `bounds_in_root_window` in screen
   // coordinates to set `widget` bounds.
-  void UpdateWidgetBoundsInRootWindow(ash::GameDashboardWidget* widget,
+  void UpdateWidgetBoundsInRootWindow(views::Widget* widget,
                                       const gfx::Rect& bounds_in_root_window);
 
   // `TouchInjector` only rewrite events in `kView` mode. When changing between
@@ -254,10 +247,6 @@ class DisplayOverlayController : public ui::EventHandler,
       u"Move", u"Jump",  u"Attack", u"Special ability", u"Crouch",
       u"Run",  u"Shoot", u"Magic",  u"Reload",          u"Dodge"};
 
-  // For editing list reposition. It is nullopt only the first time the editing
-  // list view and widget are created.
-  absl::optional<gfx::Point> editing_list_origin_ = absl::nullopt;
-
   const raw_ptr<TouchInjector> touch_injector_;
 
   // References to UI elements owned by the overlay widget.
@@ -268,15 +257,14 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<MessageView, DanglingUntriaged> message_ = nullptr;
   raw_ptr<EducationalView, DanglingUntriaged> educational_view_ = nullptr;
   raw_ptr<NudgeView, DanglingUntriaged> nudge_view_ = nullptr;
-  raw_ptr<EditingList, DanglingUntriaged> editing_list_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 
   // For beta.
-  std::unique_ptr<ash::GameDashboardWidget> input_mapping_widget_;
-  std::unique_ptr<ash::GameDashboardWidget> editing_list_widget_;
-  std::unique_ptr<ash::GameDashboardWidget> button_options_widget_;
-  std::unique_ptr<ash::GameDashboardWidget> button_label_list_widget_;
+  std::unique_ptr<views::Widget> input_mapping_widget_;
+  std::unique_ptr<views::Widget> editing_list_widget_;
+  std::unique_ptr<views::Widget> button_options_widget_;
+  std::unique_ptr<views::Widget> button_label_list_widget_;
 };
 
 }  // namespace arc::input_overlay

@@ -5,11 +5,11 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 
 #include "ash/game_dashboard/game_dashboard_utils.h"
-#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "chrome/browser/ash/arc/input_overlay/test/game_controls_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "ui/aura/window.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
 

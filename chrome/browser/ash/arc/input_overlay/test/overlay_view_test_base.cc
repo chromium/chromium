@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 
-#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
