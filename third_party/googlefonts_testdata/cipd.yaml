@@ -1,0 +1,4 @@
+package: chromium/third_party/googlefonts_testdata
+description: Google Fonts font files for font backend comparison tests
+data:
+  - dir: "data"
