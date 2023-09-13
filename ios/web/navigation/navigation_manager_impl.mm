@@ -159,12 +159,13 @@ void NavigationManagerImpl::SerializeToProto(
     proto::NavigationStorage& storage) const {
   const int count = GetItemCount();
 
-  // The last committed item index may be equal to -1 if a session is saved
-  // during restoration. In that case use GetItemCount() - 1.
+  // Ensure that the last committed item index is in range.
   int last_committed_item_index = GetLastCommittedItemIndex();
-  if (last_committed_item_index == -1) {
+  if (last_committed_item_index < 0 || last_committed_item_index >= count) {
     last_committed_item_index = count - 1;
   }
+
+  DCHECK_LT(last_committed_item_index, count);
 
   // As some items may be skipped during serialization (e.g. because their
   // URL is too large, or they were marked "to skip during serialisation")
@@ -188,23 +189,27 @@ void NavigationManagerImpl::SerializeToProto(
     items.push_back(item);
   }
 
+  // Ensure that the last committed item index is still in range.
+  const int items_size = static_cast<int>(items.size());
+  DCHECK_LE(items_size, count);
+  DCHECK_LT(last_committed_item_index, items_size);
+
   // Limit the number of navigation item that are serialised to prevent
   // the storage required to grow indefinitely.
   int offset_int = 0;
   int length_int = 0;
   last_committed_item_index = wk_navigation_util::GetSafeItemRange(
-      last_committed_item_index, static_cast<int>(items.size()), &offset_int,
-      &length_int);
+      last_committed_item_index, items_size, &offset_int, &length_int);
 
-  CHECK_GE(offset_int, 0);
-  CHECK_GE(length_int, 0);
-  CHECK_LT(last_committed_item_index, length_int);
+  DCHECK_GE(offset_int, 0);
+  DCHECK_GE(length_int, 0);
+  DCHECK_LT(last_committed_item_index, length_int);
 
   const size_t offset = static_cast<size_t>(offset_int);
   const size_t length = static_cast<size_t>(length_int);
 
-  CHECK_LE(offset, items.size());
-  CHECK_LE(length + offset, items.size());
+  DCHECK_LE(offset, items.size());
+  DCHECK_LE(length + offset, items.size());
 
   storage.set_last_committed_item_index(last_committed_item_index);
   for (const auto* item : base::make_span(items.begin() + offset, length)) {
