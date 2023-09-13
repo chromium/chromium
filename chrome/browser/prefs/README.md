@@ -19,8 +19,8 @@ Prefs are not for:
 ## Adding a new pref
 1. Pick a name that resembles / shares a pref namespace with existing related
    prefs if possible.
-1. Define a new unique name in a pref_names.cc file. Either in:
-   * chrome/common/pref_names.cc -- being careful to put it in the right
+1. Define a new unique name in a pref_names.cc or pref_names.h file. Either in:
+   * chrome/common/pref_names.h -- being careful to put it in the right
      section (LOCAL STATE versus PROFILE PREFS) and alongside similar prefs
       (existing ifdefs and/or pref namespaces); or, ideally in:
    * a pref_names.cc local to your component (typically inside a prefs:: C++
