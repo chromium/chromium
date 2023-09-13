@@ -3,7 +3,7 @@ PASS Basic declarative DOM Parts (Main Document)
 PASS Basic declarative DOM Parts (Template)
 PASS Basic declarative DOM Parts (Clone)
 PASS Basic declarative DOM Parts (PartClone)
-FAIL Basic declarative DOM Parts (DeclarativeShadowDOM) assert_equals: declarative root should have two parts: lengths differ expected 1 but got 0
+FAIL Basic declarative DOM Parts (DeclarativeShadowDOM) assert_equals: declarative root missing parts: lengths differ expected 7 but got 0
 PASS Post-parsing structure of child parts, and stickiness
 PASS Parser only behavior - adding parseparts does nothing
 FAIL Just parts, no text before assert_equals: expected "<!----><!---->" but got " <!----> <!---->"

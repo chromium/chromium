@@ -17,9 +17,15 @@
     <h1 id="name" parseparts>
       {{#}}
         First
-        {{#}} Middle {{/}}
+        {{#}} <span {{}}>Middle</span> {{/}}
         Last
       {{/}}
+      <a foo {{}} id=nodepart1>content</a>
+      <a {{}} id=nodepart2>content</a>
+      <a {{}}id=nodepart3>content</a>
+      <a id=nodepart4 {{}}>content</a>
+      <a id=nodepart5 foo {{}}>content</a>
+      <a id=nodepart6 foo {{}} >content</a>
     </h1>
   </div>
 </div>
@@ -29,9 +35,15 @@
       <h1 id="name" parseparts>
         {{#}}
           First
-          {{#}} Middle {{/}}
+          {{#}} <span {{}}>Middle</span> {{/}}
           Last
         {{/}}
+        <a foo {{}} id=nodepart1>content</a>
+        <a {{}} id=nodepart2>content</a>
+        <a {{}}id=nodepart3>content</a>
+        <a id=nodepart4 {{}}>content</a>
+        <a id=nodepart5 foo {{}}>content</a>
+        <a id=nodepart6 foo {{}} >content</a>
       </h1>
     </div>
   </div>
@@ -43,9 +55,15 @@
         <h1 id="name" parseparts>
           {{#}}
             First
-            {{#}} Middle {{/}}
+            {{#}} <span {{}}>Middle</span> {{/}}
             Last
           {{/}}
+          <a foo {{}} id=nodepart1>content</a>
+          <a {{}} id=nodepart2>content</a>
+          <a {{}}id=nodepart3>content</a>
+          <a id=nodepart4 {{}}>content</a>
+          <a id=nodepart5 foo {{}}>content</a>
+          <a id=nodepart6 foo {{}} >content</a>
         </h1>
       </div>
     </div>
@@ -106,8 +124,14 @@ const template = document.getElementById('declarative');
     const root = doc.getPartRoot();
     assert_true(root instanceof DocumentPartRoot);
     if (expectDOMParts) {
-      const expectedRootParts = [{type:'ChildNodePart',metadata:[]}];
-      assertEqualParts(root.getParts(),expectedRootParts,0,'declarative root should have two parts');
+      let expectedRootParts = [{type:'ChildNodePart',metadata:[]}];
+      for(let i=0;i<6;++i) {
+        expectedRootParts.push({type:'NodePart',metadata:[]});
+      }
+      assertEqualParts(root.getParts(),expectedRootParts,0,'declarative root missing parts');
+      for(let i=1;i<=6;++i) {
+        assert_equals(root.getParts()[i].node,target.querySelector(`#nodepart${i}`));
+      }
       const childPart1 = root.getParts()[0];
       assertIsComment(childPart1.previousSibling,'');
       assertIsComment(childPart1.nextSibling,'');
@@ -116,8 +140,10 @@ const template = document.getElementById('declarative');
       const childPart2 = childPart1.getParts()[0];
       assertIsComment(childPart2.previousSibling,'');
       assertIsComment(childPart2.nextSibling,'');
-      const expectedChild2Parts = [];
+      const expectedChild2Parts = [{type:'NodePart',metadata:[]}];
       assertEqualParts(childPart2.getParts(),expectedChild2Parts,0,'Second level childpart should have just the node part');
+      assert_true(childPart2.getParts()[0].node instanceof HTMLSpanElement);
+      assert_equals(childPart2.getParts()[0].node.textContent,'Middle');
     } else {
       assertEqualParts(root.getParts(),[],[]);
     }

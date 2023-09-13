@@ -51,7 +51,7 @@ struct HTMLConstructionSiteTask {
   };
 
   explicit HTMLConstructionSiteTask(Operation op)
-      : operation(op), self_closing(false) {}
+      : operation(op), self_closing(false), needs_node_part(false) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(parent);
@@ -71,6 +71,7 @@ struct HTMLConstructionSiteTask {
   Member<Node> next_child;
   Member<Node> child;
   bool self_closing;
+  bool needs_node_part;
 };
 
 }  // namespace blink
@@ -252,6 +253,7 @@ class HTMLConstructionSite final {
 
   void AttachLater(ContainerNode* parent,
                    Node* child,
+                   bool needs_node_part,
                    bool self_closing = false);
 
   void FindFosterSite(HTMLConstructionSiteTask&);
@@ -342,9 +344,11 @@ class HTMLConstructionSite final {
     explicit PendingDOMParts(ContainerNode* attachment_root);
 
     void AddNodePart(Comment& node_part_comment, Vector<String> metadata);
+    void AddNodePart(Vector<String> metadata);
     void AddChildNodePartStart(Node& previous_sibling, Vector<String> metadata);
     void AddChildNodePartEnd(Node& next_sibling);
     void MaybeConstructNodePart(Node& last_node);
+    void ConstructNodePart(Node& last_node);
     PartRoot* CurrentPartRoot() const;
     void PushPartRoot(PartRoot* root);
     PartRoot* PopPartRoot();

@@ -149,6 +149,7 @@ class HTMLToken {
     copy->dom_part_data_ = std::move(dom_part_data_);
     copy->type_ = type_;
     copy->self_closing_ = self_closing_;
+    copy->needs_node_part_ = needs_node_part_;
     // Reset to uninitialized.
     Clear();
     return copy;
@@ -276,6 +277,7 @@ class HTMLToken {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kStartTag;
     self_closing_ = false;
+    needs_node_part_ = false;
     DCHECK(!current_attribute_);
     DCHECK(attributes_.empty());
 
@@ -396,6 +398,16 @@ class HTMLToken {
     return std::move(dom_part_data_);
   }
 
+  bool NeedsNodePart() const {
+    DCHECK_EQ(type_, kStartTag);
+    return needs_node_part_;
+  }
+
+  void SetNeedsNodePart() {
+    DCHECK_EQ(type_, kStartTag);
+    needs_node_part_ = true;
+  }
+
  private:
   DataVector data_;
 
@@ -409,6 +421,7 @@ class HTMLToken {
 
   // For DOM Parts API
   std::unique_ptr<DOMPartData> dom_part_data_;
+  bool needs_node_part_;
 
   TokenType type_ = kUninitialized;
 

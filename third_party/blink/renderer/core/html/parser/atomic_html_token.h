@@ -205,6 +205,11 @@ class CORE_EXPORT AtomicHTMLToken {
     return dom_part_data_->metadata_;
   }
 
+  bool NeedsNodePart() const {
+    DCHECK(type_ == HTMLToken::kStartTag);
+    return needs_node_part_;
+  }
+
   explicit AtomicHTMLToken(HTMLToken& token)
       : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
@@ -221,6 +226,8 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::kEndOfFile:
         break;
       case HTMLToken::kStartTag:
+        needs_node_part_ = token.NeedsNodePart();
+        [[fallthrough]];
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();
         const HTMLToken::AttributeList& attributes = token.Attributes();
@@ -321,6 +328,7 @@ class CORE_EXPORT AtomicHTMLToken {
 
   // For DOM Parts
   std::unique_ptr<DOMPartData> dom_part_data_;
+  bool needs_node_part_{false};
 
   // For StartTag and EndTag
   bool self_closing_ = false;
