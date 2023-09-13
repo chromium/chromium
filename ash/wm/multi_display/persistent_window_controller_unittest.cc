@@ -931,4 +931,53 @@ TEST_F(PersistentWindowControllerTest, NoRestoreOnRotationForSnappedWindows) {
           .right());
 }
 
+TEST_F(PersistentWindowControllerTest, WindowStateChangeInSamePhysicalDisplay) {
+  UpdateDisplay("500x600,500x700");
+
+  // Starts with a window in the secondary display.
+  std::unique_ptr<aura::Window> window =
+      CreateTestWindow(gfx::Rect(501, 0, 200, 100));
+  WindowState* window_state = WindowState::Get(window.get());
+  // Maximize the window.
+  window_state->Maximize();
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+  display::Screen* screen = display::Screen::GetScreen();
+  ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  ASSERT_TRUE(window_state->HasRestoreBounds());
+  const gfx::Rect maximized_bounds = window->GetBoundsInScreen();
+
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+
+  // Disconnect the primary display.
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  // Restore the maximized window after removing the primary display.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_FALSE(window_state->HasRestoreBounds());
+
+  // Reconnect the primary display.
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  // The window should still in the secondary display, in normal state and
+  // without restore bounds property set. As the window always stay in the
+  // secondary display, it was never being moved to another display. Its window
+  // state changes should be kept in this process.
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_FALSE(window_state->HasRestoreBounds());
+  EXPECT_NE(window->GetBoundsInScreen(), maximized_bounds);
+  // TODO(b/291341473): The window bounds should be {501, 0, 200, 100} based on
+  // correct restore bounds updated on the display changes.
+}
+
 }  // namespace ash

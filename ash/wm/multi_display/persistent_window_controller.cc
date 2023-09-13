@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -113,7 +114,11 @@ void PersistentWindowController::OnWillProcessDisplayChanges() {
     WindowState* window_state = WindowState::Get(window);
     // This implies that we keep the first persistent info until they're valid
     // to restore, or until they're cleared by user-invoked bounds change.
-    if (window_state->persistent_window_info_of_display_removal()) {
+    if (PersistentWindowInfo* info =
+            window_state->persistent_window_info_of_display_removal();
+        info) {
+      info->set_display_id_after_removal(
+          display::Screen::GetScreen()->GetDisplayNearestWindow(window).id());
       continue;
     }
     // Place the window that needs persistent window info into the temporary
@@ -249,22 +254,39 @@ void PersistentWindowController::
     const auto& display =
         display_manager->GetDisplayForId(persistent_display_id);
 
-    // Update |persistent_window_bounds| based on |persistent_display_bounds|'s
-    // position change. This ensures that |persistent_window_bounds| is
-    // associated with the right target display.
-    gfx::Rect persistent_window_bounds = info->window_bounds_in_screen();
     const auto& persistent_display_bounds = info->display_bounds_in_screen();
     // It is possible to have display size change, such as changing cable, bad
     // cable signal etc., but it should be rare.
     if (display.bounds().size() != persistent_display_bounds.size()) {
       continue;
     }
-    const gfx::Vector2d offset = display.bounds().OffsetFromOrigin() -
-                                 persistent_display_bounds.OffsetFromOrigin();
-    persistent_window_bounds.Offset(offset);
+    const int64_t display_id_after_removal = info->display_id_after_removal();
+    const bool is_display_changed =
+        persistent_display_id != display_id_after_removal;
+    if (!is_display_changed) {
+      // Update based on the the window's current bounds if its physical display
+      // never changed. This will help keep the window's bounds to match its
+      // current window state.
+      gfx::Rect bounds = window->bounds();
+      wm::ConvertRectToScreen(
+          Shell::GetRootWindowForDisplayId(persistent_display_id), &bounds);
+      window->SetBoundsInScreen(bounds, display);
+    } else {
+      // Update |persistent_window_bounds| based on
+      // |persistent_display_bounds|'s position change. This ensures that
+      // |persistent_window_bounds| is associated with the right target display.
+      gfx::Rect persistent_window_bounds = info->window_bounds_in_screen();
+      const gfx::Vector2d offset = display.bounds().OffsetFromOrigin() -
+                                   persistent_display_bounds.OffsetFromOrigin();
+      persistent_window_bounds.Offset(offset);
+      window->SetBoundsInScreen(persistent_window_bounds, display);
+    }
 
-    window->SetBoundsInScreen(persistent_window_bounds, display);
-    if (!info->restore_bounds_in_parent().IsEmpty()) {
+    // Set the restore bounds back if window's physical display changed, and now
+    // we are moving it back to its previous display. Or its physical display
+    // didn't change, and currently the window still has restore bounds set.
+    if ((is_display_changed || window_state->HasRestoreBounds()) &&
+        !info->restore_bounds_in_parent().IsEmpty()) {
       const gfx::Rect restore_bounds = info->restore_bounds_in_parent();
       // Use the stored window's restore bounds in parent to set the window's
       // restore bounds in screen. The conversion from the bounds in parent to

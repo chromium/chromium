@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -42,6 +43,11 @@ class ASH_EXPORT PersistentWindowInfo {
     return restore_bounds_in_parent_.value_or(gfx::Rect());
   }
 
+  int64_t display_id_after_removal() const { return display_id_after_removal_; }
+  void set_display_id_after_removal(int64_t id) {
+    display_id_after_removal_ = id;
+  }
+
  private:
   // Persistent window bounds in screen coordinates.
   gfx::Rect window_bounds_in_screen_;
@@ -49,6 +55,12 @@ class ASH_EXPORT PersistentWindowInfo {
   // Indicates the display to restore to in multi-displays scenario or the
   // display on which screen rotation happens.
   int64_t display_id_;
+
+  // Indicates the window's display id after display removal happens. This can
+  // be used to compare with `display_id` to see whether the window has been
+  // moved to another display. As we can not tell this from whether window has
+  // been re-parented to a different root window on display removal.
+  int64_t display_id_after_removal_ = display::kInvalidDisplayId;
 
   // Indicates last display bounds for |display_id| in screen coordinates.
   gfx::Rect display_bounds_in_screen_;
