@@ -56,6 +56,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "mac-rel-cft",
     ),
+    contact_team_email = "browser-automation-staff@google.com",
 )
 
 ci.builder(
@@ -69,6 +70,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "linux-arm64-rel-cft",
     ),
+    contact_team_email = "browser-automation-staff@google.com",
 )
 
 ci.builder(
@@ -81,6 +83,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "linux-rel-cft",
     ),
+    contact_team_email = "browser-automation-staff@google.com",
 )
 
 ci.builder(
@@ -93,5 +96,6 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "win-rel-cft",
     ),
+    contact_team_email = "browser-automation-staff@google.com",
     execution_timeout = 6 * time.hour,
 )
