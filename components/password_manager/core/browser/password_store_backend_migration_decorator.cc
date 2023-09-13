@@ -284,10 +284,6 @@ PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }
 
-void PasswordStoreBackendMigrationDecorator::ClearAllLocalPasswords() {
-  NOTIMPLEMENTED();
-}
-
 void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_settings_helper_.CachePasswordSyncSettingOnStartup(sync_service);

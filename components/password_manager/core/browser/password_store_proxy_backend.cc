@@ -303,10 +303,6 @@ PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }
 
-void PasswordStoreProxyBackend::ClearAllLocalPasswords() {
-  NOTIMPLEMENTED();
-}
-
 void PasswordStoreProxyBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_ = sync_service;

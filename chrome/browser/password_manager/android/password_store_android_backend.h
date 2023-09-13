@@ -67,7 +67,8 @@ enum class PasswordStoreOperation {
   kRemoveLoginsByURLAndTimeAsync = 8,
   kRemoveLoginsCreatedBetweenAsync = 9,
   kDisableAutoSignInForOriginsAsync = 10,
-  kClearAllLocalPasswords = 11,
+  // Deprecated
+  // kClearAllLocalPasswords = 11,
 
   // Operation that is non-modifying, but not safe to retry because it is
   // user-visible.
@@ -100,8 +101,6 @@ class PasswordStoreAndroidBackend
 
  private:
   SEQUENCE_CHECKER(main_sequence_checker_);
-
-  class ClearAllLocalPasswordsMetricRecorder;
 
   // Wraps the handler for an asynchronous job (if successful or scheduled to be
   // retried) and invokes the supplied metrics recorded upon completion. An
@@ -197,7 +196,6 @@ class PasswordStoreAndroidBackend
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
-  void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
   // Internal method used for implementing the GetAutofillableLoginsAsync method

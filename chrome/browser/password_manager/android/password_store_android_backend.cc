@@ -332,7 +332,6 @@ bool IsRetriableOperation(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
     case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
-    case PasswordStoreOperation::kClearAllLocalPasswords:
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
       return false;
   }
@@ -364,8 +363,6 @@ std::string GetOperationName(PasswordStoreOperation operation) {
       return "RemoveLoginsCreatedBetweenAsync";
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
       return "DisableAutoSignInForOriginsAsync";
-    case PasswordStoreOperation::kClearAllLocalPasswords:
-      return "ClearAllLocalPasswords";
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
       return "GetGroupedMatchingLoginsAsync";
   }
@@ -504,45 +501,6 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
 }
 
 }  // namespace
-
-class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
- public:
-  explicit ClearAllLocalPasswordsMetricRecorder(
-      PasswordStoreBackendMetricsRecorder metrics_recorder)
-      : metrics_recorder_(std::move(metrics_recorder)) {}
-
-  void OnAllRemovalsFinished() {
-    metrics_recorder_.RecordMetrics(SuccessStatus::kSuccess,
-                                    /*error=*/absl::nullopt);
-    base::UmaHistogramCounts1M(
-        "PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords."
-        "LoginsToRemove",
-        total_count_);
-    if (total_count_ != 0) {
-      size_t success_rate =
-          100 * (total_count_ - failure_count_) / total_count_;
-      base::UmaHistogramPercentage(
-          "PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords."
-          "SuccessRate",
-          success_rate);
-    }
-  }
-
-  void OnLoginRemoved(PasswordChangesOrError change_list) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(change_list))
-      failure_count_++;
-    else if (absl::get<PasswordChanges>(change_list)
-                 .value_or(PasswordStoreChangeList())
-                 .empty())
-      failure_count_++;
-    total_count_++;
-  }
-
- private:
-  int total_count_ = 0;
-  int failure_count_ = 0;
-  PasswordStoreBackendMetricsRecorder metrics_recorder_;
-};
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     LoginsOrErrorReply callback,
@@ -881,58 +839,6 @@ PasswordStoreAndroidBackend::CreateSyncControllerDelegate() {
   return sync_controller_delegate_->CreateProxyModelControllerDelegate();
 }
 
-void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
-  LoginsOrErrorReply cleaning_callback = base::BindOnce(
-      [](base::WeakPtr<PasswordStoreAndroidBackend> weak_self,
-         PasswordStoreBackendMetricsRecorder metrics_recorder,
-         LoginsResultOrError logins_or_error) {
-        if (!weak_self || absl::holds_alternative<PasswordStoreBackendError>(
-                              logins_or_error)) {
-          metrics_recorder.RecordMetrics(SuccessStatus::kError,
-                                         /*error=*/absl::nullopt);
-          return;
-        }
-
-        auto detailed_metric_recorder =
-            std::make_unique<ClearAllLocalPasswordsMetricRecorder>(
-                std::move(metrics_recorder));
-
-        raw_ptr<ClearAllLocalPasswordsMetricRecorder> raw_recorder =
-            detailed_metric_recorder.get();
-
-        base::OnceClosure callbacks_chain = base::BindOnce(
-            &ClearAllLocalPasswordsMetricRecorder::OnAllRemovalsFinished,
-            std::move(detailed_metric_recorder));
-
-        for (const auto& login : absl::get<LoginsResult>(logins_or_error)) {
-          base::OnceCallback record_removal_result = base::BindOnce(
-              &ClearAllLocalPasswordsMetricRecorder::OnLoginRemoved,
-              // This is safe because |detailed_metric_recorder| will be deleted
-              // only after all removals are finished.
-              base::Unretained(raw_recorder));
-
-          callbacks_chain = base::BindOnce(
-              &PasswordStoreAndroidBackend::RemoveLoginForAccountInternal,
-              weak_self, std::move(*login),
-              PasswordStoreOperationTarget::kLocalStorage,
-              std::move(record_removal_result).Then(std::move(callbacks_chain)),
-              PasswordStoreOperation::kClearAllLocalPasswords,
-              /*delay=*/base::Seconds(0));
-        }
-
-        std::move(callbacks_chain).Run();
-      },
-      weak_ptr_factory_.GetWeakPtr(),
-      PasswordStoreBackendMetricsRecorder(
-          BackendInfix("AndroidBackend"),
-          MetricInfix("ClearAllLocalPasswords")));
-
-  GetAllLoginsForAccountInternal(
-      PasswordStoreOperationTarget::kLocalStorage, std::move(cleaning_callback),
-      PasswordStoreOperation::kClearAllLocalPasswords,
-      /*delay=*/base::Seconds(0));
-}
-
 void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   // TODO(crbug.com/1335387) Check if this might be called multiple times
@@ -1081,7 +987,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
         case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
         case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
-        case PasswordStoreOperation::kClearAllLocalPasswords:
         case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
           NOTREACHED();
           return;

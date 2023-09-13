@@ -93,7 +93,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
-  void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
   // Returns the task runner. Defaults to

@@ -277,10 +277,6 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
                           base::Unretained(helper_.get())));
 }
 
-void PasswordStoreBuiltInBackend::ClearAllLocalPasswords() {
-  NOTREACHED();
-}
-
 void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {}
 

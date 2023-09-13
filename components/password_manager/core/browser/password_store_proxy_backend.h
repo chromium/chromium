@@ -78,7 +78,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
-  void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
   // Forwards the (possible) forms changes caused by a remote event to the

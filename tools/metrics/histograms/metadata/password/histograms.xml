@@ -54,7 +54,6 @@ chromium-metrics-reviews@google.com.
 
 <variants name="PasswordStoreBackendFunction">
   <variant name="AddLoginAsync" summary="AddLoginAsync()"/>
-  <variant name="ClearAllLocalPasswords" summary="ClearAllLocalPasswords()"/>
   <variant name="DisableAutoSignInForOriginsAsync"
       summary="DisableAutoSignInForOriginsAsync()"/>
   <variant name="FillMatchingLoginsAsync" summary="FillMatchingLoginsAsync()"/>
@@ -2697,29 +2696,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
-    units="count" expires_after="M120">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Total number of logins to be removed by ClearAllLocalPasswords.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.SuccessRate"
-    units="%" expires_after="M120">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Ratio between successfully removed logins and total number of logins in the
-    GMS's local storage. Removal is considered successful when change list is
-    non-empty. Recorded when all the logins have been processed. If total number
-    of logins is 0, nothing is recorded.
-  </summary>
-</histogram>
-
-<histogram
     name="PasswordManager.PasswordStoreAndroidBackend.Retry{Operation}.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="M123">
   <owner>izuzic@google.com</owner>
@@ -2733,7 +2709,6 @@ chromium-metrics-reviews@google.com.
   <token key="Operation">
     <variant name=""/>
     <variant name=".AddLoginAsync" summary="AddLogin"/>
-    <variant name=".ClearAllLocalPasswords" summary="ClearAllLocalPasswords"/>
     <variant name=".DisableAutoSignInForOriginsAsync"
         summary="DisableAutoSignInForOrigins"/>
     <variant name=".FillMatchingLoginsAsync" summary="FillMatchingLogins"/>
@@ -2767,7 +2742,6 @@ chromium-metrics-reviews@google.com.
   <token key="Operation">
     <variant name=""/>
     <variant name=".AddLoginAsync" summary="AddLoginAsync"/>
-    <variant name=".ClearAllLocalPasswords" summary="ClearAllLocalPasswords"/>
     <variant name=".DisableAutoSignInForOriginsAsync"
         summary="DisableAutoSignInForOriginsAsync"/>
     <variant name=".FillMatchingLoginsAsync" summary="FillMatchingLoginsAsync"/>

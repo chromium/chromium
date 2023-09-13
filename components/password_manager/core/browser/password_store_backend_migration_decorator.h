@@ -127,7 +127,6 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
-  void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
   // Starts migration process.

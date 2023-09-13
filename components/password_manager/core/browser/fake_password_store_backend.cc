@@ -180,10 +180,6 @@ FakePasswordStoreBackend::CreateSyncControllerDelegate() {
   return nullptr;
 }
 
-void FakePasswordStoreBackend::ClearAllLocalPasswords() {
-  NOTIMPLEMENTED();
-}
-
 void FakePasswordStoreBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   NOTIMPLEMENTED();

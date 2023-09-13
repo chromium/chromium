@@ -153,9 +153,6 @@ class PasswordStoreBackend
   virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
 
-  // Clears all the passwords from the local storage.
-  virtual void ClearAllLocalPasswords() = 0;
-
   // Propagates sync initialization event.
   virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service) = 0;
 

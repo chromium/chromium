@@ -90,7 +90,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               CreateSyncControllerDelegate,
               (),
               (override));
-  MOCK_METHOD(void, ClearAllLocalPasswords, (), (override));
   MOCK_METHOD(void,
               OnSyncServiceInitialized,
               (syncer::SyncService*),
