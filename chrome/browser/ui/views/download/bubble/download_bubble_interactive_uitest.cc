@@ -279,10 +279,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 // This test is only for Lacros, where tab fullscreen is non-immersive, and
 // other platforms, where fullscreen is not immersive.
 // TODO(chlily): Add test coverage for Mac.
-// TODO(skuhne): fullscreen mode: http://crbug.com/1470311 - due to the asynch
-// nature of Mac, Lacros, Linux, this test fails. This should get properly
-// fixed.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC)
 // Test that downloading a file in tab fullscreen (not browser fullscreen)
 // results in an exclusive access bubble, and the partial view, if enabled, is
 // displayed after the tab exits fullscreen.
