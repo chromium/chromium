@@ -360,7 +360,7 @@ CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit() const {
       if (CSSPrimitiveValue::IsRelativeUnit(value_->GetType())) {
         return absl::nullopt;
       }
-      U_FALLTHROUGH;
+      [[fallthrough]];
     case kCalcAngle:
     case kCalcTime:
     case kCalcFrequency:

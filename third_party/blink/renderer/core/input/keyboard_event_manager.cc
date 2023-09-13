@@ -376,7 +376,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       if (initial_key_event.text[0] == 0) {
         return WebInputEventResult::kNotHandled;
       }
-      U_FALLTHROUGH;
+      [[fallthrough]];
     }
     case WebInputEvent::Type::kChar: {
       WebKeyboardEvent char_event = initial_key_event;

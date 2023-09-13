@@ -127,7 +127,7 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
       switch (canvas_rendering_type_) {
         default:
           NOTREACHED();
-          U_FALLTHROUGH;
+          [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kOffscreenCanvas_2D;
           break;
@@ -148,7 +148,7 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
       switch (canvas_rendering_type_) {
         default:
           NOTREACHED();
-          U_FALLTHROUGH;
+          [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kHTMLCanvasElement_2D;
           break;

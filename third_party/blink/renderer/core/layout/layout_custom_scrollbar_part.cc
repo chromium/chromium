@@ -56,7 +56,7 @@ static void RecordScrollbarPartStats(Document& document, ScrollbarPart part) {
       UseCounter::Count(
           document,
           WebFeature::kCSSSelectorPseudoScrollbarButtonReversedDirection);
-      U_FALLTHROUGH;
+      [[fallthrough]];
     case kBackButtonStartPart:
     case kForwardButtonEndPart:
       UseCounter::Count(document,
