@@ -1517,7 +1517,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   [self.selectedEditingItemIDs removeAllObjects];
   [self.selectedSharableEditingItemIDs removeAllObjects];
 
-  [self reloadTabs];
+  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+    [self reloadCollectionViewData];
+  } else {
+    [self reloadTabs];
+  }
 
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
