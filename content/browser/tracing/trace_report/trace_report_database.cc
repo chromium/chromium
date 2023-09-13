@@ -183,13 +183,16 @@ bool TraceReportDatabase::UserRequestedUpload(const base::Uuid& uuid) {
       database_.GetCachedStatement(SQL_FROM_HERE,
                                    "UPDATE local_traces "
                                    "SET state=? "
-                                   "WHERE uuid=?"));
+                                   "WHERE uuid=?"
+                                   "AND NOT skip_reason=?"));
 
   CHECK(update_local_trace.is_valid());
 
   update_local_trace.BindInt(
       0, static_cast<int>(ReportUploadState::kPending_UserRequested));
   update_local_trace.BindString(1, uuid.AsLowercaseString());
+  update_local_trace.BindInt(
+      2, static_cast<int>(SkipUploadReason::kNotAnonymized));
 
   return update_local_trace.Run();
 }

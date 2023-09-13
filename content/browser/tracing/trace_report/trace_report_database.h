@@ -30,6 +30,7 @@ enum class ReportUploadState {
 enum class SkipUploadReason {
   kNoSkip = 0,
   kSizeLimitExceeded = 1,
+  kNotAnonymized = 2,
 };
 
 // BaseTraceReport contains common data used to create and display a trace

@@ -22,7 +22,8 @@ enum ReportUploadState {
 // TODO: update once the skip reasons have been established.
 enum SkipUploadReason {
   kNoSkip = 0,
-  kSizeLimitExceeded = 1
+  kSizeLimitExceeded = 1,
+  kNotAnonymized = 2,
 };
 
 // Information about a single trace to display

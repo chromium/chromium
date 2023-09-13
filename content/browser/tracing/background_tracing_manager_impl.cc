@@ -728,6 +728,9 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
   }
   if (!receive_callback_) {
     SkipUploadReason skip_reason = SkipUploadReason::kNoSkip;
+    if (!requires_anonymized_data_) {
+      skip_reason = SkipUploadReason::kNotAnonymized;
+    }
     if (serialized_trace.size() > upload_limit_kb_ * 1024) {
       skip_reason = SkipUploadReason::kSizeLimitExceeded;
     }

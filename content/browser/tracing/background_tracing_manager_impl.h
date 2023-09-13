@@ -203,7 +203,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   raw_ptr<TracingScenario> active_scenario_{nullptr};
   ReceiveCallback receive_callback_;
 
-  bool requires_anonymized_data_ = false;
+  bool requires_anonymized_data_ = true;
 
   std::map<std::string, base::RepeatingCallback<bool()>>
       named_trigger_callbacks_;

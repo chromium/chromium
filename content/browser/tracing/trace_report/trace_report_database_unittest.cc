@@ -190,6 +190,23 @@ TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
             ReportUploadState::kPending_UserRequested);
 }
 
+TEST_F(TraceReportDatabaseTest, UserRequestedUploadNotAnonymized) {
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
+
+  // Create Report for the local traces database.
+  NewTraceReport new_report = MakeNewTraceReport();
+  new_report.skip_reason = SkipUploadReason::kNotAnonymized;
+  ASSERT_TRUE(trace_report_.AddTrace(new_report));
+  EXPECT_EQ(trace_report_.GetAllReports().size(), 1u);
+
+  ASSERT_TRUE(trace_report_.UserRequestedUpload(new_report.uuid));
+
+  auto all_traces = trace_report_.GetAllReports();
+  EXPECT_EQ(all_traces.size(), 1u);
+  EXPECT_EQ(all_traces[0].upload_state, ReportUploadState::kNotUploaded);
+  EXPECT_EQ(all_traces[0].skip_reason, SkipUploadReason::kNotAnonymized);
+}
+
 TEST_F(TraceReportDatabaseTest, UploadComplete) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
