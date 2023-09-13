@@ -47,8 +47,8 @@ public class HistoryClustersBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Promise<HistoryClustersResult> queryClusters(String query) {
         Promise<HistoryClustersResult> returnedPromise = new Promise<>();
-        HistoryClustersBridgeJni.get().queryClusters(
-                mNativeBridge, this, query, returnedPromise::fulfill);
+        HistoryClustersBridgeJni.get().queryClusters(mNativeBridge, this, query,
+                (HistoryClustersResult result) -> fulfillIfNotRejected(returnedPromise, result));
         return returnedPromise;
     }
 
@@ -56,14 +56,20 @@ public class HistoryClustersBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public Promise<HistoryClustersResult> loadMoreClusters(String query) {
         Promise<HistoryClustersResult> returnedPromise = new Promise<>();
-        HistoryClustersBridgeJni.get().loadMoreClusters(
-                mNativeBridge, this, query, returnedPromise::fulfill);
+        HistoryClustersBridgeJni.get().loadMoreClusters(mNativeBridge, this, query,
+                (HistoryClustersResult result) -> fulfillIfNotRejected(returnedPromise, result));
         return returnedPromise;
     }
 
     /* Constructs a new HistoryClustersBridge. */
     private HistoryClustersBridge(long nativeBridgePointer) {
         mNativeBridge = nativeBridgePointer;
+    }
+
+    private static void fulfillIfNotRejected(
+            Promise<HistoryClustersResult> returnedPromise, HistoryClustersResult result) {
+        if (returnedPromise.isRejected()) return;
+        returnedPromise.fulfill(result);
     }
 
     @CalledByNative

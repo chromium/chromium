@@ -1026,6 +1026,28 @@ public class HistoryClustersMediatorTest {
         ShadowLooper.idleMainLooper();
     }
 
+    @Test
+    public void testStaleResults() {
+        Promise<HistoryClustersResult> promise = new Promise();
+        doReturn(promise).when(mBridge).queryClusters("query");
+        Promise<HistoryClustersResult> secondPromise = new Promise();
+        doReturn(secondPromise).when(mBridge).loadMoreClusters("query");
+        doReturn(3).when(mLayoutManager).findLastVisibleItemPosition();
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        // Post a task that will continueQuery.
+        mMediator.onScrolled(mRecyclerView, 1, 1);
+
+        // Invalidate the task above by resetting the UI.
+        doReturn(new Promise<>()).when(mBridge).queryClusters("");
+        mMediator.setQueryState(QueryState.forQueryless());
+        ShadowLooper.idleMainLooper();
+
+        verify(mBridge, never()).loadMoreClusters("query");
+    }
+
     private <T> void fulfillPromise(Promise<T> promise, T result) {
         promise.fulfill(result);
         ShadowLooper.idleMainLooper();

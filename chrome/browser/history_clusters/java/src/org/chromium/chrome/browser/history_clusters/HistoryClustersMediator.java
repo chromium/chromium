@@ -255,6 +255,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     void continueQuery(HistoryClustersResult previousResult) {
         mDestroyChecker.checkNotDestroyed();
         if (!previousResult.canLoadMore()) return;
+        if (isStaleResult(previousResult)) return;
+
         mPromise = mHistoryClustersBridge.loadMoreClusters(previousResult.getQuery());
         mPromise.then(
                 mCallbackController.makeCancelable(this::queryComplete), this::onPromiseRejected);
@@ -410,6 +412,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     private void queryComplete(HistoryClustersResult result) {
+        if (isStaleResult(result)) return;
+
         if (result.isContinuation() && result.getClusters().size() > 0) {
             setDividerVisibilityForLastItem(true);
         }
@@ -740,6 +744,16 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
 
         return spannableString;
+    }
+
+    /**
+     * Returns true if the given result is from a now invalid query and should be ignored. This can
+     * happen because, e.g., rejection of chained promises isn't synchronous.
+     */
+    private boolean isStaleResult(HistoryClustersResult previousResult) {
+        return (mQueryState.isSearching()
+                        && !previousResult.getQuery().equals(mQueryState.getQuery())
+                || !mQueryState.isSearching() && !previousResult.getQuery().isEmpty());
     }
 
     private void onPromiseRejected(Exception e) {}
