@@ -672,7 +672,7 @@
     "structures": [5100],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/test/data/webui/resources.grd": {
-    "META": {"sizes": {"includes": [1500],}},
+    "META": {"sizes": {"includes": [2000],}},
     "includes": [5120],
   },
   # END chrome/ miscellaneous section.
