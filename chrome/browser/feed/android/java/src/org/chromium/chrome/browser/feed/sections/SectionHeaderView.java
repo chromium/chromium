@@ -12,6 +12,7 @@ import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -133,6 +134,7 @@ public class SectionHeaderView extends LinearLayout {
 
     private @Nullable SectionHeaderTabListener mTabListener;
     private ViewGroup mContent;
+    private FrameLayout mHeaderContent;
     private @Nullable View mOptionsPanel;
 
     private boolean mTextsEnabled;
@@ -195,6 +197,7 @@ public class SectionHeaderView extends LinearLayout {
         mLeadingStatusIndicator = findViewById(R.id.section_status_indicator);
         mTabLayout = findViewById(R.id.tab_list_view);
         mContent = findViewById(R.id.main_content);
+        mHeaderContent = findViewById(R.id.header_content);
 
         if (mTabLayout != null) {
             mTabListener = new SectionHeaderTabListener();
@@ -383,6 +386,11 @@ public class SectionHeaderView extends LinearLayout {
      */
     void setTabMode(boolean isTabMode) {
         if (mTabLayout != null) {
+            if (!isTabMode) {
+                MarginLayoutParams marginLayoutParams =
+                        (MarginLayoutParams) mHeaderContent.getLayoutParams();
+                marginLayoutParams.setMarginStart(0);
+            }
             mTitleView.setVisibility(isTabMode ? GONE : VISIBLE);
             mTabLayout.setVisibility(isTabMode ? VISIBLE : GONE);
         }

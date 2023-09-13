@@ -807,8 +807,9 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.set(SectionHeaderListProperties.IS_LOGO_KEY,
                 !isGoogleSearchEngine && isSignedIn && suggestionsVisible);
         ViewVisibility indicatorState;
-        if (!isTabMode) {
-            // Gone when the following/for you tab switcher header is not shown
+        if (!isTabMode || ChromeFeatureList.sSurfacePolish.isEnabled() && isGoogleSearchEngine) {
+            // Gone when the following/for you tab switcher header is not shown or if feature flag
+            // surface polish is enabled and the DSE is Google.
             indicatorState = ViewVisibility.GONE;
         } else if (!isGoogleSearchEngine) {
             // Visible when Google is not the search engine (show logo).

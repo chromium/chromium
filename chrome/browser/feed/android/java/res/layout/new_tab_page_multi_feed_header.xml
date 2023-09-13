@@ -31,13 +31,14 @@ found in the LICENSE file.
         android:src="@drawable/ic_visibility_off_black"
         android:scaleType="centerInside"
         android:visibility="invisible"
-        android:layout_marginEnd="@dimen/feed_header_icon_margin"
         app:tint="@color/default_icon_color_disabled"
         tools:ignore="contentDescription" />
 
     <FrameLayout
+        android:id="@+id/header_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/feed_header_icon_margin"
         android:layout_weight="1">
 
       <com.google.android.material.tabs.TabLayout
