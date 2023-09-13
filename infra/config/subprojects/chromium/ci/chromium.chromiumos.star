@@ -583,9 +583,6 @@ ci.builder(
             gs_bucket = "chromium-ci-skylab",
         ),
     ),
-    sheriff_rotations = args.ignore_default(None),
-    # TODO(crbug.com/1399674): Enable tree closing when stable.
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "skylab",
