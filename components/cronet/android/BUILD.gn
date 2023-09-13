@@ -430,9 +430,46 @@ android_library("cronet_impl_native_base_java") {
   srcjar_deps += [ ":cronet_jni_headers" ]
 }
 
+# cronet_impl_aosp_native_base_java.jar - native implementation of Cronet engine
+# loaded from AOSP (only for Android U onwards)
+android_library("cronet_impl_aosp_native_base_java") {
+  sources = [
+    "java/src/org/chromium/net/impl/AndroidBidirectionalStreamBuilderWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidBidirectionalStreamWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidCallbackExceptionWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidHeaderBlockWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidHttpExceptionWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidNetworkExceptionWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidQuicExceptionWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidUploadDataSinkWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidUrlRequestBuilderWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidUrlRequestWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidUrlResponseInfoWrapper.java",
+    "java/src/org/chromium/net/impl/BidirectionalStreamCallbackWrapper.java",
+    "java/src/org/chromium/net/impl/CronetExceptionTranslationUtils.java",
+    "java/src/org/chromium/net/impl/PlatformCronetProvider.java",
+    "java/src/org/chromium/net/impl/UploadDataProviderWrapper.java",
+    "java/src/org/chromium/net/impl/UrlRequestCallbackWrapper.java",
+    "java/src/org/chromium/net/impl/UrlRequestStatusListenerWrapper.java",
+  ]
+
+  deps = [
+    ":cronet_api_java",
+    ":cronet_impl_common_base_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+}
+
 # Groups all Cronet implementations and the common code into a single Java dependency.
 java_group("cronet_impl_all_java") {
   deps = [
+    ":cronet_impl_aosp_native_base_java",
     ":cronet_impl_common_base_java",
     ":cronet_impl_native_base_java",
     ":cronet_impl_platform_base_java",
