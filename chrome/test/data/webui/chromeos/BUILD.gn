@@ -57,7 +57,6 @@ group("closure_compile") {
     "firmware_update:closure_compile",
     "gaia_action_buttons:closure_compile",
     "os_feedback_ui:closure_compile",
-    "scanning:closure_compile",
     "shimless_rma:closure_compile",
   ]
 }

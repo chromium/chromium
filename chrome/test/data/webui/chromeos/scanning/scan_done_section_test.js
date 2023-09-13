@@ -5,6 +5,7 @@
 import './scanning_mojom_imports.js';
 import 'chrome://scanning/scan_done_section.js';
 
+import {FileType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
@@ -157,8 +158,7 @@ suite('scanDoneSectionTest', function() {
     const scannedFilePaths =
         [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
     scanDoneSection.scannedFilePaths = scannedFilePaths;
-    scanDoneSection.selectedFileType =
-        ash.scanning.mojom.FileType.kJpg.toString();
+    scanDoneSection.selectedFileType = FileType.kJpg.toString();
 
     scanDoneSection.$$('#editButton').click();
     const filePathsSentToMediaApp = /** @type {!Array<string>} */ (
@@ -173,12 +173,10 @@ suite('scanDoneSectionTest', function() {
   test('editButtonHiddenForFileTypePdf', () => {
     const editButton =
         /** @type {!HTMLElement} */ (scanDoneSection.$$('#editButton'));
-    scanDoneSection.selectedFileType =
-        ash.scanning.mojom.FileType.kPng.toString();
+    scanDoneSection.selectedFileType = FileType.kPng.toString();
     assertTrue(isVisible(editButton));
 
-    scanDoneSection.selectedFileType =
-        ash.scanning.mojom.FileType.kPdf.toString();
+    scanDoneSection.selectedFileType = FileType.kPdf.toString();
     assertFalse(isVisible(editButton));
   });
 

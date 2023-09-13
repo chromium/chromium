@@ -12,6 +12,16 @@ assert(is_chromeos_ash)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" +
+            rebase_path("$root_gen_dir/mojom-webui/ash/webui/scanning/mojom/",
+                        root_build_dir),
+        "js_module_root=" +
+            rebase_path("$root_gen_dir/mojom-webui/ash/webui/common/mojom/",
+                        root_build_dir),
+      ]
   deps = [
     ":action_toolbar",
     ":color_mode_select",
@@ -46,7 +56,7 @@ js_library("color_mode_select") {
     ":scanning_app_util",
     ":select_behavior",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -61,7 +71,7 @@ js_library("loading_page") {
 js_library("file_type_select") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -71,7 +81,7 @@ js_library("page_size_select") {
     ":scanning_app_util",
     ":select_behavior",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -80,7 +90,7 @@ js_library("resolution_select") {
   deps = [
     ":select_behavior",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -99,7 +109,7 @@ js_library("scan_preview") {
     ":scanning_app_types",
     ":scanning_app_util",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/pending.js" ]
@@ -108,7 +118,7 @@ js_library("scan_preview") {
 js_library("scan_to_select") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -118,7 +128,7 @@ js_library("scanner_select") {
     ":scanning_app_types",
     ":scanning_app_util",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -126,7 +136,7 @@ js_library("scanner_select") {
 js_library("multi_page_checkbox") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -134,7 +144,7 @@ js_library("multi_page_checkbox") {
 js_library("multi_page_scan") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -165,6 +175,7 @@ js_library("scanning_app") {
 }
 
 js_library("scanning_app_types") {
+  deps = [ "//ash/webui/scanning/mojom:mojom_webui_js" ]
 }
 
 js_library("scanning_app_util") {
@@ -178,7 +189,7 @@ js_library("source_select") {
     ":scanning_app_util",
     ":select_behavior",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -193,9 +204,9 @@ js_library("scanning_browser_proxy") {
 
 js_library("mojo_interface_provider") {
   deps = [
-    "//ash/webui/common/mojom:mojom_js_library_for_compile",
+    "//ash/webui/common/mojom:mojom_webui_js",
     "//ash/webui/common/resources:cr.m",
-    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
   ]
 }
 
@@ -219,4 +230,16 @@ html_to_js("web_components") {
     "scanning_shared_css.js",
     "source_select.js",
   ]
+}
+
+copy("copy_webui_mojo") {
+  deps = [
+    "//ash/webui/common/mojom:mojom_webui_js",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
+  ]
+  sources = [
+    "$root_gen_dir/mojom-webui/ash/webui/common/mojom/accessibility_features.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ash/webui/scanning/mojom/scanning.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

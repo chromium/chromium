@@ -125,8 +125,7 @@ grit("scanning_app_resources") {
   source = "//ash/webui/scanning/resources/scanning_app_resources.grd"
 
   deps = [
-    "//ash/webui/common/mojom:mojom_js",
-    "//ash/webui/scanning/mojom:mojom_js",
+    "//ash/webui/scanning/resources:copy_webui_mojo",
     "//ash/webui/scanning/resources:web_components",
   ]
 

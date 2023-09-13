@@ -10,6 +10,7 @@
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 
+import {ColorMode, FileType, PageSize, SourceType} from './scanning.mojom-webui.js';
 import {ScanCompleteAction} from './scanning_app_types.js';
 
 /**
@@ -22,10 +23,10 @@ export let SelectedPath;
 
 /**
  * @typedef {{
- *   sourceType: ash.scanning.mojom.SourceType,
- *   fileType: ash.scanning.mojom.FileType,
- *   colorMode: ash.scanning.mojom.ColorMode,
- *   pageSize: ash.scanning.mojom.PageSize,
+ *   sourceType: SourceType,
+ *   fileType: FileType,
+ *   colorMode: ColorMode,
+ *   pageSize: PageSize,
  *   resolution: number,
  * }}
  */

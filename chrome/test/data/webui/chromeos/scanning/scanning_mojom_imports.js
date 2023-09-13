@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://scanning/file_path.mojom-lite.js';
-import 'chrome://scanning/scanning.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import 'chrome://scanning/accessibility_features.mojom-webui.js';
+import 'chrome://scanning/scanning.mojom-webui.js';

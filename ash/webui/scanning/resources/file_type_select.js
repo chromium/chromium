@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
 

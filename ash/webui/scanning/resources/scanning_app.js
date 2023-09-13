@@ -7,12 +7,12 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
 import './loading_page.js';
@@ -33,9 +33,12 @@ import {CrContainerShadowBehavior} from 'chrome://resources/ash/common/cr_contai
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
+import {ColorMode, FileType, MultiPageScanControllerRemote, PageSize, ScanJobObserverInterface, ScanJobObserverReceiver, Scanner, ScannerCapabilities, ScanResult, ScanServiceInterface, ScanSettings as ScanSettingsMojom, SourceType} from './scanning.mojom-webui.js';
 import {AppState, MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString, tokenToString} from './scanning_app_util.js';
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
@@ -59,14 +62,14 @@ Polymer({
 
   /**
    * Receives scan job notifications.
-   * @private {?ash.scanning.mojom.ScanJobObserverReceiver}
+   * @private {?ScanJobObserverReceiver}
    */
   scanJobObserverReceiver_: null,
 
-  /** @private {?ash.scanning.mojom.ScanServiceInterface} */
+  /** @private {?ScanServiceInterface} */
   scanService_: null,
 
-  /** @private {?ash.scanning.mojom.MultiPageScanControllerRemote} */
+  /** @private {?MultiPageScanControllerRemote} */
   multiPageScanController_: null,
 
   /** @private {!Map<string, !ScannerInfo>} */
@@ -88,7 +91,7 @@ Polymer({
       observer: 'onSelectedScannerIdChange_',
     },
 
-    /** @private {?ash.scanning.mojom.ScannerCapabilities} */
+    /** @private {?ScannerCapabilities} */
     capabilities_: Object,
 
     /** @type {string} */
@@ -118,7 +121,7 @@ Polymer({
     /**
      * Map of a ScanSource's name to its corresponding SourceType. Used for
      * fetching the SourceType setting for scan job metrics.
-     * @private {!Map<string, !ash.scanning.mojom.SourceType>}
+     * @private {!Map<string, !SourceType>}
      */
     sourceTypeMap_: {
       type: Object,
@@ -165,14 +168,14 @@ Polymer({
       value: 0,
     },
 
-    /** @private {!Array<ash.scanning.mojom.ColorMode>} */
+    /** @private {!Array<ColorMode>} */
     selectedSourceColorModes_: {
       type: Array,
       value: () => [],
       computed: 'computeColorModes_(selectedSource, capabilities_.sources)',
     },
 
-    /** @private {!Array<ash.scanning.mojom.PageSize>} */
+    /** @private {!Array<PageSize>} */
     selectedSourcePageSizes_: {
       type: Array,
       value: () => [],
@@ -225,7 +228,7 @@ Polymer({
 
     /**
      * The file paths of the scanned pages of a successful scan job.
-     * @private {!Array<!mojoBase.mojom.FilePath>}
+     * @private {!Array<!FilePath>}
      */
     scannedFilePaths_: {
       type: Array,
@@ -429,7 +432,7 @@ Polymer({
   },
 
   /**
-   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
+   * Overrides ScanJobObserverInterface.
    * @param {number} pageNumber
    * @param {number} progressPercent
    */
@@ -449,7 +452,7 @@ Polymer({
   },
 
   /**
-   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
+   * Overrides ScanJobObserverInterface.
    * @param {!Array<number>} pageData
    * @param {number} newPageIndex
    */
@@ -479,13 +482,12 @@ Polymer({
   },
 
   /**
-   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
-   * @param {!ash.scanning.mojom.ScanResult} result
-   * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
+   * Overrides ScanJobObserverInterface.
+   * @param {!ScanResult} result
+   * @param {!Array<!FilePath>} scannedFilePaths
    */
   onScanComplete(result, scannedFilePaths) {
-    if (result !== ash.scanning.mojom.ScanResult.kSuccess ||
-        this.objectUrls_.length == 0) {
+    if (result !== ScanResult.kSuccess || this.objectUrls_.length == 0) {
       this.setScanFailedDialogTextKey_(result);
       this.$.scanFailedDialog.showModal();
       return;
@@ -497,7 +499,7 @@ Polymer({
   },
 
   /**
-   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
+   * Overrides ScanJobObserverInterface.
    * @param {boolean} success
    */
   onCancelComplete(success) {
@@ -526,18 +528,18 @@ Polymer({
   },
 
   /**
-   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
-   * @param {!ash.scanning.mojom.ScanResult} result
+   * Overrides ScanJobObserverInterface.
+   * @param {!ScanResult} result
    */
   onMultiPageScanFail(result) {
-    assert(result !== ash.scanning.mojom.ScanResult.kSuccess);
+    assert(result !== ScanResult.kSuccess);
 
     this.setScanFailedDialogTextKey_(result);
     this.$.scanFailedDialog.showModal();
   },
 
   /**
-   * @return {!Array<ash.scanning.mojom.ColorMode>}
+   * @return {!Array<ColorMode>}
    * @private
    */
   computeColorModes_() {
@@ -551,7 +553,7 @@ Polymer({
   },
 
   /**
-   * @return {!Array<ash.scanning.mojom.PageSize>}
+   * @return {!Array<PageSize>}
    * @private
    */
   computePageSizes_() {
@@ -579,14 +581,14 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.ScannerCapabilities} capabilities
+   * @param {!ScannerCapabilities} capabilities
    * @private
    */
   onCapabilitiesReceived_(capabilities) {
     this.capabilities_ = capabilities;
     this.capabilities_.sources.forEach(
         (source) => this.sourceTypeMap_.set(source.name, source.type));
-    this.selectedFileType = ash.scanning.mojom.FileType.kPdf.toString();
+    this.selectedFileType = FileType.kPdf.toString();
 
     this.setAppState_(
         this.areSavedScanSettingsAvailable_() ?
@@ -644,12 +646,11 @@ Polymer({
     }
 
     if (!this.scanJobObserverReceiver_) {
-      this.scanJobObserverReceiver_ =
-          new ash.scanning.mojom.ScanJobObserverReceiver(
-              /**
-               * @type {!ash.scanning.mojom.ScanJobObserverInterface}
-               */
-              (this));
+      this.scanJobObserverReceiver_ = new ScanJobObserverReceiver(
+          /**
+           * @type {!ScanJobObserverInterface}
+           */
+          (this));
     }
 
     const settings = this.getScanSettings_();
@@ -1015,8 +1016,7 @@ Polymer({
    * @private
    */
   getNumFilesSaved_() {
-    return this.selectedFileType ===
-            ash.scanning.mojom.FileType.kPdf.toString() ?
+    return this.selectedFileType === FileType.kPdf.toString() ?
         1 :
         this.pageNumber_;
   },
@@ -1052,25 +1052,25 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.ScanResult} scanResult Indicates the result of
+   * @param {!ScanResult} scanResult Indicates the result of
    *   the scan job.
    * @private
    */
   setScanFailedDialogTextKey_(scanResult) {
     switch (scanResult) {
-      case ash.scanning.mojom.ScanResult.kDeviceBusy:
+      case ScanResult.kDeviceBusy:
         this.scanFailedDialogTextKey_ = 'scanFailedDialogDeviceBusyText';
         break;
-      case ash.scanning.mojom.ScanResult.kAdfJammed:
+      case ScanResult.kAdfJammed:
         this.scanFailedDialogTextKey_ = 'scanFailedDialogAdfJammedText';
         break;
-      case ash.scanning.mojom.ScanResult.kAdfEmpty:
+      case ScanResult.kAdfEmpty:
         this.scanFailedDialogTextKey_ = 'scanFailedDialogAdfEmptyText';
         break;
-      case ash.scanning.mojom.ScanResult.kFlatbedOpen:
+      case ScanResult.kFlatbedOpen:
         this.scanFailedDialogTextKey_ = 'scanFailedDialogFlatbedOpenText';
         break;
-      case ash.scanning.mojom.ScanResult.kIoError:
+      case ScanResult.kIoError:
         this.scanFailedDialogTextKey_ = 'scanFailedDialogIoErrorText';
         break;
       default:
@@ -1105,7 +1105,7 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.Scanner} scanner
+   * @param {!Scanner} scanner
      @return {!ScannerInfo}
    * @private
    */
@@ -1117,7 +1117,7 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.Scanner} scanner
+   * @param {!Scanner} scanner
    * @private
    */
   setScannerInfo_(scanner) {
@@ -1126,7 +1126,7 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.Scanner} scanner
+   * @param {!Scanner} scanner
    * @return {boolean}
    * @private
    */
@@ -1144,7 +1144,7 @@ Polymer({
   },
 
   /**
-   * @return {!mojoBase.mojom.UnguessableToken}
+   * @return {!UnguessableToken}
    * @private
    */
   getSelectedScannerToken_() {
@@ -1277,8 +1277,7 @@ Polymer({
    */
   isPDFSelected_() {
     return !!this.selectedFileType &&
-        fileTypeFromString(this.selectedFileType) ===
-        ash.scanning.mojom.FileType.kPdf;
+        fileTypeFromString(this.selectedFileType) === FileType.kPdf;
   },
 
   /**
@@ -1287,8 +1286,7 @@ Polymer({
    */
   isFlatbedSelected_() {
     return !!this.selectedSource &&
-        this.sourceTypeMap_.get(this.selectedSource) ===
-        ash.scanning.mojom.SourceType.kFlatbed;
+        this.sourceTypeMap_.get(this.selectedSource) === SourceType.kFlatbed;
   },
 
   /** @private */
@@ -1308,7 +1306,7 @@ Polymer({
   },
 
   /**
-   * @return {!ash.scanning.mojom.ScanSettings}
+   * @return {!ScanSettingsMojom}
    * @private
    */
   getScanSettings_() {
@@ -1337,17 +1335,17 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.FileType} fileType
+   * @param {!FileType} fileType
    * @private
    */
   setSelectedFileTypeIfAvailable_(fileType) {
-    if (Object.values(ash.scanning.mojom.FileType).includes(fileType)) {
+    if (Object.values(FileType).includes(fileType)) {
       this.selectedFileType = fileType.toString();
     }
   },
 
   /**
-   * @param {!ash.scanning.mojom.ColorMode} colorMode
+   * @param {!ColorMode} colorMode
    * @private
    */
   setSelectedColorModeIfAvailable_(colorMode) {
@@ -1357,7 +1355,7 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.PageSize} pageSize
+   * @param {!PageSize} pageSize
    * @private
    */
   setSelectedPageSizeIfAvailable_(pageSize) {

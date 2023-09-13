@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './accessibility_features.mojom-lite.js';
 import './action_toolbar.js';
 import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
@@ -11,13 +10,14 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ForceHiddenElementsVisibleObserverInterface, ForceHiddenElementsVisibleObserverReceiver} from './accessibility_features.mojom-webui.js';
 import {getAccessibilityFeaturesInterface} from './mojo_interface_provider.js';
-import {AppState, ForceHiddenElementsVisibleObserverInterface} from './scanning_app_types.js';
+import {AppState} from './scanning_app_types.js';
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /** @type {number} */
@@ -68,7 +68,7 @@ Polymer({
   /**
    * Receives the status of the enabled accesbility features that should force
    * the hidden elements visible.
-   * @private {?ash.common.mojom.ForceHiddenElementsVisibleObserverReceiver}
+   * @private {?ForceHiddenElementsVisibleObserverReceiver}
    */
   forceHiddenElementsVisibleObserverReceiver_: null,
 
@@ -250,7 +250,7 @@ Polymer({
         parseFloat(styleMap.get('--action-toolbar-width').toString());
 
     this.forceHiddenElementsVisibleObserverReceiver_ =
-        new ash.common.mojom.ForceHiddenElementsVisibleObserverReceiver(
+        new ForceHiddenElementsVisibleObserverReceiver(
             /**
                @type {!ForceHiddenElementsVisibleObserverInterface}
              */
@@ -277,7 +277,7 @@ Polymer({
   },
 
   /**
-   * Overrides ash.common.mojom.ForceHiddenElementsVisibleObserverReceiver.
+   * Overrides ForceHiddenElementsVisibleObserverReceiver.
    * @param {boolean} forceVisible
    */
   onForceHiddenElementsVisibleChange(forceVisible) {

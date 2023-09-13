@@ -6,16 +6,11 @@ import './scanning_mojom_imports.js';
 import 'chrome://scanning/color_mode_select.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ColorMode} from 'chrome://scanning/scanning.mojom-webui.js';
 import {getColorModeString} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
-
-const ColorMode = {
-  BLACK_AND_WHITE: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-  GRAYSCALE: ash.scanning.mojom.ColorMode.kGrayscale,
-  COLOR: ash.scanning.mojom.ColorMode.kColor,
-};
 
 suite('colorModeSelectTest', function() {
   /** @type {?ColorModeSelectElement} */
@@ -42,8 +37,8 @@ suite('colorModeSelectTest', function() {
     assertFalse(select.disabled);
     assertEquals(0, select.length);
 
-    const firstColorMode = ColorMode.COLOR;
-    const secondColorMode = ColorMode.GRAYSCALE;
+    const firstColorMode = ColorMode.kColor;
+    const secondColorMode = ColorMode.kGrayscale;
     colorModeSelect.options = [firstColorMode, secondColorMode];
     flush();
 
@@ -61,22 +56,22 @@ suite('colorModeSelectTest', function() {
   // selected by default.
   test('colorModesSortedAlphabetically', () => {
     colorModeSelect.options =
-        [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
+        [ColorMode.kGrayscale, ColorMode.kBlackAndWhite, ColorMode.kColor];
     flush();
 
     assertOrderedAlphabetically(
         colorModeSelect.options, (colorMode) => getColorModeString(colorMode));
-    assertEquals(ColorMode.COLOR.toString(), colorModeSelect.selectedOption);
+    assertEquals(ColorMode.kColor.toString(), colorModeSelect.selectedOption);
   });
 
   // Verify the first color mode in the sorted color mode array is selected by
   // default when Color is not an available option.
   test('firstColorModeUsedWhenDefaultNotAvailable', () => {
-    colorModeSelect.options = [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE];
+    colorModeSelect.options = [ColorMode.kGrayscale, ColorMode.kBlackAndWhite];
     flush();
 
     assertEquals(
-        ColorMode.BLACK_AND_WHITE.toString(), colorModeSelect.selectedOption);
+        ColorMode.kBlackAndWhite.toString(), colorModeSelect.selectedOption);
   });
 
   // Verify the correct default option is selected when a scanner is selected
@@ -85,23 +80,23 @@ suite('colorModeSelectTest', function() {
     const select =
         /** @type {!HTMLSelectElement} */ (colorModeSelect.$$('select'));
     colorModeSelect.options =
-        [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
+        [ColorMode.kGrayscale, ColorMode.kBlackAndWhite, ColorMode.kColor];
     flush();
     return changeSelect(select, /* value */ null, /* selectedIndex */ 0)
         .then(() => {
           assertEquals(
-              ColorMode.BLACK_AND_WHITE.toString(),
+              ColorMode.kBlackAndWhite.toString(),
               colorModeSelect.selectedOption);
           assertEquals(
-              ColorMode.BLACK_AND_WHITE.toString(),
+              ColorMode.kBlackAndWhite.toString(),
               select.options[select.selectedIndex].value);
 
-          colorModeSelect.options = [ColorMode.GRAYSCALE, ColorMode.COLOR];
+          colorModeSelect.options = [ColorMode.kGrayscale, ColorMode.kColor];
           flush();
           assertEquals(
-              ColorMode.COLOR.toString(), colorModeSelect.selectedOption);
+              ColorMode.kColor.toString(), colorModeSelect.selectedOption);
           assertEquals(
-              ColorMode.COLOR.toString(),
+              ColorMode.kColor.toString(),
               select.options[select.selectedIndex].value);
         });
   });

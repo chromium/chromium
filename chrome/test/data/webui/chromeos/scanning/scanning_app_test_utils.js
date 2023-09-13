@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import './scanning_mojom_imports.js';
 
+import {ColorMode, PageSize, Scanner, ScanSource} from 'chrome://scanning/scanning.mojom-webui.js';
 import {alphabeticalCompare} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -26,7 +27,7 @@ export function assertOrderedAlphabetically(arr, conversionFn = (val) => val) {
 /**
  * @param {!mojoBase.mojom.UnguessableToken} id
  * @param {string} displayName
- * @return {!ash.scanning.mojom.Scanner}
+ * @return {!Scanner}
  */
 export function createScanner(id, displayName) {
   return {id, 'displayName': strToMojoString16(displayName)};
@@ -35,14 +36,14 @@ export function createScanner(id, displayName) {
 /**
  * @param {number} type
  * @param {string} name
- * @param {!Array<ash.scanning.mojom.PageSize>} pageSizes
- * @param {!Array<ash.scanning.mojom.ColorMode>} colorModes
+ * @param {!Array<PageSize>} pageSizes
+ * @param {!Array<ColorMode>} colorModes
  * @param {!Array<number>} resolutions
- * @return {!ash.scanning.mojom.ScanSource}
+ * @return {!ScanSource}
  */
 export function createScannerSource(
     type, name, pageSizes, colorModes, resolutions) {
-  return /** @type {!ash.scanning.mojom.ScanSource} */ (
+  return /** @type {!ScanSource} */ (
       {type, name, pageSizes, colorModes, resolutions});
 }
 

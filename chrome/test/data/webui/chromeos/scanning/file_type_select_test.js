@@ -5,15 +5,10 @@
 import './scanning_mojom_imports.js';
 import 'chrome://scanning/file_type_select.js';
 
+import {FileType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {changeSelect} from './scanning_app_test_utils.js';
-
-const FileType = {
-  JPG: ash.scanning.mojom.FileType.kJpg,
-  PDF: ash.scanning.mojom.FileType.kPdf,
-  PNG: ash.scanning.mojom.FileType.kPng,
-};
 
 suite('fileTypeSelectTest', function() {
   /** @type {?FileTypeSelectElement} */
@@ -42,14 +37,14 @@ suite('fileTypeSelectTest', function() {
     assertEquals('JPG', select.options[0].textContent.trim());
     assertEquals('PNG', select.options[1].textContent.trim());
     assertEquals('PDF', select.options[2].textContent.trim());
-    assertEquals(FileType.PDF.toString(), select.value);
+    assertEquals(FileType.kPdf.toString(), select.value);
 
     // Selecting a different option should update the selected value.
     return changeSelect(
-               select, FileType.JPG.toString(), /* selectedIndex */ null)
+               select, FileType.kJpg.toString(), /* selectedIndex */ null)
         .then(() => {
           assertEquals(
-              FileType.JPG.toString(), fileTypeSelect.selectedFileType);
+              FileType.kJpg.toString(), fileTypeSelect.selectedFileType);
         });
   });
 });

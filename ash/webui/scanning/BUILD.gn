@@ -40,10 +40,6 @@ static_library("scanning") {
   ]
 }
 
-group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
-}
-
 source_set("unit_tests") {
   testonly = true
 

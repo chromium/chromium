@@ -6,9 +6,12 @@ import './scanning_mojom_imports.js';
 import 'chrome://scanning/scanning_app.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
+import {ColorMode, FileType, PageSize, ScanResult, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
 import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
 import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
@@ -29,57 +32,33 @@ const ADF_DUPLEX = 'adf_duplex';
 const ADF_SIMPLEX = 'adf_simplex';
 const PLATEN = 'platen';
 
-const ColorMode = {
-  BLACK_AND_WHITE: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-  GRAYSCALE: ash.scanning.mojom.ColorMode.kGrayscale,
-  COLOR: ash.scanning.mojom.ColorMode.kColor,
-};
-
-const FileType = {
-  JPG: ash.scanning.mojom.FileType.kJpg,
-  PDF: ash.scanning.mojom.FileType.kPdf,
-  PNG: ash.scanning.mojom.FileType.kPng,
-};
-
-const PageSize = {
-  A4: ash.scanning.mojom.PageSize.kIsoA4,
-  Letter: ash.scanning.mojom.PageSize.kNaLetter,
-  Max: ash.scanning.mojom.PageSize.kMax,
-};
-
-const SourceType = {
-  FLATBED: ash.scanning.mojom.SourceType.kFlatbed,
-  ADF_SIMPLEX: ash.scanning.mojom.SourceType.kAdfSimplex,
-  ADF_DUPLEX: ash.scanning.mojom.SourceType.kAdfDuplex,
-};
-
-const firstPageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
-const firstColorModes = [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
+const firstPageSizes = [PageSize.kIsoA4, PageSize.kNaLetter, PageSize.kMax];
+const firstColorModes = [ColorMode.kBlackAndWhite, ColorMode.kColor];
 const firstResolutions = [75, 100, 300];
 
-const secondPageSizes = [PageSize.A4, PageSize.Max];
-const secondColorModes = [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE];
+const secondPageSizes = [PageSize.kIsoA4, PageSize.kMax];
+const secondColorModes = [ColorMode.kBlackAndWhite, ColorMode.kGrayscale];
 const secondResolutions = [150, 600];
 
-const thirdPageSizes = [PageSize.Max];
-const thirdColorModes = [ColorMode.BLACK_AND_WHITE];
+const thirdPageSizes = [PageSize.kMax];
+const thirdColorModes = [ColorMode.kBlackAndWhite];
 const thirdResolutions = [75, 200];
 
 const firstScannerId =
-    /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
+    /** @type {!UnguessableToken} */ ({high: 0, low: 1});
 const firstScannerName = 'Scanner 1';
 
 const secondScannerId =
-    /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 2});
+    /** @type {!UnguessableToken} */ ({high: 0, low: 2});
 const secondScannerName = 'Scanner 2';
 
 const firstCapabilities = {
   sources: [
     createScannerSource(
-        SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes, firstColorModes,
+        SourceType.kAdfDuplex, ADF_DUPLEX, firstPageSizes, firstColorModes,
         firstResolutions),
     createScannerSource(
-        SourceType.FLATBED, PLATEN, secondPageSizes, firstColorModes,
+        SourceType.kFlatbed, PLATEN, secondPageSizes, firstColorModes,
         firstResolutions),
   ],
 };
@@ -87,33 +66,33 @@ const firstCapabilities = {
 const secondCapabilities = {
   sources: [
     createScannerSource(
-        SourceType.ADF_DUPLEX, ADF_DUPLEX, thirdPageSizes, thirdColorModes,
+        SourceType.kAdfDuplex, ADF_DUPLEX, thirdPageSizes, thirdColorModes,
         thirdResolutions),
     createScannerSource(
-        SourceType.ADF_SIMPLEX, ADF_SIMPLEX, secondPageSizes, secondColorModes,
+        SourceType.kAdfSimplex, ADF_SIMPLEX, secondPageSizes, secondColorModes,
         secondResolutions),
   ],
 };
 
-/** @implements {ash.scanning.mojom.ScanServiceInterface} */
+/** @implements {ScanServiceInterface} */
 class FakeScanService {
   constructor() {
     /** @private {!Map<string, !PromiseResolver>} */
     this.resolverMap_ = new Map();
 
-    /** @private {?ash.scanning.mojom.MultiPageScanControllerInterface} */
+    /** @private {?MultiPageScanControllerInterface} */
     this.multiPageScanController_ = null;
 
     /** @private {!ScannerArr} */
     this.scanners_ = [];
 
     /**
-     * @private {!Map<!mojoBase.mojom.UnguessableToken,
-     *     !ash.scanning.mojom.ScannerCapabilities>}
+     * @private {!Map<!UnguessableToken,
+     *     !ScannerCapabilities>}
      */
     this.capabilities_ = new Map();
 
-    /** @private {?ash.scanning.mojom.ScanJobObserverRemote} */
+    /** @private {?ScanJobObserverRemote} */
     this.scanJobObserverRemote_ = null;
 
     /** @private {boolean} */
@@ -165,7 +144,7 @@ class FakeScanService {
   }
 
   /**
-   * @param {?ash.scanning.mojom.MultiPageScanControllerInterface} controller
+   * @param {?MultiPageScanControllerInterface} controller
    */
   setMultiPageScanController(controller) {
     this.multiPageScanController_ = controller;
@@ -176,14 +155,14 @@ class FakeScanService {
     this.scanners_ = scanners;
   }
 
-  /** @param {ash.scanning.mojom.Scanner} scanner */
+  /** @param {Scanner} scanner */
   addScanner(scanner) {
     this.scanners_ = this.scanners_.concat(scanner);
   }
 
   /**
-   * @param {!Map<!mojoBase.mojom.UnguessableToken,
-   *     !ash.scanning.mojom.ScannerCapabilities>} capabilities
+   * @param {!Map<!UnguessableToken,
+   *     !ScannerCapabilities>} capabilities
    */
   setCapabilities(capabilities) {
     this.capabilities_ = capabilities;
@@ -219,8 +198,8 @@ class FakeScanService {
   }
 
   /**
-   * @param {!ash.scanning.mojom.ScanResult} result
-   * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
+   * @param {!ScanResult} result
+   * @param {!Array<!FilePath>} scannedFilePaths
    * @return {!Promise}
    */
   simulateScanComplete(result, scannedFilePaths) {
@@ -238,7 +217,7 @@ class FakeScanService {
   }
 
   /**
-   * @param {!ash.scanning.mojom.ScanResult} scanResult
+   * @param {!ScanResult} scanResult
    * @return {!Promise}
    */
   simulateMultiPageScanFail(scanResult) {
@@ -257,9 +236,9 @@ class FakeScanService {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} scanner_id
+   * @param {!UnguessableToken} scanner_id
    * @return {!Promise<{capabilities:
-   *    !ash.scanning.mojom.ScannerCapabilities}>}
+   *    !ScannerCapabilities}>}
    */
   getScannerCapabilities(scanner_id) {
     return new Promise(resolve => {
@@ -269,9 +248,9 @@ class FakeScanService {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} scanner_id
-   * @param {!ash.scanning.mojom.ScanSettings} settings
-   * @param {!ash.scanning.mojom.ScanJobObserverRemote} remote
+   * @param {!UnguessableToken} scanner_id
+   * @param {!ScanSettings} settings
+   * @param {!ScanJobObserverRemote} remote
    * @return {!Promise<{success: boolean}>}
    */
   startScan(scanner_id, settings, remote) {
@@ -283,9 +262,9 @@ class FakeScanService {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} scanner_id
-   * @param {!ash.scanning.mojom.ScanSettings} settings
-   * @param {!ash.scanning.mojom.ScanJobObserverRemote} remote
+   * @param {!UnguessableToken} scanner_id
+   * @param {!ScanSettings} settings
+   * @param {!ScanJobObserverRemote} remote
    * @return {!Promise<StartMultiPageScanResponse>}
    */
   startMultiPageScan(scanner_id, settings, remote) {
@@ -303,7 +282,7 @@ class FakeScanService {
   }
 }
 
-/** @implements {ash.scanning.mojom.MultiPageScanControllerInterface} */
+/** @implements {MultiPageScanControllerInterface} */
 class FakeMultiPageScanController {
   constructor() {
     /** @private {!Map<string, !PromiseResolver>} */
@@ -360,8 +339,8 @@ class FakeMultiPageScanController {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} scannerId
-   * @param {!ash.scanning.mojom.ScanSettings} settings
+   * @param {!UnguessableToken} scannerId
+   * @param {!ScanSettings} settings
    * @return {!Promise<{success: boolean}>}
    */
   scanNextPage(scannerId, settings) {
@@ -377,8 +356,8 @@ class FakeMultiPageScanController {
   }
 
   /**
-   * @param {!mojoBase.mojom.UnguessableToken} scannerId
-   * @param {!ash.scanning.mojom.ScanSettings} settings
+   * @param {!UnguessableToken} scannerId
+   * @param {!ScanSettings} settings
    * @param {number} pageIndex
    * @return {!Promise<{success: boolean}>}
    */
@@ -466,8 +445,8 @@ suite('scanningAppTest', function() {
   const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
 
   /**
-   * @type {!Map<!mojoBase.mojom.UnguessableToken,
-   *     !ash.scanning.mojom.ScannerCapabilities>}
+   * @type {!Map<!UnguessableToken,
+   *     !ScannerCapabilities>}
    */
   const capabilities = new Map();
   capabilities.set(firstScannerId, firstCapabilities);
@@ -524,8 +503,8 @@ suite('scanningAppTest', function() {
 
   /**
    * @param {!ScannerArr} scanners
-   * @param {!Map<!mojoBase.mojom.UnguessableToken,
-   *     !ash.scanning.mojom.ScannerCapabilities>} capabilities
+   * @param {!Map<!UnguessableToken,
+   *     !ScannerCapabilities>} capabilities
    * @return {!Promise}
    */
   function initializeScanningApp(scanners, capabilities) {
@@ -631,7 +610,7 @@ suite('scanningAppTest', function() {
 
   // Verify a full scan job can be completed.
   test('Scan', () => {
-    /** @type {!Array<!mojoBase.mojom.FilePath>} */
+    /** @type {!Array<!FilePath>} */
     const scannedFilePaths =
         [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
     let newPageIndex = 0;
@@ -667,9 +646,9 @@ suite('scanningAppTest', function() {
           assertEquals(
               firstCapabilities.sources[1].name, scanningApp.selectedSource);
           assertEquals(MY_FILES_PATH, scanningApp.selectedFilePath);
-          assertEquals(FileType.PDF.toString(), scanningApp.selectedFileType);
+          assertEquals(FileType.kPdf.toString(), scanningApp.selectedFileType);
           assertEquals(
-              ColorMode.COLOR.toString(), scanningApp.selectedColorMode);
+              ColorMode.kColor.toString(), scanningApp.selectedColorMode);
           assertEquals(
               firstCapabilities.sources[1].pageSizes[0].toString(),
               scanningApp.selectedPageSize);
@@ -756,7 +735,7 @@ suite('scanningAppTest', function() {
         .then(() => {
           // Complete the scan.
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kSuccess, scannedFilePaths);
+              ScanResult.kSuccess, scannedFilePaths);
         })
         .then(() => {
           assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
@@ -814,8 +793,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // Simulate the scan failing.
-          return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kIoError, []);
+          return fakeScanService_.simulateScanComplete(ScanResult.kIoError, []);
         })
         .then(() => {
           // The scan failed dialog should open.
@@ -853,8 +831,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           // Simulate the scan failing.
-          return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kIoError, []);
+          return fakeScanService_.simulateScanComplete(ScanResult.kIoError, []);
         })
         .then(() => {
           const scanFailedDialog = scanningApp.$$('#scanFailedDialog');
@@ -874,7 +851,7 @@ suite('scanningAppTest', function() {
 
   // Verify a multi-page scan job can be initiated.
   test('MultiPageScan', () => {
-    /** @type {!Array<!mojoBase.mojom.FilePath>} */
+    /** @type {!Array<!FilePath>} */
     const scannedFilePaths = [{'path': '/test/path/scan1.pdf'}];
     let newPageIndex = 0;
 
@@ -884,7 +861,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -943,7 +920,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kSuccess, scannedFilePaths);
+              ScanResult.kSuccess, scannedFilePaths);
         })
         .then(() => {
           scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
@@ -968,7 +945,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -998,7 +975,7 @@ suite('scanningAppTest', function() {
                   .$$('#progressText')
                   .textContent.trim());
           return fakeScanService_.simulateMultiPageScanFail(
-              ash.scanning.mojom.ScanResult.kFlatbedOpen);
+              ScanResult.kFlatbedOpen);
         })
         .then(() => {
           // The scan failed dialog should open.
@@ -1036,8 +1013,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kSuccess,
-              [{'path': '/test/path/scan1.pdf'}]);
+              ScanResult.kSuccess, [{'path': '/test/path/scan1.pdf'}]);
         })
         .then(() => {
           scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
@@ -1058,7 +1034,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return flushTasks();
         })
         .then(() => {
@@ -1115,7 +1091,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -1186,7 +1162,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -1239,7 +1215,7 @@ suite('scanningAppTest', function() {
 
   // Verify one page can be scanned and then rescanned in a multi-page scan job.
   test('MultiPageScanRescanOnePage', () => {
-    /** @type {!Array<!mojoBase.mojom.FilePath>} */
+    /** @type {!Array<!FilePath>} */
     const scannedFilePaths = [{'path': '/test/path/scan1.pdf'}];
     const pageIndexToRescan = 0;
 
@@ -1254,7 +1230,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -1313,7 +1289,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kSuccess, scannedFilePaths);
+              ScanResult.kSuccess, scannedFilePaths);
         })
         .then(() => {
           scannedImages = scanningApp.$$('#scanPreview').$$('#scannedImages');
@@ -1344,7 +1320,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -1440,7 +1416,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -1479,7 +1455,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateMultiPageScanFail(
-              ash.scanning.mojom.ScanResult.kFlatbedOpen);
+              ScanResult.kFlatbedOpen);
         })
         .then(() => {
           // The scan failed dialog should open.
@@ -1585,7 +1561,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kUnknownError, []);
+              ScanResult.kUnknownError, []);
         })
         .then(() => {
           assertEquals(
@@ -1599,7 +1575,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kDeviceBusy, []);
+              ScanResult.kDeviceBusy, []);
         })
         .then(() => {
           assertEquals(
@@ -1613,7 +1589,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kAdfJammed, []);
+              ScanResult.kAdfJammed, []);
         })
         .then(() => {
           assertEquals(
@@ -1627,7 +1603,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kAdfEmpty, []);
+              ScanResult.kAdfEmpty, []);
         })
         .then(() => {
           assertEquals(
@@ -1641,7 +1617,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kFlatbedOpen, []);
+              ScanResult.kFlatbedOpen, []);
         })
         .then(() => {
           assertEquals(
@@ -1654,8 +1630,7 @@ suite('scanningAppTest', function() {
           return fakeScanService_.whenCalled('startScan');
         })
         .then(() => {
-          return fakeScanService_.simulateScanComplete(
-              ash.scanning.mojom.ScanResult.kIoError, []);
+          return fakeScanService_.simulateScanComplete(ScanResult.kIoError, []);
         })
         .then(() => {
           assertEquals(
@@ -1905,7 +1880,7 @@ suite('scanningAppTest', function() {
         .then(() => {
           return changeSelect(
               scanningApp.$$('#fileTypeSelect').$$('select'),
-              FileType.JPG.toString(), /* selectedIndex */ null);
+              FileType.kJpg.toString(), /* selectedIndex */ null);
         })
         .then(() => {
           return changeSelect(
@@ -1930,7 +1905,7 @@ suite('scanningAppTest', function() {
         .then(() => {
           return changeSelect(
               scanningApp.$$('#colorModeSelect').$$('select'),
-              ColorMode.BLACK_AND_WHITE.toString(), /* selectedIndex */ null);
+              ColorMode.kBlackAndWhite.toString(), /* selectedIndex */ null);
         })
         .then(() => {
           return changeSelect(
@@ -1940,7 +1915,7 @@ suite('scanningAppTest', function() {
         .then(() => {
           return changeSelect(
               scanningApp.$$('#fileTypeSelect').$$('select'),
-              FileType.JPG.toString(), /* selectedIndex */ null);
+              FileType.kJpg.toString(), /* selectedIndex */ null);
         })
         .then(() => {
           return changeSelect(
@@ -1971,13 +1946,13 @@ suite('scanningAppTest', function() {
               loadTimeData.getString('myFilesSelectOption'),
               scanningApp.$$('#scanToSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.FileType.kPdf.toString(),
+              FileType.kPdf.toString(),
               scanningApp.$$('#fileTypeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.ColorMode.kColor.toString(),
+              ColorMode.kColor.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -2001,13 +1976,13 @@ suite('scanningAppTest', function() {
               loadTimeData.getString('myFilesSelectOption'),
               scanningApp.$$('#scanToSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.FileType.kPdf.toString(),
+              FileType.kPdf.toString(),
               scanningApp.$$('#fileTypeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.ColorMode.kBlackAndWhite.toString(),
+              ColorMode.kBlackAndWhite.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '600', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -2024,9 +1999,9 @@ suite('scanningAppTest', function() {
         name: 'Wrong Scanner',
         lastScanDate: new Date(),
         sourceName: ADF_DUPLEX,
-        fileType: ash.scanning.mojom.FileType.kPng,
-        colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
-        pageSize: ash.scanning.mojom.PageSize.kMax,
+        fileType: FileType.kPng,
+        colorMode: ColorMode.kGrayscale,
+        pageSize: PageSize.kMax,
         resolutionDpi: 100,
         multiPageScanChecked: false,
       }],
@@ -2047,13 +2022,13 @@ suite('scanningAppTest', function() {
               loadTimeData.getString('myFilesSelectOption'),
               scanningApp.$$('#scanToSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.FileType.kPdf.toString(),
+              FileType.kPdf.toString(),
               scanningApp.$$('#fileTypeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.ColorMode.kColor.toString(),
+              ColorMode.kColor.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -2073,9 +2048,9 @@ suite('scanningAppTest', function() {
         name: firstScannerName,
         lastScanDate: new Date(),
         sourceName: PLATEN,
-        fileType: ash.scanning.mojom.FileType.kPdf,
-        colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-        pageSize: ash.scanning.mojom.PageSize.kMax,
+        fileType: FileType.kPdf,
+        colorMode: ColorMode.kBlackAndWhite,
+        pageSize: PageSize.kMax,
         resolutionDpi: 75,
         multiPageScanChecked: true,
       }],
@@ -2096,13 +2071,13 @@ suite('scanningAppTest', function() {
               selectedPath.baseName,
               scanningApp.$$('#scanToSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.FileType.kPdf.toString(),
+              FileType.kPdf.toString(),
               scanningApp.$$('#fileTypeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.ColorMode.kBlackAndWhite.toString(),
+              ColorMode.kBlackAndWhite.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kMax.toString(),
+              PageSize.kMax.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '75', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -2124,7 +2099,7 @@ suite('scanningAppTest', function() {
         lastScanDate: new Date(),
         sourceName: ADF_SIMPLEX,
         fileType: -1,
-        colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
+        colorMode: ColorMode.kGrayscale,
         pageSize: -1,
         resolutionDpi: 600,
         multiPageScanChecked: false,
@@ -2146,13 +2121,13 @@ suite('scanningAppTest', function() {
               loadTimeData.getString('myFilesSelectOption'),
               scanningApp.$$('#scanToSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.FileType.kPdf.toString(),
+              FileType.kPdf.toString(),
               scanningApp.$$('#fileTypeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.ColorMode.kColor.toString(),
+              ColorMode.kColor.toString(),
               scanningApp.$$('#colorModeSelect').$$('select').value);
           assertEquals(
-              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           assertEquals(
               '300', scanningApp.$$('#resolutionSelect').$$('select').value);
@@ -2171,9 +2146,9 @@ suite('scanningAppTest', function() {
         name: secondScannerName,
         lastScanDate: new Date(),
         sourceName: PLATEN,
-        fileType: ash.scanning.mojom.FileType.kPdf,
-        colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
-        pageSize: ash.scanning.mojom.PageSize.kNaLetter,
+        fileType: FileType.kPdf,
+        colorMode: ColorMode.kGrayscale,
+        pageSize: PageSize.kNaLetter,
         resolutionDpi: 600,
         multiPageScanChecked: true,
       }],
@@ -2202,9 +2177,9 @@ suite('scanningAppTest', function() {
         name: secondScannerName,
         lastScanDate: new Date(),
         sourceName: PLATEN,
-        fileType: ash.scanning.mojom.FileType.kPdf,
-        colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
-        pageSize: ash.scanning.mojom.PageSize.kNaLetter,
+        fileType: FileType.kPdf,
+        colorMode: ColorMode.kGrayscale,
+        pageSize: PageSize.kNaLetter,
         resolutionDpi: 600,
       }],
     };
@@ -2230,9 +2205,9 @@ suite('scanningAppTest', function() {
         name: secondScannerName,
         lastScanDate: new Date(),
         sourceName: ADF_DUPLEX,
-        fileType: ash.scanning.mojom.FileType.kPng,
-        colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-        pageSize: ash.scanning.mojom.PageSize.kMax,
+        fileType: FileType.kPng,
+        colorMode: ColorMode.kBlackAndWhite,
+        pageSize: PageSize.kMax,
         resolutionDpi: 75,
         multiPageScanChecked: false,
       }],
@@ -2256,9 +2231,9 @@ suite('scanningAppTest', function() {
       name: secondScannerName,
       lastScanDate: LAST_SCAN_DATE,
       sourceName: ADF_DUPLEX,
-      fileType: ash.scanning.mojom.FileType.kPng,
-      colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-      pageSize: ash.scanning.mojom.PageSize.kMax,
+      fileType: FileType.kPng,
+      colorMode: ColorMode.kBlackAndWhite,
+      pageSize: PageSize.kMax,
       resolutionDpi: 100,
       multiPageScanChecked: false,
     };
@@ -2298,9 +2273,9 @@ suite('scanningAppTest', function() {
       name: firstScannerName,
       lastScanDate: LAST_SCAN_DATE,
       sourceName: ADF_DUPLEX,
-      fileType: ash.scanning.mojom.FileType.kPng,
-      colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-      pageSize: ash.scanning.mojom.PageSize.kMax,
+      fileType: FileType.kPng,
+      colorMode: ColorMode.kBlackAndWhite,
+      pageSize: PageSize.kMax,
       resolutionDpi: 100,
       multiPageScanChecked: false,
     };
@@ -2312,9 +2287,9 @@ suite('scanningAppTest', function() {
       name: secondScannerName,
       lastScanDate: LAST_SCAN_DATE,
       sourceName: ADF_DUPLEX,
-      fileType: ash.scanning.mojom.FileType.kPng,
-      colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-      pageSize: ash.scanning.mojom.PageSize.kMax,
+      fileType: FileType.kPng,
+      colorMode: ColorMode.kBlackAndWhite,
+      pageSize: PageSize.kMax,
       resolutionDpi: 100,
       multiPageScanChecked: false,
     };
@@ -2333,9 +2308,9 @@ suite('scanningAppTest', function() {
       name: secondScannerName,
       lastScanDate: LAST_SCAN_DATE,
       sourceName: ADF_SIMPLEX,
-      fileType: ash.scanning.mojom.FileType.kJpg,
-      colorMode: ash.scanning.mojom.ColorMode.kGrayscale,
-      pageSize: ash.scanning.mojom.PageSize.kIsoA4,
+      fileType: FileType.kJpg,
+      colorMode: ColorMode.kGrayscale,
+      pageSize: PageSize.kIsoA4,
       resolutionDpi: 600,
       multiPageScanChecked: false,
     };
@@ -2373,9 +2348,9 @@ suite('scanningAppTest', function() {
       name: secondScannerName,
       lastScanDate: '1/1/2021',
       sourceName: ADF_DUPLEX,
-      fileType: ash.scanning.mojom.FileType.kPng,
-      colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-      pageSize: ash.scanning.mojom.PageSize.kMax,
+      fileType: FileType.kPng,
+      colorMode: ColorMode.kBlackAndWhite,
+      pageSize: PageSize.kMax,
       resolutionDpi: 100,
       multiPageScanChecked: false,
     };
@@ -2427,9 +2402,9 @@ suite('scanningAppTest', function() {
         name: 'Scanner ' + (i + 1),
         lastScanDate: new Date(new Date().getTime() + i),
         sourceName: ADF_DUPLEX,
-        fileType: ash.scanning.mojom.FileType.kPng,
-        colorMode: ash.scanning.mojom.ColorMode.kBlackAndWhite,
-        pageSize: ash.scanning.mojom.PageSize.kMax,
+        fileType: FileType.kPng,
+        colorMode: ColorMode.kBlackAndWhite,
+        pageSize: PageSize.kMax,
         resolutionDpi: 300,
         multiPageScanChecked: false,
       };
@@ -2467,7 +2442,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = ADF_DUPLEX;
-          scanningApp.selectedFileType = FileType.PNG.toString();
+          scanningApp.selectedFileType = FileType.kPng.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -2476,7 +2451,7 @@ suite('scanningAppTest', function() {
                   scanningApp.$$('multi-page-checkbox').$$('#checkboxDiv'))));
 
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PNG.toString();
+          scanningApp.selectedFileType = FileType.kPng.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -2485,7 +2460,7 @@ suite('scanningAppTest', function() {
                   scanningApp.$$('multi-page-checkbox').$$('#checkboxDiv'))));
 
           scanningApp.selectedSource = ADF_DUPLEX;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -2494,7 +2469,7 @@ suite('scanningAppTest', function() {
                   scanningApp.$$('multi-page-checkbox').$$('#checkboxDiv'))));
 
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return waitAfterNextRender(/** @type {!HTMLElement} */ (scanningApp));
         })
         .then(() => {
@@ -2513,7 +2488,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return flushTasks();
         })
         .then(() => {
@@ -2524,7 +2499,7 @@ suite('scanningAppTest', function() {
               'Scan page 1', scanningApp.$$('#scanButton').textContent.trim());
 
           // Leave the multi-page checkbox checked but switch the file type.
-          scanningApp.selectedFileType = FileType.PNG.toString();
+          scanningApp.selectedFileType = FileType.kPng.toString();
           return flushTasks();
         })
         .then(() => {
@@ -2546,7 +2521,7 @@ suite('scanningAppTest', function() {
         })
         .then(() => {
           scanningApp.selectedSource = PLATEN;
-          scanningApp.selectedFileType = FileType.PDF.toString();
+          scanningApp.selectedFileType = FileType.kPdf.toString();
           return flushTasks();
         })
         .then(() => {
@@ -2585,16 +2560,16 @@ suite('scanningAppTest', function() {
           const pageSizeSelector =
               scanningApp.$$('#pageSizeSelect').$$('select');
           changeSelect(
-              pageSizeSelector, PageSize.A4.toString(),
+              pageSizeSelector, PageSize.kIsoA4.toString(),
               /* selectedIndex */ null);
           assertEquals(
-              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           changeSelect(
-              pageSizeSelector, PageSize.Max.toString(),
+              pageSizeSelector, PageSize.kMax.toString(),
               /* selectedIndex */ null);
           assertEquals(
-              ash.scanning.mojom.PageSize.kMax.toString(),
+              PageSize.kMax.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
         })
         .then(() => {
@@ -2606,22 +2581,22 @@ suite('scanningAppTest', function() {
           const pageSizeSelector =
               scanningApp.$$('#pageSizeSelect').$$('select');
           changeSelect(
-              pageSizeSelector, PageSize.A4.toString(),
+              pageSizeSelector, PageSize.kIsoA4.toString(),
               /* selectedIndex */ null);
           assertEquals(
-              ash.scanning.mojom.PageSize.kIsoA4.toString(),
+              PageSize.kIsoA4.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           changeSelect(
-              pageSizeSelector, PageSize.Letter.toString(),
+              pageSizeSelector, PageSize.kNaLetter.toString(),
               /* selectedIndex */ null);
           assertEquals(
-              ash.scanning.mojom.PageSize.kNaLetter.toString(),
+              PageSize.kNaLetter.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
           changeSelect(
-              pageSizeSelector, PageSize.Max.toString(),
+              pageSizeSelector, PageSize.kMax.toString(),
               /* selectedIndex */ null);
           assertEquals(
-              ash.scanning.mojom.PageSize.kMax.toString(),
+              PageSize.kMax.toString(),
               scanningApp.$$('#pageSizeSelect').$$('select').value);
         });
   });

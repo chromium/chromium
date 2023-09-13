@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+
+import {ColorMode, FileType, MultiPageScanControllerRemote, PageSize, Scanner, ScannerCapabilities} from './scanning.mojom-webui.js';
+
 /**
  * Enum for the state of `scanning-app`.
  * @enum {number}
@@ -41,18 +45,18 @@ export const ScanCompleteAction = {
 export const MAX_NUM_SAVED_SCANNERS = 20;
 
 /**
- * @typedef {!Array<!ash.scanning.mojom.Scanner>}
+ * @typedef {!Array<!Scanner>}
  */
 export let ScannerArr;
 
 /**
- * @typedef {{capabilities: !ash.scanning.mojom.ScannerCapabilities}}
+ * @typedef {{capabilities: !ScannerCapabilities}}
  */
 export let ScannerCapabilitiesResponse;
 
 /**
  * @typedef {{
- *   token: !mojoBase.mojom.UnguessableToken,
+ *   token: !UnguessableToken,
  *   displayName: string,
  * }}
  */
@@ -63,9 +67,9 @@ export let ScannerInfo;
  *   name: string,
  *   lastScanDate: !Date,
  *   sourceName: string,
- *   fileType: ash.scanning.mojom.FileType,
- *   colorMode: ash.scanning.mojom.ColorMode,
- *   pageSize: ash.scanning.mojom.PageSize,
+ *   fileType: FileType,
+ *   colorMode: ColorMode,
+ *   pageSize: PageSize,
  *   resolutionDpi: number,
  *   multiPageScanChecked: boolean,
  * }}
@@ -83,11 +87,6 @@ export let ScanSettings;
 
 /**
  * @typedef {{controller:
-                     ?ash.scanning.mojom.MultiPageScanControllerRemote}}
+                     ?MultiPageScanControllerRemote}}
  */
 export let StartMultiPageScanResponse;
-
-/**
- * @typedef {!ash.common.mojom.ForceHiddenElementsVisibleObserverInterface}
- */
-export let ForceHiddenElementsVisibleObserverInterface;

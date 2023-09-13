@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PageSize} from './scanning.mojom-webui.js';
 import {alphabeticalCompare, getPageSizeString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
 
-/** @type {ash.scanning.mojom.PageSize} */
-const DEFAULT_PAGE_SIZE = ash.scanning.mojom.PageSize.kNaLetter;
+/** @type {PageSize} */
+const DEFAULT_PAGE_SIZE = PageSize.kNaLetter;
 
 /**
  * @fileoverview
@@ -38,7 +38,7 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.PageSize} pageSize
+   * @param {!PageSize} pageSize
    * @return {string}
    * @private
    */
@@ -54,7 +54,7 @@ Polymer({
     // If the fit to scan area option exists, move it to the end of the page
     // sizes array.
     const fitToScanAreaIndex = this.options.findIndex((pageSize) => {
-      return pageSize === ash.scanning.mojom.PageSize.kMax;
+      return pageSize === PageSize.kMax;
     });
 
 
@@ -64,7 +64,7 @@ Polymer({
   },
 
   /**
-   * @param {!ash.scanning.mojom.PageSize} option
+   * @param {!PageSize} option
    * @return {boolean}
    */
   isDefaultOption(option) {

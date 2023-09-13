@@ -2,62 +2,65 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+
+import {ColorMode, FileType, PageSize, Scanner, SourceType} from './scanning.mojom-webui.js';
 
 /**
- * Converts a ash.scanning.mojom.ColorMode string to the corresponding enum
+ * Converts a ColorMode string to the corresponding enum
  * value.
  * @param {string} colorModeString
- * @return {ash.scanning.mojom.ColorMode}
+ * @return {ColorMode}
  */
 export function colorModeFromString(colorModeString) {
   switch (colorModeString) {
-    case ash.scanning.mojom.ColorMode.kBlackAndWhite.toString():
-      return ash.scanning.mojom.ColorMode.kBlackAndWhite;
-    case ash.scanning.mojom.ColorMode.kGrayscale.toString():
-      return ash.scanning.mojom.ColorMode.kGrayscale;
-    case ash.scanning.mojom.ColorMode.kColor.toString():
-      return ash.scanning.mojom.ColorMode.kColor;
+    case ColorMode.kBlackAndWhite.toString():
+      return ColorMode.kBlackAndWhite;
+    case ColorMode.kGrayscale.toString():
+      return ColorMode.kGrayscale;
+    case ColorMode.kColor.toString():
+      return ColorMode.kColor;
     default:
       assertNotReached();
-      return ash.scanning.mojom.ColorMode.kColor;
+      return ColorMode.kColor;
   }
 }
 
 /**
- * Converts a ash.scanning.mojom.FileType string to the corresponding
+ * Converts a FileType string to the corresponding
  * enum value.
  * @param {string} fileTypeString
- * @return {ash.scanning.mojom.FileType}
+ * @return {FileType}
  */
 export function fileTypeFromString(fileTypeString) {
   switch (fileTypeString) {
-    case ash.scanning.mojom.FileType.kJpg.toString():
-      return ash.scanning.mojom.FileType.kJpg;
-    case ash.scanning.mojom.FileType.kPdf.toString():
-      return ash.scanning.mojom.FileType.kPdf;
-    case ash.scanning.mojom.FileType.kPng.toString():
-      return ash.scanning.mojom.FileType.kPng;
+    case FileType.kJpg.toString():
+      return FileType.kJpg;
+    case FileType.kPdf.toString():
+      return FileType.kPdf;
+    case FileType.kPng.toString():
+      return FileType.kPng;
     default:
       assertNotReached();
-      return ash.scanning.mojom.FileType.kPdf;
+      return FileType.kPdf;
   }
 }
 
 /**
- * Converts a ash.scanning.mojom.ColorMode to a string that can be
+ * Converts a ColorMode to a string that can be
  * displayed in the color mode dropdown.
- * @param {ash.scanning.mojom.ColorMode} mojoColorMode
+ * @param {ColorMode} mojoColorMode
  * @return {string}
  */
 export function getColorModeString(mojoColorMode) {
   switch (mojoColorMode) {
-    case ash.scanning.mojom.ColorMode.kBlackAndWhite:
+    case ColorMode.kBlackAndWhite:
       return loadTimeData.getString('blackAndWhiteOptionText');
-    case ash.scanning.mojom.ColorMode.kGrayscale:
+    case ColorMode.kGrayscale:
       return loadTimeData.getString('grayscaleOptionText');
-    case ash.scanning.mojom.ColorMode.kColor:
+    case ColorMode.kColor:
       return loadTimeData.getString('colorOptionText');
     default:
       assertNotReached();
@@ -66,26 +69,26 @@ export function getColorModeString(mojoColorMode) {
 }
 
 /**
- * Converts a ash.scanning.mojom.PageSize to a string that can be
+ * Converts a PageSize to a string that can be
  * displayed in the page size dropdown.
- * @param {ash.scanning.mojom.PageSize} pageSize
+ * @param {PageSize} pageSize
  * @return {string}
  */
 export function getPageSizeString(pageSize) {
   switch (pageSize) {
-    case ash.scanning.mojom.PageSize.kIsoA3:
+    case PageSize.kIsoA3:
       return loadTimeData.getString('a3OptionText');
-    case ash.scanning.mojom.PageSize.kIsoA4:
+    case PageSize.kIsoA4:
       return loadTimeData.getString('a4OptionText');
-    case ash.scanning.mojom.PageSize.kIsoB4:
+    case PageSize.kIsoB4:
       return loadTimeData.getString('b4OptionText');
-    case ash.scanning.mojom.PageSize.kLegal:
+    case PageSize.kLegal:
       return loadTimeData.getString('legalOptionText');
-    case ash.scanning.mojom.PageSize.kNaLetter:
+    case PageSize.kNaLetter:
       return loadTimeData.getString('letterOptionText');
-    case ash.scanning.mojom.PageSize.kTabloid:
+    case PageSize.kTabloid:
       return loadTimeData.getString('tabloidOptionText');
-    case ash.scanning.mojom.PageSize.kMax:
+    case PageSize.kMax:
       return loadTimeData.getString('fitToScanAreaOptionText');
     default:
       assertNotReached();
@@ -94,22 +97,22 @@ export function getPageSizeString(pageSize) {
 }
 
 /**
- * Converts a ash.scanning.mojom.SourceType to a string that can be
+ * Converts a SourceType to a string that can be
  * displayed in the source dropdown.
- * @param {ash.scanning.mojom.SourceType} mojoSourceType
+ * @param {SourceType} mojoSourceType
  * @return {string}
  */
 export function getSourceTypeString(mojoSourceType) {
   switch (mojoSourceType) {
-    case ash.scanning.mojom.SourceType.kFlatbed:
+    case SourceType.kFlatbed:
       return loadTimeData.getString('flatbedOptionText');
-    case ash.scanning.mojom.SourceType.kAdfSimplex:
+    case SourceType.kAdfSimplex:
       return loadTimeData.getString('oneSidedDocFeederOptionText');
-    case ash.scanning.mojom.SourceType.kAdfDuplex:
+    case SourceType.kAdfDuplex:
       return loadTimeData.getString('twoSidedDocFeederOptionText');
-    case ash.scanning.mojom.SourceType.kDefault:
+    case SourceType.kDefault:
       return loadTimeData.getString('defaultSourceOptionText');
-    case ash.scanning.mojom.SourceType.kUnknown:
+    case SourceType.kUnknown:
     default:
       assertNotReached();
       return loadTimeData.getString('defaultSourceOptionText');
@@ -117,36 +120,36 @@ export function getSourceTypeString(mojoSourceType) {
 }
 
 /**
- * Converts a ash.scanning.mojom.PageSize string to the corresponding enum
+ * Converts a PageSize string to the corresponding enum
  * value.
  * @param {string} pageSizeString
- * @return {ash.scanning.mojom.PageSize}
+ * @return {PageSize}
  */
 export function pageSizeFromString(pageSizeString) {
   switch (pageSizeString) {
-    case ash.scanning.mojom.PageSize.kIsoA3.toString():
-      return ash.scanning.mojom.PageSize.kIsoA3;
-    case ash.scanning.mojom.PageSize.kIsoA4.toString():
-      return ash.scanning.mojom.PageSize.kIsoA4;
-    case ash.scanning.mojom.PageSize.kIsoB4.toString():
-      return ash.scanning.mojom.PageSize.kIsoB4;
-    case ash.scanning.mojom.PageSize.kLegal.toString():
-      return ash.scanning.mojom.PageSize.kLegal;
-    case ash.scanning.mojom.PageSize.kNaLetter.toString():
-      return ash.scanning.mojom.PageSize.kNaLetter;
-    case ash.scanning.mojom.PageSize.kTabloid.toString():
-      return ash.scanning.mojom.PageSize.kTabloid;
-    case ash.scanning.mojom.PageSize.kMax.toString():
-      return ash.scanning.mojom.PageSize.kMax;
+    case PageSize.kIsoA3.toString():
+      return PageSize.kIsoA3;
+    case PageSize.kIsoA4.toString():
+      return PageSize.kIsoA4;
+    case PageSize.kIsoB4.toString():
+      return PageSize.kIsoB4;
+    case PageSize.kLegal.toString():
+      return PageSize.kLegal;
+    case PageSize.kNaLetter.toString():
+      return PageSize.kNaLetter;
+    case PageSize.kTabloid.toString():
+      return PageSize.kTabloid;
+    case PageSize.kMax.toString():
+      return PageSize.kMax;
     default:
       assertNotReached();
-      return ash.scanning.mojom.PageSize.kNaLetter;
+      return PageSize.kNaLetter;
   }
 }
 
 /**
  * Converts a scanner's display name from UTF-16 to a displayable string.
- * @param {!ash.scanning.mojom.Scanner} scanner
+ * @param {!Scanner} scanner
  * @return {string}
  */
 export function getScannerDisplayName(scanner) {
@@ -156,7 +159,7 @@ export function getScannerDisplayName(scanner) {
 /**
  * Converts an unguessable token to a string by combining the high and low
  * values as strings with a hashtag as the separator.
- * @param {!mojoBase.mojom.UnguessableToken} token
+ * @param {!UnguessableToken} token
  * @return {string}
  */
 export function tokenToString(token) {
