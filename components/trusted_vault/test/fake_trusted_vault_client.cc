@@ -20,6 +20,15 @@ namespace trusted_vault {
 FakeTrustedVaultClient::CachedKeysPerUser::CachedKeysPerUser() = default;
 FakeTrustedVaultClient::CachedKeysPerUser::~CachedKeysPerUser() = default;
 
+FakeTrustedVaultClient::FakeServer::RecoveryMethod::RecoveryMethod(
+    const std::vector<uint8_t>& public_key,
+    int method_type_hint)
+    : public_key(public_key), method_type_hint(method_type_hint) {}
+
+FakeTrustedVaultClient::FakeServer::RecoveryMethod::RecoveryMethod(
+    const RecoveryMethod&) = default;
+FakeTrustedVaultClient::FakeServer::RecoveryMethod::~RecoveryMethod() = default;
+
 FakeTrustedVaultClient::FakeServer::FakeServer() = default;
 FakeTrustedVaultClient::FakeServer::~FakeServer() = default;
 
@@ -58,6 +67,24 @@ FakeTrustedVaultClient::FakeServer::RequestRotatedKeysFromServer(
   }
 
   return latest_keys;
+}
+
+void FakeTrustedVaultClient::FakeServer::AddRecoveryMethod(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    int method_type_hint) {
+  gaia_id_to_recovery_methods_[gaia_id].emplace_back(public_key,
+                                                     method_type_hint);
+}
+
+std::vector<FakeTrustedVaultClient::FakeServer::RecoveryMethod>
+FakeTrustedVaultClient::FakeServer::GetRecoveryMethods(
+    const std::string& gaia_id) const {
+  auto it = gaia_id_to_recovery_methods_.find(gaia_id);
+  if (it == gaia_id_to_recovery_methods_.end()) {
+    return {};
+  }
+  return it->second;
 }
 
 FakeTrustedVaultClient::FakeTrustedVaultClient() = default;
@@ -184,7 +211,8 @@ void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {
-  NOTIMPLEMENTED();
+  server_.AddRecoveryMethod(gaia_id, public_key, method_type_hint);
+  std::move(callback).Run();
 }
 
 void FakeTrustedVaultClient::ClearLocalDataForAccount(

@@ -1,0 +1,64 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/account_manager.mojom";
+
+// Allows lacros-chrome to observe trusted vault state changes.
+[Stable, Uuid="3402f0a2-81f4-474a-9076-ffedb5123eaf"]
+interface TrustedVaultBackendObserver {
+  // Invoked when the keys inside the vault have changed.
+  OnTrustedVaultKeysChanged@0();
+
+  // Invoked when the recoverability of the keys has changed.
+  OnTrustedVaultRecoverabilityChanged@1();
+};
+
+// Defines a TrustedVault API (implemented by ash-chrome), allowing to implement
+// TrustedVaultClient in lacros-chrome, that will rely on state in ash-chrome.
+[Stable, Uuid="8f8b16c0-4879-4c42-aa1c-78f76a9839db"]
+interface TrustedVaultBackend {
+  // Adds a new observer.
+  AddObserver@0(pending_remote<TrustedVaultBackendObserver> observer);
+
+  // Attempts to fetch decryption keys, required by sync to resume.
+  FetchKeys@1(AccountKey account_key) => (array<array<uint8>> keys);
+
+  // Invoked when the result of FetchKeys() contains keys that cannot decrypt
+  // the pending cryptographer (Nigori) keys, which should only be possible if
+  // the provided keys are not up-to-date. Returns false if the call did not
+  // make any difference (e.g. keys were already marked as stale) or true if
+  // some change may have occurred (which indicates a second FetchKeys() attempt
+  // is worthwhile).
+  MarkLocalKeysAsStale@2(AccountKey account_key) => (bool result);
+
+  // Allows implementations to store encryption keys fetched by other means such
+  // as Web interactions. Implementations are free to completely ignore these
+  // keys, so callers may not assume that later calls to FetchKeys() would
+  // necessarily return the keys passed here.
+  StoreKeys@3(AccountKey account_key, array<array<uint8>> keys,
+              int32 last_key_version);
+
+  // Returns whether recoverability of the keys is degraded and user action is
+  // required to add a new method. This may be called frequently and
+  // implementations are responsible for implementing caching and possibly
+  // throttling.
+  GetIsRecoverabilityDegraded@4(AccountKey account_key) => (bool degraded);
+
+  // Registers a new trusted recovery method that can be used to retrieve keys,
+  // usually for the purpose of resolving a recoverability-degraded case
+  // surfaced by GetIsRecoverabilityDegraded(). `method_type_hint` is an opaque
+  // value provided server-side that may be used for related future interactions
+  // with the server.
+  AddTrustedRecoveryMethod@5(AccountKey account_key,
+                             array<uint8> public_key,
+                             int32 method_type_hint) => ();
+
+  // Clears all data associated with `account_key`. Doesn't remove account from
+  // storage.
+  ClearLocalDataForAccount@6(AccountKey account_key);
+};
+
+

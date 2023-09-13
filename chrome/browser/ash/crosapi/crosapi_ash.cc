@@ -9,6 +9,7 @@
 
 #include "ash/public/ash_interfaces.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -114,6 +115,8 @@
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
+#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_ash.h"
+#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_factory_ash.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -145,6 +148,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/trusted_vault/features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
@@ -906,6 +910,16 @@ void CrosapiAsh::BindTestController(
 void CrosapiAsh::BindTimeZoneService(
     mojo::PendingReceiver<mojom::TimeZoneService> receiver) {
   time_zone_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindTrustedVaultBackend(
+    mojo::PendingReceiver<mojom::TrustedVaultBackend> receiver) {
+  if (!base::FeatureList::IsEnabled(
+          trusted_vault::kChromeOSTrustedVaultClientShared)) {
+    return;
+  }
+  ash::TrustedVaultBackendServiceFactoryAsh::GetForProfile(GetAshProfile())
+      ->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {

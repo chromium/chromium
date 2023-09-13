@@ -106,6 +106,7 @@ mojom("mojom") {
     "telemetry_keyboard_event.mojom",
     "test_controller.mojom",
     "timezone.mojom",
+    "trusted_vault.mojom",
     "tts.mojom",
     "ui_constants.mojom",
     "url_handler.mojom",

@@ -23,6 +23,16 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
  public:
   class FakeServer {
    public:
+    struct RecoveryMethod {
+      RecoveryMethod(const std::vector<uint8_t>& public_key,
+                     int method_type_hint);
+      RecoveryMethod(const RecoveryMethod&);
+      ~RecoveryMethod();
+
+      std::vector<uint8_t> public_key;
+      int method_type_hint;
+    };
+
     FakeServer();
     ~FakeServer();
 
@@ -41,8 +51,17 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
         const std::string& gaia_id,
         const std::vector<uint8_t>& key_known_by_client);
 
+    void AddRecoveryMethod(const std::string& gaia_id,
+                           const std::vector<uint8_t>& public_key,
+                           int method_type_hint);
+
+    std::vector<RecoveryMethod> GetRecoveryMethods(
+        const std::string& gaia_id) const;
+
    private:
     std::map<std::string, std::vector<std::vector<uint8_t>>> gaia_id_to_keys_;
+    std::map<std::string, std::vector<RecoveryMethod>>
+        gaia_id_to_recovery_methods_;
   };
 
   FakeTrustedVaultClient();

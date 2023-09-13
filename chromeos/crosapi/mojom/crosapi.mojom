@@ -95,6 +95,7 @@ import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
+import "chromeos/crosapi/mojom/trusted_vault.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
@@ -146,8 +147,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 119
-// Next method id: 121
+// Next version: 120
+// Next method id: 122
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -588,6 +589,13 @@ interface Crosapi {
   [MinVersion=48]
   BindStructuredMetricsService@52(
       pending_receiver<StructuredMetricsService> receiver);
+
+  // Binds TrustedVaultBackend, which allows lacros-chrome to access data stored
+  // by ash-chrome TrustedVaultClient.
+  // Added in M119.
+  [MinVersion=119]
+  BindTrustedVaultBackend@121(
+      pending_receiver<TrustedVaultBackend> receiver);
 
   // Binds the HidManager interface for support HID devices.
   // Added in M87.
