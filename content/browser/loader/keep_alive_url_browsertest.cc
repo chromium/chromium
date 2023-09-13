@@ -715,6 +715,14 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param;
     });
 
+// TODO(crbug.com/1482176): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MultipleRedirectsRequestWithIframeRemoval \
+  DISABLED_MultipleRedirectsRequestWithIframeRemoval
+#else
+#define MAYBE_MultipleRedirectsRequestWithIframeRemoval \
+  MultipleRedirectsRequestWithIframeRemoval
+#endif
 // Tests navigator.sendBeacon() with a cross-origin & CORS-safelisted request
 // that causes a redirect chain of 4 URLs.
 //
@@ -722,7 +730,7 @@ INSTANTIATE_TEST_SUITE_P(
 // call, so the chain of redirects & response handling must survive the iframe
 // unload.
 IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
-                       MultipleRedirectsRequestWithIframeRemoval) {
+                       MAYBE_MultipleRedirectsRequestWithIframeRemoval) {
   const auto beacon_endpoint =
       base::StringPrintf("%s?id=%s", kKeepAliveEndpoint, kBeaconId);
   auto request_handler =
