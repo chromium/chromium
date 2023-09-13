@@ -453,4 +453,58 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, GetAllDataForDebugging) {
               testing::UnorderedElementsAre(server_cvc1, server_cvc2));
 }
 
+// Test to verify the deletion of the server cvc for the card with the `REMOVE`
+// change tag.
+TEST_F(AutofillWalletCredentialSyncBridgeTest,
+       DeletesServerCvcWhenCardDeleted) {
+  const CreditCard card1 = test::GetMaskedServerCard();
+  const CreditCard card2 = test::GetMaskedServerCard2();
+  const ServerCvc server_cvc1 =
+      ServerCvc{card1.instrument_id(), u"123",
+                base::Time::UnixEpoch() + base::Milliseconds(25000)};
+  const ServerCvc server_cvc2 =
+      ServerCvc{card2.instrument_id(), u"890",
+                base::Time::UnixEpoch() + base::Milliseconds(50000)};
+  table()->AddServerCvc(server_cvc1);
+  table()->AddServerCvc(server_cvc2);
+
+  EXPECT_CALL(mock_processor(), Delete).Times(1);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+
+  bridge()->CreditCardChanged(
+      CreditCardChange(CreditCardChange::REMOVE, card1.server_id(), card1));
+
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc2));
+}
+
+// Test to verify the non deletion/updation of the server cvc for the card with
+// the `UPDATE` change tag.
+TEST_F(AutofillWalletCredentialSyncBridgeTest,
+       DoesNotUpdateOrDeleteServerCvcWhenCardUpdated) {
+  const CreditCard card1 = test::GetMaskedServerCard();
+  const CreditCard card2 = test::GetMaskedServerCard2();
+  const ServerCvc server_cvc1 =
+      ServerCvc{card1.instrument_id(), u"123",
+                base::Time::UnixEpoch() + base::Milliseconds(25000)};
+  const ServerCvc server_cvc2 =
+      ServerCvc{card2.instrument_id(), u"890",
+                base::Time::UnixEpoch() + base::Milliseconds(50000)};
+  table()->AddServerCvc(server_cvc1);
+  table()->AddServerCvc(server_cvc2);
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges()).Times(0);
+
+  bridge()->CreditCardChanged(
+      CreditCardChange(CreditCardChange::UPDATE, card1.server_id(), card1));
+
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc1, server_cvc2));
+}
+
 }  // namespace autofill

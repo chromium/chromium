@@ -207,6 +207,28 @@ bool AutofillWalletCredentialSyncBridge::IsEntityDataValid(
              entity_data.specifics.autofill_wallet_credential());
 }
 
+void AutofillWalletCredentialSyncBridge::CreditCardChanged(
+    const CreditCardChange& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `ADD` and `UPDATE` changes for credit card can be ignored as there is no
+  // cvc field for the credit card sync entity.
+  if (change.type() != CreditCardChange::REMOVE) {
+    return;
+  }
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+  // Delete the cvc from sync servers for server cards.
+  if (GetAutofillTable()->RemoveServerCvc(
+          change.data_model().instrument_id())) {
+    // We are extracting the `instrument_id` directly here instead of using
+    // `GetStorageKey`. This is to avoid additional processing of generating the
+    // entity data for the `change` and then extracting the `instrument_id`.
+    change_processor()->Delete(
+        base::NumberToString(change.data_model().instrument_id()),
+        metadata_change_list.get());
+  }
+}
+
 void AutofillWalletCredentialSyncBridge::ServerCvcChanged(
     const ServerCvcChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
