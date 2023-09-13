@@ -301,7 +301,7 @@ class MetricsWebContentsObserver
   bool MaybeActivatePageLoadTracker(
       content::NavigationHandle* navigation_handle);
 
-  // Notify `tracker` about cookie read or write.
+  // Notifies `tracker` about cookie read or write.
   void OnCookiesAccessedImpl(PageLoadTracker& tracker,
                              const content::CookieAccessDetails& details);
 

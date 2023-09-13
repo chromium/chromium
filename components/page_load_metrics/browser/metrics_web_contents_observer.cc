@@ -634,6 +634,15 @@ void MetricsWebContentsObserver::DidFinishNavigation(
     // the currently committed navigation.
     FinalizeCurrentlyCommittedLoad(navigation_handle,
                                    navigation_handle_tracker.get());
+
+    if (primary_page_) {
+      // Mark the current tracker as it sees a link navigation.
+      ui::PageTransition transition = navigation_handle->GetPageTransition();
+      if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK)) {
+        primary_page_->RecordLinkNavigation();
+      }
+    }
+
     // Transfers the ownership of `primary_page_`. This `primary_page_`
     // might be reused later when restoring the page from the cache.
     // Note: back-forward cache doesn't support features that rely on

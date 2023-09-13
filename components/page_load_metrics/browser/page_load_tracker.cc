@@ -267,6 +267,18 @@ internal::PageLoadTrackerPageType CalculatePageType(
   return internal::PageLoadTrackerPageType::kPrimaryPage;
 }
 
+bool CalculateIsOriginVisit(bool is_first_navigation,
+                            ui::PageTransition transition) {
+  if (is_first_navigation) {
+    return true;
+  }
+  if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK) ||
+      ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD)) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 PageLoadTracker::PageLoadTracker(
@@ -294,6 +306,9 @@ PageLoadTracker::PageLoadTracker(
       source_id_(source_id),
       web_contents_(navigation_handle->GetWebContents()),
       is_first_navigation_in_web_contents_(is_first_navigation_in_web_contents),
+      is_origin_visit_(
+          CalculateIsOriginVisit(is_first_navigation_in_web_contents,
+                                 navigation_handle->GetPageTransition())),
       soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       page_type_(CalculatePageType(navigation_handle)),
       parent_tracker_(std::move(parent_tracker)) {
@@ -1341,6 +1356,18 @@ ukm::SourceId PageLoadTracker::GetPreviousUkmSourceIdForSoftNavigation() const {
 
 bool PageLoadTracker::IsFirstNavigationInWebContents() const {
   return is_first_navigation_in_web_contents_;
+}
+
+bool PageLoadTracker::IsOriginVisit() const {
+  return is_origin_visit_;
+}
+
+bool PageLoadTracker::IsTerminalVisit() const {
+  return is_terminal_visit_;
+}
+
+void PageLoadTracker::RecordLinkNavigation() {
+  is_terminal_visit_ = false;
 }
 
 void PageLoadTracker::OnEnterBackForwardCache() {

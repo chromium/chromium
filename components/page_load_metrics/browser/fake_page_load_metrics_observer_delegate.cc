@@ -211,6 +211,14 @@ bool FakePageLoadMetricsObserverDelegate::IsFirstNavigationInWebContents()
   return false;
 }
 
+bool FakePageLoadMetricsObserverDelegate::IsOriginVisit() const {
+  return false;
+}
+
+bool FakePageLoadMetricsObserverDelegate::IsTerminalVisit() const {
+  return false;
+}
+
 void FakePageLoadMetricsObserverDelegate::AddBackForwardCacheRestore(
     PageLoadMetricsObserverDelegate::BackForwardCacheRestore bfcache_restore) {
   back_forward_cache_restores_.push_back(bfcache_restore);

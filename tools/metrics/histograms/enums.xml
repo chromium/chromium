@@ -82055,6 +82055,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="Unknown"/>
 </enum>
 
+<enum name="PageVisitType">
+  <int value="0"
+      label="Independent Visit; the page is opened from UI or in new tab, and
+             not followed by any link navigation."/>
+  <int value="1"
+      label="Origin Visit; the page is opened from UI or in new tab, and
+             followed by a link navigation."/>
+  <int value="2"
+      label="PassingVisit; the page is visited and followed by link
+             navigations."/>
+  <int value="3"
+      label="TerminalVisit; the page is visited by a link navigation, but not
+             followed by any link navigation."/>
+</enum>
+
 <enum name="PageWhitelistingInitiatorCheck">
   <int value="0" label="Initiator absent"/>
   <int value="1" label="Neither candidate matches initiator"/>

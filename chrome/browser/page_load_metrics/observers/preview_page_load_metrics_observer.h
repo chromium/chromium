@@ -1,0 +1,52 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEW_PAGE_LOAD_METRICS_OBSERVER_H_
+#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEW_PAGE_LOAD_METRICS_OBSERVER_H_
+
+#include "base/time/time.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+
+// Records Link-Preview project related metrics to evaluate the project impact.
+// So, it collects data from all kind of navigations regardless of the
+// Link-Preview feature existence to analyse users' activity trend.
+// As a starting point, this class experimentally records page visit types and
+// total foreground time duration for each visit type to analyze a.k.a unwanted
+// navigations.
+class PreviewPageLoadMetricsObserver
+    : public page_load_metrics::PageLoadMetricsObserver {
+ public:
+  PreviewPageLoadMetricsObserver() = default;
+  PreviewPageLoadMetricsObserver(const PreviewPageLoadMetricsObserver&) =
+      delete;
+  PreviewPageLoadMetricsObserver& operator=(
+      const PreviewPageLoadMetricsObserver&) = delete;
+  ~PreviewPageLoadMetricsObserver() override = default;
+
+  // page_load_metrics::PageLoadMetricsObserver implementation:
+  ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
+                        const GURL& currently_committed_url,
+                        bool started_in_foreground) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
+  ObservePolicy FlushMetricsOnAppEnterBackground(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnHidden(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnShown() override;
+  void OnComplete(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
+ private:
+  void RecordMetrics();
+
+  bool currently_in_foreground_ = false;
+  base::TimeTicks last_time_shown_;
+  base::TimeDelta total_foreground_duration_;
+};
+
+#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEW_PAGE_LOAD_METRICS_OBSERVER_H_

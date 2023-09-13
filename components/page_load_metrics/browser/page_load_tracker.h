@@ -306,6 +306,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   ukm::SourceId GetUkmSourceIdForSoftNavigation() const override;
   ukm::SourceId GetPreviousUkmSourceIdForSoftNavigation() const override;
   bool IsFirstNavigationInWebContents() const override;
+  bool IsOriginVisit() const override;
+  bool IsTerminalVisit() const override;
 
   void Redirect(content::NavigationHandle* navigation_handle);
   void WillProcessNavigationResponse(
@@ -452,10 +454,13 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                          subresource_load_metrics,
                      mojom::SoftNavigationMetricsPtr soft_navigation_metrics);
 
-  // Set RenderFrameHost for the main frame of the page this tracker instance is
-  // bound. This is called on moving the tracker to the active / inactive
+  // Sets RenderFrameHost for the main frame of the page this tracker instance
+  // is bound. This is called on moving the tracker to the active / inactive
   // tracker list after the provisional load is committed.
   void SetPageMainFrame(content::RenderFrameHost* rfh);
+
+  // Records the fact link navigation from the tracking page happens.
+  void RecordLinkNavigation();
 
   // Gets a bound ukm::SourceId without any check for testing.
   ukm::SourceId GetPageUkmSourceIdForTesting() const { return source_id_; }
@@ -575,6 +580,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       page_main_frame_;
 
   const bool is_first_navigation_in_web_contents_;
+  const bool is_origin_visit_;
+  bool is_terminal_visit_ = true;
 
   page_load_metrics::LargestContentfulPaintHandler
       largest_contentful_paint_handler_;

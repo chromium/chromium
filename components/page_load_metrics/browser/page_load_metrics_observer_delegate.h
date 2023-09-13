@@ -229,6 +229,20 @@ class PageLoadMetricsObserverDelegate {
   // WebContents. Note that, for newly opened tabs that display the New Tab
   // Page, the New Tab Page is considered the first navigation in that tab.
   virtual bool IsFirstNavigationInWebContents() const = 0;
+
+  // Checks whether the associated page visit is the first visit in its
+  // associated WebContesnts, or navigated from a Chrome UI, such as Omnibox or
+  // Bookmarks.
+  // As we don't identify client redirect cases, if the origin page runs client
+  // redirects, only the redirect initiating page is marked as the origin visit,
+  // and actual landing page is not marked as the origin visit.
+  virtual bool IsOriginVisit() const = 0;
+
+  // Checks whether the associated page visit doesn't see any link navigation.
+  // If the next navigation is initiated from a Chrome UI, the current page will
+  // be marked as a terminal visit unless it made another link navigation and
+  // went back to the page with a back navigation from BFCache.
+  virtual bool IsTerminalVisit() const = 0;
 };
 
 }  // namespace page_load_metrics

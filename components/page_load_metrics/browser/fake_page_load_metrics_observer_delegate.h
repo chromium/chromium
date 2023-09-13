@@ -81,6 +81,8 @@ class FakePageLoadMetricsObserverDelegate
   ukm::SourceId GetUkmSourceIdForSoftNavigation() const override;
   ukm::SourceId GetPreviousUkmSourceIdForSoftNavigation() const override;
   bool IsFirstNavigationInWebContents() const override;
+  bool IsOriginVisit() const override;
+  bool IsTerminalVisit() const override;
 
   // Helpers to add a BackForwardCacheRestore to this fake.
   void AddBackForwardCacheRestore(BackForwardCacheRestore bfcache_restore);
