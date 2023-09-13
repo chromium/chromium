@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator_unittest.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 
 #import <Foundation/Foundation.h>
 
@@ -22,26 +22,44 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-PromosManagerCoordinatorTest::PromosManagerCoordinatorTest() {
-  browser_state_ = TestChromeBrowserState::Builder().Build();
-  browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-  view_controller_ = [[UIViewController alloc] init];
-  [scoped_key_window_.Get() setRootViewController:view_controller_];
-}
-PromosManagerCoordinatorTest::~PromosManagerCoordinatorTest() {}
+namespace {
 
-void PromosManagerCoordinatorTest::CreatePromosManagerCoordinator() {
-  coordinator_ = [[PromosManagerCoordinator alloc]
-          initWithBaseViewController:view_controller_
-                             browser:browser_.get()
-      credentialProviderPromoHandler:OCMStrictProtocolMock(@protocol(
-                                         CredentialProviderPromoCommands))];
-}
+class PromosManagerCoordinatorTest : public PlatformTest {
+ public:
+  void SetUp() override {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    view_controller_ = [[UIViewController alloc] init];
+    [scoped_key_window_.Get() setRootViewController:view_controller_];
+  }
+
+  // Initializes a new `PromosManagerCoordinator` for testing.
+  void CreatePromosManagerCoordinator() {
+    coordinator_ = [[PromosManagerCoordinator alloc]
+            initWithBaseViewController:view_controller_
+                               browser:browser_.get()
+        credentialProviderPromoHandler:OCMStrictProtocolMock(@protocol(
+                                           CredentialProviderPromoCommands))];
+  }
+
+ protected:
+  IOSChromeScopedTestingLocalState local_state_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  PromosManagerCoordinator* coordinator_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
+  ScopedKeyWindow scoped_key_window_;
+  UIViewController* view_controller_;
+};
+
+}  // namespace
 
 // Tests a provider's standardPromoDismissAction is called when a
 // viewController's dismiss button is pressed.
