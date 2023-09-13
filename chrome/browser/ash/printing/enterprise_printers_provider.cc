@@ -194,8 +194,8 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 
     // Enterprise printers from user policy, device policy, as well as printers
     // from the legacy `Printers` policy.
-    std::unordered_map<std::string, chromeos::Printer> all_printers;
-    all_printers.merge(recommended_printers_);
+    std::unordered_map<std::string, chromeos::Printer> all_printers =
+        recommended_printers_;
 
     if (device_printers_) {
       complete_ = complete_ && device_printers_is_complete_;

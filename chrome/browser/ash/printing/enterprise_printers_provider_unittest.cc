@@ -242,8 +242,7 @@ TEST_F(EnterprisePrintersProviderTest, SingleDevicePrinter) {
               UnorderedElementsAre(kThirdId));
 }
 
-// TODO(crbug.com/1482165): re-enable this test
-TEST_F(EnterprisePrintersProviderTest, DISABLED_RecommendedPrinters) {
+TEST_F(EnterprisePrintersProviderTest, RecommendedPrinters) {
   LoggingObserver observer(provider_.get());
   SetRecommendedPrinters({kRecommendedPrinter});
 
