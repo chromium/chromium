@@ -418,7 +418,8 @@ SelectFileDialogLinuxPortal::BuildFilterSet() {
     if (i < file_types().extension_description_overrides.size()) {
       filter.name =
           base::UTF16ToUTF8(file_types().extension_description_overrides[i]);
-    } else {
+    }
+    if (filter.name.empty()) {
       std::vector<std::string> patterns_vector(filter.patterns.begin(),
                                                filter.patterns.end());
       filter.name = base::JoinString(patterns_vector, ",");
