@@ -943,7 +943,7 @@ std::u16string GetValueForProfile(const AutofillProfile& profile,
                                                        failure_to_fill);
     } else {
       value = FieldFiller::GetPhoneNumberValueForInput(
-          *field_data, value,
+          field_data->max_length, value,
           profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
     }
   } else if (type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
@@ -1076,21 +1076,20 @@ bool FieldFiller::FillFormField(
   return true;
 }
 
-// TODO(crbug.com/581514): Add support for filling only the prefix/suffix for
-// phone numbers with 10 or 11 digits.
 // static
 std::u16string FieldFiller::GetPhoneNumberValueForInput(
-    const FormFieldData& field_data,
+    uint64_t field_max_length,
     const std::u16string& number,
     const std::u16string& city_and_number) {
   // If no max length was specified, return the complete number.
-  if (field_data.max_length == 0)
+  if (field_max_length == 0) {
     return number;
+  }
 
-  if (number.length() > field_data.max_length) {
+  if (number.length() > field_max_length) {
     // Try after removing the country code, if |number| exceeds the maximum size
     // of the field.
-    if (city_and_number.length() <= field_data.max_length) {
+    if (city_and_number.length() <= field_max_length) {
       return city_and_number;
     }
 
@@ -1098,8 +1097,7 @@ std::u16string FieldFiller::GetPhoneNumberValueForInput(
     // provide a valid number for the field. For example, the number 15142365264
     // with a field with a max length of 10 would return 5142365264, thus
     // filling in the last |field_data.max_length| characters from the |number|.
-    return number.substr(number.length() - field_data.max_length,
-                         field_data.max_length);
+    return number.substr(number.length() - field_max_length, field_max_length);
   }
 
   return number;

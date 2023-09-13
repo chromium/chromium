@@ -134,7 +134,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
       if (profile) {
         suggestion.main_text = Suggestion::Text(
             FieldFiller::GetPhoneNumberValueForInput(
-                field, suggestion.main_text.value,
+                field.max_length, suggestion.main_text.value,
                 profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale)),
             Suggestion::Text::IsPrimary(true));
       }
