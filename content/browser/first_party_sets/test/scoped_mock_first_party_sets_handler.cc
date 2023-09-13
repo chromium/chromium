@@ -21,11 +21,7 @@
 namespace content {
 
 ScopedMockFirstPartySetsHandler::ScopedMockFirstPartySetsHandler()
-    : FirstPartySetsHandlerImpl(
-          base::PassKey<ScopedMockFirstPartySetsHandler>(),
-          /*enabled=*/true,
-          /*embedder_will_provide_public_sets=*/true),
-      previous_(FirstPartySetsHandlerImpl::GetInstance()) {
+    : previous_(FirstPartySetsHandlerImpl::GetInstance()) {
   FirstPartySetsHandlerImpl::SetInstanceForTesting(this);
 }
 
@@ -50,6 +46,10 @@ ScopedMockFirstPartySetsHandler::FindEntry(
   }
   return global_sets_.FindEntry(site, config);
 }
+
+void ScopedMockFirstPartySetsHandler::Init(
+    const base::FilePath& user_data_dir,
+    const LocalSetDeclaration& local_set) {}
 
 [[nodiscard]] absl::optional<net::GlobalFirstPartySets>
 ScopedMockFirstPartySetsHandler::GetSets(

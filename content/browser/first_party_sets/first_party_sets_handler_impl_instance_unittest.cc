@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
+#include "content/browser/first_party_sets/first_party_sets_handler_impl_instance.h"
 
 #include <string>
 
@@ -69,7 +69,7 @@ constexpr char kMostDelayedQueryDeltaHistogram[] =
 
 }  // namespace
 
-TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
+TEST(FirstPartySetsHandlerImplInstance, ValidateEnterprisePolicy_ValidPolicy) {
   base::Value input = base::JSONReader::Read(R"(
              {
                 "replacements": [
@@ -94,7 +94,7 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
   EXPECT_THAT(warnings, IsEmpty());
 }
 
-TEST(FirstPartySetsHandlerImpl,
+TEST(FirstPartySetsHandlerImplInstance,
      ValidateEnterprisePolicy_ValidPolicyWithWarnings) {
   // Some input that matches our policies schema but returns non-fatal warnings.
   base::Value input = base::JSONReader::Read(R"(
@@ -124,7 +124,8 @@ TEST(FirstPartySetsHandlerImpl,
           {kAdditionsField, 0, kCctldsField, "https://non-canonical.test"})));
 }
 
-TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
+TEST(FirstPartySetsHandlerImplInstance,
+     ValidateEnterprisePolicy_InvalidPolicy) {
   // Some input that matches our policies schema but breaks FPS invariants.
   // For more test coverage, see the ParseSetsFromEnterprisePolicy unit tests.
   base::Value input = base::JSONReader::Read(R"(
@@ -155,7 +156,7 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
 class FirstPartySetsHandlerImplTest : public ::testing::Test {
  public:
   explicit FirstPartySetsHandlerImplTest(bool enabled)
-      : handler_(FirstPartySetsHandlerImpl::CreateForTesting(
+      : handler_(FirstPartySetsHandlerImplInstance::CreateForTesting(
             /*enabled=*/enabled,
             /*embedder_will_provide_public_sets=*/enabled)) {
     CHECK(scoped_dir_.CreateUniqueTempDir());
@@ -170,7 +171,8 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
     return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   }
 
-  net::GlobalFirstPartySets GetSetsAndWait(FirstPartySetsHandlerImpl& handler) {
+  net::GlobalFirstPartySets GetSetsAndWait(
+      FirstPartySetsHandlerImplInstance& handler) {
     base::test::TestFuture<net::GlobalFirstPartySets> future;
     absl::optional<net::GlobalFirstPartySets> result =
         handler.GetSets(future.GetCallback());
@@ -178,7 +180,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
   }
 
   void ClearSiteDataOnChangedSetsForContextAndWait(
-      FirstPartySetsHandlerImpl& handler,
+      FirstPartySetsHandlerImplInstance& handler,
       BrowserContext* context,
       const std::string& browser_context_id,
       net::FirstPartySetsContextConfig context_config) {
@@ -194,7 +196,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
 
   absl::optional<
       std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
-  GetPersistedSetsAndWait(FirstPartySetsHandlerImpl& handler,
+  GetPersistedSetsAndWait(FirstPartySetsHandlerImplInstance& handler,
                           const std::string& browser_context_id) {
     base::test::TestFuture<absl::optional<
         std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>>
@@ -205,7 +207,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
   }
 
   absl::optional<bool> HasEntryInBrowserContextsClearedAndWait(
-      FirstPartySetsHandlerImpl& handler,
+      FirstPartySetsHandlerImplInstance& handler,
       const std::string& browser_context_id) {
     base::test::TestFuture<absl::optional<bool>> future;
     handler.HasBrowserContextClearedForTesting(browser_context_id,
@@ -237,7 +239,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
                                                    browser_context_id);
   }
 
-  FirstPartySetsHandlerImpl& handler() { return handler_; }
+  FirstPartySetsHandlerImplInstance& handler() { return handler_; }
 
   BrowserContext* context() { return &context_; }
 
@@ -247,7 +249,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
  private:
   BrowserTaskEnvironment env_;
   TestBrowserContext context_;
-  FirstPartySetsHandlerImpl handler_;
+  FirstPartySetsHandlerImplInstance handler_;
 };
 
 class FirstPartySetsHandlerImplDisabledTest
@@ -358,8 +360,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string browser_context_id = "profile";
 
   base::HistogramTester histogram;
-  FirstPartySetsHandlerImpl handler =
-      FirstPartySetsHandlerImpl::CreateForTesting(true, false);
+  FirstPartySetsHandlerImplInstance handler =
+      FirstPartySetsHandlerImplInstance::CreateForTesting(true, false);
   const std::string input =
       R"({"primary": "https://foo.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
@@ -406,8 +408,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   {
     base::HistogramTester histogram;
-    FirstPartySetsHandlerImpl handler =
-        FirstPartySetsHandlerImpl::CreateForTesting(true, true);
+    FirstPartySetsHandlerImplInstance handler =
+        FirstPartySetsHandlerImplInstance::CreateForTesting(true, true);
     const std::string input =
         R"({"primary": "https://foo.test", )"
         R"("associatedSites": ["https://associatedsite.test"]})";
@@ -453,8 +455,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   // list.
   {
     base::HistogramTester histogram;
-    FirstPartySetsHandlerImpl handler =
-        FirstPartySetsHandlerImpl::CreateForTesting(true, true);
+    FirstPartySetsHandlerImplInstance handler =
+        FirstPartySetsHandlerImplInstance::CreateForTesting(true, true);
     const std::string input =
         R"({"primary": "https://foo.test", )"
         R"("associatedSites": ["https://associatedsite2.test"]})";

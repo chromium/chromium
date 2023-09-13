@@ -92,6 +92,4 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsDeadlockingQueriesBrowserTest,
       https_server().GetURL(kHostA, "/echoheader?cookie")));
   EXPECT_EQ("cross-site=a.test", content::EvalJs(GetPrimaryMainFrame(),
                                                  "document.body.textContent"));
-
-  handler().SynchronouslyResetDBHelperForTesting();
 }
