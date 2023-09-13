@@ -932,6 +932,10 @@ extern const char kThemeColorInTopToolbarDescription[];
 extern const char kEnableLensInHomeScreenWidgetName[];
 extern const char kEnableLensInHomeScreenWidgetDescription[];
 
+// Title and description for the flag to enable the iOS Large Fakebox feature
+extern const char kIOSLargeFakeboxName[];
+extern const char kIOSLargeFakeboxDescription[];
+
 // Title and description for the flag to enable using direct upload for
 // Lens searches in iOS.
 extern const char kIOSLensUseDirectUploadName[];

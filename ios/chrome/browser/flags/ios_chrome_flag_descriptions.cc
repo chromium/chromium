@@ -1065,6 +1065,11 @@ const char kThemeColorInTopToolbarDescription[] =
     "When enabled with bottom omnibox, the top toolbar background color is the "
     "page's theme color";
 
+const char kIOSLargeFakeboxName[] = "Enable Large Fakebox on Home";
+const char kIOSLargeFakeboxDescription[] =
+    "When enabled, the Fakebox on Home appears larger and has an updated "
+    "design.";
+
 const char kIOSLensUseDirectUploadName[] =
     "Use direct upload for Lens searches";
 const char kIOSLensUseDirectUploadDescription[] =

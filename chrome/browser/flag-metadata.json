@@ -5069,6 +5069,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "ios-large-fakebox",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "ios-lens-use-direct-upload",
     "owners": [ "schechter", "hujasonx" ],
     "expiry_milestone": 120

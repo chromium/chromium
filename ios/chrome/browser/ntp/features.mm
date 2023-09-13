@@ -90,6 +90,10 @@ BASE_FEATURE(kContentPushNotifications,
              "ContentPushNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSLargeFakebox,
+             "IOSLargeFakebox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh capability. This is used because
 // registering for background refreshes must happen early in app initialization
@@ -370,4 +374,8 @@ bool IsFollowUIUpdateEnabled() {
 
 bool IsContentPushNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kContentPushNotifications);
+}
+
+bool IsIOSLargeFakeboxEnabled() {
+  return base::FeatureList::IsEnabled(kIOSLargeFakebox);
 }
