@@ -81,28 +81,26 @@ struct DomKeyKeyDownEntry {
   const char* name;
 };
 
+#if BUILDFLAG(IS_MAC)
+#define OPTION_OR_CTRL_KEY kOptionKey
+#else
+#define OPTION_OR_CTRL_KEY kCtrlKey
+#endif
+
 // Key bindings with command key on Mac and alt key on other platforms are
 // marked as system key events and will be ignored (with the exception
 // of Command-B and Command-I) so they shouldn't be added here.
 const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_LEFT, 0, "MoveLeft"},
     {VKEY_LEFT, kShiftKey, "MoveLeftAndModifySelection"},
-#if BUILDFLAG(IS_MAC)
-    {VKEY_LEFT, kOptionKey, "MoveWordLeft"},
-    {VKEY_LEFT, kOptionKey | kShiftKey, "MoveWordLeftAndModifySelection"},
-#else
-    {VKEY_LEFT, kCtrlKey, "MoveWordLeft"},
-    {VKEY_LEFT, kCtrlKey | kShiftKey, "MoveWordLeftAndModifySelection"},
-#endif
+    {VKEY_LEFT, OPTION_OR_CTRL_KEY, "MoveWordLeft"},
+    {VKEY_LEFT, OPTION_OR_CTRL_KEY | kShiftKey,
+     "MoveWordLeftAndModifySelection"},
     {VKEY_RIGHT, 0, "MoveRight"},
     {VKEY_RIGHT, kShiftKey, "MoveRightAndModifySelection"},
-#if BUILDFLAG(IS_MAC)
-    {VKEY_RIGHT, kOptionKey, "MoveWordRight"},
-    {VKEY_RIGHT, kOptionKey | kShiftKey, "MoveWordRightAndModifySelection"},
-#else
-    {VKEY_RIGHT, kCtrlKey, "MoveWordRight"},
-    {VKEY_RIGHT, kCtrlKey | kShiftKey, "MoveWordRightAndModifySelection"},
-#endif
+    {VKEY_RIGHT, OPTION_OR_CTRL_KEY, "MoveWordRight"},
+    {VKEY_RIGHT, OPTION_OR_CTRL_KEY | kShiftKey,
+     "MoveWordRightAndModifySelection"},
     {VKEY_UP, 0, "MoveUp"},
     {VKEY_UP, kShiftKey, "MoveUpAndModifySelection"},
     {VKEY_PRIOR, kShiftKey, "MovePageUpAndModifySelection"},
@@ -137,13 +135,8 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_BACK, 0, "DeleteBackward"},
     {VKEY_BACK, kShiftKey, "DeleteBackward"},
     {VKEY_DELETE, 0, "DeleteForward"},
-#if BUILDFLAG(IS_MAC)
-    {VKEY_BACK, kOptionKey, "DeleteWordBackward"},
-    {VKEY_DELETE, kOptionKey, "DeleteWordForward"},
-#else
-    {VKEY_BACK, kCtrlKey, "DeleteWordBackward"},
-    {VKEY_DELETE, kCtrlKey, "DeleteWordForward"},
-#endif
+    {VKEY_BACK, OPTION_OR_CTRL_KEY, "DeleteWordBackward"},
+    {VKEY_DELETE, OPTION_OR_CTRL_KEY, "DeleteWordForward"},
 #if BUILDFLAG(IS_MAC)
     {'B', kCommandKey, "ToggleBold"},
     {'I', kCommandKey, "ToggleItalic"},
@@ -199,6 +192,8 @@ const DomKeyKeyDownEntry kDomKeyKeyDownEntries[] = {
     {"Cut", 0, "Cut"},
     {"Paste", 0, "Paste"},
 };
+
+#undef OPTION_OR_CTRL_KEY
 
 const char* LookupCommandNameFromDomKeyKeyDown(const String& key,
                                                unsigned modifiers) {
