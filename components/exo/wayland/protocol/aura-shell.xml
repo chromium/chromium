@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="59">
+  <interface name="zaura_shell" version="60">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -178,6 +178,15 @@
         Sends the Exo compositor version information.
       </description>
       <arg name="version_label" type="string" summary="version string label"/>
+    </event>
+
+    <!-- Version 60 additions -->
+    <event name="all_bug_fixes_sent" since="60">
+      <description summary="completed sending all bug fix ids">
+        Notifies client that all the IDs of a bug fixed on the exo server is
+        sent. Bug fix ids are sent via `bug_fix` events which sends ids one by
+        one, not an array. This event is used to confirm all ids are sent.
+      </description>
     </event>
 
   </interface>

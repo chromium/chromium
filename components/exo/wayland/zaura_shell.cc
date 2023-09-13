@@ -1208,6 +1208,11 @@ class WaylandAuraShell : public ash::DesksController::Observer,
       for (uint32_t bug_id : kFixedBugIds) {
         zaura_shell_send_bug_fix(aura_shell_resource_, bug_id);
       }
+      if (wl_resource_get_version(aura_shell_resource_) >=
+          ZAURA_SHELL_ALL_BUG_FIXES_SENT_SINCE_VERSION) {
+        zaura_shell_send_all_bug_fixes_sent(aura_shell_resource_);
+      }
+      wl_client_flush(wl_resource_get_client(aura_shell_resource_));
     }
     display->seat()->AddObserver(this, kAuraShellSeatObserverPriority);
 

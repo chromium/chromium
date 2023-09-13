@@ -1177,7 +1177,8 @@ void ClientBase::SetupAuraShellIfAvailable() {
       [](void* data, struct zaura_shell* zaura_shell) {},
       [](void* data, struct zaura_shell* zaura_shell) {},
       [](void* data, struct zaura_shell* zaura_shell,
-         const char* compositor_version) {}};
+         const char* compositor_version) {},
+      [](void* data, struct zaura_shell* zaura_shell) {}};
   zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
                            this);
 
