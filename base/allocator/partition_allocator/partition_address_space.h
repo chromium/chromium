@@ -19,7 +19,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_isolation/alignment.h"
 #include "build/build_config.h"
 

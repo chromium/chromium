@@ -26,7 +26,6 @@
 #include "base/allocator/partition_allocator/partition_page_constants.h"
 #include "base/allocator/partition_allocator/partition_superpage_extent_entry.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_STARSCAN)
@@ -35,6 +34,10 @@
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #include "base/allocator/partition_allocator/partition_ref_count.h"
+#endif
+
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+#include "base/allocator/partition_allocator/tagging.h"
 #endif
 
 namespace partition_alloc::internal {

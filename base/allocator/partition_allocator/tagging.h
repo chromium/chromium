@@ -8,7 +8,6 @@
 // This file contains method definitions to support Armv8.5-A's memory tagging
 // extension.
 
-#include <csignal>
 #include <cstddef>
 #include <cstdint>
 
@@ -16,6 +15,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
+
+#if PA_CONFIG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+#include <csignal>
+#endif
 
 namespace partition_alloc {
 

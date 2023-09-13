@@ -16,11 +16,14 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
 #include <mach/vm_page_size.h>
+#endif
+
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#include "base/allocator/partition_allocator/tagging.h"
 #endif
 
 namespace partition_alloc {
