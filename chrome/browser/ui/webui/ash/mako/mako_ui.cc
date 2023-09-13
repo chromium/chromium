@@ -10,8 +10,10 @@
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
-#include "chrome/browser/ui/webui/ash/mako/mako_source.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
+#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/grit/orca_resources.h"
+#include "chrome/grit/orca_resources_map.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -104,8 +106,25 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
   // If key fails to match, crash chrome.
   CHECK_EQ(debug_key_hash, hash);
 
-  content::URLDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                              std::make_unique<MakoSource>());
+  // Setup the data source
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), kChromeUIMakoURL);
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kOrcaResources, kOrcaResourcesSize),
+      IDR_MAKO_ORCA_HTML);
+  source->SetDefaultResource(IDR_MAKO_ORCA_HTML);
+
+  // Setup additional CSP overrides
+  // Intentional space at end of the strings - things are appended to this.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types goog#html polymer_resin lit-html "
+      "polymer-template-event-attribute-policy polymer-html-literal; ");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'unsafe-inline'; ");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc, "img-src data:; ");
 }
 MakoUntrustedUI::~MakoUntrustedUI() = default;
 

@@ -3090,8 +3090,6 @@ static_library("ui") {
       "webui/ash/login/welcome_screen_handler.h",
       "webui/ash/login/wrong_hwid_screen_handler.cc",
       "webui/ash/login/wrong_hwid_screen_handler.h",
-      "webui/ash/mako/mako_source.cc",
-      "webui/ash/mako/mako_source.h",
       "webui/ash/mako/mako_ui.cc",
       "webui/ash/mako/mako_ui.h",
       "webui/ash/mako/url_constants.cc",

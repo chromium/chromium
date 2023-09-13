@@ -164,6 +164,10 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [2560],
   },
+   "chrome/browser/resources/chromeos/mako/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [2570],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/remote_maintenance_curtain/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [2580],

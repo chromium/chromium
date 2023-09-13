@@ -33,6 +33,7 @@ group("resources") {
     "lock_screen_reauth:resources",
     "login:conditional_resources",
     "login:unconditional_resources",
+    "mako:resources",
     "manage_mirrorsync:resources",
     "multidevice_internals:resources",
     "network_ui:resources",
