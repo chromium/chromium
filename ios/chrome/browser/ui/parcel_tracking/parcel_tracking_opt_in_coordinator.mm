@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -42,6 +44,8 @@
                                       completion:nil];
   self.browser->GetBrowserState()->GetPrefs()->SetBoolean(
       prefs::kIosParcelTrackingOptInPromptDisplayed, true);
+  base::UmaHistogramBoolean(parcel_tracking::kOptInPromptDisplayedHistogramName,
+                            true);
 }
 
 - (void)stop {
@@ -59,7 +63,9 @@
       prefs::kIosParcelTrackingOptInStatus,
       static_cast<int>(IOSParcelTrackingOptInStatus::kAlwaysTrack));
   [_mediator didTapPrimaryActionButton:_parcels];
-  // TODO(crbug.com/1473449): record metric.
+  base::UmaHistogramEnumeration(
+      parcel_tracking::kOptInPromptActionHistogramName,
+      parcel_tracking::OptInPromptActionType::kAlwaysTrack);
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -67,7 +73,9 @@
   self.browser->GetBrowserState()->GetPrefs()->SetInteger(
       prefs::kIosParcelTrackingOptInStatus,
       static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack));
-  // TODO(crbug.com/1473449): record metric.
+  base::UmaHistogramEnumeration(
+      parcel_tracking::kOptInPromptActionHistogramName,
+      parcel_tracking::OptInPromptActionType::kNoThanks);
 }
 
 - (void)confirmationAlertTertiaryAction {
@@ -76,7 +84,9 @@
       prefs::kIosParcelTrackingOptInStatus,
       static_cast<int>(IOSParcelTrackingOptInStatus::kAskToTrack));
   [_mediator didTapTertiaryActionButton:_parcels];
-  // TODO(crbug.com/1473449): record metric.
+  base::UmaHistogramEnumeration(
+      parcel_tracking::kOptInPromptActionHistogramName,
+      parcel_tracking::OptInPromptActionType::kAskEveryTime);
 }
 
 #pragma mark - Private
@@ -86,5 +96,7 @@
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
 }
+
+// TODO(crbug.com/1473449): handle swipe dismiss.
 
 @end

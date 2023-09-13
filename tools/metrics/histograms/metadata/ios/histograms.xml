@@ -1925,6 +1925,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ParcelTracking.OptIn.ActionOnPrompt"
+    enum="IOSParcelTrackingOptInActionOnPrompt" expires_after="2024-03-07">
+  <owner>hiramahmood@google.com</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>Logs a user's action on the Parcel Tracking Opt-In prompt.</summary>
+</histogram>
+
+<histogram name="IOS.ParcelTracking.OptIn.Displayed" enum="Boolean"
+    expires_after="2024-03-07">
+  <owner>hiramahmood@google.com</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>
+    Logs each time when the Parcel Tracking Opt-In prompt is displayed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PartialTranslate.Outcome" enum="PartialTranslateOutcome"
     expires_after="2024-02-23">
   <owner>olivierrobin@chromium.org</owner>

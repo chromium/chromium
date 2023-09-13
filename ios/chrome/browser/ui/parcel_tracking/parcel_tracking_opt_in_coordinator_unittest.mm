@@ -6,7 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -41,26 +43,38 @@ class ParcelTrackingOptInCoordinatorTest : public PlatformTest {
 // Test that the kIosParcelTrackingOptInStatus pref is properly set when the
 // primary action button is tapped.
 TEST_F(ParcelTrackingOptInCoordinatorTest, PrimaryAction) {
+  base::HistogramTester histogram_tester;
   [coordinator_ confirmationAlertPrimaryAction];
   EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kAlwaysTrack),
             browser_state_->GetPrefs()->GetInteger(
                 prefs::kIosParcelTrackingOptInStatus));
+  histogram_tester.ExpectUniqueSample(
+      parcel_tracking::kOptInPromptActionHistogramName,
+      parcel_tracking::OptInPromptActionType::kAlwaysTrack, 1);
 }
 
 // Test that the kIosParcelTrackingOptInStatus pref is properly set when the
 // secondary action button is tapped.
 TEST_F(ParcelTrackingOptInCoordinatorTest, SecondaryAction) {
+  base::HistogramTester histogram_tester;
   [coordinator_ confirmationAlertSecondaryAction];
   EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack),
             browser_state_->GetPrefs()->GetInteger(
                 prefs::kIosParcelTrackingOptInStatus));
+  histogram_tester.ExpectUniqueSample(
+      parcel_tracking::kOptInPromptActionHistogramName,
+      parcel_tracking::OptInPromptActionType::kNoThanks, 1);
 }
 
 // Test that the kIosParcelTrackingOptInStatus pref is properly set when the
 // tertiary action button is tapped.
 TEST_F(ParcelTrackingOptInCoordinatorTest, TertiaryAction) {
+  base::HistogramTester histogram_tester;
   [coordinator_ confirmationAlertTertiaryAction];
   EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kAskToTrack),
             browser_state_->GetPrefs()->GetInteger(
                 prefs::kIosParcelTrackingOptInStatus));
+  histogram_tester.ExpectUniqueSample(
+      parcel_tracking::kOptInPromptActionHistogramName,
+      parcel_tracking::OptInPromptActionType::kAskEveryTime, 1);
 }

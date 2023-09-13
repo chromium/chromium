@@ -56055,6 +56055,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="11" label="CarrierIParcel"/>
 </enum>
 
+<enum name="IOSParcelTrackingOptInActionOnPrompt">
+  <int value="0" label="AskEveryTime"/>
+  <int value="1" label="AlwaysTrack"/>
+  <int value="2" label="NoThanks"/>
+  <int value="3" label="SwipeToDismiss"/>
+</enum>
+
 <enum name="IOSPermissionEvent">
   <int value="0" label="Camera permission disabled"/>
   <int value="1" label="Camera permission enabled"/>
