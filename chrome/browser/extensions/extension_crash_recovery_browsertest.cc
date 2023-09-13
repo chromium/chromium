@@ -149,7 +149,13 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, Basic) {
+// TODO(crbug.com/1482434): timeout on wayland.
+#if BUILDFLAG(IS_LINUX) && defined(OZONE_PLATFORM_WAYLAND)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, MAYBE_Basic) {
   const size_t count_before = GetEnabledExtensionCount();
   const size_t crash_count_before = GetTerminatedExtensionCount();
   LoadTestExtension();
@@ -229,8 +235,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   ASSERT_EQ(0U, CountNotifications());
 }
 
+// TODO(crbug.com/1482434): timeout on wayland.
+#if BUILDFLAG(IS_LINUX) && defined(OZONE_PLATFORM_WAYLAND)
+#define MAYBE_ReloadIndependentlyNavigatePage \
+  DISABLED_ReloadIndependentlyNavigatePage
+#else
+#define MAYBE_ReloadIndependentlyNavigatePage ReloadIndependentlyNavigatePage
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       ReloadIndependentlyNavigatePage) {
+                       MAYBE_ReloadIndependentlyNavigatePage) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   CrashExtension(first_extension_id_);
