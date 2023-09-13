@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -23,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "media/audio/audio_bus_pool.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -158,9 +158,8 @@ class AudioDebugRecordingHelperTest : public ::testing::Test {
     // CreateWavFileCallback with expected stream type and id.
     EXPECT_EQ(stream_type_, stream_type);
     EXPECT_EQ(id_, id);
-    base::ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    base::FilePath path(temp_dir.GetPath().Append(base::FilePath(kFileName)));
+    base::FilePath path(base::CreateUniqueTempDirectoryScopedToTest().Append(
+        base::FilePath(kFileName)));
     base::File debug_file(
         path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     // Run |reply_callback| with a valid file for expected

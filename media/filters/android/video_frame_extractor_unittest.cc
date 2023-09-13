@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "media/base/test_data_util.h"
 #include "media/filters/file_data_source.h"
@@ -48,7 +48,6 @@ class VideoFrameExtractorTest : public testing::Test {
   ~VideoFrameExtractorTest() override {}
 
  protected:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   ExtractVideoFrameResult ExtractFrame(const base::FilePath& file_path) {
     base::File file(
@@ -66,11 +65,8 @@ class VideoFrameExtractorTest : public testing::Test {
     return result;
   }
 
-  const base::FilePath& temp_dir() const { return temp_dir_.GetPath(); }
-
  private:
   base::test::TaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
   std::unique_ptr<FileDataSource> data_source_;
   std::unique_ptr<VideoFrameExtractor> extractor_;
 };
@@ -87,7 +83,8 @@ TEST_F(VideoFrameExtractorTest, ExtractVideoFrame) {
 // file.
 TEST_F(VideoFrameExtractorTest, ExtractInvalidVideoFile) {
   // Creates a dummy video file, frame extraction should fail.
-  base::FilePath file = temp_dir().AppendASCII("test.txt");
+  base::FilePath file =
+      base::CreateUniqueTempDirectoryScopedToTest().AppendASCII("test.txt");
   EXPECT_TRUE(base::WriteFile(file, "123"));
 
   auto result = ExtractFrame(file);
