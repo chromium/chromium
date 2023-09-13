@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -65,32 +66,35 @@ public class HeaderIphScrollListener implements ScrollListener {
     }
 
     private void maybeTriggerIPH(int verticalScrollOffset) {
-        // Get the feature tracker for the IPH and determine whether to show the IPH.
-        final String featureForIph = FeatureConstants.FEED_HEADER_MENU_FEATURE;
-        final Tracker tracker = mDelegate.getFeatureEngagementTracker();
-        // Stop listening to scroll if the IPH was already displayed in the past.
-        if (tracker.getTriggerState(featureForIph) == TriggerState.HAS_BEEN_DISPLAYED) {
-            mScrollableContainerDelegate.removeScrollListener(this);
-            return;
+        try (TraceEvent e = TraceEvent.scoped("HeaderIphScrollListener.maybeTriggerIPH")) {
+            // Get the feature tracker for the IPH and determine whether to show the IPH.
+            final String featureForIph = FeatureConstants.FEED_HEADER_MENU_FEATURE;
+            final Tracker tracker = mDelegate.getFeatureEngagementTracker();
+            // Stop listening to scroll if the IPH was already displayed in the past.
+            if (tracker.getTriggerState(featureForIph) == TriggerState.HAS_BEEN_DISPLAYED) {
+                mScrollableContainerDelegate.removeScrollListener(this);
+                return;
+            }
+
+            // Check whether the feed is expanded.
+            if (!mDelegate.isFeedExpanded()) return;
+
+            // Check whether the user is signed in.
+            if (!mDelegate.isSignedIn()) return;
+
+            // Check that enough scrolling was done proportionally to the stream height.
+            if ((float) verticalScrollOffset
+                    < (float) mScrollableContainerDelegate.getRootViewHeight()
+                            * mMinScrollFraction) {
+                return;
+            }
+
+            // Check that the feed header is well positioned in the recycler view to show the IPH.
+            if (!mDelegate.isFeedHeaderPositionInContainerSuitableForIPH(mHeaderMaxPosFraction)) {
+                return;
+            }
+
+            mShowIPHRunnable.run();
         }
-
-        // Check whether the feed is expanded.
-        if (!mDelegate.isFeedExpanded()) return;
-
-        // Check whether the user is signed in.
-        if (!mDelegate.isSignedIn()) return;
-
-        // Check that enough scrolling was done proportionally to the stream height.
-        if ((float) verticalScrollOffset
-                < (float) mScrollableContainerDelegate.getRootViewHeight() * mMinScrollFraction) {
-            return;
-        }
-
-        // Check that the feed header is well positioned in the recycler view to show the IPH.
-        if (!mDelegate.isFeedHeaderPositionInContainerSuitableForIPH(mHeaderMaxPosFraction)) {
-            return;
-        }
-
-        mShowIPHRunnable.run();
     }
 }

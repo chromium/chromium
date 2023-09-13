@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -53,23 +54,27 @@ public class RefreshIphScrollListener implements ScrollListener {
     }
 
     private void maybeTriggerIPH() {
-        final String featureForIph = FeatureConstants.FEED_SWIPE_REFRESH_FEATURE;
-        final Tracker tracker = mDelegate.getFeatureEngagementTracker();
+        try (TraceEvent e = TraceEvent.scoped("RefreshIphScrollListener.maybeTriggerIPH")) {
+            final String featureForIph = FeatureConstants.FEED_SWIPE_REFRESH_FEATURE;
+            final Tracker tracker = mDelegate.getFeatureEngagementTracker();
 
-        if (tracker.getTriggerState(featureForIph) == TriggerState.HAS_BEEN_DISPLAYED) {
-            mScrollableContainerDelegate.removeScrollListener(this);
-            return;
+            if (tracker.getTriggerState(featureForIph) == TriggerState.HAS_BEEN_DISPLAYED) {
+                mScrollableContainerDelegate.removeScrollListener(this);
+                return;
+            }
+
+            if (mDelegate.canScrollUp()) return;
+
+            if (!mDelegate.isFeedExpanded()) return;
+
+            long lastFetchTimeMs = mDelegate.getLastFetchTimeMs();
+            // If last fetch time is not available, bail out.
+            if (lastFetchTimeMs == 0) return;
+            if (mDelegate.getCurrentTimeMs() - lastFetchTimeMs < FETCH_TIME_AGE_THREASHOLD_MS) {
+                return;
+            }
+
+            mShowIPHRunnable.run();
         }
-
-        if (mDelegate.canScrollUp()) return;
-
-        if (!mDelegate.isFeedExpanded()) return;
-
-        long lastFetchTimeMs = mDelegate.getLastFetchTimeMs();
-        // If last fetch time is not available, bail out.
-        if (lastFetchTimeMs == 0) return;
-        if (mDelegate.getCurrentTimeMs() - lastFetchTimeMs < FETCH_TIME_AGE_THREASHOLD_MS) return;
-
-        mShowIPHRunnable.run();
     }
 }

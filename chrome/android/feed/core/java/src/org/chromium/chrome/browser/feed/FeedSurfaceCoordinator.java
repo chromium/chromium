@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -186,6 +187,25 @@ public class FeedSurfaceCoordinator
 
             return mDelegate.onInterceptTouchEvent(ev);
         }
+
+        @Override
+        public void onMeasure(int x, int y) {
+            try (TraceEvent e = TraceEvent.scoped("Feed.RootView.onMeasure")) {
+                super.onMeasure(x, y);
+            }
+        }
+        @Override
+        public void onLayout(boolean a, int b, int c, int d, int e) {
+            try (TraceEvent e1 = TraceEvent.scoped("Feed.RootView.onLayout")) {
+                super.onLayout(a, b, c, d, e);
+            }
+        }
+        @Override
+        public void onDraw(android.graphics.Canvas canvas) {
+            try (TraceEvent e = TraceEvent.scoped("Feed.RootView.onDraw")) {
+                super.onDraw(canvas);
+            }
+        }
     }
 
     private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
@@ -241,6 +261,76 @@ public class FeedSurfaceCoordinator
             mSectionHeaderModel.set(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY,
                     isStickyHeaderVisibleOnStartSurface);
         }
+    }
+
+    // TracingAndPerfScrollListener is explicitly not a ScrollListener due to the fact that the
+    // ScrollableContainerDelegate could be null if we are tracking scrolling. However for looking
+    // at performance metrics of scrolling we always want to know when feed is scrolling.
+    class TracingAndPerfScrollListener extends RecyclerView.OnScrollListener {
+        @Override
+        public void onScrollStateChanged(RecyclerView view, int newState) {
+            switch (mPrevState) {
+                case -1: {
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        startScroll();
+                    } else if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        startFling();
+                    }
+                    // else IDLE
+                    break;
+                }
+                case RecyclerView.SCROLL_STATE_IDLE: {
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        startScroll();
+                    } else if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        startFling();
+                    }
+                    break;
+                }
+                case RecyclerView.SCROLL_STATE_DRAGGING: {
+                    endScroll();
+                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                        startFling();
+                    }
+                    break;
+                }
+                case RecyclerView.SCROLL_STATE_SETTLING: {
+                    endFling();
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                        startScroll();
+                    }
+                    break;
+                }
+                default: {
+                    mPrevState = -1;
+                    break;
+                }
+            }
+            mPrevState = newState;
+        }
+
+        @Override
+        public void onScrolled(RecyclerView view, int dx, int dy) {}
+
+        private void startScroll() {
+            // TODO(nuskos): These next two are just a "hack" to get a nice track name
+            // in the UI (it uses the first event it hits). Eventually with the Perfetto
+            // SDK we could just explicitly title the track instead.
+            TraceEvent.startAsync("Feed.ScrollState", hashCode());
+            TraceEvent.finishAsync("Feed.ScrollState", hashCode());
+            TraceEvent.startAsync("Feed.TouchScrollStarted", hashCode());
+        }
+        private void endScroll() {
+            TraceEvent.finishAsync("Feed.TouchScrollEnded", hashCode());
+        }
+        private void startFling() {
+            TraceEvent.startAsync("Feed.FlingScrollStarted", hashCode());
+        }
+        private void endFling() {
+            TraceEvent.finishAsync("Feed.FlingScrollEnded", hashCode());
+        }
+
+        private int mPrevState = -1;
     }
 
     private class Scroller implements Runnable {
@@ -388,9 +478,9 @@ public class FeedSurfaceCoordinator
                     optionsCoordinator.getStickyHeaderOptionsView());
 
             // TODO(b/258073469): update the margin to the correct number
-            // If we are on start surface, the sticky header's margin is temporarily set to be 1/2
-            // toolbar height; if we are on NTP, the sticky header's margin should be set to the
-            // toolbar height.
+            // If we are on start surface, the sticky header's margin is temporarily set to be
+            // 1/2 toolbar height; if we are on NTP, the sticky header's margin should be set to
+            // the toolbar height.
             if (mSurfaceType == SurfaceType.START_SURFACE) {
                 mSectionHeaderModel.set(
                         SectionHeaderListProperties.STICKY_HEADER_MUTABLE_MARGIN_KEY,
@@ -456,8 +546,8 @@ public class FeedSurfaceCoordinator
 
     private void showDiscoverIph() {
         mHandler.postDelayed(() -> {
-            // The feed header may not be visible for smaller screens or landscape mode. Scroll to
-            // show the header before showing the IPH.
+            // The feed header may not be visible for smaller screens or landscape mode. Scroll
+            // to show the header before showing the IPH.
             mMediator.scrollToViewIfNecessary(getSectionHeaderPosition());
             UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
             mSectionHeaderView.showHeaderIph(helper);
@@ -476,8 +566,8 @@ public class FeedSurfaceCoordinator
     public void nonNativeContentLoaded(@StreamKind int kind) {
         // We want to show the web feed IPH on the first load of the FOR_YOU feed.
         if (kind == StreamKind.FOR_YOU) {
-            // After the web feed content has loaded, we will know if we have any content, and it is
-            // safe to show the IPH.
+            // After the web feed content has loaded, we will know if we have any content, and
+            // it is safe to show the IPH.
             maybeShowWebFeedAwarenessIph();
         }
     }
@@ -739,6 +829,9 @@ public class FeedSurfaceCoordinator
             if (mOverScrollDisabled) {
                 view.setOverScrollMode(View.OVER_SCROLL_NEVER);
             }
+            // Always add the TracingAndPerfScrollListener so debugging traces and metrics continue
+            // to work.
+            view.addOnScrollListener(new TracingAndPerfScrollListener());
         } else {
             view = null;
         }
@@ -921,8 +1014,8 @@ public class FeedSurfaceCoordinator
      * (e.g., by policy).
      */
     void initializeBubbleTriggering() {
-        // Don't do anything when there is no feed stream because the bubble isn't needed in that
-        // case.
+        // Don't do anything when there is no feed stream because the bubble isn't needed in
+        // that case.
         if (!mMediator.hasStreams()) return;
 
         // Provide a delegate for the container of the feed surface that is handled by the feed
