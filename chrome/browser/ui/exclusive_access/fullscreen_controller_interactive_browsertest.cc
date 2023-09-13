@@ -1174,7 +1174,33 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 
   const gfx::Rect fullscreen_bounds = browser()->window()->GetBounds();
   const display::Display original_display = GetCurrentDisplay(browser());
+
+  // On the Mac, the available fullscreen space is not always the entire
+  // screen. In non-immersive, on machines with a notch, the menu bar is not
+  // visible, but there's a black bar at the top of the screen. In immersive
+  // fullscreen, the top chrome appears to be part of the browser window but
+  // is actually in a separate widget/window (the overlay widget) positioned
+  // just above. The fullscreen bounds rect is therefore reduced in height
+  // by the notch bar (maybe) and top chrome.
+  //
+  // What should always be true is the left, right, and bottom sides of the
+  // fullscreen bounds match the those portions of the display bounds. The
+  // top is trickier. By using the "work area," we should be able to take the
+  // menu bar area out of the equation. Ideally, we would just check that
+  // fullscreen_bounds.y - overlay_widget.height == display.work_area.bottom.
+  // However, at this location in the source tree, we are not allowed to know
+  // anything about Views or widgets, so we cannot access the overlay_widget
+  // to query its frame. The most we can, therefore, say, is that the top
+  // of the fullscreen bounds must be greater than or equal to the bottom of
+  // the display bounds.
+#if BUILDFLAG(IS_MAC)
+  EXPECT_LE(original_display.work_area().y(), fullscreen_bounds.y());
+  EXPECT_EQ(original_display.work_area().x(), fullscreen_bounds.x());
+  EXPECT_EQ(original_display.work_area().right(), fullscreen_bounds.right());
+  EXPECT_EQ(original_display.work_area().bottom(), fullscreen_bounds.bottom());
+#else
   EXPECT_EQ(original_display.bounds(), fullscreen_bounds);
+#endif  // BUILDFLAG(IS_MAC)
 
   // Execute JS to request fullscreen on a different screen.
   RequestContentFullscreenOnAnotherScreen();
