@@ -143,10 +143,9 @@ void PersistentWindowController::OnDisplayRemoved(
   for (const auto& [window, restore_bounds_in_parent] :
        need_persistent_info_windows_.window_restore_bounds_map()) {
     WindowState* window_state = WindowState::Get(window);
-    window_state->set_persistent_window_info_of_display_removal(
-        PersistentWindowInfo(window,
-                             /*is_landscape_before_rotation=*/false,
-                             restore_bounds_in_parent));
+    window_state->CreatePersistentWindowInfo(
+        /*is_landscape_before_rotation=*/false, restore_bounds_in_parent,
+        /*for_display_removal=*/true);
   }
   need_persistent_info_windows_.RemoveAll();
   is_landscape_orientation_map_.erase(old_display.id());
@@ -183,9 +182,10 @@ void PersistentWindowController::OnDisplayMetricsChanged(
         window_state->IsFullscreen()) {
       continue;
     }
-    window_state->set_persistent_window_info_of_screen_rotation(
-        PersistentWindowInfo(window, was_landscape_before_rotation,
-                             /*given_restore_bounds_in_parent=*/gfx::Rect()));
+    window_state->CreatePersistentWindowInfo(
+        was_landscape_before_rotation,
+        /*restore_bounds_in_parent=*/gfx::Rect(),
+        /*for_display_removal=*/false);
   }
   screen_rotation_restore_callback_ =
       base::BindOnce(&PersistentWindowController::
@@ -239,9 +239,9 @@ void PersistentWindowController::
     if (!window_state->persistent_window_info_of_display_removal()) {
       continue;
     }
-    PersistentWindowInfo info =
-        *window_state->persistent_window_info_of_display_removal();
-    const int64_t persistent_display_id = info.display_id;
+    PersistentWindowInfo* info =
+        window_state->persistent_window_info_of_display_removal();
+    const int64_t persistent_display_id = info->display_id();
     auto* display_manager = GetDisplayManager();
     if (!display_manager->IsDisplayIdValid(persistent_display_id)) {
       continue;
@@ -252,8 +252,8 @@ void PersistentWindowController::
     // Update |persistent_window_bounds| based on |persistent_display_bounds|'s
     // position change. This ensures that |persistent_window_bounds| is
     // associated with the right target display.
-    gfx::Rect persistent_window_bounds = info.window_bounds_in_screen;
-    const auto& persistent_display_bounds = info.display_bounds_in_screen;
+    gfx::Rect persistent_window_bounds = info->window_bounds_in_screen();
+    const auto& persistent_display_bounds = info->display_bounds_in_screen();
     // It is possible to have display size change, such as changing cable, bad
     // cable signal etc., but it should be rare.
     if (display.bounds().size() != persistent_display_bounds.size()) {
@@ -264,8 +264,8 @@ void PersistentWindowController::
     persistent_window_bounds.Offset(offset);
 
     window->SetBoundsInScreen(persistent_window_bounds, display);
-    if (info.restore_bounds_in_parent) {
-      const gfx::Rect restore_bounds = *info.restore_bounds_in_parent;
+    if (!info->restore_bounds_in_parent().IsEmpty()) {
+      const gfx::Rect restore_bounds = info->restore_bounds_in_parent();
       // Use the stored window's restore bounds in parent to set the window's
       // restore bounds in screen. The conversion from the bounds in parent to
       // the bounds in screen will be based on the current displays' layout.
@@ -296,9 +296,9 @@ void PersistentWindowController::
     if (!window_state->persistent_window_info_of_screen_rotation()) {
       continue;
     }
-    PersistentWindowInfo info =
-        *window_state->persistent_window_info_of_screen_rotation();
-    const int64_t display_id = info.display_id;
+    PersistentWindowInfo* info =
+        window_state->persistent_window_info_of_screen_rotation();
+    const int64_t display_id = info->display_id();
     auto* display_manager = GetDisplayManager();
     if (!display_manager->IsDisplayIdValid(display_id)) {
       continue;
@@ -310,8 +310,8 @@ void PersistentWindowController::
     // window's bounds should be the same in each landscape orientation. Same
     // for portrait screen orientation.
     if (chromeos::IsDisplayLayoutHorizontal(display_manager->GetDisplayForId(
-            display_id)) == info.is_landscape) {
-      window->SetBounds(info.window_bounds_in_screen);
+            display_id)) == info->is_landscape()) {
+      window->SetBounds(info->window_bounds_in_screen());
       ++window_restored_count;
     }
   }

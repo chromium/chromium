@@ -323,6 +323,23 @@ void WindowState::SetDelegate(std::unique_ptr<WindowStateDelegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
+void WindowState::CreatePersistentWindowInfo(
+    bool was_landscape_before_rotation,
+    const gfx::Rect& restore_bounds_in_parent,
+    bool for_display_removal) {
+  if (for_display_removal) {
+    CHECK(!persistent_window_info_of_display_removal_);
+    persistent_window_info_of_display_removal_ =
+        std::make_unique<PersistentWindowInfo>(
+            window_, was_landscape_before_rotation, restore_bounds_in_parent);
+    return;
+  }
+  CHECK(!persistent_window_info_of_screen_rotation_);
+  persistent_window_info_of_screen_rotation_ =
+      std::make_unique<PersistentWindowInfo>(
+          window_, was_landscape_before_rotation, restore_bounds_in_parent);
+}
+
 WindowStateType WindowState::GetStateType() const {
   return current_state_->GetType();
 }

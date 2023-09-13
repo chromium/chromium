@@ -14,24 +14,21 @@ namespace ash {
 PersistentWindowInfo::PersistentWindowInfo(
     aura::Window* window,
     bool is_landscape_before_rotation,
-    const gfx::Rect& given_restore_bounds_in_parent)
-    : is_landscape(is_landscape_before_rotation) {
+    const gfx::Rect& restore_bounds_in_parent)
+    : is_landscape_(is_landscape_before_rotation) {
   const auto& display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-  window_bounds_in_screen = window->GetBoundsInScreen();
-  display_id = display.id();
-  display_bounds_in_screen = display.bounds();
+  window_bounds_in_screen_ = window->GetBoundsInScreen();
+  display_id_ = display.id();
+  display_bounds_in_screen_ = display.bounds();
 
   WindowState* window_state = WindowState::Get(window);
   DCHECK(window_state);
 
-  if (!given_restore_bounds_in_parent.IsEmpty()) {
-    restore_bounds_in_parent = given_restore_bounds_in_parent;
+  if (!restore_bounds_in_parent.IsEmpty()) {
+    restore_bounds_in_parent_ = restore_bounds_in_parent;
   }
 }
-
-PersistentWindowInfo::PersistentWindowInfo(const PersistentWindowInfo& other) =
-    default;
 
 PersistentWindowInfo::~PersistentWindowInfo() = default;
 

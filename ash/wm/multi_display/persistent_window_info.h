@@ -19,33 +19,46 @@ namespace ash {
 
 // Describes the information that each window needs to carry for persistent
 // window placement in multi-displays or screen rotation scenario.
-struct ASH_EXPORT PersistentWindowInfo {
+class ASH_EXPORT PersistentWindowInfo {
+ public:
   // `is_landscape_before_rotation` indicates the screen orientation before
   // screen rotation happens. This is used to help restore window bounds in
   // screen rotation scenario. The `given_restore_bounds_in_parent` will be
   // ignored if it is empty.
   PersistentWindowInfo(aura::Window* window,
                        bool is_landscape_before_rotation,
-                       const gfx::Rect& given_restore_bounds_in_parent);
-  PersistentWindowInfo(const PersistentWindowInfo& other);
+                       const gfx::Rect& restore_bounds_in_parent);
+  PersistentWindowInfo(const PersistentWindowInfo&) = delete;
+  PersistentWindowInfo& operator=(const PersistentWindowInfo&) = delete;
   ~PersistentWindowInfo();
 
+  gfx::Rect window_bounds_in_screen() const { return window_bounds_in_screen_; }
+  int64_t display_id() const { return display_id_; }
+  gfx::Rect display_bounds_in_screen() const {
+    return display_bounds_in_screen_;
+  }
+  bool is_landscape() const { return is_landscape_; }
+  gfx::Rect restore_bounds_in_parent() const {
+    return restore_bounds_in_parent_.value_or(gfx::Rect());
+  }
+
+ private:
   // Persistent window bounds in screen coordinates.
-  gfx::Rect window_bounds_in_screen;
+  gfx::Rect window_bounds_in_screen_;
 
   // Indicates the display to restore to in multi-displays scenario or the
   // display on which screen rotation happens.
-  int64_t display_id;
+  int64_t display_id_;
 
   // Indicates last display bounds for |display_id| in screen coordinates.
-  gfx::Rect display_bounds_in_screen;
+  gfx::Rect display_bounds_in_screen_;
 
   // True if it is in landscape orientation before screen orientation happens.
   // Note, this is only meaningful in the screen rotation scenario.
-  bool is_landscape;
+  bool is_landscape_;
 
   // Stores the restore bounds in its parent coordinates if they exist.
-  absl::optional<gfx::Rect> restore_bounds_in_parent;
+  absl::optional<gfx::Rect> restore_bounds_in_parent_;
 };
 
 }  // namespace ash
