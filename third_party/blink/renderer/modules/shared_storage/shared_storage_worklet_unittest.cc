@@ -2783,12 +2783,24 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
     }
 
     // Use counters are recorded.
-    EXPECT_EQ(test_client_->observed_use_counters_.size(), 1u);
-    EXPECT_THAT(
-        test_client_->observed_use_counters_[0],
-        testing::UnorderedElementsAre(
-            blink::mojom::WebFeature::kPrivateAggregationApiAll,
-            blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+    if (expected_debug_mode_details->is_enabled) {
+      EXPECT_THAT(test_client_->observed_use_counters_,
+                  testing::UnorderedElementsAre(
+                      testing::UnorderedElementsAre(
+                          blink::mojom::WebFeature::kPrivateAggregationApiAll,
+                          blink::mojom::WebFeature::
+                              kPrivateAggregationApiSharedStorage),
+                      testing::UnorderedElementsAre(
+                          blink::mojom::WebFeature::
+                              kPrivateAggregationApiEnableDebugMode)));
+    } else {
+      EXPECT_EQ(test_client_->observed_use_counters_.size(), 1u);
+      EXPECT_THAT(
+          test_client_->observed_use_counters_[0],
+          testing::UnorderedElementsAre(
+              blink::mojom::WebFeature::kPrivateAggregationApiAll,
+              blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
+    }
 
     mock_private_aggregation_host_->FlushForTesting();
   }

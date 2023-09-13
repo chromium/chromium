@@ -798,6 +798,17 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
     return;
   }
 
+  if (!has_logged_private_aggregation_enable_debug_mode_web_feature_ &&
+      base::ranges::any_of(private_aggregation_requests,
+                           [](const auto& request) {
+                             return request->debug_mode_details->is_enabled;
+                           })) {
+    has_logged_private_aggregation_enable_debug_mode_web_feature_ = true;
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &render_frame_host(),
+        blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode);
+  }
+
   if (!has_logged_extended_private_aggregation_web_feature_ &&
       base::ranges::any_of(
           private_aggregation_requests, [](const auto& request) {

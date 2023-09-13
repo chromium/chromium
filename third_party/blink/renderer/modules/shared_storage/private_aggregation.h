@@ -71,9 +71,11 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
   void OnWorkletDestroyed();
 
  private:
-  void EnsureUseCountersAreRecorded();
+  void EnsureGeneralUseCountersAreRecorded();
+  void EnsureEnableDebugModeUseCounterIsRecorded();
 
-  bool has_recorded_use_counters_ = false;
+  bool has_recorded_general_use_counters_ = false;
+  bool has_recorded_enable_debug_mode_use_counter_ = false;
 
   Member<SharedStorageWorkletGlobalScope> global_scope_;
   HeapHashMap<int64_t,

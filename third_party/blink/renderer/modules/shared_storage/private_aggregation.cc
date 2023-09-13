@@ -70,7 +70,7 @@ void PrivateAggregation::contributeToHistogram(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
-  EnsureUseCountersAreRecorded();
+  EnsureGeneralUseCountersAreRecorded();
 
   if (!global_scope_->private_aggregation_permissions_policy_allowed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -123,7 +123,8 @@ void PrivateAggregation::enableDebugMode(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
-  EnsureUseCountersAreRecorded();
+  EnsureGeneralUseCountersAreRecorded();
+  EnsureEnableDebugModeUseCounterIsRecorded();
 
   if (!global_scope_->private_aggregation_permissions_policy_allowed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -198,12 +199,20 @@ void PrivateAggregation::OnWorkletDestroyed() {
   CHECK(operation_states_.empty());
 }
 
-void PrivateAggregation::EnsureUseCountersAreRecorded() {
-  if (!has_recorded_use_counters_) {
-    has_recorded_use_counters_ = true;
+void PrivateAggregation::EnsureGeneralUseCountersAreRecorded() {
+  if (!has_recorded_general_use_counters_) {
+    has_recorded_general_use_counters_ = true;
     global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
         {mojom::blink::WebFeature::kPrivateAggregationApiAll,
          mojom::blink::WebFeature::kPrivateAggregationApiSharedStorage});
+  }
+}
+
+void PrivateAggregation::EnsureEnableDebugModeUseCounterIsRecorded() {
+  if (!has_recorded_enable_debug_mode_use_counter_) {
+    has_recorded_enable_debug_mode_use_counter_ = true;
+    global_scope_->GetSharedStorageWorkletServiceClient()->RecordUseCounters(
+        {mojom::blink::WebFeature::kPrivateAggregationApiEnableDebugMode});
   }
 }
 
