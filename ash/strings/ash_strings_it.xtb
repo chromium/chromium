@@ -81,7 +81,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1275285675049378717">Alimentazione di <ph name="POWER_SOURCE" /></translation>
 <translation id="1276975447697633661">Seleziona il file, quindi premi <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
-<translation id="1285992161347843613">Localizza telefono</translation>
+<translation id="1285992161347843613">Localizza smartphone</translation>
 <translation id="1287002645302686982">Esiste già una scrivania salvata denominata <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1288276784862223576">Configura la visualizzazione di contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="1289185460362160437">Puoi riprendere <ph name="COME_BACK_DAY_OF_WEEK" /> alle ore <ph name="COME_BACK_TIME" />.</translation>
@@ -452,6 +452,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2891209721153296020">"Deseleziona"</translation>
 <translation id="2894949423239620203">Il cavo può influire sulle prestazioni</translation>
 <translation id="2914580577416829331">Schermate acquisite</translation>
+<translation id="2924416280450782352">Impossibile mostrare elementi. Prova a riaprire questo riquadro.</translation>
 <translation id="2931572158271115754">Questa lista di cose da fare è vuota.</translation>
 <translation id="2941112035454246133">Bassa</translation>
 <translation id="2942350706960889382">Lente d'ingrandimento ancorata</translation>

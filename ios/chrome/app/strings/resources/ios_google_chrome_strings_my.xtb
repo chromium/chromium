@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1105362920864247682">Chrome ၌ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းရန်။</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> အတွက် သင့်စကားဝှက်ကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ သိမ်းပါမည်။</translation>
 <translation id="1180362651362502943">သင့် Google Account တွင် Chrome ဒေတာများ ဆက်သုံးပါ။</translation>
 <translation id="1282031177488366470">Chrome ၏ ဝန်ဆောင်မှုများနှင့် စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်လာအောင် ကူညီခြင်း</translation>
@@ -56,6 +57,7 @@
 <translation id="2736805085127235148">သင့်စက်ဆက်တင်များတွင် Chrome အကြောင်းကြားချက်များကို လောလောဆယ်ပိတ်ထားသည်။</translation>
 <translation id="2767464022270041271">သိမ်းထားသော စကားဝှက် မရှိပါ။ သင်စကားဝှက်များကို သိမ်းသည့်အခါ Google Password Manager က ၎င်းတို့ကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="2840432500933227975">iOS တွင် Chrome ဆက်တင်များကို ဖွင့်ပါ၊ ထို့နောက် “မူရင်း ဘရောင်ဇာအက်ပ်” ကို တို့ပြီး Chrome ကို ရွေးပါ။</translation>
+<translation id="2868822340714096138">Chrome ၌ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းရန်</translation>
 <translation id="2869959624320573933">Chrome တွင် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome က သင့်ဒေတာကို သီးသန့်ထားပေးပုံ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ကို ရွေးပါ</translation>

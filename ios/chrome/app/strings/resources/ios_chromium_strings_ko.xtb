@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">새 Chromium 시크릿 탭을 엽니다.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="3827545470516145620">이 기기에 표준 보안 보호 조치가 적용되고 있습니다.</translation>
+<translation id="3833326979834193417">Chromium은 매일 자동으로 안전 확인을 실행하여 정보 유출 및 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다. 설정에서 안전 확인에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="3886689467633467988">이 사이트 및 Chromium에 로그인하여 모든 기기에서 북마크 등을 사용하세요.</translation>
 <translation id="394413318816989199">결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
@@ -84,6 +85,7 @@
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium에서 결제 수단 설정 페이지를 엽니다.</translation>
 <translation id="4585809515399340748">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>
+<translation id="459080529287102949">Chromium에서 시각적 검색 수행</translation>
 <translation id="4633738821577273991">이 Chromium 프로필에 향상된 세이프 브라우징도 사용해 보세요.</translation>
 <translation id="4654936625574199632">앱 개선을 위해 Chromium에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium 스캐너 사용</translation>
@@ -152,6 +154,7 @@
 <translation id="7045244423563602563">나만의 Chromium 만들기</translation>
 <translation id="7055269218854630176">내가 로그인한 계정과 Chromium이 사용될 수 있는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>
 <translation id="7099326575020694068">Chromium에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
+<translation id="7163483974919055112">Chromium에서 시각적 검색을 수행합니다.</translation>
 <translation id="7165402419892018581">자동 완성에 사용할 Chromium 선택</translation>
 <translation id="7175400662502680481">정보 유출로 인해 비밀번호가 노출되었습니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7192111075364461693">현재 기기 설정에서 Chromium 알림이 사용 중지되어 있습니다.</translation>

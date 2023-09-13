@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2677748264148917807">Выйсці</translation>
 <translation id="2678468611080193228">Паспрабуйце часова дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць, але павысіць імавернасць таго, што функцыі сайта будуць працаваць</translation>
+<translation id="2683434792633810741">Выдаліць і скінуць?</translation>
 <translation id="2687403674020088961">Блакіраваць усе файлы cookie (не рэкамендуецца)</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
 <translation id="2717722538473713889">Адрасы электроннай пошты</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Дазвол выкарыстання файлаў cookie ад канкрэтнага сайта.</translation>
 <translation id="4046123991198612571">Наступны трэк</translation>
 <translation id="4053720452172726777">Наладжвайце Google Chrome і кіруйце ім</translation>
+<translation id="4149890623864272035">Вы сапраўды хочаце выдаліць усе лакальныя даныя (у тым ліку файлы cookie) і скінуць усе дазволы для гэтага вэб-сайта?</translation>
 <translation id="4149994727733219643">Спрошчаны выгляд для вэб-старонак</translation>
 <translation id="4151930093518524179">Стандартны маштаб</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Дазволіць староннія файлы cookie</translation>
 <translation id="4428065317363009941">Персаналізацыя рэкламы</translation>
 <translation id="4434045419905280838">Усплыв. вокны і перанакіраванні</translation>
+<translation id="443552056913301231">Будуць выдалены ўсе лакальныя даныя (у тым ліку файлы cookie) і скінуты ўсе дазволы для сайта <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Выключыць гук на канкрэтным сайце.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файлы cookie}many{# файлаў cookie}other{# файла cookie}}</translation>
 <translation id="4478158430052450698">Вы можаце спрасціць змяненне маштабу на розных сайтах</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Выключыць мікрафон</translation>
 <translation id="4570913071927164677">Падрабязныя звесткі</translation>
 <translation id="4598549027014564149">Калі ўключаны рэжым інкогніта, сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на сайтах, нават звязаных. Вашы дзеянні ў браўзеры не выкарыстоўваюцца для паказу персаналізаванай рэкламы і падобных мэт. На некаторых сайтах можа не працаваць частка функцый.</translation>
+<translation id="4644713492825682049">Выдаліць і скінуць</translation>
 <translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Апошняе наведванне: сёння</translation>
 <translation id="5225463052809312700">Уключыць камеру</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
+<translation id="5246825184569358663">Будуць выдалены ўсе лакальныя даныя (у тым ліку файлы cookie) і скінуты ўсе дазволы для дамена <ph name="DOMAIN" /> і сайтаў, якія да яго належаць</translation>
 <translation id="5264323282659631142">Выдаліць чып "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Каб выйсці з поўнаэкраннага рэжыму, правядзіце зверху ўніз і націсніце кнопку "Назад".</translation>
 <translation id="5300589172476337783">Паказаць</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Выключэнні</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6205314730813004066">Прыватнасць у рэкламе</translation>
+<translation id="6207207788774442484">Выдаліць даныя і скінуць дазволы</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
 <translation id="6231752747840485235">Выдаліць "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">На падставе даных вашай апошняй укладкі</translation>

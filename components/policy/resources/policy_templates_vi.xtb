@@ -6359,6 +6359,16 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="6477685422297715670">Đèn nền bàn phím màu xanh lục</translation>
 <translation id="6478258366184919502">Nguồn gốc thông tin đăng nhập và màn hình</translation>
 <translation id="6478261301433199402">Việc đặt chính sách này sẽ chỉ định hình ảnh <ph name="PLUGIN_VM_NAME" /> cho một người dùng. Hãy chỉ định chính sách này làm một chuỗi định dạng JSON, trong đó <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> cho biết vị trí tải xuống hình ảnh đó và chỉ định <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> làm một hàm băm SHA-256 dùng để xác minh tính toàn vẹn của tệp tải xuống.</translation>
+<translation id="6478975565604106426">Các trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sắp bị loại bỏ. Việc các trình xử lý này có kích hoạt hay không phụ thuộc vào <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />. Hiện tại, chính sách cho phép các trình xử lý này kích hoạt theo mặc định. Trong tương lai, các trình xử lý này sẽ dần chuyển sang trạng thái không được phép theo mặc định và phải được các trang web cho phép rõ ràng bằng cách sử dụng tiêu đề <ph name="PERMISSIONS_POLICY_NAME" />. Bạn có thể sử dụng chính sách doanh nghiệp này để từ chối việc loại bỏ dần này bằng cách buộc duy trì giá trị mặc định ở trạng thái cho phép.
+ 
+Các trang có thể dựa vào trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> để lưu dữ liệu hoặc báo hiệu việc kết thúc phiên của người dùng với máy chủ. Cách này không được khuyến nghị do không đáng tin cậy và sẽ ảnh hưởng đến hiệu suất do việc không cho phép sử dụng <ph name="PRODUCT_NAME" />. Dù có một số lựa chọn thay thế được đề xuất, nhưng sự kiện <ph name="UNLOAD_EVENT_NAME" /> đã được sử dụng trong một thời gian dài. Một số ứng dụng có thể vẫn hoạt động dựa vào các trình xử lý sự kiện đó.
+
+Nếu bạn đặt chính sách này thành false (sai) hoặc không đặt, thì các trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sẽ dần bị loại bỏ tương ứng với tiến độ triển khai việc loại bỏ và các trang web không đặt tiêu đề <ph name="PERMISSIONS_POLICY_NAME" /> sẽ ngừng kích hoạt các sự kiện "unload".
+
+Nếu bạn đặt chính sách này thành true (đúng), thì trình xử lý sự kiện <ph name="UNLOAD_EVENT_NAME" /> sẽ tiếp tục hoạt động theo mặc định.
+
+LƯU Ý: Chính sách này có giá trị mặc định "true" được ghi không chính xác trong M117. Sự kiện "unload" đã và sẽ không thay đổi trong M117, vì vậy chính sách này không có hiệu lực trong phiên bản đó.
+</translation>
 <translation id="6481245670325946423">Cho phép sử dụng Chế độ không có giao diện người dùng</translation>
 <translation id="648158446793103284">Nếu bạn thiết lập chính sách này, thì người dùng có thể chọn một trong nhiều phương thức nhập cho phiên <ph name="PRODUCT_OS_NAME" /> mà bạn chỉ định.
 
