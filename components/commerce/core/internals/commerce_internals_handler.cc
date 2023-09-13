@@ -59,8 +59,9 @@ void CommerceInternalsHandler::GetShoppingListEligibleDetails(
   }
   detail->is_account_checker_valid =
       mojom::EligibleEntry::New(true, /*expected_value=*/true);
-  detail->is_signed_in = mojom::EligibleEntry::New(
-      account_checker->IsSignedIn(), /*expected_value=*/true);
+  detail->is_signed_in =
+      mojom::EligibleEntry::New(account_checker->IsOptedIntoSync(),
+                                /*expected_value=*/true);
   detail->is_syncing_bookmarks = mojom::EligibleEntry::New(
       account_checker->IsSyncingBookmarks(), /*expected_value=*/true);
   detail->is_anonymized_url_data_collection_enabled = mojom::EligibleEntry::New(

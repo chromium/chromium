@@ -666,7 +666,7 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_SignIn) {
   ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                      kEligibleLocale));
 
-  checker.SetSignedIn(false);
+  checker.SetOptedIntoSync(false);
 
   ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
                                       kEligibleLocale));

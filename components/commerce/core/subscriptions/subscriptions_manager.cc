@@ -182,7 +182,7 @@ void SubscriptionsManager::UpdateSyncStates(bool sync_succeeded) {
 }
 
 void SubscriptionsManager::HandleSync() {
-  if (account_checker_ && account_checker_->IsSignedIn() &&
+  if (account_checker_ && account_checker_->IsOptedIntoSync() &&
       account_checker_->IsAnonymizedUrlDataCollectionEnabled()) {
     GetRemoteSubscriptionsAndUpdateStorage(
         SubscriptionType::kPriceTrack,
