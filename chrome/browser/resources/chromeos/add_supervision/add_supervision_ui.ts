@@ -82,8 +82,8 @@ export class AddSupervisionUi extends PolymerElement {
     };
   }
 
-  webviewLoading: boolean;
-  private server_: AddSupervisionApiServer|null;
+  protected webviewLoading: boolean;
+  private server: AddSupervisionApiServer|null;
 
   override ready() {
     super.ready();
@@ -147,7 +147,7 @@ export class AddSupervisionUi extends PolymerElement {
       webview.src = url.toString();
 
       // Set up the server.
-      this.server_ = new AddSupervisionApiServer(
+      this.server = new AddSupervisionApiServer(
           this, webview, url.toString(), eventOriginFilter);
     });
   }
@@ -160,7 +160,7 @@ export class AddSupervisionUi extends PolymerElement {
   }
 
   getApiServerForTest(): AddSupervisionApiServer|null {
-    return this.server_;
+    return this.server;
   }
 }
 
