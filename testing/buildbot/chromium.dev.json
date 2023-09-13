@@ -17,6 +17,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "name": "chrome_public_smoke_test",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -53,6 +54,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -67,6 +69,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -82,6 +85,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -97,6 +101,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -111,6 +116,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -126,6 +132,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -140,6 +147,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-18.04"
@@ -153,6 +161,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -171,6 +180,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -185,6 +195,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -200,6 +211,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -215,6 +227,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "cores": "2",
@@ -229,6 +242,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -244,6 +258,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -258,6 +273,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -271,6 +287,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "cores": "2",
@@ -289,6 +306,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -303,6 +321,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -318,6 +337,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -332,6 +352,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -346,6 +367,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -360,6 +382,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -374,6 +397,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
@@ -392,6 +416,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -406,6 +431,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "cores": "8|12",
@@ -422,6 +448,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -436,6 +463,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -450,6 +478,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -464,6 +493,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -478,6 +508,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -496,6 +527,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045"
@@ -509,6 +541,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045"
@@ -523,6 +556,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045"
@@ -536,6 +570,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045"
@@ -549,6 +584,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045"
@@ -562,6 +598,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045"
@@ -575,6 +612,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "os": "Windows-10-19045"
@@ -592,6 +630,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-11-22000"
@@ -605,6 +644,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Windows-11-22000"
@@ -619,6 +659,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-11-22000"
@@ -632,6 +673,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
             "os": "Windows-11-22000"
@@ -645,6 +687,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-11-22000"
@@ -658,6 +701,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "os": "Windows-11-22000"
@@ -671,6 +715,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "unit_tests",
         "swarming": {
           "dimensions": {
             "os": "Windows-11-22000"

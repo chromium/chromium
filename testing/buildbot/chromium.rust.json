@@ -11,6 +11,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -30,6 +31,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -46,6 +48,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -62,6 +65,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -78,6 +82,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -136,6 +141,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -155,6 +161,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -171,6 +178,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -187,6 +195,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -203,6 +212,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -261,6 +271,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -280,6 +291,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -296,6 +308,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -312,6 +325,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -328,6 +342,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "device_os": "PQ3A.190801.002",
@@ -388,6 +403,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -404,6 +420,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -417,6 +434,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -430,6 +448,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -443,6 +462,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -511,6 +531,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -527,6 +548,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -540,6 +562,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -553,6 +576,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -566,6 +590,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -634,6 +659,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -651,6 +677,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -665,6 +692,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -679,6 +707,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -693,6 +722,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -765,6 +795,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -782,6 +813,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -796,6 +828,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -810,6 +843,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -824,6 +858,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -896,6 +931,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -913,6 +949,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "components_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -927,6 +964,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_integration_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -941,6 +979,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_rust_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
@@ -955,6 +994,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
