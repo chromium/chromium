@@ -4161,6 +4161,12 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
 }
 
 TEST_P(GPURendererPixelTest, TrilinearFiltering) {
+  // TODO(crbug.com/1442381): Enable test for Graphite once mipmap issue is
+  // fixed.
+  if (is_skia_graphite()) {
+    GTEST_SKIP();
+  }
+
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
   AggregatedRenderPassId root_pass_id{1};
