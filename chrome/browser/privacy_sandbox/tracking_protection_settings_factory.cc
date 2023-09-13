@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -30,7 +31,9 @@ TrackingProtectionSettingsFactory::TrackingProtectionSettingsFactory()
               // CookieControlsServiceFactory or PrivacySandboxServiceFactory
               // it should also be reflected here.
               .WithGuest(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
@@ -38,5 +41,6 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-      profile->GetPrefs());
+      profile->GetPrefs(),
+      TrackingProtectionOnboardingFactory::GetForProfile(profile));
 }
