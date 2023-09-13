@@ -3169,7 +3169,7 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
     RecordNearbyShareTransferFinalStatusMetric(
         &feature_usage_metrics_,
         /*is_incoming=*/true, share_target.type, metadata.status(),
-        share_target.is_known);
+        share_target.is_known, share_target.for_self_share);
 
     ShareTargetInfo* info = GetShareTargetInfo(share_target);
     CHECK(info->endpoint_id().has_value());
@@ -3213,7 +3213,7 @@ void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
     RecordNearbyShareTransferFinalStatusMetric(
         &feature_usage_metrics_,
         /*is_incoming=*/false, share_target.type, metadata.status(),
-        share_target.is_known);
+        share_target.is_known, share_target.for_self_share);
 
     ShareTargetInfo* info = GetShareTargetInfo(share_target);
     CHECK(info->endpoint_id().has_value());

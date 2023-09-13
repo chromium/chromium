@@ -981,6 +981,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.IsSelfShare" enum="BooleanSuccess"
+    expires_after="2024-09-12">
+  <owner>brandosocarras@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records whether the share was a Self Share. Emitted when Self Share is
+    enabled and a transfer completes successfully, fails, or was aborted by the
+    user, for example, by cancelling the transfer.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult"
     enum="NearbyHttpResult" expires_after="2024-07-10">
   <owner>cclem@chromium.org</owner>
@@ -1332,6 +1343,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".NonContact" summary="when sharing with a non-contact"/>
     <variant name=".Phone" summary="when sharing with a phone"/>
     <variant name=".Receive" summary="when receiving"/>
+    <variant name=".SelfShare"
+        summary="when sharing with a device logged into the same account"/>
     <variant name=".Send" summary="when sending"/>
     <variant name=".Tablet" summary="when sharing with a tablet"/>
     <variant name=".UnknownDeviceType"
@@ -1374,6 +1387,7 @@ chromium-metrics-reviews@google.com.
   <token key="ContactStatus">
     <variant name="Contact" summary="contact-based sharing"/>
     <variant name="NonContact" summary="non-contact-based sharing"/>
+    <variant name="SelfShare" summary="account-based sharing"/>
   </token>
 </histogram>
 
