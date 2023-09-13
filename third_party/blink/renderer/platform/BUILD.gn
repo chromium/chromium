@@ -2703,6 +2703,7 @@ source_set("unit_tests") {
     "graphics/animation_worklet_mutator_dispatcher_impl_test.cc",
     "graphics/canvas_2d_layer_bridge_test.cc",
     "graphics/canvas_color_params_test.cc",
+    "graphics/canvas_hibernation_handler_test.cc",
     "graphics/canvas_resource_dispatcher_test.cc",
     "graphics/canvas_resource_provider_test.cc",
     "graphics/canvas_resource_test.cc",
