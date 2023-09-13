@@ -22,9 +22,9 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
-#include "media/gpu/v4l2/legacy/v4l2_stateful_workaround.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
+#include "media/gpu/v4l2/v4l2_vp9_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {

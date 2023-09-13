@@ -16,8 +16,6 @@ assert(use_v4l2_codec)
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "legacy/v4l2_stateful_workaround.cc",
-    "legacy/v4l2_stateful_workaround.h",
     "legacy/v4l2_video_decode_accelerator.cc",
     "legacy/v4l2_video_decode_accelerator.h",
     "stateless/device.cc",
@@ -64,6 +62,8 @@ source_set("v4l2") {
     "v4l2_video_decoder_delegate_vp8.h",
     "v4l2_video_decoder_delegate_vp9.cc",
     "v4l2_video_decoder_delegate_vp9.h",
+    "v4l2_vp9_helpers.cc",
+    "v4l2_vp9_helpers.h",
   ]
 
   if (enable_hevc_parser_and_hw_decoder) {
@@ -157,8 +157,8 @@ source_set("v4l2_status") {
 source_set("unit_test") {
   testonly = true
   sources = [
-    "legacy/v4l2_stateful_workaround_unittest.cc",
     "v4l2_utils_unittest.cc",
+    "v4l2_vp9_helpers_unittest.cc",
   ]
   deps = [
     ":v4l2",

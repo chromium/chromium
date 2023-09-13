@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/legacy/v4l2_stateful_workaround.h"
+#include "media/gpu/v4l2/v4l2_vp9_helpers.h"
 
 #include <vector>
 
@@ -25,7 +25,7 @@ void AppendSideData(DecoderBuffer& decoder_buffer,
 }  // namespace
 
 // Checks superframe index size is expected.
-TEST(V4L2StatefulWorkaroundTest, CheckSuperFrameIndexSize) {
+TEST(V4L2VP9HelpersTest, CheckSuperFrameIndexSize) {
   constexpr uint32_t kFrameSizes[] = {
       0x10,       // 1 byte
       0x1020,     // 2 byte
@@ -39,8 +39,9 @@ TEST(V4L2StatefulWorkaroundTest, CheckSuperFrameIndexSize) {
     size_t expected_bytes_per_framesize = 0;
     std::vector<uint32_t> frame_sizes;
     for (size_t i = 0; i < kNumFrames; i++) {
-      if (!(mask & (1 << i)))
+      if (!(mask & (1 << i))) {
         continue;
+      }
       frame_sizes.push_back(kFrameSizes[i]);
       buffer_size += kFrameSizes[i];
       expected_bytes_per_framesize = i + 1;
@@ -72,7 +73,7 @@ TEST(V4L2StatefulWorkaroundTest, CheckSuperFrameIndexSize) {
   }
 }
 
-TEST(V4L2StatefulWorkaroundTest, ParseAppendedSuperFrameIndex) {
+TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
   auto stream = std::make_unique<base::MemoryMappedFile>();
   ASSERT_TRUE(stream->Initialize(GetTestDataFilePath("test-25fps.vp9")));
 

@@ -33,7 +33,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/legacy/v4l2_stateful_workaround.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
@@ -335,9 +334,6 @@ bool V4L2VideoDecodeAccelerator::CheckConfig(const Config& config) {
              << ", caps check failed: 0x" << std::hex << caps.capabilities;
     return false;
   }
-
-  workarounds_ =
-      CreateV4L2StatefulWorkarounds(V4L2Device::Type::kDecoder, config.profile);
 
   output_mode_ = config.output_mode;
 
@@ -1001,15 +997,6 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
         buffer->data() + decoder_current_bitstream_buffer_->bytes_used;
     const size_t data_size =
         buffer->data_size() - decoder_current_bitstream_buffer_->bytes_used;
-
-    for (auto& workaround : workarounds_) {
-      auto result = workaround->Apply(data, data_size);
-      if (result == V4L2StatefulWorkaround::Result::NotifyError) {
-        LOG(ERROR) << "Failed applying a workaround";
-        NOTIFY_ERROR(PLATFORM_FAILURE);
-        return;
-      }
-    }
 
     if (!frame_splitter_->AdvanceFrameFragment(data, data_size,
                                                &decoded_size)) {
@@ -1931,7 +1918,6 @@ void V4L2VideoDecodeAccelerator::DestroyTask() {
   output_queue_ = nullptr;
 
   frame_splitter_ = nullptr;
-  workarounds_.clear();
 
   // Clear the V4L2 devices in the decoder thread so the V4L2Device's
   // destructor is called from the thread that used it.

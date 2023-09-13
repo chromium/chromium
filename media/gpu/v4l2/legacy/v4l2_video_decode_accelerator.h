@@ -59,7 +59,6 @@ class GLFenceEGL;
 
 namespace media {
 
-class V4L2StatefulWorkaround;
 
 namespace v4l2_vda_helpers {
 class InputBufferFragmentSplitter;
@@ -541,10 +540,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // for H.264 streams.
   std::unique_ptr<v4l2_vda_helpers::InputBufferFragmentSplitter>
       frame_splitter_;
-
-  // Workaround for V4L2VideoDecodeAccelerator. This is created only if some
-  // workaround is necessary for the V4L2VideoDecodeAccelerator.
-  std::vector<std::unique_ptr<V4L2StatefulWorkaround>> workarounds_;
 
   // Color space passed in from Initialize().
   VideoColorSpace container_color_space_;
