@@ -628,7 +628,6 @@ public class StartSurfaceTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1471244")
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_BottomSheet_WithBottomSheetGtsSupport() {
