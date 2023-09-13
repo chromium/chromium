@@ -830,6 +830,7 @@ crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough 
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/oes-shader-multisample-interpolation.html [ Failure ]
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/webgl-stencil-texturing.html [ Failure ]
+crbug.com/angleproject/8315 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_EXT_render_snorm [ Failure ]
 
 #####################
 # Lacros failures #
