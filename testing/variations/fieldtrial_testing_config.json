@@ -15397,7 +15397,7 @@
             ]
         }
     ],
-    "SidePanelCompanionDesktop": [
+    "SidePanelCompanionDesktopM116Plus": [
         {
             "platforms": [
                 "chromeos",
@@ -15408,17 +15408,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Pinned_Clobber",
+                    "name": "Enabled_UnPinned_Clobber_20230912",
                     "params": {
                         "companion-image-upload-url": "https://lens.google.com/v3/upload",
                         "open-links-in-current-tab": "true"
                     },
                     "enable_features": [
-                        "SidePanelCompanion",
-                        "SidePanelCompanionDefaultPinned"
+                        "SidePanelCompanion"
                     ],
                     "disable_features": [
-                        "SideSearch"
+                        "SidePanelCompanionDefaultPinned",
+                        "SideSearch",
+                        "VisualSearchSuggestions"
                     ]
                 }
             ]
