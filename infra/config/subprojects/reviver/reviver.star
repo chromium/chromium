@@ -61,12 +61,13 @@ polymorphic.launcher(
 
 polymorphic.launcher(
     name = "android-coverage-launcher",
-    # Match the replicated builder's schedule for comparable data
+    # Match the replicated builders' schedule for comparable data
     schedule = "0 4 * * *",
     pool = ci.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
     runner = "reviver/coverage-runner",
     target_builders = [
+        "ci/android-code-coverage",
         "ci/android-code-coverage-native",
     ],
 )
