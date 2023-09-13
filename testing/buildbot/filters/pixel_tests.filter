@@ -50,7 +50,6 @@ InteractionTestUtilBrowserUiTest.CompareScreenshot_*
 LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
-OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*
 PageInfoBubbleViewDialogBrowserTest.*
@@ -62,8 +61,8 @@ PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
 PasswordReuseModalWarningTest.*
-PermissionRequestChipDialogBrowserTest.*
-*PermissionPromptBubbleViewBrowserTest.*
+PermissionRequestChipBrowserUiTest.*
+*PermissionPromptBubble*ViewBrowserTest.InvokeUi_*
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
@@ -75,7 +74,6 @@ QrCodeGeneratorServicePixelTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
 RelaunchRequiredDialogViewDialogTest.*
 ReopenTabPromoControllerDialogBrowserTest.*
-SAAEnabledPermissionPromptBubbleViewBrowserTest.*
 SafetyTipPageInfoBubbleViewDialogTest.*
 ScreenCaptureNotificationUiBrowserTest.*
 SearchEngineChoiceUIPixelTest.*

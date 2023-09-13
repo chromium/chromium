@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
+#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
@@ -26,7 +29,9 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace {
 
@@ -55,8 +60,7 @@ class PermissionRequestChipGestureSensitiveBrowserTest
     : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures({permissions::features::kPermissionChip},
-                                   {});
+    feature_list_.InitAndEnableFeature(permissions::features::kPermissionChip);
     InProcessBrowserTest::SetUp();
   }
 
@@ -352,37 +356,28 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
   EXPECT_FALSE(lbv->chip_controller()->is_dismiss_timer_running_for_testing());
 }
 
-class PermissionRequestChipDialogBrowserTest : public UiBrowserTest {
+class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
  public:
-  PermissionRequestChipDialogBrowserTest() {
+  PermissionRequestChipBrowserUiTest() {
     feature_list_.InitAndEnableFeature(permissions::features::kPermissionChip);
   }
-
-  PermissionRequestChipDialogBrowserTest(
-      const PermissionRequestChipDialogBrowserTest&) = delete;
-  PermissionRequestChipDialogBrowserTest& operator=(
-      const PermissionRequestChipDialogBrowserTest&) = delete;
 
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     RequestPermission(browser());
-
-    LocationBarView* lbv = GetLocationBarView(browser());
-    lbv->GetFocusManager()->ClearFocus();
-    lbv->chip_controller()->chip()->SetForceExpandedForTesting(true);
   }
 
   bool VerifyUi() override {
-    LocationBarView* lbv = GetLocationBarView(browser());
-    OmniboxChipButton* chip = lbv->chip_controller()->chip();
-    if (!chip)
+    LocationBarView* const location_bar = GetLocationBarView(browser());
+    OmniboxChipButton* const chip = location_bar->chip_controller()->chip();
+    if (!chip || !chip->GetVisible() || chip->is_fully_collapsed()) {
       return false;
+    }
 
-    auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
-    const std::string screenshot_name =
-        base::StrCat({test_info->test_case_name(), "_", test_info->name()});
-    return VerifyPixelUi(chip, "BrowserUi", screenshot_name) !=
-           ui::test::ActionResult::kFailed;
+    const auto* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    return VerifyPixelUi(location_bar, test_info->test_case_name(),
+                         test_info->name()) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {
@@ -392,10 +387,18 @@ class PermissionRequestChipDialogBrowserTest : public UiBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  // Disable the permission chip animation. This happens automatically in pixel
+  // test mode, but without doing this explicitly, the test will fail when run
+  // interactively.
+  const std::unique_ptr<
+      base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      disable_rich_animations_ =
+          gfx::AnimationTestApi::SetRichAnimationRenderMode(
+              gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
-// Temporarily disabled per https://crbug.com/1197280
-IN_PROC_BROWSER_TEST_F(PermissionRequestChipDialogBrowserTest,
-                       DISABLED_InvokeUi_geolocation) {
+IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
+                       InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }

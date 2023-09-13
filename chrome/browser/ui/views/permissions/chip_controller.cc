@@ -39,17 +39,21 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/widget/widget.h"
 
-constexpr auto kExpandDuration = base::Milliseconds(350);
-constexpr auto kAnimateToFitDuration = base::Milliseconds(200);
-constexpr auto kPromptCollapseDuration = base::Milliseconds(250);
-constexpr auto kConfirmationCollapseDuration = base::Milliseconds(75);
-constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
-constexpr auto kDelayBeforeCollapsingChip = base::Seconds(12);
+namespace {
 
+constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
+constexpr auto kCollapseDelay = base::Seconds(12);
+constexpr auto kDismissDelay = base::Seconds(6);
 // Abusive origins do not support expand animation, hence the dismiss timer
 // should be longer.
-constexpr auto kDelayBeforeCollapsingChipForAbusiveOrigins = base::Seconds(18);
-constexpr auto kPermissionChipAutoDismissDelay = base::Seconds(6);
+constexpr auto kDismissDelayForAbusiveOrigins = kDismissDelay * 3;
+
+base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
+  return gfx::Animation::ShouldRenderRichAnimation() ? duration
+                                                     : base::TimeDelta();
+}
+
+}  // namespace
 
 class BubbleButtonController : public views::ButtonController {
  public:
@@ -367,7 +371,7 @@ void ChipController::OnPageInfoBubbleClosed(
 }
 
 void ChipController::CollapseConfirmation() {
-  chip_->AnimateCollapse(kConfirmationCollapseDuration);
+  chip_->AnimateCollapse(GetAnimationDuration(base::Milliseconds(75)));
   is_confirmation_showing_ = false;
   is_waiting_for_confirmation_collapse = true;
   GetLocationBarView()->ResetConfirmationChipShownTime();
@@ -380,7 +384,7 @@ bool ChipController::should_expand_for_testing() {
 
 void ChipController::AnimateExpand() {
   chip_->ResetAnimation();
-  chip_->AnimateExpand(kExpandDuration);
+  chip_->AnimateExpand(GetAnimationDuration(base::Milliseconds(350)));
   chip_->SetVisible(true);
 }
 
@@ -398,13 +402,11 @@ void ChipController::HandleConfirmation(
     is_confirmation_showing_ = true;
 
     if (chip_->GetVisible()) {
-      chip_->AnimateToFit(kAnimateToFitDuration);
+      chip_->AnimateToFit(GetAnimationDuration(base::Milliseconds(200)));
     } else {
       // No request chip was shown, always expand independently of what contents
-      // are stored in the previous chip (which is not visible before the
-      // SetVisible call).
-      chip_->SetVisible(true);
-      chip_->AnimateExpand(kExpandDuration);
+      // were stored in the previous chip.
+      AnimateExpand();
     }
 
     chip_->SetCallback(base::BindRepeating(&ChipController::ShowPageInfoDialog,
@@ -436,8 +438,9 @@ void ChipController::CollapsePrompt(bool allow_restart) {
     permission_prompt_model_->UpdateAutoCollapsePromptChipState(true);
     SyncChipWithModel();
 
-    if (!chip_->is_fully_collapsed())
-      chip_->AnimateCollapse(kPromptCollapseDuration);
+    if (!chip_->is_fully_collapsed()) {
+      chip_->AnimateCollapse(GetAnimationDuration(base::Milliseconds(250)));
+    }
 
     StartDismissTimer();
   }
@@ -625,7 +628,7 @@ void ChipController::SyncChipWithModel() {
 }
 
 void ChipController::StartCollapseTimer() {
-  collapse_timer_.Start(FROM_HERE, kDelayBeforeCollapsingChip,
+  collapse_timer_.Start(FROM_HERE, kCollapseDelay,
                         base::BindOnce(&ChipController::CollapsePrompt,
                                        weak_factory_.GetWeakPtr(),
                                        /*allow_restart=*/true));
@@ -635,13 +638,11 @@ void ChipController::StartDismissTimer() {
   if (!permission_prompt_model_)
     return;
 
-  if (permission_prompt_model_->ShouldExpand()) {
-    dismiss_timer_.Start(FROM_HERE, kPermissionChipAutoDismissDelay, this,
-                         &ChipController::OnPromptExpired);
-  } else {
-    dismiss_timer_.Start(FROM_HERE, kDelayBeforeCollapsingChipForAbusiveOrigins,
-                         this, &ChipController::OnPromptExpired);
-  }
+  dismiss_timer_.Start(FROM_HERE,
+                       permission_prompt_model_->ShouldExpand()
+                           ? kDismissDelay
+                           : kDismissDelayForAbusiveOrigins,
+                       this, &ChipController::OnPromptExpired);
 }
 
 void ChipController::ResetTimers() {

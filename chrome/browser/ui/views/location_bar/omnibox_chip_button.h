@@ -65,8 +65,6 @@ class OmniboxChipButton : public views::MdTextButton {
   void SetPermissionPromptStyle(PermissionPromptStyle prompt_style);
   void SetChipIcon(const gfx::VectorIcon& icon);
 
-  void SetForceExpandedForTesting(bool force_expanded_for_testing);
-
   bool ShouldShowBlockedIcon() const { return should_show_blocked_icon_; }
   permissions::PermissionAction GetUserDecision() const {
     return user_decision_;
@@ -103,6 +101,8 @@ class OmniboxChipButton : public views::MdTextButton {
   // width.
   void ForceAnimateCollapse();
 
+  void OnAnimationValueMaybeChanged();
+
   int GetIconSize() const;
 
   int GetCornerRadius() const;
@@ -134,8 +134,6 @@ class OmniboxChipButton : public views::MdTextButton {
   bool fully_collapsed_ = false;
 
   raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
-
-  bool force_expanded_for_testing_ = false;
 
   base::ObserverList<Observer> observers_;
 };
