@@ -1762,9 +1762,6 @@ config("default_warnings") {
 
       if (is_fuchsia) {
         cflags_cc += [
-          # TODO(https://crbug.com/1474032): fix and reenable
-          "-Wno-deprecated-literal-operator",
-
           # TODO(https://crbug.com/1474434): fix and reenable
           "-Wno-missing-field-initializers",
         ]
