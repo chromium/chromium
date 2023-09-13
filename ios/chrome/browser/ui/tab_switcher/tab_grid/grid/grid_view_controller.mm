@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_header.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
@@ -73,6 +74,8 @@ NSString* const kOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
+// TODO(crbug.com/1462907): Remove kSuggestedActionsCellIdentifier once the
+// diffable data source refactor is validated by testers.
 NSString* const kSuggestedActionsCellIdentifier =
     @"SuggestedActionsCellIdentifier";
 NSString* const kGridHeaderIdentifier = @"GridHeaderIdentifier";
@@ -107,6 +110,12 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 }
 @end
 
+// To ease the use of generics with the diffable data source, define a Snapshot
+// type
+typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
+    DiffableDataSource;
+typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
+
 @interface GridViewController () <GridCellDelegate,
                                   SuggestedActionsViewControllerDelegate,
                                   // TODO(crbug.com/1462907): Remove once the
@@ -121,9 +130,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
 // The collection view's data source.
-@property(nonatomic, strong)
-    UICollectionViewDiffableDataSource<NSString*, NSString*>*
-        diffableDataSource;
+@property(nonatomic, strong) DiffableDataSource* diffableDataSource;
 // The cell registration for grid cells.
 @property(nonatomic, strong)
     UICollectionViewCellRegistration* gridCellRegistration;
@@ -258,7 +265,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
         initWithCollectionView:collectionView
                   cellProvider:^UICollectionViewCell*(
                       UICollectionView* innerCollectionView,
-                      NSIndexPath* indexPath, NSString* itemIdentifier) {
+                      NSIndexPath* indexPath,
+                      GridItemIdentifier* itemIdentifier) {
                     return [weakSelf cellForItemAtIndexPath:indexPath
                                              itemIdentifier:itemIdentifier];
                   }];
@@ -412,7 +420,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
     // Reconfigure all items.
-    NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
+    Snapshot* snapshot = self.diffableDataSource.snapshot;
     [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 
@@ -789,15 +797,19 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - UICollectionView Diffable Data Source Helpers
 
 - (void)reloadCollectionViewData {
-  NSDiffableDataSourceSnapshot* snapshot =
-      [[NSDiffableDataSourceSnapshot alloc] init];
+  Snapshot* snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
-  NSString* identifierKey = NSStringFromSelector(@selector(identifier));
-  [snapshot appendItemsWithIdentifiers:[self.items valueForKey:identifierKey]];
+  for (TabSwitcherItem* item in self.items) {
+    GridItemIdentifier* itemIdentifier =
+        [GridItemIdentifier tabIdentifier:item];
+    [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
+  }
   if (self.showingSuggestedActions) {
     [snapshot
         appendSectionsWithIdentifiers:@[ kSuggestedActionsSectionIdentifier ]];
-    [snapshot appendItemsWithIdentifiers:@[ kSuggestedActionsCellIdentifier ]];
+    GridItemIdentifier* itemIdentifier =
+        [GridItemIdentifier suggestedActionsIdentifier];
+    [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
   }
   [self.diffableDataSource applySnapshotUsingReloadData:snapshot];
 }
@@ -941,37 +953,44 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Returns a configured cell for the given index path and item identifier.
 - (UICollectionViewCell*)cellForItemAtIndexPath:(NSIndexPath*)indexPath
-                                 itemIdentifier:(NSString*)itemIdentifier {
+                                 itemIdentifier:
+                                     (GridItemIdentifier*)itemIdentifier {
   CHECK(base::FeatureList::IsEnabled(kTabGridRefactoring));
 
-  // Handle the SuggestedActionsGridCell.
-  if ([itemIdentifier isEqualToString:kSuggestedActionsCellIdentifier]) {
-    return [self.collectionView
-        dequeueConfiguredReusableCellWithRegistration:
-            self.suggestedActionsCellRegistration
-                                         forIndexPath:indexPath
-                                                 item:itemIdentifier];
+  switch (itemIdentifier.type) {
+    case GridItemType::Tab: {
+      // Handle GridCell-s.
+      NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
+      // In some cases, this is called with an index path that doesn't match the
+      // data source -- see crbug.com/1068136. Presumably this is a race
+      // condition where an item has been deleted at the same time as the
+      // collection is doing layout (potentially during rotation?). Fudge by
+      // returning an unconfigured cell. The assumption is that there will be
+      // another – correct – layout shortly after the incorrect one.
+      // Keep `items`' bounds valid.
+      if (self.items.count == 0 || itemIndex >= self.items.count) {
+        // Dequeue using the reuse identifier, not the registration, as there is
+        // no valid `item` that could be passed in for the configuration.
+        return [self.collectionView
+            dequeueReusableCellWithReuseIdentifier:kCellIdentifier
+                                      forIndexPath:indexPath];
+      }
+      TabSwitcherItem* item = self.items[itemIndex];
+      UICollectionViewCellRegistration* registration =
+          self.gridCellRegistration;
+      return [self.collectionView
+          dequeueConfiguredReusableCellWithRegistration:registration
+                                           forIndexPath:indexPath
+                                                   item:item];
+    }
+    case GridItemType::SuggestedActions:
+      UICollectionViewCellRegistration* registration =
+          self.suggestedActionsCellRegistration;
+      return [self.collectionView
+          dequeueConfiguredReusableCellWithRegistration:registration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier];
   }
-
-  // Handle GridCell-s.
-  NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-  // In some cases, this is called with an index path that doesn't match the
-  // data source -- see crbug.com/1068136. Presumably this is a race condition
-  // where an item has been deleted at the same time as the collection is doing
-  // layout (potentially during rotation?). Fudge by returning an unconfigured
-  // cell. The assumption is that there will be another – correct – layout
-  // shortly after the incorrect one. Keep `items`' bounds valid.
-  if (self.items.count == 0 || itemIndex >= self.items.count) {
-    return [self.collectionView
-        dequeueReusableCellWithReuseIdentifier:kCellIdentifier
-                                  forIndexPath:indexPath];
-  }
-
-  TabSwitcherItem* item = self.items[itemIndex];
-  return [self.collectionView
-      dequeueConfiguredReusableCellWithRegistration:self.gridCellRegistration
-                                       forIndexPath:indexPath
-                                               item:item];
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -1553,7 +1572,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   [self
-      performModelAndViewUpdates:^(NSDiffableDataSourceSnapshot* snapshot) {
+      performModelAndViewUpdates:^(Snapshot* snapshot) {
         [weakSelf applyModelAndViewUpdatesForInsertionOfItem:item
                                                      atIndex:index
                                               selectedItemID:selectedItemID
@@ -1576,7 +1595,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   [self
-      performModelAndViewUpdates:^(NSDiffableDataSourceSnapshot* snapshot) {
+      performModelAndViewUpdates:^(Snapshot* snapshot) {
         [weakSelf applyModelAndViewUpdatesForRemovalOfItemWithID:removedItemID
                                                   selectedItemID:selectedItemID
                                                         snapshot:snapshot];
@@ -1630,7 +1649,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
   [self
-      performModelAndViewUpdates:^(NSDiffableDataSourceSnapshot* snapshot) {
+      performModelAndViewUpdates:^(Snapshot* snapshot) {
         [weakSelf applyModelAndViewUpdatesForMoveOfItemWithID:itemID
                                                     fromIndex:fromIndex
                                                       toIndex:toIndex
@@ -1738,14 +1757,15 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // actions section is not yet added, add it. Otherwise remove the section if
   // it exists and the search mode is not active.
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
+    Snapshot* snapshot = self.diffableDataSource.snapshot;
     if (self.mode == TabGridModeSearch && self.searchText.length) {
       if (!self.showingSuggestedActions) {
         [snapshot appendSectionsWithIdentifiers:@[
           kSuggestedActionsSectionIdentifier
         ]];
-        [snapshot
-            appendItemsWithIdentifiers:@[ kSuggestedActionsCellIdentifier ]];
+        GridItemIdentifier* itemIdentifier =
+            [GridItemIdentifier suggestedActionsIdentifier];
+        [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
         self.showingSuggestedActions = YES;
       }
     } else {
@@ -1784,13 +1804,12 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Performs model and view updates together.
 - (void)performModelAndViewUpdates:
-            (void (^)(NSDiffableDataSourceSnapshot* snapshot))
-                modelAndViewUpdates
+            (void (^)(Snapshot* snapshot))modelAndViewUpdates
                         completion:(ProceduralBlock)completion {
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
     self.updating = YES;
     // Synchronize model and diffable snapshot updates.
-    NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
+    Snapshot* snapshot = self.diffableDataSource.snapshot;
     modelAndViewUpdates(snapshot);
     __weak __typeof(self) weakSelf = self;
     [self.diffableDataSource applySnapshot:snapshot
@@ -1824,18 +1843,16 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)applyModelAndViewUpdatesForInsertionOfItem:(TabSwitcherItem*)item
                                            atIndex:(NSUInteger)index
                                     selectedItemID:(NSString*)selectedItemID
-                                          snapshot:
-                                              (NSDiffableDataSourceSnapshot*)
-                                                  snapshot {
+                                          snapshot:(Snapshot*)snapshot {
   // Consistency check: `item`'s ID is not in `items`.
   // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
 
   // Store the identifier of the current item at the given index, if any, prior
   // to model updates.
-  NSString* previousItemIdentifierAtIndex;
+  TabSwitcherItem* previousItemAtIndex;
   if (index < self.items.count) {
-    previousItemIdentifierAtIndex = self.items[index].identifier;
+    previousItemAtIndex = self.items[index];
   }
 
   [self.items insertObject:item atIndex:index];
@@ -1858,11 +1875,15 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     // If the new item is taking the spot of an existing item, insert the new
     // one before it. Otherwise (if the section is empty, or the new index is
     // the new last position), append at the end of the section.
-    if (previousItemIdentifierAtIndex) {
-      [snapshot insertItemsWithIdentifiers:@[ item.identifier ]
-                  beforeItemWithIdentifier:previousItemIdentifierAtIndex];
+    GridItemIdentifier* itemIdentifier =
+        [GridItemIdentifier tabIdentifier:item];
+    if (previousItemAtIndex) {
+      GridItemIdentifier* previousItemIdentifier =
+          [GridItemIdentifier tabIdentifier:previousItemAtIndex];
+      [snapshot insertItemsWithIdentifiers:@[ itemIdentifier ]
+                  beforeItemWithIdentifier:previousItemIdentifier];
     } else {
-      [snapshot appendItemsWithIdentifiers:@[ item.identifier ]
+      [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]
                  intoSectionWithIdentifier:kOpenTabsSectionIdentifier];
     }
   } else {
@@ -1890,20 +1911,20 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Makes the required changes to `items` and `collectionView` when an existing
 // item is removed.
-- (void)
-    applyModelAndViewUpdatesForRemovalOfItemWithID:(NSString*)removedItemID
-                                    selectedItemID:(NSString*)selectedItemID
-                                          snapshot:
-                                              (NSDiffableDataSourceSnapshot*)
-                                                  snapshot {
+- (void)applyModelAndViewUpdatesForRemovalOfItemWithID:(NSString*)removedItemID
+                                        selectedItemID:(NSString*)selectedItemID
+                                              snapshot:(Snapshot*)snapshot {
   NSUInteger index = [self indexOfItemWithID:removedItemID];
+  TabSwitcherItem* removedItem = self.items[index];
   [self.items removeObjectAtIndex:index];
   self.selectedItemID = selectedItemID;
   [self deselectItemWithIDForEditing:removedItemID];
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
 
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    [snapshot deleteItemsWithIdentifiers:@[ removedItemID ]];
+    GridItemIdentifier* removedItemIdentifier =
+        [GridItemIdentifier tabIdentifier:removedItem];
+    [snapshot deleteItemsWithIdentifiers:@[ removedItemIdentifier ]];
     if ([self shouldShowEmptyState]) {
       [self animateEmptyStateIn];
     }
@@ -1930,20 +1951,23 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 - (void)applyModelAndViewUpdatesForMoveOfItemWithID:(NSString*)itemID
                                           fromIndex:(NSUInteger)fromIndex
                                             toIndex:(NSUInteger)toIndex
-                                           snapshot:
-                                               (NSDiffableDataSourceSnapshot*)
-                                                   snapshot {
-  NSString* toItemID = self.items[toIndex].identifier;
+                                           snapshot:(Snapshot*)snapshot {
+  TabSwitcherItem* toItem = self.items[toIndex];
   TabSwitcherItem* item = self.items[fromIndex];
   [self.items removeObjectAtIndex:fromIndex];
   [self.items insertObject:item atIndex:toIndex];
 
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+    GridItemIdentifier* itemIdentifier =
+        [GridItemIdentifier tabIdentifier:item];
+    GridItemIdentifier* toItemIdentifier =
+        [GridItemIdentifier tabIdentifier:toItem];
     if (fromIndex < toIndex) {
-      [snapshot moveItemWithIdentifier:itemID afterItemWithIdentifier:toItemID];
+      [snapshot moveItemWithIdentifier:itemIdentifier
+               afterItemWithIdentifier:toItemIdentifier];
     } else {
-      [snapshot moveItemWithIdentifier:itemID
-              beforeItemWithIdentifier:toItemID];
+      [snapshot moveItemWithIdentifier:itemIdentifier
+              beforeItemWithIdentifier:toItemIdentifier];
     }
   } else {
     [self.collectionView moveItemAtIndexPath:CreateIndexPath(fromIndex)
@@ -2132,8 +2156,10 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
     }
     // Reconfigure the item.
     if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-      NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
-      [snapshot reconfigureItemsWithIdentifiers:@[ itemID ]];
+      Snapshot* snapshot = self.diffableDataSource.snapshot;
+      GridItemIdentifier* itemIdentifier =
+          [GridItemIdentifier tabIdentifier:self.items[index]];
+      [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
       [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
     } else {
       [UIView performWithoutAnimation:^{
@@ -2204,7 +2230,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 // Reloads the tabs section of the grid view.
 - (void)reloadTabs {
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
+    Snapshot* snapshot = self.diffableDataSource.snapshot;
     if (NSNotFound ==
         [snapshot indexOfSectionIdentifier:kOpenTabsSectionIdentifier]) {
       return;
@@ -2215,9 +2241,12 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
         itemIdentifiersInSectionWithIdentifier:kOpenTabsSectionIdentifier];
     [snapshot deleteItemsWithIdentifiers:oldTabsIdentifiers];
     // Add new tabs.
-    NSString* identifierKey = NSStringFromSelector(@selector(identifier));
-    [snapshot appendItemsWithIdentifiers:[self.items valueForKey:identifierKey]
-               intoSectionWithIdentifier:kOpenTabsSectionIdentifier];
+    for (TabSwitcherItem* item in self.items) {
+      GridItemIdentifier* itemIdentifier =
+          [GridItemIdentifier tabIdentifier:item];
+      [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]
+                 intoSectionWithIdentifier:kOpenTabsSectionIdentifier];
+    }
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 
     [self updateVisibleCellIdentifiers];
@@ -2368,7 +2397,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   // Note: this could be revisited when supporting iPad, as the user could
   // have closed all inactive tabs in a different window.
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
+    Snapshot* snapshot = self.diffableDataSource.snapshot;
     [snapshot reloadSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   } else {
