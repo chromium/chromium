@@ -78,11 +78,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void Install() const override { RunCommand("install"); }
 
-  void InstallUpdaterAndApp(const std::string& app_id,
-                            const bool is_silent_install) const override {
+  void InstallUpdaterAndApp(
+      const std::string& app_id,
+      const bool is_silent_install,
+      const std::string& child_window_text_to_find) const override {
     RunCommand("install_updater_and_app",
                {Param("app_id", app_id),
-                Param("is_silent_install", BoolToString(is_silent_install))});
+                Param("is_silent_install", BoolToString(is_silent_install)),
+                Param("child_window_text_to_find", child_window_text_to_find)});
   }
 
   void ExpectInstalled() const override { RunCommand("expect_installed"); }

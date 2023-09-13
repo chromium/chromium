@@ -713,41 +713,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   if (is_silent_install) {
     EXPECT_TRUE(WaitForUpdaterExit(scope));
   } else {
-    // Dismiss the installation completion dialog, then wait for the process
-    // exit.
-    EXPECT_TRUE(WaitFor(
-        [string_resource_id_to_find] {
-          // Enumerate the top-level dialogs to find the setup dialog.
-          WindowEnumerator(
-              ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
-                return WindowEnumerator::IsSystemDialog(hwnd) &&
-                       base::Contains(WindowEnumerator::GetWindowText(hwnd),
-                                      GetLocalizedStringF(
-                                          IDS_INSTALLER_DISPLAY_NAME_BASE,
-                                          GetLocalizedString(
-                                              IDS_FRIENDLY_COMPANY_NAME_BASE)));
-              }),
-              base::BindLambdaForTesting(
-                  [string_resource_id_to_find](HWND hwnd) {
-                    // Enumerates the dialog items to search for installation
-                    // complete message. Once found, close the dialog.
-                    WindowEnumerator(
-                        hwnd,
-                        base::BindLambdaForTesting([string_resource_id_to_find](
-                                                       HWND hwnd) {
-                          return base::Contains(
-                              WindowEnumerator::GetWindowText(hwnd),
-                              GetLocalizedString(string_resource_id_to_find));
-                        }),
-                        base::BindRepeating([](HWND hwnd) {
-                          ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
-                        }))
-                        .Run();
-                  }))
-              .Run();
-          return !IsUpdaterRunning();
-        },
-        [] { VLOG(0) << "Still waiting for the process exit."; }));
+    CloseInstallCompleteDialog(GetLocalizedString(string_resource_id_to_find));
   }
 
   const base::Version pv =
@@ -1844,6 +1810,40 @@ void RunFakeLegacyUpdater(UpdaterScope scope) {
       ASSERT_TRUE(process.IsValid());
     }
   }
+}
+
+void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
+  EXPECT_TRUE(WaitFor(
+      [&child_window_text_to_find] {
+        // Enumerate the top-level dialogs to find the setup dialog.
+        WindowEnumerator(
+            ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
+              return WindowEnumerator::IsSystemDialog(hwnd) &&
+                     base::Contains(WindowEnumerator::GetWindowText(hwnd),
+                                    GetLocalizedStringF(
+                                        IDS_INSTALLER_DISPLAY_NAME_BASE,
+                                        GetLocalizedString(
+                                            IDS_FRIENDLY_COMPANY_NAME_BASE)));
+            }),
+            base::BindLambdaForTesting([&child_window_text_to_find](HWND hwnd) {
+              // Enumerates the dialog items to search for installation
+              // complete message. Once found, close the dialog.
+              WindowEnumerator(
+                  hwnd,
+                  base::BindLambdaForTesting([&child_window_text_to_find](
+                                                 HWND hwnd) {
+                    return base::Contains(WindowEnumerator::GetWindowText(hwnd),
+                                          child_window_text_to_find);
+                  }),
+                  base::BindRepeating([](HWND hwnd) {
+                    ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
+                  }))
+                  .Run();
+            }))
+            .Run();
+        return !IsUpdaterRunning();
+      },
+      [] { VLOG(0) << "Still waiting for the process exit."; }));
 }
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {

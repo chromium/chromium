@@ -51,10 +51,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void Install() const override { updater::test::Install(updater_scope_); }
 
-  void InstallUpdaterAndApp(const std::string& app_id,
-                            const bool is_silent_install) const override {
-    updater::test::InstallUpdaterAndApp(updater_scope_, app_id,
-                                        is_silent_install);
+  void InstallUpdaterAndApp(
+      const std::string& app_id,
+      const bool is_silent_install,
+      const std::string& child_window_text_to_find) const override {
+    updater::test::InstallUpdaterAndApp(
+        updater_scope_, app_id, is_silent_install, child_window_text_to_find);
   }
 
   void ExpectInstalled() const override {

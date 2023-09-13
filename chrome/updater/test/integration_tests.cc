@@ -68,6 +68,8 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -176,8 +178,10 @@ class IntegrationTest : public ::testing::Test {
   void Install() { test_commands_->Install(); }
 
   void InstallUpdaterAndApp(const std::string& app_id,
-                            const bool is_silent_install) {
-    test_commands_->InstallUpdaterAndApp(app_id, is_silent_install);
+                            const bool is_silent_install,
+                            const std::string& child_window_text_to_find = {}) {
+    test_commands_->InstallUpdaterAndApp(app_id, is_silent_install,
+                                         child_window_text_to_find);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -2161,6 +2165,15 @@ INSTANTIATE_TEST_SUITE_P(
          0,
          {},
          "more.com"},
+
+        // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
+        {true,
+         base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
+                       base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+         ERROR_SUCCESS_REBOOT_REQUIRED,
+         base::WideToASCII(GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
+                                               L"")),
+         {}},
     }));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
@@ -2188,8 +2201,8 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
   if (GetParam().interactive_install) {
-    ASSERT_NO_FATAL_FAILURE(
-        InstallUpdaterAndApp(kMsiAppId, /*is_silent_install=*/false));
+    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+        kMsiAppId, /*is_silent_install=*/false, GetParam().installer_text));
     ASSERT_TRUE(WaitForUpdaterExit());
   } else {
     int64_t crx_file_size = 0;
