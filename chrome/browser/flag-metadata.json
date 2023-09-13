@@ -29,11 +29,6 @@
 
 [
   {
-    "name": "access-code-cast-freeze-ui",
-    "owners": [ "bzielinski@google.com", "dorianbrandon@google.com", "cros-edu-eng@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "accessible-pdf-form",
     "owners": [ "bravi@microsoft.com", "mohitb@microsoft.com" ],
     "expiry_milestone": 110
