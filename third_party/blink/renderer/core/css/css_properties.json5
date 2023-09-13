@@ -6511,6 +6511,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_position_fallback: true,
+      layout_dependent: true,
     },
     {
       name: "inset-inline-end",
@@ -6521,6 +6522,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_position_fallback: true,
+      layout_dependent: true,
     },
     {
       name: "inset-block-start",
@@ -6531,6 +6533,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_position_fallback: true,
+      layout_dependent: true,
     },
     {
       name: "inset-block-end",
@@ -6541,6 +6544,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_position_fallback: true,
+      layout_dependent: true,
     },
     {
       name: "border-start-start-radius",
@@ -7247,18 +7251,21 @@
       longhands: ["top", "right", "bottom", "left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_position_fallback: true,
+      layout_dependent: true,
     },
     {
       name: "inset-block",
       longhands: ["inset-block-start", "inset-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_position_fallback: true,
+      layout_dependent: true,
     },
     {
       name: "inset-inline",
       longhands: ["inset-inline-start", "inset-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_position_fallback: true,
+      layout_dependent: true,
     },
     {
       name: "list-style",

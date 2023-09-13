@@ -4221,6 +4221,11 @@ const CSSValue* InsetBlockEnd::ParseSingleValue(
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
+bool InsetBlockEnd::IsLayoutDependent(const ComputedStyle* style,
+                                      LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
+}
+
 const CSSValue* InsetBlockStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -4228,6 +4233,11 @@ const CSSValue* InsetBlockStart::ParseSingleValue(
   return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+}
+
+bool InsetBlockStart::IsLayoutDependent(const ComputedStyle* style,
+                                        LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
 }
 
 const CSSValue* InsetInlineEnd::ParseSingleValue(
@@ -4239,6 +4249,11 @@ const CSSValue* InsetInlineEnd::ParseSingleValue(
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
+bool InsetInlineEnd::IsLayoutDependent(const ComputedStyle* style,
+                                       LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
+}
+
 const CSSValue* InsetInlineStart::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -4246,6 +4261,11 @@ const CSSValue* InsetInlineStart::ParseSingleValue(
   return css_parsing_utils::ConsumeMarginOrOffset(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+}
+
+bool InsetInlineStart::IsLayoutDependent(const ComputedStyle* style,
+                                         LayoutObject* layout_object) const {
+  return layout_object && layout_object->IsBox();
 }
 
 const blink::Color InternalVisitedBackgroundColor::ColorIncludingFallback(
