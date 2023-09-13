@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -28,30 +27,21 @@ const char kDeviceSwitcherFieldTrialName[] = "Segmentation_DeviceSwitcher";
 
 DeviceSwitcherResultDispatcher::DeviceSwitcherResultDispatcher(
     SegmentationPlatformService* segmentation_service,
-    syncer::SyncService* sync_service,
+    syncer::DeviceInfoTracker* device_info_tracker,
     PrefService* prefs,
     FieldTrialRegister* field_trial_register)
     : segmentation_service_(segmentation_service),
-      sync_service_(sync_service),
+      device_info_tracker_(device_info_tracker),
       prefs_(prefs),
       field_trial_register_(field_trial_register) {
   latest_result_ = ReadResultFromPref();
   RegisterFieldTrials();
 
-  if (sync_service_) {
-    has_sync_consent_at_startup_ = sync_service_->HasSyncConsent();
-    if (has_sync_consent_at_startup_) {
-      sync_consent_timestamp_ = base::Time::Now();
-    } else {
-      sync_observation_.Observe(sync_service);
-    }
+  if (!device_info_tracker_->IsSyncing()) {
+    device_info_observation_.Observe(device_info_tracker_);
   }
 
-  if (!latest_result_ || (has_sync_consent_at_startup_ &&
-                          latest_result_->ordered_labels[0] ==
-                              DeviceSwitcherModel::kNotSyncedLabel)) {
-    RefreshSegmentResult();
-  }
+  RefreshSegmentResultIfNeeded();
 }
 
 DeviceSwitcherResultDispatcher::~DeviceSwitcherResultDispatcher() = default;
@@ -82,26 +72,22 @@ void DeviceSwitcherResultDispatcher::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kDeviceSwitcherUserSegmentPrefKey);
 }
 
-void DeviceSwitcherResultDispatcher::OnStateChanged(syncer::SyncService* sync) {
-  DCHECK_EQ(sync_consent_timestamp_, base::Time());
-  if (sync->HasSyncConsent()) {
-    sync_consent_timestamp_ = base::Time::Now();
-    sync_observation_.Reset();
-    if (!latest_result_ || (!latest_result_->ordered_labels.empty() &&
-                            latest_result_->ordered_labels[0] ==
-                                DeviceSwitcherModel::kNotSyncedLabel)) {
-      RefreshSegmentResult();
-    }
+void DeviceSwitcherResultDispatcher::OnDeviceInfoChange() {
+  if (!device_info_tracker_->IsSyncing()) {
+    return;
   }
+  device_info_observation_.Reset();
+  RefreshSegmentResultIfNeeded();
 }
 
-void DeviceSwitcherResultDispatcher::OnSyncShutdown(syncer::SyncService* sync) {
-  sync_observation_.Reset();
-}
-
-void DeviceSwitcherResultDispatcher::RefreshSegmentResult() {
+void DeviceSwitcherResultDispatcher::RefreshSegmentResultIfNeeded() {
   if (!base::FeatureList::IsEnabled(
           features::kSegmentationPlatformDeviceSwitcher)) {
+    return;
+  }
+  if (latest_result_ && (latest_result_->ordered_labels.empty() ||
+                         latest_result_->ordered_labels[0] !=
+                             DeviceSwitcherModel::kNotSyncedLabel)) {
     return;
   }
   PredictionOptions options;
@@ -118,19 +104,6 @@ void DeviceSwitcherResultDispatcher::OnGotResult(
   latest_result_ = result;
   RegisterFieldTrials();
 
-  if (!sync_consent_timestamp_.is_null()) {
-    base::TimeDelta consent_verification_to_result_duration =
-        base::Time::Now() - sync_consent_timestamp_;
-    if (has_sync_consent_at_startup_) {
-      base::UmaHistogramMediumTimes(
-          "SegmentationPlatform.DeviceSwicther.TimeFromStartupToResult",
-          consent_verification_to_result_duration);
-    } else {
-      base::UmaHistogramMediumTimes(
-          "SegmentationPlatform.DeviceSwicther.TimeFromConsentToResult",
-          consent_verification_to_result_duration);
-    }
-  }
   if (!waiting_callback_.is_null()) {
     std::move(waiting_callback_).Run(result);
   }
@@ -168,7 +141,7 @@ void DeviceSwitcherResultDispatcher::SaveResultToPref(
 }
 
 absl::optional<ClassificationResult>
-DeviceSwitcherResultDispatcher::ReadResultFromPref() {
+DeviceSwitcherResultDispatcher::ReadResultFromPref() const {
   ClassificationResult result(PredictionStatus::kNotReady);
   const base::Value::Dict& dictionary =
       prefs_->GetDict(kDeviceSwitcherUserSegmentPrefKey);

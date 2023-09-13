@@ -39,6 +39,7 @@ static_library("default_model") {
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//components/sync/service",
+    "//components/sync_device_info",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]
@@ -106,6 +107,8 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public:test_support",
     "//components/segmentation_platform/public/proto",
     "//components/sync:test_support",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
     "//testing/gtest",
   ]
 }
