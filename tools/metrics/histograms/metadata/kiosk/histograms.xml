@@ -218,7 +218,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS only. Records a new browser window type once a new browser window
     is attempted to be shown in a kiosk session. Distinguishes settings page,
-    closed regular browser and opened regular browser.
+    closed regular browser, opened regular browser, troubleshooting tools and
+    system web app.
   </summary>
 </histogram>
 

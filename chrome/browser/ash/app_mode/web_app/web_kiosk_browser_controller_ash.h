@@ -9,17 +9,26 @@
 
 namespace ash {
 
+class SystemWebAppDelegate;
+
 // Applies web Kiosk restrictions to the browser in Ash.
 class WebKioskBrowserControllerAsh
     : public chromeos::WebKioskBrowserControllerBase {
  public:
   WebKioskBrowserControllerAsh(web_app::WebAppProvider& provider,
                                Browser* browser,
-                               web_app::AppId app_id);
+                               web_app::AppId app_id,
+                               const ash::SystemWebAppDelegate* system_app);
   WebKioskBrowserControllerAsh(const WebKioskBrowserControllerAsh&) = delete;
   WebKioskBrowserControllerAsh& operator=(const WebKioskBrowserControllerAsh&) =
       delete;
   ~WebKioskBrowserControllerAsh() override;
+
+  const ash::SystemWebAppDelegate* system_app() const override;
+
+ private:
+  // The system app (if any) associated with the WebContents we're in.
+  raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
 };
 
 }  // namespace ash

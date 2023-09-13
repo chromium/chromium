@@ -83,9 +83,11 @@ namespace web_app {
 
 namespace {
 
-ui::WindowShowState DetermineWindowShowState() {
-  if (chrome::IsRunningInForcedAppMode())
+ui::WindowShowState DetermineWindowShowState(bool is_system_web_app) {
+  // Show SWAs in Kiosk non-fullscreen.
+  if (chrome::IsRunningInForcedAppMode() && !is_system_web_app) {
     return ui::SHOW_STATE_FULLSCREEN;
+  }
 
   return ui::SHOW_STATE_DEFAULT;
 }
@@ -150,21 +152,6 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   return target_browser;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
-    Browser* browser,
-    WebAppProvider* provider,
-    const AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<ash::WebKioskBrowserControllerAsh>(*provider, browser,
-                                                             app_id);
-#else
-  // TODO(b/242023891): Add web Kiosk browser controller for Lacros.
-  return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(Browser* browser,
                                                          const AppId& app_id) {
@@ -177,6 +164,23 @@ const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(Browser* browser,
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
+    Browser* browser,
+    WebAppProvider* provider,
+    const AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const ash::SystemWebAppDelegate* system_app =
+      GetSystemWebAppDelegate(browser, app_id);
+  return std::make_unique<ash::WebKioskBrowserControllerAsh>(
+      *provider, browser, app_id, system_app);
+#else
+  // TODO(b/242023891): Add web Kiosk browser controller for Lacros.
+  return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
     Browser* browser,
@@ -418,6 +422,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                                     bool can_resize,
                                     bool can_maximize,
                                     bool can_fullscreen,
+                                    bool is_system_web_app,
                                     const gfx::Rect initial_bounds) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
   Browser::CreateParams browser_params =
@@ -428,7 +433,8 @@ Browser* CreateWebApplicationWindow(Profile* profile,
           : Browser::CreateParams::CreateForApp(
                 app_name, /*trusted_source=*/true, initial_bounds, profile,
                 /*user_gesture=*/true);
-  browser_params.initial_show_state = DetermineWindowShowState();
+  browser_params.initial_show_state =
+      DetermineWindowShowState(is_system_web_app);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   browser_params.restore_id = restore_id;
 #endif

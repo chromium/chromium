@@ -19,6 +19,8 @@
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "kiosk_troubleshooting_controller_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -85,6 +87,16 @@ void KioskBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::IsSystemWebApp(browser) &&
+      base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
+    base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
+                                  KioskBrowserWindowType::kOpenedSystemWebApp);
+    on_browser_window_added_callback_.Run(/*is_closing=*/false);
+    return;
+  }
+#endif
 
   if (IsNewBrowserWindowAllowed(browser)) {
     base::UmaHistogramEnumeration(

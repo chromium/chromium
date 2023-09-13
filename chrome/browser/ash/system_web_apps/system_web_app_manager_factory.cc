@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -72,9 +73,9 @@ content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
     return nullptr;
   }
 
-  // SWAM is not supported in Kiosk mode. We want to use WebAppProvider to
-  // install web apps in Kiosk without enabling SWAM.
-  if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
+  // SWAM is guarded by the feature flag in kiosk mode, disabled by default.
+  if (base::FeatureList::IsEnabled(::features::kKioskEnableAppService) &&
+      !base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps) &&
       chromeos::IsKioskSession()) {
     return nullptr;
   }

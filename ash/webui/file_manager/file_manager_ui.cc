@@ -4,6 +4,7 @@
 
 #include "ash/webui/file_manager/file_manager_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/file_manager/file_manager_page_handler.h"
@@ -12,6 +13,7 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -61,8 +63,12 @@ FileManagerUIConfig::FileManagerUIConfig(
 
 bool FileManagerUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
+  // Enable file manager WebUI if enable for SWA config or
+  // for the Kiosk session if SWAs are disabled there.
   return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) ||
-         IsKioskSession();
+         (!base::FeatureList::IsEnabled(
+              ash::features::kKioskEnableSystemWebApps) &&
+          IsKioskSession());
 }
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,

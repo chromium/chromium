@@ -61,6 +61,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -307,16 +308,23 @@ bool AreWebAppsEnabled(Profile* profile) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();
-  // Don't enable for Chrome App Kiosk sessions.
-  if (user_manager && user_manager->IsLoggedInAsKioskApp())
+  // Never enable for ARC Kiosk sessions.
+  if (user_manager && user_manager->IsLoggedInAsArcKioskApp()) {
     return false;
-  // Don't enable for ARC Kiosk sessions.
-  if (user_manager && user_manager->IsLoggedInAsArcKioskApp())
-    return false;
-  // Don't enable for Web Kiosk if kKioskEnableAppService is disabled.
-  if (user_manager && user_manager->IsLoggedInAsWebKioskApp() &&
-      !base::FeatureList::IsEnabled(features::kKioskEnableAppService))
-    return false;
+  }
+  // Don't enable if SWAs in Kiosk session are disabled for the next session
+  // types.
+  if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
+    // Don't enable for Chrome App Kiosk sessions.
+    if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
+      return false;
+    }
+    // Don't enable for Web Kiosk if kKioskEnableAppService is disabled.
+    if (user_manager && user_manager->IsLoggedInAsWebKioskApp() &&
+        !base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
+      return false;
+    }
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Disable web apps in the profile unless one of the following is true:
   // * the profile is the main one

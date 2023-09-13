@@ -225,8 +225,9 @@ void RequestFeedbackFlow(const GURL& page_url,
     include_bluetooth_logs = IsFromUserInteraction(source);
     show_questionnaire = IsFromUserInteraction(source);
   }
-  // Disable the new feedback tool for kiosk, because SWAs are disabled there.
-  if (!chromeos::IsKioskSession()) {
+  // Disable the new feedback tool for kiosk, when SWAs are disabled there.
+  if (!chromeos::IsKioskSession() ||
+      base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
     // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
     // tool.
     ash::SystemAppLaunchParams params;

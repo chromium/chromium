@@ -57561,6 +57561,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Opened regular browser"/>
   <int value="3" label="Opened devtools browser"/>
   <int value="4" label="Opened normal troubleshooting browser"/>
+  <int value="5" label="Opened system web app"/>
 </enum>
 
 <enum name="KioskInternetAccessInfo">

@@ -369,6 +369,7 @@ source_set("chromeos") {
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//chrome/browser/ash/video_conference",
+      "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
       "//chromeos/ash/components/chaps_util",
       "//chromeos/ash/components/login/auth/public:authpublic",
       "//chromeos/ash/components/settings",
