@@ -270,8 +270,6 @@ TEST_P(CookieSettingsBaseStorageAccessAPITest,
       overrides.Has(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
       IsStoragePartitioned());
-  EXPECT_EQ(overrides.Has(net::CookieSettingOverride::k3pcdSupport),
-            IsStoragePartitioned());
   EXPECT_EQ(
       overrides.Has(net::CookieSettingOverride::k3pcdMetadataGrantEligible),
       IsStoragePartitioned());

@@ -51,9 +51,9 @@ struct TestCase {
   const char* test_name;
   bool storage_access_grant_eligible;
   bool top_level_storage_access_grant_eligible;
+  // Whether `net::features::kTpcdSupportSettings` is enabled.
   bool eligible_for_3pcd_support;
-  // tpcd_metadata_grant_eligible aka the feature
-  // `net::features::kThirdPartyStoragePartitioning` is enabled.
+  // Whether `net::features::kThirdPartyStoragePartitioning` is enabled.
   bool tpcd_metadata_grant_eligible;
 };
 
@@ -158,7 +158,11 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     enabled_features.push_back({kImprovedCookieControls, {}});
     disabled_features.push_back(net::features::kTpcdSupportSettings);
 #else
-    enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
+    if (Is3pcdSupportEligible()) {
+      enabled_features.push_back({net::features::kTpcdSupportSettings, {}});
+    } else {
+      disabled_features.push_back(net::features::kTpcdSupportSettings);
+    }
 
     if (IsStorageAccessGrantEligible()) {
       enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
@@ -218,9 +222,6 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
       overrides.Put(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
     }
-    if (Is3pcdSupportEligible()) {
-      overrides.Put(net::CookieSettingOverride::k3pcdSupport);
-    }
     if (Is3pcdMetadataGrantEligible()) {
       overrides.Put(net::CookieSettingOverride::k3pcdMetadataGrantEligible);
     }
@@ -245,7 +246,9 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
                : CONTENT_SETTING_BLOCK;
   }
 
-  ContentSetting SettingWith3pcdSupportOverride() const {
+  // Assumes that cookie access would be blocked if not for a
+  // `ContentSettingsType::TPCD_SUPPORT` setting.
+  ContentSetting SettingWith3pcdSupportSetting() const {
     return Is3pcdSupportEligible() ? CONTENT_SETTING_ALLOW
                                    : CONTENT_SETTING_BLOCK;
   }
@@ -284,10 +287,10 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
 
-  // The cookie access result would be blocked if not for a third-party cookie
-  // override.
+  // The cookie access result would be blocked if not for a
+  // `ContentSettingsType::TPCD_SUPPORT` setting.
   net::cookie_util::StorageAccessResult
-  BlockedStorageAccessResultWith3pcdSupportOverride() const {
+  BlockedStorageAccessResultWith3pcdSupportSetting() const {
     if (Is3pcdSupportEligible()) {
       return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD;
     }
@@ -1455,11 +1458,11 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdSupport) {
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
-            SettingWith3pcdSupportOverride());
+            SettingWith3pcdSupportSetting());
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(BlockedStorageAccessResultWith3pcdSupportOverride()), 1);
+      static_cast<int>(BlockedStorageAccessResultWith3pcdSupportSetting()), 1);
 
   // Invalid pair the |top_level_url| granting access to |url| is now being
   // loaded under |url| as the top level url.
