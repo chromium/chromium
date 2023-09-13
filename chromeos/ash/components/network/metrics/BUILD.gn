@@ -9,12 +9,16 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 source_set("metrics") {
   # Due to circular dependency, others should depend on via
   # chromeos/ash/components/network.
-  visibility = [ "//chromeos/ash/components/network" ]
+  visibility = [
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network/metrics:test_support",
+  ]
 
   configs += [ "//chromeos/ash/components/network:network_config" ]
   deps = [
     "//ash/constants:constants",
     "//base",
+    "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/services/hotspot_config/public/mojom",
@@ -47,6 +51,7 @@ source_set("metrics") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":test_support",
     "//ash/constants",
     "//ash/constants:constants",
     "//base",
@@ -70,5 +75,19 @@ source_set("unit_tests") {
     "network_metrics_helper_unittest.cc",
     "vpn_network_metrics_helper_unittest.cc",
     "wifi_network_metrics_helper_unittest.cc",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  deps = [
+    ":metrics",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+  sources = [
+    "cellular_network_metrics_test_helper.cc",
+    "cellular_network_metrics_test_helper.h",
   ]
 }
