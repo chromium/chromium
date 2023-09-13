@@ -5,8 +5,8 @@
 import './scan_settings_section.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
 
@@ -14,44 +14,56 @@ import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './sc
  * @fileoverview
  * 'scan-to-select' displays the chosen directory to save completed scans.
  */
-Polymer({
-  is: 'scan-to-select',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ScanToSelectElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ScanToSelectElement extends ScanToSelectElementBase {
+  static get is() {
+    return 'scan-to-select';
+  }
 
-  /** @private {?ScanningBrowserProxy}*/
-  browserProxy_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {boolean} */
-    disabled: Boolean,
+  static get properties() {
+    return {
+      /** @type {boolean} */
+      disabled: Boolean,
 
-    /**
-     * The lowest level directory in |selectedFilePath|.
-     * @type {string}
-     */
-    selectedFolder: {
-      type: String,
-      notify: true,
-    },
+      /**
+       * The lowest level directory in |selectedFilePath|.
+       * @type {string}
+       */
+      selectedFolder: {
+        type: String,
+        notify: true,
+      },
 
-    /** @type {string} */
-    selectedFilePath: {
-      type: String,
-      notify: true,
-    },
-  },
+      /** @type {string} */
+      selectedFilePath: {
+        type: String,
+        notify: true,
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     // Default option is 'My files'.
     this.selectedFolder = this.i18n('myFilesSelectOption');
 
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
-  },
+  }
 
   /**
    * Opens the select dialog and updates the dropdown to the user's selected
@@ -76,5 +88,7 @@ Polymer({
           this.selectedFolder = baseName;
           this.selectedFilePath = filePath;
         });
-  },
-});
+  }
+}
+
+customElements.define(ScanToSelectElement.is, ScanToSelectElement);

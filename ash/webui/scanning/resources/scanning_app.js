@@ -29,13 +29,13 @@ import './scanning_shared_css.js';
 import './source_select.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {CrContainerShadowBehavior} from 'chrome://resources/ash/common/cr_container_shadow_behavior.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrContainerShadowBehavior, CrContainerShadowBehaviorInterface} from 'chrome://resources/ash/common/cr_container_shadow_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
 import {ColorMode, FileType, MultiPageScanControllerRemote, PageSize, ScanJobObserverInterface, ScanJobObserverReceiver, Scanner, ScannerCapabilities, ScanResult, ScanServiceInterface, ScanSettings as ScanSettingsMojom, SourceType} from './scanning.mojom-webui.js';
@@ -53,319 +53,328 @@ const HELP_PAGE_LINK = 'http://support.google.com/chromebook?p=chrome_scanning';
  * @fileoverview
  * 'scanning-app' is used to interact with connected scanners.
  */
-Polymer({
-  is: 'scanning-app',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrContainerShadowBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const ScanningAppElementBase =
+    mixinBehaviors([CrContainerShadowBehavior, I18nBehavior], PolymerElement);
 
-  behaviors: [CrContainerShadowBehavior, I18nBehavior],
+/** @polymer */
+class ScanningAppElement extends ScanningAppElementBase {
+  static get is() {
+    return 'scanning-app';
+  }
 
-  /**
-   * Receives scan job notifications.
-   * @private {?ScanJobObserverReceiver}
-   */
-  scanJobObserverReceiver_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?ScanServiceInterface} */
-  scanService_: null,
-
-  /** @private {?MultiPageScanControllerRemote} */
-  multiPageScanController_: null,
-
-  /** @private {!Map<string, !ScannerInfo>} */
-  scannerInfoMap_: new Map(),
-
-  /** @private {?ScanningBrowserProxy}*/
-  browserProxy_: null,
-
-  properties: {
-    /** @private {!ScannerArr} */
-    scanners_: {
-      type: Array,
-      value: () => [],
-    },
-
-    /** @type {string} */
-    selectedScannerId: {
-      type: String,
-      observer: 'onSelectedScannerIdChange_',
-    },
-
-    /** @private {?ScannerCapabilities} */
-    capabilities_: Object,
-
-    /** @type {string} */
-    selectedSource: String,
-
-    /** @type {string} */
-    selectedFileType: String,
-
-    /** @type {string} */
-    selectedFilePath: String,
-
-    /** @type {string} */
-    selectedColorMode: String,
-
-    /** @type {string} */
-    selectedPageSize: String,
-
-    /** @type {string} */
-    selectedResolution: String,
-
-    /**
-     * Used to indicate where scanned files are saved when a scan is complete.
-     * @type {string}
-     */
-    selectedFolder: String,
-
-    /**
-     * Map of a ScanSource's name to its corresponding SourceType. Used for
-     * fetching the SourceType setting for scan job metrics.
-     * @private {!Map<string, !SourceType>}
-     */
-    sourceTypeMap_: {
-      type: Object,
-      value() {
-        return new Map();
+  static get properties() {
+    return {
+      /** @private {!ScannerArr} */
+      scanners_: {
+        type: Array,
+        value: () => [],
       },
-    },
 
-    /**
-     * Used to determine when certain parts of the app should be shown or hidden
-     * and enabled or disabled.
-     * @private {!AppState}
-     */
-    appState_: {
-      type: Number,
-      value: AppState.GETTING_SCANNERS,
-      observer: 'onAppStateChange_',
-    },
-
-    /**
-     * The object URLs of the scanned images.
-     * @private {!Array<string>}
-     */
-    objectUrls_: {
-      type: Array,
-      value: () => [],
-    },
-
-    /**
-     * Used to display which page is being scanned during a scan.
-     * @private {number}
-     */
-    pageNumber_: {
-      type: Number,
-      value: 1,
-    },
-
-    /**
-     * Used to display a page's scan progress during a scan.
-     * @private {number}
-     */
-    progressPercent_: {
-      type: Number,
-      value: 0,
-    },
-
-    /** @private {!Array<ColorMode>} */
-    selectedSourceColorModes_: {
-      type: Array,
-      value: () => [],
-      computed: 'computeColorModes_(selectedSource, capabilities_.sources)',
-    },
-
-    /** @private {!Array<PageSize>} */
-    selectedSourcePageSizes_: {
-      type: Array,
-      value: () => [],
-      computed: 'computePageSizes_(selectedSource, capabilities_.sources)',
-    },
-
-    /** @private {!Array<number>} */
-    selectedSourceResolutions_: {
-      type: Array,
-      value: () => [],
-      computed: 'computeResolutions_(selectedSource, capabilities_.sources)',
-    },
-
-    /**
-     * Determines whether settings should be disabled based on the current app
-     * state. Settings should be disabled until after the selected scanner's
-     * capabilities are fetched since the capabilities determine what options
-     * are available in the settings. They should also be disabled while
-     * scanning since settings cannot be changed while a scan is in progress.
-     * @private {boolean}
-     */
-    settingsDisabled_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /** @private {boolean} */
-    scannersLoaded_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    showDoneSection_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    showCancelButton_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    cancelButtonDisabled_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * The file paths of the scanned pages of a successful scan job.
-     * @private {!Array<!FilePath>}
-     */
-    scannedFilePaths_: {
-      type: Array,
-      value: () => [],
-    },
-
-    /**
-     * The key to retrieve the appropriate string to display in the toast.
-     * @private {string}
-     */
-    toastMessageKey_: {
-      type: String,
-      observer: 'onToastMessageKeyChange_',
-    },
-
-    /** @private {boolean} */
-    showToastInfoIcon_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    showToastHelpLink_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates whether the More settings section is expanded.
-     * @private {boolean}
-     */
-    opened_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    /**
-     * Determines the arrow icon direction.
-     * @private {string}
-     */
-    arrowIconDirection_: {
-      type: String,
-      computed: 'computeArrowIconDirection_(opened_)',
-    },
-
-    /**
-     * Used to track the number of times a user changes scan settings before
-     * initiating a scan. This gets reset to 1 when the user selects a different
-     * scanner (selecting a different scanner is treated as a setting change).
-     * @private {number}
-     */
-    numScanSettingChanges_: {
-      type: Number,
-      value: 0,
-    },
-
-    /**
-     * The key to retrieve the appropriate string to display in an error dialog
-     * when a scan job fails.
-     * @private {string}
-     */
-    scanFailedDialogTextKey_: String,
-
-    /** @private {!ScanSettings} */
-    savedScanSettings_: {
-      type: Object,
-      value() {
-        return {
-          lastUsedScannerName: '',
-          scanToPath: '',
-          scanners: [],
-        };
+      /** @type {string} */
+      selectedScannerId: {
+        type: String,
+        observer: 'onSelectedScannerIdChange_',
       },
-    },
 
-    /** @private {string} */
-    lastUsedScannerId_: String,
+      /** @private {?ScannerCapabilities} */
+      capabilities_: Object,
 
-    /**
-     * Used to track the number of completed scans during a single session of
-     * the Scan app being open. This value is recorded whenever the app window
-     * is closed or refreshed.
-     * @private {number}
-     */
-    numCompletedScansInSession_: {
-      type: Number,
-      value: 0,
-    },
+      /** @type {string} */
+      selectedSource: String,
 
-    /** {boolean} */
-    multiPageScanChecked: Boolean,
+      /** @type {string} */
+      selectedFileType: String,
 
-    /**
-     * Only true when the multi-page checkbox is checked and the supported scan
-     * settings are chosen. Multi-page scanning only supports creating PDFs from
-     * the Flatbed source.
-     * @private {boolean}
-     */
-    isMultiPageScan_: {
-      type: Boolean,
-      computed: 'computeIsMultiPageScan_(multiPageScanChecked, ' +
-          'selectedFileType, selectedSource)',
-      observer: 'onIsMultiPageScanChange_',
-    },
+      /** @type {string} */
+      selectedFilePath: String,
 
-    /** @private {boolean} */
-    showMultiPageCheckbox_: {
-      type: Boolean,
-      computed: 'computeShowMultiPageCheckbox_(showScanSettings_, ' +
-          'selectedSource, selectedFileType)',
-      reflectToAttribute: true,
-    },
+      /** @type {string} */
+      selectedColorMode: String,
 
-    /** @private {string} */
-    scanButtonText_: String,
+      /** @type {string} */
+      selectedPageSize: String,
 
-    /** @private {boolean} */
-    showScanSettings_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @type {string} */
+      selectedResolution: String,
 
-    /** @private {boolean} */
-    showMultiPageScan_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * Used to indicate where scanned files are saved when a scan is complete.
+       * @type {string}
+       */
+      selectedFolder: String,
 
-  observers:
-      ['scanSettingsChange_(selectedSource, selectedFileType, ' +
-       'selectedFilePath, selectedColorMode, selectedPageSize, ' +
-       'selectedResolution)'],
+      /**
+       * Map of a ScanSource's name to its corresponding SourceType. Used for
+       * fetching the SourceType setting for scan job metrics.
+       * @private {!Map<string, !SourceType>}
+       */
+      sourceTypeMap_: {
+        type: Object,
+        value() {
+          return new Map();
+        },
+      },
+
+      /**
+       * Used to determine when certain parts of the app should be shown or
+       * hidden and enabled or disabled.
+       * @private {!AppState}
+       */
+      appState_: {
+        type: Number,
+        value: AppState.GETTING_SCANNERS,
+        observer: 'onAppStateChange_',
+      },
+
+      /**
+       * The object URLs of the scanned images.
+       * @private {!Array<string>}
+       */
+      objectUrls_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * Used to display which page is being scanned during a scan.
+       * @private {number}
+       */
+      pageNumber_: {
+        type: Number,
+        value: 1,
+      },
+
+      /**
+       * Used to display a page's scan progress during a scan.
+       * @private {number}
+       */
+      progressPercent_: {
+        type: Number,
+        value: 0,
+      },
+
+      /** @private {!Array<ColorMode>} */
+      selectedSourceColorModes_: {
+        type: Array,
+        value: () => [],
+        computed: 'computeColorModes_(selectedSource, capabilities_.sources)',
+      },
+
+      /** @private {!Array<PageSize>} */
+      selectedSourcePageSizes_: {
+        type: Array,
+        value: () => [],
+        computed: 'computePageSizes_(selectedSource, capabilities_.sources)',
+      },
+
+      /** @private {!Array<number>} */
+      selectedSourceResolutions_: {
+        type: Array,
+        value: () => [],
+        computed: 'computeResolutions_(selectedSource, capabilities_.sources)',
+      },
+
+      /**
+       * Determines whether settings should be disabled based on the current app
+       * state. Settings should be disabled until after the selected scanner's
+       * capabilities are fetched since the capabilities determine what options
+       * are available in the settings. They should also be disabled while
+       * scanning since settings cannot be changed while a scan is in progress.
+       * @private {boolean}
+       */
+      settingsDisabled_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /** @private {boolean} */
+      scannersLoaded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      showDoneSection_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      showCancelButton_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      cancelButtonDisabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * The file paths of the scanned pages of a successful scan job.
+       * @private {!Array<!FilePath>}
+       */
+      scannedFilePaths_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * The key to retrieve the appropriate string to display in the toast.
+       * @private {string}
+       */
+      toastMessageKey_: {
+        type: String,
+        observer: 'onToastMessageKeyChange_',
+      },
+
+      /** @private {boolean} */
+      showToastInfoIcon_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      showToastHelpLink_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether the More settings section is expanded.
+       * @private {boolean}
+       */
+      opened_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Determines the arrow icon direction.
+       * @private {string}
+       */
+      arrowIconDirection_: {
+        type: String,
+        computed: 'computeArrowIconDirection_(opened_)',
+      },
+
+      /**
+       * Used to track the number of times a user changes scan settings before
+       * initiating a scan. This gets reset to 1 when the user selects a
+       * different scanner (selecting a different scanner is treated as a
+       * setting change).
+       * @private {number}
+       */
+      numScanSettingChanges_: {
+        type: Number,
+        value: 0,
+      },
+
+      /**
+       * The key to retrieve the appropriate string to display in an error
+       * dialog when a scan job fails.
+       * @private {string}
+       */
+      scanFailedDialogTextKey_: String,
+
+      /** @private {!ScanSettings} */
+      savedScanSettings_: {
+        type: Object,
+        value() {
+          return {
+            lastUsedScannerName: '',
+            scanToPath: '',
+            scanners: [],
+          };
+        },
+      },
+
+      /** @private {string} */
+      lastUsedScannerId_: String,
+
+      /**
+       * Used to track the number of completed scans during a single session of
+       * the Scan app being open. This value is recorded whenever the app window
+       * is closed or refreshed.
+       * @private {number}
+       */
+      numCompletedScansInSession_: {
+        type: Number,
+        value: 0,
+      },
+
+      /** {boolean} */
+      multiPageScanChecked: Boolean,
+
+      /**
+       * Only true when the multi-page checkbox is checked and the supported
+       * scan settings are chosen. Multi-page scanning only supports creating
+       * PDFs from the Flatbed source.
+       * @private {boolean}
+       */
+      isMultiPageScan_: {
+        type: Boolean,
+        computed: 'computeIsMultiPageScan_(multiPageScanChecked, ' +
+            'selectedFileType, selectedSource)',
+        observer: 'onIsMultiPageScanChange_',
+      },
+
+      /** @private {boolean} */
+      showMultiPageCheckbox_: {
+        type: Boolean,
+        computed: 'computeShowMultiPageCheckbox_(showScanSettings_, ' +
+            'selectedSource, selectedFileType)',
+        reflectToAttribute: true,
+      },
+
+      /** @private {string} */
+      scanButtonText_: String,
+
+      /** @private {boolean} */
+      showScanSettings_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /** @private {boolean} */
+      showMultiPageScan_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'scanSettingsChange_(selectedSource, selectedFileType, ' +
+          'selectedFilePath, selectedColorMode, selectedPageSize, ' +
+          'selectedResolution)',
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+    /** @type {!Object<string, ScannerInfo>} */
+    this.scannerInfoMap_ = new Map();
+    /** @type {ScanJobObserverReceiver|null} */
+    this.scanJobObserverReceiver_ = null;
+    /** @type {MultiPageScanControllerRemote|null} */
+    this.multiPageScanController_ = null;
+
     this.scanService_ = getScanService();
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
@@ -382,10 +391,12 @@ Polymer({
           this.savedScanSettings_ =
               /** @type {!ScanSettings} */ (JSON.parse(scanSettings));
         });
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     window.addEventListener('beforeunload', event => {
       this.browserProxy_.recordNumCompletedScans(
           this.numCompletedScansInSession_);
@@ -402,10 +413,12 @@ Polymer({
         /*@type {!{scanners: !ScannerArr}}*/ (response) => {
           this.onScannersReceived_(response);
         });
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     if (loadTimeData.getBoolean('isJellyEnabledForScanningApp')) {
       // TODO(b/276493795): After the Jelly experiment is launched, replace
       // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
@@ -422,14 +435,16 @@ Polymer({
         ColorChangeUpdater.forDocument().start();
       })();
     }
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (this.scanJobObserverReceiver_) {
       this.scanJobObserverReceiver_.$.close();
     }
-  },
+  }
 
   /**
    * Overrides ScanJobObserverInterface.
@@ -449,7 +464,7 @@ Polymer({
       this.pageNumber_ = pageNumber;
     }
     this.progressPercent_ = progressPercent;
-  },
+  }
 
   /**
    * Overrides ScanJobObserverInterface.
@@ -479,7 +494,7 @@ Polymer({
     if (this.isMultiPageScan_) {
       this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
     }
-  },
+  }
 
   /**
    * Overrides ScanJobObserverInterface.
@@ -496,7 +511,7 @@ Polymer({
     ++this.numCompletedScansInSession_;
     this.scannedFilePaths_ = scannedFilePaths;
     this.setAppState_(AppState.DONE);
-  },
+  }
 
   /**
    * Overrides ScanJobObserverInterface.
@@ -525,7 +540,7 @@ Polymer({
     }
 
     this.showToast_('scanCanceledToastText');
-  },
+  }
 
   /**
    * Overrides ScanJobObserverInterface.
@@ -536,7 +551,7 @@ Polymer({
 
     this.setScanFailedDialogTextKey_(result);
     this.$.scanFailedDialog.showModal();
-  },
+  }
 
   /**
    * @return {!Array<ColorMode>}
@@ -550,7 +565,7 @@ Polymer({
     }
 
     return [];
-  },
+  }
 
   /**
    * @return {!Array<PageSize>}
@@ -564,7 +579,7 @@ Polymer({
     }
 
     return [];
-  },
+  }
 
   /**
    * @return {!Array<number>}
@@ -578,7 +593,7 @@ Polymer({
     }
 
     return [];
-  },
+  }
 
   /**
    * @param {!ScannerCapabilities} capabilities
@@ -594,7 +609,7 @@ Polymer({
         this.areSavedScanSettingsAvailable_() ?
             AppState.SETTING_SAVED_SETTINGS :
             AppState.READY);
-  },
+  }
 
   /**
    * @param {!{scanners: !ScannerArr}} response
@@ -615,7 +630,7 @@ Polymer({
 
     this.setAppState_(AppState.GOT_SCANNERS);
     this.scanners_ = response.scanners;
-  },
+  }
 
   /** @private */
   onSelectedScannerIdChange_() {
@@ -630,7 +645,7 @@ Polymer({
         /*@type {!ScannerCapabilitiesResponse}*/ (response) => {
           this.onCapabilitiesReceived_(response.capabilities);
         });
-  },
+  }
 
   /** @private */
   onScanClick_() {
@@ -688,12 +703,12 @@ Polymer({
 
     this.browserProxy_.recordNumScanSettingChanges(this.numScanSettingChanges_);
     this.numScanSettingChanges_ = 0;
-  },
+  }
 
   /** @private */
   onDoneClick_() {
     this.setAppState_(AppState.READY);
-  },
+  }
 
   /**
    * @param {!{success: boolean}} response
@@ -708,7 +723,7 @@ Polymer({
     this.setAppState_(AppState.SCANNING);
     this.pageNumber_ = 1;
     this.progressPercent_ = 0;
-  },
+  }
 
   /**
    * @param {!StartMultiPageScanResponse} response
@@ -726,7 +741,7 @@ Polymer({
     this.multiPageScanController_ = response.controller;
     this.pageNumber_ = 1;
     this.progressPercent_ = 0;
-  },
+  }
 
   /** @private */
   onScanNextPage_() {
@@ -736,7 +751,7 @@ Polymer({
             /*@type {!{success: boolean}}*/ (response) => {
               this.onScanNextPageResponse_(response);
             });
-  },
+  }
 
   /**
    * @param {Event} e
@@ -756,7 +771,7 @@ Polymer({
       this.resetMultiPageScanController_();
       this.setAppState_(AppState.READY);
     }
-  },
+  }
 
   /**
    * Sends the request to initiate a new scan and once completed, use it to
@@ -775,19 +790,19 @@ Polymer({
             /*@type {!{success: boolean}}*/ (response) => {
               this.onRescanPageResponse_(response, pageIndex);
             });
-  },
+  }
 
   /** @private */
   onCompleteMultiPageScan_() {
     this.multiPageScanController_.completeMultiPageScan();
     this.resetMultiPageScanController_();
-  },
+  }
 
   /** @private */
   resetMultiPageScanController_() {
     this.multiPageScanController_.$.close();
     this.multiPageScanController_ = null;
-  },
+  }
 
   /**
    * @param {!{success: boolean}} response
@@ -802,7 +817,7 @@ Polymer({
     this.setAppState_(AppState.MULTI_PAGE_SCANNING);
     ++this.pageNumber_;
     this.progressPercent_ = 0;
-  },
+  }
 
   /**
    * @param {!{success: boolean}} response
@@ -818,12 +833,12 @@ Polymer({
     this.progressPercent_ = 0;
     this.pageNumber_ = ++pageIndex;
     this.setAppState_(AppState.MULTI_PAGE_SCANNING);
-  },
+  }
 
   /** @private */
   toggleClicked_() {
-    this.$$('#collapse').toggle();
-  },
+    this.shadowRoot.querySelector('#collapse').toggle();
+  }
 
   /**
    * @return {string}
@@ -831,7 +846,7 @@ Polymer({
    */
   computeArrowIconDirection_() {
     return this.opened_ ? 'cr:expand-less' : 'cr:expand-more';
-  },
+  }
 
   /**
    * @return {string}
@@ -841,7 +856,7 @@ Polymer({
     const fileSavedText =
         this.pageNumber_ > 1 ? 'fileSavedTextPlural' : 'fileSavedText';
     return this.i18n(fileSavedText);
-  },
+  }
 
   /** @private */
   onCancelClick_() {
@@ -853,7 +868,7 @@ Polymer({
             AppState.MULTI_PAGE_CANCELING :
             AppState.CANCELING);
     this.scanService_.cancelScan();
-  },
+  }
 
   /**
    * Revokes and removes all of the object URLs.
@@ -864,7 +879,7 @@ Polymer({
       URL.revokeObjectURL(url);
     }
     this.objectUrls_ = [];
-  },
+  }
 
   /**
    * Sets the app state if the state transition is allowed.
@@ -934,7 +949,7 @@ Polymer({
     }
 
     this.appState_ = newState;
-  },
+  }
 
   /** @private */
   onAppStateChange_() {
@@ -958,14 +973,16 @@ Polymer({
         this.setScanSettingsFromSavedSettings_();
         this.setAppState_(AppState.READY);
       } else if (this.appState_ === AppState.READY) {
-        this.$$('#scannerSelect').$$('#scannerSelect').focus();
+        this.shadowRoot.querySelector('#scannerSelect')
+            .$$('#scannerSelect')
+            .focus();
       } else if (this.appState_ === AppState.SCANNING) {
-        this.$$('#cancelButton').focus();
+        this.shadowRoot.querySelector('#cancelButton').focus();
       } else if (this.appState_ === AppState.DONE) {
-        this.$$('#scanPreview').$$('#previewDiv').focus();
+        this.shadowRoot.querySelector('#scanPreview').$$('#previewDiv').focus();
       }
     });
-  },
+  }
 
   /**
    * @param {string} toastMessageKey
@@ -974,7 +991,7 @@ Polymer({
   showToast_(toastMessageKey) {
     this.toastMessageKey_ = toastMessageKey;
     this.$.toast.show();
-  },
+  }
 
   /** @private */
   onToastMessageKeyChange_() {
@@ -982,12 +999,12 @@ Polymer({
     this.showToastHelpLink_ =
         this.toastMessageKey_ !== 'scanCanceledToastText' &&
         this.toastMessageKey_ !== 'fileNotFoundToastText';
-  },
+  }
 
   /** @private */
   onFileNotFound_() {
     this.showToast_('fileNotFoundToastText');
-  },
+  }
 
   /** @private */
   onScanFailedDialogOkClick_() {
@@ -1002,14 +1019,14 @@ Polymer({
     }
 
     this.setAppState_(AppState.READY);
-  },
+  }
 
   /** @private */
   onScanFailedDialogGetHelpClick_() {
     this.$.scanFailedDialog.close();
     this.setAppState_(AppState.READY);
     window.open(HELP_PAGE_LINK);
-  },
+  }
 
   /**
    * @return {number}
@@ -1019,7 +1036,7 @@ Polymer({
     return this.selectedFileType === FileType.kPdf.toString() ?
         1 :
         this.pageNumber_;
-  },
+  }
 
   /** @private */
   onRetryClick_() {
@@ -1028,12 +1045,12 @@ Polymer({
         /*@type {!{scanners: !ScannerArr}}*/ (response) => {
           this.onScannersReceived_(response);
         });
-  },
+  }
 
   /** @private */
   onLearnMoreClick_() {
     window.open(HELP_PAGE_LINK);
-  },
+  }
 
   /**
    * Increments the counter for the number of scan setting changes before a
@@ -1049,7 +1066,7 @@ Polymer({
     }
 
     ++this.numScanSettingChanges_;
-  },
+  }
 
   /**
    * @param {!ScanResult} scanResult Indicates the result of
@@ -1076,7 +1093,7 @@ Polymer({
       default:
         this.scanFailedDialogTextKey_ = 'scanFailedDialogUnknownErrorText';
     }
-  },
+  }
 
   /** @private */
   setScanSettingsFromSavedSettings_() {
@@ -1102,7 +1119,7 @@ Polymer({
     // This must be set last because it depends on the values of sourceType and
     // fileType.
     this.setMultiPageScanIfAvailable_(scannerSettings.multiPageScanChecked);
-  },
+  }
 
   /**
    * @param {!Scanner} scanner
@@ -1114,7 +1131,7 @@ Polymer({
       token: scanner.id,
       displayName: getScannerDisplayName(scanner),
     };
-  },
+  }
 
   /**
    * @param {!Scanner} scanner
@@ -1123,7 +1140,7 @@ Polymer({
   setScannerInfo_(scanner) {
     this.scannerInfoMap_.set(
         tokenToString(scanner.id), this.createScannerInfo_(scanner));
-  },
+  }
 
   /**
    * @param {!Scanner} scanner
@@ -1133,7 +1150,7 @@ Polymer({
   isLastUsedScanner_(scanner) {
     return this.savedScanSettings_.lastUsedScannerName ===
         getScannerDisplayName(scanner);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -1141,7 +1158,7 @@ Polymer({
    */
   isSelectedScannerKnown_() {
     return this.scannerInfoMap_.has(this.selectedScannerId);
-  },
+  }
 
   /**
    * @return {!UnguessableToken}
@@ -1149,7 +1166,7 @@ Polymer({
    */
   getSelectedScannerToken_() {
     return this.scannerInfoMap_.get(this.selectedScannerId).token;
-  },
+  }
 
   /**
    * @return {string}
@@ -1157,7 +1174,7 @@ Polymer({
    */
   getSelectedScannerDisplayName_() {
     return this.scannerInfoMap_.get(this.selectedScannerId).displayName;
-  },
+  }
 
   /**
    * @return {!Promise<!ScannerCapabilitiesResponse>}
@@ -1166,7 +1183,7 @@ Polymer({
   getSelectedScannerCapabilities_() {
     return this.scanService_.getScannerCapabilities(
         this.getSelectedScannerToken_());
-  },
+  }
 
   /**
    * @return {!ScannerSetting|undefined}
@@ -1176,7 +1193,7 @@ Polymer({
     const selectedScannerDisplayName = this.getSelectedScannerDisplayName_();
     return this.savedScanSettings_.scanners.find(
         scanner => scanner.name === selectedScannerDisplayName);
-  },
+  }
 
   /**
    * Validates that the file path from saved settings still exists on the local
@@ -1197,7 +1214,7 @@ Polymer({
               this.selectedFolder = baseName;
               this.selectedFilePath = filePath;
             });
-  },
+  }
 
   /** @private */
   saveScanSettings_() {
@@ -1222,7 +1239,7 @@ Polymer({
 
     this.browserProxy_.saveScanSettings(
         JSON.stringify(this.savedScanSettings_));
-  },
+  }
 
   /**
    * Sort the saved settings scanners array so the oldest scanners are moved to
@@ -1235,7 +1252,7 @@ Polymer({
           new Date(firstScanner.lastScanDate);
     });
     this.savedScanSettings_.scanners.splice(MAX_NUM_SAVED_SCANNERS);
-  },
+  }
 
   /**
    * @return {!ScannerSetting}
@@ -1252,7 +1269,7 @@ Polymer({
       resolutionDpi: Number(this.selectedResolution),
       multiPageScanChecked: this.multiPageScanChecked,
     });
-  },
+  }
 
   /**
    * @return {boolean}
@@ -1260,7 +1277,7 @@ Polymer({
    */
   areSavedScanSettingsAvailable_() {
     return this.savedScanSettings_.scanners.length !== 0;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -1269,7 +1286,7 @@ Polymer({
   computeShowMultiPageCheckbox_() {
     return this.showScanSettings_ && this.isPDFSelected_() &&
         this.isFlatbedSelected_();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -1278,7 +1295,7 @@ Polymer({
   isPDFSelected_() {
     return !!this.selectedFileType &&
         fileTypeFromString(this.selectedFileType) === FileType.kPdf;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -1287,13 +1304,13 @@ Polymer({
   isFlatbedSelected_() {
     return !!this.selectedSource &&
         this.sourceTypeMap_.get(this.selectedSource) === SourceType.kFlatbed;
-  },
+  }
 
   /** @private */
   computeIsMultiPageScan_() {
     return this.multiPageScanChecked && this.isPDFSelected_() &&
         this.isFlatbedSelected_();
-  },
+  }
 
   /** @private */
   onIsMultiPageScanChange_() {
@@ -1303,7 +1320,7 @@ Polymer({
             /* @type {string} */ (pluralString) => {
               this.scanButtonText_ = pluralString;
             });
-  },
+  }
 
   /**
    * @return {!ScanSettingsMojom}
@@ -1322,7 +1339,7 @@ Polymer({
       pageSize: pageSize,
       resolutionDpi: resolution,
     };
-  },
+  }
 
   /**
    * @param {string} sourceName
@@ -1332,7 +1349,7 @@ Polymer({
     if (this.capabilities_.sources.find(source => source.name === sourceName)) {
       this.selectedSource = sourceName;
     }
-  },
+  }
 
   /**
    * @param {!FileType} fileType
@@ -1342,7 +1359,7 @@ Polymer({
     if (Object.values(FileType).includes(fileType)) {
       this.selectedFileType = fileType.toString();
     }
-  },
+  }
 
   /**
    * @param {!ColorMode} colorMode
@@ -1352,7 +1369,7 @@ Polymer({
     if (this.selectedSourceColorModes_.includes(colorMode)) {
       this.selectedColorMode = colorMode.toString();
     }
-  },
+  }
 
   /**
    * @param {!PageSize} pageSize
@@ -1362,7 +1379,7 @@ Polymer({
     if (this.selectedSourcePageSizes_.includes(pageSize)) {
       this.selectedPageSize = pageSize.toString();
     }
-  },
+  }
 
   /**
    * @param {number} resolution
@@ -1372,7 +1389,7 @@ Polymer({
     if (this.selectedSourceResolutions_.includes(resolution)) {
       this.selectedResolution = resolution.toString();
     }
-  },
+  }
 
   /**
    * @param {boolean} multiPageScanChecked
@@ -1384,5 +1401,7 @@ Polymer({
     if (this.showMultiPageCheckbox_) {
       this.multiPageScanChecked = multiPageScanChecked;
     }
-  },
-});
+  }
+}
+
+customElements.define(ScanningAppElement.is, ScanningAppElement);

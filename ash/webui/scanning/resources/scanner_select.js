@@ -8,8 +8,8 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-w
 import './scan_settings_section.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Scanner} from './scanning.mojom-webui.js';
 import {ScannerArr, ScannerInfo} from './scanning_app_types.js';
@@ -19,37 +19,52 @@ import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scann
  * @fileoverview
  * 'scanner-select' displays the connected scanners in a dropdown.
  */
-Polymer({
-  is: 'scanner-select',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ScannerSelectElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ScannerSelectElement extends ScannerSelectElementBase {
+  static get is() {
+    return 'scanner-select';
+  }
 
-  properties: {
-    /** @type {boolean} */
-    disabled: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!ScannerArr} */
-    scanners: {
-      type: Array,
-      value: () => [],
-    },
+  static get properties() {
+    return {
+      /** @type {boolean} */
+      disabled: Boolean,
 
-    /** @type {string} */
-    selectedScannerId: {
-      type: String,
-      notify: true,
-    },
+      /** @type {!ScannerArr} */
+      scanners: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @type {!Map<string, !ScannerInfo>} */
-    scannerInfoMap: Object,
+      /** @type {string} */
+      selectedScannerId: {
+        type: String,
+        notify: true,
+      },
 
-    /** @type {string} */
-    lastUsedScannerId: String,
-  },
+      /** @type {!Map<string, !ScannerInfo>} */
+      scannerInfoMap: Object,
 
-  observers: ['onScannersChange_(scanners.*)'],
+      /** @type {string} */
+      lastUsedScannerId: String,
+    };
+  }
+
+  static get observers() {
+    return ['onScannersChange_(scanners.*)'];
+  }
 
   /**
    * @param {!Scanner} scanner
@@ -58,7 +73,7 @@ Polymer({
    */
   getScannerDisplayName_(scanner) {
     return getScannerDisplayName(scanner);
-  },
+  }
 
   /**
    * Converts an unguessable token to a string so it can be used as the value of
@@ -69,7 +84,7 @@ Polymer({
    */
   getTokenAsString_(scanner) {
     return tokenToString(scanner.id);
-  },
+  }
 
   /**
    * Sorts the scanners and sets the selected scanner when the scanners array
@@ -97,11 +112,11 @@ Polymer({
       // After the dropdown renders with the scanner options, set the selected
       // scanner.
       afterNextRender(this, () => {
-        this.$$('#scannerSelect').selectedIndex =
+        this.shadowRoot.querySelector('#scannerSelect').selectedIndex =
             this.getSelectedScannerIndex_();
       });
     }
-  },
+  }
 
   /**
    * @return {number}
@@ -112,5 +127,7 @@ Polymer({
         this.scannerInfoMap.get(this.selectedScannerId).token;
     return this.scanners.findIndex(
         scanner => scanner.id === selectedScannerToken);
-  },
-});
+  }
+}
+
+customElements.define(ScannerSelectElement.is, ScannerSelectElement);

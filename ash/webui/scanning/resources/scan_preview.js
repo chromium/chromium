@@ -11,9 +11,9 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ForceHiddenElementsVisibleObserverInterface, ForceHiddenElementsVisibleObserverReceiver} from './accessibility_features.mojom-webui.js';
 import {getAccessibilityFeaturesInterface} from './mojo_interface_provider.js';
@@ -40,204 +40,207 @@ const ACTION_TOOLBAR_BOTTOM_MARGIN_PX = 40;
  * @fileoverview
  * 'scan-preview' shows a preview of a scanned document.
  */
-Polymer({
-  is: 'scan-preview',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ScanPreviewElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ScanPreviewElement extends ScanPreviewElementBase {
+  static get is() {
+    return 'scan-preview';
+  }
 
-  /** @private {?ScanningBrowserProxy}*/
-  browserProxy_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?Function} */
-  onWindowResized_: null,
-
-  /** @private {?ResizeObserver} */
-  previewAreaResizeObserver_: null,
-
-  /** @private {?Function} */
-  onDialogActionClick_: null,
-
-  /** @private {number} */
-  actionToolbarHeight_: 0,
-
-  /** @private {number} */
-  actionToolbarWidth_: 0,
-
-  /**
-   * Receives the status of the enabled accesbility features that should force
-   * the hidden elements visible.
-   * @private {?ForceHiddenElementsVisibleObserverReceiver}
-   */
-  forceHiddenElementsVisibleObserverReceiver_: null,
-
-  properties: {
-    /** @type {!AppState} */
-    appState: {
-      type: Number,
-      observer: 'onAppStateChange_',
-    },
-
-    /** @protected {boolean} */
-    isDarkModeEnabled_: {
-      type: Boolean,
-    },
-
-    /** @protected {boolean} */
-    isJellyEnabled_: {
-      type: Boolean,
-      value: () => {
-        return loadTimeData.getBoolean('isJellyEnabledForScanningApp');
+  static get properties() {
+    return {
+      /** @type {!AppState} */
+      appState: {
+        type: Number,
+        observer: 'onAppStateChange_',
       },
-    },
 
-    /**
-     * The object URLs of the scanned images.
-     * @type {!Array<string>}
-     */
-    objectUrls: {
-      type: Array,
-      observer: 'onObjectUrlsChange_',
-    },
+      /** @protected {boolean} */
+      isDarkModeEnabled_: {
+        type: Boolean,
+      },
+
+      /** @protected {boolean} */
+      isJellyEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isJellyEnabledForScanningApp');
+        },
+      },
+
+      /**
+       * The object URLs of the scanned images.
+       * @type {!Array<string>}
+       */
+      objectUrls: {
+        type: Array,
+        observer: 'onObjectUrlsChange_',
+      },
 
 
-    /** @type {number} */
-    pageNumber: {
-      type: Number,
-      observer: 'onPageNumberChange_',
-    },
+      /** @type {number} */
+      pageNumber: {
+        type: Number,
+        observer: 'onPageNumberChange_',
+      },
 
-    /** @type {number} */
-    progressPercent: Number,
+      /** @type {number} */
+      progressPercent: Number,
 
-    /** @private {boolean} */
-    showHelpOrProgress_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private {boolean} */
+      showHelpOrProgress_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private {boolean} */
-    showScannedImages_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showScannedImages_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showHelperText_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private {boolean} */
+      showHelperText_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private {boolean} */
-    showScanProgress_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showScanProgress_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showCancelingProgress_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showCancelingProgress_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {string} */
-    progressTextString_: String,
+      /** @private {string} */
+      progressTextString_: String,
 
-    /** @private {string} */
-    previewAriaLabel_: String,
+      /** @private {string} */
+      previewAriaLabel_: String,
 
-    /** @private {?number} */
-    progressTimer_: {
-      type: Number,
-      value: null,
-    },
+      /** @private {?number} */
+      progressTimer_: {
+        type: Number,
+        value: null,
+      },
 
-    /** @type {boolean} */
-    isMultiPageScan: {
-      type: Boolean,
-      observer: 'onIsMultiPageScanChange_',
-    },
+      /** @type {boolean} */
+      isMultiPageScan: {
+        type: Boolean,
+        observer: 'onIsMultiPageScanChange_',
+      },
 
-    /**
-     * The index of the page currently focused on.
-     * @private {number}
-     */
-    currentPageIndexInView_: {
-      type: Number,
-      value: 0,
-    },
+      /**
+       * The index of the page currently focused on.
+       * @private {number}
+       */
+      currentPageIndexInView_: {
+        type: Number,
+        value: 0,
+      },
 
-    /**
-     * Set to true once the first scanned image from a scan is loaded. This is
-     * needed to prevent checking the dimensions of every scanned image. The
-     * assumption is that all scanned images share the same dimensions.
-     * @private {boolean}
-     */
-    scannedImagesLoaded_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Set to true once the first scanned image from a scan is loaded. This is
+       * needed to prevent checking the dimensions of every scanned image. The
+       * assumption is that all scanned images share the same dimensions.
+       * @private {boolean}
+       */
+      scannedImagesLoaded_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showActionToolbar_: Boolean,
+      /** @private {boolean} */
+      showActionToolbar_: Boolean,
 
-    /** @private {string} */
-    dialogTitleText_: String,
+      /** @private {string} */
+      dialogTitleText_: String,
 
-    /** @private {string} */
-    dialogConfirmationText_: String,
+      /** @private {string} */
+      dialogConfirmationText_: String,
 
-    /** @private {string} */
-    dialogButtonText_: String,
+      /** @private {string} */
+      dialogButtonText_: String,
 
-    /**
-     * True when |appState| is MULTI_PAGE_SCANNING.
-     * @private {boolean}
-     */
-    multiPageScanning_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+      /**
+       * True when |appState| is MULTI_PAGE_SCANNING.
+       * @private {boolean}
+       */
+      multiPageScanning_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    /** @private {boolean} */
-    showSingleImageFocus_: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+      /** @private {boolean} */
+      showSingleImageFocus_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    /**
-     * True when the ChromeVox, Switch, or Screen Magnifier accessibility
-     * features are turned on that require the action toolbar to always be
-     * visible during multi-page scan sessions. Only used for CSS selector
-     * logic.
-     * @private {boolean}
-     */
-    forceActionToolbarVisible_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-  },
+      /**
+       * True when the ChromeVox, Switch, or Screen Magnifier accessibility
+       * features are turned on that require the action toolbar to always be
+       * visible during multi-page scan sessions. Only used for CSS selector
+       * logic.
+       * @private {boolean}
+       */
+      forceActionToolbarVisible_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
 
-  observers: [
-    'setPreviewAriaLabel_(showScannedImages_, showCancelingProgress_,' +
-        ' showHelperText_, objectUrls.length)',
-    'setScanProgressTimer_(showScanProgress_, progressPercent)',
-  ],
+  static get observers() {
+    return [
+      'setPreviewAriaLabel_(showScannedImages_, showCancelingProgress_,' +
+          ' showHelperText_, objectUrls.length)',
+      'setScanProgressTimer_(showScanProgress_, progressPercent)',
+
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+    /** @type {number} */
+    this.actionToolbarHeight_;
+    /** @type {number} */
+    this.actionToolbarWidth_;
+    /** @type {!ForceHiddenElementsVisibleObserverReceiver} */
+    this.forceHiddenElementsVisibleObserverReceiver_;
+    /** @type {Function} */
+    this.onDialogActionClick_;
+
     // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.onWindowResized_ = () => this.setActionToolbarPosition_();
     this.previewAreaResizeObserver_ =
         new ResizeObserver(() => this.updatePreviewElements_());
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.style.setProperty(
         '--scanned-image-margin-bottom', SCANNED_IMG_MARGIN_BOTTOM_PX + 'px');
 
@@ -262,10 +265,12 @@ Polymer({
         .then(
             response => this.forceActionToolbarVisible_ =
                 response.forceVisible);
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     if (this.isMultiPageScan) {
       window.removeEventListener('resize', this.onWindowResized_);
       this.previewAreaResizeObserver_.disconnect();
@@ -274,7 +279,7 @@ Polymer({
     if (this.forceHiddenElementsVisibleObserverReceiver_) {
       this.forceHiddenElementsVisibleObserverReceiver_.$.close();
     }
-  },
+  }
 
   /**
    * Overrides ForceHiddenElementsVisibleObserverReceiver.
@@ -282,7 +287,7 @@ Polymer({
    */
   onForceHiddenElementsVisibleChange(forceVisible) {
     this.forceActionToolbarVisible_ = forceVisible;
-  },
+  }
 
   /** @private */
   onAppStateChange_() {
@@ -307,13 +312,13 @@ Polymer({
     if (this.showHelpOrProgress_) {
       this.scannedImagesLoaded_ = false;
     }
-  },
+  }
 
   /** @private */
   onPageNumberChange_() {
     this.progressTextString_ =
         this.i18n('scanPreviewProgressText', this.pageNumber);
-  },
+  }
 
   /**
    * Sets the ARIA label used by the preview area based on the app state and the
@@ -341,7 +346,7 @@ Polymer({
       this.previewAriaLabel_ = this.i18n('scanPreviewHelperText');
       return;
     }
-  },
+  }
 
   /**
    * When receiving progress updates from an ongoing scan job, only update the
@@ -370,7 +375,7 @@ Polymer({
 
     this.progressTimer_ = setTimeout(
         () => this.onScanProgressTimerComplete_(), PROGRESS_TIMER_MS);
-  },
+  }
 
   /** @private */
   onScanProgressTimerComplete_() {
@@ -382,7 +387,7 @@ Polymer({
     this.previewAriaLabel_ = this.i18n(
         'scanningImagesAriaLabel', this.pageNumber, this.progressPercent);
     this.progressTimer_ = null;
-  },
+  }
 
   /**
    * While scrolling, if the current page in view would change, update it and
@@ -395,8 +400,8 @@ Polymer({
       return;
     }
 
-    const scannedImages =
-        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    const scannedImages = this.shadowRoot.querySelector('#scannedImages')
+                              .getElementsByClassName('scanned-image');
     if (scannedImages.length === 0) {
       return;
     }
@@ -408,7 +413,7 @@ Polymer({
     }
 
     this.setFocusedScannedImage_(scannedImages, pageIndexInView);
-  },
+  }
 
   /**
    * Calculates the index of the current page in view based on the scroll
@@ -436,8 +441,9 @@ Polymer({
     // The first step is to calculate the number of images that will be visible
     // in the viewport when scrolled to the bottom. That is how to calculate the
     // "crossover" point where the algorithm needs to change.
-    const numImagesVisibleAtEnd =
-        Math.ceil(this.$$('#previewDiv').offsetHeight / imageHeight);
+    const numImagesVisibleAtEnd = Math.ceil(
+        this.shadowRoot.querySelector('#previewDiv').offsetHeight /
+        imageHeight);
     const numImagesBeforeCrossover =
         scannedImages.length - numImagesVisibleAtEnd;
 
@@ -449,11 +455,13 @@ Polymer({
 
     // Before the "crossover", update the page index based on when the previous
     // image is scrolled halfway outside the viewport.
-    if (this.$$('#previewDiv').scrollTop < crossoverBreakpoint) {
+    if (this.shadowRoot.querySelector('#previewDiv').scrollTop <
+        crossoverBreakpoint) {
       // Subtract half the image height so |scrollTop| = 0 when the first page
       // is scrolled halfway outside the viewport. That way each page index will
       // be the current scroll divided by the image height.
-      const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight / 2) -
+      const scrollTop = this.shadowRoot.querySelector('#previewDiv').scrollTop -
+          (imageHeight / 2) -
           /*imageFocusBorder=*/ 2;
       if (scrollTop < 0) {
         return 0;
@@ -465,19 +473,21 @@ Polymer({
     // After the "crossover", the remaining amount of scroll left in the
     // scrollbar is divided evenly to the remaining images. This allows every
     // image to be scrolled to.
-    const maxScrollTop = this.$$('#previewDiv').scrollHeight -
-        this.$$('#previewDiv').offsetHeight;
+    const maxScrollTop =
+        this.shadowRoot.querySelector('#previewDiv').scrollHeight -
+        this.shadowRoot.querySelector('#previewDiv').offsetHeight;
     const scrollRemainingAfterCrossover =
         Math.max(maxScrollTop - crossoverBreakpoint, 0);
     const imageScrollProportion =
         scrollRemainingAfterCrossover / numImagesVisibleAtEnd;
 
     // Calculate the new page index.
-    const scrollTop = this.$$('#previewDiv').scrollTop - crossoverBreakpoint;
+    const scrollTop = this.shadowRoot.querySelector('#previewDiv').scrollTop -
+        crossoverBreakpoint;
     const index = Math.floor(scrollTop / imageScrollProportion);
 
     return Math.min(numImagesBeforeCrossover + index, scannedImages.length - 1);
-  },
+  }
 
   /**
    * Sets the CSS class for the current scanned image in view so the blue border
@@ -494,7 +504,7 @@ Polymer({
     assert(pageIndexInView >= 0 && pageIndexInView < scannedImages.length);
     scannedImages[pageIndexInView].classList.add('focused-scanned-image');
     this.currentPageIndexInView_ = pageIndexInView;
-  },
+  }
 
   /**
    * Removes the focus CSS class from the scanned image which already has it
@@ -519,7 +529,7 @@ Polymer({
     // Set to -1 because the focus has been removed from the current page and no
     // other page has it.
     this.currentPageIndexInView_ = -1;
-  },
+  }
 
   /**
    * Runs when a new scanned image is loaded.
@@ -531,8 +541,8 @@ Polymer({
       return;
     }
 
-    const scannedImages =
-        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    const scannedImages = this.shadowRoot.querySelector('#scannedImages')
+                              .getElementsByClassName('scanned-image');
     this.setFocusedScannedImage_(
         scannedImages, this.getCurrentPageInView_(scannedImages));
 
@@ -547,7 +557,7 @@ Polymer({
 
     // |e.model| is populated by the dom-repeat element.
     this.scrollToPage_(e.model.index);
-  },
+  }
 
   /**
    * Set the focus to the clicked scanned image.
@@ -560,10 +570,10 @@ Polymer({
     }
 
     // |e.model| is populated by the dom-repeat element.
-    const scannedImages =
-        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    const scannedImages = this.shadowRoot.querySelector('#scannedImages')
+                              .getElementsByClassName('scanned-image');
     this.setFocusedScannedImage_(scannedImages, e.model.index);
-  },
+  }
 
   /**
    * Set the position of the action toolbar based on the size of the scanned
@@ -573,7 +583,7 @@ Polymer({
   setActionToolbarPosition_() {
     assert(this.isMultiPageScan);
 
-    const scannedImage = this.$$('.scanned-image');
+    const scannedImage = this.shadowRoot.querySelector('.scanned-image');
     if (!scannedImage) {
       return;
     }
@@ -581,7 +591,8 @@ Polymer({
     const scannedImageRect = scannedImage.getBoundingClientRect();
 
     // Set the toolbar position from the bottom edge of the viewport.
-    const topPosition = this.$$('#previewDiv').offsetHeight -
+    const topPosition =
+        this.shadowRoot.querySelector('#previewDiv').offsetHeight -
         ACTION_TOOLBAR_BOTTOM_MARGIN_PX - (this.actionToolbarHeight_ / 2);
     this.style.setProperty('--action-toolbar-top', topPosition + 'px');
 
@@ -589,12 +600,12 @@ Polymer({
     const leftPosition = scannedImageRect.x + (scannedImageRect.width / 2) -
         (this.actionToolbarWidth_ / 2);
     this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
-  },
+  }
 
   /** @param {boolean} enabled */
   setIsJellyEnabledForTesting(enabled) {
     this.isJellyEnabled_ = enabled;
-  },
+  }
 
   /**
    * Called when the "show-remove-page-dialog" event fires from the action
@@ -604,7 +615,7 @@ Polymer({
    */
   onShowRemovePageDialog_(e) {
     this.showRemoveOrRescanDialog_(/* isRemovePageDialog */ true, e.detail);
-  },
+  }
 
   /**
    * Called when the "show-rescan-page-dialog" event fires from the action
@@ -614,7 +625,7 @@ Polymer({
    */
   onShowRescanPageDialog_(e) {
     this.showRemoveOrRescanDialog_(/* isRemovePageDialog */ false, e.detail);
-  },
+  }
 
   /**
    * @param {boolean} isRemovePageDialog Determines whether to show the
@@ -628,7 +639,7 @@ Polymer({
       this.fireDialogAction_(
           isRemovePageDialog ? 'remove-page' : 'rescan-page', pageIndex);
     };
-    this.$$('#actionButton')
+    this.shadowRoot.querySelector('#actionButton')
         .addEventListener('click', this.onDialogActionClick_, {once: true});
 
     // Configure the dialog strings for the requested mode (Remove or Rescan).
@@ -656,9 +667,9 @@ Polymer({
               }
 
               // Once strings are loaded, open the dialog.
-              this.$$('#scanPreviewDialog').showModal();
+              this.shadowRoot.querySelector('#scanPreviewDialog').showModal();
             });
-  },
+  }
 
   /**
    * @param {string} event Either the 'remove-page' or 'rescan-page' event.
@@ -666,21 +677,22 @@ Polymer({
    * @private
    */
   fireDialogAction_(event, pageIndex) {
-    const scannedImages =
-        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    const scannedImages = this.shadowRoot.querySelector('#scannedImages')
+                              .getElementsByClassName('scanned-image');
     this.removeFocusFromScannedImage_(scannedImages);
 
     assert(pageIndex >= 0);
-    this.fire(event, pageIndex);
+    this.dispatchEvent(new CustomEvent(
+        event, {bubbles: true, composed: true, detail: pageIndex}));
     this.closeDialog_();
-  },
+  }
 
   /**  @private */
   closeDialog_() {
-    this.$$('#scanPreviewDialog').close();
-    this.$$('#actionButton')
+    this.shadowRoot.querySelector('#scanPreviewDialog').close();
+    this.shadowRoot.querySelector('#actionButton')
         .removeEventListener('click', this.onDialogActionClick_);
-  },
+  }
 
   /**
    * Scrolls the image specified by |pageIndex| into view.
@@ -690,16 +702,16 @@ Polymer({
   scrollToPage_(pageIndex) {
     assert(this.isMultiPageScan);
 
-    const scannedImages =
-        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    const scannedImages = this.shadowRoot.querySelector('#scannedImages')
+                              .getElementsByClassName('scanned-image');
     if (scannedImages.length === 0) {
       return;
     }
 
     assert(pageIndex >= 0 && pageIndex < scannedImages.length);
-    this.$$('#previewDiv').scrollTop =
+    this.shadowRoot.querySelector('#previewDiv').scrollTop =
         scannedImages[pageIndex].offsetTop - /*imageFocusBorder=*/ 2;
-  },
+  }
 
   /** @private */
   onIsMultiPageScanChange_() {
@@ -712,12 +724,13 @@ Polymer({
       // the scan progress div height can be updated when images are
       // added/removed.
       this.previewAreaResizeObserver_.observe(
-          /** @type {!HTMLElement} */ (this.$$('#previewDiv')));
+          /** @type {!HTMLElement} */ (
+              this.shadowRoot.querySelector('#previewDiv')));
     } else {
       window.removeEventListener('resize', this.onWindowResized_);
       this.previewAreaResizeObserver_.disconnect();
     }
-  },
+  }
 
   /**
    * Make the scan progress height match the preview area height.
@@ -726,8 +739,8 @@ Polymer({
   setMultiPageScanProgressHeight_() {
     this.style.setProperty(
         '--multi-page-scan-progress-height',
-        this.$$('#previewDiv').offsetHeight + 'px');
-  },
+        this.shadowRoot.querySelector('#previewDiv').offsetHeight + 'px');
+  }
 
   /** @private */
   onObjectUrlsChange_() {
@@ -739,7 +752,7 @@ Polymer({
     if (this.objectUrls.length === 0) {
       this.currentPageIndexInView_ = -1;
     }
-  },
+  }
 
   /**
    * Sets the size and positioning of elements that depend on the size of the
@@ -749,7 +762,7 @@ Polymer({
   updatePreviewElements_() {
     this.setMultiPageScanProgressHeight_();
     this.setActionToolbarPosition_();
-  },
+  }
 
   /**
    * Hide the action toolbar if it's page is not currently in view.
@@ -758,7 +771,7 @@ Polymer({
    */
   showActionToolbarByIndex_(index) {
     return index === this.currentPageIndexInView_ && this.showActionToolbar_;
-  },
+  }
 
   /**
    * Set |currentPageIndexInView_| to the page focused on (via ChromeVox).
@@ -771,10 +784,10 @@ Polymer({
     }
 
     // |e.model| is populated by the dom-repeat element.
-    const scannedImages =
-        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    const scannedImages = this.shadowRoot.querySelector('#scannedImages')
+                              .getElementsByClassName('scanned-image');
     this.setFocusedScannedImage_(scannedImages, e.model.index);
-  },
+  }
 
   /**
    * @param {number} index
@@ -784,7 +797,7 @@ Polymer({
   getScannedImageAriaLabel_(index) {
     return this.i18n(
         'multiPageImageAriaLabel', index + 1, this.objectUrls.length);
-  },
+  }
 
   /**
    * Determines correct SVG for "ready to scan" based on dark mode.
@@ -794,5 +807,7 @@ Polymer({
   getReadyToScanSvgSrc_() {
     return this.isDarkModeEnabled_ ? 'svg/ready_to_scan_dark.svg' :
                                      'svg/ready_to_scan.svg';
-  },
-});
+  }
+}
+
+customElements.define(ScanPreviewElement.is, ScanPreviewElement);

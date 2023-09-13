@@ -9,11 +9,11 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FileType} from './scanning.mojom-webui.js';
 import {AppState, ScanCompleteAction} from './scanning_app_types.js';
@@ -23,59 +23,76 @@ import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser
  * @fileoverview
  * 'scan-done-section' shows the post-scan user options.
  */
-Polymer({
-  is: 'scan-done-section',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ScanDoneSectionElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ScanDoneSectionElement extends ScanDoneSectionElementBase {
+  static get is() {
+    return 'scan-done-section';
+  }
 
-  /** @private {?ScanningBrowserProxy}*/
-  browserProxy_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {number} */
-    numFilesSaved: {
-      type: Number,
-      observer: 'onNumFilesSavedChange_',
-    },
+  static get properties() {
+    return {
+      /** @type {number} */
+      numFilesSaved: {
+        type: Number,
+        observer: 'onNumFilesSavedChange_',
+      },
 
-    /** @type {!Array<!FilePath>} */
-    scannedFilePaths: Array,
+      /** @type {!Array<!FilePath>} */
+      scannedFilePaths: Array,
 
-    /** @type {string} */
-    selectedFileType: String,
+      /** @type {string} */
+      selectedFileType: String,
 
-    /** @type {string} */
-    selectedFolder: String,
+      /** @type {string} */
+      selectedFolder: String,
 
-    /** @private {string} */
-    fileSavedTextContent_: String,
+      /** @private {string} */
+      fileSavedTextContent_: String,
 
-    /** @private {boolean} */
-    showEditButton_: {
-      type: Boolean,
-      computed: 'computeShowEditButton_(selectedFileType)',
-    },
+      /** @private {boolean} */
+      showEditButton_: {
+        type: Boolean,
+        computed: 'computeShowEditButton_(selectedFileType)',
+      },
 
-    /** @private {string} */
-    editButtonLabel_: String,
-  },
+      /** @private {string} */
+      editButtonLabel_: String,
+    };
+  }
 
-  observers: ['setFileSavedTextContent_(numFilesSaved, selectedFolder)'],
+  static get observers() {
+    return ['setFileSavedTextContent_(numFilesSaved, selectedFolder)'];
+  }
+
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @private */
   onDoneClick_() {
     this.browserProxy_.recordScanCompleteAction(
         ScanCompleteAction.DONE_BUTTON_CLICKED);
-    this.fire('done-click');
-  },
+    this.dispatchEvent(
+        new CustomEvent('done-click', {bubbles: true, composed: true}));
+  }
 
   /** @private */
   showFileInLocation_() {
@@ -88,10 +105,11 @@ Polymer({
         .then(
             /* @type {boolean} */ (succesful) => {
               if (!succesful) {
-                this.fire('file-not-found');
+                this.dispatchEvent(new CustomEvent(
+                    'file-not-found', {bubbles: true, composed: true}));
               }
             });
-  },
+  }
 
   /** @private */
   setFileSavedTextContent_() {
@@ -104,12 +122,12 @@ Polymer({
               this.fileSavedTextContent_ = sanitizeInnerHtml(
                   fileSavedTextContent,
                   {attrs: ['id', 'aria-hidden', 'aria-labelledby']});
-              const linkElement = this.$$('#folderLink');
+              const linkElement = this.shadowRoot.querySelector('#folderLink');
               linkElement.setAttribute('href', '#');
               linkElement.addEventListener(
                   'click', () => this.showFileInLocation_());
             });
-  },
+  }
 
   /**
    * Takes a localized string that contains exactly one anchor tag and labels
@@ -151,12 +169,12 @@ Polymer({
     anchorTags[0].setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
 
     return tempEl.innerHTML;
-  },
+  }
 
   /** @private */
   computeShowEditButton_() {
     return this.selectedFileType !== FileType.kPdf.toString();
-  },
+  }
 
   /** @private */
   openMediaApp_() {
@@ -166,7 +184,7 @@ Polymer({
         ScanCompleteAction.MEDIA_APP_OPENED);
     this.browserProxy_.openFilesInMediaApp(
         this.scannedFilePaths.map(filePath => filePath.path));
-  },
+  }
 
   /** @private */
   onNumFilesSavedChange_() {
@@ -175,5 +193,7 @@ Polymer({
             /* @type {string} */ (pluralString) => {
               this.editButtonLabel_ = pluralString;
             });
-  },
-});
+  }
+}
+
+customElements.define(ScanDoneSectionElement.is, ScanDoneSectionElement);

@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './scanning_fonts_css.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppState} from './scanning_app_types.js';
 import {ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
@@ -17,47 +17,60 @@ import {ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.j
  * @fileoverview
  * 'multi-page-scan' shows the available actions for a multi-page scan.
  */
-Polymer({
-  is: 'multi-page-scan',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const MultiPageScanElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class MultiPageScanElement extends MultiPageScanElementBase {
+  static get is() {
+    return 'multi-page-scan';
+  }
 
-  properties: {
-    /** @type {!AppState} */
-    appState: {
-      type: Number,
-      observer: 'onAppStateChange_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {number} */
-    pageNumber: {
-      type: Number,
-      observer: 'onPageNumberChange_',
-    },
+  static get properties() {
+    return {
+      /** @type {!AppState} */
+      appState: {
+        type: Number,
+        observer: 'onAppStateChange_',
+      },
 
-    /** @private {string} */
-    scanButtonText_: String,
+      /** @type {number} */
+      pageNumber: {
+        type: Number,
+        observer: 'onPageNumberChange_',
+      },
 
-    /** @private {boolean} */
-    showCancelButton_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {string} */
+      scanButtonText_: String,
 
-    /** @private {boolean} */
-    cancelButtonDisabled_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showCancelButton_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showCancelingText_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private {boolean} */
+      cancelButtonDisabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      showCancelingText_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @private */
   onAppStateChange_() {
@@ -66,7 +79,7 @@ Polymer({
     this.cancelButtonDisabled_ =
         this.appState === AppState.MULTI_PAGE_CANCELING;
     this.showCancelingText_ = this.appState === AppState.MULTI_PAGE_CANCELING;
-  },
+  }
 
   /** @private */
   onPageNumberChange_() {
@@ -76,22 +89,25 @@ Polymer({
             /* @type {string} */ (pluralString) => {
               this.scanButtonText_ = pluralString;
             });
-  },
+  }
 
   /** @private */
   onScanClick_() {
-    this.fire('scan-next-page');
-  },
+    this.dispatchEvent(
+        new CustomEvent('scan-next-page', {bubbles: true, composed: true}));
+  }
 
   /** @private */
   onSaveClick_() {
-    this.fire('complete-multi-page-scan');
-  },
+    this.dispatchEvent(new CustomEvent(
+        'complete-multi-page-scan', {bubbles: true, composed: true}));
+  }
 
   /** @private */
   onCancelClick_() {
-    this.fire('cancel-click');
-  },
+    this.dispatchEvent(
+        new CustomEvent('cancel-click', {bubbles: true, composed: true}));
+  }
 
   /**
    * @return {string}
@@ -99,5 +115,7 @@ Polymer({
    */
   getProgressText_() {
     return this.i18n('multiPageScanProgressText', this.pageNumber);
-  },
-});
+  }
+}
+
+customElements.define(MultiPageScanElement.is, MultiPageScanElement);

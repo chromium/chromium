@@ -5,10 +5,18 @@
 import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'scan-settings-section',
+/** @polymer */
+class ScanSettingsSectionElement extends PolymerElement {
+  static get is() {
+    return 'scan-settings-section';
+  }
 
-  _template: html`{__html_template__}`,
-});
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+customElements.define(
+    ScanSettingsSectionElement.is, ScanSettingsSectionElement);

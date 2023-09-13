@@ -63,3 +63,15 @@ export const SelectBehavior = {
     }
   },
 };
+
+/** @interface */
+export class SelectBehaviorInterface {
+  constructor() {
+    /** @type {boolean} */
+    this.disabled = false;
+    /** @type {!Array} */
+    this.options = [];
+    /** @type {string} */
+    this.selectedOption = '';
+  }
+}

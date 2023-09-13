@@ -5,11 +5,11 @@
 import './scan_settings_section.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SelectBehavior} from './select_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
 
 /** @type {number} */
 const DEFAULT_RESOLUTION = 300;
@@ -18,12 +18,25 @@ const DEFAULT_RESOLUTION = 300;
  * @fileoverview
  * 'resolution-select' displays the available scan resolutions in a dropdown.
  */
-Polymer({
-  is: 'resolution-select',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SelectBehaviorInterface}
+ */
+const ResolutionSelectElementBase =
+    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior, SelectBehavior],
+/** @polymer */
+class ResolutionSelectElement extends ResolutionSelectElementBase {
+  static get is() {
+    return 'resolution-select';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /**
    * @param {number} index
@@ -33,7 +46,7 @@ Polymer({
     assert(index < this.options.length);
 
     return this.options[index].toString();
-  },
+  }
 
   /**
    * @param {number} resolution
@@ -42,14 +55,14 @@ Polymer({
    */
   getResolutionString_(resolution) {
     return this.i18n('resolutionOptionText', resolution);
-  },
+  }
 
   sortOptions() {
     // Sort the resolutions in descending order.
     this.options.sort(function(a, b) {
       return b - a;
     });
-  },
+  }
 
   /**
    * @param {number} option
@@ -57,5 +70,7 @@ Polymer({
    */
   isDefaultOption(option) {
     return option === DEFAULT_RESOLUTION;
-  },
-});
+  }
+}
+
+customElements.define(ResolutionSelectElement.is, ResolutionSelectElement);
