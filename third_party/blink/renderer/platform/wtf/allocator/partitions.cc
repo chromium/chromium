@@ -36,6 +36,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -362,7 +363,8 @@ void* Partitions::BufferMalloc(size_t n, const char* type_name) {
 
 // static
 void* Partitions::BufferTryRealloc(void* p, size_t n, const char* type_name) {
-  return BufferPartition()->TryRealloc(p, n, type_name);
+  return BufferPartition()->Realloc<partition_alloc::AllocFlags::kReturnNull>(
+      p, n, type_name);
 }
 
 // static

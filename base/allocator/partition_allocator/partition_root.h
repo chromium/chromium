@@ -514,13 +514,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE PA_MALLOC_ALIGNED void* ReallocInline(void* ptr,
                                                          size_t new_size,
                                                          const char* type_name);
-  // Overload that may return nullptr if reallocation isn't possible. In this
-  // case, |ptr| remains valid.
-  PA_NOINLINE PA_MALLOC_ALIGNED void* TryRealloc(void* ptr,
-                                                 size_t new_size,
-                                                 const char* type_name) {
-    return ReallocInline<AllocFlags::kReturnNull>(ptr, new_size, type_name);
-  }
 
   template <unsigned int flags = 0>
   PA_NOINLINE void Free(void* object) {

@@ -535,7 +535,6 @@ class PartitionAllocTest
   enum ReturnNullTestMode {
     kPartitionAlloc,
     kPartitionRealloc,
-    kPartitionRootTryRealloc,
   };
 
   void DoReturnNullTest(size_t alloc_size, ReturnNullTestMode mode) {
@@ -570,12 +569,6 @@ class PartitionAllocTest
           ptrs[i] = allocator.root()->Realloc<AllocFlags::kReturnNull>(
               ptrs[i], alloc_size, type_name);
           break;
-        }
-        case kPartitionRootTryRealloc: {
-          ptrs[i] =
-              allocator.root()->Alloc<AllocFlags::kReturnNull>(1, type_name);
-          ptrs[i] =
-              allocator.root()->TryRealloc(ptrs[i], alloc_size, type_name);
         }
       }
 
@@ -2408,15 +2401,11 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
     BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_RepeatedAllocReturnNullDirect RepeatedAllocReturnNullDirect
 #define MAYBE_RepeatedReallocReturnNullDirect RepeatedReallocReturnNullDirect
-#define MAYBE_RepeatedTryReallocReturnNullDirect \
-  RepeatedTryReallocReturnNullDirect
 #else
 #define MAYBE_RepeatedAllocReturnNullDirect \
   DISABLED_RepeatedAllocReturnNullDirect
 #define MAYBE_RepeatedReallocReturnNullDirect \
   DISABLED_RepeatedReallocReturnNullDirect
-#define MAYBE_RepeatedTryReallocReturnNullDirect \
-  DISABLED_RepeatedTryReallocReturnNullDirect
 #endif
 
 // The following four tests wrap a called function in an expect death statement
@@ -2445,14 +2434,6 @@ TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedReallocReturnNullDirect) {
                "Passed DoReturnNullTest");
 }
 
-// Repeating above test with TryRealloc
-TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedTryReallocReturnNullDirect) {
-  size_t direct_map_size = 32 * 1024 * 1024;
-  ASSERT_GT(direct_map_size, kMaxBucketed);
-  EXPECT_DEATH(DoReturnNullTest(direct_map_size, kPartitionRootTryRealloc),
-               "Passed DoReturnNullTest");
-}
-
 // TODO(crbug.com/1348221) re-enable the tests below, once the allocator
 // actually returns nullptr for non direct-mapped allocations.
 // When doing so, they will need to be made MAYBE_ like those above.
@@ -2473,15 +2454,6 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
   ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
   ASSERT_LE(single_slot_size, kMaxBucketed);
   EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionRealloc),
-               "Passed DoReturnNullTest");
-}
-
-// Repeating above test with TryRealloc.
-TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
-  size_t single_slot_size = 512 * 1024;
-  ASSERT_GT(single_slot_size, MaxRegularSlotSpanSize());
-  ASSERT_LE(single_slot_size, kMaxBucketed);
-  EXPECT_DEATH(DoReturnNullTest(single_slot_size, kPartitionRootTryRealloc),
                "Passed DoReturnNullTest");
 }
 
