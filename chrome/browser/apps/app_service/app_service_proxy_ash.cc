@@ -495,6 +495,11 @@ std::unique_ptr<IconLoader::Releaser> AppServiceProxyAsh::LoadShortcutIcon(
     return nullptr;
   }
   auto icon_key = shortcut_outer_icon_loader_.GetIconKey(shortcut_id.value());
+  if (!icon_key.has_value()) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return nullptr;
+  }
+
   return shortcut_outer_icon_loader_.LoadIconFromIconKey(
       shortcut_id.value(), icon_key.value(), icon_type, size_hint_in_dip,
       allow_placeholder_icon, std::move(callback));
@@ -539,9 +544,18 @@ absl::optional<IconKey> AppServiceProxyAsh::ShortcutInnerIconLoader::GetIconKey(
     return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
-  return std::move(*host_->ShortcutRegistryCache()
-                        ->GetShortcut(ShortcutId(id))
-                        ->icon_key->Clone());
+  if (!host_->ShortcutRegistryCache()->HasShortcut(ShortcutId(id))) {
+    return absl::nullopt;
+  }
+
+  const absl::optional<IconKey>& icon_key =
+      host_->ShortcutRegistryCache()->GetShortcut(ShortcutId(id))->icon_key;
+
+  if (icon_key.has_value()) {
+    return std::move(*icon_key->Clone());
+  }
+
+  return absl::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser>

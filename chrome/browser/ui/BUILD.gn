@@ -2090,6 +2090,8 @@ static_library("ui") {
       "../ash/app_list/app_service/app_service_promise_app_model_builder.h",
       "../ash/app_list/app_service/app_service_shortcut_context_menu.cc",
       "../ash/app_list/app_service/app_service_shortcut_context_menu.h",
+      "../ash/app_list/app_service/app_service_shortcut_icon_loader.cc",
+      "../ash/app_list/app_service/app_service_shortcut_icon_loader.h",
       "../ash/app_list/app_service/app_service_shortcut_item.cc",
       "../ash/app_list/app_service/app_service_shortcut_item.h",
       "../ash/app_list/app_service/app_service_shortcut_model_builder.cc",

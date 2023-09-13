@@ -49,6 +49,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_icon_loader.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_shortcut_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -114,6 +115,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -1096,6 +1098,15 @@ void ChromeShelfController::OnShortcutUpdated(
     return;
   }
   ash::ShelfItem item = model_->items()[index];
+
+  if (update.IconKeyChanged()) {
+    AppIconLoader* app_icon_loader =
+        GetAppIconLoaderForApp(update.ShortcutId().value());
+    if (app_icon_loader) {
+      app_icon_loader->FetchImage(update.ShortcutId().value());
+    }
+  }
+
   std::u16string title = base::UTF8ToUTF16(update.Name());
   if (item.title != title) {
     item.title = title;
@@ -1122,7 +1133,9 @@ void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
   bool is_standard_icon = true;
   if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id) &&
       !AppServicePromiseAppIconLoader::CanLoadImage(latest_active_profile_,
-                                                    app_id)) {
+                                                    app_id) &&
+      !AppServiceShortcutIconLoader::CanLoadImage(latest_active_profile_,
+                                                  app_id)) {
     is_standard_icon = false;
   }
 
@@ -1595,6 +1608,15 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
       app_icon_loaders_[profile].emplace_back(
           std::make_unique<AppServicePromiseAppIconLoader>(
               profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
+    }
+
+    if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+      app_icon_loaders_for_profile.emplace_back(
+          std::make_unique<AppServiceShortcutIconLoader>(
+              profile, extension_misc::EXTENSION_ICON_MEDIUM,
+              // TODO(crbug.com/1480423): Update the size after the effects
+              // visual done.
+              extension_misc::EXTENSION_ICON_SMALLISH, this));
     }
 
     // Some special extensions open new windows, and on Chrome OS, those windows

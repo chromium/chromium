@@ -77,6 +77,7 @@
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_icon_loader.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_shortcut_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -162,6 +163,7 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
+#include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
@@ -6519,6 +6521,68 @@ TEST_F(ChromeShelfControllerShortcutTest, ShortcutRemoved) {
   cache()->RemoveShortcut(shortcut_id);
   EXPECT_FALSE(model_->IsAppPinned(shortcut_id.value()));
   EXPECT_FALSE(shelf_controller_->GetItem(id));
+}
+
+TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
+  InitShelfController();
+
+  apps::ShortcutPtr shortcut =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->icon_key = apps::IconKey(100, 0, 0);
+
+  apps::StubIconLoader shortcut_stub_icon_loader;
+  apps::StubIconLoader app_stub_icon_loader;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->OverrideShortcutInnerIconLoaderForTesting(&shortcut_stub_icon_loader);
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader);
+  shortcut_stub_icon_loader.timelines_by_app_id_[shortcut_id.value()] = 1;
+  app_stub_icon_loader.timelines_by_app_id_[app_constants::kChromeAppId] = 1;
+  EXPECT_EQ(0, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(0, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  cache()->UpdateShortcut(std::move(shortcut));
+  PinAppWithIDToShelf(shortcut_id.value());
+
+  // Verify icon loaded when shelf item added.
+  ash::ShelfID id(shortcut_id.value());
+  const ash::ShelfItem* item = shelf_controller_->GetItem(id);
+  ASSERT_TRUE(item);
+
+  EXPECT_EQ(1, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(1, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_FALSE(item->image.isNull());
+
+  // Verify icon update loads icon again.
+  apps::ShortcutPtr delta =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  delta->icon_key = apps::IconKey(101, 1, 1);
+  cache()->UpdateShortcut(std::move(delta));
+
+  EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(2, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  apps::ShortcutPtr delta_no_icon_update =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  delta_no_icon_update->name = "NewName";
+  cache()->UpdateShortcut(std::move(delta_no_icon_update));
+
+  // Verify the icon is not updated.
+  EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(2, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // Verify unpin then pin shortcut loads icon again.
+  UnpinAppWithIDFromShelf(shortcut_id.value());
+  PinAppWithIDToShelf(shortcut_id.value());
+  EXPECT_EQ(3, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(3, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // Verify UpdateItemImage uses the cache in memory and does not load icon
+  // again.
+  shelf_controller_->UpdateItemImage(shortcut_id.value());
+  EXPECT_EQ(3, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(3, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
