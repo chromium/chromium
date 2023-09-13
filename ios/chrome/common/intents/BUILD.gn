@@ -25,5 +25,6 @@ intent_definition("intents") {
     "ManagePasswordsIntent",
     "ManageSettingsIntent",
     "OpenLatestTabIntent",
+    "OpenLensIntent",
   ]
 }
