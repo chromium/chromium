@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service.h"
+#include "chrome/browser/chromeos/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"

@@ -8,22 +8,6 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "fake_probe_service.cc",
-    "fake_probe_service.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/crosapi/mojom",
-    "//mojo/public/cpp/bindings",
-    "//testing/gtest",
-  ]
-}
-
 source_set("telemetry") {
   sources = [
     "telemetry_api.cc",
@@ -56,10 +40,10 @@ source_set("browser_tests") {
 
   deps = [
     ":telemetry",
-    ":test_support",
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
+    "//chrome/browser/chromeos/telemetry:test_support",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/network_config/public/mojom:network_types",
     "//chromeos/services/network_health/public/mojom:types",

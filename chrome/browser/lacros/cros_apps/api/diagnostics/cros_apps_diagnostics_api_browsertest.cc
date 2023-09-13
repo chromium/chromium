@@ -7,7 +7,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service.h"
+#include "chrome/browser/chromeos/telemetry/fake_probe_service.h"
 #include "chrome/browser/lacros/cros_apps/api/cros_apps_api_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/constants/chromeos_features.h"
