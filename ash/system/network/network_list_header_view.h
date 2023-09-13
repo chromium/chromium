@@ -47,6 +47,7 @@ class ASH_EXPORT NetworkListHeaderView : public views::View,
   friend class NetworkListNetworkHeaderViewTest;
   friend class NetworkListMobileHeaderViewTest;
   friend class NetworkListWifiHeaderViewTest;
+  friend class NetworkListTetherHostsHeaderViewTest;
 
   void AddTitleView(int label_id);
 

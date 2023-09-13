@@ -26936,6 +26936,7 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="Mobile section shown"/>
   <int value="2" label="Ethernet section shown"/>
   <int value="3" label="Detailed view shown"/>
+  <int value="4" label="Tether Hosts section shown"/>
 </enum>
 
 <enum name="DeviceActiveCheckMembershipResponseCases">

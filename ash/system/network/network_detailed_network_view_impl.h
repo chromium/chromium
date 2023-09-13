@@ -6,13 +6,12 @@
 #define ASH_SYSTEM_NETWORK_NETWORK_DETAILED_NETWORK_VIEW_IMPL_H_
 
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr.h"
-
 #include "ash/style/rounded_container.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
@@ -54,9 +53,12 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   void ReorderNetworkListView(size_t index) override;
   void ReorderMobileTopContainer(size_t index) override;
   void ReorderMobileListView(size_t index) override;
+  void ReorderTetherHostsTopContainer(size_t index) override;
+  void ReorderTetherHostsListView(size_t index) override;
   void MaybeRemoveFirstListView() override;
   void UpdateWifiStatus(bool enabled) override;
   void UpdateMobileStatus(bool enabled) override;
+  void UpdateTetherHostsStatus(bool enabled) override;
   void ScrollToPosition(int position) override;
   int GetScrollPosition() override;
 
@@ -71,11 +73,16 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
   // true.
   raw_ptr<RoundedContainer, DanglingUntriaged | ExperimentalAsh>
       first_list_view_ = nullptr;
+
   raw_ptr<RoundedContainer, ExperimentalAsh> mobile_top_container_ = nullptr;
   raw_ptr<RoundedContainer, ExperimentalAsh> mobile_network_list_view_ =
       nullptr;
   raw_ptr<RoundedContainer, ExperimentalAsh> wifi_top_container_ = nullptr;
   raw_ptr<RoundedContainer, ExperimentalAsh> wifi_network_list_view_ = nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> tether_hosts_top_container_ =
+      nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> tether_hosts_network_list_view_ =
+      nullptr;
 };
 
 }  // namespace ash

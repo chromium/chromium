@@ -17,6 +17,7 @@
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
+#include "ash/system/network/network_list_tether_hosts_header_view.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -246,6 +247,21 @@ void NetworkDetailedNetworkViewImpl::ReorderMobileListView(size_t index) {
   }
 }
 
+void NetworkDetailedNetworkViewImpl::ReorderTetherHostsTopContainer(
+    size_t index) {
+  DCHECK(base::FeatureList::IsEnabled(features::kInstantHotspotRebrand));
+  if (tether_hosts_top_container_) {
+    scroll_content()->ReorderChildView(tether_hosts_top_container_, index);
+  }
+}
+
+void NetworkDetailedNetworkViewImpl::ReorderTetherHostsListView(size_t index) {
+  DCHECK(base::FeatureList::IsEnabled(features::kInstantHotspotRebrand));
+  if (tether_hosts_network_list_view_) {
+    scroll_content()->ReorderChildView(tether_hosts_network_list_view_, index);
+  }
+}
+
 void NetworkDetailedNetworkViewImpl::MaybeRemoveFirstListView() {
   if (first_list_view_ && first_list_view_->children().empty()) {
     scroll_content()->RemoveChildViewT(first_list_view_.get());
@@ -280,6 +296,21 @@ void NetworkDetailedNetworkViewImpl::UpdateMobileStatus(bool enabled) {
   }
   if (mobile_network_list_view_) {
     mobile_network_list_view_->SetVisible(enabled);
+  }
+}
+
+void NetworkDetailedNetworkViewImpl::UpdateTetherHostsStatus(bool enabled) {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
+  if (tether_hosts_top_container_) {
+    tether_hosts_top_container_->SetBehavior(
+        enabled ? RoundedContainer::Behavior::kTopRounded
+                : RoundedContainer::Behavior::kAllRounded);
+  }
+  if (tether_hosts_network_list_view_) {
+    tether_hosts_network_list_view_->SetVisible(enabled);
   }
 }
 

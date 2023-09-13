@@ -104,6 +104,8 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   virtual void ReorderNetworkListView(size_t index) = 0;
   virtual void ReorderMobileTopContainer(size_t index) = 0;
   virtual void ReorderMobileListView(size_t index) = 0;
+  virtual void ReorderTetherHostsTopContainer(size_t index) = 0;
+  virtual void ReorderTetherHostsListView(size_t index) = 0;
 
   // Removes the first list view if there's no child views in it.
   virtual void MaybeRemoveFirstListView() = 0;
@@ -111,6 +113,7 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // Updates the containers, shows or hides the corresponding list view.
   virtual void UpdateWifiStatus(bool enabled) = 0;
   virtual void UpdateMobileStatus(bool enabled) = 0;
+  virtual void UpdateTetherHostsStatus(bool enabled) = 0;
 
   // Provides some virtual methods to get and set the scroll view's position
   // before and after reordering the network list.
