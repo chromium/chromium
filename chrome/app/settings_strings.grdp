@@ -4309,9 +4309,6 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Hub page. The 'Safety recommendation' section shows actionable modules about permissions and extensions based on the current state of the browser.">
     Safety recommendation
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_USER_EDU_SECTION_HEADER" desc="The title of the last section in the Safety Hub page. The 'Safety tips' section shows three safety related features to provide user education on how Chrome keeps the user safe.">
-    Safety tips
-  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_HEADER" translateable="false" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
     Nothing else needs your attention right now
   </message>
@@ -4344,5 +4341,11 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER" translateable="false" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because the user has turned it off.">
     Turn on Safe Browsing to get protection against dangerous sites
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_GO_SITE_SETTINGS_ITEM" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. 'Unused Site Permissions' in this page shows unused websites for which permissions have been revoked. This label is for the action menu item that navigates users to the site settings page.">
+    Go to site settings
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_GO_NOTIFICATION_SETTINGS_ITEM" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. 'Review Notification Permissions' in this page shows the websites that send a lot of notifications. This label is for the action menu item that navigates users to notification the settings page.">
+    Go to notification settings
   </message>
 </grit-part>

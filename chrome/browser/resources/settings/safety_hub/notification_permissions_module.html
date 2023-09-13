@@ -18,6 +18,10 @@
         hidden$="[[shouldShowCompletionInfo_]]">
       $i18n{safetyCheckNotificationPermissionReviewBlockAllLabel}
     </cr-button>
+    <cr-icon-button id="moreActionButton" class="icon-more-vert"
+        on-click="onHeaderMoreActionClick_"
+        hidden$="[[shouldShowCompletionInfo_]]" title="$i18n{moreActions}">
+    </cr-icon-button>
     <cr-icon-button id="bulkUndoButton" iron-icon="settings20:undo"
         on-click="onUndoClick_" hidden$="[[!shouldShowCompletionInfo_]]">
     </cr-icon-button>
@@ -31,6 +35,12 @@
   <button class="dropdown-item" id="reset" on-click="onResetClick_"
       aria-label$="[[getResetAriaLabelForOrigins(lastOrigins_)]]">
     $i18n{safetyCheckNotificationPermissionReviewResetLabel}
+  </button>
+</cr-action-menu>
+<cr-action-menu id="headerActionMenu" role-description="$i18n{menu}">
+  <button class="dropdown-item" id="goToSettings"
+      on-click="onGoToSettingsClick_">
+    $i18n{safetyHubGoNotificationSettingsItem}
   </button>
 </cr-action-menu>
 <cr-toast id="undoToast" duration="5000">

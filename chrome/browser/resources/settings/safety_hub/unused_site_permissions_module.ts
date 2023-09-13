@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../i18n_setup.js';
 import './safety_hub_module.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -17,7 +18,7 @@ import {isUndoKeyboardEvent} from 'chrome://resources/js/util_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {getLocalizationStringForContentType} from '../site_settings_page/site_settings_page_util.js';
@@ -28,9 +29,12 @@ import {getTemplate} from './unused_site_permissions_module.html.js';
 
 export interface SettingsSafetyHubUnusedSitePermissionsModuleElement {
   $: {
+    headerActionMenu: CrActionMenuElement,
     bulkUndoButton: HTMLElement,
     gotItButton: HTMLElement,
+    goToSettings: HTMLElement,
     module: SettingsSafetyHubModuleElement,
+    moreActionButton: HTMLElement,
     toastUndoButton: HTMLElement,
     undoToast: CrToastElement,
   };
@@ -212,6 +216,19 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     const toastText = await PluralStringProxyImpl.getInstance().getPluralString(
         'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
     this.showUndoToast_(toastText);
+  }
+
+  private onMoreActionClick_(e: Event) {
+    e.stopPropagation();
+    this.$.headerActionMenu.showAt(e.target as HTMLElement);
+  }
+
+  private onGoToSettingsClick_(e: Event) {
+    e.stopPropagation();
+    this.$.headerActionMenu.close();
+    Router.getInstance().navigateTo(
+        routes.SITE_SETTINGS, /* dynamicParams= */ undefined,
+        /* removeSearch= */ true);
   }
 
   /* Repopulate the list when unused site permission list is updated. */

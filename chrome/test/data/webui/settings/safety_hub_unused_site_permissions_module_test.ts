@@ -301,4 +301,18 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertFalse(isVisible(testElement.$.gotItButton));
     assertTrue(isVisible(testElement.$.bulkUndoButton));
   });
+
+  test('More Actions Button in Header', async function() {
+    assertFalse(isVisible(testElement.$.headerActionMenu.getDialog()));
+
+    // The action menu should be visible after clicking the button.
+    testElement.$.moreActionButton.click();
+    assertTrue(isVisible(testElement.$.headerActionMenu.getDialog()));
+
+    testElement.$.goToSettings.click();
+    // The action menu should be gone after clicking the button.
+    assertFalse(isVisible(testElement.$.headerActionMenu.getDialog()));
+    // Ensure the site settings page is shown.
+    assertEquals(routes.SITE_SETTINGS, Router.getInstance().getCurrentRoute());
+  });
 });

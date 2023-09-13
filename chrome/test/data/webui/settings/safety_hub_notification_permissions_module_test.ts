@@ -399,4 +399,24 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     assertFalse(isVisible(testElement.$.blockAllButton));
     assertTrue(isVisible(testElement.$.bulkUndoButton));
   });
+
+  /**
+   * Tests whether pressing the more action button correctly shows the menu and
+   * if the navigation happens correctly.
+   */
+  test('More Actions Button in Header', async function() {
+    assertFalse(isVisible(testElement.$.headerActionMenu.getDialog()));
+
+    // The action menu should be visible after clicking the button.
+    clickButton(testElement.shadowRoot!.querySelector('#moreActionButton'));
+    assertTrue(isVisible(testElement.$.headerActionMenu.getDialog()));
+
+    clickButton(testElement.shadowRoot!.querySelector('#goToSettings'));
+    // The action menu should be gone after clicking the button.
+    assertFalse(isVisible(testElement.$.headerActionMenu.getDialog()));
+    // Ensure the site settings page is shown.
+    assertEquals(
+        routes.SITE_SETTINGS_NOTIFICATIONS,
+        Router.getInstance().getCurrentRoute());
+  });
 });
