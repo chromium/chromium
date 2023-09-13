@@ -15,7 +15,10 @@ namespace ash {
 namespace {
 // Do not throttle until battery percent is below this threshold,
 // regardless of AC state.
-const float kThrottleThreshold = 20.f;
+// TODO(b/291809001): Remove this constant and associate logic after further
+// investigation into whether or not there should be any kind of battery
+// threshold.
+const float kThrottleThreshold = 100.f;
 // Always throttle if battery percent is below this threshold, regardless
 // of AC state.
 const float kLowBatteryThreshold = 5.0f;
