@@ -192,7 +192,8 @@ class TimeLapseFixedSpeedSaver {
       private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
   write(blob: Blob, frameNo: number): void {
-    this.processor.write(blob);
+    // processor.write does queuing internally.
+    void this.processor.write(blob);
     this.maxWrittenFrame = frameNo;
   }
 
