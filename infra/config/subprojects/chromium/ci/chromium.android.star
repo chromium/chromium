@@ -1601,6 +1601,7 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "11",
     ),
+    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
