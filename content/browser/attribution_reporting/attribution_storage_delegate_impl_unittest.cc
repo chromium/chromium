@@ -69,6 +69,11 @@ void RunRandomFakeReportsTest(const SourceType source_type,
           .SetEventReportWindows(
               AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
                   source_type, /*last_report_window=*/kDefaultExpiry))
+          .SetMaxEventLevelReports(
+              source_type ==
+                      attribution_reporting::mojom::SourceType::kNavigation
+                  ? 3
+                  : 1)
           .BuildStored();
 
   base::flat_map<std::vector<FakeReport>, int> output_counts;
@@ -222,7 +227,14 @@ TEST(AttributionStorageDelegateImplTest,
      RandomizedResponse_NoNoiseModeReturnsRealRateAndNullResponse) {
   for (auto source_type : kSourceTypes) {
     const auto source =
-        SourceBuilder().SetSourceType(source_type).BuildStored();
+        SourceBuilder()
+            .SetSourceType(source_type)
+            .SetMaxEventLevelReports(
+                source_type ==
+                        attribution_reporting::mojom::SourceType::kNavigation
+                    ? 3
+                    : 1)
+            .BuildStored();
 
     auto result = AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
                       .GetRandomizedResponse(source.common_info().source_type(),
@@ -417,6 +429,11 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
             .SetEventReportWindows(
                 AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
                     test_case.source_type, /*last_report_window=*/kExpiry))
+            .SetMaxEventLevelReports(
+                test_case.source_type ==
+                        attribution_reporting::mojom::SourceType::kNavigation
+                    ? 3
+                    : 1)
             .BuildStored();
     EXPECT_EQ(
         test_case.expected,
@@ -474,6 +491,11 @@ TEST(AttributionStorageDelegateImplTest,
                 AttributionStorageDelegateImpl().GetDefaultEventReportWindows(
                     test_case.source_type,
                     /*last_report_window=*/base::Days(30)))
+            .SetMaxEventLevelReports(
+                test_case.source_type ==
+                        attribution_reporting::mojom::SourceType::kNavigation
+                    ? 3
+                    : 1)
             .BuildStored();
 
     const AttributionStorageDelegateImpl delegate;

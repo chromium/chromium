@@ -356,7 +356,7 @@ TEST_F(AttributionStorageTest, ImpressionExpired_ConversionsStoredPrior) {
 }
 
 TEST_F(AttributionStorageTest,
-       ImpressionWithMaxConversions_ConversionReportNotStored) {
+       ImpressionWithDefaultMaxConversions_ConversionReportNotStored) {
   storage()->StoreSource(SourceBuilder().Build());
 
   for (int i = 0; i < kMaxConversions; i++) {
@@ -1226,8 +1226,9 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
             CreateReportMaxAttributionsLimitIs(2),
             DroppedEventLevelReportIs(absl::nullopt)));
 
-  const auto source =
-      source_builder.SetAggregatableBudgetConsumed(5).BuildStored();
+  const auto source = source_builder.SetAggregatableBudgetConsumed(5)
+                          .SetMaxEventLevelReports(3)
+                          .BuildStored();
   auto contributions =
       DefaultAggregatableHistogramContributions(/*histogram_values=*/{5});
   ASSERT_THAT(contributions, SizeIs(1));
@@ -1404,6 +1405,7 @@ TEST_F(AttributionStorageTest,
           .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
           .SetPriority(0)
           .SetAggregatableBudgetConsumed(1)
+          .SetMaxEventLevelReports(3)
           .BuildStored(),
       DefaultAggregatableHistogramContributions(), trigger);
 
@@ -1742,6 +1744,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           builder.SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
               .SetActiveState(
                   StoredSource::ActiveState::kReachedEventLevelAttributionLimit)
+              .SetMaxEventLevelReports(1)
               .BuildStored())
           .SetTriggerData(7)
           .SetReportTime(fake_report_time)
@@ -3499,8 +3502,9 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
             NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(contributions))))));
 
-  const auto source =
-      source_builder.SetAggregatableBudgetConsumed(5).BuildStored();
+  const auto source = source_builder.SetAggregatableBudgetConsumed(5)
+                          .SetMaxEventLevelReports(3)
+                          .BuildStored();
   auto expected_aggregatable_report =
       GetExpectedAggregatableReport(source, std::move(contributions), trigger);
 
@@ -3765,9 +3769,11 @@ TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
           .BuildNullAggregatable();
 
   const AttributionReport expected_aggregatable_report =
-      GetExpectedAggregatableReport(
-          builder.SetAggregatableBudgetConsumed(1).BuildStored(),
-          DefaultAggregatableHistogramContributions(), trigger);
+      GetExpectedAggregatableReport(builder.SetAggregatableBudgetConsumed(1)
+                                        .SetMaxEventLevelReports(3)
+                                        .BuildStored(),
+                                    DefaultAggregatableHistogramContributions(),
+                                    trigger);
 
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),

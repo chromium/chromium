@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -291,7 +292,7 @@ StoredSource SourceBuilder::BuildStored() const {
                                   aggregatable_report_window_, source_time_),
                               expiry_time),
       max_event_level_reports_.value_or(
-          source_type_ == SourceType::kNavigation ? 3 : 1),
+          attribution_reporting::kMaxSettableEventLevelAttributions),
       priority_, filter_data_, debug_key_, aggregation_keys_,
       attribution_logic_, active_state_, source_id_,
       aggregatable_budget_consumed_, randomized_response_rate_);
