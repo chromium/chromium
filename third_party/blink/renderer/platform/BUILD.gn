@@ -996,6 +996,7 @@ component("platform") {
     "graphics/image_observer.h",
     "graphics/image_orientation.cc",
     "graphics/image_orientation.h",
+    "graphics/image_orientation_enum.h",
     "graphics/image_pattern.cc",
     "graphics/image_pattern.h",
     "graphics/intercepting_canvas.cc",
