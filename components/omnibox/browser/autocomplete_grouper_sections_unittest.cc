@@ -7,7 +7,6 @@
 #include <iterator>
 #include <memory>
 
-#include "base/ranges/ranges.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -566,15 +565,15 @@ TEST(AutocompleteGrouperSectionsTest, AndroidSRPZpsSection) {
             CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            // Not allowed.
             CreateMatch(2, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
-            // Bogus, repetitive, only one allowed.
             CreateMatch(1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
             CreateMatch(0, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
         },
         {2, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
   }
   {
-    SCOPED_TRACE("Android/ZPS on Web with recent searches only.");
+    SCOPED_TRACE("Android/ZPS on SRP with recent searches only.");
     // Verify that the Clipboard suggestion is retained on top.
     test(
         {
@@ -621,13 +620,12 @@ TEST(AutocompleteGrouperSectionsTest, AndroidSRPZpsSection) {
             CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            // Not allowed.
             CreateMatch(4, omnibox::GROUP_MOBILE_MOST_VISITED),
-            // Bogus, repetitive, currently only one allowed.
-            // This will be permitted when group rendering shifts to horizontal.
             CreateMatch(3, omnibox::GROUP_MOBILE_MOST_VISITED),
             CreateMatch(2, omnibox::GROUP_MOBILE_MOST_VISITED),
         },
-        {4, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
+        {100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86});
   }
   {
     SCOPED_TRACE("Android/ZPS with multiple auxiliary suggestions.");
@@ -668,7 +666,7 @@ TEST(AutocompleteGrouperSectionsTest, AndroidSRPZpsSection) {
         // Observe that PERSONALIZED_ZERO_SUGGEST and VISITED_DOC suggestions
         // are grouped together. VISITED_DOC_RELATED are prioritized over the
         // PERSONALIZED_ZERO_SUGGEST because these are more context relevant.
-        {2, 20, 40, 99, 97, 95, 93, 91, 89, 87, 85, 100, 98, 96, 94});
+        {2, 20, 99, 97, 95, 93, 91, 89, 87, 85, 100, 98, 96, 94, 92});
   }
   {
     SCOPED_TRACE("No Inspire Me content shown in the core ZPS content");
@@ -694,9 +692,10 @@ TEST(AutocompleteGrouperSectionsTest, AndroidSRPZpsSection) {
             // Auxiliary suggestions.
             CreateMatch(2, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
             CreateMatch(3, omnibox::GROUP_MOBILE_CLIPBOARD),
+            // Not allowed.
             CreateMatch(4, omnibox::GROUP_MOBILE_MOST_VISITED),
         },
-        {2, 3, 4, 99, 95, 91, 87, 100, 98, 94, 90, 86});
+        {2, 3, 99, 95, 91, 87, 100, 98, 94, 90, 86});
   }
 }
 
@@ -845,13 +844,12 @@ TEST(AutocompleteGrouperSectionsTest, AndroidWebZpsSection) {
             CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            // Slotted in horizontal render group.
             CreateMatch(4, omnibox::GROUP_MOBILE_MOST_VISITED),
-            // Bogus, repetitive, currently only one allowed.
-            // This will be permitted when group rendering shifts to horizontal.
             CreateMatch(3, omnibox::GROUP_MOBILE_MOST_VISITED),
             CreateMatch(2, omnibox::GROUP_MOBILE_MOST_VISITED),
         },
-        {4, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
+        {4, 3, 2, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
   }
   {
     SCOPED_TRACE("Android/ZPS with multiple auxiliary suggestions.");
@@ -885,14 +883,14 @@ TEST(AutocompleteGrouperSectionsTest, AndroidWebZpsSection) {
             CreateMatch(19, omnibox::GROUP_MOBILE_CLIPBOARD),
             // MV Tiles should always be on the third position if both SRO and
             // Clipboard are present.
-            // Currently only one item is permitted.
+            // Slotted in horizontal render group.
             CreateMatch(40, omnibox::GROUP_MOBILE_MOST_VISITED),
             CreateMatch(39, omnibox::GROUP_MOBILE_MOST_VISITED),
         },
         // Observe that PERSONALIZED_ZERO_SUGGEST and VISITED_DOC suggestions
         // are grouped together. VISITED_DOC_RELATED are prioritized over the
         // PERSONALIZED_ZERO_SUGGEST because these are more context relevant.
-        {2, 20, 40, 99, 97, 95, 93, 91, 89, 87, 85, 100, 98, 96, 94});
+        {2, 20, 40, 39, 99, 97, 95, 93, 91, 89, 87, 85, 100, 98, 96, 94});
   }
   {
     SCOPED_TRACE("No Inspire Me content shown in the core ZPS content");
@@ -1151,5 +1149,122 @@ TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSection_noInspireMe) {
             CreateMatch(10, omnibox::GROUP_TRENDS),
         },
         {});
+  }
+}
+
+TEST(AutocompleteGrouperSectionsTest, AndroidWebZpsSection_mostVisitedTiles) {
+  const ACMatches tail = {
+      CreateMatch(105, omnibox::GROUP_VISITED_DOC_RELATED),
+      CreateMatch(104, omnibox::GROUP_VISITED_DOC_RELATED),
+      CreateMatch(103, omnibox::GROUP_VISITED_DOC_RELATED),
+      CreateMatch(102, omnibox::GROUP_VISITED_DOC_RELATED),
+      CreateMatch(101, omnibox::GROUP_VISITED_DOC_RELATED),
+      CreateMatch(10, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(9, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(7, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(6, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(5, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(4, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(3, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(2, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+      CreateMatch(1, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+  };
+
+  auto test = [&tail](ACMatches matches, bool append_tail_suggestions,
+                      std::vector<int> expected_relevances) {
+    if (append_tail_suggestions) {
+      matches.insert(matches.end(), tail.begin(), tail.end());
+    }
+
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<AndroidWebZpsSection>(group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+
+  {
+    SCOPED_TRACE("No Search Ready Omnibox. No MV Tiles.");
+    test({}, true, {105, 104, 103, 102, 101, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1});
+  }
+
+  {
+    SCOPED_TRACE("Search Ready Omnibox, no MV Tiles.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(200, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+        },
+        true, {200, 105, 104, 103, 102, 101, 10, 9, 8, 7, 6, 5, 4, 3, 2});
+  }
+
+  {
+    // This test verifies that when we append MV Tiles, we don't do this at
+    // expense of Search suggestions.
+    SCOPED_TRACE("Search Ready Omnibox and 1 MV Tile.");
+    test(
+        {
+            CreateMatch(300, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            CreateMatch(200, omnibox::GROUP_MOBILE_MOST_VISITED),
+        },
+        true, {300, 200, 105, 104, 103, 102, 101, 10, 9, 8, 7, 6, 5, 4, 3});
+  }
+
+  {
+    // This test verifies that if we have no suggestions, we don't spend the
+    // limit on excessive MV Tiles.
+    SCOPED_TRACE("Excessive number of MV Tiles.");
+    test(
+        {
+            CreateMatch(215, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(214, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(213, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(212, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(211, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(210, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(209, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(208, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(207, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(206, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(205, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(204, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(203, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(202, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(201, omnibox::GROUP_MOBILE_MOST_VISITED),
+        },
+        false, {215, 214, 213, 212, 211, 210, 209, 208, 207, 206});
+  }
+
+  {
+    // This test verifies that if we have both MV Tiles and suggestions, we
+    // don't lose search suggestions slots on MV tiles.
+    SCOPED_TRACE("Search Ready Omnibox and many MV Tiles.");
+    test(
+        {
+            CreateMatch(300, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            CreateMatch(215, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(214, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(213, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(212, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(211, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(210, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(209, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(208, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(207, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(206, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(205, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(204, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(203, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(202, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(201, omnibox::GROUP_MOBILE_MOST_VISITED),
+        },
+        true,
+        {// SRO
+         300,
+         // 10 MV Tiles
+         215, 214, 213, 212, 211, 210, 209, 208, 207, 206,
+         // 13 search suggestions.
+         105, 104, 103, 102, 101, 10, 9, 8, 7, 6, 5, 4, 3});
   }
 }

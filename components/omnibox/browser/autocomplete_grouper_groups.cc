@@ -4,10 +4,7 @@
 
 #include "components/omnibox/browser/autocomplete_grouper_groups.h"
 
-#include <memory>
-
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
 Group::Group(size_t limit,

@@ -97,6 +97,7 @@ class AndroidSRPZpsSection : public ZpsSection {
 class AndroidWebZpsSection : public ZpsSection {
  public:
   explicit AndroidWebZpsSection(omnibox::GroupConfigMap& group_configs);
+  void InitFromMatches(ACMatches& matches) override;
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the NTP.

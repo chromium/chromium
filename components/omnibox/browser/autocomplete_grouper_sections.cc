@@ -5,7 +5,6 @@
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
 
 #include <algorithm>
-#include <limits>
 #include <memory>
 
 #include "base/dcheck_is_on.h"
@@ -14,6 +13,10 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+
+namespace {
+constexpr size_t kAndroidMostVisitedTilesLimit = 10;
+}
 
 Section::Section(size_t limit,
                  Groups groups,
@@ -122,7 +125,6 @@ AndroidSRPZpsSection::AndroidSRPZpsSection(
                  {
                      {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
                      {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
                      {15, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
                      {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
                  },
@@ -130,15 +132,34 @@ AndroidSRPZpsSection::AndroidSRPZpsSection(
 
 AndroidWebZpsSection::AndroidWebZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(15,
+    : ZpsSection(15,  // Excludes MV tile count (calculated at runtime).
                  {
                      {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
                      {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                     {kAndroidMostVisitedTilesLimit,
+                      omnibox::GROUP_MOBILE_MOST_VISITED},
                      {8, omnibox::GROUP_VISITED_DOC_RELATED},
                      {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
                  },
                  group_configs) {}
+
+void AndroidWebZpsSection::InitFromMatches(ACMatches& matches) {
+  size_t tile_count = std::count_if(
+      matches.begin(), matches.end(), [](const AutocompleteMatch& m) {
+        return m.suggestion_group_id.value_or(omnibox::GROUP_INVALID) ==
+               omnibox::GROUP_MOBILE_MOST_VISITED;
+      });
+  // In the event we find more MV tiles than we can accommodate, trim the limit.
+  limit_ += std::min(tile_count, kAndroidMostVisitedTilesLimit);
+  // Note that the horizontal render group takes a single slot in vertical list:
+  // we therefore count it as an individual item, meaning this list:
+  //     [ URL_WHAT_YOU_TYPED    ]
+  //     [ [MV] [MV] [MV] [MV]   ]
+  //     [ SEARCH_SUGGEST        ]
+  // has 3 elements built from 6 AutocompleteMatch objects.
+  limit_ -= (tile_count ? 1 : 0);
+  ZpsSection::InitFromMatches(matches);
+}
 
 DesktopNTPZpsSection::DesktopNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)
