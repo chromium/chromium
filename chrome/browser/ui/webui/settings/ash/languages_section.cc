@@ -554,11 +554,15 @@ LanguagesSection::LanguagesSection(Profile* profile,
 LanguagesSection::~LanguagesSection() = default;
 
 void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
       {"osLanguagesPageTitle", IDS_OS_SETTINGS_LANGUAGES_AND_INPUT_PAGE_TITLE},
       {"languagesPageTitle", IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PAGE_TITLE},
-      {"inputPageTitle", IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE},
-      {"inputPageTitleV2", IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2},
+      {"inputPageTitle", kIsRevampEnabled
+                             ? IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE
+                             : IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2},
       {"inputMethodEnabled", IDS_SETTINGS_LANGUAGES_INPUT_METHOD_ENABLED},
       {"inputMethodsManagedbyPolicy",
        IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY},
@@ -646,9 +650,11 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Input.
   generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kInputSubpagePath);
+      ash::features::IsOsSettingsRevampWayfindingEnabled()
+          ? IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE
+          : IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2,
+      mojom::Subpage::kInput, mojom::SearchResultIcon::kGlobe,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
   static constexpr mojom::Setting kInputPageSettings[] = {
       mojom::Setting::kAddInputMethod,
       mojom::Setting::kSpellCheck,
