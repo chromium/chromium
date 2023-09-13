@@ -81,7 +81,7 @@ void EditorMenuControllerImpl::OnAnchorBoundsChanged(
 }
 
 void EditorMenuControllerImpl::OnDismiss(bool is_other_command_executed) {
-  if (editor_menu_widget_) {
+  if (editor_menu_widget_ && !editor_menu_widget_->IsActive()) {
     editor_menu_widget_.reset();
   }
 }
