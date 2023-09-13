@@ -660,7 +660,13 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kPrivacyGuide3};
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
+// TODO(crbug.com/1482266): flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PrivacyGuidePage DISABLED_PrivacyGuidePage
+#else
+#define MAYBE_PrivacyGuidePage PrivacyGuidePage
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_PrivacyGuidePage) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuidePage')");
 }
