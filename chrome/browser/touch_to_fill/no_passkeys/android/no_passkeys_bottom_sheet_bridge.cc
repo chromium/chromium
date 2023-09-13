@@ -4,6 +4,8 @@
 
 #include "chrome/browser/touch_to_fill/no_passkeys/android/no_passkeys_bottom_sheet_bridge.h"
 
+#include "base/android/jni_string.h"
+#include "chrome/browser/touch_to_fill/no_passkeys/internal/android/jni/NoPasskeysBottomSheetBridge_jni.h"
 #include "ui/android/window_android.h"
 
 namespace {
@@ -18,18 +20,20 @@ class JniDelegateImpl : public JniDelegate {
   ~JniDelegateImpl() override = default;
 
   void Create(ui::WindowAndroid* window_android) override {
-    // TODO(crbug/1481495): Implement.
-    NOTIMPLEMENTED();
+    java_object_.Reset(Java_NoPasskeysBottomSheetBridge_Constructor(
+        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+        window_android->GetJavaObject()));
   }
 
   void Show(const std::string& origin) override {
-    // TODO(crbug/1481495): Implement.
-    NOTIMPLEMENTED();
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_NoPasskeysBottomSheetBridge_show(
+        env, java_object_, base::android::ConvertUTF8ToJavaString(env, origin));
   }
 
   void Dismiss() override {
-    // TODO(crbug/1481495): Implement.
-    NOTIMPLEMENTED();
+    Java_NoPasskeysBottomSheetBridge_dismiss(
+        base::android::AttachCurrentThread(), java_object_);
   }
 
  private:

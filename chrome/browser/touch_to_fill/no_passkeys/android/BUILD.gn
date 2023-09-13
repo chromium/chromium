@@ -12,6 +12,7 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//chrome/browser/touch_to_fill/no_passkeys/internal/android:jni",
     "//ui/android:android",
   ]
 }
