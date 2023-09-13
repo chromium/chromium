@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -28,13 +29,28 @@ using autofill_helper::RemoveKeys;
 using autofill_helper::SetProfiles;
 using sync_timing_helper::TimeMutualSyncCycle;
 
-// See comments in typed_urls_sync_perf_test.cc for reasons for these
-// magic numbers.
-//
-// TODO(akalin): If this works, decomp the magic number calculation
-// into a macro and have all the perf tests use it.
+// These numbers should be as far away from a multiple of
+// `kDefaultMaxCommitBatchSize` as possible, so that sync cycle counts
+// for batch operations stay the same even if some batches end up not
+// being completely full.
 constexpr size_t kNumKeys = 163;
 constexpr size_t kNumProfiles = 163;
+// Checks that the given `item_count` is right in the middle between two
+// multiples of `kDefaultMaxCommitBatchSize`.
+constexpr bool IsRightBetweenCommitBatches(size_t item_count) {
+  size_t item_count_in_last_commit =
+      item_count % syncer::kDefaultMaxCommitBatchSize;
+  size_t min_good_count = syncer::kDefaultMaxCommitBatchSize / 2;
+  size_t max_good_count = (syncer::kDefaultMaxCommitBatchSize + 1) / 2;
+  return min_good_count <= item_count_in_last_commit &&
+         item_count_in_last_commit <= max_good_count;
+}
+static_assert(
+    IsRightBetweenCommitBatches(kNumKeys),
+    "kNumKeys should be between two multiples of kDefaultMaxCommitBatchSize");
+static_assert(IsRightBetweenCommitBatches(kNumProfiles),
+              "kNumProfiles should be between two multiples of "
+              "kDefaultMaxCommitBatchSize");
 
 constexpr char kMetricPrefixAutofill[] = "Autofill.";
 constexpr char kMetricAddProfilesSyncTime[] = "add_profiles_sync_time";
