@@ -1080,9 +1080,12 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithAlphaThresholdFilter) {
   // Force the allocation a larger textures.
   set_enlarge_texture_amount(gfx::Size(50, 50));
 
-  RunPixelTest(
-      background,
-      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_threshold.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_threshold.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunPixelTest(background, expected_result);
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithCropOffsetFilter) {
@@ -1118,9 +1121,12 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithCropOffsetFilter) {
   // Force the allocation a larger textures.
   set_enlarge_texture_amount(gfx::Size(50, 50));
 
-  RunPixelTest(
-      background,
-      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_crop_offset.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("enlarged_texture_on_crop_offset.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunPixelTest(background, expected_result);
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {

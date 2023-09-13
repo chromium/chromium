@@ -48,8 +48,10 @@
 //components/test/data/viz/blue_yellow_filter_chain.png
 //components/test/data/viz/blue_yellow_flipped.png
 //components/test/data/viz/blue_yellow_flipped_dither.png
+//components/test/data/viz/blue_yellow_flipped_graphite.png
 //components/test/data/viz/blue_yellow_partial_flipped.png
 //components/test/data/viz/blue_yellow_partial_flipped_dither.png
+//components/test/data/viz/blue_yellow_partial_flipped_graphite.png
 //components/test/data/viz/blur_expands_bounds.png
 //components/test/data/viz/blur_expands_bounds_graphite.png
 //components/test/data/viz/blur_expands_bounds_sw.png
@@ -82,7 +84,9 @@
 //components/test/data/viz/delegated_ink_two_trails_second_graphite.png
 //components/test/data/viz/dense_layer_tree.json
 //components/test/data/viz/enlarged_texture_on_crop_offset.png
+//components/test/data/viz/enlarged_texture_on_crop_offset_graphite.png
 //components/test/data/viz/enlarged_texture_on_threshold.png
+//components/test/data/viz/enlarged_texture_on_threshold_graphite.png
 //components/test/data/viz/filter_with_giant_crop_rect.png
 //components/test/data/viz/force_anti_aliasing_off.png
 //components/test/data/viz/force_anti_aliasing_off_graphite.png
@@ -244,6 +248,7 @@
 //components/test/data/viz/solid_color_empty_mask_with_effect.png
 //components/test/data/viz/spiral.png
 //components/test/data/viz/spiral_64_scale.png
+//components/test/data/viz/spiral_64_scale_graphite.png
 //components/test/data/viz/spiral_64_scale_vk.png
 //components/test/data/viz/spiral_double_scale.png
 //components/test/data/viz/srgb_green_in_p3.png

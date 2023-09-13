@@ -58,7 +58,7 @@ TEST_P(LayerTreeHostMirrorPixelTest, MirrorLayer) {
             .SetAbsErrorLimit(120));
   }
 
-  if (use_skia_vulkan()) {
+  if (use_skia_vulkan() || use_skia_graphite()) {
     pixel_comparator_ =
         std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
   }

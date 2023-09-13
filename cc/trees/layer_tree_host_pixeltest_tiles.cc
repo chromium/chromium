@@ -246,16 +246,22 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif
 TEST_P(LayerTreeHostTilesTestPartialInvalidation, MAYBE_PartialRaster) {
   use_partial_raster_ = true;
-  RunSingleThreadedPixelTest(
-      picture_layer_,
-      base::FilePath(FILE_PATH_LITERAL("blue_yellow_partial_flipped.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("blue_yellow_partial_flipped.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunSingleThreadedPixelTest(picture_layer_, expected_result);
 }
 #undef MAYBE_PartialRaster
 
 TEST_P(LayerTreeHostTilesTestPartialInvalidation, FullRaster) {
-  RunSingleThreadedPixelTest(
-      picture_layer_,
-      base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunSingleThreadedPixelTest(picture_layer_, expected_result);
 }
 
 std::vector<RasterTestConfig> const kTestCasesMultiThread = {
@@ -297,15 +303,22 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 TEST_P(LayerTreeHostTilesTestPartialInvalidationMultiThread,
        MAYBE_PartialRaster) {
   use_partial_raster_ = true;
-  RunPixelTest(
-      picture_layer_,
-      base::FilePath(FILE_PATH_LITERAL("blue_yellow_partial_flipped.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("blue_yellow_partial_flipped.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunPixelTest(picture_layer_, expected_result);
 }
 #undef MAYBE_PartialRaster
 
 TEST_P(LayerTreeHostTilesTestPartialInvalidationMultiThread, FullRaster) {
-  RunPixelTest(picture_layer_,
-               base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  RunPixelTest(picture_layer_, expected_result);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

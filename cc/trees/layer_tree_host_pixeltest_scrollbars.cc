@@ -172,10 +172,15 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   pixel_comparator_ =
       std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
 
-  RunPixelTest(background,
-               base::FilePath(use_skia_vulkan()
-                                  ? FILE_PATH_LITERAL("spiral_64_scale_vk.png")
-                                  : FILE_PATH_LITERAL("spiral_64_scale.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("spiral_64_scale.png"));
+  if (use_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  if (use_skia_vulkan()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_vk");
+  }
+  RunPixelTest(background, expected_result);
 }
 
 class LayerTreeHostOverlayScrollbarsPixelTest
