@@ -173,15 +173,6 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-
-    mock_graph_ =
-        std::make_unique<MockMultiplePagesAndWorkersWithMultipleProcessesGraph>(
-            graph());
-    mock_utility_process_ =
-        CreateNode<ProcessNodeImpl>(content::PROCESS_TYPE_UTILITY);
-    mock_utility_process_->SetProcess(base::Process::Current(),
-                                      /*launch_time=*/base::TimeTicks::Now());
-
     cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(base::BindRepeating(
         &CPUMeasurementMonitorTest::CPUMeasurementDelegateFactory,
         base::Unretained(this)));
@@ -284,26 +275,15 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   // clears any cached results.
   void StartMonitoring() {
     last_measurements_ = {};
-    last_page_cpu_usage_ = {};
     current_measurements_ = {};
-    current_page_cpu_usage_ = {};
     cpu_monitor_.StartMonitoring(graph());
   }
 
   // Calls UpdateAndGetCPUMeasurements() on the CPUMeasurementMonitor under
-  // test, and caches the results. Also caches the results of
-  // EstimatePageCPUUsage() for all pages in the mock graph.
+  // test, and caches the results.
   void UpdateAndGetCPUMeasurements() {
     last_measurements_ = current_measurements_;
-    last_page_cpu_usage_ = current_page_cpu_usage_;
-
     current_measurements_ = cpu_monitor_.UpdateAndGetCPUMeasurements();
-    current_page_cpu_usage_[mock_graph_->page->resource_context()] =
-        CPUMeasurementMonitor::EstimatePageCPUUsage(mock_graph_->page.get(),
-                                                    current_measurements_);
-    current_page_cpu_usage_[mock_graph_->other_page->resource_context()] =
-        CPUMeasurementMonitor::EstimatePageCPUUsage(
-            mock_graph_->other_page.get(), current_measurements_);
   }
 
   // GMock matcher expecting that a given CPUTimeResult equals
@@ -343,27 +323,7 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
     return Field("start_time", &CPUTimeResult::start_time, expected_start_time);
   }
 
-  // Returns the change in CPU estimates of `page_context` since the previous
-  // call to StartMonitoring() or UpdateAndGetCPUMeasurements(), or nullopt if
-  // `page_context` has no cached estimates.
-  absl::optional<base::TimeDelta> GetPageCPUUsageDelta(
-      const PageContext& page_context) const {
-    const auto current_it = current_page_cpu_usage_.find(page_context);
-    if (current_it == current_page_cpu_usage_.end()) {
-      // No measurement for this context.
-      return absl::nullopt;
-    }
-    const auto last_it = last_page_cpu_usage_.find(page_context);
-    if (last_it == last_page_cpu_usage_.end()) {
-      // First measurement for this context.
-      return current_it->second;
-    }
-    return current_it->second - last_it->second;
-  }
-
   CPUMeasurementMonitor cpu_monitor_;
-
-  TestNodeWrapper<ProcessNodeImpl> mock_utility_process_;
 
   // Map of ProcessNode to CPUMeasurementDelegate that simulates that process.
   // The delegates are owned by `cpu_monitor_` or `pending_cpu_delegates_`.
@@ -375,16 +335,11 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   std::map<const ProcessNode*, std::unique_ptr<SimulatedCPUMeasurementDelegate>>
       pending_cpu_delegates_;
 
-  std::unique_ptr<MockMultiplePagesAndWorkersWithMultipleProcessesGraph>
-      mock_graph_;
-
   // Cached results from UpdateAndGetCPUMeasurements(). Most tests will validate
   // the difference between the "last" and "current" measurements, which is
   // easier to follow than the full cumulative measurements at any given time.
   std::map<ResourceContext, CPUTimeResult> last_measurements_;
   std::map<ResourceContext, CPUTimeResult> current_measurements_;
-  std::map<PageContext, base::TimeDelta> last_page_cpu_usage_;
-  std::map<PageContext, base::TimeDelta> current_page_cpu_usage_;
 };
 
 // Tests that renderers created at various points around CPU measurement
@@ -660,13 +615,15 @@ TEST_F(CPUMeasurementMonitorTest, VaryingMeasurements) {
 // workers in those processes, and correctly aggregated to pages containing
 // frames and workers from multiple processes.
 TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
+  MockUtilityAndMultipleRenderProcessesGraph mock_graph(graph());
+
   // Track CPU usage of the mock utility process to make sure that measuring it
   // doesn't crash. Currently only measurements of renderer processes are
   // stored anywhere, so there are no other expectations to verify.
-  SetProcessCPUUsage(mock_utility_process_.get(), 0.7);
+  SetProcessCPUUsage(mock_graph.utility_process.get(), 0.7);
 
-  SetProcessCPUUsage(mock_graph_->process.get(), 0.6);
-  SetProcessCPUUsage(mock_graph_->other_process.get(), 0.5);
+  SetProcessCPUUsage(mock_graph.process.get(), 0.6);
+  SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
 
   StartMonitoring();
   const auto monitoring_start_time = base::TimeTicks::Now();
@@ -679,14 +636,21 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
 
   UpdateAndGetCPUMeasurements();
 
-  const FrameContext& frame_context = mock_graph_->frame->resource_context();
+  const FrameContext& frame_context = mock_graph.frame->resource_context();
   const FrameContext& child_frame_context =
-      mock_graph_->child_frame->resource_context();
+      mock_graph.child_frame->resource_context();
   const FrameContext& other_frame_context =
-      mock_graph_->other_frame->resource_context();
-  const WorkerContext& worker_context = mock_graph_->worker->resource_context();
+      mock_graph.other_frame->resource_context();
+  const PageContext& page_context = mock_graph.page->resource_context();
+  const PageContext& other_page_context =
+      mock_graph.other_page->resource_context();
+  const WorkerContext& worker_context = mock_graph.worker->resource_context();
   const WorkerContext& other_worker_context =
-      mock_graph_->other_worker->resource_context();
+      mock_graph.other_worker->resource_context();
+  const ProcessContext& process_context =
+      mock_graph.process->resource_context();
+  const ProcessContext& other_process_context =
+      mock_graph.other_process->resource_context();
 
   // `process` splits its 60% CPU usage evenly between `frame`, `other_frame`
   // and `worker`. `other_process` splits its 50% CPU usage evenly between
@@ -695,6 +659,15 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   base::TimeDelta split_process_cpu_delta = kTimeBetweenMeasurements * 0.2;
   base::TimeDelta other_process_split_cpu_delta =
       kTimeBetweenMeasurements * 0.25;
+
+  EXPECT_THAT(
+      current_measurements_[process_context],
+      AllOf(CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6),
+            StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(current_measurements_[other_process_context],
+              AllOf(CPUDeltaMatches(other_process_context,
+                                    kTimeBetweenMeasurements * 0.5),
+                    StartTimeMatches(monitoring_start_time)));
 
   EXPECT_THAT(current_measurements_[frame_context],
               AllOf(CPUDeltaMatches(frame_context, split_process_cpu_delta),
@@ -720,15 +693,19 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   // `other_page` gets the sum of `other_frame`, `child_frame` and
   // `other_worker`. See the chart in
   // MockMultiplePagesAndWorkersWithMultipleProcessesGraph.
-  EXPECT_THAT(GetPageCPUUsageDelta(mock_graph_->page->resource_context()),
-              Optional(kTimeBetweenMeasurements * 0.4));
-  EXPECT_THAT(GetPageCPUUsageDelta(mock_graph_->other_page->resource_context()),
-              Optional(kTimeBetweenMeasurements * 0.7));
+  EXPECT_THAT(
+      current_measurements_[page_context],
+      AllOf(CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.4),
+            StartTimeMatches(monitoring_start_time)));
+  EXPECT_THAT(
+      current_measurements_[other_page_context],
+      AllOf(CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.7),
+            StartTimeMatches(monitoring_start_time)));
 
   // Modify the CPU usage of each process, ensure all frames and workers are
   // updated.
-  SetProcessCPUUsage(mock_graph_->process.get(), 0.3);
-  SetProcessCPUUsage(mock_graph_->other_process.get(), 0.8);
+  SetProcessCPUUsage(mock_graph.process.get(), 0.3);
+  SetProcessCPUUsage(mock_graph.other_process.get(), 0.8);
   task_env().FastForwardBy(kTimeBetweenMeasurements);
 
   UpdateAndGetCPUMeasurements();
@@ -739,6 +716,12 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   split_process_cpu_delta = kTimeBetweenMeasurements * 0.1;
   other_process_split_cpu_delta = kTimeBetweenMeasurements * 0.4;
 
+  EXPECT_THAT(current_measurements_[process_context],
+              CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.3));
+  EXPECT_THAT(
+      current_measurements_[other_process_context],
+      CPUDeltaMatches(other_process_context, kTimeBetweenMeasurements * 0.8));
+
   EXPECT_THAT(current_measurements_[frame_context],
               CPUDeltaMatches(frame_context, split_process_cpu_delta));
   EXPECT_THAT(current_measurements_[other_frame_context],
@@ -756,16 +739,17 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
   // `other_worker`.
-  EXPECT_THAT(GetPageCPUUsageDelta(mock_graph_->page->resource_context()),
-              Optional(kTimeBetweenMeasurements * 0.2));
-  EXPECT_THAT(GetPageCPUUsageDelta(mock_graph_->other_page->resource_context()),
-              Optional(kTimeBetweenMeasurements * 0.9));
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, kTimeBetweenMeasurements * 0.2));
+  EXPECT_THAT(
+      current_measurements_[other_page_context],
+      CPUDeltaMatches(other_page_context, kTimeBetweenMeasurements * 0.9));
 
   // Drop CPU usage of `other_process` to 0%. Only advance part of the normal
   // measurement interval, to be sure that the percentage usage doesn't depend
   // on the length of the interval.
   constexpr base::TimeDelta kShortInterval = kTimeBetweenMeasurements / 3;
-  SetProcessCPUUsage(mock_graph_->other_process.get(), 0.0);
+  SetProcessCPUUsage(mock_graph.other_process.get(), 0.0);
   task_env().FastForwardBy(kShortInterval);
 
   UpdateAndGetCPUMeasurements();
@@ -776,6 +760,11 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   split_process_cpu_delta = kShortInterval * 0.1;
   other_process_split_cpu_delta = base::TimeDelta();
 
+  EXPECT_THAT(current_measurements_[process_context],
+              CPUDeltaMatches(process_context, kShortInterval * 0.3));
+  EXPECT_THAT(current_measurements_[other_process_context],
+              CPUDeltaMatches(other_process_context, base::TimeDelta()));
+
   EXPECT_THAT(current_measurements_[frame_context],
               CPUDeltaMatches(frame_context, split_process_cpu_delta));
   EXPECT_THAT(current_measurements_[other_frame_context],
@@ -793,10 +782,10 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
   // `page` gets its CPU usage from the sum of `frame` and `worker`.
   // `other_page` gets the sum of `other_frame`, `child_frame` and
   // `other_worker`.
-  EXPECT_THAT(GetPageCPUUsageDelta(mock_graph_->page->resource_context()),
-              kShortInterval * 0.2);
-  EXPECT_THAT(GetPageCPUUsageDelta(mock_graph_->other_page->resource_context()),
-              kShortInterval * 0.1);
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, kShortInterval * 0.2));
+  EXPECT_THAT(current_measurements_[other_page_context],
+              CPUDeltaMatches(other_page_context, kShortInterval * 0.1));
 }
 
 // Tests that errors returned from ProcessMetrics are correctly ignored.

@@ -110,14 +110,35 @@ void ValidateCPUTimeResult(const CPUTimeResult& result) {
 // immediately follow the end time of `result`. Used for adding successive
 // measurements of process, frame and worker contexts.
 void ApplySequentialDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
-  ValidateCPUTimeResult(result);
+  CHECK(!IsEmptyCPUTimeResult(delta));
   ValidateCPUTimeResult(delta);
   if (IsEmptyCPUTimeResult(result)) {
     result = delta;
   } else {
     // Successive measurement periods should be back to back.
+    ValidateCPUTimeResult(result);
     CHECK_EQ(result.metadata.measurement_time, delta.start_time);
     result.metadata.measurement_time = delta.metadata.measurement_time;
+    result.cumulative_cpu += delta.cumulative_cpu;
+  }
+
+  // Adding a valid delta to a valid result should produce a valid result.
+  ValidateCPUTimeResult(result);
+}
+
+// Adds the measurement in `delta` to `result`. Delta may start before `result`
+// or end after it. Used for adding frame and worker measurements to page
+// contexts, since the frames and workers can be added in any order.
+void ApplyOverlappingDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
+  CHECK(!IsEmptyCPUTimeResult(delta));
+  ValidateCPUTimeResult(delta);
+  if (IsEmptyCPUTimeResult(result)) {
+    result = delta;
+  } else {
+    ValidateCPUTimeResult(result);
+    result.metadata.measurement_time = std::max(
+        result.metadata.measurement_time, delta.metadata.measurement_time);
+    result.start_time = std::min(result.start_time, delta.start_time);
     result.cumulative_cpu += delta.cumulative_cpu;
   }
 
@@ -191,34 +212,6 @@ CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
   return results;
 }
 
-// static
-base::TimeDelta CPUMeasurementMonitor::EstimatePageCPUUsage(
-    const PageNode* page_node,
-    const std::map<ResourceContext, CPUTimeResult>& cpu_usage_map) {
-  base::TimeDelta page_cpu_usage;
-  auto accumulate_cpu_usage = [&page_cpu_usage,
-                               &cpu_usage_map](const ResourceContext& context) {
-    const auto it = cpu_usage_map.find(context);
-    // A context might be missing from the map if there was an error measuring
-    // the CPU usage of its process.
-    if (it != cpu_usage_map.end()) {
-      page_cpu_usage += it->second.cumulative_cpu;
-    }
-  };
-  GraphOperations::VisitFrameTreePreOrder(page_node, [&accumulate_cpu_usage](
-                                                         const FrameNode* f) {
-    accumulate_cpu_usage(f->GetResourceContext());
-    // TODO(crbug.com/1410503): Handle non-dedicated workers, which could appear
-    // as children of multiple frames.
-    f->VisitChildDedicatedWorkers([&accumulate_cpu_usage](const WorkerNode* w) {
-      accumulate_cpu_usage(w->GetResourceContext());
-      return true;
-    });
-    return true;
-  });
-  return page_cpu_usage;
-}
-
 void CPUMeasurementMonitor::OnProcessLifetimeChange(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -253,6 +246,8 @@ void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
 void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Only measure renderers.
+  // TODO(crbug.com/1471683): Measure other process types, just don't distribute
+  // the measurements to frames and workers.
   CHECK_EQ(process_node->GetProcessType(), content::PROCESS_TYPE_RENDERER);
   const auto& [it, was_inserted] = cpu_measurement_map_.emplace(
       process_node,
@@ -267,10 +262,52 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements() {
 
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
+  std::map<ResourceContext, CPUTimeResult> measurement_deltas;
   for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
     cpu_measurement.MeasureAndDistributeCPUUsage(process_node,
-                                                 measurement_results_);
+                                                 measurement_deltas);
   }
+
+  // Add the new process, frame and worker measurements to the existing
+  // measurements.
+  for (const auto& [context, delta] : measurement_deltas) {
+    CHECK(!ContextIs<PageContext>(context));
+    ApplySequentialDelta(measurement_results_[context], delta);
+  }
+
+  // Aggregate new frame and worker measurements to pages.
+  // TODO(crbug.com/1471683): Implement the resource attribution Query API and
+  // keep track of which pages are being measured to avoid extra work here.
+  graph_->VisitAllPageNodes(
+      [this, &measurement_deltas](const PageNode* page_node) {
+        EstimatePageCPUUsage(page_node, measurement_deltas);
+        return true;
+      });
+}
+
+void CPUMeasurementMonitor::EstimatePageCPUUsage(
+    const PageNode* page_node,
+    const std::map<ResourceContext, CPUTimeResult>& measurement_deltas) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CPUTimeResult& result = measurement_results_[page_node->GetResourceContext()];
+  auto apply_delta_to_page =
+      [&result, &measurement_deltas](const ResourceContext& context) {
+        const auto it = measurement_deltas.find(context);
+        if (it != measurement_deltas.end()) {
+          ApplyOverlappingDelta(result, it->second);
+        }
+      };
+  GraphOperations::VisitFrameTreePreOrder(page_node, [&apply_delta_to_page](
+                                                         const FrameNode* f) {
+    apply_delta_to_page(f->GetResourceContext());
+    // TODO(crbug.com/1410503): Handle non-dedicated workers, which could
+    // appear as children of multiple frames.
+    f->VisitChildDedicatedWorkers([&apply_delta_to_page](const WorkerNode* w) {
+      apply_delta_to_page(w->GetResourceContext());
+      return true;
+    });
+    return true;
+  });
 }
 
 CPUMeasurementMonitor::CPUMeasurement::CPUMeasurement(
@@ -293,7 +330,7 @@ CPUMeasurementMonitor::CPUMeasurement::operator=(
 
 void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
-    std::map<ResourceContext, CPUTimeResult>& cpu_usage_map) {
+    std::map<ResourceContext, CPUTimeResult>& measurement_deltas) {
   // TODO(crbug.com/1471683): Handle final CPU usage of a process.
   //
   // There isn't a good way to get the process CPU usage after it exits here:
@@ -415,25 +452,31 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   most_recent_measurement_ = current_cpu_usage;
   last_measurement_time_ = measurement_interval_end;
 
-  auto record_cpu_deltas =
-      [&cpu_usage_map, &measurement_interval_start, &measurement_interval_end](
-          const ResourceContext& context, base::TimeDelta cpu_delta) {
-        ApplySequentialDelta(
-            cpu_usage_map[context],
-            CPUTimeResult{
-                .metadata = {.measurement_time = measurement_interval_end},
-                // TODO(crbug.com/1471683): `start_time` for a frame or
-                // worker might be different than its parent process, since it
-                // might have been created partway through the current
-                // measurement interval, after the parent is. Handle this by
-                // watching for added/removed FrameNode's and WorkerNode's and
-                // taking an immediate measurement, so that their lifetimes
-                // always correspond with the measurement period.
-                .start_time = measurement_interval_start,
-                .cumulative_cpu = cpu_delta,
-            });
-      };
+  auto record_cpu_deltas = [&measurement_deltas, &measurement_interval_start,
+                            &measurement_interval_end](
+                               const ResourceContext& context,
+                               base::TimeDelta cpu_delta) {
+    // Each ProcessNode should be updated by one call to
+    // MeasureAndDistributeCPUUsage(), and each FrameNode and WorkerNode is in a
+    // single process, so none of these contexts should be in the map yet.
+    const auto [_, inserted] = measurement_deltas.emplace(
+        context,
+        CPUTimeResult{
+            .metadata = {.measurement_time = measurement_interval_end},
+            // TODO(crbug.com/1471683): `start_time` for a frame or
+            // worker might be different than its parent process, since it
+            // might have been created partway through the current
+            // measurement interval, after the parent is. Handle this by
+            // watching for added/removed FrameNode's and WorkerNode's and
+            // taking an immediate measurement, so that their lifetimes
+            // always correspond with the measurement period.
+            .start_time = measurement_interval_start,
+            .cumulative_cpu = cpu_delta,
+        });
+    CHECK(inserted);
+  };
 
+  record_cpu_deltas(process_node->GetResourceContext(), cumulative_cpu_delta);
   resource_attribution::SplitResourceAmongFramesAndWorkers(
       cumulative_cpu_delta, process_node,
       [&record_cpu_deltas](const FrameNode* f, base::TimeDelta cpu_delta) {

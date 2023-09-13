@@ -93,16 +93,9 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   void StopMonitoring();
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
-  // the estimated CPU usage of each frame and worker in those processes.
-  // TODO(crbug.com/1471683): Also store PageContext's in this map, replacing
-  // EstimatePageCPUUsage().
+  // the estimated CPU usage of each frame and worker in those processes, and
+  // all pages containing them.
   std::map<ResourceContext, CPUTimeResult> UpdateAndGetCPUMeasurements();
-
-  // Helper to estimate the CPU usage of a PageNode given the estimates for all
-  // frames and workers.
-  static base::TimeDelta EstimatePageCPUUsage(
-      const PageNode* page_node,
-      const std::map<ResourceContext, CPUTimeResult>& cpu_usage_map);
 
   // ProcessNode::Observer:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
@@ -133,10 +126,11 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
 
     // Measures the CPU usage of `process_node`, calculates the change in CPU
     // usage over the period (`last_measurement_time_` ... now], and allocates
-    // the results to frames and workers in the process.
+    // the results to frames and workers in the process. The new CPU usage in
+    // this measurement is added to `measurement_deltas`.
     void MeasureAndDistributeCPUUsage(
         const ProcessNode* process_node,
-        std::map<ResourceContext, CPUTimeResult>& cpu_usage_map);
+        std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
 
    private:
     std::unique_ptr<CPUMeasurementDelegate> delegate_;
@@ -157,6 +151,13 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   // the estimated CPU usage of each frame and worker in those processes since
   // the last time UpdateCPUMeasurements() was called to `measurement_results_`.
   void UpdateCPUMeasurements();
+
+  // Helper to estimate the CPU usage of `page_node` given `measurement_deltas`
+  // containing the change in estimates for all frames and workers. The estimate
+  // is added to `measurement_results_`.
+  void EstimatePageCPUUsage(
+      const PageNode* page_node,
+      const std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
