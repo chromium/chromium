@@ -658,4 +658,46 @@ TEST_F(UserPolicySigninServiceTest, CanHandleError_OauthToken) {
   ASSERT_TRUE(manager_->core()->service());
 }
 
+// Tests that the delayed registration task is cancelled when the service is
+// shut down.
+TEST_F(UserPolicySigninServiceTest, IgnorePendingRegistrationAfterShutdown) {
+  // Explicitly forcing this call is necessary for the clearing of the primary
+  // account to result in the account being fully removed in this testing
+  // context.
+  identity_test_env()->EnableRemovalOfExtendedAccountInfo();
+
+  // Set the user as signed in and syncing.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(kManagedTestUser);
+  identity_test_env()->SetPrimaryAccount(kManagedTestUser,
+                                         signin::ConsentLevel::kSync);
+
+  // Mark the store as loaded to allow registration during the initialization of
+  // the user policy service.
+  mock_store_->NotifyStoreLoaded();
+
+  // Initialize the UserPolicySigninService while the user has sync enabled and
+  // is eligible for user policy. This will kick off the asynchronous
+  // registration process.
+  InitUserPolicySigninService();
+
+  // Expect the UserCloudPolicyManager to be initialized when creating the
+  // service because the user is syncing and eligible for user policy.
+  EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
+  ASSERT_TRUE(manager_->core()->service());
+
+  // Sign out and verify that the manager is shutdown.
+  EXPECT_CALL(*mock_store_, Clear());
+  identity_test_env()->ClearPrimaryAccount();
+  ASSERT_FALSE(manager_->core()->service());
+
+  // Fast forward to reach the delay that would normally trigger
+  // RegisterCloudPolicyService().
+  task_environment_.FastForwardBy(
+      GetTryRegistrationDelayFromPrefs(browser_state_->GetPrefs()));
+
+  // Verify that no registration takes place because the task was cancelled.
+  EXPECT_FALSE(IsRequestActive());
+}
+
 }  // namespace policy

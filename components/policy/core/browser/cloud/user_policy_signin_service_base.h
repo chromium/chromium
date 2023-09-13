@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -240,6 +241,10 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // `RegisterForPolicyWithAccountId()`.
   std::unique_ptr<CloudPolicyClientRegistrationHelper>
       registration_helper_for_temporary_client_;
+
+  // Callback to start the delayed registration. Cancelled when the service is
+  // shut down.
+  base::CancelableOnceCallback<void()> registration_callback_;
 
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
 
