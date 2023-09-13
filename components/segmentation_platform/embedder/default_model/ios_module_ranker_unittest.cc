@@ -30,7 +30,7 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInput) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(35, 0);
+  std::vector<float> input(15, 0);
 
   ExpectClassifierResults(input, {kMostVisitedTiles, kShortcuts, kSafetyCheck,
                                   kTabResumption, kParcelTracking});
