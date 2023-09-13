@@ -101,8 +101,8 @@ public class AutofillProviderTest {
         mAutofillProvider = new AutofillProvider(
                 mContext, mContainerView, mWebContents, "AutofillProviderTest") {
             @Override
-            protected long initializeNativeAutofillProvider(WebContents webContents) {
-                return mMockedNativeAutofillProviderAndroid;
+            protected void initializeNativeAutofillProvider(WebContents webContents) {
+                setNativeAutofillProvider(mMockedNativeAutofillProviderAndroid);
             }
         };
 

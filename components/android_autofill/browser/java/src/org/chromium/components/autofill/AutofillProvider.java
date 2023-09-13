@@ -107,7 +107,7 @@ public class AutofillProvider {
             mAutofillManager.addInputUIObserver(mInputUIObserver);
             mContext = context;
         }
-        mNativeAutofillProvider = initializeNativeAutofillProvider(webContents);
+        initializeNativeAutofillProvider(webContents);
     }
 
     public void destroy() {
@@ -308,8 +308,8 @@ public class AutofillProvider {
     }
 
     // Add a specific method in order to mock it in test.
-    protected long initializeNativeAutofillProvider(WebContents webContents) {
-        return AutofillProviderJni.get().init(this, webContents);
+    protected void initializeNativeAutofillProvider(WebContents webContents) {
+        AutofillProviderJni.get().init(this, webContents);
     }
 
     private boolean isDatalistField(int childId) {
@@ -570,7 +570,7 @@ public class AutofillProvider {
     }
 
     @CalledByNative
-    private void onQueryDone(boolean success) {
+    private void onServerPredictionQueryDone(boolean success) {
         if (mRequest == null) return;
         mRequest.onQueryDone(success);
         mAutofillUMA.onServerTypeAvailable(
@@ -660,13 +660,14 @@ public class AutofillProvider {
 
     @NativeMethods
     interface Natives {
-        long init(AutofillProvider caller, WebContents webContents);
-        void detachFromJavaAutofillProvider(long nativeAutofillProviderAndroid);
-        void onAutofillAvailable(
-                long nativeAutofillProviderAndroid, AutofillProvider caller, FormData formData);
-        void onAcceptDataListSuggestion(
-                long nativeAutofillProviderAndroid, AutofillProvider caller, String value);
-        void setAnchorViewRect(long nativeAutofillProviderAndroid, AutofillProvider caller,
-                View anchorView, float x, float y, float width, float height);
+        void init(AutofillProvider caller, WebContents webContents);
+        void detachFromJavaAutofillProvider(long nativeAutofillProviderAndroidBridgeImpl);
+        void onAutofillAvailable(long nativeAutofillProviderAndroidBridgeImpl,
+                AutofillProvider caller, FormData formData);
+        void onAcceptDataListSuggestion(long nativeAutofillProviderAndroidBridgeImpl,
+                AutofillProvider caller, String value);
+        void setAnchorViewRect(long nativeAutofillProviderAndroidBridgeImpl,
+                AutofillProvider caller, View anchorView, float x, float y, float width,
+                float height);
     }
 }

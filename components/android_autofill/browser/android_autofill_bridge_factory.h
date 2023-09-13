@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 
 namespace autofill {
 
@@ -22,12 +23,27 @@ class AndroidAutofillBridgeFactory {
  public:
   static AndroidAutofillBridgeFactory& GetInstance();
 
-  // Creates and returns a `FormFieldDataAndroidBridge`.
+  // Creates and returns a `AutofillProviderAndroidBridge`.
+  std::unique_ptr<AutofillProviderAndroidBridge>
+  CreateAutofillProviderAndroidBridge(
+      AutofillProviderAndroidBridge::Delegate* delegate);
+
+  // Creates and returns a `FormDataAndroidBridge`.
   std::unique_ptr<FormDataAndroidBridge> CreateFormDataAndroidBridge();
 
   // Creates and returns a `FormFieldDataAndroidBridge`.
   std::unique_ptr<FormFieldDataAndroidBridge>
   CreateFormFieldDataAndroidBridge();
+
+  // Sets a testing factory for `FormDataAndroidBridge`s. If set, the
+  // testing factory is used in the factory method.
+  using AutofillProviderAndroidBridgeTestingFactory =
+      base::RepeatingCallback<std::unique_ptr<AutofillProviderAndroidBridge>(
+          AutofillProviderAndroidBridge::Delegate* delegate)>;
+  void SetFormDataAndroidTestingFactory(
+      AutofillProviderAndroidBridgeTestingFactory factory) {
+    autofill_provider_android_bridge_testing_factory_ = std::move(factory);
+  }
 
   // Sets a testing factory for `FormDataAndroidBridge`s. If set, the
   // testing factory is used in the factory method.
@@ -53,6 +69,8 @@ class AndroidAutofillBridgeFactory {
   AndroidAutofillBridgeFactory();
   ~AndroidAutofillBridgeFactory();
 
+  AutofillProviderAndroidBridgeTestingFactory
+      autofill_provider_android_bridge_testing_factory_;
   FormDataAndroidBridgeTestingFactory form_data_android_bridge_testing_factory_;
   FormFieldDataAndroidBridgeTestingFactory
       form_field_data_android_bridge_testing_factory_;

@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
 #define COMPONENTS_ANDROID_AUTOFILL_BROWSER_AUTOFILL_PROVIDER_ANDROID_H_
 
-#include "base/android/jni_weak_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/android_autofill/browser/autofill_provider.h"
+#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -23,11 +23,10 @@ class FormDataAndroid;
 // WebContents, this class is native peer of AutofillProvider.java.
 // This class is always instantialized by AutofillProvider Java object.
 class AutofillProviderAndroid : public AutofillProvider,
-                                content::WebContentsObserver {
+                                public AutofillProviderAndroidBridge::Delegate,
+                                public content::WebContentsObserver {
  public:
   static AutofillProviderAndroid* Create(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& jcaller,
       content::WebContents* web_contents);
 
   static AutofillProviderAndroid* FromWebContents(
@@ -42,11 +41,6 @@ class AutofillProviderAndroid : public AutofillProvider,
   void AttachToJavaAutofillProvider(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jcaller);
-
-  // Invoked when the WebContents that associates with Java AutofillProvider
-  // is changed or Java AutofillProvider is destroyed, it indicates this
-  // AutofillProviderAndroid object shall not talk to its Java peer anymore.
-  void DetachFromJavaAutofillProvider(JNIEnv* env);
 
   // AutofillProvider:
   void OnAskForValuesToFill(
@@ -93,35 +87,26 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 
-  // Methods called by Java.
-  void OnAutofillAvailable(JNIEnv* env, jobject jcaller, jobject form_data);
-  void OnAcceptDataListSuggestion(JNIEnv* env, jobject jcaller, jstring value);
-
-  void SetAnchorViewRect(JNIEnv* env,
-                         jobject jcaller,
-                         jobject anchor_view,
-                         jfloat x,
-                         jfloat y,
-                         jfloat width,
-                         jfloat height);
-
  private:
-  AutofillProviderAndroid(JNIEnv* env,
-                          const base::android::JavaRef<jobject>& jcaller,
-                          content::WebContents* web_contents);
+  explicit AutofillProviderAndroid(content::WebContents* web_contents);
+
+  // AndroidAutofillProviderBridge::Delegate:
+  void OnAutofillAvailable() override;
+  void OnAcceptDatalistSuggestion(const std::u16string& value) override;
+  void SetAnchorViewRect(const base::android::JavaRef<jobject>& anchor,
+                         const gfx::RectF& bounds) override;
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   void FireSuccessfulSubmission(mojom::SubmissionSource source);
-  void OnFocusChanged(bool focus_on_form,
-                      size_t index,
-                      const gfx::RectF& bounding_box);
-  void FireFormFieldDidChanged(AndroidAutofillManager* manager,
-                               const FormData& form,
-                               const FormFieldData& field,
-                               const gfx::RectF& bounding_box);
+  // Calls `OnFormFieldDidChange` in the bridge if there is an ongoing Autofill
+  // session for this `form`.
+  void MaybeFireFormFieldDidChange(AndroidAutofillManager* manager,
+                                   const FormData& form,
+                                   const FormFieldData& field,
+                                   const gfx::RectF& bounding_box);
 
   bool IsCurrentlyLinkedManager(AndroidAutofillManager* manager);
 
@@ -151,10 +136,12 @@ class AutofillProviderAndroid : public AutofillProvider,
   // determines which fields are safe to be filled in cross-frame forms.
   url::Origin triggered_origin_;
   base::WeakPtr<AndroidAutofillManager> manager_;
-  JavaObjectWeakGlobalRef java_ref_;
-  bool check_submission_;
+  bool check_submission_ = false;
   // Valid only if check_submission_ is true.
   mojom::SubmissionSource pending_submission_source_;
+
+  // The bridge for C++ <-> Java communication.
+  std::unique_ptr<AutofillProviderAndroidBridge> bridge_;
 };
 }  // namespace autofill
 
