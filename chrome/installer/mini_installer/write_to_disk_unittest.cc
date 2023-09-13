@@ -51,13 +51,8 @@ TEST_F(WriteToDiskTest, ASmallVictory) {
 TEST_F(WriteToDiskTest, LargeData) {
   constexpr size_t kBlobSize = 32 * 1024 * 1024 + 13;
   std::vector<uint8_t> blob;
-  blob.reserve(kBlobSize);
-  std::generate_n(std::back_inserter(blob), kBlobSize, []() {
-    uint8_t number;
-    base::RandBytes(&number, sizeof(number));
-    return number;
-  });
-
+  blob.resize(kBlobSize);
+  base::RandBytes(blob.data(), kBlobSize);
   const MemoryRange data = {blob.data(), blob.size()};
   const base::FilePath data_path = temp_dir().AppendASCII("data");
   ASSERT_PRED2(WriteToDisk, data, data_path.value().c_str());
