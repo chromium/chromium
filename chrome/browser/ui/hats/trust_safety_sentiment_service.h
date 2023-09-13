@@ -136,10 +136,6 @@ class TrustSafetySentimentService
       bool did_proceed,
       safe_browsing::SBThreatType threat_type);
 
-  // Returns whether the threat_type is not in the phishing, malware, unwanted
-  // software, and billing threat categories.
-  bool IsOtherInterstitialCategory(safe_browsing::SBThreatType threat_type);
-
   // Checks that this feature area is valid for the current version.
   static bool VersionCheck(FeatureArea feature_area);
 

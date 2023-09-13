@@ -333,7 +333,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &features::kTrustSafetySentimentSurveyV2,
       kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial,
       features::kTrustSafetySentimentSurveyV2SafeBrowsingInterstitialTriggerId
-          .Get());
+          .Get(),
+      std::vector<std::string>{
+          "User proceeded past interstitial", "Enhanced protection enabled",
+          "Threat is phishing", "Threat is malware",
+          "Threat is unwanted software", "Threat is billing"});
 
   // Autofill surveys.
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,

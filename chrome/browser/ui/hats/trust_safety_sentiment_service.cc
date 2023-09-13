@@ -151,6 +151,21 @@ std::map<std::string, bool> GetPrivacySettingsProductSpecificData(
   return product_specific_data;
 }
 
+// Returns true if the threat_type is not in the phishing, malware, unwanted
+// software, or billing threat categories.
+bool IsOtherSBInterstitialCategory(safe_browsing::SBThreatType threat_type) {
+  switch (threat_type) {
+    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+    case safe_browsing::SB_THREAT_TYPE_BILLING:
+      return false;
+    default:
+      return true;
+  }
+}
+
 }  // namespace
 
 TrustSafetySentimentService::TrustSafetySentimentService(Profile* profile)
@@ -405,23 +420,9 @@ void TrustSafetySentimentService::InteractedWithSafeBrowsingInterstitial(
       threat_type == safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
   product_specific_data["Threat is billing"] =
       threat_type == safe_browsing::SB_THREAT_TYPE_BILLING;
-  DCHECK(!IsOtherInterstitialCategory(threat_type));
+  DCHECK(!IsOtherSBInterstitialCategory(threat_type));
   TriggerOccurred(FeatureArea::kSafeBrowsingInterstitial,
                   product_specific_data);
-}
-
-bool TrustSafetySentimentService::IsOtherInterstitialCategory(
-    safe_browsing::SBThreatType threat_type) {
-  switch (threat_type) {
-    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
-    case safe_browsing::SB_THREAT_TYPE_BILLING:
-      return false;
-    default:
-      return true;
-  }
 }
 
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
@@ -516,6 +517,9 @@ void TrustSafetySentimentService::SettingsWatcherComplete() {
 void TrustSafetySentimentService::TriggerOccurred(
     FeatureArea feature_area,
     const std::map<std::string, bool>& product_specific_data) {
+  // Log histogram that verifies infrastructure works as intended.
+  base::UmaHistogramEnumeration(
+      "Feedback.TrustSafetySentiment.CallTriggerOccurred", feature_area);
   if (!ProbabilityCheck(feature_area))
     return;
 

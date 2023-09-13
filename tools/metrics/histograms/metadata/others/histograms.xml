@@ -6260,6 +6260,19 @@ chromium-metrics-reviews@google.com.
   <summary>Records the source that requested showing the feedback app.</summary>
 </histogram>
 
+<histogram name="Feedback.TrustSafetySentiment.CallTriggerOccurred"
+    enum="TrustSafetySentimentFeatureArea" expires_after="2023-10-14">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the associated feature area when the Trust and Safety sentiment
+    service detects that the user has performed a trigger action. This is
+    recorded before the associated probability check and will be used to verify
+    the infrastructure of newly integrated feature areas. We will remove this
+    histogram once we verify the implementation.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.TrustSafetySentiment.SurveyRequested"
     enum="TrustSafetySentimentFeatureArea" expires_after="2024-01-14">
   <owner>sauski@google.com</owner>
