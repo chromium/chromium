@@ -394,6 +394,7 @@ void FullscreenModel::SetProgress(CGFloat progress) {
 }
 
 void FullscreenModel::OnScrollViewSizeBroadcasted(CGSize scroll_view_size) {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   SetScrollViewHeight(scroll_view_size.height);
 }
 
