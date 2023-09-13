@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAuthentication.MacOS.PasskeysPermission"
+<histogram name="WebAuthentication.MacOS.PasskeyPermission"
     enum="WebAuthenticationMacOSPasskeysPermission" expires_after="2024-06-14">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
