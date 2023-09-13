@@ -65,7 +65,7 @@ class WPTAdapterTest(unittest.TestCase):
         self.results_processor = mock.Mock()
         self.results_processor.stream_results.return_value = (
             contextlib.nullcontext(mock.Mock()))
-        self.results_processor.num_regressions = 0
+        self.results_processor.num_initial_failures = 0
         self._mocks.enter_context(
             mock.patch('blinkpy.wpt_tests.wpt_adapter.WPTResultsProcessor',
                        return_value=self.results_processor))
@@ -313,7 +313,7 @@ class WPTAdapterTest(unittest.TestCase):
             mock.patch.object(self.host.user, 'open_url',
                               post_run_tasks.open_url))
         with adapter.test_env() as options:
-            self.results_processor.num_regressions = 1
+            self.results_processor.num_initial_failures = 1
         self.assertEqual(post_run_tasks.mock_calls, [
             mock.call.clean_up_test_run(),
             mock.call.open_url('file:///mock-checkout/out/Release/'

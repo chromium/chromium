@@ -141,6 +141,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     test='/reftest.html',
                     status='PASS')
 
+        self.assertEqual(self.processor.num_initial_failures, 0)
         report_mock = self.processor.sink.report_individual_test_result
         report_mock.assert_called_once_with(
             test_name_prefix='',
@@ -170,6 +171,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     expected='PASS',
                     known_intermittent=['TIMEOUT'])
 
+        self.assertEqual(self.processor.num_initial_failures, 1)
         report_mock = self.processor.sink.report_individual_test_result
         report_mock.assert_called_once_with(
             test_name_prefix='',
@@ -225,6 +227,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     status='OK')
         self._event(action='suite_end', time=7000)
 
+        self.assertEqual(self.processor.num_initial_failures, 1)
         report_mock = self.processor.sink.report_individual_test_result
         report_mock.assert_has_calls([
             mock.call(test_name_prefix='',
@@ -834,12 +837,13 @@ class WPTResultsProcessorTest(LoggingTestCase):
                             status='PASS',
                             expected='PASS')
                 self._event(action='suite_end')
-
         self.processor.process_results_json()
+
         full_json = json.loads(
             self.fs.read_text_file(
                 self.fs.join('/mock-checkout', 'out', 'Default',
                              'layout-test-results', 'full_results.json')))
+        self.assertEqual(full_json['num_regressions'], 1)
         unexpected_fail = full_json['tests']['external']['wpt']['test.html']
         self.assertEqual(unexpected_fail['has_stderr'], True)
         self.assertEqual(unexpected_fail['artifacts']['stderr'], [

@@ -580,8 +580,8 @@ class WPTAdapter:
         processor.process_results_json(
             self.port.get_option('json_test_results'))
         processor.copy_results_viewer()
-        if self.port.get_option(
-                'show_results') and processor.num_regressions > 0:
+        if (self.port.get_option('show_results')
+                and processor.num_initial_failures > 0):
             self.port.show_results_html_file(
                 self.fs.join(artifacts_dir, 'results.html'))
 

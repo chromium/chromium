@@ -304,7 +304,6 @@ class WPTResultsProcessor:
             'shutdown': self.shutdown,
             'process_output': self.process_output,
         }
-        self.num_regressions: int = 0
         self.failure_threshold = failure_threshold or math.inf
         self.crash_timeout_threshold = crash_timeout_threshold or math.inf
         assert self.failure_threshold > 0
@@ -314,6 +313,14 @@ class WPTResultsProcessor:
         self._num_failures_by_status = collections.defaultdict(int)
         # Results includes retries, used for computing full_results.json
         self._results_by_name = collections.defaultdict(list)
+
+    @property
+    def num_initial_failures(self) -> int:
+        failure_statuses = [
+            ResultType.Failure, ResultType.Crash, ResultType.Timeout
+        ]
+        return sum(self._num_failures_by_status[status]
+                   for status in failure_statuses)
 
     def copy_results_viewer(self):
         files_to_copy = ['results.html', 'results.html.version']
@@ -571,7 +578,7 @@ class WPTResultsProcessor:
     def create_final_results(self):
         # compute the tests dict
         tests = {}
-        num_passes = 0
+        num_passes = num_regressions = 0
         for test_name, results in self._results_by_name.items():
             # TODO: the expected result calculated this way could change each time
             expected = ' '.join(results[0].expected)
@@ -602,7 +609,7 @@ class WPTResultsProcessor:
                 test_dict['is_unexpected'] = True
                 if not is_pass:
                     test_dict['is_regression'] = True
-                    self.num_regressions += 1
+                    num_regressions += 1
 
             if results[0].image_diff_stats:
                 test_dict['image_diff_stats'] = results[0].image_diff_stats
@@ -616,9 +623,7 @@ class WPTResultsProcessor:
 
             if has_stderr:
                 test_dict['has_stderr'] = True
-
             # TODO: handle bugs, crash_site, has_repaint_overlay
-
             convert_to_hierarchical_view(tests, test_name, test_dict)
 
         # Create the final result dictionary
@@ -628,14 +633,14 @@ class WPTResultsProcessor:
 
             # TODO: change this to the actual value
             'interrupted': False,
-            'path_delimiter': "/",
+            'path_delimiter': '/',
             'seconds_since_epoch': int(time.time()),
             'layout_tests_dir': self.port.web_tests_dir(),
             "flag_name": self.port.flag_specific_config_name() or '',
             'num_failures_by_type': self._num_failures_by_status,
             'num_passes': num_passes,
             'skipped': self._num_failures_by_status[ResultType.Skip],
-            'num_regressions': self.num_regressions,
+            'num_regressions': num_regressions,
             'tests': tests,
         }
         return final_results
