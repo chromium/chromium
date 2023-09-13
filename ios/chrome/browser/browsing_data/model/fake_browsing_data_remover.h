@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_FAKE_BROWSING_DATA_REMOVER_H_
-#define IOS_CHROME_BROWSER_BROWSING_DATA_FAKE_BROWSING_DATA_REMOVER_H_
+#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_H_
+#define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_H_
 
-#include "ios/chrome/browser/browsing_data/browsing_data_remover.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 
 // Minimal implementation of BrowsingDataRemover, to be used in tests.
 class FakeBrowsingDataRemover : public BrowsingDataRemover {
@@ -20,4 +20,4 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   void RemoveSessionsData(NSArray<NSString*>* session_ids) override;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_FAKE_BROWSING_DATA_REMOVER_H_
+#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_H_

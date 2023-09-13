@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_
-#define IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_IMPL_H_
+#define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_IMPL_H_
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
@@ -14,8 +14,8 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/prefs/pref_member.h"
 #include "components/search_engines/template_url_service.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remover.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 
 class ChromeBrowserState;
 @class SessionServiceIOS;
@@ -134,4 +134,4 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   base::WeakPtrFactory<BrowsingDataRemoverImpl> weak_ptr_factory_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_IMPL_H_

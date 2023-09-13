@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browsing_data/browsing_data_remover_observer_bridge.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer_bridge.h"
 
-#import "ios/chrome/browser/browsing_data/fake_browsing_data_remover.h"
-#import "ios/chrome/browser/browsing_data/fake_browsing_data_remover_observer.h"
+#import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
+#import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover_observer.h"
 #import "testing/platform_test.h"
 
 class BrowsingDataRemoverObserverBridgeTest : public PlatformTest {
@@ -27,7 +27,7 @@ TEST_F(BrowsingDataRemoverObserverBridgeTest, OnBrowsingDataRemoved) {
                                          BrowsingDataRemoveMask::REMOVE_ALL);
   ASSERT_TRUE([observer_ didRemoveBrowsingDataWithMaskInfo]);
   EXPECT_EQ(remover_.get(),
-            [observer_ didRemoveBrowsingDataWithMaskInfo] -> remover);
+            [observer_ didRemoveBrowsingDataWithMaskInfo]->remover);
   EXPECT_EQ(BrowsingDataRemoveMask::REMOVE_ALL,
-            [observer_ didRemoveBrowsingDataWithMaskInfo] -> mask);
+            [observer_ didRemoveBrowsingDataWithMaskInfo]->mask);
 }

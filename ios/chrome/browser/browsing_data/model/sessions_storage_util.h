@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_SESSIONS_STORAGE_UTIL_H_
-#define IOS_CHROME_BROWSER_BROWSING_DATA_SESSIONS_STORAGE_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_SESSIONS_STORAGE_UTIL_H_
+#define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_SESSIONS_STORAGE_UTIL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -19,4 +19,4 @@ void ResetDiscardedSessions();
 
 }  // namespace sessions_storage_util
 
-#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_SESSIONS_STORAGE_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_SESSIONS_STORAGE_UTIL_H_

@@ -78,7 +78,7 @@ source_set("main") {
     "//ios/chrome/app/resources:launchscreen_xib",
     "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/autofill:autofill_internal",
-    "//ios/chrome/browser/browsing_data",
+    "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/download",

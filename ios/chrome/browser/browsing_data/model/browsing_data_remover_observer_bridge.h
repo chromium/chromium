@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_
 
-#include "ios/chrome/browser/browsing_data/browsing_data_remover_observer.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
 
 #import <Foundation/Foundation.h>
 
@@ -41,4 +41,4 @@ class BrowsingDataRemoverObserverBridge : public BrowsingDataRemoverObserver {
   __weak id<BrowsingDataRemoverObserving> observer_ = nil;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_

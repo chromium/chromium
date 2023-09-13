@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browsing_data/browsing_data_remover_impl.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
 
 #import <WebKit/WebKit.h>
 
@@ -38,9 +38,9 @@
 #import "ios/chrome/browser/autofill/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
 #import "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
-#import "ios/chrome/browser/browsing_data/browsing_data_features.h"
-#import "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
-#import "ios/chrome/browser/browsing_data/system_snapshots_cleaner.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/external_files/external_file_remover.h"
 #import "ios/chrome/browser/external_files/external_file_remover_factory.h"
@@ -405,8 +405,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
           autofill::PersonalDataManagerFactory::GetForBrowserState(
               browser_state_);
 
-      if (data_manager)
+      if (data_manager) {
         data_manager->Refresh();
+      }
     }
 
     // Remove language histogram history.
@@ -461,8 +462,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       // Clear out the Autofill StrikeDatabase in its entirety.
       autofill::StrikeDatabase* strike_database =
           autofill::StrikeDatabaseFactory::GetForBrowserState(browser_state_);
-      if (strike_database)
+      if (strike_database) {
         strike_database->ClearAllStrikes();
+      }
 
       // Ask for a call back when the above calls are finished.
       web_data_service->GetDBTaskRunner()->PostTaskAndReply(
@@ -472,8 +474,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
           autofill::PersonalDataManagerFactory::GetForBrowserState(
               browser_state_);
 
-      if (data_manager)
+      if (data_manager) {
         data_manager->Refresh();
+      }
     }
   }
 
@@ -697,8 +700,9 @@ void BrowsingDataRemoverImpl::OnTaskComplete() {
   // before continuing.
 
   DCHECK_GT(pending_tasks_count_, 0);
-  if (--pending_tasks_count_ > 0)
+  if (--pending_tasks_count_ > 0) {
     return;
+  }
 
   NotifyRemovalComplete();
 }

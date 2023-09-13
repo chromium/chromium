@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browsing_data/cache_counter.h"
+#include "ios/chrome/browser/browsing_data/model/cache_counter.h"
 #include "base/functional/bind.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -49,8 +49,9 @@ class IOThreadCacheCounter {
 
     while (rv != net::ERR_IO_PENDING) {
       // In case of an error, skip to the last step.
-      if (rv < 0)
+      if (rv < 0) {
         next_step_ = STEP_CALLBACK;
+      }
 
       // Process the counting in three steps: STEP_GET_BACKEND -> STEP_COUNT ->
       // -> STEP_CALLBACK.
@@ -139,8 +140,9 @@ void CacheCounter::Count() {
 
 void CacheCounter::OnCacheSizeCalculated(int64_t result_bytes) {
   // A value less than 0 means a net error code.
-  if (result_bytes < 0)
+  if (result_bytes < 0) {
     return;
+  }
 
   ReportResult(result_bytes);
 }

@@ -76,7 +76,7 @@ source_set("browser_state") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bring_android_tabs/model",
     "//ios/chrome/browser/browser_state_metrics",
-    "//ios/chrome/browser/browsing_data",
+    "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/commerce:shopping_service",
     "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/content_settings",

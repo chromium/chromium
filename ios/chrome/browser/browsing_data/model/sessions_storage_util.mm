@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
+#import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
@@ -26,8 +26,9 @@ namespace sessions_storage_util {
 void MarkSessionsForRemoval(NSArray<NSString*>* session_ids) {
   NSString* file_path = GetDiscardedSessionsFilePath();
   NSMutableArray* sessions = [NSMutableArray arrayWithContentsOfFile:file_path];
-  if (!sessions)
+  if (!sessions) {
     sessions = [[NSMutableArray alloc] init];
+  }
   [sessions addObjectsFromArray:session_ids];
   [sessions writeToFile:file_path atomically:YES];
 }

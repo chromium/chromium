@@ -8,7 +8,7 @@
 // responsibility of a lower layer, and is tested in
 // DiskCacheBackendTest.CalculateSizeOfAllEntries in net_unittests.
 
-#include "ios/chrome/browser/browsing_data/cache_counter.h"
+#include "ios/chrome/browser/browsing_data/model/cache_counter.h"
 
 #include <memory>
 
@@ -100,8 +100,9 @@ class CacheCounterTest : public PlatformTest {
               ->Value();
     }
 
-    if (run_loop_ && finished_)
+    if (run_loop_ && finished_) {
       run_loop_->Quit();
+    }
   }
 
   // Get the last reported counter result.
@@ -171,8 +172,9 @@ class CacheCounterTest : public PlatformTest {
               base::BindOnce(&CacheCounterTest::SaveEntryAndStep,
                              base::Unretained(this)));
           rv = result.net_error();
-          if (rv != net::ERR_IO_PENDING)
+          if (rv != net::ERR_IO_PENDING) {
             entry_ = result.ReleaseEntry();
+          }
           break;
         }
 
@@ -194,8 +196,9 @@ class CacheCounterTest : public PlatformTest {
         case STEP_CALLBACK: {
           next_step_ = STEP_DONE;
 
-          if (current_operation_ == OPERATION_ADD_ENTRY)
+          if (current_operation_ == OPERATION_ADD_ENTRY) {
             entry_->Close();
+          }
 
           web::GetUIThreadTaskRunner({})->PostTask(
               FROM_HERE, base::BindOnce(&CacheCounterTest::Callback,
@@ -220,8 +223,9 @@ class CacheCounterTest : public PlatformTest {
   // General completion callback.
   void Callback() {
     DCHECK_CURRENTLY_ON(web::WebThread::UI);
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   web::WebTaskEnvironment task_environment_;

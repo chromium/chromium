@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browsing_data/browsing_data_counter_wrapper.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,8 +16,8 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_features.h"
-#include "ios/chrome/browser/browsing_data/cache_counter.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#include "ios/chrome/browser/browsing_data/model/cache_counter.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
@@ -76,8 +76,9 @@ BrowsingDataCounterWrapper::CreateCounterWrapper(
     UpdateUICallback update_ui_callback) {
   std::unique_ptr<browsing_data::BrowsingDataCounter> counter =
       CreateCounterForBrowserStateAndPref(browser_state, pref_name);
-  if (!counter)
+  if (!counter) {
     return nullptr;
+  }
 
   return base::WrapUnique<BrowsingDataCounterWrapper>(
       new BrowsingDataCounterWrapper(std::move(counter), pref_service,

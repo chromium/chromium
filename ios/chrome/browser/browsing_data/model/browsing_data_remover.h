@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_
-#define IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_
+#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_H_
+#define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 
 class BrowsingDataRemoverObserver;
 
@@ -52,4 +52,4 @@ class BrowsingDataRemover : public KeyedService {
   base::ObserverList<BrowsingDataRemoverObserver, true> observers_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_
+#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_H_

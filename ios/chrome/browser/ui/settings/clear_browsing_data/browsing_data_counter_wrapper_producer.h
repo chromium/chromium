@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ios/chrome/browser/browsing_data/browsing_data_counter_wrapper.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
 
 class ChromeBrowserState;
 

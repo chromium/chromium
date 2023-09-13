@@ -23,7 +23,7 @@ source_set("system_flags") {
     "//components/autofill/core/common",
     "//components/password_manager/core/common:features",
     "//components/variations",
-    "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/public/features",

@@ -9,7 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 
 class ChromeBrowserState;
 

@@ -10,11 +10,11 @@ source_set("feature_flags") {
   deps = [ "//base" ]
 }
 
-source_set("browsing_data_remove_mask") {
+source_set("model_remove_mask") {
   sources = [ "browsing_data_remove_mask.h" ]
 }
 
-source_set("browsing_data") {
+source_set("model") {
   sources = [
     "browsing_data_counter_wrapper.cc",
     "browsing_data_counter_wrapper.h",
@@ -87,7 +87,7 @@ source_set("browsing_data") {
     "//url",
   ]
   public_deps = [
-    ":browsing_data_remove_mask",
+    ":model_remove_mask",
     "//components/search_engines",
   ]
 }
@@ -115,8 +115,8 @@ source_set("unit_tests") {
     "system_snapshots_cleaner_unittest.mm",
   ]
   deps = [
-    ":browsing_data",
     ":counters",
+    ":model",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -150,7 +150,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    ":browsing_data",
+    ":model",
     "//base",
     "//testing/gtest",
   ]

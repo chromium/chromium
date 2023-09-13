@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
-#define IOS_CHROME_BROWSER_BROWSING_DATA_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
+#define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
 
-#import "ios/chrome/browser/browsing_data/browsing_data_remover_observer_bridge.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer_bridge.h"
 
 #import <Foundation/Foundation.h>
 
@@ -24,4 +24,4 @@ struct TestDidRemoveBrowsingDataWithMaskInfo {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_OBSERVER_H_
