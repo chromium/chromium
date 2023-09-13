@@ -90,7 +90,7 @@ DXGISharedHandleState::~DXGISharedHandleState() {
 }
 
 void DXGISharedHandleState::AddRef() const {
-  base::subtle::RefCountedThreadSafeBase::AddRef();
+  base::subtle::RefCountedThreadSafeBase::AddRefWithCheck();
 }
 
 void DXGISharedHandleState::Release() const {
