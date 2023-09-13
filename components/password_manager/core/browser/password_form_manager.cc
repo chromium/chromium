@@ -812,7 +812,7 @@ bool PasswordFormManager::ProvisionallySave(
             parsed_submitted_form_.get()) ||    // Case (1).
         password_form_had_possible_username) {  // Case (2).
       // TODO(crbug.com/959776): Reset `possible_username` after it's used.
-      HandleUsernameFirstFlow(&possible_username,
+      HandleUsernameFirstFlow(possible_username,
                               password_form_had_possible_username);
     }
   }
@@ -1140,32 +1140,27 @@ void PasswordFormManager::CalculateSubmittedFormTypeMetric() {
 }
 
 bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
-    const PossibleUsernameData* possible_username) const {
-  if (!possible_username) {
-    LogUsingPossibleUsername(client_, /*is_used*/ false, "Null");
-    return false;
-  }
-
+    const PossibleUsernameData& possible_username) const {
   // The username form and password forms signon realms must be the same.
-  if (parsed_submitted_form_->signon_realm != possible_username->signon_realm) {
+  if (parsed_submitted_form_->signon_realm != possible_username.signon_realm) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Different domains");
     return false;
   }
 
-  if (possible_username->value.empty()) {
+  if (possible_username.value.empty()) {
     LogUsingPossibleUsername(client_, /*is_used*/ false,
                              "Empty possible username value");
     return false;
   }
 
-  if (possible_username->IsStale()) {
+  if (possible_username.IsStale()) {
     LogUsingPossibleUsername(client_, /*is_used*/ false,
                              "Possible username data expired");
     return false;
   }
 
-  if (possible_username->is_likely_otp &&
-      !possible_username->HasSingleUsernameServerPrediction()) {
+  if (possible_username.is_likely_otp &&
+      !possible_username.HasSingleUsernameServerPrediction()) {
     LogUsingPossibleUsername(client_, /*is_used*/ false,
                              "Possible username field is an OTP field");
     return false;
@@ -1173,8 +1168,8 @@ bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
 
   // The username candidate field should not be in |observed_form()|, otherwise
   // that is a task of FormParser to choose it from |observed_form()|.
-  if (ObservedFormHasField(possible_username->driver_id,
-                           possible_username->renderer_id)) {
+  if (ObservedFormHasField(possible_username.driver_id,
+                           possible_username.renderer_id)) {
     return false;
   }
 
@@ -1208,7 +1203,7 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
 }
 
 void PasswordFormManager::HandleUsernameFirstFlow(
-    const PossibleUsernameData* possible_username,
+    const PossibleUsernameData& possible_username,
     bool password_form_had_username) {
   if (IsPossibleSingleUsernameAvailable(possible_username)) {
     // Suggest the possible username value in a prompt in two cases:
@@ -1216,15 +1211,15 @@ void PasswordFormManager::HandleUsernameFirstFlow(
     // (2) If the field has autocomplete = "username" attribute (used only if
     // there are no server predictions, which lets us override the attribute).
     // Otherwise, |possible_username| is used only for voting.
-    if (possible_username->HasSingleUsernameServerPrediction() ||
-        (!possible_username->HasServerPrediction() &&
-         possible_username->autocomplete_attribute_has_username &&
+    if (possible_username.HasSingleUsernameServerPrediction() ||
+        (!possible_username.HasServerPrediction() &&
+         possible_username.autocomplete_attribute_has_username &&
          base::FeatureList::IsEnabled(
              password_manager::features::
                  kUsernameFirstFlowHonorAutocomplete))) {
-      parsed_submitted_form_->username_value = possible_username->value;
+      parsed_submitted_form_->username_value = possible_username.value;
       metrics_recorder_->set_possible_username_used(true);
-      if (possible_username->autocomplete_attribute_has_username) {
+      if (possible_username.autocomplete_attribute_has_username) {
         LogUsingPossibleUsername(client_, /*is_used=*/true,
                                  "Valid possible username by autocomplete "
                                  "attribue, populated in prompt");
@@ -1239,8 +1234,8 @@ void PasswordFormManager::HandleUsernameFirstFlow(
                                "not populated in prompt");
     }
     votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
-        possible_username->renderer_id, possible_username->value,
-        possible_username->form_predictions.value_or(FormPredictions()),
+        possible_username.renderer_id, possible_username.value,
+        possible_username.form_predictions.value_or(FormPredictions()),
         form_fetcher_->GetBestMatches(), password_form_had_username));
   } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
     // If no single username typing preceded single password typing, set

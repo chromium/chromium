@@ -328,7 +328,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Returns whether |possible_username| data can be used in username first
   // flow.
   bool IsPossibleSingleUsernameAvailable(
-      const PossibleUsernameData* possible_username) const;
+      const PossibleUsernameData& possible_username) const;
 
   // Updates the predictions stored in `parser_` with predictions relevant for
   // `observed_form_or_digest_`.
@@ -349,7 +349,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Sets voting data and update |parsed_submitted_form_| with the correct
   // username value for a password form without a username field.
-  void HandleUsernameFirstFlow(const PossibleUsernameData* possible_username,
+  void HandleUsernameFirstFlow(const PossibleUsernameData& possible_username,
                                bool password_form_had_username);
 
   // Sets voting data for a password form that is likely a forgot password form
