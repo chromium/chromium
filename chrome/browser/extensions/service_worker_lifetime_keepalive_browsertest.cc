@@ -16,7 +16,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api/test/test_api.h"
@@ -52,12 +51,6 @@ constexpr char kPersistentPortConnectedMessage[] = "Persistent port connected";
 constexpr char kPersistentPortDisconnectedMessage[] =
     "Persistent port disconnected";
 #endif
-
-content::ServiceWorkerContext* GetServiceWorkerContext(
-    content::BrowserContext* browser_context) {
-  return browser_context->GetDefaultStoragePartition()
-      ->GetServiceWorkerContext();
-}
 
 }  // namespace
 
@@ -159,7 +152,7 @@ class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
     // This is required because the TickClock must outlive ServiceWorkerVersion,
     // otherwise ServiceWorkerVersion will hold a dangling pointer.
     content::ResetTickClockToDefaultForAllLiveServiceWorkerVersions(
-        GetServiceWorkerContext(browser()->profile()));
+        GetServiceWorkerContext());
   }
 
   void TriggerTimeoutAndCheckActive(content::ServiceWorkerContext* context,
@@ -186,8 +179,7 @@ class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
 // minutes).
 IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersTimeOutWithoutPolicy) {
-  content::ServiceWorkerContext* context =
-      GetServiceWorkerContext(browser()->profile());
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
   TestServiceWorkerContextObserver sw_observer_receiver_extension(
       context, kTestReceiverExtensionId);
@@ -243,8 +235,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls,
       std::move(urls));
 
-  content::ServiceWorkerContext* context =
-      GetServiceWorkerContext(browser()->profile());
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
   TestServiceWorkerContextObserver sw_observer_receiver_extension(
       context, kTestReceiverExtensionId);
@@ -305,8 +296,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls,
       std::move(urls));
 
-  content::ServiceWorkerContext* context =
-      GetServiceWorkerContext(browser()->profile());
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
   TestServiceWorkerContextObserver sw_observer_receiver_extension(
       context, kTestReceiverExtensionId);
@@ -364,8 +354,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
       pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls,
       std::move(urls));
 
-  content::ServiceWorkerContext* context =
-      GetServiceWorkerContext(browser()->profile());
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
   TestServiceWorkerContextObserver sw_observer_receiver_extension(
       context, kTestReceiverExtensionId);
@@ -467,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
       BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
   EXPECT_EQ("success", result);
 
-  content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
   // Right now, the permissions request should be pending. Since
   // `permissions.request()` is specified as a function that can keep the
@@ -532,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
 
   ASSERT_TRUE(message_listener.WaitUntilSatisfied());
 
-  content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
   TestServiceWorkerContextObserver context_observer(context, extension->id());
   context_observer.SetRunningId(version_id);
 
@@ -615,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // Ensure the keepalive associated with sendScriptResult() has resolved.
   base::RunLoop().RunUntilIdle();
 
-  content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
+  content::ServiceWorkerContext* context = GetServiceWorkerContext();
 
   // Since the extension has an active debugger session, it should not be
   // terminated, even for going past the typical time limit.

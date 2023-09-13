@@ -46,7 +46,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
@@ -58,6 +57,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -144,9 +144,8 @@ class ServiceWorkerConsoleObserver
  public:
   explicit ServiceWorkerConsoleObserver(
       content::BrowserContext* browser_context) {
-    content::StoragePartition* partition =
-        browser_context->GetDefaultStoragePartition();
-    scoped_observation_.Observe(partition->GetServiceWorkerContext());
+    scoped_observation_.Observe(
+        service_worker_test_utils::GetServiceWorkerContext(browser_context));
   }
   ~ServiceWorkerConsoleObserver() override = default;
 

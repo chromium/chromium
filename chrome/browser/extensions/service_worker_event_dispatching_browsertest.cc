@@ -6,13 +6,13 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,12 +21,6 @@ namespace extensions {
 namespace {
 
 constexpr char kTestExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
-
-content::ServiceWorkerContext* GetServiceWorkerContext(
-    content::BrowserContext* browser_context) {
-  return browser_context->GetDefaultStoragePartition()
-      ->GetServiceWorkerContext();
-}
 
 // Broadcasts a webNavigation.onBeforeNavigate event.
 void DispatchWebNavigationEvent(content::BrowserContext* browser_context,
@@ -47,8 +41,10 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   TestWorkerStatusObserver(content::BrowserContext* browser_context,
                            const ExtensionId& extension_id)
       : browser_context_(browser_context),
-        extension_url_(Extension::GetBaseURLFromExtensionId(extension_id)) {
-    scoped_observation_.Observe(GetServiceWorkerContext(browser_context));
+        extension_url_(Extension::GetBaseURLFromExtensionId(extension_id)),
+        sw_context_(service_worker_test_utils::GetServiceWorkerContext(
+            browser_context)) {
+    scoped_observation_.Observe(sw_context_);
   }
 
   TestWorkerStatusObserver(const TestWorkerStatusObserver&) = delete;
@@ -82,8 +78,7 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
     }
 
     test_worker_version_id = version_id;
-    EXPECT_TRUE(content::CheckServiceWorkerIsRunning(
-        GetServiceWorkerContext(browser_context_), version_id));
+    EXPECT_TRUE(content::CheckServiceWorkerIsRunning(sw_context_, version_id));
     started_worker_run_loop_.Quit();
   }
 
@@ -115,6 +110,7 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   base::RunLoop stopped_worker_run_loop_;
   const raw_ptr<content::BrowserContext> browser_context_;
   const GURL extension_url_;
+  const raw_ptr<content::ServiceWorkerContext> sw_context_;
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
@@ -133,7 +129,7 @@ class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
-    sw_context_ = GetServiceWorkerContext(browser()->profile());
+    sw_context_ = GetServiceWorkerContext();
   }
 
   void TearDownOnMainThread() override {
@@ -165,8 +161,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
   ASSERT_EQ(kTestExtensionId, extension->id());
   test_event_observer.WaitForWorkerStarted();
   ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
-      GetServiceWorkerContext(profile()),
-      test_event_observer.test_worker_version_id));
+      sw_context_, test_event_observer.test_worker_version_id));
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
@@ -213,8 +208,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                                                              extension->id());
   test_event_observer.WaitForWorkerStopped();
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
-      GetServiceWorkerContext(profile()),
-      test_event_observer.test_worker_version_id));
+      sw_context_, test_event_observer.test_worker_version_id));
 
   base::HistogramTester histogram_tester;
   DispatchWebNavigationEvent(profile(), web_contents());
@@ -322,8 +316,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
                                      base::DoNothing());
   test_event_observer.WaitForWorkerStopping();
   ASSERT_TRUE(content::CheckServiceWorkerIsStopping(
-      GetServiceWorkerContext(profile()),
-      test_event_observer.test_worker_version_id));
+      sw_context_, test_event_observer.test_worker_version_id));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener extension_event_listener_fired("listener fired");
