@@ -372,7 +372,7 @@ example_value: false
 max_size: 123456
 
 # Each policy is tagged with risk tags that indicate potential privacy or
-# security risks. They are defined in `components/policy/templates/risk_tag_definitions.yaml`.
+# security risks. They are defined in `components/policy/resources/templates/risk_tag_definitions.yaml`.
 # Each risk tag contains the following information:
 #   - name: The name of the risk tag. May not contain spaces.
 #   - description: Description for developers so they know which tags apply to
