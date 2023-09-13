@@ -15303,6 +15303,84 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
+// Test window.fence.reportEvent from an iframe nested under an ad component
+// frame is also disallowed:
+// 1. Run an auction with an ad component.
+// 2. Load the ad in a top-level frame.
+// 3. Load the ad component in the nested frame.
+// 4. Navigate the iframe nested under the ad component frame.
+// 5. Invoke window.fence.reportEvent from the nested iframe under the ad
+// component frame.
+// 6. Expect reportEvent to fail because it is not allowed from an iframe nested
+// under an ad component frame.
+// For such a frame, only reserved.top_navigation beacon is allowed.
+IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
+                       ReportEventNotAllowedInNestedIframeUnderAdComponent) {
+  GURL ad_component_url = https_server_->GetURL(
+      "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+
+  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent());
+
+  RenderFrameHost* ad_frame =
+      GetAdRenderFrameHost(shell()->web_contents()->GetPrimaryMainFrame(),
+                           IsAdLoadedInFencedFrame());
+  RenderFrameHost* ad_component_frame =
+      GetAdRenderFrameHost(ad_frame, IsAdComponentLoadedInFencedFrame());
+
+  // Add a nested iframe under the ad component frame.
+  EXPECT_TRUE(ExecJs(ad_component_frame,
+                     "var nested_iframe = document.createElement('iframe');"
+                     "document.body.appendChild(nested_iframe);"));
+  EXPECT_EQ(
+      1U, static_cast<RenderFrameHostImpl*>(ad_component_frame)->child_count());
+  auto* nested_iframe =
+      static_cast<RenderFrameHostImpl*>(ad_component_frame)->child_at(0);
+
+  // Navigate the added nested iframe.
+  GURL nested_iframe_url =
+      https_server_->GetURL("a.test", "/fenced_frames/title0.html");
+  TestFrameNavigationObserver observer(nested_iframe->current_frame_host());
+  EXPECT_TRUE(ExecJs(ad_component_frame,
+                     JsReplace("nested_iframe.src = $1", nested_iframe_url)));
+  observer.Wait();
+
+  EXPECT_EQ(nested_iframe_url,
+            nested_iframe->current_frame_host()->GetLastCommittedURL());
+
+  // Monitor the console errors.
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetFilter(base::BindRepeating(IsErrorMessage));
+  console_observer.SetPattern(
+      "This frame is an ad component. It is not allowed to call "
+      "fence.reportEvent.");
+
+  // Invoke window.fence.reportEvent from the nested iframe. This should fail
+  // because only reserved.top_navigation event beacon is allowed from an
+  // ad component.
+  EXPECT_TRUE(ExecJs(nested_iframe->current_frame_host(), R"(
+                        window.fence.reportEvent(
+                          {
+                            eventType: 'click',
+                            eventData: 'some data',
+                            destination: ['seller']
+                          }
+                        );
+                      )"));
+
+  // Verify the expected error is logged to the console.
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+
+  // Send a basic request to the reporting destination.
+  GURL reporting_url = https_server_->GetURL("a.test", "/report_event.html");
+  SendBasicRequest(reporting_url);
+
+  // Verify the request received is the basic request, which implies the
+  // reportEvent beacon was not sent, as expected.
+  EXPECT_EQ(network_responder_->GetRequest()->content, "Basic request data");
+  EXPECT_TRUE(network_responder_->HasReceivedRequest());
+}
+
 // Test `reserved.top_navigation` beacon from an ad component frame nested in
 // the main ad frame:
 // 1. Run an auction with an ad component.

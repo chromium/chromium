@@ -8736,8 +8736,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
   // Beacons can only be sent from inside a fenced frame/urn iframe tree, where
   // there is a fenced frame reporter.
   const absl::optional<FencedFrameProperties>& properties =
-      initiator_rfh->frame_tree_node()->GetFencedFrameProperties(
-          /*force_tree_traversal=*/true);
+      initiator_rfh->frame_tree_node()->GetFencedFrameProperties();
   if (!properties.has_value() || !properties->fenced_frame_reporter_) {
     return;
   }
@@ -8789,7 +8788,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
 
   // Get the reporting metadata associated with the fenced frame.
   const absl::optional<FencedFrameProperties>& fenced_frame_properties =
-      frame_tree_node_->GetFencedFrameProperties(/*force_tree_traversal=*/true);
+      frame_tree_node_->GetFencedFrameProperties();
   if (fenced_frame_properties.has_value() &&
       fenced_frame_properties->is_ad_component_) {
     if (from_renderer) {

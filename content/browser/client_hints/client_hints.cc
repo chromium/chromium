@@ -561,6 +561,15 @@ struct ClientHintsExtendedData {
       // TODO(https://crbug.com/1430508) Add WPT tests and specify the behavior
       // of client hints delegation for subframes inside
       // FencedFrames/Portals/etc...
+      // Test cases should cover this 3 layers nested frames case, from top to
+      // bottom:
+      // 1. Fenced frame.
+      // 2. Urn iframe.
+      // 3. Iframe.
+      // `GetFencedFrameProperties()` called from the iframe returns the
+      // fenced frame properties from the urn iframe because it does a bottom
+      // up traversal.
+      // See crbug.com/1470634.
       const absl::optional<FencedFrameProperties>& fenced_frame_properties =
           frame_tree_node->GetFencedFrameProperties();
       base::span<const blink::mojom::PermissionsPolicyFeature> permissions;

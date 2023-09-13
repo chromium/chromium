@@ -1066,10 +1066,15 @@ class CONTENT_EXPORT NavigationRequest
 
   // Compute and return the `FencedFrameProperties` that this
   // `NavigationRequest` acts under, i.e. the properties attached to this
-  // `NavigationRequest` if present, or the properties attached to the fenced
-  // frame root (if present) otherwise.
-  const absl::optional<FencedFrameProperties>& ComputeFencedFrameProperties()
-      const;
+  // `NavigationRequest` if present.
+  // Otherwise, returns the fenced frame properties associated with the given
+  // source. See `FrameTreeNode::GetFencedFrameProperties()` on how fenced
+  // frame properties are obtained for different sources.
+  // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
+  // is deprecated, remove the parameter `node_source`.
+  const absl::optional<FencedFrameProperties>& ComputeFencedFrameProperties(
+      FencedFramePropertiesNodeSource node_source =
+          FencedFramePropertiesNodeSource::kClosestAncestor) const;
 
   const absl::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
 
