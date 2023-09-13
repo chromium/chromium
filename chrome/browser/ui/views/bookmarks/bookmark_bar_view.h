@@ -277,6 +277,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void ConfigureButton(const bookmarks::BookmarkNode* node,
                        views::LabelButton* button);
 
+  // Returns true when the TabGroupsSave feature should be added to the
+  // bookmarks bar.
+  bool IsSavedTabGroupsEnabled();
+
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
   // is required.
   bool BookmarkNodeAddedImpl(bookmarks::BookmarkModel* model,

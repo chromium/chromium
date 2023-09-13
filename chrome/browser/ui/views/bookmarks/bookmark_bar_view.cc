@@ -1092,7 +1092,7 @@ void BookmarkBarView::Layout() {
   }
 
   int saved_tab_group_bar_width = 0;
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+  if (IsSavedTabGroupsEnabled()) {
     // Calculate the maximum size needed for the tab group buttons.
     saved_tab_group_bar_width =
         saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(max_x - x);
@@ -1160,11 +1160,11 @@ void BookmarkBarView::Layout() {
 
   // Set the visibility of the tab group separator if there are groups and
   // bookmarks.
-  if (saved_tab_groups_separator_view_ &&
-      base::FeatureList::IsEnabled(features::kTabGroupsSave))
+  if (IsSavedTabGroupsEnabled()) {
     saved_tab_groups_separator_view_->SetVisible(
         saved_tab_group_bar_width > 0 && !bookmark_buttons_.empty() &&
         bookmark_buttons_[0]->GetVisible());
+  }
 
   // Layout the right side buttons.
   x = max_x + bookmark_bar_button_padding;
@@ -1725,8 +1725,7 @@ void BookmarkBarView::Init() {
 
   saved_tab_group_bar_ = AddChildView(
       std::make_unique<SavedTabGroupBar>(browser_, animations_enabled));
-  saved_tab_group_bar_->SetVisible(
-      base::FeatureList::IsEnabled(features::kTabGroupsSave));
+  saved_tab_group_bar_->SetVisible(IsSavedTabGroupsEnabled());
 
   overflow_button_ = AddChildView(CreateOverflowButton());
 
@@ -1743,9 +1742,7 @@ void BookmarkBarView::Init() {
 
   saved_tab_groups_separator_view_ =
       AddChildView(std::make_unique<ButtonSeparatorView>());
-  saved_tab_groups_separator_view_->SetVisible(
-      base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-      browser_->profile()->IsRegularProfile());
+  saved_tab_groups_separator_view_->SetVisible(IsSavedTabGroupsEnabled());
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
       base::BindRepeating(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,
@@ -1933,6 +1930,11 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   }
 
   button->SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, 0));
+}
+
+bool BookmarkBarView::IsSavedTabGroupsEnabled() {
+  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+         browser_->profile()->IsRegularProfile();
 }
 
 bool BookmarkBarView::BookmarkNodeAddedImpl(BookmarkModel* model,
