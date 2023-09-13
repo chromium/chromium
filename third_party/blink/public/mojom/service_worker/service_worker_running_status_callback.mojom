@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/service_worker/service_worker_embedded_worker_status.mojom";
+
+// Experimental.
+// The callback interface to allow the browser process to notify the
+// ServiceWorker running status to renderer processes executing subresource
+// loaders for that ServiceWorker. This is used for realizing the running
+// status condition defined in the ServiceWorker static routing API.
+// See: https://github.com/WICG/service-worker-static-routing-api/blob/main/final-form.md#use-service-worker-iif-running
+interface ServiceWorkerRunningStatusCallback {
+  // OnStatusChanged is called on the ServiceWorker running status change.
+  // `status` tell the latest running status.
+  OnStatusChanged(ServiceWorkerEmbeddedWorkerStatus status);
+};

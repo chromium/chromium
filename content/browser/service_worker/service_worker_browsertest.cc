@@ -6969,9 +6969,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        SubresourceRunningStatus) {
   const std::string relative_url = "/service_worker/direct_if_not_running";
   SetupAndRegisterServiceWorker(TestType::kNetwork);
-  // Initial state is stopped, and should go to network.
-  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
             EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
                                               "').then(response => "

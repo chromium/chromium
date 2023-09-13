@@ -201,6 +201,7 @@ mojom("mojom_platform") {
     "service_worker/service_worker_fetch_handler_type.mojom",
     "service_worker/service_worker_fetch_response_callback.mojom",
     "service_worker/service_worker_installed_scripts_manager.mojom",
+    "service_worker/service_worker_running_status_callback.mojom",
     "service_worker/service_worker_state.mojom",
     "service_worker/service_worker_stream_handle.mojom",
     "service_worker/service_worker_worker_client.mojom",

@@ -495,9 +495,6 @@ class FakeServiceWorkerContainerHost
     std::move(callback).Run();
   }
   void OnExecutionReady() override {}
-  void GetRunningStatus(GetRunningStatusCallback callback) override {
-    NOTIMPLEMENTED();
-  }
 
  private:
   int get_controller_service_worker_count_ = 0;
@@ -564,7 +561,8 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
           mojo::NullRemote() /*remote_controller*/,
           mojo::NullRemote() /*remote_cache_storage*/, "" /*client_id*/,
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
-          absl::nullopt, blink::EmbeddedWorkerStatus::STOPPED);
+          absl::nullopt, blink::EmbeddedWorkerStatus::STOPPED,
+          mojo::NullReceiver() /*running_status_receiver*/);
     }
     mojo::Remote<network::mojom::URLLoaderFactory>
         service_worker_url_loader_factory;

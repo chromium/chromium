@@ -297,6 +297,14 @@ ServiceWorkerMainResourceLoaderInterceptor::
       controller_info->router_data->remote_cache_storage =
           std::move(remote_cache_storage);
     }
+    if (container_host->controller()
+            ->router_evaluator()
+            ->need_running_status()) {
+      controller_info->router_data->running_status_receiver =
+          container_host->GetRunningStatusCallbackReceiver();
+      controller_info->router_data->initial_running_status =
+          container_host->controller()->running_status();
+    }
   }
   // Note that |controller_info->remote_controller| is null if the controller
   // has no fetch event handler. In that case the renderer frame won't get the

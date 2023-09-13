@@ -120,10 +120,6 @@ interface ServiceWorkerContainerHost {
   // Informs the host that the context is execution ready.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
   OnExecutionReady();
-
-  // Experimental.
-  // Get the service worker current running status.
-  GetRunningStatus() => (ServiceWorkerEmbeddedWorkerStatus status);
 };
 
 // ServiceWorkerContainer is an interface implemented by the renderer process.

@@ -17,6 +17,7 @@ import "third_party/blink/public/mojom/service_worker/service_worker_fetch_respo
 import "third_party/blink/public/mojom/service_worker/service_worker_object.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_running_status_callback.mojom";
 
 // Represents a service worker that is a 'controller'.
 // (https://w3c.github.io/ServiceWorker/#navigator-service-worker-controller)
@@ -68,6 +69,9 @@ struct ServiceWorkerRouterData {
   ServiceWorkerRouterRules router_rules;
   // ServiceWorker running status at initialization time.
   ServiceWorkerEmbeddedWorkerStatus initial_running_status;
+  // A receiver to notify the ServiceWorker running status change.
+  // It is used for judging the running status condition.
+  pending_receiver<ServiceWorkerRunningStatusCallback>? running_status_receiver;
   // CacheStorage connection to be used upon the given rule.
   // Non-null if the cache storage API is available and `router_rules` is set.
   pending_remote<CacheStorage> remote_cache_storage;

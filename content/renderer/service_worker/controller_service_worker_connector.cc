@@ -23,10 +23,13 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
     absl::optional<blink::ServiceWorkerRouterRules> router_rules,
-    blink::EmbeddedWorkerStatus initial_running_status)
+    blink::EmbeddedWorkerStatus initial_running_status,
+    mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
+        running_status_receiver)
     : client_id_(client_id),
       fetch_handler_bypass_option_(fetch_handler_bypass_option),
-      running_status_(initial_running_status) {
+      running_status_(initial_running_status),
+      running_status_receiver_(this) {
   container_host_.Bind(std::move(remote_container_host));
   container_host_.set_disconnect_handler(base::BindOnce(
       &ControllerServiceWorkerConnector::OnContainerHostConnectionClosed,
@@ -37,6 +40,10 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
     CHECK(router_evaluator_->IsValid());
     if (remote_cache_storage) {
       cache_storage_.Bind(std::move(remote_cache_storage));
+    }
+    if (running_status_receiver) {
+      CHECK(router_evaluator_->need_running_status());
+      running_status_receiver_.Bind(std::move(running_status_receiver));
     }
   }
   SetControllerServiceWorker(std::move(remote_controller));
@@ -132,18 +139,16 @@ void ControllerServiceWorkerConnector::SetControllerServiceWorker(
 
 blink::EmbeddedWorkerStatus
 ControllerServiceWorkerConnector::GetRecentRunningStatus() {
-  if (!get_service_worker_status_inflight_) {
-    container_host_->GetRunningStatus(base::BindOnce(
-        &ControllerServiceWorkerConnector::DidGetRunningStatus, this));
-    get_service_worker_status_inflight_ = true;
-  }
   return running_status_;
 }
 
-void ControllerServiceWorkerConnector::DidGetRunningStatus(
+void ControllerServiceWorkerConnector::OnStatusChanged(
     blink::EmbeddedWorkerStatus running_status) {
+  // A callback to update `running_status_` is set only if
+  // ServiceWorkerRouterEvaluator requires the running status.
+  // Otherwise, `running_status_` may not be a meaningful value.
+  CHECK(router_evaluator_->need_running_status());
   running_status_ = running_status;
-  get_service_worker_status_inflight_ = false;
 }
 
 void ControllerServiceWorkerConnector::CallCacheStorageMatch(
