@@ -39,10 +39,6 @@ void CommonPaletteTool::OnViewClicked(views::View* sender) {
   // enabled. Then, to open the bubble again we have to click on the palette
   // tray twice, and the first click will disable any active tools.
   DCHECK(!enabled());
-
-  delegate()->RecordPaletteOptionsUsage(
-      PaletteToolIdToPaletteTrayOptions(GetToolId()),
-      PaletteInvocationMethod::MENU);
   delegate()->EnableTool(GetToolId());
 }
 

@@ -51,10 +51,6 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
     // Return the window associated with this palette.
     virtual aura::Window* GetWindow() = 0;
 
-    // Record usage of each pen palette option.
-    virtual void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                           PaletteInvocationMethod method) = 0;
-
    protected:
     virtual ~Delegate() {}
   };
@@ -108,8 +104,6 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
   void HidePalette() override;
   void HidePaletteImmediately() override;
   aura::Window* GetWindow() override;
-  void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                 PaletteInvocationMethod method) override;
 
   PaletteTool* FindToolById(PaletteToolId tool_id) const;
 

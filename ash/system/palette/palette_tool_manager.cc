@@ -130,12 +130,6 @@ aura::Window* PaletteToolManager::GetWindow() {
   return delegate_->GetWindow();
 }
 
-void PaletteToolManager::RecordPaletteOptionsUsage(
-    PaletteTrayOptions option,
-    PaletteInvocationMethod method) {
-  return delegate_->RecordPaletteOptionsUsage(option, method);
-}
-
 PaletteTool* PaletteToolManager::FindToolById(PaletteToolId tool_id) const {
   for (const std::unique_ptr<PaletteTool>& tool : tools_) {
     if (tool->GetToolId() == tool_id)

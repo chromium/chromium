@@ -65,8 +65,6 @@ class PaletteToolManagerTest : public ::testing::Test,
     NOTREACHED();
     return nullptr;
   }
-  void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                 PaletteInvocationMethod method) override {}
 
   // PaletteTool::Delegate:
   void EnableTool(PaletteToolId tool_id) override {}

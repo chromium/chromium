@@ -114,8 +114,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // PaletteToolManager::Delegate:
   void HidePalette() override;
   void HidePaletteImmediately() override;
-  void RecordPaletteOptionsUsage(PaletteTrayOptions option,
-                                 PaletteInvocationMethod method) override;
 
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;

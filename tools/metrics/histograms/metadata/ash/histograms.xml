@@ -6318,17 +6318,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Shelf.Palette.Usage" enum="PaletteTrayOptions"
-    expires_after="2022-04-17">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    Recorded every time that the palette option has been selected from the
-    palette that has been opened manually (not via a stylus eject event).
-  </summary>
-</histogram>
-
 <histogram name="Ash.Shelf.Palette.Usage.AutoOpened" enum="PaletteTrayOptions"
     expires_after="2021-12-12">
   <obsolete>
