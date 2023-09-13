@@ -215,6 +215,13 @@ void MainThreadDebugger::ExceptionThrown(ExecutionContext* context,
 
 int MainThreadDebugger::ContextGroupId(LocalFrame* frame) {
   LocalFrame& local_frame_root = frame->LocalFrameRoot();
+
+  if (!WeakIdentifierMap<LocalFrame>::HasIdentifier(&local_frame_root)) {
+    int newId = WeakIdentifierMap<LocalFrame>::Identifier(&local_frame_root);
+    recordreplay::CommandDiagnosticTrace(
+        "[RUN-2486-2577] WeakIdentifierMap<LocalFrame>::Put %d", newId);
+  }
+
   return WeakIdentifierMap<LocalFrame>::Identifier(&local_frame_root);
 }
 

@@ -43,6 +43,10 @@ class WeakIdentifierMap final
     return result;
   }
 
+  static bool HasIdentifier(T* object) {
+    return Instance().object_to_identifier_.Contains(object);
+  }
+
   static IdentifierType ExistingIdentifier(T* object) {
     return Instance().object_to_identifier_.at(object);
   }
