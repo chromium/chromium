@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_WITH_APP_RESOURCES_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_WITH_APP_RESOURCES_H_
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 
 namespace web_app {
 
+class ExtensionsManager;
 class OsIntegrationManager;
 class WebAppIconManager;
 class WebAppInstallFinalizer;
@@ -36,6 +36,7 @@ class WithAppResources {
  public:
   ~WithAppResources();
 
+  ExtensionsManager& extensions_manager();
   WebAppRegistrar& registrar();
   WebAppSyncBridge& sync_bridge();
   WebAppInstallFinalizer& install_finalizer();
