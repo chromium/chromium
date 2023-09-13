@@ -9,7 +9,6 @@
 
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
-    <!-- TODO(b/292678609) Include L1 page content here -->
     <storage-and-power-settings-card></storage-and-power-settings-card>
 
     <language-settings-card
@@ -21,6 +20,10 @@
     <date-time-settings-card prefs="{{prefs}}"
         active-time-zone-display-name="{{activeTimeZoneDisplayName_}}">
     </date-time-settings-card>
+
+    <template is="dom-if" if="[[shouldShowFilesSettingsCard_]]">
+      <files-settings-card prefs="{{prefs}}"></files-settings-card>
+    </template>
 
     <search-and-assistant-settings-card prefs="{{prefs}}">
     </search-and-assistant-settings-card>
@@ -37,6 +40,41 @@
           active-time-zone-display-name="{{activeTimeZoneDisplayName_}}">
       </timezone-subpage>
     </os-settings-subpage>
+  </template>
+
+  <!-- Files subpages -->
+  <template is="dom-if" route-path="/smbShares">
+    <os-settings-subpage page-title="$i18n{smbSharesTitle}">
+      <settings-smb-shares-page prefs="{{prefs}}">
+      </settings-smb-shares-page>
+    </os-settings-subpage>
+  </template>
+
+  <template is="dom-if" if="[[shouldStampGoogleDriveSubpage_]]">
+    <template is="dom-if" route-path="/googleDrive">
+      <os-settings-subpage page-title="$i18n{googleDriveLabel}"
+          show-spinner="[[showSpinner_]]">
+        <settings-google-drive-subpage prefs="{{prefs}}"
+            show-spinner="{{showSpinner_}}">
+        </settings-google-drive-subpage>
+      </os-settings-subpage>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[shouldStampOfficeSubpage_]]">
+    <template is="dom-if" route-path="/officeFiles">
+      <os-settings-subpage page-title="$i18n{officeSubpageTitle}">
+        <settings-office-page prefs="{{prefs}}">
+        </settings-office-page>
+      </os-settings-subpage>
+    </template>
+
+    <template is="dom-if" route-path="/oneDrive">
+      <os-settings-subpage page-title="$i18n{oneDriveLabel}">
+        <settings-one-drive-subpage prefs="{{prefs}}">
+        </settings-one-drive-subpage>
+      </os-settings-subpage>
+    </template>
   </template>
 
   <!-- Languages and Input subpages -->

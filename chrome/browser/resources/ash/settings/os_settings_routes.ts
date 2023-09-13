@@ -525,26 +525,6 @@ export function createRoutes(): OsSettingsRoutes {
       r.OS_PRIVACY, routesMojom.PRIVACY_HUB_MICROPHONE_SUBPAGE_PATH,
       Subpage.kPrivacyHubMicrophone);
 
-  // Files section.
-  if (!isGuest()) {
-    r.FILES = createSection(
-        r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
-    if (loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
-        loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
-      r.GOOGLE_DRIVE = createSubpage(
-          r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH, Subpage.kGoogleDrive);
-    }
-    if (loadTimeData.getBoolean('showOfficeSettings')) {
-      r.ONE_DRIVE = createSubpage(
-          r.FILES, routesMojom.ONE_DRIVE_SUBPAGE_PATH, Subpage.kOneDrive);
-    }
-    r.OFFICE = createSubpage(
-        r.FILES, routesMojom.OFFICE_FILES_SUBPAGE_PATH, Subpage.kOfficeFiles);
-    r.SMB_SHARES = createSubpage(
-        r.FILES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
-        Subpage.kNetworkFileShares);
-  }
-
   // Printing section.
   r.OS_PRINTING = createSection(
       r.ADVANCED, routesMojom.PRINTING_SECTION_PATH, Section.kPrinting);
@@ -570,6 +550,27 @@ export function createRoutes(): OsSettingsRoutes {
     r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
         r.SYSTEM_PREFERENCES, routesMojom.TIME_ZONE_SUBPAGE_PATH,
         Subpage.kTimeZone);
+
+    // Files subpages.
+    if (!isGuest()) {
+      if (loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
+          loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
+        r.GOOGLE_DRIVE = createSubpage(
+            r.SYSTEM_PREFERENCES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH,
+            Subpage.kGoogleDrive);
+      }
+      if (loadTimeData.getBoolean('showOfficeSettings')) {
+        r.OFFICE = createSubpage(
+            r.SYSTEM_PREFERENCES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
+            Subpage.kOfficeFiles);
+        r.ONE_DRIVE = createSubpage(
+            r.SYSTEM_PREFERENCES, routesMojom.ONE_DRIVE_SUBPAGE_PATH,
+            Subpage.kOneDrive);
+      }
+      r.SMB_SHARES = createSubpage(
+          r.SYSTEM_PREFERENCES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
+          Subpage.kNetworkFileShares);
+    }
 
     // Languages and Input subpages.
     r.OS_LANGUAGES_LANGUAGES = createSubpage(
@@ -623,6 +624,28 @@ export function createRoutes(): OsSettingsRoutes {
         Subpage.kExternalStorage);
     r.POWER =
         createSubpage(r.DEVICE, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
+
+    // Files section.
+    if (!isGuest()) {
+      r.FILES = createSection(
+          r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
+      if (loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
+          loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
+        r.GOOGLE_DRIVE = createSubpage(
+            r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH,
+            Subpage.kGoogleDrive);
+      }
+      if (loadTimeData.getBoolean('showOfficeSettings')) {
+        r.OFFICE = createSubpage(
+            r.FILES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
+            Subpage.kOfficeFiles);
+        r.ONE_DRIVE = createSubpage(
+            r.FILES, routesMojom.ONE_DRIVE_SUBPAGE_PATH, Subpage.kOneDrive);
+      }
+      r.SMB_SHARES = createSubpage(
+          r.FILES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
+          Subpage.kNetworkFileShares);
+    }
 
     // Languages and Input section.
     r.OS_LANGUAGES = createSection(

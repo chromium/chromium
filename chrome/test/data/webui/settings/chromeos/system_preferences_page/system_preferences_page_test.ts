@@ -12,11 +12,13 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {ensureLazyLoaded, OsSettingsRoutes, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Route, Router, routes, setGlobalScrollTargetForTesting, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, ensureLazyLoaded, OneDriveBrowserProxy, OsSettingsRoutes, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Route, Router, routes, setGlobalScrollTargetForTesting, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {OneDriveTestBrowserProxy} from '../os_files_page/one_drive_test_browser_proxy.js';
 
 interface SubpageData {
   routeName: keyof OsSettingsRoutes;
@@ -30,6 +32,17 @@ suite('<settings-system-preferences-page>', () => {
     page = document.createElement('settings-system-preferences-page');
     document.body.appendChild(page);
     await flushTasks();
+  }
+
+  /**
+   * Recreate routes (via new Router instance) based on the given load-time
+   * data overrides.
+   */
+  function recreateRoutesFromLoadTimeOverrides(
+      overrides: Record<string, boolean>) {
+    loadTimeData.overrideValues(overrides);
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
   }
 
   async function navigateToSubpage(route: Route) {
@@ -53,6 +66,12 @@ suite('<settings-system-preferences-page>', () => {
   }
 
   setup(() => {
+    loadTimeData.overrideValues({
+      isGuest: false,
+      showGoogleDriveSettingsPage: false,
+      showOfficeSettings: false,
+    });
+
     Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES);
   });
 
@@ -77,6 +96,87 @@ suite('<settings-system-preferences-page>', () => {
 
       await navigateToSubpage(routes.DATETIME_TIMEZONE_SUBPAGE);
       assertSubpageIsVisible('timezone-subpage');
+    });
+  });
+
+  suite('Files subsection', () => {
+    test('Files settings card is visible', async () => {
+      await createPage();
+
+      const filesSettingsCard =
+          page.shadowRoot!.querySelector('files-settings-card');
+      assertTrue(
+          isVisible(filesSettingsCard),
+          'Files settings card should be visible.');
+    });
+
+    suite('for guest users', () => {
+      setup(() => {
+        loadTimeData.overrideValues({isGuest: true});
+      });
+
+      test('Files settings card is not visible', async () => {
+        await createPage();
+
+        const filesSettingsCard =
+            page.shadowRoot!.querySelector('files-settings-card');
+        assertFalse(
+            isVisible(filesSettingsCard),
+            'Files settings card should not be visible.');
+      });
+    });
+
+    test('File shares subpage is visible for SMB_SHARES route', async () => {
+      await createPage();
+
+      await navigateToSubpage(routes.SMB_SHARES);
+      assertSubpageIsVisible('settings-smb-shares-page');
+    });
+
+    suite('when Google Drive settings are available', () => {
+      setup(() => {
+        recreateRoutesFromLoadTimeOverrides({
+          showGoogleDriveSettingsPage: true,
+        });
+      });
+
+      test(
+          'Google Drive subpage is visible for GOOGLE_DRIVE route',
+          async () => {
+            assertTrue(
+                !!routes.GOOGLE_DRIVE, 'GOOGLE_DRIVE route should exist');
+            await createPage();
+            await navigateToSubpage(routes.GOOGLE_DRIVE);
+            assertSubpageIsVisible('settings-google-drive-subpage');
+          });
+    });
+
+    suite('when office settings are available', () => {
+      setup(() => {
+        recreateRoutesFromLoadTimeOverrides({
+          showOfficeSettings: true,
+        });
+
+        const testOneDriveBrowserProxy =
+            new OneDriveTestBrowserProxy({email: 'sample@google.com'});
+        OneDriveBrowserProxy.setInstance(testOneDriveBrowserProxy);
+      });
+
+      test('Office subpage is visible for OFFICE route', async () => {
+        assertTrue(!!routes.OFFICE, 'OFFICE route should exist');
+        await createPage();
+        await navigateToSubpage(routes.OFFICE);
+        assertSubpageIsVisible('settings-office-page');
+      });
+
+      test(
+          'OneDrive subpage subpage element is visible for ONE_DRIVE route',
+          async () => {
+            assertTrue(!!routes.ONE_DRIVE, 'ONE_DRIVE route should exist');
+            await createPage();
+            await navigateToSubpage(routes.ONE_DRIVE);
+            assertSubpageIsVisible('settings-one-drive-subpage');
+          });
     });
   });
 

@@ -9,6 +9,7 @@
  */
 
 import '../date_time_page/date_time_settings_card.js';
+import '../os_files_page/files_settings_card.js';
 import '../os_languages_page/language_settings_card.js';
 import '../os_languages_page/languages.js';
 import '../os_settings_page/os_settings_animated_pages.js';
@@ -23,10 +24,11 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, isExternalStorageEnabled, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isRevampWayfindingEnabled, shouldShowQuickAnswersSettings} from '../common/load_time_booleans.js';
 import {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './system_preferences_page.html.js';
 
@@ -76,6 +78,13 @@ export class SettingsSystemPreferencesPageElement extends
         value: loadTimeData.getString('timeZoneName'),
       },
 
+      shouldShowFilesSettingsCard_: {
+        type: Boolean,
+        value: () => {
+          return !isGuest();
+        },
+      },
+
       shouldShowResetSettingsCard_: {
         type: Boolean,
         value: () => {
@@ -103,6 +112,20 @@ export class SettingsSystemPreferencesPageElement extends
           return isExternalStorageEnabled();
         },
       },
+
+      shouldStampGoogleDriveSubpage_: {
+        type: Boolean,
+        value: () => {
+          return !!routes.GOOGLE_DRIVE;
+        },
+      },
+
+      shouldStampOfficeSubpage_: {
+        type: Boolean,
+        value: () => {
+          return !!routes.OFFICE;
+        },
+      },
     };
   }
 
@@ -116,6 +139,11 @@ export class SettingsSystemPreferencesPageElement extends
 
   // Date and Time subsection
   private activeTimeZoneDisplayName_: string;
+
+  // Files subsection
+  private shouldShowFilesSettingsCard_: boolean;
+  private shouldStampGoogleDriveSubpage_: boolean;
+  private shouldStampOfficeSubpage_: boolean;
 
   // Reset subsection
   private shouldShowResetSettingsCard_: boolean;

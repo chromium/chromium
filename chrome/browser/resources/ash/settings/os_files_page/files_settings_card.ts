@@ -143,7 +143,8 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     super();
 
     /** RouteOriginMixin override */
-    this.route = routes.FILES;
+    this.route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
+                                                   routes.FILES;
 
     this.smbBrowserProxy_ = SmbBrowserProxyImpl.getInstance();
 

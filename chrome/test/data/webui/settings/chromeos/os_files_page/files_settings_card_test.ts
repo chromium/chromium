@@ -18,6 +18,11 @@ import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_p
 import {TestSmbBrowserProxy} from './test_smb_browser_proxy.js';
 
 suite('<files-settings-card>', () => {
+  const isRevampWayfindingEnabled =
+      loadTimeData.getBoolean('isRevampWayfindingEnabled');
+  const route =
+      isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.FILES;
+
   let filesSettingsCard: FilesSettingsCardElement;
   let prefElement: SettingsPrefsElement;
   let smbBrowserProxy: TestSmbBrowserProxy;
@@ -119,6 +124,8 @@ suite('<files-settings-card>', () => {
       enableDriveFsBulkPinning: false,
       showGoogleDriveSettingsPage: false,
     });
+
+    Router.getInstance().navigateTo(route);
   });
 
   teardown(() => {
@@ -155,7 +162,7 @@ suite('<files-settings-card>', () => {
     const params = new URLSearchParams();
     const setting = settingMojom.Setting.kGoogleDriveConnection;
     params.append('settingId', setting.toString());
-    Router.getInstance().navigateTo(routes.FILES, params);
+    Router.getInstance().navigateTo(route, params);
     flush();
 
     const deepLinkElement =
@@ -284,7 +291,6 @@ suite('<files-settings-card>', () => {
     });
 
     test('OneDrive row is focused when returning from subpage', async () => {
-      Router.getInstance().navigateTo(routes.FILES);
       setupBrowserProxy({email: null});
       await createFilesSettingsCard();
 
@@ -292,7 +298,6 @@ suite('<files-settings-card>', () => {
     });
 
     test('Office row is focused when returning from subpage', async () => {
-      Router.getInstance().navigateTo(routes.FILES);
       setupBrowserProxy({email: null});
       await createFilesSettingsCard();
 
@@ -386,7 +391,6 @@ suite('<files-settings-card>', () => {
 
     test(
         'Google Drive row is focused when returning from subpage', async () => {
-          Router.getInstance().navigateTo(routes.FILES);
           await createFilesSettingsCard();
 
           await assertSubpageTriggerFocused(
@@ -394,13 +398,7 @@ suite('<files-settings-card>', () => {
         });
   });
 
-  suite('with isRevampWayfindingEnabled set to true', () => {
-    setup(async () => {
-      loadTimeData.overrideValues({
-        isRevampWayfindingEnabled: true,
-      });
-    });
-
+  if (isRevampWayfindingEnabled) {
     suite('when no share has been setup before', () => {
       setup(async () => {
         smbBrowserProxy.anySmbMounted = false;
@@ -447,16 +445,17 @@ suite('<files-settings-card>', () => {
             filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
         assertFalse(isVisible(addSmbSharesRow));
       });
-    });
-  });
 
-  suite('with flag isRevampWayfindingEnabled disabled', () => {
-    setup(() => {
-      loadTimeData.overrideValues({
-        isRevampWayfindingEnabled: false,
-      });
-    });
+      test(
+          'File shares row is focused when returning from subpage',
+          async () => {
+            await createFilesSettingsCard();
 
+            await assertSubpageTriggerFocused(
+                '#smbSharesRow', routes.SMB_SHARES);
+          });
+    });
+  } else {
     test('File shares row is visible', async () => {
       await createFilesSettingsCard();
       const smbSharesLinkRow =
@@ -470,12 +469,11 @@ suite('<files-settings-card>', () => {
           filesSettingsCard.shadowRoot!.querySelector('#addSmbSharesRow');
       assertFalse(isVisible(addSmbSharesRow));
     });
-  });
 
-  test('File shares row is focused when returning from subpage', async () => {
-    Router.getInstance().navigateTo(routes.FILES);
-    await createFilesSettingsCard();
+    test('File shares row is focused when returning from subpage', async () => {
+      await createFilesSettingsCard();
 
-    await assertSubpageTriggerFocused('#smbSharesRow', routes.SMB_SHARES);
-  });
+      await assertSubpageTriggerFocused('#smbSharesRow', routes.SMB_SHARES);
+    });
+  }
 });
