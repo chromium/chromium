@@ -4171,8 +4171,14 @@ bool AXObject::IsKeyboardFocusable() const {
     return false;
 
   Element* element = GetElement();
-  DCHECK(element) << "Cannot be focusable without an element: "
-                  << ToString(true, true);
+  if (!element) {
+    // TODO(crbug.com/1480563) It is possible to reach this line, though it
+    // isn't clear how. See the linked bug for crash reports. Since we would
+    // prefer not to crash in this case, return false here instead.
+    LOG(ERROR) << "Cannot be focusable without an element: "
+               << ToString(true, true);
+    return false;
+  }
   if (element->IsScrollableContainerThatShouldBeKeyboardFocusable()) {
     return true;
   }
