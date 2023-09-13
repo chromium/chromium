@@ -127,6 +127,9 @@ void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void EditorMenuPromoCardView::OnWidgetDestroying(views::Widget* widget) {
   widget_observation_.Reset();
+
+  CHECK(delegate_);
+  delegate_->OnPromoCardWidgetClosed(widget->closed_reason());
 }
 
 void EditorMenuPromoCardView::OnWidgetActivationChanged(views::Widget* widget,
@@ -257,8 +260,9 @@ void EditorMenuPromoCardView::AddButtonBar(views::View* main_view) {
   // Dismiss button.
   dismiss_button_ =
       button_bar->AddChildView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(&EditorMenuPromoCardView::OnDismissButtonPressed,
-                              weak_factory_.GetWeakPtr()),
+          base::BindRepeating(&EditorMenuPromoCardView::CloseWidgetWithReason,
+                              weak_factory_.GetWeakPtr(),
+                              views::Widget::ClosedReason::kCloseButtonClicked),
           l10n_util::GetStringUTF16(
               IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON)));
   dismiss_button_->SetStyle(ui::ButtonStyle::kText);
@@ -267,21 +271,18 @@ void EditorMenuPromoCardView::AddButtonBar(views::View* main_view) {
   tell_me_more_button_ =
       button_bar->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
-              &EditorMenuPromoCardView::OnTellMeMoreButtonPressed,
-              weak_factory_.GetWeakPtr()),
+              &EditorMenuPromoCardView::CloseWidgetWithReason,
+              weak_factory_.GetWeakPtr(),
+              views::Widget::ClosedReason::kAcceptButtonClicked),
           l10n_util::GetStringUTF16(
               IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON)));
   tell_me_more_button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
-void EditorMenuPromoCardView::OnDismissButtonPressed() {
-  CHECK(delegate_);
-  delegate_->OnPromoCardDismissButtonPressed();
-}
-
-void EditorMenuPromoCardView::OnTellMeMoreButtonPressed() {
-  CHECK(delegate_);
-  delegate_->OnPromoCardTellMeMoreButtonPressed();
+void EditorMenuPromoCardView::CloseWidgetWithReason(
+    views::Widget::ClosedReason closed_reason) {
+  CHECK(GetWidget());
+  GetWidget()->CloseWithReason(closed_reason);
 }
 
 void EditorMenuPromoCardView::ResetPreTargetHandler() {

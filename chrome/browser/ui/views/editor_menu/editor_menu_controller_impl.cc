@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -99,12 +100,19 @@ void EditorMenuControllerImpl::OnTextfieldArrowButtonPressed(
   GetEditorPanelManager().StartEditingFlowWithFreeform(base::UTF16ToUTF8(text));
 }
 
-void EditorMenuControllerImpl::OnPromoCardDismissButtonPressed() {
-  GetEditorPanelManager().OnPromoCardDeclined();
-}
-
-void EditorMenuControllerImpl::OnPromoCardTellMeMoreButtonPressed() {
-  GetEditorPanelManager().StartEditingFlow();
+void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
+    views::Widget::ClosedReason closed_reason) {
+  switch (closed_reason) {
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      GetEditorPanelManager().StartEditingFlow();
+      break;
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      GetEditorPanelManager().OnPromoCardDeclined();
+      break;
+    default:
+      GetEditorPanelManager().OnPromoCardDismissed();
+      break;
+  }
 }
 
 void EditorMenuControllerImpl::OnGetEditorPanelContextResult(

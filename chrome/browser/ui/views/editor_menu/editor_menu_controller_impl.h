@@ -14,6 +14,7 @@
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace chromeos::editor_menu {
 
@@ -39,8 +40,8 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   void OnSettingsButtonPressed() override;
   void OnChipButtonPressed(std::string_view text_query_id) override;
   void OnTextfieldArrowButtonPressed(std::u16string_view text) override;
-  void OnPromoCardDismissButtonPressed() override;
-  void OnPromoCardTellMeMoreButtonPressed() override;
+  void OnPromoCardWidgetClosed(
+      views::Widget::ClosedReason closed_reason) override;
 
   views::Widget* editor_menu_widget_for_testing() {
     return editor_menu_widget_.get();

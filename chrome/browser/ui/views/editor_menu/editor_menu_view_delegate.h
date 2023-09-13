@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+#include "ui/views/widget/widget.h"
+
 namespace chromeos::editor_menu {
 
 class EditorMenuViewDelegate {
@@ -19,9 +21,8 @@ class EditorMenuViewDelegate {
 
   virtual void OnTextfieldArrowButtonPressed(std::u16string_view text) = 0;
 
-  virtual void OnPromoCardDismissButtonPressed() = 0;
-
-  virtual void OnPromoCardTellMeMoreButtonPressed() = 0;
+  virtual void OnPromoCardWidgetClosed(
+      views::Widget::ClosedReason closed_reason) = 0;
 };
 
 }  // namespace chromeos::editor_menu

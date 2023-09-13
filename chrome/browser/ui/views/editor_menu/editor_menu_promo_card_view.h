@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -57,8 +58,7 @@ class EditorMenuPromoCardView : public views::View,
   void AddDescription(views::View* main_view);
   void AddButtonBar(views::View* main_view);
 
-  void OnDismissButtonPressed();
-  void OnTellMeMoreButtonPressed();
+  void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
 
   void ResetPreTargetHandler();
 

@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace chromeos::editor_menu {
 
@@ -31,9 +32,8 @@ class MockEditorMenuViewDelegate : public EditorMenuViewDelegate {
 
   void OnTextfieldArrowButtonPressed(std::u16string_view text) override {}
 
-  void OnPromoCardDismissButtonPressed() override {}
-
-  void OnPromoCardTellMeMoreButtonPressed() override {}
+  void OnPromoCardWidgetClosed(
+      views::Widget::ClosedReason closed_reason) override {}
 };
 
 using EditorMenuViewTest = views::ViewsTestBase;
