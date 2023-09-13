@@ -27,12 +27,16 @@
 
 namespace ash {
 
-class EolNotificationTest : public BrowserWithTestWindowTest {
+class EolNotificationTest : public BrowserWithTestWindowTest,
+                            public testing::WithParamInterface<bool> {
  public:
   EolNotificationTest() = default;
   ~EolNotificationTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSuppressFirstEolWarning, SuppressFirstWarningEnabled());
+
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
@@ -79,15 +83,21 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     fake_update_engine_client_->set_eol_date(utc_date);
   }
 
+  bool SuppressFirstWarningEnabled() { return GetParam(); }
+
  protected:
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<EolNotification> eol_notification_;
   std::unique_ptr<base::SimpleTestClock> clock_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(EolNotificationTest, TestNoNotifciationBeforeEol) {
+INSTANTIATE_TEST_SUITE_P(All, EolNotificationTest, testing::Bool());
+
+TEST_P(EolNotificationTest, TestNoNotifciationBeforeEol) {
   SetCurrentTimeToUtc("1 January 2019");
   SetEolDateUtc("1 December 2019");
 
@@ -96,22 +106,26 @@ TEST_F(EolNotificationTest, TestNoNotifciationBeforeEol) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolNotificationTest, TestFirstWarningNotification) {
+TEST_P(EolNotificationTest, TestFirstWarningNotification) {
   SetCurrentTimeToUtc("1 August 2019");
   SetEolDateUtc("1 December 2019");
 
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_TRUE(notification);
 
-  std::u16string expected_title = u"Updates end December 2019";
-  std::u16string expected_message =
-      u"You'll still be able to use this Chrome device after that time, but it "
-      u"will no longer get automatic software and security updates";
-  EXPECT_EQ(notification->title(), expected_title);
-  EXPECT_EQ(notification->message(), expected_message);
+  if (SuppressFirstWarningEnabled()) {
+    ASSERT_FALSE(notification);
+  } else {
+    ASSERT_TRUE(notification);
+    std::u16string expected_title = u"Updates end December 2019";
+    std::u16string expected_message =
+        u"You'll still be able to use this Chrome device after that time, but "
+        u"it will no longer get automatic software and security updates";
+    EXPECT_EQ(notification->title(), expected_title);
+    EXPECT_EQ(notification->message(), expected_message);
 
-  DismissNotification();
+    DismissNotification();
+  }
 
   SetCurrentTimeToUtc("15 August 2019");
   CheckEolInfo();
@@ -119,7 +133,7 @@ TEST_F(EolNotificationTest, TestFirstWarningNotification) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolNotificationTest, TestSecondWarningNotification) {
+TEST_P(EolNotificationTest, TestSecondWarningNotification) {
   SetCurrentTimeToUtc("1 November 2019");
   SetEolDateUtc("1 December 2019");
 
@@ -147,7 +161,7 @@ TEST_F(EolNotificationTest, TestSecondWarningNotification) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolNotificationTest, TestFinalEolNotification) {
+TEST_P(EolNotificationTest, TestFinalEolNotification) {
   SetEolDateUtc("1 December 2019");
   SetCurrentTimeToUtc("2 December 2019");
 
@@ -170,7 +184,7 @@ TEST_F(EolNotificationTest, TestFinalEolNotification) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeFirstWarning) {
+TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeFirstWarning) {
   SetCurrentTimeToUtc("1 January 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
@@ -184,15 +198,20 @@ TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeFirstWarning) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeSecondWarning) {
+TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeSecondWarning) {
   SetCurrentTimeToUtc("1 August 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_TRUE(notification);
+  if (SuppressFirstWarningEnabled()) {
+    ASSERT_FALSE(notification);
+  } else {
+    ASSERT_TRUE(notification);
 
-  // Dismiss first warning notification.
-  DismissNotification();
+    // Dismiss first warning notification.
+    DismissNotification();
+  }
+
   CheckEolInfo();
   notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_FALSE(notification);
@@ -201,10 +220,15 @@ TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeSecondWarning) {
   SetEolDateUtc("2 December 2019");
   CheckEolInfo();
   notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_TRUE(notification);
+
+  if (SuppressFirstWarningEnabled()) {
+    ASSERT_FALSE(notification);
+  } else {
+    ASSERT_TRUE(notification);
+  }
 }
 
-TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeFinalWarning) {
+TEST_P(EolNotificationTest, TestOnEolDateChangeBeforeFinalWarning) {
   SetCurrentTimeToUtc("1 November 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
@@ -224,7 +248,7 @@ TEST_F(EolNotificationTest, TestOnEolDateChangeBeforeFinalWarning) {
   ASSERT_TRUE(notification);
 }
 
-TEST_F(EolNotificationTest, TestOnEolDateChangedAfterFinalWarning) {
+TEST_P(EolNotificationTest, TestOnEolDateChangedAfterFinalWarning) {
   SetEolDateUtc("1 December 2019");
   SetCurrentTimeToUtc("3 December 2019");
   CheckEolInfo();
@@ -250,27 +274,31 @@ TEST_F(EolNotificationTest, TestOnEolDateChangedAfterFinalWarning) {
   ASSERT_TRUE(notification);
 }
 
-TEST_F(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
+TEST_P(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   SetCurrentTimeToUtc("1 August 2019");
   SetEolDateUtc("1 December 2019");
   CheckEolInfo();
   auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_TRUE(notification);
 
-  std::u16string expected_title = u"Updates end December 2019";
-  std::u16string expected_message =
-      u"You'll still be able to use this Chrome device after that time, but it "
-      u"will no longer get automatic software and security updates";
-  EXPECT_EQ(notification->title(), expected_title);
-  EXPECT_EQ(notification->message(), expected_message);
+  if (SuppressFirstWarningEnabled()) {
+    ASSERT_FALSE(notification);
+  } else {
+    ASSERT_TRUE(notification);
+    std::u16string expected_title = u"Updates end December 2019";
+    std::u16string expected_message =
+        u"You'll still be able to use this Chrome device after that time, but "
+        u"it will no longer get automatic software and security updates";
+    EXPECT_EQ(notification->title(), expected_title);
+    EXPECT_EQ(notification->message(), expected_message);
+  }
 
   // EOL date arrives and the user has not dismissed the notification.
   SetCurrentTimeToUtc("1 December 2019");
   CheckEolInfo();
   notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_TRUE(notification);
-  expected_title = u"Final software update";
-  expected_message =
+  std::u16string expected_title = u"Final software update";
+  std::u16string expected_message =
       u"This is the last automatic software and security update for this "
       u"Chrome device. To get future updates, upgrade to a newer model.";
   EXPECT_EQ(notification->title(), expected_title);
@@ -281,7 +309,7 @@ TEST_F(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolNotificationTest, TestBackwardsCompatibilityFinalUpdateAlreadyShown) {
+TEST_P(EolNotificationTest, TestBackwardsCompatibilityFinalUpdateAlreadyShown) {
   SetEolDateUtc("1 December 2019");
   SetCurrentTimeToUtc("2 December 2019");
 
@@ -311,7 +339,9 @@ class EolIncentiveNotificationTest : public EolNotificationTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(EolIncentiveNotificationTest, TestIncentiveFarBeforeEolDate) {
+INSTANTIATE_TEST_SUITE_P(All, EolIncentiveNotificationTest, testing::Bool());
+
+TEST_P(EolIncentiveNotificationTest, TestIncentiveFarBeforeEolDate) {
   SetCurrentTimeToUtc("1 January 2023");
   SetEolDateUtc("1 December 2023");
 
@@ -320,7 +350,7 @@ TEST_F(EolIncentiveNotificationTest, TestIncentiveFarBeforeEolDate) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolIncentiveNotificationTest, TestIncentiveBeforeEolDate) {
+TEST_P(EolIncentiveNotificationTest, TestIncentiveBeforeEolDate) {
   SetCurrentTimeToUtc("1 November 2023");
   SetEolDateUtc("1 December 2023");
 
@@ -333,7 +363,7 @@ TEST_F(EolIncentiveNotificationTest, TestIncentiveBeforeEolDate) {
       prefs::kEolApproachingIncentiveNotificationDismissed));
 }
 
-TEST_F(EolIncentiveNotificationTest, TestIncentiveOnEolDate) {
+TEST_P(EolIncentiveNotificationTest, TestIncentiveOnEolDate) {
   SetCurrentTimeToUtc("1 December 2023");
   SetEolDateUtc("1 December 2023");
 
@@ -346,7 +376,7 @@ TEST_F(EolIncentiveNotificationTest, TestIncentiveOnEolDate) {
       prefs::kEolPassedFinalIncentiveDismissed));
 }
 
-TEST_F(EolIncentiveNotificationTest, TestIncentiveAfterEolDate) {
+TEST_P(EolIncentiveNotificationTest, TestIncentiveAfterEolDate) {
   SetCurrentTimeToUtc("3 December 2023");
   SetEolDateUtc("1 December 2023");
 
@@ -359,7 +389,7 @@ TEST_F(EolIncentiveNotificationTest, TestIncentiveAfterEolDate) {
       prefs::kEolPassedFinalIncentiveDismissed));
 }
 
-TEST_F(EolIncentiveNotificationTest, TestIncentiveFarAfterEolDate) {
+TEST_P(EolIncentiveNotificationTest, TestIncentiveFarAfterEolDate) {
   SetCurrentTimeToUtc("20 December 2023");
   SetEolDateUtc("1 December 2023");
 
@@ -373,7 +403,7 @@ TEST_F(EolIncentiveNotificationTest, TestIncentiveFarAfterEolDate) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolIncentiveNotificationTest,
+TEST_P(EolIncentiveNotificationTest,
        TestIncentiveFarAfterEolDateIncentiveNotShown) {
   SetCurrentTimeToUtc("20 December 2023");
   SetEolDateUtc("1 December 2023");

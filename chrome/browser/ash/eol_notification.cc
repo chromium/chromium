@@ -139,6 +139,10 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
   } else if (SecondWarningDate(eol_date) <= now) {
     dismiss_pref_ = prefs::kSecondEolWarningDismissed;
   } else if (FirstWarningDate(eol_date) <= now) {
+    if (base::FeatureList::IsEnabled(features::kSuppressFirstEolWarning)) {
+      dismiss_pref_ = absl::nullopt;
+      return;
+    }
     dismiss_pref_ = prefs::kFirstEolWarningDismissed;
   } else {
     // |now| < FirstWarningDate() so don't show anything.

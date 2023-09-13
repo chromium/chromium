@@ -2410,6 +2410,11 @@ BASE_FEATURE(kShowPlayInDemoMode,
              "ShowPlayInDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Suppresses the first end of life warning shown 180 days before the AUE date.
+BASE_FEATURE(kSuppressFirstEolWarning,
+             "SuppressFirstEolWarning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allow the system to suspend to disk via hibernate.
 BASE_FEATURE(kSuspendToDisk,
              "CrOSSuspendToDisk",
