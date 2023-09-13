@@ -663,12 +663,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   int num_unsupported_windows_ = 0;
 
   // Used when feature ContinuousOverviewScrollAnimation is enabled. When a
-  // continuous scroll starts, store the calculated rects here. For each scroll
-  // update, use this list to prevent unnecessary recalculations. For a scroll
-  // end, clear the list.
-  // TODO(http://b/295063288): Cache target transforms instead, it will be more
-  // precise and performant.
-  std::vector<gfx::RectF> cached_rects_;
+  // continuous scroll starts, store the calculated target transforms here. For
+  // each scroll update, use this list to prevent unnecessary recalculations.
+  // For a scroll end, clear the list.
+  base::flat_map<OverviewItemBase*, gfx::Transform> cached_transforms_;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };

@@ -45,6 +45,8 @@ class OverviewGroupItem : public OverviewItemBase,
   void RestoreWindow(bool reset_transform, bool animate) override;
   void SetBounds(const gfx::RectF& target_bounds,
                  OverviewAnimationType animation_type) override;
+  gfx::Transform ComputeTargetTransform(
+      const gfx::RectF& target_bounds) override;
   gfx::RectF GetTargetBoundsInScreen() const override;
   gfx::RectF GetWindowTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
@@ -69,8 +71,7 @@ class OverviewGroupItem : public OverviewItemBase,
   void OnFocusedViewClosed() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
-  void OnOverviewItemContinuousScroll(const gfx::RectF& target_bouns,
-                                      bool first_scroll,
+  void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
                                       float scroll_ratio) override;
   void SetVisibleDuringItemDragging(bool visible, bool animate) override;
   void UpdateShadowTypeForDrag(bool is_dragging) override;

@@ -428,6 +428,59 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   }
 }
 
+gfx::Transform OverviewItem::ComputeTargetTransform(
+    const gfx::RectF& target_bounds) {
+  aura::Window* window = GetWindow();
+
+  CHECK(!overview_grid_->IsDropTargetWindow(window));
+
+  gfx::RectF screen_rect = gfx::RectF(GetTargetBoundsInScreen());
+
+  // Avoid division by zero by ensuring screen bounds is not empty.
+  gfx::SizeF screen_size(screen_rect.size());
+  screen_size.SetToMax(gfx::SizeF(1.f, 1.f));
+  screen_rect.set_size(screen_size);
+
+  const int top_view_inset = transform_window_.GetTopInset();
+  gfx::RectF transformed_bounds = target_bounds;
+
+  // Update `transformed_bounds` to match the unclipped size of the window, so
+  // we transform the window to the correct size.
+  if (unclipped_size_) {
+    transformed_bounds.set_size(gfx::SizeF(*unclipped_size_));
+  }
+
+  gfx::RectF overview_item_bounds =
+      transform_window_.ShrinkRectToFitPreservingAspectRatio(
+          screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
+
+  if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
+      transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
+    overview_item_bounds.set_x(transformed_bounds.x());
+    overview_item_bounds.set_width(transformed_bounds.width());
+  }
+
+  // Adjust the `overview_item_bounds` y position and height if the window has
+  // normal or pillar dimensions type to make sure there's no gap between the
+  // header and the window and no empty space at the end of the overview item
+  // container.
+  if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
+      transform_window_.type() == OverviewGridWindowFillMode::kPillarBoxed) {
+    if (!overview_item_view_->header_view()->GetBoundsInScreen().IsEmpty()) {
+      // The window top bar's target height with the transform.
+      const float window_top_inset_target_height =
+          target_bounds.height() / screen_rect.height() * top_view_inset;
+      overview_item_bounds.set_y(
+          overview_item_view_->header_view()->GetBoundsInScreen().bottom() -
+          window_top_inset_target_height);
+      overview_item_bounds.set_height(target_bounds.height() - kHeaderHeightDp +
+                                      window_top_inset_target_height);
+    }
+  }
+
+  return gfx::TransformBetweenRects(screen_rect, overview_item_bounds);
+}
+
 void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   TRACE_EVENT0("ui", "OverviewItem::RestoreWindow");
 
@@ -520,6 +573,8 @@ views::View* OverviewItem::GetBackDropView() const {
 }
 
 void OverviewItem::UpdateRoundedCornersAndShadow() {
+  // TODO(sammiequon): Clean up this function.
+
   // Do not show the rounded corners and the shadow if overview is shutting
   // down or we're currently in entering overview animation. Also don't update
   // or animate the window's frame header clip under these conditions. If the
@@ -559,10 +614,7 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   // corners but no shadows.
   bool should_show_shadow_for_rounded_corners = false;
   if (features::IsContinuousOverviewScrollAnimationEnabled()) {
-    should_show_shadow_for_rounded_corners =
-        !continuous_scroll_in_progress ||
-        (continuous_scroll_in_progress &&
-         !transform_window_.IsMinimizedOrTucked());
+    should_show_shadow_for_rounded_corners = !continuous_scroll_in_progress;
   } else {
     should_show_shadow_for_rounded_corners = should_show_rounded_corners;
   }
@@ -894,35 +946,25 @@ void OverviewItem::OnOverviewItemDragEnded(bool snap) {
 }
 
 void OverviewItem::OnOverviewItemContinuousScroll(
-    const gfx::RectF& target_bounds,
-    bool first_scroll,
+    const gfx::Transform& target_transform,
     float scroll_ratio) {
-  const auto* window = GetWindow();
-  const bool is_window_minimized = WindowState::Get(window)->IsMinimized();
+  auto* window = GetWindow();
   auto* item_layer = overview_item_view_->layer();
 
-  // If this is the first scroll update, position minimized windows
-  // and hide the headers of non-minimized windows.
-  if (first_scroll) {
-    // TODO(sammiequon): This should use
-    // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
-    // windows behave like minimized windows in overview, even if continuous
-    // scroll and tucked windows will not be supported together.
-    if (is_window_minimized) {
-      SetBounds(target_bounds, OVERVIEW_ANIMATION_NONE);
-    } else {
-      item_layer->SetOpacity(0.0f);
-    }
-  }
-
-  // For all scroll updates, set the opacity of minimized windows and
-  // reposition non-minimized windows.
-  if (is_window_minimized) {
+  // TODO(sammiequon): This should use
+  // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
+  // windows behave like minimized windows in overview, even if continuous
+  // scroll and tucked windows will not be supported together.
+  // Minimized windows slowly fade towards their target opacity 1.f. All other
+  // windows transform towards their target transform. The operation may be
+  // no-ops if the windows are at their final opacity and transform, which can
+  // happen if the windows were completely occluded before entering overview.
+  if (WindowState::Get(window)->IsMinimized()) {
     item_layer->SetOpacity(std::clamp(0.01f, scroll_ratio, 1.f));
   } else {
-    SetBounds(gfx::Tween::RectFValueBetween(
-                  scroll_ratio, gfx::RectF(window->bounds()), target_bounds),
-              OVERVIEW_ANIMATION_NONE);
+    gfx::Transform transform = gfx::Tween::TransformValueBetween(
+        scroll_ratio, gfx::Transform(), target_transform);
+    SetTransform(window, transform);
   }
 }
 
@@ -1362,54 +1404,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
     return;
   }
 
-  gfx::RectF screen_rect = gfx::RectF(GetTargetBoundsInScreen());
-
-  // Avoid division by zero by ensuring screen bounds is not empty.
-  gfx::SizeF screen_size(screen_rect.size());
-  screen_size.SetToMax(gfx::SizeF(1.f, 1.f));
-  screen_rect.set_size(screen_size);
-
-  const int top_view_inset = transform_window_.GetTopInset();
-  gfx::RectF transformed_bounds = target_bounds;
-
-  // Update |transformed_bounds| to match the unclipped size of the window, so
-  // we transform the window to the correct size.
-  if (unclipped_size_)
-    transformed_bounds.set_size(gfx::SizeF(*unclipped_size_));
-
-  gfx::RectF overview_item_bounds =
-      transform_window_.ShrinkRectToFitPreservingAspectRatio(
-          screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
-
-  if (chromeos::features::IsJellyrollEnabled()) {
-    // Adjust the `overview_item_bounds` x position and width if the window has
-    // normal or letter dimensions type to make sure it's aligned with overview
-    // item header view after the transform.
-    if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
-        transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
-      overview_item_bounds.set_x(transformed_bounds.x());
-      overview_item_bounds.set_width(transformed_bounds.width());
-    }
-
-    // Adjust the `overview_item_bounds` y position and height if the window has
-    // normal or pillar dimensions type to make sure there's no gap between the
-    // header and the window and no empty space at the end of the overview item
-    // container.
-    if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
-        transform_window_.type() == OverviewGridWindowFillMode::kPillarBoxed) {
-      // The window top bar's target height with the transform.
-      float window_top_inset_target_height =
-          target_bounds.height() / screen_rect.height() * top_view_inset;
-      overview_item_bounds.set_y(
-          overview_item_view_->header_view()->GetBoundsInScreen().bottom() -
-          window_top_inset_target_height);
-      overview_item_bounds.set_height(target_bounds.height() - kHeaderHeightDp +
-                                      window_top_inset_target_height);
-    }
-  }
-
-  const gfx::Transform transform =
-      gfx::TransformBetweenRects(screen_rect, overview_item_bounds);
+  const gfx::Transform transform = ComputeTargetTransform(target_bounds);
 
   // Determine the amount of clipping we should put on the window. Note that the
   // clipping goes after setting a transform, as layer transform affects layer
@@ -1575,8 +1570,8 @@ void OverviewItem::AnimateOpacity(float opacity,
 void OverviewItem::StartDrag() {
   // Stack the window and the widget window at the top. This is to ensure that
   // they appear above other app windows, as well as above the desks bar. Note
-  // that the stacking operations are done in this order to make sure that that
-  // the window appears above the widget window.
+  // that the stacking operations are done in this order to make sure that the
+  // window appears above the widget window.
   if (aura::Window* widget_window = item_widget_->GetNativeWindow())
     widget_window->parent()->StackChildAtTop(widget_window);
 

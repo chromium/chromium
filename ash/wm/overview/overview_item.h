@@ -87,6 +87,8 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void RestoreWindow(bool reset_transform, bool animate) override;
   void SetBounds(const gfx::RectF& target_bounds,
                  OverviewAnimationType animation_type) override;
+  gfx::Transform ComputeTargetTransform(
+      const gfx::RectF& target_bounds) override;
   float GetItemScale(const gfx::Size& size) override;
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;
   void EnsureVisible() override;
@@ -111,8 +113,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void OnFocusedViewClosed() override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
-  void OnOverviewItemContinuousScroll(const gfx::RectF& target_bounds,
-                                      bool first_scroll,
+  void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
                                       float scroll_ratio) override;
   void SetVisibleDuringItemDragging(bool visible, bool animate) override;
   void UpdateShadowTypeForDrag(bool is_dragging) override;

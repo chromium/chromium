@@ -540,32 +540,7 @@ void OverviewGrid::PrepareForOverview() {
 }
 
 void OverviewGrid::PositionWindowsContinuously(float y_offset) {
-  // If it's the first scroll, the rects will need to be re-calculated.
-  bool first_scroll = false;
-  if (cached_rects_.empty()) {
-    first_scroll = true;
-    cached_rects_ = ShouldUseScrollingLayout(/*ignored_items_size=*/0u)
-                        ? GetWindowRectsForScrollingLayout({})
-                        : GetWindowRects({});
-    // When starting a continuous scroll to EXIT overview mode, hide the save
-    // desk button immediately.
-    // When starting a continuous scroll to ENTER overview mode, the save desk
-    // button will be shown once overview mode is fully entered.
-    if (IsSaveDeskButtonContainerVisible()) {
-      UpdateSaveDeskButtons();
-    }
-  }
-
-  // Fade in/out the minimized windows and position non-minimized windows.
   const float scroll_ratio = y_offset / WmGestureHandler::kVerticalThresholdDp;
-  for (size_t i = 0; i < window_list_.size(); ++i) {
-    // TODO(b/297923747): The assumption here is: For item at index `i` in
-    // `window_list_`, there is a corresponding correct target rect also at
-    // index `i` in `cached_rects_`. We need to make sure that this assumption
-    // is still standing when integrating with snap groups.
-    window_list_[i]->OnOverviewItemContinuousScroll(cached_rects_[i],
-                                                    first_scroll, scroll_ratio);
-  }
 
   // Move the desks bar up/down.
   if (auto* desks_bar = desks_bar_view()) {
@@ -573,9 +548,55 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
         0, desks_bar->height() * (scroll_ratio - 1)));
   }
 
+  // Compute and adjust the "No recent items" label.
   if (no_windows_widget_) {
     no_windows_widget_->GetLayer()->SetOpacity(
         std::clamp(0.01f, scroll_ratio, 1.f));
+  }
+
+  if (!cached_transforms_.empty()) {
+    // TODO(http://b/297923747): Integrate continuous animation with snap
+    // groups.
+    for (const auto& [overview_item, transform] : cached_transforms_) {
+      overview_item->OnOverviewItemContinuousScroll(transform, scroll_ratio);
+    }
+    return;
+  }
+
+  if (window_list_.empty()) {
+    return;
+  }
+
+  // The first time we call this function we want to compute the target
+  // transforms.
+  const std::vector<gfx::RectF> target_rects =
+      ShouldUseScrollingLayout(/*ignored_items_size=*/0u)
+          ? GetWindowRectsForScrollingLayout({})
+          : GetWindowRects({});
+  CHECK_EQ(window_list_.size(), target_rects.size());
+
+  for (size_t i = 0; i < window_list_.size(); ++i) {
+    OverviewItemBase* overview_item = window_list_[i].get();
+    cached_transforms_[overview_item] =
+        overview_item->ComputeTargetTransform(target_rects[i]);
+
+    if (WindowState::Get(overview_item->GetWindow())->IsMinimized()) {
+      overview_item->SetBounds(target_rects[i], OVERVIEW_ANIMATION_NONE);
+    } else {
+      // Keep the overview header, backdrop, etc. and rounded corners and shadow
+      // hidden during the trackpad swipe. They will be shown after the swipe is
+      // completed.
+      overview_item->GetFocusableView()->GetView()->layer()->SetOpacity(0.f);
+      overview_item->UpdateRoundedCornersAndShadow();
+    }
+  }
+
+  // When starting a continuous scroll to EXIT overview mode, hide the save
+  // desk button immediately.
+  // When starting a continuous scroll to ENTER overview mode, the save desk
+  // button will be shown once overview mode is fully entered.
+  if (IsSaveDeskButtonContainerVisible()) {
+    UpdateSaveDeskButtons();
   }
 }
 
@@ -677,9 +698,9 @@ void OverviewGrid::PositionWindows(
   UpdateSaveDeskButtons();
 
   // This is a no-op if the feature ContinuousOverviewScrollAnimation is not
-  // enabled. Once windows are placed at their final positions, clear rects so
-  // that they get re-calculated when a continuous downward scroll begins.
-  cached_rects_.clear();
+  // enabled. Once windows are placed at their final positions, clear transforms
+  // so that they get re-calculated when a continuous downward scroll begins.
+  cached_transforms_.clear();
 }
 
 OverviewItemBase* OverviewGrid::GetOverviewItemContaining(

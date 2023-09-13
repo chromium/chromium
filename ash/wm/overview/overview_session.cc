@@ -1053,42 +1053,36 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 }
 
 bool OverviewSession::HandleContinuousScrollIntoOverview(float y_offset) {
-  // If a scroll has ended, reset the opacity of minimized windows before
-  // animating all windows into their final positions.
-  if (!Shell::Get()
-           ->overview_controller()
-           ->is_continuous_scroll_in_progress()) {
+  if (Shell::Get()->overview_controller()->is_continuous_scroll_in_progress()) {
+    CHECK_EQ(enter_exit_overview_type_,
+             OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate);
+
+    // If a scroll is in progress, position the windows continuously.
     for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
-      for (const auto& window_item : overview_grid->window_list()) {
-        // TODO(b/292125336): Animate the opacity change.
-        if (WindowState::Get(window_item->GetWindow())->IsMinimized()) {
-          window_item->GetFocusableView()->GetView()->layer()->SetOpacity(1.f);
-        } else {
-          // Remove shadow bounds so that the entry animation looks smoother and
-          // does not show an unnecessary shadow.
-          window_item->SetShadowBounds(absl::nullopt);
-        }
-      }
-      overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
-                                     /*transition=*/OverviewTransition::kEnter);
-
-      // TODO(b/292125336): Animate the desk bar transformation and no windows
-      // label opacity.
-      if (auto* desks_bar = overview_grid->desks_bar_view()) {
-        desks_bar->layer()->SetTransform({});
-      }
-
-      if (auto* no_windows_widget = overview_grid->no_windows_widget()) {
-        no_windows_widget->SetOpacity(1.f);
-      }
+      overview_grid->PositionWindowsContinuously(y_offset);
     }
     return true;
   }
-  // If a scroll is in progress, position the windows continuously.
-  CHECK_EQ(enter_exit_overview_type_,
-           OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate);
+
+  // If a scroll has ended, reset the opacity of minimized windows before
+  // animating all windows into their final positions.
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
-    overview_grid->PositionWindowsContinuously(y_offset);
+    for (const auto& window_item : overview_grid->window_list()) {
+      window_item->GetFocusableView()->GetView()->layer()->SetOpacity(1.f);
+      window_item->UpdateRoundedCornersAndShadow();
+    }
+    overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
+                                   /*transition=*/OverviewTransition::kEnter);
+
+    // TODO(http://b/292125336): Animate the desk bar transformation and no
+    // windows label opacity.
+    if (auto* desks_bar = overview_grid->desks_bar_view()) {
+      desks_bar->layer()->SetTransform({});
+    }
+
+    if (auto* no_windows_widget = overview_grid->no_windows_widget()) {
+      no_windows_widget->SetOpacity(1.f);
+    }
   }
   return true;
 }

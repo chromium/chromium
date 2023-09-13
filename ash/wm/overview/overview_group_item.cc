@@ -112,6 +112,11 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
   overview_items_[1]->SetBounds(sub_bounds2, animation_type);
 }
 
+gfx::Transform OverviewGroupItem::ComputeTargetTransform(
+    const gfx::RectF& target_bounds) {
+  return gfx::Transform();
+}
+
 gfx::RectF OverviewGroupItem::GetTargetBoundsInScreen() const {
   gfx::RectF target_bounds;
   for (auto& item : overview_items_) {
@@ -200,8 +205,7 @@ void OverviewGroupItem::OnOverviewItemDragStarted(OverviewItemBase* item) {}
 void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {}
 
 void OverviewGroupItem::OnOverviewItemContinuousScroll(
-    const gfx::RectF& target_bouns,
-    bool first_scroll,
+    const gfx::Transform& target_transform,
     float scroll_ratio) {}
 
 void OverviewGroupItem::SetVisibleDuringItemDragging(bool visible,

@@ -6000,9 +6000,8 @@ TEST_P(ContinuousOverviewAnimationTest, WindowCornerRadiiAndShadows) {
   EXPECT_FALSE(HasRoundedCorner(active_item));
   EXPECT_TRUE(HasRoundedCorner(minimized_item));
 
-  // If a window is minimized, it should hide its shadows until the enter
-  // animation ends. Otherwise, retain its shadow the entire time.
-  EXPECT_FALSE(GetShadowBounds(active_item).IsEmpty());
+  // Shadows are hidden until the continuous swipe is over.
+  EXPECT_TRUE(GetShadowBounds(active_item).IsEmpty());
   EXPECT_TRUE(GetShadowBounds(minimized_item).IsEmpty());
 
   // Reset.
@@ -6023,12 +6022,10 @@ TEST_P(ContinuousOverviewAnimationTest, WindowCornerRadiiAndShadows) {
   active_item = GetOverviewItemForWindow(active_window.get());
   minimized_item = GetOverviewItemForWindow(minimized_window.get());
 
-  // During the entry animation, the non-minimized windows do not show their
-  // rounded corners or shadows until the animation is complete. Minimized
-  // windows always have rounded corners and immediately show their shadows.
-  // TODO(b/293923755): Both minimized and non-minimized windows should show
-  // their shadow after the animation is complete.
-  EXPECT_FALSE(HasRoundedCorner(active_item));
+  // Rounded corners are shown once the fingers lift. Shadows on minimized
+  // windows are shown, but shadows on non-minimized windows are hidden until
+  // the animation is finished.
+  EXPECT_TRUE(HasRoundedCorner(active_item));
   EXPECT_TRUE(GetShadowBounds(active_item).IsEmpty());
   EXPECT_TRUE(HasRoundedCorner(minimized_item));
   EXPECT_FALSE(GetShadowBounds(minimized_item).IsEmpty());

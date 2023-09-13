@@ -152,6 +152,10 @@ class OverviewItemBase {
   virtual void SetBounds(const gfx::RectF& target_bounds,
                          OverviewAnimationType animation_type) = 0;
 
+  // TODO(http://b/297923747): Integrate continuous animation with snap groups.
+  virtual gfx::Transform ComputeTargetTransform(
+      const gfx::RectF& target_bounds) = 0;
+
   // Returns the union of the original target bounds of all transformed windows
   // managed by `this`, i.e. all regular (normal or panel transient descendants
   // of the window returned by `GetWindows()`).
@@ -228,12 +232,11 @@ class OverviewItemBase {
   virtual void OnOverviewItemDragStarted(OverviewItemBase* item) = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;
 
-  // Called when performing the continuous scroll on overview item to set bounds
-  // and opacity with pre-calculated `target_bounds`. `first_scroll` is used to
-  // decide if any special handlings are needed for first scroll update.
-  virtual void OnOverviewItemContinuousScroll(const gfx::RectF& target_bouns,
-                                              bool first_scroll,
-                                              float scroll_ratio) = 0;
+  // Called when performing the continuous scroll on overview item to set
+  // transform and opacity with pre-calculated `target_transform`.
+  virtual void OnOverviewItemContinuousScroll(
+      const gfx::Transform& target_transform,
+      float scroll_ratio) = 0;
 
   // Shows/Hides window item during window dragging. Used when swiping up a
   // window from shelf.
