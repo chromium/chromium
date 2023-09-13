@@ -1186,9 +1186,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // This includes bidders that are still attempting to generate bids ---
   // both BuyerHelpers and component auctions. BuyerHelpers may generate
   // multiple bids (or no bids). It also includes waiting for promises in
-  // configuration to resolve, and waiting for
-  // directFromSellerSignalsHeaderAdSlot to parse.
-  // TODO(morlovich): And will wait for additional_bids.
+  // configuration to resolve, waiting for directFromSellerSignalsHeaderAdSlot
+  // to parse, and waiting for additional bids to parse.
   //
   // When this reaches 0, the SellerWorklet's SendPendingSignalsRequests()
   // method should be invoked, so it can send any pending scoring signals
