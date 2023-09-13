@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">Erlaube Chromium, deine Inkognitotabs zu sperren.</translation>
 <translation id="1472013873724362412">Dieses Konto funktioniert in Chromium nicht. Wende dich an deinen Domainadministrator oder melde dich mit einem Google-Standardkonto an.</translation>
 <translation id="1507010443238049608">Ich möchte dabei helfen, die Funktionen und die Leistung von Chromium zu verbessern</translation>
+<translation id="1513122820609681462">Chromium als Standardbrowser festlegen</translation>
 <translation id="1531155317299575425">Aufforderungen für die Anmeldung in Chromium werden angezeigt.</translation>
 <translation id="1591119736686995611">Öffnet das Chromium-Tabraster.</translation>
 <translation id="1617663976202781617">Daten aus der Chromium-Synchronisierung</translation>
@@ -138,11 +139,13 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chromium<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="6752854822223394465">Deine Organisation richtet Chromium ein…</translation>
+<translation id="6794054469102824109">Öffnet Chromium Dino.</translation>
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="6911341667534646387">Chromium-Daten in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="7006920032187763988">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
 <translation id="7018284295775193585">Chromium kann nicht aktualisiert werden</translation>
 <translation id="7045244423563602563">Chromium personalisieren</translation>
+<translation id="7055269218854630176">Deine Organisation, <ph name="DOMAIN" />, verwaltet dieses Konto und die Nutzung von Chromium. Dein Administrator kann einzelne Funktionen einrichten oder einschränken.</translation>
 <translation id="7099326575020694068">Chromium kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
 <translation id="7165402419892018581">Chromium für Autofill auswählen</translation>
 <translation id="7175400662502680481">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
@@ -182,6 +185,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="865600487977764604">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
 <translation id="8663480472502753423">Chromium auf dem neuesten Stand halten</translation>
 <translation id="8685813584220679697">Melde dich bei dieser Website und in Chromium an.</translation>
+<translation id="8730503818204408000">Öffnet die Chromium-Einstellung, mit der Chromium als Standardbrowser festgelegt wird.</translation>
 <translation id="8747378496147986285">Wenn aktiviert:
 <ph name="BEGIN_INDENT" />  • Du hilfst, Chromium für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
 
@@ -200,5 +204,6 @@ Wichtige Hinweise:
 <translation id="9110075932708282655">Standardmäßig Chromium verwenden</translation>
 <translation id="921174536258924340">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">Automatisch Chromium verwenden, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst</translation>
+<translation id="981812233959540767">Chromium Dino spielen</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
 </translationbundle>

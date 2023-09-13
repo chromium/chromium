@@ -5045,7 +5045,7 @@
 <translation id="5039071832298038564">ಸಾಧನದ ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5040262127954254034">ಗೌಪ್ಯತೆ</translation>
-<translation id="5040823038948176460">ಹೆಚ್ಚುವರಿ ವಿಷಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="5040823038948176460">ಹೆಚ್ಚುವರಿ ಕಂಟೆಂಟ್‍ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5041509233170835229">Chrome ಆ್ಯಪ್‌</translation>
 <translation id="5043440033854483429">ಹೆಸರು ಅಕ್ಷರಗಳು, ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಹೈಫನ್‌ಗಳನ್ನು (-) ಬಳಸಬಹುದು, ಹಾಗೂ 1 ರಿಂದ 15 ಅಕ್ಷರಗಳನ್ನು ಒಳಗೊಂಡಿರಬೇಕು.</translation>
 <translation id="5043807571255634689"><ph name="SUBSCRIPTION_NAME" /> ಅನ್ನು ಈ ಸಾಧನದಿಂದ ಮಾತ್ರ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್‌ನಲ್ಲಿ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಲು, ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ಪೂರೈಕೆದಾರರನ್ನು ಸಂಪರ್ಕಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -9069,7 +9069,7 @@
 <translation id="8326478304147373412">PKCS #7, ಪ್ರಮಾಣಪತ್ರ ಸರಣಿ</translation>
 <translation id="8327386430364625757">ಗಣಿತದ ಫಾಂಟ್</translation>
 <translation id="8327538105740918488">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಂತರ ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು. ಇದನ್ನು <ph name="EMAIL" /> ಗಾಗಿ <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="8327676037044516220">ಅನುಮತಿಗಳು ಮತ್ತು ವಿಷಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="8327676037044516220">ಅನುಮತಿಗಳು ಮತ್ತು ಕಂಟೆಂಟ್‍ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8330617762701840933">ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ಗೆ ಮರುನಿರ್ದೇಶಿಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಪಟ್ಟಿ.</translation>
 <translation id="8330689128072902965">ಸಮೀಪದಲ್ಲಿರುವ ಸಂಪರ್ಕಗಳು ನಿಮ್ಮ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಬದಲಾಯಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರ: <ph name="FILE_TYPE1" />}=2{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ಮತ್ತು {OVERFLOW_COUNT} ಇನ್ನಷ್ಟು<ph name="END_LINK" />)}other{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ಮತ್ತು {OVERFLOW_COUNT} ಇನ್ನಷ್ಟು<ph name="END_LINK" />)}}</translation>

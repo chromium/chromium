@@ -234,6 +234,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1432187715652018471">Seite möchte einen Service-Handler installieren.</translation>
 <translation id="1432581352905426595">Suchmaschinen verwalten</translation>
 <translation id="1433225466058025572">Versuche noch einmal, deine Dateien zu verschieben</translation>
+<translation id="1434317006812369578">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware auf <ph name="SITE" /> gefunden<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.</translation>
 <translation id="1435940442311036198">Passkey auf einem anderen Gerät verwenden</translation>
 <translation id="1436185428532214179">Darf nachfragen, wenn sie Dateien oder Ordner auf meinem Gerät bearbeiten möchte</translation>
 <translation id="1442386063175183758">Rechtsseitige Fensterfaltung</translation>
@@ -384,6 +385,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1732445923934584865">Stattdessen persönlich fragen</translation>
 <translation id="1733064249834771892">Schriftarten</translation>
 <translation id="1733631169686303142">Audiogeräte</translation>
+<translation id="1733762317901693627">Selbst Websites, die normalerweise sicher sind, werden manchmal gehackt. Besuche diese <ph name="BEGIN_LINK" />unsichere Website<ph name="END_LINK" /> nur, wenn du dir über die Risiken im Klaren bist.</translation>
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Setze dich mit dem Systemadministrator in Verbindung.</translation>
 <translation id="1736420071277903564">Computer</translation>
@@ -717,6 +719,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2480300195898055381">In meinem Google-Konto, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="248348093745724435">Computerrichtlinien</translation>
+<translation id="2490199669743245365">Auf dieser Website besteht die Gefahr, dass Angreifer Schadsoftware installieren, mit der z. B. Passwörter, Fotos, Nachrichten oder Kreditkartennummern gestohlen oder gelöscht werden. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Das Serverzertifikat enthält Fehler.</translation>
 <translation id="2491414235131909199">Diese Seite wurde von einer Erweiterung blockiert</translation>
 <translation id="2495083838625180221">JSON-Parser</translation>
@@ -1051,6 +1054,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Update jetzt erforderlich}=2{Update bis morgen erforderlich}other{Update innerhalb von # Tagen erforderlich}}</translation>
+<translation id="3218388919950135939">Besuche diese <ph name="BEGIN_LINK" />unsichere Website<ph name="END_LINK" /> nur, wenn du dir über die Risiken im Klaren bist.</translation>
 <translation id="3220264767789936523">Abendgarderobe</translation>
 <translation id="3223287115535306850">Ladesymbol beim Starten der App</translation>
 <translation id="3223425961342298674">Standortermittlung nicht zulässig</translation>
@@ -1335,6 +1339,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3772211998634047851">Papier (Hartpost)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Notiz in Google Notizen zu erstellen</translation>
 <translation id="3778403066972421603">Möchtest du diese Karte in deinem Google-Konto und auf diesem Gerät speichern?</translation>
+<translation id="378026377453746707">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Schadsoftware auf <ph name="SITE" /> gefunden<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.</translation>
 <translation id="3780694243617746492">Ausgabefach</translation>
 <translation id="3781428340399460090">Dunkelrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1346,6 +1351,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3795344968043407227">Indie-Rock und Alternative</translation>
 <translation id="3799805948399000906">Gewünschte Schriftart</translation>
 <translation id="380329542618494757">Name</translation>
+<translation id="3806932344025766608">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Software oder zur Preisgabe von Daten wie deinem Passwort, deiner Telefonnummer oder deiner Kreditkartennummer verleiten möchten. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">Telekommunikationsunternehmen</translation>
 <translation id="3807366285948165054">X-Verschiebung des Bilds</translation>
 <translation id="3807873520724684969">Schädliche Inhalte blockiert.</translation>
@@ -1411,6 +1417,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3953505489397572035">Dieser Preis entspricht dem Normalpreis</translation>
 <translation id="3958057596965527988">4 × 4 Zoll</translation>
+<translation id="3959121317419633580">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Phishingversuche auf <ph name="SITE" /> festgestellt<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.<ph name="NEW_LINE" />Selbst Websites, die normalerweise sicher sind, werden manchmal gehackt. Wenn du der Meinung bist, dass es sich um einen Fehler handelt und diese Website keine Gefahr darstellt, melde uns das bitte <ph name="BEGIN_ERROR_LINK" />unter diesem Link<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Das Dokument zur Zahlungsabwicklung ist zur Hälfte geöffnet</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963721102035795474">Lesemodus</translation>
@@ -1434,6 +1441,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="401170183602135785">Umschlag C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-Dokument mit {COUNT} Seite}other{PDF-Dokument mit {COUNT} Seiten}}</translation>
 <translation id="4014895360827978999">Dienstleistungen im Handel und Zahlungssysteme</translation>
+<translation id="4018819349042761761">Öffentlicher Schlüssel</translation>
 <translation id="4023431997072828269">Dieses Formular wird über eine Verbindung gesendet, die nicht vollständig sicher ist. Hierdurch können deine Informationen für andere sichtbar sein.</translation>
 <translation id="4030383055268325496">&amp;Hinzufügen rückgängig machen</translation>
 <translation id="4030545038933060179">Wenn diese Option aktiviert ist, wird basierend auf deinem aktuellen Browserverlauf eine Liste von Themen angezeigt</translation>
@@ -1610,6 +1618,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="433013776994920042">Webhosting und Domainregistrierung</translation>
 <translation id="4331519897422864041">Stapelfach 5</translation>
 <translation id="4331708818696583467">Nicht sicher</translation>
+<translation id="4333295216031073611">Einkaufsliste</translation>
 <translation id="4333561522337981382">Fenster auf allen Bildschirmen verwalten</translation>
 <translation id="4340575312453649552">Diese Werbeanzeige erfordert auf deinem Gerät zu viele Ressourcen. Darum hat Chrome sie entfernt.</translation>
 <translation id="4340810192899866471">Aus JSON importieren</translation>
@@ -1662,6 +1671,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4451684391620232683">Text, der dem Nutzer angezeigt wurde:</translation>
 <translation id="4452328064229197696">Das Passwort, das du gerade verwendet hast, wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Google Passwortmanager, deine gespeicherten Passwörter zu prüfen.</translation>
 <translation id="4464826014807964867">Websites mit Informationen deiner Organisation</translation>
+<translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktiviere den erweiterten Schutz<ph name="END_ENHANCED_PROTECTION_LINK" />, um für ein Höchstmaß an Sicherheit zu sorgen</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Dieses Formular ist nicht sicher. „Autofill“ wurde deaktiviert.</translation>
 <translation id="4477350412780666475">Nächster Titel</translation>
@@ -2380,6 +2390,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5992805036496113940">Informationen ansehen, die zum Anzeigen von Werbung verwendet werden</translation>
 <translation id="5995727681868049093">Daten, Datenschutz- und Sicherheits­einstellungen in deinem Google-Konto verwalten</translation>
 <translation id="5997247540087773573">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Google Passwortmanager, das Passwort jetzt zu ändern und deine gespeicherten Passwörter zu prüfen.</translation>
+<translation id="5999271311987646952">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Malware gefunden<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> Ergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Meine Geräte</translation>
 <translation id="6005659677094197001">Endlos</translation>
@@ -2684,6 +2695,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Computer-Ausbildung und ‑Weiterbildung</translation>
 <translation id="6633476656216409494">Unternehmens- und Produktivitätssoftware</translation>
+<translation id="6638353438328951386">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Schadsoftware gefunden<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6645291930348198241">Auf Cookies und Websitedaten zugreifen.</translation>
 <translation id="6645478838938543427">Benachrichtigungen zu Preisnachlässen werden an <ph name="EMAIL_ADDRESS" /> gesendet</translation>
@@ -2879,6 +2891,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="702146556168549005">URLs von Seiten, die du besuchst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie werden beispielsweise gescannt, um unsichere Websites zu identifizieren oder Websites auf Grundlage von Regeln zu filtern, die vom Administrator eingerichtet wurden.</translation>
 <translation id="702275896380648118">Diese Website erhebt Informationen dazu, was dir gefällt, und schlägt dann anderen Websites Werbung vor. Außerdem ruft sie deine Anzeigenthemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
 <translation id="7023162328967545559">Warnung vom Administrator</translation>
+<translation id="7024932305105294144">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Phishingversuche festgestellt<ph name="END_LINK" />. Phishing-Websites geben sich als andere Websites aus, um dich zu täuschen.<ph name="NEW_LINE" />Selbst Websites, die normalerweise sicher sind, werden manchmal gehackt. Wenn du der Meinung bist, dass es sich um einen Fehler handelt und diese Website keine Gefahr darstellt, melde uns das bitte <ph name="BEGIN_ERROR_LINK" />unter diesem Link<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7030436163253143341">Zertifikat ist ungültig</translation>
 <translation id="7031646650991750659">Welche Google Play-Apps du installiert hast</translation>
@@ -2914,6 +2927,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7105998430540165694">Passkey von iCloud-Schlüsselbund</translation>
 <translation id="7106762743910369165">Dein Browser wird von deiner Organisation verwaltet</translation>
 <translation id="7107249414147762907">Auf diese PDF-Datei kann nicht zugegriffen werden. Kein Text extrahiert.</translation>
+<translation id="7107427078069498123">SHA-256-Fingerabdrücke</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> möchte deine Kamera verwenden</translation>
 <translation id="7108819624672055576">Von einer Erweiterung zugelassen</translation>
@@ -3079,6 +3093,7 @@ Weitere Details:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7437289804838430631">Kontaktdaten hinzufügen</translation>
 <translation id="7437490109271760224">Kartenspiele</translation>
+<translation id="7438338505272634288">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Schadsoftware verleiten möchten, die sich auf deine Internetnutzung auswirkt. Solche Software könnte zum Beispiel deine Startseite ändern oder auf Websites zusätzliche Werbung einblenden. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Verfügbare Offline-Inhalte</translation>
 <translation id="7441627299479586546">Falsche(r) Nutzername/Domain der Richtlinie</translation>
 <translation id="7441864845853794192">Gourmet- und Feinkost</translation>
@@ -3406,6 +3421,7 @@ Weitere Details:
 <translation id="8078006011486731853">{0,plural, =1{Vertrauliche Datei hochladen?}other{Vertrauliche Dateien hochladen?}}</translation>
 <translation id="8078141288243656252">Anmerkungen bei gedrehtem Dokument nicht möglich</translation>
 <translation id="8079031581361219619">Website neu laden?</translation>
+<translation id="8079976827192572403">Gefährliche Website</translation>
 <translation id="8081087320434522107">Limousinen</translation>
 <translation id="8086971161893892807">Entwurf</translation>
 <translation id="8088680233425245692">Der Artikel kann nicht angezeigt werden.</translation>
@@ -3690,6 +3706,7 @@ Weitere Details:
 <translation id="8680536109547170164"><ph name="QUERY" />, Antwort, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Die Website unter <ph name="PAGE" /> konnte nicht geladen, weil:</translation>
 <translation id="8686424632716064939">Computersicherheit</translation>
+<translation id="8687278439622293018">Eintrag „<ph name="ENTRY_VOICEOVER" />“ wurde gelöscht</translation>
 <translation id="8687429322371626002">Dein Gerät und dein Konto werden von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="8688672835843460752">Verfügbar</translation>
 <translation id="868922510921656628">Seiten pro Satz</translation>
@@ -3902,6 +3919,7 @@ Weitere Details:
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>
 <translation id="9131119348384879525">Vertrauliche Inhalte aufnehmen?</translation>
 <translation id="9133985615769429248">Wenn du dieses Gerät gemeinsam mit anderen nutzt, kannst du die Displaysperre verwenden, um deine Identität zu bestätigen, wenn du ein gespeichertes Passwort verwendest</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtuelle Karte</translation>
 <translation id="9136861683332321024">Luxusfahrzeuge</translation>
 <translation id="9137013805542155359">Original anzeigen</translation>
 <translation id="9137248913990643158">Melde dich in Chrome an, bevor du diese App nutzt.</translation>

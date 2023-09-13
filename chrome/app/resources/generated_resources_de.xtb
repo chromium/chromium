@@ -484,6 +484,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1390548061267426325">In normalem Tab öffnen</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> ist nicht autorisiert, über den Drucker „<ph name="PRINTER_NAME" />“ zu drucken. Bitte wende dich an deinen Administrator.</translation>
 <translation id="1392047138650695757">Meine Wörterbücher</translation>
+<translation id="139300021892314943">Beschränken, wer sich anmelden kann</translation>
 <translation id="1393283411312835250">Sonne und Wolken</translation>
 <translation id="1395730723686586365">Updater gestartet</translation>
 <translation id="1395832189806039783">Element mit Tastaturfokus hervorheben</translation>
@@ -2513,6 +2514,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2956070239128776395">In Gruppe verschachtelter Abschnitt: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Erweiterung packen: Warnung</translation>
 <translation id="2959127025785722291">Ein Fehler ist aufgetreten. Der Scan konnte nicht durchgeführt werden. Bitte versuche es noch einmal.</translation>
+<translation id="2959474507964749987">Diese verschlüsselte Datei könnte ein Virus oder Malware sein.<ph name="LINE_BREAK" />Um zu prüfen, ob sie unsicher ist, kannst du die Datei und das Passwort an Google Safe Browsing senden. Die Prüfung dauert in der Regel einige Sekunden.<ph name="LINE_BREAK" />Füge zum Prüfen das Passwort der Datei hinzu.</translation>
 <translation id="2959842337402130152">Die Wiederherstellung ist nicht möglich, da nicht genügend Speicherplatz verfügbar ist. Bitte gib <ph name="SPACE_REQUIRED" /> auf dem Gerät frei und versuche es dann noch einmal.</translation>
 <translation id="2960208947600937804">Bei der Konfiguration von Linux ist ein Fehler aufgetreten. Wende dich bitte an deinen Administrator.</translation>
 <translation id="2960942820860729477">Aktualisierungsrate</translation>
@@ -3976,6 +3978,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4147099377280085053">Brailletabelle auswählen</translation>
 <translation id="4147911968024186208">Bitte versuche es noch einmal. Wenn dieser Fehler wieder auftritt, wende dich an deinen Support-Mitarbeiter.</translation>
 <translation id="414800391140809654">kann deine Informationen während des Surfens verwenden</translation>
+<translation id="4148195018520464922">Du kannst die Anmeldung auf bestimmte Nutzer beschränken. Dadurch wird die Option „Person hinzufügen“ vom Anmeldebildschirm entfernt. Du kannst auch bestehende Nutzer entfernen.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4150569944729499860">Bildschirmkontext</translation>
 <translation id="4151449637210235443">Erzähl uns von deinem letzten Gameplay</translation>
@@ -8130,6 +8133,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7617263010641145920">Play Store aktivieren</translation>
 <translation id="7617648809369507487">Unaufdringlichere Benachrichtigungen verwenden</translation>
 <translation id="7621382409404463535">Das System konnte die Gerätekonfiguration nicht speichern.</translation>
+<translation id="7621480263311228380">Dürfen keine Informationen verwenden, die sie über dich gespeichert haben</translation>
 <translation id="7621595347123595643">Wenn du dein Passwort oder deine PIN vergisst, kannst du keine lokalen Daten wiederherstellen.</translation>
 <translation id="7622114377921274169">Wird aufgeladen.</translation>
 <translation id="7622768823216805500">Websites installieren normalerweise Zahlungs-Handler für Einkaufsfunktionen wie eine schnellere Bezahlung</translation>

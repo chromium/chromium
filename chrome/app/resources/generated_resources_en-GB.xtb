@@ -1490,7 +1490,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2148892889047469596">Cast tab</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2150139952286079145">Search destinations</translation>
-<translation id="2150661552845026580">Add "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="2150661552845026580">Add '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2151576029659734873">Invalid tab index entered.</translation>
 <translation id="2152281589789213846">Add printers to your profile</translation>
 <translation id="2154484045852737596">Edit card</translation>
@@ -2105,7 +2105,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2629227353894235473">Develop Android apps</translation>
 <translation id="2629437048544561682">Clear canvas</translation>
 <translation id="2631498379019108537">Show input options in the shelf</translation>
-<translation id="2633212996805280240">Remove "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="2633212996805280240">Remove '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> couldn't complete installation, but will continue to run from its disk image.</translation>
 <translation id="2633764681656412085">FIDO</translation>
 <translation id="2634199532920451708">Print history</translation>
