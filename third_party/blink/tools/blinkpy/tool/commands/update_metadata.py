@@ -19,7 +19,6 @@ import re
 from concurrent.futures import Executor
 from typing import (
     Any,
-    ClassVar,
     Collection,
     Dict,
     FrozenSet,
@@ -190,6 +189,16 @@ class UpdateMetadata(Command):
                       'in conditions. See https://web-platform-tests.org/tools'
                       '/wptrunner/docs/expectation.html'
                       '#properties-file-format for format.')),
+            optparse.make_option(
+                '--min-samples',
+                metavar='N',
+                type='int',
+                default=4,
+                help=("Minimum number of results to update a test's "
+                      'expectations. Default to 4 so that expectations are '
+                      'only updated for tests that exhaust all retries. '
+                      'A threshold too low may destabilize expectations for '
+                      'flaky or unexpectedly passing tests.')),
             RebaselineCL.patchset_option,
             RebaselineCL.test_name_file_option,
             RebaselineCL.only_changed_tests_option,
@@ -232,6 +241,7 @@ class UpdateMetadata(Command):
             self._tool.port_factory.get(),
             self._explicit_include_patterns(options, args),
             options.exclude,
+            min_samples=options.min_samples,
             update_properties=update_properties,
             overwrite_conditions=options.overwrite_conditions,
             disable_intermittent=options.disable_intermittent,
@@ -673,16 +683,12 @@ TestInfoMap = Mapping[str, TestInfo]
 
 
 class MetadataUpdater:
-    # When using wptreports from builds, only update expectations for tests
-    # that exhaust all retries. Unexpectedly passing tests and occasional
-    # flakes/timeouts will not cause an update.
-    min_results_for_update: ClassVar[int] = 4
-
     def __init__(
         self,
         test_files: TestFileMap,
         test_info: TestInfoMap,
         configs: wpt_metadata.TestConfigurations,
+        min_samples: int = 4,
         update_properties: UpdateProperties = UpdateProperties.DEFAULT,
         overwrite_conditions: Literal['yes', 'no', 'fill'] = 'fill',
         disable_intermittent: Optional[str] = None,
@@ -692,6 +698,7 @@ class MetadataUpdater:
     ):
         self._configs = configs
         self._test_info = test_info
+        self._min_samples = min_samples
         self.update_properties = update_properties
         # Ensure all configs have exactly the same properties.
         assert len({frozenset(config.data) for config in self._configs}) == 1
@@ -908,7 +915,7 @@ class MetadataUpdater:
 
         report['results'] = []
         for test_id, results in results_by_test.items():
-            if len(results) >= self.min_results_for_update:
+            if len(results) >= self._min_samples:
                 report['results'].extend(results)
         return report
 

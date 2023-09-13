@@ -36,9 +36,6 @@ class BaseUpdateMetadataTest(LoggingTestCase):
     def setUp(self):
         super().setUp()
         self.maxDiff = None
-        # Lower this threshold so that test results do not need to be repeated.
-        MetadataUpdater.min_results_for_update = 1
-
         self.tool = MockBlinkTool()
         self.finder = path_finder.PathFinder(self.tool.filesystem)
         self.tool.filesystem.write_text_file(
@@ -217,7 +214,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'OK',
                 'status':
                 'CRASH',
-            }],
+            }] * 4,
         }).encode()
 
     def _unstaged_changes(self):
@@ -289,7 +286,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'subtests': [],
                 'expected': 'PASS',
                 'status': 'FAIL',
-            }],
+            }] * 4,
         }).encode()
         with self._patch_builtins() as stack:
             stack.enter_context(self._unstaged_changes())
@@ -490,7 +487,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'test': '/new-test-on-tot.html',
                 'subtests': [],
                 'status': 'PASS',
-            }],
+            }] * 4,
         }).encode()
         with self._patch_builtins():
             exit_code = self.command.main(['fail.html'])
@@ -693,6 +690,9 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     configs[run_info] = test_port
 
             configs = TestConfigurations(self.tool.filesystem, configs)
+            # Lower this threshold so that test results do not need to be
+            # repeated.
+            options.setdefault('min_samples', 1)
             updater = MetadataUpdater.from_manifests(
                 manifests, configs, self.tool.port_factory.get(), **options)
             updater.collect_results(
@@ -1180,19 +1180,20 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         unexpectedly passes. Unexpected passes should be removed separately
         using long-term test history.
         """
-        MetadataUpdater.min_results_for_update = 2
         self.write_contents(
             'external/wpt/fail.html.ini', """\
             [fail.html]
               expected: FAIL
             """)
-        self.update({
-            'results': [{
-                'test': '/fail.html',
-                'status': 'PASS',
-                'expected': 'FAIL',
-            }],
-        })
+        self.update(
+            {
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'PASS',
+                    'expected': 'FAIL',
+                }],
+            },
+            min_samples=2)
         self.assert_contents(
             'external/wpt/fail.html.ini', """\
             [fail.html]
