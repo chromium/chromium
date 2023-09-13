@@ -261,6 +261,14 @@ class TestFeedNetwork : public FeedNetwork {
       absl::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) override;
 
+  void SendAsyncDataRequest(
+      const GURL& url,
+      base::StringPiece request_method,
+      net::HttpRequestHeaders request_headers,
+      std::string request_body,
+      const AccountInfo& account_info,
+      base::OnceCallback<void(RawResponse)> callback) override;
+
   void CancelRequests() override;
 
   void InjectRealFeedQueryResponse();
@@ -319,6 +327,9 @@ class TestFeedNetwork : public FeedNetwork {
   }
   void InjectListWebFeedsResponse(const FeedNetwork::RawResponse& response) {
     InjectApiRawResponse<ListWebFeedsDiscoverApi>(response);
+  }
+  void InjectRawResponse(const FeedNetwork::RawResponse& response) {
+    injected_raw_response_ = response;
   }
 
   void InjectEmptyActionRequestResult();
@@ -403,6 +414,7 @@ class TestFeedNetwork : public FeedNetwork {
   std::map<NetworkRequestType, int> api_request_count_;
   std::vector<NetworkRequestType> sent_request_types_;
   absl::optional<feedwire::Response> injected_response_;
+  absl::optional<RawResponse> injected_raw_response_;
 };
 
 // Forwards to |FeedStream::WireResponseTranslator| unless a response is

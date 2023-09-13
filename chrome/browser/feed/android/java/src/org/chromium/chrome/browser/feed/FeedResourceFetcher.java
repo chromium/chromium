@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.feed.FeedSurfaceScopeDependencyProviderImpl.NetworkResponse;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher;
 import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher.Header;
@@ -69,17 +71,19 @@ public class FeedResourceFetcher implements ResourceFetcher {
 
     @Override
     public void fetch(Request request, ResponseCallback responseCallback) {
-        List<String> headerNamesAndValues = new ArrayList<String>(request.headers.size() * 2);
-        for (Header header : request.headers) {
-            headerNamesAndValues.add(header.name);
-            headerNamesAndValues.add(header.value);
-        }
-        FeedSurfaceScopeDependencyProviderImplJni.get().fetchResource(new GURL(request.uri),
-                request.method,
-                headerNamesAndValues.toArray(new String[headerNamesAndValues.size()]),
-                request.postData, (NetworkResponse response) -> {
-                    responseCallback.onResponse(new FeedResponse(
-                            response.success, response.statusCode, null, response.rawData));
-                });
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
+            List<String> headerNamesAndValues = new ArrayList<String>(request.headers.size() * 2);
+            for (Header header : request.headers) {
+                headerNamesAndValues.add(header.name);
+                headerNamesAndValues.add(header.value);
+            }
+            FeedSurfaceScopeDependencyProviderImplJni.get().fetchResource(new GURL(request.uri),
+                    request.method,
+                    headerNamesAndValues.toArray(new String[headerNamesAndValues.size()]),
+                    request.postData, (NetworkResponse response) -> {
+                        responseCallback.onResponse(new FeedResponse(
+                                response.success, response.statusCode, null, response.rawData));
+                    });
+        });
     }
 }

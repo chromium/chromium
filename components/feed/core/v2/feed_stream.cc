@@ -727,14 +727,30 @@ void FeedStream::ManualRefresh(SurfaceId surface_id,
 void FeedStream::FetchResource(
     const GURL& url,
     const std::string& method,
-    const std::vector<std::string>& header_name_and_values,
+    const std::vector<std::string>& header_names_and_values,
     const std::string& post_data,
     base::OnceCallback<void(NetworkResponse)> callback) {
-  if (!resource_fetcher_) {
-    return;
+  net::HttpRequestHeaders headers;
+  for (size_t i = 0; i + 1 < header_names_and_values.size(); i += 2) {
+    headers.SetHeader(header_names_and_values[i],
+                      header_names_and_values[i + 1]);
   }
-  resource_fetcher_->Fetch(url, method, header_name_and_values, post_data,
-                           std::move(callback));
+  feed_network_->SendAsyncDataRequest(
+      url, method, headers, post_data, GetAccountInfo(),
+      base::BindOnce(&FeedStream::FetchResourceComplete, base::Unretained(this),
+                     std::move(callback)));
+}
+
+void FeedStream::FetchResourceComplete(
+    base::OnceCallback<void(NetworkResponse)> callback,
+    FeedNetwork::RawResponse response) {
+  MetricsReporter::OnResourceFetched(response.response_info.status_code);
+  NetworkResponse network_response;
+  network_response.status_code = response.response_info.status_code;
+  network_response.response_bytes = std::move(response.response_bytes);
+  network_response.response_header_names_and_values =
+      std::move(response.response_info.response_header_names_and_values);
+  std::move(callback).Run(std::move(network_response));
 }
 
 void FeedStream::ExecuteOperations(

@@ -17,7 +17,6 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/types.h"
 #include "components/version_info/channel.h"
-#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -74,6 +73,14 @@ class FeedNetworkImpl : public FeedNetwork {
       absl::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) override;
 
+  void SendAsyncDataRequest(
+      const GURL& url,
+      base::StringPiece request_method,
+      net::HttpRequestHeaders request_headers,
+      std::string request_body,
+      const AccountInfo& account_info,
+      base::OnceCallback<void(RawResponse)> callback) override;
+
   // Cancels all pending requests immediately. This could be used, for example,
   // if there are pending requests for a user who just signed out.
   void CancelRequests() override;
@@ -95,6 +102,9 @@ class FeedNetworkImpl : public FeedNetwork {
   void SendComplete(NetworkFetch* fetch,
                     base::OnceCallback<void(RawResponse)> callback,
                     RawResponse raw_response);
+
+  // Override url if requested.
+  GURL GetOverriddenUrl(const GURL& url) const;
 
   raw_ptr<Delegate> delegate_;
   raw_ptr<signin::IdentityManager> identity_manager_;
