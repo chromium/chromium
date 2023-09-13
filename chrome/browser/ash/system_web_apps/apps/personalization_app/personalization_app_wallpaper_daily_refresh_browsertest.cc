@@ -225,13 +225,14 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
   EXPECT_EQ(original_info.collection_id, new_info.collection_id);
 }
 
-// TODO(crbug.com/1480066): Test is flaky.
 IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
-                       DISABLED_DailyDarkLightWallpaperIsRefreshed) {
+                       DailyDarkLightWallpaperIsRefreshed) {
   Browser* browser;
   auto* web_contents = LaunchAppAtWallpaperSubpage(&browser);
   ASSERT_EQ(ScheduleType::kCustom, scheduler()->GetScheduleType());
   const char kCollectionId[] = "dark_light_collection";
+  auto* dark_light_controller = Shell::Get()->dark_light_mode_controller();
+  dark_light_controller->SetAutoScheduleEnabled(false);
   {
     // Enables daily refresh.
     base::RunLoop loop;
@@ -241,20 +242,23 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
         base::DoNothing());
     loop.Run();
   }
-  ASSERT_EQ(WallpaperType::kDaily, wallpaper_controller()->GetWallpaperType());
   WallpaperInfo original_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   ASSERT_EQ(kCollectionId, original_info.collection_id);
+  ASSERT_EQ(WallpaperType::kDaily, original_info.type);
   {
     // Forwards half day and expects no change in wallpaper.
     FastForwardBy(base::Hours(12));
     base::RunLoop().RunUntilIdle();
-    ASSERT_TRUE(original_info.MatchesAsset(
-        *wallpaper_controller()->GetActiveUserWallpaperInfo()))
+    WallpaperInfo new_info =
+        *wallpaper_controller()->GetActiveUserWallpaperInfo();
+    ASSERT_TRUE(original_info.MatchesAsset(new_info))
         << "No change to asset because not enough time elapsed for daily "
-           "refresh";
+           "refresh."
+        << " original_info=" << original_info << " new_info=" << new_info;
+  }
+  {
     // Toggles color mode and expects new asset from the same wallpaper.
-    auto* dark_light_controller = Shell::Get()->dark_light_mode_controller();
     dark_light_controller->ToggleColorMode();
     base::RunLoop loop;
     WallpaperChangedWaiter waiter(loop.QuitClosure());
@@ -262,11 +266,12 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
     WallpaperInfo new_info =
         *wallpaper_controller()->GetActiveUserWallpaperInfo();
     EXPECT_TRUE(original_info.MatchesSelection(new_info))
-        << "Expect same wallpaper after color mode changes";
+        << "Expect same wallpaper after color mode changes."
+        << " original_info=" << original_info << " new_info=" << new_info;
     EXPECT_FALSE(original_info.MatchesAsset(new_info))
         << "Expect updated variant asset after color mode changes";
     EXPECT_EQ(original_info.date, new_info.date)
-        << "The wallpaper is timestamp is unaffected by color mode change";
+        << "The wallpaper's timestamp is unaffected by color mode change";
     EXPECT_EQ(original_info.collection_id, new_info.collection_id)
         << "Expect same collection";
   }
@@ -282,7 +287,8 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
     WallpaperInfo new_info =
         *wallpaper_controller()->GetActiveUserWallpaperInfo();
     EXPECT_FALSE(original_info.MatchesSelection(new_info))
-        << "Expect new daily wallpaper after 24 hours have elapsed";
+        << "Expect new daily wallpaper after 24 hours have elapsed."
+        << " original_info=" << original_info << " new_info=" << new_info;
     EXPECT_EQ(original_info.collection_id, new_info.collection_id)
         << "Expect same collection";
   }
