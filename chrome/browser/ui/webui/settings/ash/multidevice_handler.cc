@@ -12,8 +12,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
-#include "chrome/browser/ash/android_sms/android_sms_urls.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
@@ -54,7 +52,6 @@ const char kPageContentDataModeKey[] = "mode";
 const char kPageContentDataHostDeviceNameKey[] = "hostDeviceName";
 const char kPageContentDataBetterTogetherStateKey[] = "betterTogetherState";
 const char kPageContentDataInstantTetheringStateKey[] = "instantTetheringState";
-const char kPageContentDataMessagesStateKey[] = "messagesState";
 const char kPageContentDataPhoneHubStateKey[] = "phoneHubState";
 const char kPageContentDataPhoneHubCameraRollStateKey[] =
     "phoneHubCameraRollState";
@@ -68,7 +65,6 @@ const char kPageContentDataSmartLockStateKey[] = "smartLockState";
 const char kNotificationAccessStatus[] = "notificationAccessStatus";
 const char kNotificationAccessProhibitedReason[] =
     "notificationAccessProhibitedReason";
-const char kIsAndroidSmsPairingComplete[] = "isAndroidSmsPairingComplete";
 const char kIsNearbyShareDisallowedByPolicy[] =
     "isNearbyShareDisallowedByPolicy";
 const char kAppsAccessStatus[] = "appsAccessStatus";
@@ -81,9 +77,6 @@ const char kIsPhoneHubFeatureCombinedSetupSupported[] =
 const char kIsChromeOSSyncedSessionSharingEnabled[] =
     "isChromeOSSyncedSessionSharingEnabled";
 const char kIsLacrosTabSyncEnabled[] = "isLacrosTabSyncEnabled";
-
-constexpr char kAndroidSmsInfoOriginKey[] = "origin";
-constexpr char kAndroidSmsInfoEnabledKey[] = "enabled";
 
 void OnRetrySetHostNowResult(bool success) {
   if (success) {
@@ -101,17 +94,12 @@ MultideviceHandler::MultideviceHandler(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     phonehub::MultideviceFeatureAccessManager*
         multidevice_feature_access_manager,
-    multidevice_setup::AndroidSmsPairingStateTracker*
-        android_sms_pairing_state_tracker,
-    android_sms::AndroidSmsAppManager* android_sms_app_manager,
     eche_app::AppsAccessManager* apps_access_manager,
     phonehub::CameraRollManager* camera_roll_manager,
     phonehub::BrowserTabsModelProvider* browser_tabs_model_provider)
     : prefs_(prefs),
       multidevice_setup_client_(multidevice_setup_client),
       multidevice_feature_access_manager_(multidevice_feature_access_manager),
-      android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
-      android_sms_app_manager_(android_sms_app_manager),
       apps_access_manager_(apps_access_manager),
       camera_roll_manager_(camera_roll_manager),
       browser_tabs_model_provider_(browser_tabs_model_provider) {
@@ -142,14 +130,6 @@ void MultideviceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "retryPendingHostSetup",
       base::BindRepeating(&MultideviceHandler::HandleRetryPendingHostSetup,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "setUpAndroidSms",
-      base::BindRepeating(&MultideviceHandler::HandleSetUpAndroidSms,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getAndroidSmsInfo",
-      base::BindRepeating(&MultideviceHandler::HandleGetAndroidSmsInfo,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "attemptNotificationSetup",
@@ -222,16 +202,6 @@ void MultideviceHandler::OnJavascriptAllowed() {
         multidevice_feature_access_manager_.get());
   }
 
-  if (android_sms_pairing_state_tracker_) {
-    android_sms_pairing_state_tracker_observation_.Observe(
-        android_sms_pairing_state_tracker_.get());
-  }
-
-  if (android_sms_app_manager_) {
-    android_sms_app_manager_observation_.Observe(
-        android_sms_app_manager_.get());
-  }
-
   if (apps_access_manager_) {
     apps_access_manager_observation_.Observe(apps_access_manager_.get());
   }
@@ -282,18 +252,6 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     notification_access_operation_.reset();
   }
 
-  if (android_sms_pairing_state_tracker_) {
-    DCHECK(android_sms_pairing_state_tracker_observation_.IsObservingSource(
-        android_sms_pairing_state_tracker_.get()));
-    android_sms_pairing_state_tracker_observation_.Reset();
-  }
-
-  if (android_sms_app_manager_) {
-    DCHECK(android_sms_app_manager_observation_.IsObservingSource(
-        android_sms_app_manager_.get()));
-    android_sms_app_manager_observation_.Reset();
-  }
-
   if (apps_access_manager_) {
     DCHECK(apps_access_manager_observation_.IsObservingSource(
         apps_access_manager_.get()));
@@ -323,7 +281,6 @@ void MultideviceHandler::OnHostStatusChanged(
     const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
         host_status_with_device) {
   UpdatePageContent();
-  NotifyAndroidSmsInfoChange();
 }
 
 void MultideviceHandler::OnFeatureStatesChanged(
@@ -333,7 +290,6 @@ void MultideviceHandler::OnFeatureStatesChanged(
                << multidevice_setup::FeatureStatesMapToString(
                       feature_states_map);
   UpdatePageContent();
-  NotifyAndroidSmsInfoChange();
 }
 
 void MultideviceHandler::OnNotificationAccessChanged() {
@@ -346,16 +302,6 @@ void MultideviceHandler::OnCameraRollAccessChanged() {
 
 void MultideviceHandler::OnFeatureSetupRequestSupportedChanged() {
   UpdatePageContent();
-}
-
-void MultideviceHandler::OnPairingStateChanged() {
-  UpdatePageContent();
-  NotifyAndroidSmsInfoChange();
-}
-
-void MultideviceHandler::OnInstalledAppUrlChanged() {
-  UpdatePageContent();
-  NotifyAndroidSmsInfoChange();
 }
 
 void MultideviceHandler::OnAppsAccessChanged() {
@@ -384,11 +330,6 @@ void MultideviceHandler::UpdatePageContent() {
                << page_content_dictionary << ".";
   FireWebUIListener("settings.updateMultidevicePageContentData",
                     page_content_dictionary);
-}
-
-void MultideviceHandler::NotifyAndroidSmsInfoChange() {
-  FireWebUIListener("settings.onAndroidSmsInfoChange",
-                    GenerateAndroidSmsInfo());
 }
 
 void MultideviceHandler::HandleShowMultiDeviceSetupDialog(
@@ -460,45 +401,6 @@ void MultideviceHandler::HandleRetryPendingHostSetup(
   DCHECK(args.empty());
   multidevice_setup_client_->RetrySetHostNow(
       base::BindOnce(&OnRetrySetHostNowResult));
-}
-
-void MultideviceHandler::HandleSetUpAndroidSms(const base::Value::List& args) {
-  DCHECK(args.empty());
-  android_sms_app_manager_->SetUpAndLaunchAndroidSmsApp();
-}
-
-base::Value::Dict MultideviceHandler::GenerateAndroidSmsInfo() {
-  absl::optional<GURL> app_url;
-  if (android_sms_app_manager_) {
-    app_url = android_sms_app_manager_->GetCurrentAppUrl();
-  }
-  if (!app_url) {
-    app_url = android_sms::GetAndroidMessagesURL();
-  }
-
-  base::Value::Dict android_sms_info;
-  android_sms_info.Set(
-      kAndroidSmsInfoOriginKey,
-      ContentSettingsPattern::FromURLNoWildcard(*app_url).ToString());
-
-  multidevice_setup::mojom::FeatureState messages_state =
-      multidevice_setup_client_->GetFeatureState(
-          multidevice_setup::mojom::Feature::kMessages);
-  bool enabled_state =
-      messages_state ==
-          multidevice_setup::mojom::FeatureState::kEnabledByUser ||
-      messages_state ==
-          multidevice_setup::mojom::FeatureState::kFurtherSetupRequired;
-  android_sms_info.Set(kAndroidSmsInfoEnabledKey, enabled_state);
-
-  return android_sms_info;
-}
-
-void MultideviceHandler::HandleGetAndroidSmsInfo(
-    const base::Value::List& args) {
-  const base::Value& callback_id = args[0];
-
-  ResolveJavascriptCallback(callback_id, GenerateAndroidSmsInfo());
 }
 
 void MultideviceHandler::HandleAttemptNotificationSetup(
@@ -736,10 +638,6 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
           feature_states
               [multidevice_setup::mojom::Feature::kInstantTethering]));
   page_content_dictionary.Set(
-      kPageContentDataMessagesStateKey,
-      static_cast<int32_t>(
-          feature_states[multidevice_setup::mojom::Feature::kMessages]));
-  page_content_dictionary.Set(
       kPageContentDataSmartLockStateKey,
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kSmartLock]));
@@ -780,12 +678,6 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
     page_content_dictionary.Set(kPageContentDataHostDeviceNameKey,
                                 host_status_with_device.second->name());
   }
-
-  page_content_dictionary.Set(
-      kIsAndroidSmsPairingComplete,
-      android_sms_pairing_state_tracker_
-          ? android_sms_pairing_state_tracker_->IsAndroidSmsPairingComplete()
-          : false);
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus
       notification_access_status = phonehub::MultideviceFeatureAccessManager::

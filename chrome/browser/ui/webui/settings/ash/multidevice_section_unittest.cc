@@ -8,7 +8,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -106,7 +105,6 @@ class MultiDeviceSectionTest : public testing::Test {
     multi_device_section_ = std::make_unique<MultiDeviceSection>(
         profile, search_tag_registry_.get(),
         fake_multidevice_setup_client_.get(), fake_phone_hub_manager_.get(),
-        android_sms::AndroidSmsServiceFactory::GetForBrowserContext(profile),
         &pref_service_,
         eche_app::EcheAppManagerFactory::GetForProfile(profile));
   }

@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 /**
  * @fileoverview
  * Suite of tests for settings-multidevice-feature-toggle element. For
- * simplicity, we provide the toggle with a real feature (i.e. messages) as a
+ * simplicity, we provide the toggle with a real feature (i.e. Phone Hub) as a
  * stand-in for a generic feature.
  */
 suite('<settings-multidevice-feature-toggle>', () => {
@@ -81,7 +81,6 @@ suite('<settings-multidevice-feature-toggle>', () => {
       mode: MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS,
       hostDeviceName: undefined,
       instantTetheringState: MultiDeviceFeatureState.DISABLED_BY_USER,
-      messagesState: MultiDeviceFeatureState.DISABLED_BY_USER,
       smartLockState: MultiDeviceFeatureState.DISABLED_BY_USER,
       phoneHubState: MultiDeviceFeatureState.DISABLED_BY_USER,
       phoneHubCameraRollState: MultiDeviceFeatureState.DISABLED_BY_USER,
@@ -89,7 +88,6 @@ suite('<settings-multidevice-feature-toggle>', () => {
       phoneHubTaskContinuationState: MultiDeviceFeatureState.DISABLED_BY_USER,
       phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
       wifiSyncState: MultiDeviceFeatureState.DISABLED_BY_USER,
-      isAndroidSmsPairingComplete: false,
       cameraRollAccessStatus:
           PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
       notificationAccessStatus:
@@ -115,7 +113,7 @@ suite('<settings-multidevice-feature-toggle>', () => {
   }
 
   test('checked property can be set by feature state', () => {
-    init(MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.PHONE_HUB, 'phoneHubState');
 
     setFeatureState(MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.get('checked_'));
@@ -127,7 +125,7 @@ suite('<settings-multidevice-feature-toggle>', () => {
   });
 
   test('disabled property can be set by feature state', () => {
-    init(MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.PHONE_HUB, 'phoneHubState');
 
     setFeatureState(MultiDeviceFeatureState.PROHIBITED_BY_POLICY);
     assertTrue(crToggle.disabled);
@@ -137,7 +135,7 @@ suite('<settings-multidevice-feature-toggle>', () => {
   });
 
   test('disabled and checked properties update simultaneously', () => {
-    init(MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.PHONE_HUB, 'phoneHubState');
 
     setFeatureState(MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.get('checked_'));
@@ -156,7 +154,7 @@ suite('<settings-multidevice-feature-toggle>', () => {
   });
 
   test('disabled property can be set by suite pref', () => {
-    init(MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.PHONE_HUB, 'phoneHubState');
 
     setSuiteState(MultiDeviceFeatureState.DISABLED_BY_USER);
     flush();
@@ -168,7 +166,7 @@ suite('<settings-multidevice-feature-toggle>', () => {
   });
 
   test('checked property is unaffected by suite pref', () => {
-    init(MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.PHONE_HUB, 'phoneHubState');
 
     setFeatureState(MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.get('checked_'));
@@ -183,7 +181,7 @@ suite('<settings-multidevice-feature-toggle>', () => {
   });
 
   test('clicking toggle does not change checked property', () => {
-    init(MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.PHONE_HUB, 'phoneHubState');
 
     const preClickCrToggleChecked = crToggle.checked;
     crToggle.click();

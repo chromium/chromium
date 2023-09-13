@@ -24,7 +24,7 @@ export enum MultiDeviceSettingsMode {
 export enum MultiDeviceFeature {
   BETTER_TOGETHER_SUITE = 0,
   INSTANT_TETHERING = 1,
-  MESSAGES = 2,
+  // MESSAGES (2) is deprecated.
   SMART_LOCK = 3,
   PHONE_HUB = 4,
   PHONE_HUB_NOTIFICATIONS = 5,
@@ -155,7 +155,6 @@ export interface MultiDevicePageContentData {
   hostDeviceName: string|undefined;
   betterTogetherState: MultiDeviceFeatureState;
   instantTetheringState: MultiDeviceFeatureState;
-  messagesState: MultiDeviceFeatureState;
   smartLockState: MultiDeviceFeatureState;
   phoneHubState: MultiDeviceFeatureState;
   phoneHubCameraRollState: MultiDeviceFeatureState;
@@ -163,7 +162,6 @@ export interface MultiDevicePageContentData {
   phoneHubTaskContinuationState: MultiDeviceFeatureState;
   phoneHubAppsState: MultiDeviceFeatureState;
   wifiSyncState: MultiDeviceFeatureState;
-  isAndroidSmsPairingComplete: boolean;
   cameraRollAccessStatus: PhoneHubFeatureAccessStatus;
   notificationAccessStatus: PhoneHubFeatureAccessStatus;
   appsAccessStatus: PhoneHubFeatureAccessStatus;

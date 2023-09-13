@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/android_sms/android_sms_service.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
@@ -65,14 +64,6 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kForgetPhone},
         {IDS_OS_SETTINGS_TAG_MULTIDEVICE_FORGET_ALT1,
-         SearchConcept::kAltTagEnd}},
-       {IDS_OS_SETTINGS_TAG_MULTIDEVICE_MESSAGES,
-        mojom::kMultiDeviceFeaturesSubpagePath,
-        mojom::SearchResultIcon::kMessages,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSetting,
-        {.setting = mojom::Setting::kMessagesOnOff},
-        {IDS_OS_SETTINGS_TAG_MULTIDEVICE_MESSAGES_ALT1,
          SearchConcept::kAltTagEnd}},
        {IDS_OS_SETTINGS_TAG_MULTIDEVICE,
         mojom::kMultiDeviceFeaturesSubpagePath,
@@ -164,7 +155,6 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kSetUpMultiDevice},
         {IDS_OS_SETTINGS_TAG_MULTIDEVICE,
-         IDS_OS_SETTINGS_TAG_MULTIDEVICE_MESSAGES,
          IDS_OS_SETTINGS_TAG_MULTIDEVICE_SMART_LOCK, SearchConcept::kAltTagEnd},
     };
 
@@ -298,13 +288,11 @@ MultiDeviceSection::MultiDeviceSection(
     SearchTagRegistry* search_tag_registry,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     phonehub::PhoneHubManager* phone_hub_manager,
-    android_sms::AndroidSmsService* android_sms_service,
     PrefService* pref_service,
     eche_app::EcheAppManager* eche_app_manager)
     : OsSettingsSection(profile, search_tag_registry),
       multidevice_setup_client_(multidevice_setup_client),
       phone_hub_manager_(phone_hub_manager),
-      android_sms_service_(android_sms_service),
       pref_service_(pref_service),
       eche_app_manager_(eche_app_manager),
       html_source_(nullptr) {
@@ -425,16 +413,6 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING},
       {"multideviceInstantTetheringItemSummary",
        IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_SUMMARY},
-      {"multideviceInstantTetheringItemConnectedDescription",
-       IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_CONNECTED_DESCRIPTION},
-      {"multideviceInstantTetheringItemConnectingDescription",
-       IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_CONNECTING_DESCRIPTION},
-      {"multideviceInstantTetheringItemNoNetworkDescription",
-       IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_NO_NETWORK_DESCRIPTION},
-      {"multideviceInstantTetheringItemDisabledDescription",
-       IDS_OS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING_DISABLED_DESCRIPTION},
-      {"multideviceAndroidMessagesItemTitle",
-       IDS_SETTINGS_MULTIDEVICE_ANDROID_MESSAGES},
       {"multideviceForgetDevice", IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE},
       {"multideviceSmartLockOptions",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOCK},
@@ -556,14 +534,6 @@ void MultiDeviceSection::AddLoadTimeData(
                   GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
                       .spec())));
   html_source->AddString(
-      "multideviceAndroidMessagesItemSummary",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MULTIDEVICE_ANDROID_MESSAGES_SUMMARY,
-          ui::GetChromeOSDeviceName(),
-          base::UTF8ToUTF16(
-              multidevice_setup::GetBoardSpecificMessagesLearnMoreUrl()
-                  .spec())));
-  html_source->AddString(
       "multideviceSmartLockItemSummary",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MULTIDEVICE_SMART_LOCK_SUMMARY,
@@ -661,11 +631,6 @@ void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
       phone_hub_manager_
           ? phone_hub_manager_->GetMultideviceFeatureAccessManager()
           : nullptr,
-      android_sms_service_
-          ? android_sms_service_->android_sms_pairing_state_tracker()
-          : nullptr,
-      android_sms_service_ ? android_sms_service_->android_sms_app_manager()
-                           : nullptr,
       eche_app_manager_ ? eche_app_manager_->GetAppsAccessManager() : nullptr,
       phone_hub_manager_ ? phone_hub_manager_->GetCameraRollManager() : nullptr,
       phone_hub_manager_ ? phone_hub_manager_->GetBrowserTabsModelProvider()
@@ -706,8 +671,6 @@ void MultiDeviceSection::RegisterHierarchy(
       mojom::kMultiDeviceFeaturesSubpagePath);
   static constexpr mojom::Setting kMultiDeviceFeaturesSettings[] = {
       mojom::Setting::kMultiDeviceOnOff,
-      mojom::Setting::kMessagesSetUp,
-      mojom::Setting::kMessagesOnOff,
       mojom::Setting::kForgetPhone,
       mojom::Setting::kPhoneHubOnOff,
       mojom::Setting::kPhoneHubCameraRollOnOff,

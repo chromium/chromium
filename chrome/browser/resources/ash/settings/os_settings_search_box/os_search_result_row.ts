@@ -729,8 +729,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:lock';
       case SearchResultIcon.kMagnifyingGlass:
         return 'cr:search';
-      case SearchResultIcon.kMessages:
-        return 'os-settings:multidevice-messages';
       case SearchResultIcon.kMicrophone:
         return 'os-settings:microphone';
       case SearchResultIcon.kMouse:

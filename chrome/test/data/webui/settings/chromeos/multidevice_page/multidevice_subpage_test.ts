@@ -9,7 +9,7 @@ import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
@@ -48,10 +48,6 @@ suite('<settings-multidevice-subpage>', () => {
               supportedFeatures.includes(MultiDeviceFeature.INSTANT_TETHERING) ?
               MultiDeviceFeatureState.ENABLED_BY_USER :
               MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
-          messagesState:
-              supportedFeatures.includes(MultiDeviceFeature.MESSAGES) ?
-              MultiDeviceFeatureState.ENABLED_BY_USER :
-              MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
           smartLockState:
               supportedFeatures.includes(MultiDeviceFeature.SMART_LOCK) ?
               MultiDeviceFeatureState.ENABLED_BY_USER :
@@ -83,17 +79,6 @@ suite('<settings-multidevice-subpage>', () => {
                   MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL) ?
               MultiDeviceFeatureState.ENABLED_BY_USER :
               MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
-        });
-    flush();
-  }
-
-  function setAndroidSmsPairingComplete(pairingComplete: boolean): void {
-    multideviceSubpage.pageContentData =
-        Object.assign({}, multideviceSubpage.pageContentData, {
-          messagesState: pairingComplete ?
-              MultiDeviceFeatureState.ENABLED_BY_USER :
-              MultiDeviceFeatureState.FURTHER_SETUP_REQUIRED,
-          isAndroidSmsPairingComplete: pairingComplete,
         });
     flush();
   }
@@ -143,9 +128,6 @@ suite('<settings-multidevice-subpage>', () => {
               '#instantTetheringItem'));
       assertEquals(
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED,
-          !!multideviceSubpage.shadowRoot!.querySelector('#messagesItem'));
-      assertEquals(
-          mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED,
           !!multideviceSubpage.shadowRoot!.querySelector('#phoneHubItem'));
       assertEquals(
           mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED,
@@ -173,7 +155,6 @@ suite('<settings-multidevice-subpage>', () => {
         !!multideviceSubpage.shadowRoot!.querySelector('#smartLockItem'));
     assertTrue(!!multideviceSubpage.shadowRoot!.querySelector(
         '#instantTetheringItem'));
-    assertTrue(!!multideviceSubpage.shadowRoot!.querySelector('#messagesItem'));
     assertTrue(!!multideviceSubpage.shadowRoot!.querySelector('#phoneHubItem'));
     assertTrue(!!multideviceSubpage.shadowRoot!.querySelector(
         '#phoneHubNotificationsItem'));
@@ -187,7 +168,6 @@ suite('<settings-multidevice-subpage>', () => {
 
     setSupportedFeatures([
       MultiDeviceFeature.SMART_LOCK,
-      MultiDeviceFeature.MESSAGES,
       MultiDeviceFeature.PHONE_HUB,
       MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
       MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
@@ -199,7 +179,6 @@ suite('<settings-multidevice-subpage>', () => {
         !!multideviceSubpage.shadowRoot!.querySelector('#smartLockItem'));
     assertNull(
         multideviceSubpage.shadowRoot!.querySelector('#instantTetheringItem'));
-    assertTrue(!!multideviceSubpage.shadowRoot!.querySelector('#messagesItem'));
     assertTrue(!!multideviceSubpage.shadowRoot!.querySelector('#phoneHubItem'));
     assertTrue(!!multideviceSubpage.shadowRoot!.querySelector(
         '#phoneHubNotificationsItem'));
@@ -215,7 +194,6 @@ suite('<settings-multidevice-subpage>', () => {
     assertNull(multideviceSubpage.shadowRoot!.querySelector('#smartLockItem'));
     assertTrue(!!multideviceSubpage.shadowRoot!.querySelector(
         '#instantTetheringItem'));
-    assertNull(multideviceSubpage.shadowRoot!.querySelector('#messagesItem'));
     assertNull(multideviceSubpage.shadowRoot!.querySelector('#phoneHubItem'));
     assertNull(multideviceSubpage.shadowRoot!.querySelector(
         '#phoneHubNotificationsItem'));
@@ -231,7 +209,6 @@ suite('<settings-multidevice-subpage>', () => {
     assertNull(multideviceSubpage.shadowRoot!.querySelector('#smartLockItem'));
     assertNull(
         multideviceSubpage.shadowRoot!.querySelector('#instantTetheringItem'));
-    assertNull(multideviceSubpage.shadowRoot!.querySelector('#messagesItem'));
     assertNull(multideviceSubpage.shadowRoot!.querySelector('#phoneHubItem'));
     assertNull(multideviceSubpage.shadowRoot!.querySelector(
         '#phoneHubNotificationsItem'));
@@ -281,107 +258,6 @@ suite('<settings-multidevice-subpage>', () => {
 
         loadTimeData.overrideValues({'isSmartLockSignInRemoved': false});
       });
-
-  test('AndroidMessages item shows button when not set up', () => {
-    setAndroidSmsPairingComplete(false);
-    flush();
-
-    const controllerSelector = '#messagesItem > [slot=feature-controller]';
-    const selector =
-        multideviceSubpage.shadowRoot!.querySelector(controllerSelector);
-    assertTrue(!!selector);
-    assertTrue(selector.tagName.includes('BUTTON'));
-
-    setAndroidSmsPairingComplete(true);
-    flush();
-
-    assertNull(
-        multideviceSubpage.shadowRoot!.querySelector(controllerSelector));
-  });
-
-  test(
-      'AndroidMessages set up button calls browser proxy function',
-      async () => {
-        setAndroidSmsPairingComplete(false);
-        flush();
-
-        const setUpButton =
-            multideviceSubpage.shadowRoot!.querySelector<HTMLElement>(
-                '#messagesItem > [slot=feature-controller]');
-        assertTrue(!!setUpButton);
-
-        setUpButton.click();
-
-        await browserProxy.whenCalled('setUpAndroidSms');
-      });
-
-  test('AndroidMessages toggle is disabled when prohibited by policy', () => {
-    // Verify that setup button is disabled when prohibited by policy.
-    multideviceSubpage.pageContentData = {
-      ...multideviceSubpage.pageContentData,
-      messagesState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
-      isAndroidSmsPairingComplete: false,
-    };
-    flush();
-
-    let setUpButton =
-        multideviceSubpage.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#messagesItem > [slot=feature-controller]');
-    assertNull(setUpButton);
-
-    // Verify that setup button is not disabled when feature is enabled.
-    setAndroidSmsPairingComplete(false);
-    setUpButton = multideviceSubpage.shadowRoot!.querySelector(
-        '#messagesItem > [slot=feature-controller]');
-    assertTrue(!!setUpButton);
-    assertTrue(setUpButton.tagName.includes('BUTTON'));
-    assertFalse(setUpButton.disabled);
-  });
-
-  test('Deep link to setup messages', async () => {
-    setAndroidSmsPairingComplete(false);
-    flush();
-
-    const params = new URLSearchParams();
-    params.append('settingId', settingMojom.Setting.kMessagesSetUp.toString());
-    Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES, params);
-
-    flush();
-
-    const deepLinkElement =
-        multideviceSubpage.shadowRoot!.querySelector<HTMLElement>(
-            '#messagesItem > [slot=feature-controller]');
-    assertTrue(!!deepLinkElement);
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Setup messages button should be focused for settingId=205.');
-  });
-
-  test('Deep link to messages on/off', async () => {
-    setAndroidSmsPairingComplete(true);
-    flush();
-
-    const params = new URLSearchParams();
-    params.append('settingId', settingMojom.Setting.kMessagesOnOff.toString());
-    Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES, params);
-
-    flush();
-
-    const messagesItem =
-        multideviceSubpage.shadowRoot!.querySelector('#messagesItem');
-    assertTrue(!!messagesItem);
-    const featureToggle = messagesItem.shadowRoot!.querySelector(
-        'settings-multidevice-feature-toggle');
-    assertTrue(!!featureToggle);
-    const deepLinkElement =
-        featureToggle.shadowRoot!.querySelector('cr-toggle');
-    assertTrue(!!deepLinkElement);
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Messages on/off toggle should be focused for settingId=206.');
-  });
 
   test('Deep link to phone hub on/off', async () => {
     const params = new URLSearchParams();

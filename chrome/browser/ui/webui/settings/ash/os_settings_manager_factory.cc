@@ -6,7 +6,6 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
@@ -49,7 +48,6 @@ OsSettingsManagerFactory::OsSettingsManagerFactory()
   DependsOn(KerberosCredentialsManagerFactory::GetInstance());
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(android_sms::AndroidSmsServiceFactory::GetInstance());
   DependsOn(CupsPrintersManagerFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(eche_app::EcheAppManagerFactory::GetInstance());
@@ -71,7 +69,6 @@ OsSettingsManagerFactory::BuildServiceInstanceForBrowserContext(
       KerberosCredentialsManagerFactory::Get(profile),
       ArcAppListPrefsFactory::GetForBrowserContext(profile),
       IdentityManagerFactory::GetForProfile(profile),
-      android_sms::AndroidSmsServiceFactory::GetForBrowserContext(profile),
       CupsPrintersManagerFactory::GetForBrowserContext(profile),
       apps::AppServiceProxyFactory::GetForProfile(profile),
       eche_app::EcheAppManagerFactory::GetForProfile(profile));

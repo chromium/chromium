@@ -6,14 +6,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import {MultiDeviceFeature, MultiDevicePageContentData, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from './multidevice_constants.js';
 
-/**
- * An object containing messages for web permissisions origin
- * and the messages multidevice feature state.
- */
-export interface AndroidSmsInfo {
-  origin: string;
-  enabled: boolean;
-}
 
 export interface MultiDeviceBrowserProxy {
   showMultiDeviceSetupDialog(): void;
@@ -35,14 +27,6 @@ export interface MultiDeviceBrowserProxy {
   removeHostDevice(): void;
 
   retryPendingHostSetup(): void;
-
-  setUpAndroidSms(): void;
-
-  /**
-   * Returns android messages info with messages feature state
-   * and messages for web permissions origin.
-   */
-  getAndroidSmsInfo(): Promise<AndroidSmsInfo>;
 
   /**
    * Attempts the phone hub notification access setup flow.
@@ -151,14 +135,6 @@ export class MultiDeviceBrowserProxyImpl implements MultiDeviceBrowserProxy {
 
   retryPendingHostSetup(): void {
     chrome.send('retryPendingHostSetup');
-  }
-
-  setUpAndroidSms(): void {
-    chrome.send('setUpAndroidSms');
-  }
-
-  getAndroidSmsInfo(): Promise<AndroidSmsInfo> {
-    return sendWithPromise('getAndroidSmsInfo');
   }
 
   attemptNotificationSetup(): void {

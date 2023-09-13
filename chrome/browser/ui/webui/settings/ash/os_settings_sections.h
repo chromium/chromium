@@ -25,9 +25,6 @@ namespace ash {
 class CupsPrintersManager;
 class KerberosCredentialsManager;
 
-namespace android_sms {
-class AndroidSmsService;
-}
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;
@@ -50,7 +47,6 @@ class OsSettingsSections {
       KerberosCredentialsManager* kerberos_credentials_manager,
       ArcAppListPrefs* arc_app_list_prefs,
       signin::IdentityManager* identity_manager,
-      android_sms::AndroidSmsService* android_sms_service,
       CupsPrintersManager* printers_manager,
       apps::AppServiceProxy* app_service_proxy,
       eche_app::EcheAppManager* eche_app_manager);

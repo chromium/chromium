@@ -13,8 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/android_sms/android_sms_urls.h"
-#include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -30,7 +28,6 @@
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "chromeos/ash/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/account_id/account_id.h"
@@ -95,17 +92,12 @@ class TestMultideviceHandler : public MultideviceHandler {
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       phonehub::MultideviceFeatureAccessManager*
           multidevice_feature_access_manager,
-      multidevice_setup::AndroidSmsPairingStateTracker*
-          android_sms_pairing_state_tracker,
-      android_sms::AndroidSmsAppManager* android_sms_app_manager,
       eche_app::AppsAccessManager* apps_access_manager,
       phonehub::CameraRollManager* camera_roll_manager,
       phonehub::BrowserTabsModelProvider* browser_tabs_model_provider)
       : MultideviceHandler(prefs,
                            multidevice_setup_client,
                            multidevice_feature_access_manager,
-                           android_sms_pairing_state_tracker,
-                           android_sms_app_manager,
                            apps_access_manager,
                            camera_roll_manager,
                            browser_tabs_model_provider) {}
@@ -170,9 +162,6 @@ GenerateDefaultFeatureStatesMap() {
       {multidevice_setup::mojom::Feature::kInstantTethering,
        multidevice_setup::mojom::FeatureState::
            kUnavailableNoVerifiedHost_NoEligibleHosts},
-      {multidevice_setup::mojom::Feature::kMessages,
-       multidevice_setup::mojom::FeatureState::
-           kUnavailableNoVerifiedHost_NoEligibleHosts},
       {multidevice_setup::mojom::Feature::kSmartLock,
        multidevice_setup::mojom::FeatureState::
            kUnavailableNoVerifiedHost_NoEligibleHosts},
@@ -228,12 +217,6 @@ void VerifyPageContentDict(
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kInstantTethering);
   EXPECT_EQ(static_cast<int>(it->second), *instant_tethering_state);
-
-  absl::optional<int> messages_state =
-      page_content_dict.FindInt("messagesState");
-  ASSERT_TRUE(messages_state);
-  it = feature_states_map.find(multidevice_setup::mojom::Feature::kMessages);
-  EXPECT_EQ(static_cast<int>(it->second), *messages_state);
 
   absl::optional<int> smart_lock_state =
       page_content_dict.FindInt("smartLockState");
@@ -348,10 +331,6 @@ class MultideviceHandlerTest : public testing::Test {
         std::make_unique<phonehub::FakeMultideviceFeatureAccessManager>(
             phonehub::MultideviceFeatureAccessManager::AccessStatus::
                 kAvailableButNotGranted);
-    fake_android_sms_pairing_state_tracker_ = std::make_unique<
-        multidevice_setup::FakeAndroidSmsPairingStateTracker>();
-    fake_android_sms_app_manager_ =
-        std::make_unique<android_sms::FakeAndroidSmsAppManager>();
     fake_apps_access_manager_ =
         std::make_unique<eche_app::FakeAppsAccessManager>(
             phonehub::MultideviceFeatureAccessManager::AccessStatus::
@@ -384,9 +363,8 @@ class MultideviceHandlerTest : public testing::Test {
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(),
         fake_multidevice_feature_access_manager_.get(),
-        fake_android_sms_pairing_state_tracker_.get(),
-        fake_android_sms_app_manager_.get(), fake_apps_access_manager_.get(),
-        fake_camera_roll_manager_.get(), &fake_browser_tabs_model_provider_);
+        fake_apps_access_manager_.get(), fake_camera_roll_manager_.get(),
+        &fake_browser_tabs_model_provider_);
 
     test_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&test_profile_));
@@ -417,7 +395,7 @@ class MultideviceHandlerTest : public testing::Test {
     test_web_ui_.reset();
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(), nullptr, nullptr,
-        nullptr, nullptr, nullptr, nullptr);
+        nullptr, nullptr);
 
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(test_web_contents_.get());
@@ -452,27 +430,6 @@ class MultideviceHandlerTest : public testing::Test {
     test_web_ui()->HandleReceivedMessage("removeHostDevice", empty_args);
     EXPECT_EQ(num_remote_host_device_calls_before_call + 1u,
               fake_multidevice_setup_client()->num_remove_host_device_called());
-  }
-
-  void CallGetAndroidSmsInfo(bool expected_enabled, const GURL& expected_url) {
-    size_t call_data_count_before_call = test_web_ui()->call_data().size();
-
-    base::Value::List args;
-    args.Append("handlerFunctionName");
-    test_web_ui()->HandleReceivedMessage("getAndroidSmsInfo", args);
-
-    ASSERT_EQ(call_data_count_before_call + 1u,
-              test_web_ui()->call_data().size());
-    const content::TestWebUI::CallData& call_data =
-        CallDataAtIndex(call_data_count_before_call);
-    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-    EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
-    ASSERT_TRUE(call_data.arg2()->GetBool());
-    EXPECT_EQ(
-        ContentSettingsPattern::FromURLNoWildcard(expected_url).ToString(),
-        *call_data.arg3()->GetDict().FindString("origin"));
-    EXPECT_EQ(expected_enabled,
-              *call_data.arg3()->GetDict().FindBool("enabled"));
   }
 
   void CallAttemptNotificationSetup(bool has_notification_access_been_granted) {
@@ -554,7 +511,7 @@ class MultideviceHandlerTest : public testing::Test {
 
     fake_multidevice_setup_client_->SetHostStatusWithDevice(
         std::make_pair(host_status, host_device));
-    EXPECT_EQ(call_data_count_before_call + 2u,
+    EXPECT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
 
     const content::TestWebUI::CallData& call_data =
@@ -571,23 +528,7 @@ class MultideviceHandlerTest : public testing::Test {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
     fake_multidevice_setup_client_->SetFeatureStates(feature_states_map);
-    EXPECT_EQ(call_data_count_before_call + 2u,
-              test_web_ui()->call_data().size());
-
-    const content::TestWebUI::CallData& call_data =
-        CallDataAtIndex(call_data_count_before_call);
-    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-    EXPECT_EQ("settings.updateMultidevicePageContentData",
-              call_data.arg1()->GetString());
-    VerifyPageContent(call_data.arg2());
-  }
-
-  void SimulatePairingStateUpdate(bool is_android_sms_pairing_complete) {
-    size_t call_data_count_before_call = test_web_ui()->call_data().size();
-
-    fake_android_sms_pairing_state_tracker_->SetPairingComplete(
-        is_android_sms_pairing_complete);
-    EXPECT_EQ(call_data_count_before_call + 2u,
+    EXPECT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
 
     const content::TestWebUI::CallData& call_data =
@@ -741,11 +682,6 @@ class MultideviceHandlerTest : public testing::Test {
         success);
   }
 
-  void CallSetUpAndroidSms() {
-    base::Value::List empty_args;
-    test_web_ui()->HandleReceivedMessage("setUpAndroidSms", empty_args);
-  }
-
   void CallSetFeatureEnabledState(multidevice_setup::mojom::Feature feature,
                                   bool enabled,
                                   const absl::optional<std::string>& auth_token,
@@ -786,10 +722,6 @@ class MultideviceHandlerTest : public testing::Test {
   multidevice_setup::FakeMultiDeviceSetupClient*
   fake_multidevice_setup_client() {
     return fake_multidevice_setup_client_.get();
-  }
-
-  android_sms::FakeAndroidSmsAppManager* fake_android_sms_app_manager() {
-    return fake_android_sms_app_manager_.get();
   }
 
   phonehub::FakeMultideviceFeatureAccessManager*
@@ -976,8 +908,6 @@ class MultideviceHandlerTest : public testing::Test {
       fake_multidevice_setup_client_;
   std::unique_ptr<phonehub::FakeMultideviceFeatureAccessManager>
       fake_multidevice_feature_access_manager_;
-  std::unique_ptr<multidevice_setup::FakeAndroidSmsPairingStateTracker>
-      fake_android_sms_pairing_state_tracker_;
   std::unique_ptr<eche_app::FakeAppsAccessManager> fake_apps_access_manager_;
   std::unique_ptr<phonehub::FakeCameraRollManager> fake_camera_roll_manager_;
   phonehub::FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
@@ -989,8 +919,6 @@ class MultideviceHandlerTest : public testing::Test {
       host_status_with_device_;
   multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
       feature_states_map_;
-  std::unique_ptr<android_sms::FakeAndroidSmsAppManager>
-      fake_android_sms_app_manager_;
 
   std::unique_ptr<TestMultideviceHandler> handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1385,8 +1313,6 @@ TEST_F(MultideviceHandlerTest, PageContentData) {
       multidevice_setup::mojom::FeatureState::kDisabledByUser;
   SimulateFeatureStatesUpdate(feature_states_map);
 
-  SimulatePairingStateUpdate(/*is_android_sms_pairing_complete=*/true);
-
   SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/true,
                                        /*is_managed=*/false);
   SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/true,
@@ -1411,14 +1337,6 @@ TEST_F(MultideviceHandlerTest, RetryPendingHostSetup) {
   CallRetryPendingHostSetup(false /* success */);
 }
 
-TEST_F(MultideviceHandlerTest, SetUpAndroidSms) {
-  EXPECT_FALSE(fake_android_sms_app_manager()->has_installed_app());
-  EXPECT_FALSE(fake_android_sms_app_manager()->has_launched_app());
-  CallSetUpAndroidSms();
-  EXPECT_TRUE(fake_android_sms_app_manager()->has_installed_app());
-  EXPECT_TRUE(fake_android_sms_app_manager()->has_launched_app());
-}
-
 TEST_F(MultideviceHandlerTest, SetFeatureEnabledState) {
   CallSetFeatureEnabledState(
       multidevice_setup::mojom::Feature::kBetterTogetherSuite,
@@ -1435,48 +1353,6 @@ TEST_F(MultideviceHandlerTest, RemoveHostDevice) {
   CallRemoveHostDevice();
   CallRemoveHostDevice();
   CallRemoveHostDevice();
-}
-
-TEST_F(MultideviceHandlerTest, GetAndroidSmsInfo) {
-  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub,
-                                           ash::features::kEcheSWA},
-                   /* disabled_features */ {});
-  // Check that getAndroidSmsInfo returns correct value.
-  CallGetAndroidSmsInfo(false /* expected_enabled */,
-                        android_sms::GetAndroidMessagesURL(
-                            true /* use_install_url */) /* expected_url */);
-
-  // Change messages feature state and assert that the change
-  // callback is fired.
-  multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
-      feature_states_map = GenerateDefaultFeatureStatesMap();
-  feature_states_map[multidevice_setup::mojom::Feature::kMessages] =
-      multidevice_setup::mojom::FeatureState::kEnabledByUser;
-
-  size_t call_data_count_before_call = test_web_ui()->call_data().size();
-  SimulateFeatureStatesUpdate(feature_states_map);
-  const content::TestWebUI::CallData& call_data_1 =
-      CallDataAtIndex(call_data_count_before_call + 1);
-  EXPECT_EQ("cr.webUIListenerCallback", call_data_1.function_name());
-  EXPECT_EQ("settings.onAndroidSmsInfoChange", call_data_1.arg1()->GetString());
-
-  // Check that getAndroidSmsInfo returns update value.
-  CallGetAndroidSmsInfo(true /* enabled */, android_sms::GetAndroidMessagesURL(
-                                                true) /* expected_url */);
-
-  // Now, update the installed URL. This should have resulted in another call.
-  fake_android_sms_app_manager()->SetInstalledAppUrl(
-      android_sms::GetAndroidMessagesURL(true /* use_install_url */,
-                                         android_sms::PwaDomain::kStaging));
-  const content::TestWebUI::CallData& call_data_2 =
-      CallDataAtIndex(call_data_count_before_call + 4);
-  EXPECT_EQ("cr.webUIListenerCallback", call_data_2.function_name());
-  EXPECT_EQ("settings.onAndroidSmsInfoChange", call_data_2.arg1()->GetString());
-  CallGetAndroidSmsInfo(
-      true /* enabled */,
-      android_sms::GetAndroidMessagesURL(
-          true /* use_install_url */,
-          android_sms::PwaDomain::kStaging) /* expected_url */);
 }
 
 TEST_F(MultideviceHandlerTest, PageContentDataWhenEcheSWADisabled) {

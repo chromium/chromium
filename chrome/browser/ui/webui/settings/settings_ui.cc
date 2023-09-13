@@ -128,8 +128,6 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
-#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
@@ -547,13 +545,7 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             ash::AccountAppsAvailabilityFactory::GetForProfile(profile)));
   }
 
-  // MultideviceHandler is required in browser settings to show a special note
-  // under the notification permission that is auto-granted for Android Messages
-  // integration in ChromeOS.
   if (!profile->IsGuestSession()) {
-    auto* android_sms_service =
-        ash::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
-            profile);
     ash::phonehub::PhoneHubManager* phone_hub_manager =
         ash::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     ash::eche_app::EcheAppManager* eche_app_manager =
@@ -567,11 +559,6 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
         phone_hub_manager
             ? phone_hub_manager->GetMultideviceFeatureAccessManager()
             : nullptr,
-        android_sms_service
-            ? android_sms_service->android_sms_pairing_state_tracker()
-            : nullptr,
-        android_sms_service ? android_sms_service->android_sms_app_manager()
-                            : nullptr,
         eche_app_manager ? eche_app_manager->GetAppsAccessManager() : nullptr,
         phone_hub_manager ? phone_hub_manager->GetCameraRollManager() : nullptr,
         phone_hub_manager ? phone_hub_manager->GetBrowserTabsModelProvider()

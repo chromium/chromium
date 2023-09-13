@@ -65,27 +65,6 @@
     </template>
     <template is="dom-if"
         if="[[isFeatureSupported(
-            MultiDeviceFeature.MESSAGES, pageContentData)]]"
-        restamp>
-      <settings-multidevice-feature-item id="messagesItem"
-          feature="[[MultiDeviceFeature.MESSAGES]]"
-          page-content-data="[[pageContentData]]"
-          deep-link-focus-id$="[[Setting.kMessagesOnOff]]
-              [[Setting.kMessagesSetUp]]">
-        <template is="dom-if"
-            if="[[doesAndroidMessagesRequireSetUp_(pageContentData)]]"
-            restamp>
-          <cr-button disabled$="[[isAndroidMessagesSetupButtonDisabled_(
-                                    pageContentData)]]"
-              on-click="handleAndroidMessagesButtonClick_"
-              slot="feature-controller">
-            $i18n{multideviceSetupButton}
-          </cr-button>
-        </template>
-      </settings-multidevice-feature-item>
-    </template>
-    <template is="dom-if"
-        if="[[isFeatureSupported(
             MultiDeviceFeature.PHONE_HUB, pageContentData)]]"
         restamp>
       <settings-multidevice-feature-item id="phoneHubItem"

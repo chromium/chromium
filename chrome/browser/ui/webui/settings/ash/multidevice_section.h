@@ -21,10 +21,6 @@ class WebUIDataSource;
 
 namespace ash {
 
-namespace android_sms {
-class AndroidSmsService;
-}
-
 namespace phonehub {
 class PhoneHubManager;
 }
@@ -46,7 +42,6 @@ class MultiDeviceSection
       SearchTagRegistry* search_tag_registry,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       phonehub::PhoneHubManager* phone_hub_manager,
-      android_sms::AndroidSmsService* android_sms_service,
       PrefService* pref_service,
       eche_app::EcheAppManager* eche_app_manager);
   ~MultiDeviceSection() override;
@@ -101,7 +96,6 @@ class MultiDeviceSection
   raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
       multidevice_setup_client_;
   raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
-  raw_ptr<android_sms::AndroidSmsService, ExperimentalAsh> android_sms_service_;
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<eche_app::EcheAppManager, ExperimentalAsh> eche_app_manager_;

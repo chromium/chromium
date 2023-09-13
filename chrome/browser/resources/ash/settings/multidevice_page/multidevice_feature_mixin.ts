@@ -214,8 +214,6 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
               return this.i18n('multideviceSetupItemHeading');
             case MultiDeviceFeature.INSTANT_TETHERING:
               return this.i18n('multideviceInstantTetheringItemTitle');
-            case MultiDeviceFeature.MESSAGES:
-              return this.i18n('multideviceAndroidMessagesItemTitle');
             case MultiDeviceFeature.SMART_LOCK:
               return this.i18n('multideviceSmartLockItemTitle');
             case MultiDeviceFeature.PHONE_HUB:
@@ -243,8 +241,6 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
           switch (feature) {
             case MultiDeviceFeature.BETTER_TOGETHER_SUITE:
               return 'os-settings:multidevice-better-together-suite';
-            case MultiDeviceFeature.MESSAGES:
-              return 'os-settings:multidevice-messages';
             case MultiDeviceFeature.SMART_LOCK:
               return 'os-settings:multidevice-smart-lock';
             case MultiDeviceFeature.PHONE_HUB:
@@ -271,8 +267,6 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
             case MultiDeviceFeature.INSTANT_TETHERING:
               return this.i18nAdvanced(
                   'multideviceInstantTetheringItemSummary');
-            case MultiDeviceFeature.MESSAGES:
-              return this.i18nAdvanced('multideviceAndroidMessagesItemSummary');
             case MultiDeviceFeature.PHONE_HUB:
               return this.i18nAdvanced('multidevicePhoneHubItemSummary');
             case MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
@@ -309,8 +303,6 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
               return this.pageContentData.betterTogetherState;
             case MultiDeviceFeature.INSTANT_TETHERING:
               return this.pageContentData.instantTetheringState;
-            case MultiDeviceFeature.MESSAGES:
-              return this.pageContentData.messagesState;
             case MultiDeviceFeature.SMART_LOCK:
               return this.pageContentData.smartLockState;
             case MultiDeviceFeature.PHONE_HUB:

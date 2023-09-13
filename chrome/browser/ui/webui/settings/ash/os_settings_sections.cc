@@ -44,7 +44,6 @@ OsSettingsSections::OsSettingsSections(
     KerberosCredentialsManager* kerberos_credentials_manager,
     ArcAppListPrefs* arc_app_list_prefs,
     signin::IdentityManager* identity_manager,
-    android_sms::AndroidSmsService* android_sms_service,
     CupsPrintersManager* printers_manager,
     apps::AppServiceProxy* app_service_proxy,
     eche_app::EcheAppManager* eche_app_manager) {
@@ -61,11 +60,10 @@ OsSettingsSections::OsSettingsSections(
       mojom::Section::kBluetooth,
       std::make_unique<BluetoothSection>(profile, search_tag_registry, prefs));
 
-  AddSection(
-      mojom::Section::kMultiDevice,
-      std::make_unique<MultiDeviceSection>(
-          profile, search_tag_registry, multidevice_setup_client,
-          phone_hub_manager, android_sms_service, prefs, eche_app_manager));
+  AddSection(mojom::Section::kMultiDevice,
+             std::make_unique<MultiDeviceSection>(
+                 profile, search_tag_registry, multidevice_setup_client,
+                 phone_hub_manager, prefs, eche_app_manager));
 
   AddSection(mojom::Section::kPeople,
              std::make_unique<PeopleSection>(profile, search_tag_registry,

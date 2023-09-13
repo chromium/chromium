@@ -9,8 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
-#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
@@ -33,8 +31,6 @@ namespace ash::settings {
 class MultideviceHandler
     : public ::settings::SettingsPageUIHandler,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
-      public multidevice_setup::AndroidSmsPairingStateTracker::Observer,
-      public android_sms::AndroidSmsAppManager::Observer,
       public phonehub::MultideviceFeatureAccessManager::Observer,
       public phonehub::NotificationAccessSetupOperation::Delegate,
       public eche_app::AppsAccessManager::Observer,
@@ -49,9 +45,6 @@ class MultideviceHandler
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       phonehub::MultideviceFeatureAccessManager*
           multidevice_feature_access_manager,
-      multidevice_setup::AndroidSmsPairingStateTracker*
-          android_sms_pairing_state_tracker,
-      android_sms::AndroidSmsAppManager* android_sms_app_manager,
       eche_app::AppsAccessManager* apps_access_manager,
       phonehub::CameraRollManager* camera_roll_manager,
       phonehub::BrowserTabsModelProvider* browser_tabs_model_provider);
@@ -105,12 +98,6 @@ class MultideviceHandler
   void OnCameraRollAccessChanged() override;
   void OnFeatureSetupRequestSupportedChanged() override;
 
-  // multidevice_setup::AndroidSmsPairingStateTracker::Observer:
-  void OnPairingStateChanged() override;
-
-  // android_sms::AndroidSmsAppManager::Observer:
-  void OnInstalledAppUrlChanged() override;
-
   // eche_app::AppsAccessManager::Observer:
   void OnAppsAccessChanged() override;
 
@@ -141,8 +128,6 @@ class MultideviceHandler
   void HandleSetFeatureEnabledState(const base::Value::List& args);
   void HandleRemoveHostDevice(const base::Value::List& args);
   void HandleRetryPendingHostSetup(const base::Value::List& args);
-  void HandleSetUpAndroidSms(const base::Value::List& args);
-  void HandleGetAndroidSmsInfo(const base::Value::List& args);
   void HandleAttemptNotificationSetup(const base::Value::List& args);
   void HandleCancelNotificationSetup(const base::Value::List& args);
   void HandleAttemptAppsSetup(const base::Value::List& args);
@@ -156,11 +141,6 @@ class MultideviceHandler
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);
-
-  // Generate android sms info dictionary containing the messages for web
-  // content settings origin url and messages feature state.
-  base::Value::Dict GenerateAndroidSmsInfo();
-  void NotifyAndroidSmsInfoChange();
 
   // Returns true if |auth_token| matches the current auth token stored in
   // QuickUnlockStorage, i.e., the user has successfully authenticated recently.
@@ -194,11 +174,6 @@ class MultideviceHandler
   std::unique_ptr<phonehub::FeatureSetupConnectionOperation>
       feature_setup_connection_operation_;
 
-  raw_ptr<multidevice_setup::AndroidSmsPairingStateTracker, ExperimentalAsh>
-      android_sms_pairing_state_tracker_;
-  raw_ptr<android_sms::AndroidSmsAppManager, ExperimentalAsh>
-      android_sms_app_manager_;
-
   raw_ptr<eche_app::AppsAccessManager, ExperimentalAsh> apps_access_manager_;
   std::unique_ptr<eche_app::AppsAccessSetupOperation> apps_access_operation_;
 
@@ -209,13 +184,6 @@ class MultideviceHandler
   base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
                           multidevice_setup::MultiDeviceSetupClient::Observer>
       multidevice_setup_observation_{this};
-  base::ScopedObservation<
-      multidevice_setup::AndroidSmsPairingStateTracker,
-      multidevice_setup::AndroidSmsPairingStateTracker::Observer>
-      android_sms_pairing_state_tracker_observation_{this};
-  base::ScopedObservation<android_sms::AndroidSmsAppManager,
-                          android_sms::AndroidSmsAppManager::Observer>
-      android_sms_app_manager_observation_{this};
   base::ScopedObservation<phonehub::MultideviceFeatureAccessManager,
                           phonehub::MultideviceFeatureAccessManager::Observer>
       multidevice_feature_access_manager_observation_{this};

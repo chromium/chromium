@@ -31,7 +31,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
-import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
+import {MultiDeviceFeature, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubPermissionsSetupFeatureCombination} from './multidevice_constants.js';
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_subpage.html.js';
 
@@ -59,8 +59,6 @@ export class SettingsMultideviceSubpageElement extends
           Setting.kInstantTetheringOnOff,
           Setting.kMultiDeviceOnOff,
           Setting.kSmartLockOnOff,
-          Setting.kMessagesSetUp,
-          Setting.kMessagesOnOff,
           Setting.kForgetPhone,
           Setting.kPhoneHubOnOff,
           Setting.kPhoneHubCameraRollOnOff,
@@ -108,10 +106,6 @@ export class SettingsMultideviceSubpageElement extends
     this.browserProxy_.retryPendingHostSetup();
   }
 
-  private handleAndroidMessagesButtonClick_(): void {
-    this.browserProxy_.setUpAndroidSms();
-  }
-
   private shouldShowIndividualFeatures_(): boolean {
     return this.pageContentData.mode ===
         MultiDeviceSettingsMode.HOST_SET_VERIFIED;
@@ -149,18 +143,6 @@ export class SettingsMultideviceSubpageElement extends
         this.i18nAdvanced(`multideviceSuiteToggleLabel`) :
         (this.isSuiteOn() ? this.i18nAdvanced('multideviceEnabled') :
                             this.i18nAdvanced('multideviceDisabled'));
-  }
-
-  private doesAndroidMessagesRequireSetUp_(): boolean {
-    return this.getFeatureState(MultiDeviceFeature.MESSAGES) ===
-        MultiDeviceFeatureState.FURTHER_SETUP_REQUIRED;
-  }
-
-  private isAndroidMessagesSetupButtonDisabled_(): boolean {
-    const messagesFeatureState =
-        this.getFeatureState(MultiDeviceFeature.MESSAGES);
-    return !this.isSuiteOn() ||
-        messagesFeatureState === MultiDeviceFeatureState.PROHIBITED_BY_POLICY;
   }
 
   private getPhoneHubNotificationsTooltip_(): string {
