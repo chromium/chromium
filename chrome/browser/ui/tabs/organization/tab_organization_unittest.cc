@@ -6,6 +6,7 @@
 #include <string>
 
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -84,4 +85,72 @@ TEST_F(TabOrganizationTest, TabDataTabStripTabUpdatingDoesntUpdateTabData) {
   EXPECT_EQ(tab_data.original_index(), current_index);
   EXPECT_NE(tab_data.original_index(),
             tab_strip_model()->GetIndexOfWebContents(web_contents));
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
+  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
+
+  content::WebContents* web_contents = AddTab();
+  TabData tab_data(tab_strip_model(), web_contents);
+
+  organization.AddTabData(std::move(tab_data));
+  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
+  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+  content::WebContents* web_contents = AddTab();
+  TabData tab_data(tab_strip_model(), web_contents);
+  TabData::TabID tab_data_id = tab_data.tab_id();
+  organization.AddTabData(std::move(tab_data));
+  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
+
+  organization.RemoveTabData(tab_data_id);
+  EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
+  std::u16string name_0 = u"name_0";
+  std::u16string name_1 = u"name_1";
+  TabOrganization organization({}, {name_0, name_1}, 0, absl::nullopt);
+  EXPECT_TRUE(absl::holds_alternative<size_t>(organization.current_name()));
+  EXPECT_EQ(static_cast<int>(absl::get<size_t>(organization.current_name())),
+            0);
+  EXPECT_EQ(organization.GetDisplayName(), name_0);
+
+  organization.SetCurrentName(1);
+  EXPECT_TRUE(absl::holds_alternative<size_t>(organization.current_name()));
+  EXPECT_EQ(static_cast<int>(absl::get<size_t>(organization.current_name())),
+            1);
+  EXPECT_EQ(organization.GetDisplayName(), name_1);
+
+  std::u16string custom_name = u"custom_name";
+  organization.SetCurrentName(custom_name);
+  EXPECT_TRUE(
+      absl::holds_alternative<std::u16string>(organization.current_name()));
+  EXPECT_EQ((absl::get<std::u16string>(organization.current_name())),
+            custom_name);
+  EXPECT_EQ(organization.GetDisplayName(), custom_name);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationChangingUserActions) {
+  TabOrganization accept_organization({}, {u"default_name"}, 0, absl::nullopt);
+
+  accept_organization.Accept();
+  EXPECT_EQ(accept_organization.choice(),
+            TabOrganization::UserChoice::ACCEPTED);
+
+  TabOrganization reject_organization({}, {u"default_name"}, 0, absl::nullopt);
+
+  reject_organization.Reject();
+  EXPECT_EQ(reject_organization.choice(),
+            TabOrganization::UserChoice::REJECTED);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
+  TabOrganization organization({}, {u"default_name"}, 0,
+                               TabOrganization::UserChoice::ACCEPTED);
+
+  EXPECT_DEATH(organization.Reject(), "");
 }
