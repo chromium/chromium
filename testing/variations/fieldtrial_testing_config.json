@@ -9618,42 +9618,6 @@
             ]
         }
     ],
-    "LimitImageDecodeCacheAge": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "seconds": "10"
-                    },
-                    "enable_features": [
-                        "LimitImageDecodeCacheAge"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LimitImageDecodeCacheSize": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "mb": "32"
-                    },
-                    "enable_features": [
-                        "LimitImageDecodeCacheSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "LoadingPhaseBufferTimeAfterFirstMeaningfulPaint": [
         {
             "platforms": [
