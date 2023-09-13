@@ -29,7 +29,7 @@ namespace {
 
 // The minimum window size for Document Picture-in-Picture windows. This does
 // not apply to video Picture-in-Picture windows.
-constexpr gfx::Size kMinWindowSize(300, 52);
+constexpr gfx::Size kMinWindowSize(240, 52);
 
 // The maximum window size for Document Picture-in-Picture windows. This does
 // not apply to video Picture-in-Picture windows.

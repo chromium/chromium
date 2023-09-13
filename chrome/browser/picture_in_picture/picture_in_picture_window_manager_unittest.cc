@@ -96,7 +96,7 @@ TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
   pip_options.width = 100;
   pip_options.height = 500;
   EXPECT_EQ(
-      gfx::Size(300, 500),
+      gfx::Size(240, 500),
       PictureInPictureWindowManager::GetInstance()
           ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
           .size());
@@ -107,7 +107,7 @@ TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
   pip_options.height = 0;
   pip_options.initial_aspect_ratio = 0.00000001;
   EXPECT_EQ(
-      gfx::Size(300, 800),
+      gfx::Size(240, 800),
       PictureInPictureWindowManager::GetInstance()
           ->CalculateInitialPictureInPictureWindowBounds(pip_options, display)
           .size());
