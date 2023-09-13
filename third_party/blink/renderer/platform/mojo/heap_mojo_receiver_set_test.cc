@@ -120,8 +120,12 @@ template <HeapMojoWrapperMode Mode, typename ContextType>
 class HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest
     : public HeapMojoReceiverSetDisconnectHandlerBaseTest<Mode, ContextType> {
  public:
-  uint32_t& disconnected_reason_code() { return disconnected_reason_code_; }
-  std::string& disconnected_description() { return disconnected_description_; }
+  absl::optional<uint32_t>& disconnected_reason_code() {
+    return disconnected_reason_code_;
+  }
+  absl::optional<std::string>& disconnected_description() {
+    return disconnected_description_;
+  }
 
  protected:
   void SetUp() override {
@@ -144,8 +148,8 @@ class HeapMojoReceiverSetDisconnectWithReasonHandlerBaseTest
         WTF::Unretained(this)));
   }
 
-  uint32_t disconnected_reason_code_;
-  std::string disconnected_description_;
+  absl::optional<uint32_t> disconnected_reason_code_;
+  absl::optional<std::string> disconnected_description_;
 };
 
 }  // namespace
@@ -334,8 +338,9 @@ TEST_F(HeapMojoReceiverSetDisconnectWithReasonHandlerWithoutContextObserverTest,
        ClearWithReason) {
   const std::string message = "test message";
   const uint32_t reason = 15;
-  ASSERT_NE(disconnected_reason_code(), reason);
-  ASSERT_TRUE(disconnected_description().empty());
+
+  ASSERT_FALSE(disconnected_reason_code().has_value());
+  ASSERT_FALSE(disconnected_description().has_value());
 
   owner()->receiver_set().ClearWithReason(reason, message);
   run_loop().Run();
