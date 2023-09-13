@@ -802,7 +802,7 @@ bool PasswordFormManager::ProvisionallySave(
     // 2) There are both password and username fields, and the username value
     // matches the username value (`possible_username`) in the single username
     // form.
-    // TODO(crbug.com/4037883): The distinction between (1) and (2), i.e.
+    // TODO: crbug.com/1468297 - The distinction between (1) and (2), i.e.
     // `password_form_had_matching_username`, is used only to assess the impact
     // of (2) with metrics. The variable can be removed once the metrics are not
     // needed anymore.
@@ -1283,7 +1283,7 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
     // 1) A password form without a username was submitted after the single
     // username form. 2) The submitted password form contains the potential
     // username.
-    // TODO(crbug.com/4037883): The distinction between (1) and (2), i.e.
+    // TODO: crbug.com/1468297 - The distinction between (1) and (2), i.e.
     // 'password_form_had_matching_username', is used only to assess the impact
     // of (2) with metrics. The variable can be removed once the metrics are not
     // needed anymore.
