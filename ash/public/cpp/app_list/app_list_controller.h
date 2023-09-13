@@ -89,6 +89,10 @@ class ASH_PUBLIC_EXPORT AppListController {
       bool animate,
       base::OnceClosure update_position_closure) = 0;
 
+  // Returns whether the image search category is toggleable in the category
+  // filter menu.
+  virtual bool IsImageSearchToggleable() = 0;
+
  protected:
   AppListController();
   virtual ~AppListController();

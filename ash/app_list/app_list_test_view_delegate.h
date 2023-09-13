@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -61,6 +62,8 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   // AppListViewDelegate overrides:
   bool KeyboardTraversalEngaged() override;
   void StartAssistant() override {}
+  std::vector<AppListSearchControlCategory> GetToggleableCategories()
+      const override;
   void StartSearch(const std::u16string& raw_query) override {}
   void StartZeroStateSearch(base::OnceClosure callback,
                             base::TimeDelta timeout) override;

@@ -31,17 +31,17 @@ class ASH_EXPORT SearchNotifierController {
   // Gets the number of times that the privacy notice has been shown.
   static int GetPrivacyNoticeShownCount(PrefService* prefs);
 
+  // Returns true if the privacy notice should be shown.
+  static bool ShouldShowPrivacyNotice();
+
+  // Whether the privacy notice is accepted by the user.
+  static bool IsPrivacyNoticeAccepted();
+
   // Enables the image search category in launcher search.
   void EnableImageSearch();
 
-  // Returns true if the privacy notice should be shown.
-  bool ShouldShowPrivacyNotice() const;
-
   // Updates the privacy notice's accepted pref.
   void SetPrivacyNoticeAcceptedPref();
-
-  // Whether the privacy notice is accepted by the user.
-  bool IsPrivacyNoticeAccepted() const;
 
   // Updates the current notifier visibility state in prefs to determine if a
   // notifier should be showing.

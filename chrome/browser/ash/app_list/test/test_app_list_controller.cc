@@ -70,6 +70,10 @@ void TestAppListController::UpdateAppListWithNewTemporarySortOrder(
   std::move(update_position_closure).Run();
 }
 
+bool TestAppListController::IsImageSearchToggleable() {
+  return true;
+}
+
 void TestAppListController::NotifyAppListVisibilityChanged() {
   for (auto& observer : observers_) {
     observer.OnAppListVisibilityWillChange(visible_, /*display_id=*/-1);

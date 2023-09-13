@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -109,6 +110,7 @@ class ASH_EXPORT AppListControllerImpl
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
   bool IsVisible() override;
+  bool IsImageSearchToggleable() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -152,6 +154,8 @@ class ASH_EXPORT AppListControllerImpl
       override;
   void OpenSearchBoxIphUrl() override;
   void StartAssistant() override;
+  std::vector<AppListSearchControlCategory> GetToggleableCategories()
+      const override;
   void StartSearch(const std::u16string& raw_query) override;
   void StartZeroStateSearch(base::OnceClosure callback,
                             base::TimeDelta timeout) override;

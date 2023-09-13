@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/model/app_list_model.h"
 #include "base/functional/callback.h"
@@ -25,6 +26,11 @@ AppListTestViewDelegate::~AppListTestViewDelegate() = default;
 
 bool AppListTestViewDelegate::KeyboardTraversalEngaged() {
   return true;
+}
+
+std::vector<AppListSearchControlCategory>
+AppListTestViewDelegate::GetToggleableCategories() const {
+  return std::vector<AppListSearchControlCategory>();
 }
 
 void AppListTestViewDelegate::StartZeroStateSearch(base::OnceClosure callback,

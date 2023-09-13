@@ -42,6 +42,12 @@ class ASH_PUBLIC_EXPORT AppListClient {
   //////////////////////////////////////////////////////////////////////////////
   // Interfaces on searching:
 
+  // Returns the search categories that are available for users to choose if
+  // they want to have the results in the categories displayed in launcher
+  // search.
+  virtual std::vector<AppListSearchControlCategory> GetToggleableCategories()
+      const = 0;
+
   // Refreshes the search zero-state suggestions and invokes `on_done` when
   // complete. The client must run `on_done` before `timeout` because this
   // method is called when the user tries to open the launcher and the UI waits

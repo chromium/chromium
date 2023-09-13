@@ -56,6 +56,32 @@ int SearchNotifierController::GetPrivacyNoticeShownCount(PrefService* prefs) {
   return dictionary.FindInt(kPrivacyNoticeShownCount).value_or(0);
 }
 
+// static
+bool SearchNotifierController::ShouldShowPrivacyNotice() {
+  PrefService* prefs = GetPrefs();
+  if (!prefs) {
+    return false;
+  }
+
+  if (IsPrivacyNoticeAccepted()) {
+    return false;
+  }
+
+  return GetPrivacyNoticeShownCount(prefs) <= kMaxShowCount;
+}
+
+// static
+bool SearchNotifierController::IsPrivacyNoticeAccepted() {
+  const PrefService* prefs = GetPrefs();
+  if (!prefs) {
+    return false;
+  }
+
+  return prefs->GetDict(prefs::kImageSearchPrivacyNotice)
+      .FindBool(kPrivacyNoticeAccepted)
+      .value_or(false);
+}
+
 void SearchNotifierController::EnableImageSearch() {
   PrefService* prefs = GetPrefs();
   if (!prefs) {
@@ -67,19 +93,6 @@ void SearchNotifierController::EnableImageSearch() {
   update->Set(
       GetAppListControlCategoryName(AppListSearchControlCategory::kImages),
       true);
-}
-
-bool SearchNotifierController::ShouldShowPrivacyNotice() const {
-  PrefService* prefs = GetPrefs();
-  if (!prefs) {
-    return false;
-  }
-
-  if (IsPrivacyNoticeAccepted()) {
-    return false;
-  }
-
-  return GetPrivacyNoticeShownCount(prefs) <= kMaxShowCount;
 }
 
 void SearchNotifierController::SetPrivacyNoticeAcceptedPref() {
@@ -94,17 +107,6 @@ void SearchNotifierController::SetPrivacyNoticeAcceptedPref() {
 
   // Enable the image search as the privacy notice is accepted.
   EnableImageSearch();
-}
-
-bool SearchNotifierController::IsPrivacyNoticeAccepted() const {
-  const PrefService* prefs = GetPrefs();
-  if (!prefs) {
-    return false;
-  }
-
-  return prefs->GetDict(prefs::kImageSearchPrivacyNotice)
-      .FindBool(kPrivacyNoticeAccepted)
-      .value_or(false);
 }
 
 void SearchNotifierController::UpdateNotifierVisibility(bool visible) {

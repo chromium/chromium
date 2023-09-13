@@ -666,6 +666,12 @@ TEST_P(SearchResultImageViewTest, AcceptingPrivacyNoticeRemovesIt) {
 
 TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   GetAppListTestHelper()->ShowAppList();
+  auto* app_list_client = GetAppListTestHelper()->app_list_client();
+
+  app_list_client->set_available_categories_for_test(
+      {AppListSearchControlCategory::kApps,
+       AppListSearchControlCategory::kFiles,
+       AppListSearchControlCategory::kWeb});
 
   // Press a character key to open the search.
   PressAndReleaseKey(ui::VKEY_A);
@@ -677,9 +683,8 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
 
   // Set up the search callback to notify that the search is triggered.
   bool is_search_triggered = false;
-  GetAppListTestHelper()->app_list_client()->set_search_callback(
-      base::BindLambdaForTesting(
-          [&](const std::u16string& query) { is_search_triggered = true; }));
+  app_list_client->set_search_callback(base::BindLambdaForTesting(
+      [&](const std::u16string& query) { is_search_triggered = true; }));
 
   // Toggleable categories are on by default.
   PrefService* prefs =
@@ -693,14 +698,25 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   LeftClickOn(GetSearchBoxView()->GetFilterMenuItemByCategory(
       AppListSearchControlCategory::kApps));
   EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
-  ASSERT_TRUE(prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
-                  .FindBool(GetAppListControlCategoryName(
-                      AppListSearchControlCategory::kApps))
-                  .has_value());
-  EXPECT_FALSE(prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
-                   .FindBool(GetAppListControlCategoryName(
-                       AppListSearchControlCategory::kApps))
-                   .value());
+  absl::optional apps_search_enabled =
+      prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+          .FindBool(GetAppListControlCategoryName(
+              AppListSearchControlCategory::kApps));
+  ASSERT_TRUE(apps_search_enabled.has_value());
+  EXPECT_FALSE(*apps_search_enabled);
+  // Clicking on a menu item won't trigger the search.
+  EXPECT_FALSE(is_search_triggered);
+
+  // Verify that clicking on the last item can still be handled.
+  LeftClickOn(GetSearchBoxView()->GetFilterMenuItemByCategory(
+      AppListSearchControlCategory::kWeb));
+  EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
+  absl::optional web_search_enabled =
+      prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
+          .FindBool(GetAppListControlCategoryName(
+              AppListSearchControlCategory::kWeb));
+  ASSERT_TRUE(web_search_enabled.has_value());
+  EXPECT_FALSE(*web_search_enabled);
   // Clicking on a menu item won't trigger the search.
   EXPECT_FALSE(is_search_triggered);
 
@@ -710,8 +726,8 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   EXPECT_FALSE(GetSearchBoxView()->IsFilterMenuOpen());
   EXPECT_TRUE(is_search_triggered);
 
-  GetAppListTestHelper()->app_list_client()->set_search_callback(
-      TestAppListClient::SearchCallback());
+  // Reset the search callback.
+  app_list_client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
 // Tests that key traversal correctly cycles between the list of results and

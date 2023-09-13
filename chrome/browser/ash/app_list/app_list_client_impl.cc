@@ -213,6 +213,11 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
   }
 }
 
+std::vector<ash::AppListSearchControlCategory>
+AppListClientImpl::GetToggleableCategories() const {
+  return search_controller_->GetToggleableCategories();
+}
+
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
   if (search_controller_) {
     if (trimmed_query.empty()) {

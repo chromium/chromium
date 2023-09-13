@@ -254,8 +254,15 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Clear highlight range.
   void ResetHighlightRange();
 
-  // Builds the menu model for the category filter menu.
+  // Builds the menu model for the category filter menu. This returns a vector
+  // of AppListSearchControlCategory that is shown in the filter menu.
   ui::SimpleMenuModel* BuildFilterMenuModel();
+
+  // Returns the search categories that are available for users to choose if
+  // they want to have the results in the categories displayed in launcher
+  // search. These category will be listed in the filter menu for users to
+  // toggle.
+  std::vector<AppListSearchControlCategory> GetToggleableCategories();
 
   // Tracks whether the search result page view is visible.
   bool search_result_page_visible_ = false;
@@ -293,8 +300,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // The category filter menu adapter and model that handles the menu life cycle
   // and command execution.
-  std::unique_ptr<FilterMenuAdapter> filter_menu_adapter_;
   std::unique_ptr<ui::SimpleMenuModel> filter_menu_model_;
+  std::unique_ptr<FilterMenuAdapter> filter_menu_adapter_;
 
   // Set by SearchResultPageView when the accessibility selection moves to a
   // search result view - the value is the ID of the currently selected result

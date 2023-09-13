@@ -425,6 +425,12 @@ bool AppListControllerImpl::IsVisible() {
   return IsVisible(absl::nullopt);
 }
 
+bool AppListControllerImpl::IsImageSearchToggleable() {
+  // Hide the image search from the category filter menu if the privacy notice
+  // hasn't been accepted or timeout yet.
+  return !SearchNotifierController::ShouldShowPrivacyNotice();
+}
+
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (IsKioskSession())
@@ -1149,6 +1155,14 @@ void AppListControllerImpl::RecordShelfAppLaunched() {
 void AppListControllerImpl::StartAssistant() {
   AssistantUiController::Get()->ShowUi(
       AssistantEntryPoint::kLauncherSearchBoxIcon);
+}
+
+std::vector<AppListSearchControlCategory>
+AppListControllerImpl::GetToggleableCategories() const {
+  if (client_) {
+    return client_->GetToggleableCategories();
+  }
+  return std::vector<AppListSearchControlCategory>();
 }
 
 void AppListControllerImpl::StartSearch(const std::u16string& raw_query) {

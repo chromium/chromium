@@ -29,6 +29,11 @@ TestAppListClient::TestAppListClient() = default;
 
 TestAppListClient::~TestAppListClient() = default;
 
+std::vector<AppListSearchControlCategory>
+TestAppListClient::GetToggleableCategories() const {
+  return toggleable_categories_for_test_;
+}
+
 void TestAppListClient::StartZeroStateSearch(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
   start_zero_state_search_count_++;

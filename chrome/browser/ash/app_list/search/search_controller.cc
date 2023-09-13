@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -84,6 +85,32 @@ void SearchController::Initialize() {
       profile_, list_controller_, base::DefaultClock::GetInstance());
   app_discovery_metrics_manager_ =
       std::make_unique<AppDiscoveryMetricsManager>(profile_);
+}
+
+std::vector<ash::AppListSearchControlCategory>
+SearchController::GetToggleableCategories() const {
+  // Use a set to deduplicate and sort the elements in order.
+  std::set<ash::AppListSearchControlCategory> category_set;
+  for (auto& provider : providers_) {
+    // Cannot toggle is not an actual search category.
+    if (provider->control_category() ==
+        ash::AppListSearchControlCategory::kCannotToggle) {
+      continue;
+    }
+
+    // Image search results only become available after the user acknowledges a
+    // privacy notice - the user will be able to toggle the feature only after
+    // image search results become available.
+    if (provider->control_category() ==
+            ash::AppListSearchControlCategory::kImages &&
+        !ash::AppListController::Get()->IsImageSearchToggleable()) {
+      continue;
+    }
+
+    category_set.insert(provider->control_category());
+  }
+  return std::vector<ash::AppListSearchControlCategory>(category_set.begin(),
+                                                        category_set.end());
 }
 
 void SearchController::OnBurnInPeriodElapsed() {

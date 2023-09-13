@@ -76,6 +76,8 @@ class AppListClientImpl
 
   // ash::AppListClient:
   void OnAppListControllerDestroyed() override;
+  std::vector<ash::AppListSearchControlCategory> GetToggleableCategories()
+      const override;
   void StartZeroStateSearch(base::OnceClosure on_done,
                             base::TimeDelta timeout) override;
   void StartSearch(const std::u16string& trimmed_query) override;

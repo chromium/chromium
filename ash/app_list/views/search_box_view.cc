@@ -46,6 +46,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -233,7 +234,8 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
                     base::RepeatingClosure on_menu_closed,
                     AppListViewDelegate* view_delegate)
       : views::MenuModelAdapter(menu_model, std::move(on_menu_closed)),
-        view_delegate_(view_delegate) {}
+        view_delegate_(view_delegate),
+        model_(menu_model) {}
 
   FilterMenuAdapter(const FilterMenuAdapter&) = delete;
   FilterMenuAdapter& operator=(const FilterMenuAdapter&) = delete;
@@ -295,7 +297,10 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
   // `category` button. This should only be called when the menu is opened.
   views::MenuItemView* GetFilterMenuItemByCategory(
       AppListSearchControlCategory category) {
-    return GetFilterMenuItemByIdx(GetMenuIndexByCategory(category));
+    absl::optional<size_t> index =
+        model_->GetIndexOfCommandId(base::to_underlying(category));
+    CHECK(index.has_value());
+    return GetFilterMenuItemByIdx(index.value());
   }
 
  private:
@@ -306,18 +311,11 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
     return filter_menu_root_->GetSubmenu()->GetMenuItemAt(index);
   }
 
-  // Returns the index of the MenuItemView that can toggle `category` in the
-  // category filter menu.
-  int GetMenuIndexByCategory(AppListSearchControlCategory category) const {
-    // The index aligns to the corresponding command id value.
-    // TODO(crbug.com/1352636): Update this when not all categories are listed.
-    return static_cast<int>(category);
-  }
-
   const raw_ptr<AppListViewDelegate> view_delegate_;
 
   std::unique_ptr<views::MenuRunner> filter_menu_runner_;
   raw_ptr<views::MenuItemView> filter_menu_root_;
+  raw_ptr<ui::SimpleMenuModel> model_;
 };
 
 class SearchBoxView::FocusRingLayer : public ui::LayerOwner, ui::LayerDelegate {
@@ -717,22 +715,10 @@ void SearchBoxView::OpenSearchBoxIphUrl() {
   view_delegate_->OpenSearchBoxIphUrl();
 }
 
-ui::SimpleMenuModel* SearchBoxView::BuildFilterMenuModel() {
-  filter_menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  // TODO(crbug.com/1352636): Use l10n string when the text is finalized.
-  filter_menu_model_->AddTitle(u"Search categories");
-  for (auto category : kCategories) {
-    filter_menu_model_->AddItemWithIcon(
-        static_cast<int>(category.first),
-        l10n_util::GetStringUTF16(category.second),
-        GetCheckboxImage(view_delegate_->IsCategoryEnabled(category.first)));
-  }
-  return filter_menu_model_.get();
-}
-
 void SearchBoxView::ShowFilterMenu() {
+  ui::SimpleMenuModel* model = BuildFilterMenuModel();
   filter_menu_adapter_ = std::make_unique<FilterMenuAdapter>(
-      BuildFilterMenuModel(),
+      model,
       base::BindRepeating(&SearchBoxView::OnFilterMenuClosed,
                           weak_ptr_factory_.GetWeakPtr()),
       view_delegate_);
@@ -1621,6 +1607,32 @@ void SearchBoxView::ResetHighlightRange() {
   const uint32_t text_length = search_box()->GetText().length();
   highlight_range_.set_start(text_length);
   highlight_range_.set_end(text_length);
+}
+
+ui::SimpleMenuModel* SearchBoxView::BuildFilterMenuModel() {
+  filter_menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
+  // TODO(crbug.com/1352636): Use l10n string when the text is finalized.
+  filter_menu_model_->AddTitle(u"Search categories");
+  std::vector<AppListSearchControlCategory> available_categories =
+      GetToggleableCategories();
+
+  for (auto category : available_categories) {
+    if (category == AppListSearchControlCategory::kCannotToggle) {
+      continue;
+    }
+
+    filter_menu_model_->AddItemWithIcon(
+        static_cast<int>(category),
+        l10n_util::GetStringUTF16(kCategories.at(category)),
+        GetCheckboxImage(view_delegate_->IsCategoryEnabled(category)));
+  }
+
+  return filter_menu_model_.get();
+}
+
+std::vector<AppListSearchControlCategory>
+SearchBoxView::GetToggleableCategories() {
+  return view_delegate_->GetToggleableCategories();
 }
 
 }  // namespace ash
