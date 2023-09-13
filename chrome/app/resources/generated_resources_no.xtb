@@ -3067,7 +3067,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for barnets ChromeOS-enhet. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559079791149580653">Slutt å caste skjermen til <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">Kunne ikke installere regelen på enheten.</translation>
-<translation id="3559533181353831840">Omtrent <ph name="TIME_LEFT" /> gjenstår</translation>
+<translation id="3559533181353831840">Omtrent <ph name="TIME_LEFT" /> igjen</translation>
 <translation id="3560034655160545939">&amp;Stavekontroll</translation>
 <translation id="3561201631376780358">Åpne sidepanelet for å se alle bokmerker</translation>
 <translation id="3562423906127931518">Denne prosessen kan ta noen minutter. Konfigurerer Linux-beholderen.</translation>
