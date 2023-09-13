@@ -181,10 +181,9 @@ class Response {
 }  // namespace
 
 // A test class used for testing the `CrdAdminSessionController` class.
-// Use this class as fixture for parameterized tests over boolean value.
 // The value is used to verify the correct delivery of individual boolean fields
 // of `ChromeOsEnterpriseParams`.
-class CrdAdminSessionControllerTest : public testing::TestWithParam<bool> {
+class CrdAdminSessionControllerTest : public testing::Test {
  public:
   CrdAdminSessionControllerTest() = default;
   CrdAdminSessionControllerTest(const CrdAdminSessionControllerTest&) = delete;
@@ -235,10 +234,9 @@ class CrdAdminSessionControllerTest : public testing::TestWithParam<bool> {
     return session_finish_result_.Take();
   }
 
-  // Calls StartCrdHostAndGetCode() and waits until the
-  // `SupportHostObserver` is bound.
-  // This observer is used by the CRD host code to inform our delegate of status
-  // updates, and is returned by this method so we can spoof these status
+  // Calls StartCrdHostAndGetCode() and waits until the `SupportHostObserver` is
+  // bound. This observer is used by the CRD host code to inform our delegate of
+  // status updates, and is returned by this method so we can spoof these status
   // updates during our tests.
   SupportHostObserver& StartCrdHostAndBindObserver() {
     EXPECT_CALL(remoting_service(), StartSession)
@@ -290,6 +288,11 @@ class CrdAdminSessionControllerTest : public testing::TestWithParam<bool> {
   base::test::ScopedFeatureList feature_;
 };
 
+// Fixture for tests parameterized over boolean values.
+class CrdAdminSessionControllerTestWithBoolParams
+    : public CrdAdminSessionControllerTest,
+      public testing::WithParamInterface<bool> {};
+
 TEST_F(CrdAdminSessionControllerTest, ShouldPassOAuthTokenToRemotingService) {
   SessionParameters parameters;
   parameters.oauth_token = "<the-oauth-token>";
@@ -322,7 +325,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassUserNameToRemotingService) {
   EXPECT_EQ(actual_parameters->user_name, "<the-user-name>");
 }
 
-TEST_P(CrdAdminSessionControllerTest,
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassShowConfirmationDialogToRemotingService) {
   SessionParameters parameters;
   parameters.show_confirmation_dialog = GetParam();
@@ -339,7 +342,7 @@ TEST_P(CrdAdminSessionControllerTest,
   EXPECT_NE(actual_parameters.suppress_user_dialogs, GetParam());
 }
 
-TEST_P(CrdAdminSessionControllerTest,
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassTerminateUponInputToRemotingService) {
   SessionParameters parameters;
   parameters.terminate_upon_input = GetParam();
@@ -355,7 +358,7 @@ TEST_P(CrdAdminSessionControllerTest,
   EXPECT_EQ(actual_parameters.terminate_upon_input, GetParam());
 }
 
-TEST_P(CrdAdminSessionControllerTest,
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassAllowReconnectionsToRemotingService) {
   SessionParameters parameters;
   parameters.allow_reconnections = GetParam();
@@ -386,7 +389,7 @@ TEST_F(CrdAdminSessionControllerTest, ShouldPassAdminEmailToRemotingService) {
   EXPECT_EQ(actual_parameters->authorized_helper, "the.admin@email.com");
 }
 
-TEST_P(CrdAdminSessionControllerTest,
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassCurtainLocalUserSessionToRemotingService) {
   SessionParameters parameters;
   parameters.curtain_local_user_session = GetParam();
@@ -402,7 +405,7 @@ TEST_P(CrdAdminSessionControllerTest,
   EXPECT_EQ(actual_parameters.curtain_local_user_session, GetParam());
 }
 
-TEST_P(CrdAdminSessionControllerTest,
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassAllowTroubleshootingToolsToRemotingService) {
   SessionParameters parameters;
   parameters.allow_troubleshooting_tools = GetParam();
@@ -418,7 +421,7 @@ TEST_P(CrdAdminSessionControllerTest,
   EXPECT_EQ(actual_parameters.allow_troubleshooting_tools, GetParam());
 }
 
-TEST_P(CrdAdminSessionControllerTest,
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassShowTroubleshootingToolsToRemotingService) {
   SessionParameters parameters;
   parameters.show_troubleshooting_tools = GetParam();
@@ -434,7 +437,7 @@ TEST_P(CrdAdminSessionControllerTest,
   EXPECT_EQ(actual_parameters.show_troubleshooting_tools, GetParam());
 }
 
-TEST_P(CrdAdminSessionControllerTest,
+TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassAllowFileTransferToRemotingService) {
   SessionParameters parameters;
   parameters.allow_file_transfer = GetParam();
@@ -646,8 +649,8 @@ TEST_F(
   EXPECT_EQ(ResultCode::FAILURE_DISABLED_BY_POLICY, response.error_code());
 }
 
-INSTANTIATE_TEST_SUITE_P(CrdAdminSessionControllerTest,
-                         CrdAdminSessionControllerTest,
+INSTANTIATE_TEST_SUITE_P(CrdAdminSessionControllerTestWithBoolParams,
+                         CrdAdminSessionControllerTestWithBoolParams,
                          testing::Bool());
 
 }  // namespace policy
