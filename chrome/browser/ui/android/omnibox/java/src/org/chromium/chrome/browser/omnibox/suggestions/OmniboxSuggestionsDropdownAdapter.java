@@ -121,7 +121,8 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         // the creation of a view holder.
         try (TraceEvent tracing =
                         TraceEvent.scoped("OmniboxSuggestionsList.CreateView", "type:" + viewType);
-                TimingMetric metric = OmniboxMetrics.recordSuggestionViewCreateTime()) {
+                TimingMetric metric = OmniboxMetrics.recordSuggestionViewCreateTime();
+                TimingMetric metric2 = OmniboxMetrics.recordSuggestionViewCreateWallTime()) {
             return super.createView(parent, viewType);
         }
     }

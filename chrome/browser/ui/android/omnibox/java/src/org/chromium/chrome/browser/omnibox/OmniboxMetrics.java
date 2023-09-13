@@ -110,17 +110,33 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record how long the Suggestion List needed to layout its content and children.
+     * Record how long the Suggestion List needed to layout its content and children in thread time.
      */
     public static TimingMetric recordSuggestionListLayoutTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.LayoutTime2");
     }
 
     /**
-     * Record how long the Suggestion List needed to measure its content and children.
+     * Record how long the Suggestion List needed to layout its content and children in wall time.
+     */
+    public static TimingMetric recordSuggestionListLayoutWallTime() {
+        return TimingMetric.shortUptime("Android.Omnibox.SuggestionList.LayoutTime3");
+    }
+
+    /**
+     * Record how long the Suggestion List needed to measure its content and children in thread
+     * time.
      */
     public static TimingMetric recordSuggestionListMeasureTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.MeasureTime2");
+    }
+
+    /**
+     * Record how long the Suggestion List needed to measure its content and children in wall
+     * time.
+     */
+    public static TimingMetric recordSuggestionListMeasureWallTime() {
+        return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.MeasureTime3");
     }
 
     /**
@@ -129,6 +145,13 @@ public class OmniboxMetrics {
      */
     public static TimingMetric recordSuggestionViewCreateTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime2");
+    }
+
+    /**
+     * Record the amount of wall time needed to create a new suggestion view.
+     */
+    public static TimingMetric recordSuggestionViewCreateWallTime() {
+        return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime3");
     }
 
     /**

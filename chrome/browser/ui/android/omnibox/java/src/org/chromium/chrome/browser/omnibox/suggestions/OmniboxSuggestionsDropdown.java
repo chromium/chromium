@@ -338,7 +338,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
-                TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime()) {
+                TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime();
+                TimingMetric metric2 = OmniboxMetrics.recordSuggestionListMeasureWallTime()) {
             OmniboxAlignment omniboxAlignment = mEmbedder.getCurrentAlignment();
             maybeUpdateLayoutParams(omniboxAlignment.top);
             int availableViewportHeight = omniboxAlignment.height;
@@ -386,7 +387,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Layout");
-                TimingMetric metric = OmniboxMetrics.recordSuggestionListLayoutTime()) {
+                TimingMetric metric = OmniboxMetrics.recordSuggestionListLayoutTime();
+                TimingMetric metric2 = OmniboxMetrics.recordSuggestionListLayoutWallTime()) {
             super.onLayout(changed, l, t, r, b);
         }
     }

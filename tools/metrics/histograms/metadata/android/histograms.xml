@@ -2376,14 +2376,12 @@ chromium-metrics-reviews@google.com.
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
-    Records time spent on positioning all suggestions on screen. This histogram
-    is recorded every time a new suggestion list is received.
+    Records thread time spent on positioning all suggestions on screen. This
+    histogram is recorded every time a new suggestion list is received.
 
-    Values recorded here should generally aim to be small, likely below 2ms
-    range. Higher values are an indicator of a performance problem.
-
-    Layout operation should take place just once when suggestion view is shown
-    for the first time.
+    Smaller values are indicative of better performance, but the time taken
+    varies considerably based on, e.g. whether new views need to be inflated and
+    the number of suggestions being rendered.
 
     This metric is reported for all users and uses 100microsecond granularity.
 
@@ -2394,6 +2392,29 @@ chromium-metrics-reviews@google.com.
     This histogram is related to Android.Omnibox.SuggestionView.Reused,
     Android.Omnibox.SuggestionList.MeasureTime2,
     Android.Omnibox.SuggestionView.CreateTime2.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionList.LayoutTime3" units="ms"
+    expires_after="2024-09-13">
+  <owner>ender@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <summary>
+    Replacement for Android.Omnibox.SuggestionList.LayoutTime2 that uses wall
+    time instead of thread time. Records wall time spent positioning suggestion
+    view onto the screen. This histogram is recorded every time a new suggestion
+    list is received, which is typically multiple times per keystroke.
+
+    This metric is reported for all users and uses 1ms granularity.
+
+    When comparing durations measured here, also compare Total Counts for a
+    correct indication of how frequently views are laid out and how the overall
+    time spent performing layout operation changed.
+
+    This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
+    Android.Omnibox.SuggestionView.CreateTime3, and
+    Android.Omnibox.SuggestionList.MeasureTime3
   </summary>
 </histogram>
 
@@ -2453,6 +2474,30 @@ chromium-metrics-reviews@google.com.
     This histogram is related to Android.Omnibox.SuggestionView.Reused,
     Android.Omnibox.SuggestionList.LayoutTime2,
     Android.Omnibox.SuggestionView.CreateTime2.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionList.MeasureTime3" units="ms"
+    expires_after="2024-09-13">
+  <owner>ender@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <summary>
+    Replacement for Android.Omnibox.SuggestionList.MeasureTime2 that uses wall
+    time instead of thread time. Records wall time spent on measuring all
+    suggestions ahead of positioning them on screen. This histogram is recorded
+    every time a new suggestion list is received, which is typically multiple
+    times per keystroke.
+
+    This metric is reported for all users and uses 1ms granularity.
+
+    When comparing durations measured here, also compare Total Counts for a
+    correct indication of how frequently views are laid out and how the overall
+    time spent performing layout operation changed.
+
+    This histogram is related to Android.Omnibox.SuggestionList.MeasureTime2,
+    Android.Omnibox.SuggestionView.CreateTime3, and
+    Android.Omnibox.SuggestionList.LayoutTime3
   </summary>
 </histogram>
 
@@ -2580,6 +2625,29 @@ chromium-metrics-reviews@google.com.
     This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
     Android.Omnibox.SuggestionList.MeasureTime2,
     Android.Omnibox.SuggestionView.Reused.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionView.CreateTime3" units="ms"
+    expires_after="2024-09-13">
+  <owner>ender@chromium.org</owner>
+  <owner>pnoland@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <summary>
+    Replacement for Android.Omnibox.SuggestionList.CreateTime2 that uses wall
+    time instead of thread time. Records wall time spent on creating a single
+    suggestion view. This histogram is recorded every time a new view is
+    created, but not when a view is recycled.
+
+    This metric is reported for all users and uses 1ms granularity.
+
+    When comparing Durations measured here, also compare Total Counts for a
+    correct indication of how frequently views are created and how the overall
+    time spent creating views changed.
+
+    This histogram is related to Android.Omnibox.SuggestionView.CreateTime2,
+    Android.Omnibox.SuggestionList.LayoutTime3, and
+    Android.Omnibox.SuggestionList.MeasureTime3
   </summary>
 </histogram>
 
