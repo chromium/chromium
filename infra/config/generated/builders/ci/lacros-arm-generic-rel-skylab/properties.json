@@ -23,7 +23,7 @@
                 "target_arch": "arm",
                 "target_bits": 32,
                 "target_cros_boards": [
-                  "jacuzzi:arm-generic"
+                  "arm-generic"
                 ],
                 "target_platform": "chromeos"
               },

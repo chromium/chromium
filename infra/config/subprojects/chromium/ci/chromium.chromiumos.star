@@ -609,7 +609,7 @@ ci.builder(
             target_arch = builder_config.target_arch.ARM,
             target_bits = 32,
             target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = "jacuzzi:arm-generic",
+            target_cros_boards = "arm-generic",
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
         skylab_upload_location = builder_config.skylab_upload_location(
