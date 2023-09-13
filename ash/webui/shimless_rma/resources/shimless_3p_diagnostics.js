@@ -43,6 +43,12 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
         type: Boolean,
         value: false,
       },
+
+      /** @protected */
+      providerName_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -56,6 +62,10 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
 
     /** @private {!ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService_.get3pDiagnosticsProvider().then(
+        /**@type function({provider: ?string})*/ (({provider}) => {
+          this.providerName_ = provider;
+        }));
   }
 
   /**
@@ -75,6 +85,12 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
   launch3pDiagnostics() {
     if (!loadTimeData.getBoolean('3pDiagnosticsEnabled') ||
         this.hasPendingLaunch_) {
+      return;
+    }
+
+    // If there is no provider or provider is not yet fetched, don't show
+    // any UI action and just return.
+    if (!this.providerName_) {
       return;
     }
 

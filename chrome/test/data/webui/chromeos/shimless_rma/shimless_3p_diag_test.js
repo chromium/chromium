@@ -44,6 +44,7 @@ suite('shimless3pDiagTest', function() {
     hasDisabledAllButtons = false;
 
     loadTimeData.overrideValues({'3pDiagnosticsEnabled': true});
+    service.setGet3pDiagnosticsProviderResult('Google');
   });
 
   teardown(() => {
@@ -84,6 +85,32 @@ suite('shimless3pDiagTest', function() {
   // Verify 3p diag is disabled by flag.
   test('3pDiagIsDisabledByFlag', async () => {
     loadTimeData.overrideValues({'3pDiagnosticsEnabled': false});
+    await initialize();
+    assertTrue(!!component);
+
+    component.launch3pDiagnostics();
+
+    await flushTasks();
+    assertFalse(hasDisabledAllButtons);
+  });
+
+  // If provider is not yet fetched, should not trigger the launch.
+  test('ProviderIsNotYetFetched', async () => {
+    // Set a delay to simulate the provider is not yet fetched. We don't
+    // actually wait this to be done.
+    service.setAsyncOperationDelayMs(1000);
+    await initialize();
+    assertTrue(!!component);
+
+    component.launch3pDiagnostics();
+
+    await flushTasks();
+    assertFalse(hasDisabledAllButtons);
+  });
+
+  // If no provider, should not trigger the launch.
+  test('NoProvider', async () => {
+    service.setGet3pDiagnosticsProviderResult(null);
     await initialize();
     assertTrue(!!component);
 
