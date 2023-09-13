@@ -40,13 +40,19 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
   location_in_screen_ = location_in_screen;
 
   SetSelectedWindow(
-      capture_mode_util::GetTopMostCapturableWindowAtPoint(location_in_screen));
+      capture_mode_util::GetTopMostCapturableWindowAtPoint(location_in_screen),
+      /*a11y_alert_again=*/false,
+      /*bar_anchored_to_window=*/false);
   capture_mode_session_->UpdateCursor(location_in_screen, /*is_touch=*/false);
 }
 
 void CaptureWindowObserver::SetSelectedWindow(aura::Window* window,
+                                              bool a11y_alert_again,
                                               bool bar_anchored_to_window) {
   if (window_ == window) {
+    if (a11y_alert_again && window_) {
+      capture_mode_session_->A11yAlertCaptureSource(/*trigger_now=*/true);
+    }
     return;
   }
 

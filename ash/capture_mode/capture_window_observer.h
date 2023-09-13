@@ -42,11 +42,16 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
 
   // Sets the given `window` as the current observed `window_`. `window` will be
   // ignored if it's a child of the wallpaper container or it's the home
-  // launcher window. If `bar_anchored_to_window` is true, the capture bar will
+  // launcher window.
+  // If `a11y_alert_again` is true, the a11y alert that announces the selected
+  // window will be triggered again even if `window` is the same as the
+  // currently selected window.
+  // If `bar_anchored_to_window` is true, the capture bar will
   // be anchored to `window_` and it will not be allowed to be altered through
   // the entire capture mode session.
   void SetSelectedWindow(aura::Window* window,
-                         bool bar_anchored_to_window = false);
+                         bool a11y_alert_again,
+                         bool bar_anchored_to_window);
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,

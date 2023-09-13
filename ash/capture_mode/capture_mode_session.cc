@@ -510,10 +510,11 @@ void CaptureModeSession::A11yAlertCaptureSource(bool trigger_now) {
       break;
     case CaptureModeSource::kWindow:
       // Selected window could be non-empty when switching to capture type.
-      if (GetSelectedWindow()) {
-        message = l10n_util::GetStringUTF8(
+      if (auto* window = GetSelectedWindow()) {
+        message = l10n_util::GetStringFUTF8(
             is_capturing_image ? IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_SCREENSHOT
-                               : IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_RECORD);
+                               : IDS_ASH_SCREEN_CAPTURE_ALERT_WINDOW_RECORD,
+            window->GetTitle());
       }
       break;
   }
@@ -703,7 +704,8 @@ void CaptureModeSession::HighlightWindowForTab(aura::Window* window) {
   DCHECK(window);
   DCHECK_EQ(CaptureModeSource::kWindow, controller_->source());
   MaybeChangeRoot(window->GetRootWindow());
-  capture_window_observer_->SetSelectedWindow(window);
+  capture_window_observer_->SetSelectedWindow(window, /*a11y_alert_again=*/true,
+                                              /*bar_anchored_to_window=*/false);
 }
 
 void CaptureModeSession::MaybeUpdateSettingsBounds() {
@@ -852,6 +854,7 @@ void CaptureModeSession::SetPreSelectedWindow(
     aura::Window* pre_selected_window) {
   CHECK(capture_window_observer_);
   capture_window_observer_->SetSelectedWindow(pre_selected_window,
+                                              /*a11y_alert_again=*/true,
                                               /*bar_anchored_to_window=*/true);
 }
 
