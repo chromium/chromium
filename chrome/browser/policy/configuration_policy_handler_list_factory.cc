@@ -1530,6 +1530,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFullRestoreMode,
     ash::full_restore::kRestoreAppsAndPagesPrefName,
     base::Value::Type::INTEGER },
+  { key::kDeviceSwitchFunctionKeysBehaviorEnabled,
+    ash::prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

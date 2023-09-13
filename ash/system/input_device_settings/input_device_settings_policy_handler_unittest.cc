@@ -32,6 +32,8 @@ class InputDeviceSettingsPolicyHandlerTest : public ::testing::Test {
 
     local_state_->registry()->RegisterBooleanPref(
         prefs::kOwnerPrimaryMouseButtonRight, false);
+    local_state_->registry()->RegisterBooleanPref(
+        prefs::kDeviceSwitchFunctionKeysBehaviorEnabled, false);
     pref_service_->registry()->RegisterBooleanPref(prefs::kSendFunctionKeys,
                                                    false);
     pref_service_->registry()->RegisterBooleanPref(
@@ -53,10 +55,13 @@ class InputDeviceSettingsPolicyHandlerTest : public ::testing::Test {
 TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardNoPolicy) {
   handler_->Initialize(local_state_.get(), pref_service_.get());
   EXPECT_FALSE(handler_->keyboard_policies().top_row_are_fkeys_policy);
+  EXPECT_FALSE(handler_->keyboard_policies().enable_meta_fkey_rewrites_policy);
 }
 
 TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardManagedPolicy) {
   pref_service_->SetManagedPref(prefs::kSendFunctionKeys, base::Value(false));
+  local_state_->SetManagedPref(prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
+                               base::Value(false));
   handler_->Initialize(local_state_.get(), pref_service_.get());
 
   EXPECT_EQ(
@@ -71,11 +76,29 @@ TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardManagedPolicy) {
       handler_->keyboard_policies().top_row_are_fkeys_policy->policy_status);
   EXPECT_TRUE(handler_->keyboard_policies().top_row_are_fkeys_policy->value);
   EXPECT_EQ(1, num_times_keyboard_policies_changed_);
+
+  EXPECT_EQ(mojom::PolicyStatus::kManaged,
+            handler_->keyboard_policies()
+                .enable_meta_fkey_rewrites_policy->policy_status);
+  EXPECT_FALSE(
+      handler_->keyboard_policies().enable_meta_fkey_rewrites_policy->value);
+  EXPECT_EQ(1, num_times_keyboard_policies_changed_);
+
+  local_state_->SetManagedPref(prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
+                               base::Value(true));
+  EXPECT_EQ(mojom::PolicyStatus::kManaged,
+            handler_->keyboard_policies()
+                .enable_meta_fkey_rewrites_policy->policy_status);
+  EXPECT_TRUE(
+      handler_->keyboard_policies().enable_meta_fkey_rewrites_policy->value);
+  EXPECT_EQ(2, num_times_keyboard_policies_changed_);
 }
 
 TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardRecommendedPolicy) {
   pref_service_->SetRecommendedPref(prefs::kSendFunctionKeys,
                                     base::Value(false));
+  local_state_->SetRecommendedPref(
+      prefs::kDeviceSwitchFunctionKeysBehaviorEnabled, base::Value(false));
   handler_->Initialize(local_state_.get(), pref_service_.get());
 
   EXPECT_EQ(
@@ -91,6 +114,22 @@ TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardRecommendedPolicy) {
       handler_->keyboard_policies().top_row_are_fkeys_policy->policy_status);
   EXPECT_TRUE(handler_->keyboard_policies().top_row_are_fkeys_policy->value);
   EXPECT_EQ(1, num_times_keyboard_policies_changed_);
+
+  EXPECT_EQ(mojom::PolicyStatus::kRecommended,
+            handler_->keyboard_policies()
+                .enable_meta_fkey_rewrites_policy->policy_status);
+  EXPECT_FALSE(
+      handler_->keyboard_policies().enable_meta_fkey_rewrites_policy->value);
+  EXPECT_EQ(1, num_times_keyboard_policies_changed_);
+
+  local_state_->SetRecommendedPref(
+      prefs::kDeviceSwitchFunctionKeysBehaviorEnabled, base::Value(true));
+  EXPECT_EQ(mojom::PolicyStatus::kRecommended,
+            handler_->keyboard_policies()
+                .enable_meta_fkey_rewrites_policy->policy_status);
+  EXPECT_TRUE(
+      handler_->keyboard_policies().enable_meta_fkey_rewrites_policy->value);
+  EXPECT_EQ(2, num_times_keyboard_policies_changed_);
 }
 
 TEST_F(InputDeviceSettingsPolicyHandlerTest, MouseNoPolicy) {

@@ -1357,6 +1357,11 @@ inline constexpr char kXkbAutoRepeatInterval[] =
 inline constexpr char kSendFunctionKeys[] =
     "settings.language.send_function_keys";
 
+// A boolean pref that controls the value of the setting "Use the
+// launcher/search key to change the behavior of function keys".
+inline constexpr char kDeviceSwitchFunctionKeysBehaviorEnabled[] =
+    "ash.settings.switch_function_keys_behavior_enabled";
+
 // A boolean pref which is true if touchpad reverse scroll is enabled.
 inline constexpr char kNaturalScroll[] = "settings.touchpad.natural_scroll";
 // A boolean pref which is true if mouse reverse scroll is enabled.

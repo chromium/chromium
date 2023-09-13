@@ -1155,6 +1155,7 @@ policies:
   1154: ProfileSeparationDomainExceptionList
   1155: FullRestoreMode
   1156: MicrosoftOneDriveAccountRestriction
+  1157: DeviceSwitchFunctionKeysBehaviorEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

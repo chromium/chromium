@@ -90,11 +90,28 @@ bool ShouldAddExtendedFkeyProperties(mojom::MetaKey meta_key) {
          IsChromeOSKeyboard(meta_key);
 }
 
+bool GetDefaultSuppressMetaFkeyRewritesValue(
+    const mojom::KeyboardPolicies& keyboard_policies,
+    const mojom::Keyboard& keyboard) {
+  if (keyboard_policies.enable_meta_fkey_rewrites_policy &&
+      keyboard_policies.enable_meta_fkey_rewrites_policy->policy_status ==
+          mojom::PolicyStatus::kRecommended) {
+    // Invert the value of the policy when getting the default value for the
+    // setting, because the policy determines whether meta fkey rewrites are
+    // enabled, and the setting controls whether meta fkey rewrites are
+    // disabled.
+    return !keyboard_policies.enable_meta_fkey_rewrites_policy->value;
+  }
+
+  return kDefaultSuppressMetaFKeyRewrites;
+}
+
 mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
     const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
-  settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
+  settings->suppress_meta_fkey_rewrites =
+      GetDefaultSuppressMetaFkeyRewritesValue(keyboard_policies, keyboard);
   settings->top_row_are_fkeys =
       GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard);
   // Switch control and command for Apple keyboards.
@@ -240,7 +257,8 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
   force_persistence.top_row_are_fkeys =
       prefs->GetUserPrefValue(prefs::kSendFunctionKeys) != nullptr;
 
-  settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
+  settings->suppress_meta_fkey_rewrites =
+      GetDefaultSuppressMetaFkeyRewritesValue(keyboard_policies, keyboard);
   // Do not persist as default should not be persisted.
   force_persistence.suppress_meta_fkey_rewrites = false;
 
@@ -291,7 +309,8 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
   settings->suppress_meta_fkey_rewrites =
       settings_dict.FindBool(prefs::kKeyboardSettingSuppressMetaFKeyRewrites)
-          .value_or(kDefaultSuppressMetaFKeyRewrites);
+          .value_or(GetDefaultSuppressMetaFkeyRewritesValue(keyboard_policies,
+                                                            keyboard));
   settings->top_row_are_fkeys =
       settings_dict.FindBool(prefs::kKeyboardSettingTopRowAreFKeys)
           .value_or(GetDefaultTopRowAreFKeysValue(keyboard_policies, keyboard));
@@ -338,11 +357,12 @@ base::Value::Dict ConvertSettingsToDict(
   // Populate `settings_dict` with all settings in `settings`.
   base::Value::Dict settings_dict;
 
-  if (ShouldPersistSetting(prefs::kKeyboardSettingSuppressMetaFKeyRewrites,
-                           keyboard.settings->suppress_meta_fkey_rewrites,
-                           kDefaultSuppressMetaFKeyRewrites,
-                           force_persistence.suppress_meta_fkey_rewrites,
-                           existing_settings_dict)) {
+  if (ShouldPersistSetting(
+          prefs::kKeyboardSettingSuppressMetaFKeyRewrites,
+          keyboard.settings->suppress_meta_fkey_rewrites,
+          GetDefaultSuppressMetaFkeyRewritesValue(keyboard_policies, keyboard),
+          force_persistence.suppress_meta_fkey_rewrites,
+          existing_settings_dict)) {
     settings_dict.Set(prefs::kKeyboardSettingSuppressMetaFKeyRewrites,
                       keyboard.settings->suppress_meta_fkey_rewrites);
   }
@@ -512,6 +532,17 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
           mojom::PolicyStatus::kManaged) {
     keyboard->settings->top_row_are_fkeys =
         keyboard_policies.top_row_are_fkeys_policy->value;
+  }
+
+  if (keyboard->is_external &&
+      keyboard_policies.enable_meta_fkey_rewrites_policy &&
+      keyboard_policies.enable_meta_fkey_rewrites_policy->policy_status ==
+          mojom::PolicyStatus::kManaged) {
+    // Invert the value of the policy when saving the setting, because the
+    // policy determines whether meta fkey rewrites are enabled, and the setting
+    // controls whether meta fkey rewrites are disabled.
+    keyboard->settings->suppress_meta_fkey_rewrites =
+        !keyboard_policies.enable_meta_fkey_rewrites_policy->value;
   }
 }
 
