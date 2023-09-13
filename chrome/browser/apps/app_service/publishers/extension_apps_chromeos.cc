@@ -81,6 +81,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/path_util.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
@@ -966,7 +967,34 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
     app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);
   }
 
+  // Calculating app size is asynchronous. The app will be republished with size
+  // on completion.
+  if (base::FeatureList::IsEnabled(::features::kAppManagementAppDetails)) {
+    CalculateAppSize(extension);
+  }
+
   return app;
+}
+
+void ExtensionAppsChromeOs::CalculateAppSize(
+    const extensions::Extension* extension) {
+  if (app_type() != AppType::kChromeApp) {
+    return;
+  }
+  extensions::path_util::CalculateExtensionDirectorySize(
+      extension->path(),
+      base::BindOnce(&ExtensionAppsChromeOs::OnSizeCalculated,
+                     weak_factory_.GetWeakPtr(), extension->id()));
+}
+
+void ExtensionAppsChromeOs::OnSizeCalculated(const std::string& app_id,
+                                             int64_t size) {
+  std::vector<AppPtr> apps;
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  app->app_size_in_bytes = size;
+  apps.push_back(std::move(app));
+  AppPublisher::Publish(std::move(apps), app_type(),
+                        /*should_notify_initialized=*/true);
 }
 
 IconEffects ExtensionAppsChromeOs::GetIconEffects(

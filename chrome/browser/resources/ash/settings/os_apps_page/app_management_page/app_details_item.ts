@@ -57,24 +57,9 @@ export class AppManagementAppDetailsItem extends
     }
 
     switch (app.type) {
+      case AppType.kArc:
       case AppType.kChromeApp:
-      case AppType.kArc:
         return true;
-      default:
-        return false;
-    }
-  }
-
-  /**
-   * The full storage information is only shown for
-   * Android and Web apps.
-   */
-  private shouldShowStorage_(app: App): boolean {
-    switch (app.type) {
-      case AppType.kWeb:
-      case AppType.kArc:
-      case AppType.kSystemWeb:
-        return (app.appSize !== undefined || app.dataSize !== undefined);
       default:
         return false;
     }
@@ -86,6 +71,14 @@ export class AppManagementAppDetailsItem extends
 
   private shouldShowDataSize_(app: App): boolean {
     return Boolean(app.dataSize);
+  }
+
+  private shouldShowFullSizeDetails_(app: App): boolean {
+    return this.shouldShowAppSize_(app) && this.shouldShowDataSize_(app);
+  }
+
+  private shouldShowShortSizeDetails_(app: App): boolean {
+    return this.shouldShowAppSize_(app) && !this.shouldShowDataSize_(app);
   }
   /**
    * The info icon is only shown for System apps and apps installed from the
@@ -162,20 +155,6 @@ export class AppManagementAppDetailsItem extends
     }
   }
 
-  private getAppSizeString_(app: App): string {
-    if (!app.appSize) {
-      return '';
-    }
-    return this.i18n('appManagementAppDetailsAppSize', app.appSize);
-  }
-
-  private getDataSizeString_(app: App): string {
-    if (!app.dataSize) {
-      return '';
-    }
-    return this.i18n('appManagementAppDetailsDataSize', app.dataSize);
-  }
-
   private onStoreLinkClicked_(e: CustomEvent<{event: Event}>) {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
@@ -188,12 +167,6 @@ export class AppManagementAppDetailsItem extends
       AppManagementBrowserProxy.getInstance().handler.openStorePage(
           this.app.id);
     }
-  }
-
-  private getVersionString_(app: App): string {
-    return this.i18n(
-        'appManagementAppDetailsVersion',
-        app.version ? app.version.toString() : '');
   }
 
   /**

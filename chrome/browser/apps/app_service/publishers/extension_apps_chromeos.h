@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
@@ -159,6 +158,9 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;
   AppPtr CreateApp(const extensions::Extension* extension,
                    Readiness readiness) override;
+
+  void CalculateAppSize(const extensions::Extension* extension);
+  void OnSizeCalculated(const std::string& app_id, const int64_t size);
 
   // Calculate the icon effects for the extension.
   IconEffects GetIconEffects(const extensions::Extension* extension,

@@ -18,6 +18,12 @@ namespace path_util {
 // replace the home directory component with "~".
 base::FilePath PrettifyPath(const base::FilePath& source_path);
 
+// Calculates the size of the directory containing an extension, returning the
+// size value without formatting.
+void CalculateExtensionDirectorySize(
+    const base::FilePath& extension_path,
+    base::OnceCallback<void(const int64_t)> callback);
+
 // Calculates the size of the directory containing an extension, and formats it
 // to a localized string that can be placed directly in the UI. |message_id| is
 // the ID of the string to use when the size is less than 1 MB, basically

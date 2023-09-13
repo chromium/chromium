@@ -124,6 +124,23 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!launchIcon);
   });
 
+  test('Chrome type storage', async () => {
+    await addApp({
+      type: AppType.kChromeApp,
+      installSource: InstallSource.kUnknown,
+      appSize: '17 MB',
+    });
+
+    const shortSize = appDetailsItem.shadowRoot!.querySelector('#shortSize');
+
+    assertNull(appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
+    assertNull(appDetailsItem.shadowRoot!.querySelector('#appSize'));
+    assertNull(appDetailsItem.shadowRoot!.querySelector('#dataSize'));
+    assertTrue(!!shortSize);
+
+    assertEquals('Size: 17 MB', shortSize.textContent!.trim());
+  });
+
   test('Android App from play store', async () => {
     await addApp({
       type: AppType.kArc,
@@ -185,21 +202,6 @@ suite('<app-management-app-details-item>', () => {
   });
 
   test('Android type storage', async () => {
-    await addApp({
-      type: AppType.kArc,
-      installSource: InstallSource.kUnknown,
-      appSize: '17 MB',
-    });
-
-    let appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
-    let dataSize = appDetailsItem.shadowRoot!.querySelector('#dataSize');
-
-    assertTrue(!!appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
-    assertTrue(!!appSize);
-    assertNull(dataSize);
-
-    assertEquals('App size: 17 MB', appSize.textContent!.trim());
-
     await addApp(
         {
           type: AppType.kArc,
@@ -209,8 +211,8 @@ suite('<app-management-app-details-item>', () => {
         },
         'app2');
 
-    appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
-    dataSize = appDetailsItem.shadowRoot!.querySelector('#dataSize');
+    const appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
+    const dataSize = appDetailsItem.shadowRoot!.querySelector('#dataSize');
 
     assertTrue(!!appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
     assertTrue(!!appSize);

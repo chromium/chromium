@@ -226,6 +226,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_APP_DETAILS_APP_SIZE},
       {"appManagementAppDetailsDataSize",
        IDS_APP_MANAGEMENT_APP_DETAILS_DATA_SIZE},
+      {"appManagementAppDetailsTotalSize",
+       IDS_APP_MANAGEMENT_APP_DETAILS_TOTAL_SIZE},
       {"appManagementAppInstalledByPolicyLabel",
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
       {"appManagementArcManagePermissionsLabel",
