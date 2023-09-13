@@ -29,15 +29,28 @@ chromium-metrics-reviews@google.com.
   <summary>The HRESULT for a failed on-demand update check.</summary>
 </histogram>
 
-<histogram name="GoogleUpdate.InstallDetails.UpdateCohort" units="units"
-    expires_after="2024-06-01">
+<histogram name="GoogleUpdate.InstallDetails.UpdateCohort"
+    enum="GoogleUpdateHashedCohortName" expires_after="2024-06-01">
   <owner>waffles@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <owner>omaha-team@google.com</owner>
   <summary>
-    Store the hash of update cohort name as reported by Chrome Updater on
-    Windows. Recorded at the start of metrics service. Warning: this histogram
-    was expired from 2019-06-01 to 2023-01-23; data may be missing.
+    The hash of the browser's update cohort name that was present during browser
+    startup. Warning: this histogram was expired from 2019-06-01 to 2023-01-23;
+    data may be missing. This histogram is reported on every UMA log on Windows.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.InstallDetails.UpdateCohortId"
+    enum="GoogleUpdateHashedCohortId" expires_after="2024-09-01">
+  <owner>waffles@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <owner>omaha-team@google.com</owner>
+  <summary>
+    The base::PersistentHash of the browser's update cohort ID that was present
+    at the time of the metrics upload. This histogram is reported on every UMA
+    log on Windows. Unlike cohort name, cohort ID will generally be unique for
+    each rollout group and control group.
   </summary>
 </histogram>
 

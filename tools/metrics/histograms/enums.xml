@@ -49816,6 +49816,22 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="GOOGLE_UPDATE_DISABLED_BY_POLICY_AUTO_ONLY"/>
 </enum>
 
+<enum name="GoogleUpdateHashedCohortId">
+  <summary>
+    A hash of the update cohort id; a value of zero/none likely indicates no
+    cohort id, which suggests that the updater is broken or not present.
+  </summary>
+  <int value="0" label="None"/>
+</enum>
+
+<enum name="GoogleUpdateHashedCohortName">
+  <summary>
+    A hash of the update cohort name; a value of zero/none likely indicates no
+    cohort name, which suggests that the updater is broken or not present.
+  </summary>
+  <int value="0" label="None"/>
+</enum>
+
 <enum name="GoogleUpdateInfoBarActions">
   <int value="0" label="Clicked close"/>
   <int value="1" label="Clicked to update appears successful"/>

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/hash/hash.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -18,6 +19,7 @@
 #include "base/win/shlwapi.h"  // For SHDeleteKey.
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/additional_parameters.h"
@@ -835,6 +837,54 @@ TEST_P(GetGoogleUpdateVersion, TestRealValue) {
 INSTANTIATE_TEST_SUITE_P(GetGoogleUpdateVersionAtLevel,
                          GetGoogleUpdateVersion,
                          testing::Bool());
+
+// Tests that GetHashedCohortId returns an empty optional if there's no cohort
+// key.
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestNoKey) {
+  EXPECT_FALSE(GoogleUpdateSettings::GetHashedCohortId());
+}
+
+// Tests that GetHashedCohortId returns an empty optional if there's no "id"
+// value in the cohort key.
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestNoValue) {
+  RegKey(install_static::InstallDetails::Get().system_level()
+             ? HKEY_LOCAL_MACHINE
+             : HKEY_CURRENT_USER,
+         install_static::GetClientStateKeyPath(
+             install_static::InstallDetails::Get().app_guid())
+             .append(L"\\cohort")
+             .c_str(),
+         KEY_SET_VALUE);
+  EXPECT_FALSE(GoogleUpdateSettings::GetHashedCohortId());
+}
+
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestEmptyValue) {
+  RegKey(install_static::InstallDetails::Get().system_level()
+             ? HKEY_LOCAL_MACHINE
+             : HKEY_CURRENT_USER,
+         install_static::GetClientStateKeyPath(
+             install_static::InstallDetails::Get().app_guid())
+             .append(L"\\cohort")
+             .c_str(),
+         KEY_SET_VALUE)
+      .WriteValue(google_update::kRegIdField, L"");
+  EXPECT_FALSE(GoogleUpdateSettings::GetHashedCohortId());
+}
+
+TEST_F(GoogleUpdateSettingsTest, GetHashedCohortIdTestRealValue) {
+  RegKey(install_static::InstallDetails::Get().system_level()
+             ? HKEY_LOCAL_MACHINE
+             : HKEY_CURRENT_USER,
+         install_static::GetClientStateKeyPath(
+             install_static::InstallDetails::Get().app_guid())
+             .append(L"\\cohort")
+             .c_str(),
+         KEY_SET_VALUE)
+      .WriteValue(google_update::kRegIdField, L"1:qesc2/qesff:qesee@0.5");
+  EXPECT_TRUE(GoogleUpdateSettings::GetHashedCohortId());
+  EXPECT_EQ(*GoogleUpdateSettings::GetHashedCohortId(),
+            base::PersistentHash("1:qesc2/qesff"));
+}
 
 // Test values for use by the CollectStatsConsent test fixture.
 class StatsState {

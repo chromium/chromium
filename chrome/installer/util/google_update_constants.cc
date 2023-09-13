@@ -40,6 +40,7 @@ const wchar_t kRegDidRunField[] = L"dr";
 const wchar_t kRegDowngradeCleanupCommandField[] = L"DowngradeCleanupCommand";
 const wchar_t kRegEulaAceptedField[] = L"eulaaccepted";
 const wchar_t kRegGoogleUpdateVersion[] = L"version";
+const wchar_t kRegIdField[] = L"id";
 const wchar_t kRegInstallerProgress[] = L"InstallerProgress";
 const wchar_t kRegLangField[] = L"lang";
 const wchar_t kRegLastStartedAUField[] = L"LastStartedAU";

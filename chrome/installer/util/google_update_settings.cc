@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -25,6 +26,7 @@
 #include "chrome/installer/util/additional_parameters.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installation_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::win::RegKey;
 using installer::InstallationState;
@@ -68,6 +70,23 @@ bool ReadGoogleUpdateStrKeyFromRoot(HKEY root,
          key.ReadValue(name, value) == ERROR_SUCCESS;
 }
 
+// Returns the value |name| from the app's ClientState cohort registry key in
+// |root|.
+absl::optional<std::wstring> ReadGoogleUpdateCohortStrKeyFromRoot(
+    HKEY root,
+    const wchar_t* const name) {
+  std::wstring value;
+  RegKey key;
+  if (key.Open(
+          root,
+          install_static::GetClientStateKeyPath().append(L"\\cohort").c_str(),
+          KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS &&
+      key.ReadValue(name, &value) == ERROR_SUCCESS) {
+    return value;
+  }
+  return absl::nullopt;
+}
+
 // Reads the value |name| from the app's ClientState registry key in
 // HKEY_CURRENT_USER into |value|. This function is only provided for legacy
 // use. New code needing to load/store per-user data should use
@@ -85,6 +104,15 @@ bool ReadGoogleUpdateStrKey(const wchar_t* const name, std::wstring* value) {
                                             ? HKEY_LOCAL_MACHINE
                                             : HKEY_CURRENT_USER,
                                         name, value);
+}
+
+// Reads the value |name| from the app's ClientState/cohort registry key.
+absl::optional<std::wstring> ReadGoogleUpdateCohortStrKey(
+    const wchar_t* const name) {
+  return ReadGoogleUpdateCohortStrKeyFromRoot(install_static::IsSystemInstall()
+                                                  ? HKEY_LOCAL_MACHINE
+                                                  : HKEY_CURRENT_USER,
+                                              name);
 }
 
 // Writes |value| into |name| in the app's ClientState key in HKEY_CURRENT_USER.
@@ -290,6 +318,29 @@ GoogleUpdateSettings::LoadMetricsClientInfo() {
   }
 
   return client_info;
+}
+
+// static
+absl::optional<uint32_t> GoogleUpdateSettings::GetHashedCohortId() {
+  absl::optional<std::wstring> id =
+      ReadGoogleUpdateCohortStrKey(google_update::kRegIdField);
+  if (!id) {
+    return absl::nullopt;
+  }
+  std::string id_utf8 = base::WideToUTF8(*id);
+  // Duplicate the logic of
+  // ComponentMetricsProvider::ProvideSystemProfileMetrics: For component_id
+  // strings in the "1:A:B" format, ignore the B segment; including it will
+  // result in two clients assigned to the same cohort lineage (A) hashing to
+  // different values. (The B segment tracks data about the size of fractional
+  // cohorts that do not contain this client.)
+  size_t last_colon = id_utf8.find_last_of(":");
+  if (last_colon == std::string::npos) {
+    // No colon separator indicates some unexpected id format; abandon trying
+    // to interpret it.
+    return absl::nullopt;
+  }
+  return base::PersistentHash(id_utf8.c_str(), last_colon);
 }
 
 void GoogleUpdateSettings::StoreMetricsClientInfo(
