@@ -15991,42 +15991,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
-    <!-- Search Engine Choice strings -->
-    <if expr="enable_search_engine_choice">
-      <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE" desc="The subtitle for the Search Engine Choice page."
-        translateable="false">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-      </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK" desc="The info link in the subtitle of the Search Engine Choice page."
-        translateable="false">
-        labore
-      </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="The title of the button of the Search Engine Choice page."
-        translateable="false">
-        Lorem ipsum
-      </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE" desc="The title of the info dialog of the Search Engine Choice page."
-        translateable="false">
-        Lorem ipsum dolor sit amet
-      </message>
-       <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_FIRST_PARAGRAPH" desc="The first paragraph of the info dialog body of the Search Engine Choice page."
-        translateable="false">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-      </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_SECOND_PARAGRAPH" desc="The second paragraph of the info dialog body of the Search Engine Choice page."
-        translateable="false">
-        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolorin reprehenderit in voluptate<ph name="END_BOLD">&lt;/b&gt;</ph> velit esse cillum dolore eufugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH" desc="The third paragraph of the info dialog body of the Search Engine Choice page."
-        translateable="false">
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque.
-      </message>
-      <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BUTTON_TITLE" desc="The title of the button of the Search Engine Choice info dialog."
-        translateable="false">
-        Lorem ipsum
-      </message>
-    </if>
-
     <!-- Infobar shown when Protected Audiences Debugging is enabled -->
     <message name="IDS_PROTECTED_AUDIENCE_DEBUGGING_DISCLAIMER" desc="Text of infobar that shows up when the consented debugging feature for Protected Audiences is enabled.">
       Protected Audiences Debugging is enabled.

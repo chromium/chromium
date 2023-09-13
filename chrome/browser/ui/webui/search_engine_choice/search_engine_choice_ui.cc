@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/search_engine_choice_resources.h"
 #include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
@@ -58,7 +57,12 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISearchEngineChoiceHost);
 
-  source->AddLocalizedString("title", IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE);
+  // TODO(b/280753567): Differentiate new from existing users. For new users use
+  // IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE if
+  // FirstRunServiceFactory::GetForBrowserContext(profile_.get()) is present
+  // indicating it's part of FRE.
+  source->AddLocalizedString("title",
+                             IDS_SEARCH_ENGINE_CHOICE_PAGE_EXISTING_USER_TITLE);
   source->AddLocalizedString("subtitle",
                              IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE);
   source->AddLocalizedString("subtitleInfoLink",
@@ -76,8 +80,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "infoDialogThirdParagraph",
       IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BODY_THIRD_PARAGRAPH);
-  source->AddLocalizedString("infoDialogButtonText",
-                             IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_BUTTON_TITLE);
+  source->AddLocalizedString("infoDialogButtonText", IDS_CLOSE);
   source->AddLocalizedString("productLogoAltText",
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
 
