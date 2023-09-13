@@ -2809,9 +2809,14 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
     }
 
     if (style_->ContentVisibility() != new_style.ContentVisibility()) {
-      CHECK(GetNode());
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-        cache->RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ false);
+        if (GetNode()) {
+          cache->RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ false);
+        } else {
+          // Removing the AXObject for a nodeless layout object will also
+          // remove its subtree.
+          cache->Remove(this);
+        }
       }
     }
 
