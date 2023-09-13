@@ -432,7 +432,7 @@
     'identifier': 'BRYA_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R119-15610.0.0',
+      'cros_img': 'brya-release/R119-15612.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
       'shards': 10,
     },
@@ -441,7 +441,7 @@
     'identifier': 'DEDEDE_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R119-15611.0.0',
+      'cros_img': 'dedede-release/R119-15612.0.0',
       'autotest_name': 'tast.lacros-from-gcs',
     },
   },
@@ -503,7 +503,7 @@
     'identifier': 'EVE_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-public/R119-15611.0.0',
+      'cros_img': 'eve-public/R119-15612.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
@@ -598,7 +598,7 @@
     'identifier': 'TROGDOR_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_img': 'trogdor-public/R119-15611.0.0',
+      'cros_img': 'trogdor-public/R119-15612.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -614,7 +614,7 @@
     'identifier': 'OCTOPUS_PUBLIC_LKGM',
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-public/R119-15611.0.0',
+      'cros_img': 'octopus-public/R119-15612.0.0',
       'bucket': 'chromiumos-image-archive',
     },
   },
@@ -698,7 +698,7 @@
     'skylab': {
       'cros_board': 'volteer',
       'cros_model': 'voxel',
-      'cros_img': 'volteer-public/R119-15611.0.0',
+      'cros_img': 'volteer-public/R119-15612.0.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
