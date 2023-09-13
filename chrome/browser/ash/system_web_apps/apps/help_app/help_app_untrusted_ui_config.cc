@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -179,6 +180,13 @@ HelpAppUntrustedUIConfig::HelpAppUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme, kChromeUIHelpAppHost) {}
 
 HelpAppUntrustedUIConfig::~HelpAppUntrustedUIConfig() = default;
+
+bool HelpAppUntrustedUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  // TODO(b/300226633): Maybe use `IsUserBrowserContext` to filter all ash
+  // profiles.
+  return !IsShimlessRmaAppBrowserContext(browser_context);
+}
 
 std::unique_ptr<content::WebUIController>
 HelpAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
