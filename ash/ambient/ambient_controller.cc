@@ -501,9 +501,19 @@ void AmbientController::OnSigninScreenPrefServiceInitialized(
 }
 
 void AmbientController::OnPowerStatusChanged() {
-  if (ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kShouldShow ||
-      ash::features::IsScreenSaverDurationEnabled()) {
+  if (ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kShouldShow) {
     // No action needed if ambient screen is not shown.
+    return;
+  }
+
+  if (ash::features::IsScreenSaverDurationEnabled()) {
+    // TODO(b/300158227): There is a pending decision of whether we should
+    // reacquire wake lock when the power is reconnected before screen saver
+    // goes off. We make this change only to make sure that wake lock should
+    // never be acquired while on battery.
+    if (!IsChargerConnected()) {
+      ReleaseWakeLock();
+    }
     return;
   }
 

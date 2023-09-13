@@ -2189,24 +2189,6 @@ TEST_F(AmbientControllerDurationTest, SetScreenSaverDuration) {
   EXPECT_EQ(0, GetScreenSaverDuration());
 }
 
-TEST_F(AmbientControllerDurationTest, DoNotAcquireWakeLockOnBattery) {
-  // Simulate User logged in.
-  ClearLogin();
-  SimulateUserLogin(kUser1);
-
-  // Set screen saver duration to forever.
-  SetAmbientModeEnabled(true);
-  SetScreenSaverDuration(0);
-  EXPECT_EQ(0, GetScreenSaverDuration());
-
-  LockScreen();
-  FastForwardByLockScreenInactivityTimeout();
-  FastForwardTiny();
-
-  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
-                   device::mojom::WakeLockType::kPreventDisplaySleep));
-}
-
 TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
   // Simulate User logged in.
   ClearLogin();
@@ -2310,6 +2292,69 @@ TEST_F(AmbientControllerDurationTest, HoldWakeLockIfDurationIsSetToForever) {
   FastForwardByDurationInMinutes(kLongTimeInMinutes);
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+}
+
+TEST_F(AmbientControllerDurationTest, DoNotAcquireWakeLockOnBatteryMode) {
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+
+  // Set power to battery mode.
+  SetPowerStateDischarging();
+
+  SetAmbientModeEnabled(true);
+  SetScreenSaverDuration(0);
+  EXPECT_EQ(0, GetScreenSaverDuration());
+
+  LockScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
+
+  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+}
+
+TEST_F(AmbientControllerDurationTest, AcquireWakeLockWhileOnAcMode) {
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+
+  // Set power to AC mode, charging.
+  SetPowerStateCharging();
+
+  SetAmbientModeEnabled(true);
+  SetScreenSaverDuration(0);
+  EXPECT_EQ(0, GetScreenSaverDuration());
+
+  LockScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
+
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+}
+
+TEST_F(AmbientControllerDurationTest, ReleaseWakeLockWhenUnplugged) {
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+
+  // Set power to AC mode. Verify that wake lock is acquired.
+  SetPowerStateCharging();
+
+  SetAmbientModeEnabled(true);
+  SetScreenSaverDuration(0);
+  EXPECT_EQ(0, GetScreenSaverDuration());
+
+  LockScreen();
+  FastForwardByLockScreenInactivityTimeout();
+  FastForwardTiny();
+
+  EXPECT_EQ(1, GetNumOfActiveWakeLocks(
+                   device::mojom::WakeLockType::kPreventDisplaySleep));
+
+  // Set power to battery mode. Verify that wake lock is released.
+  SetPowerStateDischarging();
+  FastForwardTiny();
+  EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 }
 
