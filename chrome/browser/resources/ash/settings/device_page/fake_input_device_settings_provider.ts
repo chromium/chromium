@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {ActionChoice, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {ActionChoice, Button, ButtonPressObserverInterface, GraphicsTablet, GraphicsTabletObserverInterface, GraphicsTabletSettings, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -85,6 +85,7 @@ export class FakeInputDeviceSettingsProvider implements
   private touchpadObservers: TouchpadObserverInterface[] = [];
   private stylusObservers: StylusObserverInterface[] = [];
   private graphicsTabletObservers: GraphicsTabletObserverInterface[] = [];
+  private buttonPressObservers: ButtonPressObserverInterface[] = [];
   private observedIds: number[] = [];
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
@@ -318,6 +319,10 @@ export class FakeInputDeviceSettingsProvider implements
     this.notifyGraphicsTabletListUpdated();
   }
 
+  observeButtonPresses(observer: ButtonPressObserverInterface): void {
+    this.buttonPressObservers.push(observer);
+  }
+
   getActionsForMouseButtonCustomization(): Promise<{options: ActionChoice[]}> {
     return this.methods.resolveMethod('fakeMouseButtonActions');
   }
@@ -351,5 +356,11 @@ export class FakeInputDeviceSettingsProvider implements
 
   getObservedDevices(): number[] {
     return this.observedIds;
+  }
+
+  sendButtonPress(button: Button) {
+    for (const observer of this.buttonPressObservers) {
+      observer.onButtonPressed(button);
+    }
   }
 }

@@ -312,6 +312,48 @@ void InputDeviceSettingsProvider::ObserveGraphicsTabletSettings(
           InputDeviceSettingsController::Get()->GetConnectedGraphicsTablets()));
 }
 
+void InputDeviceSettingsProvider::ObserveButtonPresses(
+    mojo::PendingRemote<mojom::ButtonPressObserver> observer) {
+  DCHECK(features::IsPeripheralCustomizationEnabled());
+  button_press_observers_.Add(std::move(observer));
+}
+
+void InputDeviceSettingsProvider::OnCustomizableMouseButtonPressed(
+    const ::ash::mojom::Mouse& mouse,
+    const ::ash::mojom::Button& button) {
+  if (observing_paused_) {
+    return;
+  }
+
+  for (const auto& observer : button_press_observers_) {
+    observer->OnButtonPressed(button.Clone());
+  }
+}
+
+void InputDeviceSettingsProvider::OnCustomizablePenButtonPressed(
+    const ::ash::mojom::GraphicsTablet& graphics_tablet,
+    const ::ash::mojom::Button& button) {
+  if (observing_paused_) {
+    return;
+  }
+
+  for (const auto& observer : button_press_observers_) {
+    observer->OnButtonPressed(button.Clone());
+  }
+}
+
+void InputDeviceSettingsProvider::OnCustomizableTabletButtonPressed(
+    const ::ash::mojom::GraphicsTablet& graphics_tablet,
+    const ::ash::mojom::Button& button) {
+  if (observing_paused_) {
+    return;
+  }
+
+  for (const auto& observer : button_press_observers_) {
+    observer->OnButtonPressed(button.Clone());
+  }
+}
+
 void InputDeviceSettingsProvider::OnKeyboardConnected(
     const ::ash::mojom::Keyboard& keyboard) {
   NotifyKeyboardsUpdated();

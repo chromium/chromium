@@ -210,10 +210,22 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
  ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
- ['DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js'],
+ [
+   'DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
+ ],
  [
    'DevicePageCustomizeButtonsSubsection',
-   'device_page/customize_buttons_subsection_test.js'
+   'device_page/customize_buttons_subsection_test.js', {
+     enabled: [
+       'ash::features::kPeripheralCustomization',
+       'ash::features::kInputDeviceSettingsSplit'
+     ]
+   }
  ],
  [
    'DevicePageCustomizeMouseButtonsSubpage',

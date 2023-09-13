@@ -47,6 +47,14 @@ interface MouseSettingsObserver {
   OnMousePoliciesUpdated(ash.mojom.MousePolicies policies);
 };
 
+// Interface for observing button presses from mice and graphics tablets while
+// on the customize button page.
+interface ButtonPressObserver {
+  // Notifies ButtonPressObserver when a `button` is pressed on a device
+  // currently being observed.
+  OnButtonPressed(ash.mojom.Button button);
+};
+
 // Interface for observing graphics tablet settings changes in OSSettings SWA.
 interface GraphicsTabletSettingsObserver {
   // Notifies GraphicsTabletSettingsObserver when the list of connected
@@ -83,6 +91,11 @@ interface InputDeviceSettingsProvider {
   // of the current state via its ObserveGraphicsTabletSettings function.
   ObserveGraphicsTabletSettings(
       pending_remote<GraphicsTabletSettingsObserver> observer);
+
+  // Registers an observer which is notified every time a button is pressed on a
+  // device that is currently being observed via the `StartObserving` method.
+  ObserveButtonPresses(
+      pending_remote<ButtonPressObserver> observer);
 
   // Restore the keyboard remappings to default base on its id.
   RestoreDefaultKeyboardRemappings(uint32 device_id);

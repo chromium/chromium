@@ -49,6 +49,9 @@ class InputDeviceSettingsProvider
   void ObserveGraphicsTabletSettings(
       mojo::PendingRemote<mojom::GraphicsTabletSettingsObserver> observer)
       override;
+  void ObserveButtonPresses(
+      mojo::PendingRemote<mojom::ButtonPressObserver> observer) override;
+
   void RestoreDefaultKeyboardRemappings(uint32_t device_id) override;
   void SetKeyboardSettings(uint32_t device_id,
                            ::ash::mojom::KeyboardSettingsPtr settings) override;
@@ -91,6 +94,15 @@ class InputDeviceSettingsProvider
       const ::ash::mojom::GraphicsTablet& graphics_tablet) override;
   void OnGraphicsTabletSettingsUpdated(
       const ::ash::mojom::GraphicsTablet& graphics_tablet) override;
+  void OnCustomizableMouseButtonPressed(
+      const ::ash::mojom::Mouse& mouse,
+      const ::ash::mojom::Button& button) override;
+  void OnCustomizablePenButtonPressed(
+      const ::ash::mojom::GraphicsTablet& graphics_tablet,
+      const ::ash::mojom::Button& button) override;
+  void OnCustomizableTabletButtonPressed(
+      const ::ash::mojom::GraphicsTablet& graphics_tablet,
+      const ::ash::mojom::Button& button) override;
 
   void StartObserving(uint32_t device_id) override;
   void StopObserving() override;
@@ -130,6 +142,7 @@ class InputDeviceSettingsProvider
   mojo::RemoteSet<mojom::MouseSettingsObserver> mouse_settings_observers_;
   mojo::RemoteSet<mojom::GraphicsTabletSettingsObserver>
       graphics_tablet_settings_observers_;
+  mojo::RemoteSet<mojom::ButtonPressObserver> button_press_observers_;
 
   raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 

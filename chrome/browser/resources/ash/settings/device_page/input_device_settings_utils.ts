@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeviceSettings, InputDeviceSettingsPolicy, InputDeviceType, PolicyStatus} from './input_device_settings_types.js';
+import {Button, DeviceSettings, InputDeviceSettingsPolicy, InputDeviceType, PolicyStatus} from './input_device_settings_types.js';
 
 function objectsAreEqual(
     obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {
@@ -32,6 +32,10 @@ function objectsAreEqual(
 export function settingsAreEqual(
     settings1: DeviceSettings, settings2: DeviceSettings): boolean {
   return objectsAreEqual(settings1, settings2);
+}
+
+export function buttonsAreEqual(button1: Button, button2: Button): boolean {
+  return objectsAreEqual(button1, button2);
 }
 
 interface PrefPolicyFields {

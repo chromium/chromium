@@ -6,15 +6,22 @@ import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {CustomizeButtonRowElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, getInputDeviceSettingsProvider, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<customize-button-row>', () => {
   let customizeButtonRow: CustomizeButtonRowElement;
   let buttonRemappingChangedEventCount: number = 0;
+  let provider: FakeInputDeviceSettingsProvider;
+
   setup(() => {
+    setupFakeInputDeviceSettingsProvider();
+    provider =
+        getInputDeviceSettingsProvider() as FakeInputDeviceSettingsProvider;
+
     assert(window.trustedTypes);
     document.body.innerHTML = window.trustedTypes.emptyHTML;
   });
@@ -152,5 +159,49 @@ suite('<customize-button-row>', () => {
     select.dispatchEvent(new Event('change'));
     await flushTasks();
     assertEquals(buttonRemappingChangedEventCount, 3);
+  });
+
+  test('Focus current row correct button', async () => {
+    await initializeCustomizeButtonRow();
+    customizeButtonRow.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+
+    assertNotEquals(
+        getDeepActiveElement(),
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown'));
+    provider.sendButtonPress(
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings[0]!.button);
+    await flushTasks();
+
+    assertEquals(
+        getDeepActiveElement(),
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown'));
+  });
+
+  test('Focus row wrong button, not focused', async () => {
+    await initializeCustomizeButtonRow();
+    customizeButtonRow.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+
+    assertNotEquals(
+        getDeepActiveElement(),
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown'));
+    provider.sendButtonPress(
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings[1]!.button);
+    await flushTasks();
+
+    assertNotEquals(
+        getDeepActiveElement(),
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown'));
   });
 });

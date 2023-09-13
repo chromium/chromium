@@ -14,10 +14,13 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {cast} from '../assert_extras.js';
+import {ButtonPressObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 
 import {getTemplate} from './customize_button_row.html.js';
-import {ActionChoice, ButtonRemapping, KeyEvent} from './input_device_settings_types.js';
+import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, KeyEvent} from './input_device_settings_types.js';
+import {buttonsAreEqual} from './input_device_settings_utils.js';
 
 const NO_REMAPPING_OPTION_LABEL = 'none';
 const KEY_COMBINATION_OPTION_LABEL = 'key combination';
@@ -48,6 +51,12 @@ const modifierBitMaskToString: Map<number, string> = new Map([
 
 function concateKeyString(firstStr: string, secondStr: string): string {
   return firstStr.length === 0 ? secondStr : firstStr.concat(` + ${secondStr}`);
+}
+
+export interface CustomizeButtonRowElement {
+  $: {
+    remappingActionDropdown: HTMLSelectElement,
+  };
 }
 
 /**
@@ -169,6 +178,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   buttonRemappingList: ButtonRemapping[];
   remappingIndex: number;
   actionList: ActionChoice[];
+  private buttonPressObserverReceiver: ButtonPressObserverReceiver;
   private buttonRemapping_: ButtonRemapping;
   private buttonMapTargets_: DropdownMenuOptionList;
   private fakePref_: chrome.settingsPrivate.PrefObject;
@@ -177,6 +187,26 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private keyCombinationLabel_: string;
   private buttonRemappingName_: string;
   private isInitialized_: boolean;
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.observeButtonPresses();
+  }
+
+  private observeButtonPresses(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeButtonPresses(this);
+      return;
+    }
+
+    this.buttonPressObserverReceiver = new ButtonPressObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider_.observeButtonPresses(
+        this.buttonPressObserverReceiver.$.bindNewPipeAndPassRemote());
+  }
 
   /**
    * Populate dropdown menu choices.
@@ -200,9 +230,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
    * Populate the button remapping action according to the existing settings.
    */
   private setUpRemappingActions_(): void {
-    const dropdown = cast(
-        this.shadowRoot!.querySelector('#remappingActionDropdown'),
-        HTMLSelectElement);
+    const dropdown = this.$.remappingActionDropdown;
 
     // Set the dropdown option label to default 'Key combination'.
     this.keyCombinationLabel_ = this.i18n('keyCombinationOptionLabel');
@@ -302,9 +330,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   }
 
   private onSelectChange_(): void {
-    const select = cast(
-        this.shadowRoot!.querySelector('#remappingActionDropdown'),
-        HTMLSelectElement);
+    const select = this.$.remappingActionDropdown;
     if (select.value === KEY_COMBINATION_OPTION_LABEL) {
       // TODO(yyhyyh@): Pops up key combination dialog.
     } else if (select!.value !== this.fakePref_.value) {
@@ -332,6 +358,12 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       return this.buttonRemappingList[this.remappingIndex].name;
     }
     return '';
+  }
+
+  onButtonPressed(button: Button): void {
+    if (buttonsAreEqual(button, this.buttonRemapping_.button)) {
+      this.$.remappingActionDropdown!.focus();
+    }
   }
 }
 

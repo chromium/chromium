@@ -149,6 +149,7 @@ export interface FakeKeyEvent {
   keyDisplay: string;
 }
 
+export type Button = InputDeviceSettingsTypes.Button;
 export type ButtonRemapping =
     Omit<InputDeviceSettingsTypes.ButtonRemapping, 'remappingAction'>&{
       remappingAction?: RemappingAction,
@@ -194,6 +195,12 @@ export interface GraphicsTabletObserverInterface {
   // Fired when the graphics tablet list is updated.
   onGraphicsTabletListUpdated(graphicsTablet: GraphicsTablet[]): void;
 }
+
+export type ButtonPressObserverInterface =
+    InputDeviceSettingsProviderTypes.ButtonPressObserverInterface;
+
+export type ButtonPressObserver =
+    InputDeviceSettingsProviderTypes.ButtonPressObserver;
 
 interface FakeInputDeviceSettingsProviderInterface extends
     InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface {}
