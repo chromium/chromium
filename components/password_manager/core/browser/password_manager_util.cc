@@ -345,6 +345,15 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
     return GetLoginMatchType::kPSL;
   }
 
+  if (static_cast<int>(form.match_type.value() &
+                       PasswordForm::MatchType::kGrouped) &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kFillingAcrossGroupedSites)) {
+    // TODO(crbug.com/1432264): Update after proper handling of grouped matches
+    // is implemented.
+    return GetLoginMatchType::kAffiliated;
+  }
+
   NOTREACHED_NORETURN();
 }
 

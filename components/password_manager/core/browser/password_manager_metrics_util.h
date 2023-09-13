@@ -18,6 +18,10 @@
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace password_manager {
+struct PasswordForm;
+}
+
 namespace password_manager::metrics_util {
 
 using IsUsernameChanged = base::StrongAlias<class IsUsernameChangedTag, bool>;
@@ -696,6 +700,17 @@ enum class SharedPasswordsNotificationBubbleInteractions {
   kMaxValue = kCloseButtonClicked,
 };
 
+// Represent all possible states of GetLoginsWithAffiliationsRequestHandler in
+// regards to grouped matches. Entries should not be renumbered and numeric
+// values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordManager.GroupedPasswordFetchResult in enums.xml.
+enum class GroupedPasswordFetchResult {
+  kNoMatches = 0,
+  kBetterMatchesExist = 1,
+  kOnlyGroupedMatches = 2,
+  kMaxValue = kOnlyGroupedMatches,
+};
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     PasswordAccountStorageUsageLevel usage_level);
 
@@ -879,6 +894,10 @@ void LogUserInteractionsInPasswordManagementBubble(
 // Log the user interaction events in the shared passwords notification bubble.
 void LogUserInteractionsInSharedPasswordsNotificationBubble(
     SharedPasswordsNotificationBubbleInteractions interaction);
+
+// Logs GroupedPasswordFetchResult.
+void LogGroupedPasswordsResults(
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& logins);
 
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to

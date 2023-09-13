@@ -19,13 +19,11 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -175,11 +173,20 @@ class AffiliatedMatchHelperTest : public testing::Test {
 // login form.
 
 TEST_F(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealms) {
+  GroupedFacets result_grouped_facet;
+  result_grouped_facet.facets.emplace_back(
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1));
   EXPECT_CALL(*mock_affiliation_service(),
               GetAffiliationsAndBranding(
                   FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1),
                   StrategyOnCacheMiss::FAIL, _))
       .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassBeta(), true));
+  EXPECT_CALL(*mock_affiliation_service(),
+              GetGroupingInfo(testing::ElementsAre(FacetURI::FromCanonicalSpec(
+                                  kTestWebFacetURIBeta1)),
+                              _))
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<GroupedFacets>{result_grouped_facet}));
 
   base::MockCallback<AffiliatedMatchHelper::AffiliatedRealmsCallback> callback;
   EXPECT_CALL(callback, Run(UnorderedElementsAre(kTestAndroidRealmBeta2,
@@ -191,11 +198,20 @@ TEST_F(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealms) {
 }
 
 TEST_F(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
+  GroupedFacets result_grouped_facet;
+  result_grouped_facet.facets.emplace_back(
+      FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));
   EXPECT_CALL(*mock_affiliation_service(),
               GetAffiliationsAndBranding(
                   FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1),
                   StrategyOnCacheMiss::FAIL, _))
       .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassAlpha(), true));
+  EXPECT_CALL(*mock_affiliation_service(),
+              GetGroupingInfo(testing::ElementsAre(FacetURI::FromCanonicalSpec(
+                                  kTestWebFacetURIAlpha1)),
+                              _))
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<GroupedFacets>{result_grouped_facet}));
 
   base::MockCallback<AffiliatedMatchHelper::AffiliatedRealmsCallback> callback;
   // Android doesn't support filling across affiliated websites.
@@ -254,9 +270,6 @@ TEST_F(AffiliatedMatchHelperTest,
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AffiliatedMatchHelperTest, GetGroupedRealms) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFillingAcrossGroupedSites);
-
   EXPECT_CALL(*mock_affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(AffiliatedFacets(), true));
   EXPECT_CALL(*mock_affiliation_service(),
@@ -274,9 +287,6 @@ TEST_F(AffiliatedMatchHelperTest, GetGroupedRealms) {
 }
 
 TEST_F(AffiliatedMatchHelperTest, GetGroupedAndAffiliatedRealms) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFillingAcrossGroupedSites);
-
   EXPECT_CALL(*mock_affiliation_service(), GetAffiliationsAndBranding)
       .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassAlpha(), true));
   EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
@@ -292,9 +302,6 @@ TEST_F(AffiliatedMatchHelperTest, GetGroupedAndAffiliatedRealms) {
 }
 
 TEST_F(AffiliatedMatchHelperTest, GetGroupedRealmsWhenNoMatch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFillingAcrossGroupedSites);
-
   GroupedFacets result_grouped_facet;
   result_grouped_facet.facets.emplace_back(
       FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));

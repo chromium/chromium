@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_eviction_util.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_android_backend_api_error_codes.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
@@ -201,6 +202,8 @@ void ProcessGroupedLoginsAndReply(const PasswordFormDigest& form_digest,
     }
   }
 
+  password_manager::metrics_util::LogGroupedPasswordsResults(
+      absl::get<LoginsResult>(logins_or_error));
   // Remove grouped only matches if filling across groups is disabled.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossGroupedSites)) {

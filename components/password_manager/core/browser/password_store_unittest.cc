@@ -1177,8 +1177,7 @@ TEST_P(PasswordStoreGroupsTest, GetLoginsWithWebGroup) {
   if (base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
     expected_results.push_back(
         std::make_unique<PasswordForm>(*all_credentials[3]));
-    expected_results.back()->match_type = PasswordForm::MatchType::kAffiliated |
-                                          PasswordForm::MatchType::kGrouped;
+    expected_results.back()->match_type = PasswordForm::MatchType::kGrouped;
   }
 
   // In the production 'kTestWebRealm1' won't be in the list but the code should

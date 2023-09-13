@@ -774,9 +774,8 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetLoginsWithAffiliations) {
   expected_results.back()->match_type = PasswordForm::MatchType::kPSL;
   expected_results.push_back(
       std::make_unique<PasswordForm>(*all_credentials[5]));
-  expected_results.back()->match_type = PasswordForm::MatchType::kAffiliated |
-                                        PasswordForm::MatchType::kPSL |
-                                        PasswordForm::MatchType::kGrouped;
+  expected_results.back()->match_type =
+      PasswordForm::MatchType::kPSL | PasswordForm::MatchType::kGrouped;
 
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
                                       kTestWebRealm1, GURL(kTestWebOrigin1)};

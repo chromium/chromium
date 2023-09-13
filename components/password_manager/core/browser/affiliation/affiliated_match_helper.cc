@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -114,9 +113,7 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
     return;
   }
 
-  const int kCallsNumber =
-      1 + base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites);
-
+  const int kCallsNumber = 2;
   auto barrier_callback =
       base::BarrierCallback<absl::variant<AffiliatedRealms, GroupedRealms>>(
           kCallsNumber, base::BindOnce(&ProcessAffiliationAndGroupResponse,
@@ -129,11 +126,9 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
       base::BindOnce(&ProcessAffiliatedFacets, facet_uri)
           .Then(barrier_callback));
 
-  if (base::FeatureList::IsEnabled(features::kFillingAcrossGroupedSites)) {
-    affiliation_service_->GetGroupingInfo(
-        {facet_uri}, base::BindOnce(&ProcessGroupedFacets, facet_uri)
-                         .Then(std::move(barrier_callback)));
-  }
+  affiliation_service_->GetGroupingInfo(
+      {facet_uri}, base::BindOnce(&ProcessGroupedFacets, facet_uri)
+                       .Then(std::move(barrier_callback)));
 }
 
 void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(

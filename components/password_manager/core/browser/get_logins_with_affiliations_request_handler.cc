@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -276,9 +277,6 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
         }
         if (base::Contains(group_, signon_realm)) {
           form->match_type |= PasswordForm::MatchType::kGrouped;
-          // TODO(crbug.com/1432264): Delete after proper handling of
-          // affiliated groups filling is implemented.
-          form->match_type |= PasswordForm::MatchType::kAffiliated;
         }
         break;
       }
@@ -287,6 +285,15 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
   }
 
   password_manager_util::TrimUsernameOnlyCredentials(&final_result);
+  password_manager::metrics_util::LogGroupedPasswordsResults(final_result);
+  // Remove grouped only matches if filling across groups is disabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kFillingAcrossGroupedSites)) {
+    base::EraseIf(final_result, [](const auto& form) {
+      return form->match_type == PasswordForm::MatchType::kGrouped;
+    });
+  }
+
   return final_result;
 }
 

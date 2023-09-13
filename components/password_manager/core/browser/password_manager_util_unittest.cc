@@ -464,6 +464,16 @@ TEST(PasswordManagerUtil, GetMatchType_Web) {
   EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
 }
 
+TEST(PasswordManagerUtil, GetMatchType_Grouped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kFillingAcrossGroupedSites);
+
+  PasswordForm form = GetTestAndroidCredential();
+  form.match_type = PasswordForm::MatchType::kGrouped;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+}
+
 TEST(PasswordManagerUtil, FindBestMatches) {
   const base::Time kNow = base::Time::Now();
   const base::Time kYesterday = kNow - base::Days(1);
