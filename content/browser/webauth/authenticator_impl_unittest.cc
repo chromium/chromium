@@ -9109,7 +9109,8 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
   InspectTAIAuthenticatorRequestDelegate::Callback tai_callback_;
 };
 
-TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
+// TODO(crbug.com/1482133): Re-enable this test
+TEST_F(ICloudKeychainAuthenticatorImplTest, DISABLED_Discovery) {
   if (__builtin_available(macOS 13.5, *)) {
     for (const bool feature_enabled : {false, true}) {
       SCOPED_TRACE(feature_enabled);
