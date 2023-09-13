@@ -78,7 +78,7 @@ class GameDashboardCaptureModeTest : public AshTestBase {
     AshTestBase::SetUp();
     EXPECT_TRUE(features::IsGameDashboardEnabled());
 
-    game_window_ = CreateAppWindow(gfx::Rect(0, 100, 200, 200));
+    game_window_ = CreateAppWindow(gfx::Rect(0, 100, 300, 200));
     game_window_->SetProperty(kAppIDKey,
                               std::string(extension_misc::kGeForceNowAppId));
   }

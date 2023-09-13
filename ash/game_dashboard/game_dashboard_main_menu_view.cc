@@ -43,11 +43,13 @@ namespace {
 
 constexpr int kBubbleCornerRadius = 8;
 // Horizontal padding for the border around the main menu.
-constexpr int kPaddingWidth = 12;
+constexpr int kPaddingWidth = 20;
 // Vertical padding for the border around the main menu.
-constexpr int kPaddingHeight = 15;
+constexpr int kPaddingHeight = 20;
 // Padding between children in a row or column.
 constexpr int kCenterPadding = 8;
+// Main Menu fixed width.
+constexpr int kMainMenuFixedWidth = 416;
 
 // Creates an individual Game Dashboard Tile.
 std::unique_ptr<FeatureTile> CreateTile(base::RepeatingClosure callback,
@@ -222,6 +224,7 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
   set_margins(gfx::Insets());
   set_parent_window(
       context_->game_dashboard_button_widget()->GetNativeWindow());
+  set_fixed_width(kMainMenuFixedWidth);
   SetAnchorView(context_->game_dashboard_button_widget()->GetContentsView());
   SetArrow(views::BubbleBorder::Arrow::NONE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
