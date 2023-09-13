@@ -126,9 +126,13 @@
                 sub-label="
                     $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
                 learn-more-url="
-                    $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}">
+                    $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
+                disabled="[[!isTrackingProtectionCustom_(
+                  prefs.tracking_protection.tracking_protection_level.value)]]">
               </settings-toggle-button>
-              <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
+              <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}"
+                disabled="[[!isTrackingProtectionCustom_(
+                  prefs.tracking_protection.tracking_protection_level.value)]]">
               </settings-do-not-track-toggle>
             </div>
           </settings-collapse-radio-button>

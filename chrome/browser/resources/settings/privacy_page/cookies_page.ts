@@ -407,6 +407,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         CookiePrimarySetting.BLOCK_THIRD_PARTY;
   }
 
+  private isTrackingProtectionCustom_() {
+    return this.getPref('tracking_protection.tracking_protection_level')
+               .value === TrackingProtectionLevel.CUSTOM;
+  }
+
   private isPrivacySandboxSettings4CookieSettingsEnabled_(): boolean {
     return this.isPrivacySandboxSettings4_ && !this.is3pcdRedesignEnabled_;
   }
