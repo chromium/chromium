@@ -928,5 +928,6 @@ ci.builder(
         short_name = "cfm",
     ),
     main_console_view = "main",
+    contact_team_email = "core-devices-eng@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
