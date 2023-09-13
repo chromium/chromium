@@ -10,10 +10,6 @@ namespace policy {
 
 namespace features {
 
-BASE_FEATURE(kCrowdstrikeSignalReporting,
-             "CrowdstrikeSignalReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnablePolicyTestPage,
              "EnablePolicyTestPage",
              base::FEATURE_DISABLED_BY_DEFAULT);

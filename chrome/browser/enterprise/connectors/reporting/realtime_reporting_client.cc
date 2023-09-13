@@ -490,9 +490,7 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
   Profile* profile = Profile::FromBrowserContext(context_);
   device_signals::SignalsAggregator* signals_aggregator =
       enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
-  if (signals_aggregator &&
-      base::FeatureList::IsEnabled(
-          policy::features::kCrowdstrikeSignalReporting)) {
+  if (signals_aggregator) {
     device_signals::SignalsAggregationRequest request;
     request.signal_names.emplace(device_signals::SignalName::kAgent);
     signals_aggregator->GetSignals(

@@ -14,10 +14,6 @@
 namespace policy {
 namespace features {
 
-// Enable detection/upload Crowdstrike Agent signals with security
-// events.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kCrowdstrikeSignalReporting);
-
 // Enable the policy test page at chrome://policy/test.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kEnablePolicyTestPage);
 
