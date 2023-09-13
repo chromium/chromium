@@ -198,7 +198,6 @@ void ScriptLoader::HandleAsyncAttribute() {
   // <spec href="https://html.spec.whatwg.org/C/#the-script-element"
   // step="1">Set this's force async to false.</spec>
   force_async_ = false;
-  dynamic_async_ = true;
 }
 
 void ScriptLoader::Removed() {
