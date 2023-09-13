@@ -1046,12 +1046,11 @@ void PredictionManager::OverrideTargetModelForTesting(
     proto::OptimizationTarget optimization_target,
     std::unique_ptr<ModelInfo> model_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!model_info) {
-    return;
+
+  absl::optional<ModelInfo> model_info_copy;
+  if (model_info) {
+    model_info_copy = *model_info;
   }
-
-  ModelInfo model_info_copy = *model_info;
-
   optimization_target_model_info_map_.insert_or_assign(optimization_target,
                                                        std::move(model_info));
 

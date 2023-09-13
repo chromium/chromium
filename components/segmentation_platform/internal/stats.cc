@@ -557,6 +557,14 @@ void RecordSignalDatabaseGetSamplesSampleCount(size_t count) {
       "SegmentationPlatform.SignalDatabase.GetSamples.SampleCount", count);
 }
 
+void RecordSegmentInfoDatabaseUpdateEntriesResult(SegmentId segment_id,
+                                                  bool success) {
+  base::UmaHistogramBoolean(
+      "SegmentationPlatform.SegmentInfoDatabase.ProtoDBUpdateResult." +
+          SegmentIdToHistogramVariant(segment_id),
+      success);
+}
+
 void RecordSignalsListeningCount(
     const std::set<uint64_t>& user_actions,
     const std::set<std::pair<std::string, proto::SignalType>>& histograms) {

@@ -1190,6 +1190,7 @@ if (is_android) {
       "//components/messages/android:feature_flags",
       "//components/messages/android/test:test_support_cpp",
       "//components/messages/android/test:test_support_java",
+      "//components/optimization_guide/core:test_support",
       "//components/password_manager/content/browser:browser",
       "//components/policy:chrome_settings_proto_generated_compile",
       "//components/policy/core/browser:test_support",
@@ -1723,6 +1724,7 @@ if (!is_android) {
       "//components/tpcd/metadata:test_support",
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
+      "//components/optimization_guide/core:test_support",
       "//components/segmentation_platform/public:test_support",
       "//components/services/app_service",
       "//components/services/app_service/public/cpp:test_support",

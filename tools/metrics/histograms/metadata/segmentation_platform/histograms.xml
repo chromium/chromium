@@ -725,6 +725,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="SegmentationPlatform.SegmentInfoDatabase.ProtoDBUpdateResult.{SegmentationKey}"
+    units="BooleanSuccess" expires_after="2023-10-01">
+  <owner>salg@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records result of persisting SegmentInfo changes to disk. This is separate
+    to the SegmentInfoDatabase's callback which runs after updating the
+    in-memory cache.
+
+    Recorded for each call to SegmentInfoDatabase::UpdateSegment, which happens
+    at least once for each segmentation key on startup and every time training
+    data is recorded or cleared.
+  </summary>
+  <token key="SegmentationKey" variants="SegmentationKey"/>
+</histogram>
+
+<histogram
     name="SegmentationPlatform.SegmentSelectionOnDemand.Duration.{SegmentationKey}.{SelectedSegment}"
     units="ms" expires_after="2023-10-01">
   <owner>shaktisahu@chromium.org</owner>

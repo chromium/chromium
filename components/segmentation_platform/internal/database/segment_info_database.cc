@@ -4,11 +4,13 @@
 
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/logging.h"
+#include "components/segmentation_platform/internal/stats.h"
 
 #include <sstream>
 #include <string>
@@ -139,8 +141,10 @@ void SegmentInfoDatabase::UpdateSegment(
   } else {
     keys_to_delete->emplace_back(ToString(segment_id, model_source));
   }
-  database_->UpdateEntries(std::move(entries_to_save),
-                           std::move(keys_to_delete), base::DoNothing());
+  database_->UpdateEntries(
+      std::move(entries_to_save), std::move(keys_to_delete),
+      base::BindOnce(&stats::RecordSegmentInfoDatabaseUpdateEntriesResult,
+                     segment_id));
 }
 
 void SegmentInfoDatabase::UpdateMultipleSegments(
