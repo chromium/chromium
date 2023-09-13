@@ -130,16 +130,10 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
  public:
   void SetUp() override {
     if (@available(macOS 13.5, *)) {
-      NSWindow* window = [[NSWindow alloc] init];
-      window.releasedWhenClosed = NO;  // Required by ARC.
-
       fake_ = base::MakeRefCounted<FakeSystemInterface>();
       SetSystemInterfaceForTesting(fake_);
 
-      uintptr_t ns_window = (uintptr_t)(__bridge void*)window;
-      static_assert(sizeof(window) == sizeof(ns_window));
-
-      discovery_ = NewDiscovery(ns_window);
+      discovery_ = NewDiscovery(kFakeNSWindowForTesting);
       discovery_->set_observer(this);
       discovery_->Start();
       task_environment_.RunUntilIdle();
