@@ -1,12 +1,13 @@
 caption: GPO cache lifetime
+default: 25
 desc: |-
   Setting the policy specifies in hours the Group Policy Object (GPO) cache lifetime—the maximum duration GPOs can be reused before they're redownloaded. Instead of redownloading them on every policy fetch, the system reuses cached GPOs as long as their version doesn't change.
 
-        Setting the policy to 0 turns GPO caching off. Doing this increases server load, because GPOs are redownloaded on every policy fetch, even if they didn't change.
+  Setting the policy to 0 turns GPO caching off. Doing this increases server load, because GPOs are redownloaded on every policy fetch, even if they didn't change.
 
-        Leaving the policy unset means cached GPOs can be reused for up to 25 hours.
+  Leaving the policy unset means cached GPOs can be reused for up to 25 hours.
 
-        Note: Restarting and signing out clears the cache.
+  Note: Restarting and signing out clears the cache.
 device_only: true
 example_value: 0
 features:

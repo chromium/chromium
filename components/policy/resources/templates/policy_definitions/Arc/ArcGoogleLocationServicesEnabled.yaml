@@ -1,11 +1,12 @@
 caption: Control Android Google location services
+default: 0
 default_for_enterprise_users: 0
 desc: |-
   Unless the <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME">DefaultGeolocationSetting</ph> policy is set to <ph name="BLOCK_GEOLOCATION_SETTING">BlockGeolocation</ph>, then setting <ph name="GLS_ENABLED">GoogleLocationServicesEnabled</ph> turns Google location services on during initial setup. Setting the policy to <ph name="GLS_DISABLED">GoogleLocationServicesDisabled</ph> or leaving it unset keeps location services off during setup.
 
-        Setting policy to <ph name="BR_UNDER_USER_CONTROL">BackupAndRestoreUnderUserControl</ph> prompts users about whether or not to use Google location services. If they turn it on, Android apps use the services to search the device location and send anonymous location data to Google.
+  Setting policy to <ph name="BR_UNDER_USER_CONTROL">BackupAndRestoreUnderUserControl</ph> prompts users about whether or not to use Google location services. If they turn it on, Android apps use the services to search the device location and send anonymous location data to Google.
 
-        After initial setup, users can turn Google location services on or off.
+  After initial setup, users can turn Google location services on or off.
 example_value: 1
 features:
   dynamic_refresh: false

@@ -1,4 +1,5 @@
 caption: Enable ARC
+default: false
 default_for_enterprise_users: false
 desc: Unless Ephemeral mode or multiple sign-in is on during the user's session, setting
   ArcEnabled to True turns ARC on for the user. Setting the policy to False or leaving

@@ -1,12 +1,13 @@
 caption: User policy loopback processing mode
+default: 0
 desc: |-
   Setting the policy specifies whether and how user policy from computer Group Policy Object (GPO) is processed.
 
-        * Default or leaving it unset has user policy read only from user GPOs. Computer GPOs are ignored.
+  * Default or leaving it unset has user policy read only from user GPOs. Computer GPOs are ignored.
 
-        * Merge will merge user policy in user GPOs with that of computer GPOs. Computer GPOs take precedence.
+  * Merge will merge user policy in user GPOs with that of computer GPOs. Computer GPOs take precedence.
 
-        * Replace will replace user policy in user GPOs with that of computer GPOs. User GPOs are ignored.
+  * Replace will replace user policy in user GPOs with that of computer GPOs. User GPOs are ignored.
 device_only: true
 example_value: 0
 features:

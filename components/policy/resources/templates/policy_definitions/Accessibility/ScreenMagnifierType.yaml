@@ -1,8 +1,9 @@
 caption: Set screen magnifier type
+default: null
 desc: |-
   Setting the policy to None turns the screen magnifier off.
 
-        If you set the policy, users can't change it. If not set, the screen magnifier is off at first, but users can turn it on any time.
+  If you set the policy, users can't change it. If not set, the screen magnifier is off at first, but users can turn it on any time.
 example_value: 1
 features:
   can_be_recommended: true

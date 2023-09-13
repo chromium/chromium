@@ -1,16 +1,17 @@
 caption: Set the screen magnifier type on the login screen
+default: null
 desc: |-
   If this policy is set, it controls the type of screen magnifier that is enabled.
 
-            If this policy is set to "Full-screen", the screen magnifier will always be enabled in full-screen magnifier mode on the login screen.
+  If this policy is set to "Full-screen", the screen magnifier will always be enabled in full-screen magnifier mode on the login screen.
 
-            If this policy is set to "Docked", the screen magnifier will always be enabled in docked magnifier mode on the login screen.
+  If this policy is set to "Docked", the screen magnifier will always be enabled in docked magnifier mode on the login screen.
 
-            If this policy is set to "None", the screen magnifier will always be disabled on the login screen.
+  If this policy is set to "None", the screen magnifier will always be disabled on the login screen.
 
-            If you set this policy, users cannot change or override it.
+  If you set this policy, users cannot change or override it.
 
-            If this policy is left unset, the dictation is disabled on the login screen initially but can be enabled by the user anytime.
+  If this policy is left unset, the screen magnifier is disabled on the login screen initially but can be enabled by the user anytime.
 device_only: true
 example_value: true
 features:
