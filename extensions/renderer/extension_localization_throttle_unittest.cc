@@ -306,6 +306,37 @@ TEST_F(ExtensionLocalizationThrottleTest, EmptyData) {
       delegate->destination_loader_client()->completion_status().error_code);
 }
 
+// Regression test for https://crbug.com/1475798
+TEST_F(ExtensionLocalizationThrottleTest, Cancel) {
+  const GURL url("chrome-extension://some_id/test.css");
+  auto throttle =
+      ExtensionLocalizationThrottle::MaybeCreate(blink::WebURL(url));
+  ASSERT_TRUE(throttle);
+
+  auto delegate = std::make_unique<FakeDelegate>();
+  throttle->set_delegate(delegate.get());
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->mime_type = "text/css";
+  bool defer = false;
+  throttle->WillProcessResponse(url, response_head.get(), &defer);
+  EXPECT_FALSE(defer);
+  EXPECT_TRUE(delegate->is_intercepted());
+  delegate->LoadResponseBody("__MSG_hello__!");
+  delegate->CompleteResponse();
+  // Run all tasks in the main thread to make DataPipeProducer::SequenceState
+  // call PostTask(&SequenceState::StartOnSequence) to a background thread.
+  base::RunLoop().RunUntilIdle();
+  // Resetting `destination_loader_remote` triggers
+  // ExtensionLocalizationURLLoader destruction.
+  delegate->destination_loader_remote().reset();
+  // Run all tasks in the main thread to destroy the
+  // ExtensionLocalizationURLLoader.
+  base::RunLoop().RunUntilIdle();
+  // Runs SequenceState::StartOnSequence in the background thread.
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(ExtensionLocalizationThrottleTest, SourceSideError) {
   const GURL url("chrome-extension://some_id/test.css");
   auto throttle =
