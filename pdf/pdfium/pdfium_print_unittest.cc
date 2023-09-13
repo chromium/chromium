@@ -54,9 +54,8 @@ base::FilePath GetReferenceFilePath(base::StringPiece test_filename) {
 
 blink::WebPrintParams GetDefaultPrintParams() {
   blink::WebPrintParams params;
-  params.print_content_area_in_css_pixels = kUSLetterRect;
+  params.default_page_description.size = kUSLetterSize;
   params.printable_area_in_css_pixels = kUSLetterRect;
-  params.paper_size_in_css_pixels = kUSLetterSize;
   params.print_scaling_option = printing::mojom::PrintScalingOption::kNone;
   return params;
 }

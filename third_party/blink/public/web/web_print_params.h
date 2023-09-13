@@ -39,20 +39,14 @@
 namespace blink {
 
 struct WebPrintParams {
-  // Specifies printable content rect in CSS pixels (a CSS pixel is 1/96 of an
-  // inch).
-  gfx::RectF print_content_area_in_css_pixels;
-
   // Specifies the selected printer default printable area details in
-  // pixels.
+  // in CSS pixels (a CSS pixel is 1/96 of an inch).
   gfx::RectF printable_area_in_css_pixels;
-
-  // Specifies the selected printer default paper size in pixels.
-  gfx::SizeF paper_size_in_css_pixels;
 
   // The page size and margins as provided by the system / user. This will be
   // used as a base when handling @page rules, to fill in the blanks (rules may
   // provide or omit declarations for the page size and/or any margin side).
+  // In CSS pixels.
   WebPrintPageDescription default_page_description;
 
   // Specifies user selected DPI for printing.
@@ -81,9 +75,7 @@ struct WebPrintParams {
       : WebPrintParams(paper_size, true) {}
 
   WebPrintParams(const gfx::SizeF& paper_size, bool use_printing_layout)
-      : print_content_area_in_css_pixels(paper_size),
-        printable_area_in_css_pixels(paper_size),
-        paper_size_in_css_pixels(paper_size),
+      : printable_area_in_css_pixels(paper_size),
         default_page_description(paper_size),
         print_scaling_option(printing::mojom::PrintScalingOption::kSourceSize),
         use_printing_layout(use_printing_layout) {}

@@ -339,8 +339,8 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     return nullptr;
   }
 
-  gfx::Size int_paper_size =
-      ToFlooredSize(CSSPixelsToPoints(print_params.paper_size_in_css_pixels));
+  gfx::Size int_paper_size = ToFlooredSize(
+      CSSPixelsToPoints(print_params.default_page_description.size));
   gfx::Rect int_printable_area = ToEnclosedRect(
       CSSPixelsToPoints(print_params.printable_area_in_css_pixels));
 

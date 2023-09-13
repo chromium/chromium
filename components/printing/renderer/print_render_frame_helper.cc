@@ -368,11 +368,6 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
   webkit_print_params.rasterize_pdf = print_params.rasterize_pdf;
   webkit_print_params.print_scaling_option = print_params.print_scaling_option;
 
-  webkit_print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(
-      ConvertUnitFloat(print_params.content_size.width(), dpi, kPixelsPerInch),
-      ConvertUnitFloat(print_params.content_size.height(), dpi,
-                       kPixelsPerInch)));
-
   webkit_print_params.printable_area_in_css_pixels = gfx::RectF(
       ConvertUnitFloat(print_params.printable_area.x(), dpi, kPixelsPerInch),
       ConvertUnitFloat(print_params.printable_area.y(), dpi, kPixelsPerInch),
@@ -380,10 +375,6 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
                        kPixelsPerInch),
       ConvertUnitFloat(print_params.printable_area.height(), dpi,
                        kPixelsPerInch));
-
-  webkit_print_params.paper_size_in_css_pixels = gfx::SizeF(
-      ConvertUnitFloat(print_params.page_size.width(), dpi, kPixelsPerInch),
-      ConvertUnitFloat(print_params.page_size.height(), dpi, kPixelsPerInch));
 
   // The following settings is for N-up mode.
   webkit_print_params.pages_per_sheet = print_params.pages_per_sheet;
