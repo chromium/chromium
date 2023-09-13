@@ -414,7 +414,7 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   // the context.
   if (context_lost_mode_ == kSyntheticLostContext) {
     try_restore_context_event_timer_.Stop();
-    Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+    GetOrCreateCanvasResourceProvider();
     DispatchContextRestoredEvent(nullptr);
     return;
   }
