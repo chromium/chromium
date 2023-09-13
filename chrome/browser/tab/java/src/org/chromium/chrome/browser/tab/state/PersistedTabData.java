@@ -250,7 +250,7 @@ public abstract class PersistedTabData implements UserData {
      * Save {@link PersistedTabData} to storage
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    protected void save() {
+    public void save() {
         if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
             mPersistedTabDataStorage.save(
                     mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper());
@@ -463,6 +463,12 @@ public abstract class PersistedTabData implements UserData {
     public static void onShutdown() {
         PersistedTabDataConfiguration.getFilePersistedTabDataStorage().onShutdown();
         PersistedTabDataConfiguration.getEncryptedFilePersistedTabDataStorage().onShutdown();
+    }
+
+    @VisibleForTesting
+    public void existsInStorage(Callback<Boolean> callback) {
+        mPersistedTabDataStorage.restore(mTab.getId(), mPersistedTabDataId,
+                (res) -> { callback.onResult(res != null && res.limit() > 0); });
     }
 
     @VisibleForTesting

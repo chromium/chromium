@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import android.app.Activity;
+import android.util.SparseBooleanArray;
 
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
@@ -431,6 +432,10 @@ public class CustomTabTabPersistencePolicyTest {
             @Override
             public void cancelCleanupInProgress() {
             }
+
+            @Override
+            public void getAllTabIds(Callback<SparseBooleanArray> tabIdsCallback) {}
+
         };
     }
 

@@ -1484,9 +1484,25 @@ public class TabPersistentStore {
                 }
             }
         });
-        // TODO(crbug.com/1237620) Make sure maintenance works correctly in multi window case.
-        PersistedTabData.performStorageMaintenance(
-                TabModelUtils.getRegularTabIds(mTabModelSelector));
+        performPersistedTabDataMaintenance(null);
+    }
+
+    @VisibleForTesting
+    protected void performPersistedTabDataMaintenance(Runnable onCompleteForTesting) {
+        // PersistedTabData currently doesn't support Custom Tabs, so maintenance
+        // only needs to be performed for regular Tabs.
+        if (mPersistencePolicy instanceof TabbedModeTabPersistencePolicy) {
+            mPersistencePolicy.getAllTabIds((res) -> {
+                List<Integer> allTabIds = new ArrayList<>();
+                for (int i = 0; i < res.size(); i++) {
+                    allTabIds.add(res.keyAt(i));
+                }
+                PersistedTabData.performStorageMaintenance(allTabIds);
+                if (onCompleteForTesting != null) {
+                    onCompleteForTesting.run();
+                }
+            });
+        }
     }
 
     /**

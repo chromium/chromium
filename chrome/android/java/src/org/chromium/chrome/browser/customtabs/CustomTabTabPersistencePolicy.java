@@ -415,4 +415,11 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             }
         }
     }
+
+    @Override
+    public void getAllTabIds(Callback<SparseBooleanArray> tabIdsCallback) {
+        // This function is currently only used for PersistedTabData maintenance.
+        // PersistedTabData doesn't currently support Custom Tabs.
+        assert false : "Not currently supported for Custom Tabs";
+    }
 }

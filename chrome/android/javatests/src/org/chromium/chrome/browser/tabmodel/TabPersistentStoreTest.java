@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.os.Looper;
 import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
@@ -25,6 +26,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.MockTabAttributes;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -53,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -74,6 +78,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /** Tests for the TabPersistentStore. */
 
@@ -412,6 +417,81 @@ public class TabPersistentStoreTest {
             int tabId = info.contents[i].tabId;
             Assert.assertNotNull(regularCreator.created.get(tabId));
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    public void testMaintenance() throws Exception {
+        Looper.prepare();
+        mMockDirectory.writeTabModelFiles(TestTabModelDirectory.GOOGLE_CA_GOOGLE_COM, true, 0);
+        mMockDirectory.writeTabModelFiles(TestTabModelDirectory.TEXTAREA_DUCK_DUCK_GO, true, 1);
+
+        // Set up the TabPersistentStore.
+        MockTabModelSelector mockSelector =
+                TestThreadUtils.runOnUiThreadBlocking(() -> new MockTabModelSelector(0, 0, null));
+        MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
+        TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
+        final TabPersistentStore store =
+                buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
+        CallbackHelper helper = new CallbackHelper();
+        // Tabs 1, 3, 4, 5 are in the Tab metadata files
+        // Tab 2 is considered orphaned (a {@link PersistedTabData} entry will be added for it).
+        // However, Tab 2 is not in the Tab model so the data is considered orphaned.
+        // Incognito Tabs 6 and 7 are in the metadata file
+        // TestTabModelDirectory.TEXTAREA_DUCK_DUCK_GO Test includes them to ensure these do not
+        // impact maintenance. There are no PersistedTabData entries for incognito Tabs, but we need
+        // to ensure that including incognito Tabs in a global collection of Tabs passed to the
+        // maintenance function doesn't impact maintenance.
+        MockTab[] tabs = new MockTab[6];
+        for (int tabId = 1; tabId < tabs.length; tabId++) {
+            tabs[tabId] = createTabAndPersistedEntry(tabId);
+        }
+
+        // Maintenance should remove the entry for Tab 2 which is orphaned.
+        store.performPersistedTabDataMaintenance(new Runnable() {
+            @Override
+            public void run() {
+                helper.notifyCalled();
+            }
+        });
+        helper.waitForCallback(0);
+        for (int i = 1; i < tabs.length; i++) {
+            // Tab 2 is orphaned and shouldn't exist
+            // All other persisted Tab entries should be intact.
+            checkEntryExists(tabs[i], i != 2);
+        }
+    }
+
+    private static MockTab createTabAndPersistedEntry(final int tabId)
+            throws TimeoutException, ExecutionException {
+        CallbackHelper helper = new CallbackHelper();
+        MockTab tab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            MockTab newTab = new MockTab(tabId, false);
+            ObservableSupplierImpl<Boolean> observableSupplier = new ObservableSupplierImpl<>();
+            observableSupplier.set(true);
+            ShoppingPersistedTabData.from(newTab).registerIsTabSaveEnabledSupplier(
+                    observableSupplier);
+            ShoppingPersistedTabData.from(newTab).save();
+            ShoppingPersistedTabData.from(newTab).existsInStorage((res) -> {
+                Assert.assertTrue(res);
+                helper.notifyCalled();
+            });
+            return newTab;
+        });
+        helper.waitForCallback(0);
+        return tab;
+    }
+
+    private static void checkEntryExists(Tab tab, boolean expectedExists) throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.from(tab).existsInStorage((res) -> {
+                Assert.assertEquals(expectedExists, res);
+                helper.notifyCalled();
+            });
+        });
+        helper.waitForCallback(0);
     }
 
     @Test

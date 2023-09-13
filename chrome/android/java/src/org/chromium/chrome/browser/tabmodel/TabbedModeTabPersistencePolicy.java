@@ -20,7 +20,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -491,6 +493,17 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                 sCleanupTask = null;
             }
         }
+    }
+
+    @Override
+    public void getAllTabIds(Callback<SparseBooleanArray> tabIdsCallback) {
+        PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
+            SparseBooleanArray tabIds = new SparseBooleanArray();
+            for (int i = 0; i < mMaxSelectors; ++i) {
+                getTabsFromStateFiles(tabIds, i);
+            }
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { tabIdsCallback.onResult(tabIds); });
+        });
     }
 
     protected static void resetMigrationTaskForTesting() {

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.util.SparseBooleanArray;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -130,4 +132,10 @@ public interface TabPersistencePolicy {
     default boolean allowSkipLoadingTab() {
         return false;
     }
+
+    /**
+     * Acquire all {@link Tab} identifiers across all windows.
+     * @param tabIdsCallback callback to pass {@link Tab} identifiers back in.
+     */
+    void getAllTabIds(Callback<SparseBooleanArray> tabIdsCallback);
 }

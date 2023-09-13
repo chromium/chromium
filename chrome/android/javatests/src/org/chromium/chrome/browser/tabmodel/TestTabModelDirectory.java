@@ -284,6 +284,29 @@ public class TestTabModelDirectory {
                     + "L3d3dy5oYWFyZXR6LmNvLmlsLwAAAAMAFWh0dHA6Ly93d3cuZ29vZ2xlLmNhLwAAAAIAFmh0dHA6"
                     + "Ly93d3cuZ29vZ2xlLmNvbS8=");
 
+    // Active Tab is google.ca (M26_GOOGLE_CA) with Tab ID 1.
+    // Other Tab in the Tab Model is google.com (M26_GOOGLE_COM) with Tab ID 3
+    public static final TabModelMetaDataInfo GOOGLE_CA_GOOGLE_COM = new TabModelMetaDataInfo(5, 0,
+            M26_GOOGLE_CA.tabId, new TabStateInfo[] {M26_GOOGLE_CA, M26_GOOGLE_COM},
+            // The following can be obtained by
+            // 1. Open Chrome for Android, navigate to sites, open new Tabs, windows etc.
+            // 2. adb root
+            // 3. adb pull /data/data/com.google.android.apps.chrome/app_tabs/0/tab_state<index> .
+            // e.g. adb pull /data/data/com.google.android.apps.chrome/app_tabs/0/tab_state1 .
+            // for second window selector
+            // 4. base64 tab_state<index> e.g. base64 tab_state1
+            "AAAABQAAAAIAAAAA/////wAAAAAAAAABABZodHRwczovL3d3dy5nb29nbGUuY2EvAAAABQAXaHR0"
+                    + "cHM6Ly93d3cuZ29vZ2xlLmNvbS8=");
+
+    // Active Tab is textarea.org (V2_TEXTAREA) with Tab ID 4.
+    // Other Tab in the Tab Model is duckduckgo.com (V2_DUCK_DUCK_GO) with Tab ID 5
+    // Tabs 6 and 7 are incognito Tabs.
+    public static final TabModelMetaDataInfo TEXTAREA_DUCK_DUCK_GO = new TabModelMetaDataInfo(5, 0,
+            V2_TEXTAREA.tabId, new TabStateInfo[] {V2_TEXTAREA, V2_DUCK_DUCK_GO},
+            "AAAABQAAAAQAAAACAAAAAQAAAAIAAAAGABJodHRwczovL2hlbGxvLmNvbS8AAAAHAA9odHRwOi8v"
+                    + "Ym9vLmNvbS8AAAADABVodHRwczovL3RleHRhcmVhLm9yZy8AAAAEABdodHRwczovL2R1Y2tkdWNr"
+                    + "Z28uY29tLw==");
+
     private File mTestingDirectory;
     private File mDataDirectory;
 
