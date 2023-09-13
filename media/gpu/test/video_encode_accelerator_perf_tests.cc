@@ -773,7 +773,7 @@ class VideoEncoderTest : public ::testing::Test {
           bitstream_processors.push_back(CreateBitstreamValidator(
               profile, gfx::Rect(spatial_layer_resolutions[sid]),
               num_encode_frames, sid, tid, spatial_layer_resolutions,
-              decoder_buffer_validator_, SVCInterLayerPredMode::kOff));
+              decoder_buffer_validator_, inter_layer_pred_mode));
           if (g_env->SaveOutputBitstream()) {
             bitstream_processors.emplace_back(BitstreamFileWriter::Create(
                 g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile),
