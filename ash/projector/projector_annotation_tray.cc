@@ -62,16 +62,15 @@ constexpr SkColor kPenColors[] = {
 // TODO(b/201664243): Use AnnotatorToolType.
 enum ProjectorTool { kToolNone, kToolPen };
 
-ProjectorTool GetCurrentTool() {
+bool IsAnnotatorEnabled() {
   auto* controller = Shell::Get()->projector_controller();
   // `controller` may not be available yet as the `ProjectorAnnotationTray`
   // is created before it.
-  if (!controller)
-    return kToolNone;
+  return controller ? controller->IsAnnotatorEnabled() : false;
+}
 
-  if (controller->IsAnnotatorEnabled())
-    return kToolPen;
-  return kToolNone;
+ProjectorTool GetCurrentTool() {
+  return IsAnnotatorEnabled() ? kToolPen : kToolNone;
 }
 
 const gfx::VectorIcon& GetIconForTool(ProjectorTool tool, SkColor color) {
@@ -154,11 +153,7 @@ void ProjectorAnnotationTray::ClickedOutsideBubble() {
 }
 
 void ProjectorAnnotationTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
-  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      GetIconForTool(GetCurrentTool(), current_pen_color_),
-      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                : cros_tokens::kCrosSysOnSurface));
+  SetIconImage(is_active);
 }
 
 std::u16string ProjectorAnnotationTray::GetAccessibleNameForTray() {
@@ -182,7 +177,9 @@ void ProjectorAnnotationTray::HideBubbleWithView(
 void ProjectorAnnotationTray::CloseBubble() {
   pen_view_ = nullptr;
   bubble_.reset();
-  SetIsActive(false);
+  // Annotator can be enabled after closing the bubble so set the activity state
+  // according to it.
+  SetIsActive(IsAnnotatorEnabled());
   shelf()->UpdateAutoHideState();
 }
 
@@ -304,15 +301,21 @@ void ProjectorAnnotationTray::DeactivateActiveTool() {
 }
 
 void ProjectorAnnotationTray::UpdateIcon() {
-  const ProjectorTool tool = GetCurrentTool();
-  SetIsActive(tool != kToolNone);
-  // Only sets the image if Jelly is not enabled, since `UpdateTrayItemColor()`
-  // will be called in `SetIsActive()` to set the image for Jelly.
+  bool annotator_toggled = false;
+  if (is_active() != IsAnnotatorEnabled()) {
+    SetIsActive(IsAnnotatorEnabled());
+    annotator_toggled = true;
+  }
+  // Only sets the image if Jelly is not enabled or if the annotator was not
+  // toggled, since `UpdateTrayItemColor()` will be called in `SetIsActive()` to
+  // set the image for Jelly only when active state changes.
   if (!chromeos::features::IsJellyEnabled()) {
     image_view_->SetImage(gfx::CreateVectorIcon(
-        GetIconForTool(tool, current_pen_color_),
+        GetIconForTool(GetCurrentTool(), current_pen_color_),
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  } else if (!annotator_toggled) {
+    SetIconImage(is_active());
   }
   image_view_->SetTooltipText(GetTooltip());
 }
@@ -351,6 +354,14 @@ std::u16string ProjectorAnnotationTray::GetTooltip() {
           : IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE);
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TOOLTIP, enabled_state);
+}
+
+void ProjectorAnnotationTray::SetIconImage(bool is_active) {
+  DCHECK(chromeos::features::IsJellyEnabled());
+  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      GetIconForTool(GetCurrentTool(), current_pen_color_),
+      is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                : cros_tokens::kCrosSysOnSurface));
 }
 
 }  // namespace ash

@@ -82,6 +82,9 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
 
   std::u16string GetTooltip();
 
+  // Sets the image with the color that corresponds to the active state.
+  void SetIconImage(bool is_active);
+
   // Image view of the tray icon.
   const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
 
