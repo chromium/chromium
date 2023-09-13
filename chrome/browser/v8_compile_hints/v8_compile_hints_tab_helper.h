@@ -36,6 +36,16 @@ BASE_DECLARE_FEATURE(kConsumeCompileHints);
 
 }  // namespace features
 
+// Keep in sync with V8CompileHintsModelQuality in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class V8CompileHintsModelQuality {
+  kNoModel = 0,
+  kBadModel = 1,
+  kGoodModel = 2,
+  kMaxValue = kGoodModel
+};
+
 // Observes page load events, requests V8_COMPILE_HINTS data from
 // OptimizationGuide, and sends it to the renderer.
 //
@@ -68,6 +78,9 @@ class V8CompileHintsTabHelper
       SendDataToRendererFunction send_data_to_renderer_for_testing) {
     send_data_to_renderer_for_testing_ = send_data_to_renderer_for_testing;
   }
+
+  static constexpr const char* kModelQualityHistogramName =
+      "WebCore.Scripts.V8CrowdsourcedCompileHints.ModelQuality";
 
  private:
   friend class content::WebContentsUserData<V8CompileHintsTabHelper>;

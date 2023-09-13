@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -82,16 +83,18 @@ void V8CompileHintsTabHelperTest::NavigateAndCommitInFrame(
 
 namespace {
 
-optimization_guide::OptimizationMetadata CreateMetadataWithBloomFilterSize(
-    size_t count) {
+optimization_guide::OptimizationMetadata CreateMetadata(
+    size_t bloom_filter_size = V8CompileHintsTabHelper::kModelInt64Count,
+    int32_t clear_zeros = 50000,
+    int32_t clear_ones = 2000) {
   optimization_guide::OptimizationMetadata optimization_metadata;
   proto::Model model;
-  for (size_t i = 0; i < count; ++i) {
+  for (size_t i = 0; i < bloom_filter_size; ++i) {
     model.add_bloom_filter(static_cast<int64_t>(i));
   }
   model.set_sample_count(1000);
-  model.set_clear_zeros(50000);
-  model.set_clear_ones(2000);
+  model.set_clear_zeros(clear_zeros);
+  model.set_clear_ones(clear_ones);
   optimization_guide::proto::Any any;
   any.set_type_url(model.GetTypeName());
   model.SerializeToString(any.mutable_value());
@@ -99,19 +102,18 @@ optimization_guide::OptimizationMetadata CreateMetadataWithBloomFilterSize(
   return optimization_metadata;
 }
 
-optimization_guide::OptimizationMetadata CreateMetadata() {
-  return CreateMetadataWithBloomFilterSize(
-      V8CompileHintsTabHelper::kModelInt64Count);
+optimization_guide::OptimizationMetadata CreateInvalidMetadata() {
+  return CreateMetadata(V8CompileHintsTabHelper::kModelInt64Count - 1);
 }
 
-optimization_guide::OptimizationMetadata CreateInvalidMetadata() {
-  return CreateMetadataWithBloomFilterSize(
-      V8CompileHintsTabHelper::kModelInt64Count - 1);
+optimization_guide::OptimizationMetadata CreateBadMetadata() {
+  return CreateMetadata(V8CompileHintsTabHelper::kModelInt64Count, 1000, 0);
 }
 
 }  // namespace
 
 TEST_F(V8CompileHintsTabHelperTest, DataFromOptimizationGuide) {
+  base::HistogramTester histogram_tester;
   bool data_sent = false;
   tab_helper_->SetSendDataToRendererForTesting(base::BindLambdaForTesting(
       [&data_sent](const proto::Model& model) { data_sent = true; }));
@@ -128,6 +130,9 @@ TEST_F(V8CompileHintsTabHelperTest, DataFromOptimizationGuide) {
       .Run(optimization_guide::OptimizationGuideDecision::kTrue,
            ByRef(optimization_metadata));
   EXPECT_TRUE(data_sent);
+  histogram_tester.ExpectUniqueSample(
+      V8CompileHintsTabHelper::kModelQualityHistogramName,
+      V8CompileHintsModelQuality::kGoodModel, 1);
 }
 
 TEST_F(V8CompileHintsTabHelperTest, NonHttpNavigationIgnored) {
@@ -143,6 +148,7 @@ TEST_F(V8CompileHintsTabHelperTest, NonHttpNavigationIgnored) {
 }
 
 TEST_F(V8CompileHintsTabHelperTest, InvalidModelIgnored) {
+  base::HistogramTester histogram_tester;
   bool data_sent = false;
   tab_helper_->SetSendDataToRendererForTesting(base::BindLambdaForTesting(
       [&data_sent](const proto::Model& model) { data_sent = true; }));
@@ -160,6 +166,33 @@ TEST_F(V8CompileHintsTabHelperTest, InvalidModelIgnored) {
   NavigateAndCommitInFrame("http://test.org", main_rfh());
 
   EXPECT_FALSE(data_sent);
+  histogram_tester.ExpectUniqueSample(
+      V8CompileHintsTabHelper::kModelQualityHistogramName,
+      V8CompileHintsModelQuality::kNoModel, 1);
+}
+
+TEST_F(V8CompileHintsTabHelperTest, BadModelIgnored) {
+  base::HistogramTester histogram_tester;
+  bool data_sent = false;
+  tab_helper_->SetSendDataToRendererForTesting(base::BindLambdaForTesting(
+      [&data_sent](const proto::Model& model) { data_sent = true; }));
+
+  optimization_guide::OptimizationMetadata optimization_metadata =
+      CreateBadMetadata();
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimization(_, optimization_guide::proto::V8_COMPILE_HINTS,
+                           base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(optimization_metadata)));
+
+  NavigateAndCommitInFrame("http://test.org", main_rfh());
+
+  EXPECT_FALSE(data_sent);
+  histogram_tester.ExpectUniqueSample(
+      V8CompileHintsTabHelper::kModelQualityHistogramName,
+      V8CompileHintsModelQuality::kBadModel, 1);
 }
 
 }  // namespace v8_compile_hints

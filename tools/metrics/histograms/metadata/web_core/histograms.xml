@@ -768,6 +768,16 @@ chromium-metrics-reviews@google.com.
   <summary>Whether a parsing blocking script was streamed or not.</summary>
 </histogram>
 
+<histogram name="WebCore.Scripts.V8CrowdsourcedCompileHints.ModelQuality"
+    enum="V8CompileHintsModelQuality" expires_after="2024-09-11">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-loading@google.com</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Whether we got a V8CompileHints model and whether it was good quality.
+  </summary>
+</histogram>
+
 <histogram name="WebCore.WebSocket.SendType" enum="WebSocketSendType"
     expires_after="2021-10-17">
   <owner>yhirano@chromium.org</owner>

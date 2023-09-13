@@ -109822,6 +109822,12 @@ Full version information for the fingerprint enum values:
   <int value="7" label="INVALID_HEADER">Invalid header</int>
 </enum>
 
+<enum name="V8CompileHintsModelQuality">
+  <int value="0" label="No model"/>
+  <int value="1" label="Bad model"/>
+  <int value="2" label="Good model"/>
+</enum>
+
 <enum name="V8DebugFeature">
   <int value="1" label="kActive">Debugger has been active</int>
   <int value="2" label="kBreakPoint">
