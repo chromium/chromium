@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 
-from typing import List, Tuple
+from typing import Any, Callable, List, Tuple, Mapping
 
 import pytest
 
@@ -19,11 +19,23 @@ sys.path.append(os.path.join(SRC_DIR, 'build', 'util'))
 from lib.results import result_sink
 from lib.results import result_types
 
+"""Associates an artifact with the current test.
+
+Args:
+  artifact_name: The artifact name
+  file_path: The path to the file to be uploaded.
+"""
+AddArtifact = Callable[[str, str], None]
+
+
 _RESULT_TYPES = {
   'passed': result_types.PASS,
   'failed': result_types.FAIL,
   'skipped': result_types.SKIP,
 }
+
+_PROPERTY_SECTION_TAG = 'tag'
+_PROPERTY_SECTION_ARTIFACT = 'artifact'
 
 
 def pytest_sessionstart(session: pytest.Session):
@@ -42,9 +54,9 @@ def _get_test_file(result: pytest.TestReport) -> str:
   return f'//{fspath}#{lineno+1}'
 
 
-def _gen_tag_properties(
+def _extract_tags_from_properties(
     properties: List[Tuple[str, Tuple[str, str]]]) -> List[Tuple[str, str]]:
-  """Generates a list of (key, value) tuples used for test tags.
+  """Extracts a list of (key, value) tuples used for test tags.
 
   Args:
     properties: The list of tuple in the format of (section_name, [key, value])
@@ -54,8 +66,42 @@ def _gen_tag_properties(
   """
   return [
     (key, value) for (sec, (key, value)) in properties
-    if sec == 'tag'
+    if sec == _PROPERTY_SECTION_TAG
   ]
+
+def _extract_artifacts_from_properties(
+    properties: List[Tuple[str, Tuple[str, str]]]) -> Mapping[str, Any]:
+  """Extracts a dict for artifacts attributes.
+
+  Args:
+    properties: The list of tuple in the format of
+                ('artifact', [artifact_name, file_path])
+
+  Returns:
+    A dictionary of artifacts appropriate to passing to ResultSinkClient.Post
+    and luci-go/resultdb/sink/proto/v1/test_result.proto.
+
+    The dict is extracted from the property where the section name matches
+    'artifact'.
+  """
+  return {
+    artifact_name: {
+      'filePath': file_path
+    }
+    for (sec, (artifact_name, file_path)) in properties
+    if sec == _PROPERTY_SECTION_ARTIFACT
+  }
+
+
+@pytest.fixture
+def add_artifact(request: pytest.FixtureRequest) -> AddArtifact:
+  """The fixture that adds an artifact to the current test case."""
+  def add(artifact_name: str, file_path: str) -> None:
+    assert os.path.exists(file_path)
+    request.node.user_properties.append(
+      (_PROPERTY_SECTION_ARTIFACT, (artifact_name, file_path)))
+  return add
+
 
 def _report_test_result(result: pytest.TestReport,
                         item: pytest.Item,
@@ -71,9 +117,10 @@ def _report_test_result(result: pytest.TestReport,
   else:
     failure_reason = None
     artifacts = {}
+  artifacts.update(_extract_artifacts_from_properties(item.user_properties))
 
   if sink_client := item.session.sink_client:
-    tags = _gen_tag_properties(item.user_properties)
+    tags = _extract_tags_from_properties(item.user_properties)
     sink_client.Post(result.nodeid, _RESULT_TYPES[result.outcome],
                      result.duration, result.caplog, test_file, tags=tags,
                      failure_reason=failure_reason, artifacts=artifacts)
