@@ -185,23 +185,19 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
         print('Symbolizing stack using ABI=' + arch)
         symbol.ARCH = arch
     ResolveCrashSymbol(list(useful_lines), more_info, llvm_symbolizer)
+    if flush:
+      sys.stdout.flush()
 
   preprocessor = PreProcessLog(load_vaddrs, apks_directory)
   for line in iter(sys.stdin.readline, b''):
     if not line: # EOF
       break
-    if pass_through:
-      sys.stdout.write(line)
-      if flush:
-        sys.stdout.flush()
     maybe_line, maybe_so_dir = preprocessor([line])
     useful_lines.extend(maybe_line)
     so_dirs.extend(maybe_so_dir)
     if in_stack:
       if not maybe_line:
         ConvertStreamingChunk()
-        if flush:
-          sys.stdout.flush()
         so_dirs = []
         useful_lines = []
         in_stack = False
@@ -209,6 +205,10 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
       if _TRACE_LINE.match(line) or _DEBUG_TRACE_LINE.match(line) or \
           _VALUE_LINE.match(line) or _CODE_LINE.match(line):
         in_stack = True
+    if pass_through:
+      sys.stdout.write(line)
+      if flush:
+        sys.stdout.flush()
   if in_stack:
     ConvertStreamingChunk()
 
