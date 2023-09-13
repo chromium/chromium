@@ -264,7 +264,7 @@ targets.mixin(
     ],
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests",
@@ -295,7 +295,7 @@ targets.mixin(
     ],
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "gce": "1",
             "os": "Ubuntu-22.04",
@@ -325,7 +325,7 @@ targets.mixin(
     ],
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "gce": "1",
             "os": "Ubuntu-22.04",
@@ -385,7 +385,7 @@ targets.mixin(
     ],
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "gce": "1",
             "os": "Ubuntu-18.04",

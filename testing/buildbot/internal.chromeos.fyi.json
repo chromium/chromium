@@ -21,7 +21,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -64,7 +64,7 @@
         "name": "aura_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -96,7 +96,7 @@
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -130,7 +130,7 @@
         "name": "capture_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -162,7 +162,7 @@
         "name": "cc_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -199,7 +199,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -235,7 +235,7 @@
         "name": "chromeos_integration_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -267,7 +267,7 @@
         "name": "crypto_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -304,7 +304,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -337,7 +337,7 @@
         "name": "display_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -376,7 +376,7 @@
         "name": "fake_libva_driver_unittest",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -408,7 +408,7 @@
         "name": "google_apis_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -440,7 +440,7 @@
         "name": "ipc_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -472,7 +472,7 @@
         "name": "latency_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -504,7 +504,7 @@
         "name": "libcups_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -537,7 +537,7 @@
         "name": "media_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -569,7 +569,7 @@
         "name": "midi_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -601,7 +601,7 @@
         "name": "mojo_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -647,7 +647,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -681,7 +681,7 @@
         "name": "ozone_gl_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -714,7 +714,7 @@
         "name": "ozone_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -746,7 +746,7 @@
         "name": "pdf_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -778,7 +778,7 @@
         "name": "printing_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -812,7 +812,7 @@
         "name": "profile_provider_unittest",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -844,7 +844,7 @@
         "name": "rust_gtest_interop_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -876,7 +876,7 @@
         "name": "sql_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -908,7 +908,7 @@
         "name": "url_unittests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -948,7 +948,7 @@
         "name": "vaapi_unittest",
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -992,7 +992,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -1035,7 +1035,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",
@@ -1085,7 +1085,7 @@
         },
         "swarming": {
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "gce": "1",
             "kvm": "1",
             "os": "Ubuntu-22.04",

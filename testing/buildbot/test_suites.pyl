@@ -1875,7 +1875,7 @@
           # It can thus run on a standard linux machine w/o a device.
           'dimensions': {
             'os': 'Ubuntu-22.04',
-            'cpu': 'x86'
+            'cpu': 'x86-64'
           },
         },
         'resultdb': {
@@ -1895,7 +1895,7 @@
           # It can thus run on a standard linux machine w/o a device.
           'dimensions': {
             'os': 'Ubuntu-22.04',
-            'cpu': 'x86'
+            'cpu': 'x86-64'
           },
         },
         'resultdb': {
@@ -4729,7 +4729,7 @@
         'swarming': {
           'dimensions': {
             'os': 'Ubuntu-18.04',
-            'cpu': 'x86',
+            'cpu': 'x86-64',
             'device_os': None,
             'device_os_flavor': None,
             'device_playstore_version': None,

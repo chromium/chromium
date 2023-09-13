@@ -477,7 +477,7 @@ targets.variant(
     ],
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
         },

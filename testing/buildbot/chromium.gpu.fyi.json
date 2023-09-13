@@ -4630,7 +4630,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -4673,7 +4673,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -4725,7 +4725,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -4783,7 +4783,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -4832,7 +4832,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -4881,7 +4881,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -4934,7 +4934,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -4983,7 +4983,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -5042,7 +5042,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -5092,7 +5092,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -5142,7 +5142,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -5192,7 +5192,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -5244,7 +5244,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -5298,7 +5298,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
@@ -5350,7 +5350,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "cpu": "x86",
+            "cpu": "x86-64",
             "kvm": "1",
             "os": "Ubuntu-22.04",
             "pool": "chromium.tests"
