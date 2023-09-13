@@ -11,7 +11,10 @@ import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -56,7 +59,6 @@ public class SearchSuggestionsFragmentTest {
     @Before
     public void setUp() {
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
     }
 
@@ -71,8 +73,19 @@ public class SearchSuggestionsFragmentTest {
     private void initFragmentWithSearchSuggestionsState(boolean isSearchSuggestionsOn) {
         when(mPrefService.getBoolean(Pref.SEARCH_SUGGEST_ENABLED))
                 .thenReturn(isSearchSuggestionsOn);
-        mScenario = FragmentScenario.launchInContainer(
-                SearchSuggestionsFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario = FragmentScenario.launchInContainer(SearchSuggestionsFragment.class,
+                Bundle.EMPTY, R.style.Theme_MaterialComponents, new FragmentFactory() {
+                    @NonNull
+                    @Override
+                    public Fragment instantiate(
+                            @NonNull ClassLoader classLoader, @NonNull String className) {
+                        Fragment fragment = super.instantiate(classLoader, className);
+                        if (fragment instanceof SearchSuggestionsFragment) {
+                            ((SearchSuggestionsFragment) fragment).setProfile(mProfile);
+                        }
+                        return fragment;
+                    }
+                });
         mScenario.onFragment(fragment
                 -> mSearchSuggestionsButton =
                            fragment.getView().findViewById(R.id.search_suggestions_switch));

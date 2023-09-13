@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
-import androidx.fragment.app.Fragment;
-
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -22,7 +20,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 /**
  * Controls the behaviour of the Preload privacy guide page.
  */
-public class PreloadFragment extends Fragment
+public class PreloadFragment extends PrivacyGuideBasePage
         implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener,
                    RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mDisabledPreloading;

@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.fragment.app.Fragment;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
@@ -31,7 +30,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 /**
  * Last privacy guide page.
  */
-public class DoneFragment extends Fragment {
+public class DoneFragment extends PrivacyGuideBasePage {
     private CustomTabIntentHelper mCustomTabIntentHelper;
     private SettingsLauncher mSettingsLauncher;
 
@@ -55,7 +54,7 @@ public class DoneFragment extends Fragment {
             view.findViewById(R.id.ps_explanation).setVisibility(View.GONE);
         }
 
-        if (isUserSignedIn()) {
+        if (isUserSignedIn(getProfile())) {
             ChromeImageButton waaButton = view.findViewById(R.id.waa_button);
             waaButton.setOnClickListener(this::onWaaButtonClick);
         } else {

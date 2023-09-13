@@ -11,6 +11,9 @@ import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -63,8 +66,6 @@ public class CookiesFragmentTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
-
         mMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
 
@@ -87,8 +88,19 @@ public class CookiesFragmentTest {
                      mProfile, ContentSettingsType.COOKIES))
                 .thenReturn(allowCookies);
 
-        mScenario = FragmentScenario.launchInContainer(
-                CookiesFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario = FragmentScenario.launchInContainer(CookiesFragment.class, Bundle.EMPTY,
+                R.style.Theme_MaterialComponents, new FragmentFactory() {
+                    @NonNull
+                    @Override
+                    public Fragment instantiate(
+                            @NonNull ClassLoader classLoader, @NonNull String className) {
+                        Fragment fragment = super.instantiate(classLoader, className);
+                        if (fragment instanceof CookiesFragment) {
+                            ((CookiesFragment) fragment).setProfile(mProfile);
+                        }
+                        return fragment;
+                    }
+                });
         mScenario.onFragment(fragment -> {
             mBlockThirdPartyIncognito =
                     fragment.getView().findViewById(R.id.block_third_party_incognito);

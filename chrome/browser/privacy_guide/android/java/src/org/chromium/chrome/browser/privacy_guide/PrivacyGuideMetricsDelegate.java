@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.content_settings.CookieControlsMode;
 
@@ -25,6 +26,8 @@ class PrivacyGuideMetricsDelegate {
     private static final String INITIAL_COOKIES_CONTROL_MODE = "INITIAL_COOKIES_CONTROL_MODE";
     private static final String INITIAL_SEARCH_SUGGESTIONS_STATE =
             "INITIAL_SEARCH_SUGGESTIONS_STATE";
+
+    private final Profile mProfile;
 
     /**
      * Initial state of the MSBB when {@link MSBBFragment} is created.
@@ -46,6 +49,10 @@ class PrivacyGuideMetricsDelegate {
      * Initial state of the Search Suggestions when {@link SearchSuggestionsFragment} is created.
      */
     private @Nullable Boolean mInitialSearchSuggestionsState;
+
+    PrivacyGuideMetricsDelegate(Profile profile) {
+        mProfile = profile;
+    }
 
     /**
      * A method to persist the initial state of all Fragments on Activity destruction.
@@ -95,7 +102,7 @@ class PrivacyGuideMetricsDelegate {
     private void recordMetricsOnNextForMSBBCard() {
         assert mInitialMsbbState != null : "Initial state of MSSB not set.";
 
-        boolean currentValue = PrivacyGuideUtils.isMsbbEnabled();
+        boolean currentValue = PrivacyGuideUtils.isMsbbEnabled(mProfile);
         @PrivacyGuideSettingsStates
         int stateChange;
 
@@ -125,7 +132,7 @@ class PrivacyGuideMetricsDelegate {
     private void recordMetricsOnNextForHistorySyncCard() {
         assert mInitialHistorySyncState != null : "Initial state of History Sync not set.";
 
-        boolean currentValue = PrivacyGuideUtils.isHistorySyncEnabled();
+        boolean currentValue = PrivacyGuideUtils.isHistorySyncEnabled(mProfile);
         @PrivacyGuideSettingsStates
         int stateChange;
 
@@ -194,7 +201,7 @@ class PrivacyGuideMetricsDelegate {
         assert mInitialCookiesControlMode != null : "Initial mode of Cookie Control not set.";
 
         @CookieControlsMode
-        int currentValue = PrivacyGuideUtils.getCookieControlsMode();
+        int currentValue = PrivacyGuideUtils.getCookieControlsMode(mProfile);
 
         boolean isInitialStateBlock3PIncognito =
                 mInitialCookiesControlMode == CookieControlsMode.INCOGNITO_ONLY;
@@ -230,7 +237,7 @@ class PrivacyGuideMetricsDelegate {
         assert mInitialSearchSuggestionsState
                 != null : "Initial state of search suggestions not set.";
 
-        boolean currentValue = PrivacyGuideUtils.isSearchSuggestionsEnabled();
+        boolean currentValue = PrivacyGuideUtils.isSearchSuggestionsEnabled(mProfile);
         @PrivacyGuideSettingsStates
         int stateChange;
 
@@ -264,11 +271,11 @@ class PrivacyGuideMetricsDelegate {
     void setInitialStateForCard(@PrivacyGuideFragment.FragmentType int fragmentType) {
         switch (fragmentType) {
             case PrivacyGuideFragment.FragmentType.MSBB: {
-                mInitialMsbbState = PrivacyGuideUtils.isMsbbEnabled();
+                mInitialMsbbState = PrivacyGuideUtils.isMsbbEnabled(mProfile);
                 break;
             }
             case PrivacyGuideFragment.FragmentType.HISTORY_SYNC: {
-                mInitialHistorySyncState = PrivacyGuideUtils.isHistorySyncEnabled();
+                mInitialHistorySyncState = PrivacyGuideUtils.isHistorySyncEnabled(mProfile);
                 break;
             }
             case PrivacyGuideFragment.FragmentType.SAFE_BROWSING: {
@@ -276,11 +283,12 @@ class PrivacyGuideMetricsDelegate {
                 break;
             }
             case PrivacyGuideFragment.FragmentType.COOKIES: {
-                mInitialCookiesControlMode = PrivacyGuideUtils.getCookieControlsMode();
+                mInitialCookiesControlMode = PrivacyGuideUtils.getCookieControlsMode(mProfile);
                 break;
             }
             case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS: {
-                mInitialSearchSuggestionsState = PrivacyGuideUtils.isSearchSuggestionsEnabled();
+                mInitialSearchSuggestionsState =
+                        PrivacyGuideUtils.isSearchSuggestionsEnabled(mProfile);
                 break;
             }
             case PrivacyGuideFragment.FragmentType.WELCOME:

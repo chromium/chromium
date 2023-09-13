@@ -71,13 +71,14 @@ public class PrivacyGuideMetricsDelegateTest {
     @Mock
     private UserPrefs.Natives mUserPrefsNativesMock;
 
-    private final PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate =
-            new PrivacyGuideMetricsDelegate();
     private final UserActionTester mActionTester = new UserActionTester();
+
+    private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
+        mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate(mProfile);
+
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);

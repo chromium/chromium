@@ -11,6 +11,9 @@ import static org.mockito.Mockito.when;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -56,8 +59,19 @@ public class DoneFragmentTest {
     private View mWaaButton;
 
     private void initFragment() {
-        mScenario = FragmentScenario.launchInContainer(
-                DoneFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario = FragmentScenario.launchInContainer(DoneFragment.class, Bundle.EMPTY,
+                R.style.Theme_MaterialComponents, new FragmentFactory() {
+                    @NonNull
+                    @Override
+                    public Fragment instantiate(
+                            @NonNull ClassLoader classLoader, @NonNull String className) {
+                        Fragment fragment = super.instantiate(classLoader, className);
+                        if (fragment instanceof DoneFragment) {
+                            ((DoneFragment) fragment).setProfile(mProfile);
+                        }
+                        return fragment;
+                    }
+                });
         mScenario.onFragment(fragment -> {
             mFragment = (DoneFragment) fragment;
             mPsButton = fragment.getView().findViewById(R.id.ps_button);
@@ -77,7 +91,6 @@ public class DoneFragmentTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         mMocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridge);

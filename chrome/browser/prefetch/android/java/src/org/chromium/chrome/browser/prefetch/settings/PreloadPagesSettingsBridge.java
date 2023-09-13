@@ -10,6 +10,7 @@ import org.chromium.base.annotations.NativeMethods;
 /**
  * Reads and writes preferences related to preloading.
  */
+// TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 @JNINamespace("prefetch")
 public class PreloadPagesSettingsBridge {
     /**

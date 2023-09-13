@@ -10,16 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 
 /**
  * Controls the behaviour of the MSBB privacy guide page.
  */
-public class MSBBFragment extends Fragment {
+public class MSBBFragment extends PrivacyGuideBasePage {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -31,12 +29,12 @@ public class MSBBFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         SwitchCompat msbbSwitch = view.findViewById(R.id.msbb_switch);
-        msbbSwitch.setChecked(PrivacyGuideUtils.isMsbbEnabled());
+        msbbSwitch.setChecked(PrivacyGuideUtils.isMsbbEnabled(getProfile()));
 
         msbbSwitch.setOnCheckedChangeListener((button, isChecked) -> {
             PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(isChecked);
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    Profile.getLastUsedRegularProfile(), isChecked);
+                    getProfile(), isChecked);
         });
     }
 }

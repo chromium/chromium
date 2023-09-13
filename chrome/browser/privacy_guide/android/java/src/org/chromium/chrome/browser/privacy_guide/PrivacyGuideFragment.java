@@ -29,7 +29,10 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.widget.ButtonCompat;
@@ -44,7 +47,8 @@ import java.util.List;
  * Fragment containing the Privacy Guide (a walk-through of the most important privacy settings).
  */
 public class PrivacyGuideFragment
-        extends Fragment implements BackPressHandler, BackPressHelper.ObsoleteBackPressedHandler {
+        extends Fragment implements BackPressHandler, BackPressHelper.ObsoleteBackPressedHandler,
+                                    ProfileDependentSetting, FragmentSettingsLauncher {
     /**
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
@@ -85,12 +89,13 @@ public class PrivacyGuideFragment
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
     private NavbarVisibilityDelegate mNavbarVisibilityDelegate;
     private boolean mEnablePostMVPFixes;
+    private Profile mProfile;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate();
+        mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate(mProfile);
         if (savedInstanceState != null) {
             mPrivacyGuideMetricsDelegate.restoreState(savedInstanceState);
         }
@@ -106,7 +111,7 @@ public class PrivacyGuideFragment
         mView = inflater.inflate(R.layout.privacy_guide_steps, container, false);
 
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
-        mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl(),
+        mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl(mProfile),
                 ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled() ? ALL_FRAGMENT_TYPE_ORDER_PG3
                                                                     : ALL_FRAGMENT_TYPE_ORDER);
         mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
@@ -222,6 +227,10 @@ public class PrivacyGuideFragment
 
     @Override
     public void onAttachFragment(@NonNull Fragment childFragment) {
+        if (childFragment instanceof ProfileDependentSetting) {
+            ((ProfileDependentSetting) childFragment).setProfile(mProfile);
+        }
+
         if (childFragment instanceof SafeBrowsingFragment) {
             ((SafeBrowsingFragment) childFragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
@@ -289,6 +298,7 @@ public class PrivacyGuideFragment
         mCustomTabHelper = tabHelper;
     }
 
+    @Override
     public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
         mSettingsLauncher = settingsLauncher;
     }
@@ -298,5 +308,10 @@ public class PrivacyGuideFragment
         var oldValue = mPrivacyGuideMetricsDelegate;
         mPrivacyGuideMetricsDelegate = privacyGuideMetricsDelegate;
         ResettersForTesting.register(() -> mPrivacyGuideMetricsDelegate = oldValue);
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 }

@@ -9,7 +9,10 @@ import static org.junit.Assert.assertTrue;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -53,7 +56,6 @@ public class MSBBFragmentTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
     }
 
@@ -68,8 +70,19 @@ public class MSBBFragmentTest {
     private void initFragmentWithMSBBState(boolean isMSBBOn) {
         Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
                 .thenReturn(isMSBBOn);
-        mScenario = FragmentScenario.launchInContainer(
-                MSBBFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario = FragmentScenario.launchInContainer(MSBBFragment.class, Bundle.EMPTY,
+                R.style.Theme_MaterialComponents, new FragmentFactory() {
+                    @NonNull
+                    @Override
+                    public Fragment instantiate(
+                            @NonNull ClassLoader classLoader, @NonNull String className) {
+                        Fragment fragment = super.instantiate(classLoader, className);
+                        if (fragment instanceof MSBBFragment) {
+                            ((MSBBFragment) fragment).setProfile(mProfile);
+                        }
+                        return fragment;
+                    }
+                });
         mScenario.onFragment(
                 fragment -> mMSBBButton = fragment.getView().findViewById(R.id.msbb_switch));
     }

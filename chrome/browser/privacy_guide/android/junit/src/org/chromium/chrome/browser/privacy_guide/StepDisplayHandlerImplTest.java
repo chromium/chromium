@@ -61,7 +61,6 @@ public class StepDisplayHandlerImplTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
         mMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
 
@@ -69,7 +68,7 @@ public class StepDisplayHandlerImplTest {
 
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         mMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSBNativesMock);
-        mStepDisplayHandler = new StepDisplayHandlerImpl();
+        mStepDisplayHandler = new StepDisplayHandlerImpl(mProfile);
     }
 
     private void setSBState(@SafeBrowsingState int sbState) {

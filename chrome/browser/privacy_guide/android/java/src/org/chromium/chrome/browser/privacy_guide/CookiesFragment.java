@@ -12,9 +12,7 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -25,7 +23,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 /**
  * Controls the behaviour of the Cookies privacy guide page.
  */
-public class CookiesFragment extends Fragment implements RadioGroup.OnCheckedChangeListener {
+public class CookiesFragment
+        extends PrivacyGuideBasePage implements RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescription mBlockThirdPartyIncognito;
     private RadioButtonWithDescription mBlockThirdParty;
 
@@ -48,8 +47,7 @@ public class CookiesFragment extends Fragment implements RadioGroup.OnCheckedCha
 
     @Override
     public void onCheckedChanged(RadioGroup group, int clickedButtonId) {
-        WebsitePreferenceBridge.setCategoryEnabled(
-                Profile.getLastUsedRegularProfile(), ContentSettingsType.COOKIES, true);
+        WebsitePreferenceBridge.setCategoryEnabled(getProfile(), ContentSettingsType.COOKIES, true);
 
         if (clickedButtonId == R.id.block_third_party_incognito) {
             setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
@@ -62,13 +60,13 @@ public class CookiesFragment extends Fragment implements RadioGroup.OnCheckedCha
 
     private void initialRadioButtonConfig() {
         boolean allowCookies = WebsitePreferenceBridge.isCategoryEnabled(
-                Profile.getLastUsedRegularProfile(), ContentSettingsType.COOKIES);
+                getProfile(), ContentSettingsType.COOKIES);
         if (!allowCookies) {
             assert false : "Cookies page should not be shown if cookies are blocked";
         }
 
         @CookieControlsMode
-        int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode();
+        int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode(getProfile());
         switch (cookieControlsMode) {
             case CookieControlsMode.INCOGNITO_ONLY:
                 mBlockThirdPartyIncognito.setChecked(true);
@@ -86,7 +84,6 @@ public class CookiesFragment extends Fragment implements RadioGroup.OnCheckedCha
 
     private void setCookieControlsMode(@CookieControlsMode int cookieControlsMode) {
         PrivacyGuideMetricsDelegate.recordMetricsOnCookieControlsChange(cookieControlsMode);
-        UserPrefs.get(Profile.getLastUsedRegularProfile())
-                .setInteger(PrefNames.COOKIE_CONTROLS_MODE, cookieControlsMode);
+        UserPrefs.get(getProfile()).setInteger(PrefNames.COOKIE_CONTROLS_MODE, cookieControlsMode);
     }
 }

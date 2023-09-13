@@ -12,6 +12,7 @@ import org.chromium.base.annotations.NativeMethods;
 /**
  * Bridge providing access to native-side Safe Browsing data.
  */
+// TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 @JNINamespace("safe_browsing")
 public final class SafeBrowsingBridge {
     /**

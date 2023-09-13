@@ -16,9 +16,15 @@ import org.chromium.components.sync.SyncService;
  * Computes for each privacy guide step whether it should be displayed or not.
  */
 class StepDisplayHandlerImpl implements StepDisplayHandler {
+    private final Profile mProfile;
+
+    StepDisplayHandlerImpl(Profile profile) {
+        mProfile = profile;
+    }
+
     @Override
     public boolean shouldDisplayHistorySync() {
-        SyncService syncService = SyncServiceFactory.get();
+        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
         return syncService != null && syncService.isSyncFeatureEnabled();
     }
 
@@ -29,10 +35,10 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
 
     @Override
     public boolean shouldDisplayCookies() {
-        boolean allowCookies = WebsitePreferenceBridge.isCategoryEnabled(
-                Profile.getLastUsedRegularProfile(), ContentSettingsType.COOKIES);
+        boolean allowCookies =
+                WebsitePreferenceBridge.isCategoryEnabled(mProfile, ContentSettingsType.COOKIES);
         @CookieControlsMode
-        int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode();
+        int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode(mProfile);
         return allowCookies && cookieControlsMode != CookieControlsMode.OFF;
     }
 }
