@@ -1188,8 +1188,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
       ProfileHelper::GetSigninProfile();
     }
 
-    ui::SetShowEmojiKeyboardCallback(
-        base::BindRepeating(&EmojiUI::Show, base::Unretained(profile)));
+    ui::SetShowEmojiKeyboardCallback(base::BindRepeating(&EmojiUI::Show));
 
     BootTimesRecorder::Get()->OnChromeProcessStart();
 

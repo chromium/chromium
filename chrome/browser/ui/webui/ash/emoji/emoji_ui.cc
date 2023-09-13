@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
@@ -71,7 +72,7 @@ bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client) {
   return input_client != nullptr;
 }
 
-void EmojiUI::Show(Profile* profile) {
+void EmojiUI::Show() {
   if (TabletMode::Get()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
@@ -84,6 +85,12 @@ void EmojiUI::Show(Profile* profile) {
 
   // Does not show emoji picker if there is no input client.
   if (!ShouldShow(input_client)) {
+    return;
+  }
+
+  auto* profile = ProfileManager::GetActiveUserProfile();
+
+  if (!profile) {
     return;
   }
 

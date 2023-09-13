@@ -21,8 +21,6 @@
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
-class Profile;
-
 namespace ui {
 class ColorChangeHandler;
 }  // namespace ui
@@ -48,7 +46,7 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
   ~EmojiUI() override;
 
   static bool ShouldShow(const ui::TextInputClient* input_client);
-  static void Show(Profile* profile);
+  static void Show();
 
   // Instantiates the implementor of the mojom::PageHandler mojo interface
   // passing the pending receiver that will be internally bound.
