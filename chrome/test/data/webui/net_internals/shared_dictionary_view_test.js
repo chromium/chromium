@@ -8,20 +8,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {switchToView} from './test_util.js';
 
-window.shared_dictionary_view_test = {};
-const shared_dictionary_view_test = window.shared_dictionary_view_test;
-shared_dictionary_view_test.suiteName = 'NetInternalsSharedDictionaryViewTests';
-/** @enum {string} */
-shared_dictionary_view_test.TestNames = {
-  ReloadEmpty: 'Reload empty result',
-  ReloadOneDictionary: 'Reload single dictionary',
-  ReloadTwoDictionaries: 'Reload two dictionaries',
-  ReloadTwoIsolaitons: 'Reload two isolations',
-  ClearForIsolation: 'Clear dictionary for an isolation',
-  ClearAll: 'Clear all dictionaries',
-};
-
-suite(shared_dictionary_view_test.suiteName, function() {
+suite('NetInternalsSharedDictionaryViewTest', function() {
   function checkOutput() {
     return new Promise(resolve => {
       const elementToObserve =
@@ -101,7 +88,7 @@ suite(shared_dictionary_view_test.suiteName, function() {
   /**
    * Reloading without any dictionary.
    */
-  test(shared_dictionary_view_test.TestNames.ReloadEmpty, async function() {
+  test('ReloadEmpty', async function() {
     switchToView('sharedDictionary');
     let result = await checkOutput();
     assertEquals('no data', result);
@@ -114,7 +101,7 @@ suite(shared_dictionary_view_test.suiteName, function() {
   /**
    * Reloading after registering one dictionary.
    */
-  test(shared_dictionary_view_test.TestNames.ReloadOneDictionary, async function() {
+  test('ReloadOneDictionary', async function() {
     switchToView('sharedDictionary');
     let result = await checkOutput();
     assertEquals('no data', result);
@@ -157,8 +144,7 @@ suite(shared_dictionary_view_test.suiteName, function() {
    * Reloading after registering two dictionaries.
    */
   test(
-      shared_dictionary_view_test.TestNames.ReloadTwoDictionaries,
-      async function() {
+      'ReloadTwoDictionaries', async function() {
         switchToView('sharedDictionary');
         let result = await checkOutput();
         assertEquals('no data', result);
@@ -224,7 +210,7 @@ suite(shared_dictionary_view_test.suiteName, function() {
   /**
    * Reloading after registering dictionaries on two isolations.
    */
-  test(shared_dictionary_view_test.TestNames.ReloadTwoIsolaitons, async function() {
+  test('ReloadTwoIsolations', async function() {
     switchToView('sharedDictionary');
     let result = await checkOutput();
     assertEquals('no data', result);
@@ -316,7 +302,7 @@ suite(shared_dictionary_view_test.suiteName, function() {
   /**
    * Clear dictionaries for an isolation.
    */
-  test(shared_dictionary_view_test.TestNames.ClearForIsolation, async function() {
+  test('ClearForIsolation', async function() {
     switchToView('sharedDictionary');
     let result = await checkOutput();
     assertEquals('no data', result);
@@ -431,7 +417,7 @@ suite(shared_dictionary_view_test.suiteName, function() {
   /**
    * Clear all dictionaries.
    */
-  test(shared_dictionary_view_test.TestNames.ClearAll, async function() {
+  test('ClearAll', async function() {
     switchToView('sharedDictionary');
     let result = await checkOutput();
     assertEquals('no data', result);

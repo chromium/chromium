@@ -47,6 +47,7 @@ source_set("browser_tests") {
     "media/media_history_browsertest.cc",
     "media_internals/media_internals_browsertest.cc",
     "metrics_internals/metrics_internals_browsertest.cc",
+    "net_internals/net_internals_browsertest.cc",
     "new_tab_page/new_tab_page_a11y_browsertest.cc",
     "new_tab_page/new_tab_page_browsertest.cc",
     "password_manager/password_manager_browsertest.cc",
@@ -217,7 +218,6 @@ if (include_js2gtest_tests) {
       "async_gen.js",
       "commander/commander_browsertest.js",
       "js2gtest_browsertest.js",
-      "net_internals/net_internals_browsertest.js",
     ]
 
     gen_include_files = [ "polymer_browser_test_base.js" ]

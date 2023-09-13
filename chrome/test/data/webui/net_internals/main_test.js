@@ -4,7 +4,7 @@
 
 import {checkTabLinkVisibility} from './test_util.js';
 
-suite('NetInternalsMainTests', function() {
+suite('NetInternalsMainTest', function() {
   test('tab visibility state', function() {
     // Expected visibility state of each tab.
     const tabVisibilityState = {

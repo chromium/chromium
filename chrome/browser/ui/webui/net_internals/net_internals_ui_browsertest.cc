@@ -410,19 +410,21 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
 
 NetInternalsTest::NetInternalsTest()
     : test_server_started_(false) {
-  message_handler_ = std::make_unique<MessageHandler>(this);
 }
 
 NetInternalsTest::~NetInternalsTest() {
 }
 
 void NetInternalsTest::SetUpOnMainThread() {
-  WebUIBrowserTest::SetUpOnMainThread();
+  WebUIMochaBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*.com", "127.0.0.1");
 }
 
-content::WebUIMessageHandler* NetInternalsTest::GetMockMessageHandler() {
-  return message_handler_.get();
+void NetInternalsTest::OnWebContentsAvailable(
+    content::WebContents* web_contents) {
+  content::WebUI* web_ui_instance = web_contents->GetWebUI();
+  ASSERT_TRUE(web_ui_instance != nullptr);
+  web_ui_instance->AddMessageHandler(std::make_unique<MessageHandler>(this));
 }
 
 bool NetInternalsTest::StartTestServer() {

@@ -9,24 +9,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {switchToView} from './test_util.js';
 
-window.dns_view_test = {};
-const dns_view_test = window.dns_view_test;
-dns_view_test.suiteName = 'NetInternalsDnsViewTests';
-/** @enum {string} */
-dns_view_test.TestNames = {
-  ResolveHostWithoutAlternative: 'resolve host with no alternative endpoints',
-  ResolveHostWithHTTP2Alternative:
-      'resolve host with http2 alternative endpoint',
-  ResolveHostWithHTTP3Alternative:
-      'resolve host with http3 alternative endpoint',
-  ResolveHostWithECHAlternative: 'resolve host with ECH alternative endpoint',
-  ResolveHostWithMultipleAlternatives:
-      'resolve host with multiple alternative endpoints',
-  ErrorNameNotResolved: 'error name not resolved',
-  ClearCache: 'clear cache',
-};
-
-suite(dns_view_test.suiteName, function() {
+suite('NetInternalsDnsViewTest', function() {
   // Resolves the host by simulating a button click.
   function resolveHost(hostname) {
     return new Promise(resolve => {
@@ -70,7 +53,7 @@ suite(dns_view_test.suiteName, function() {
   /**
    * Checks a host resolve without alternative endpoints.
    */
-  test(dns_view_test.TestNames.ResolveHostWithoutAlternative, async function() {
+  test('ResolveHostWithoutAlternative', async function() {
     switchToView('dns');
     const result = await resolveHost('somewhere.com');
     assertEquals(
@@ -84,8 +67,7 @@ suite(dns_view_test.suiteName, function() {
    * and "h2".
    */
   test(
-      dns_view_test.TestNames.ResolveHostWithHTTP2Alternative,
-      async function() {
+      'ResolveHostWithHTTP2Alternative', async function() {
         switchToView('dns');
         const result = await resolveHost('http2.com');
         assertEquals(
@@ -100,8 +82,7 @@ suite(dns_view_test.suiteName, function() {
    * "http/1.1", "h2", and "h3".
    */
   test(
-      dns_view_test.TestNames.ResolveHostWithHTTP3Alternative,
-      async function() {
+      'ResolveHostWithHTTP3Alternative', async function() {
         switchToView('dns');
         const result = await resolveHost('http3.com');
         assertEquals(
@@ -114,7 +95,7 @@ suite(dns_view_test.suiteName, function() {
   /**
    * Checks a host resolve with an alternative endpoint that supports ECH.
    */
-  test(dns_view_test.TestNames.ResolveHostWithECHAlternative, async function() {
+  test('ResolveHostWithECHAlternative', async function() {
     switchToView('dns');
     const result = await resolveHost('ech.com');
     assertEquals(
@@ -129,8 +110,7 @@ suite(dns_view_test.suiteName, function() {
    * Checks a host resolve with multiple alternative endpoints.
    */
   test(
-      dns_view_test.TestNames.ResolveHostWithMultipleAlternatives,
-      async function() {
+      'ResolveHostWithMultipleAlternatives', async function() {
         switchToView('dns');
         const result = await resolveHost('multihost.com');
         assertEquals(
@@ -145,7 +125,7 @@ suite(dns_view_test.suiteName, function() {
   /**
    * Checks an error when a host cannot be resolved.
    */
-  test(dns_view_test.TestNames.ErrorNameNotResolved, async function() {
+  test('ErrorNameNotResolved', async function() {
     switchToView('dns');
     // Make sure a lookup of unregistered hostname causes
     // net::ERR_NAME_NOT_RESOLVED.
@@ -158,7 +138,7 @@ suite(dns_view_test.suiteName, function() {
   /**
    * Adds a successful lookup to the DNS cache, then clears the cache.
    */
-  test(dns_view_test.TestNames.ClearCache, async function() {
+  test('ClearCache', async function() {
     switchToView('dns');
 
     // Perform an initial local lookup to make sure somewhere.com isn't cached.
