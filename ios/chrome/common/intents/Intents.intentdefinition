@@ -9,11 +9,11 @@
   <key>INIntentDefinitionNamespace</key>
   <string>Oi5136</string>
   <key>INIntentDefinitionSystemVersion</key>
-  <string>22G74</string>
+  <string>22G90</string>
   <key>INIntentDefinitionToolsBuildVersion</key>
-  <string>14E222b</string>
+  <string>15A5195m</string>
   <key>INIntentDefinitionToolsVersion</key>
-  <string>14.3</string>
+  <string>15.0</string>
   <key>INIntents</key>
   <array>
     <dict>
@@ -1202,6 +1202,70 @@
       <string>Custom</string>
       <key>INIntentVerb</key>
       <string>Open</string>
+    </dict>
+    <dict>
+      <key>INIntentCategory</key>
+      <string>generic</string>
+      <key>INIntentConfigurable</key>
+      <true/>
+      <key>INIntentDescriptionID</key>
+      <string>Evtnyl</string>
+      <key>INIntentEligibleForWidgets</key>
+      <true/>
+      <key>INIntentManagedParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationUpdatesLinked</key>
+          <true/>
+        </dict>
+      </dict>
+      <key>INIntentName</key>
+      <string>OpenLatestTab</string>
+      <key>INIntentParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationIsPrimary</key>
+          <true/>
+          <key>INIntentParameterCombinationSubtitle</key>
+          <string>Open My Latest Tab in Chrome.</string>
+          <key>INIntentParameterCombinationSubtitleID</key>
+          <string>k6vkhf</string>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <false/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Open My Latest Tab in Chrome</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>ymx2nZ</string>
+        </dict>
+      </dict>
+      <key>INIntentResponse</key>
+      <dict>
+        <key>INIntentResponseCodes</key>
+        <array>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>success</string>
+            <key>INIntentResponseCodeSuccess</key>
+            <true/>
+          </dict>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>failure</string>
+          </dict>
+        </array>
+      </dict>
+      <key>INIntentTitle</key>
+      <string>Open My Latest Tab in Chrome</string>
+      <key>INIntentTitleID</key>
+      <string>oVEOzX</string>
+      <key>INIntentType</key>
+      <string>Custom</string>
+      <key>INIntentVerb</key>
+      <string>Do</string>
     </dict>
   </array>
   <key>INTypes</key>

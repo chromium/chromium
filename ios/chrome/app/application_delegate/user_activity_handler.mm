@@ -75,6 +75,7 @@ NSString* const kSiriManagePaymentMethods = @"ManagePaymentMethodsIntent";
 NSString* const kSiriRunSafetyCheck = @"RunSafetyCheckIntent";
 NSString* const kSiriManagePasswords = @"ManagePasswordsIntent";
 NSString* const kSiriManageSettings = @"ManageSettingsIntent";
+NSString* const kSiriOpenLatestTab = @"OpenLatestTabIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -313,6 +314,14 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                                 Incognito:YES
                                 initStage:initStage];
 
+  } else if ([userActivity.activityType isEqualToString:kSiriOpenLatestTab]) {
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+        initWithExternalURL:GURL()
+                completeURL:GURL()
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
+
+    startupParams.postOpeningAction = OPEN_LATEST_TAB;
+    connectionInformation.startupParameters = startupParams;
   } else if ([userActivity.activityType isEqualToString:kSiriOpenReadingList]) {
     [connectionInformation
         setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
