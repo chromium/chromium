@@ -36,7 +36,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   RealizedWebState(WebStateImpl* owner,
                    base::Time creation_time,
                    NSString* stable_identifier,
-                   SessionID unique_identifier);
+                   WebStateID unique_identifier);
 
   RealizedWebState(const RealizedWebState&) = delete;
   RealizedWebState& operator=(const RealizedWebState&) = delete;
@@ -177,7 +177,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SetKeepRenderProcessAlive(bool keep_alive);
   BrowserState* GetBrowserState() const;
   NSString* GetStableIdentifier() const;
-  SessionID GetUniqueIdentifier() const;
+  WebStateID GetUniqueIdentifier() const;
   void OpenURL(const WebState::OpenURLParams& params);
   void Stop();
   void LoadData(NSData* data, NSString* mime_type, const GURL& url);
@@ -328,7 +328,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   __strong NSString* const stable_identifier_;
 
   // The unique identifier. Stable across application restarts.
-  const SessionID unique_identifier_;
+  const WebStateID unique_identifier_;
 
   // The fake CRWWebViewNavigationProxy used for testing. Nil in production.
   __strong id<CRWWebViewNavigationProxy> web_view_for_testing_;

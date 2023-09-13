@@ -199,7 +199,7 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
     CRWSessionStorage* session_storage =
         [[CRWSessionStorage alloc] initWithProto:storage];
     session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-    session_storage.uniqueIdentifier = SessionID::NewUnique();
+    session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
 
     std::unique_ptr<WebState> web_state = WebState::CreateWithStorageSession(
         WebState::CreateParams(browser_state), session_storage);
@@ -211,7 +211,7 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
   metadata.Swap(storage.mutable_metadata());
 
   std::unique_ptr<WebState> web_state = WebState::CreateWithStorage(
-      browser_state, SessionID::NewUnique(), std::move(metadata),
+      browser_state, WebStateID::NewUnique(), std::move(metadata),
       base::BindOnce(
           [](proto::WebStateStorage storage,
              proto::WebStateStorage& out_storage) {

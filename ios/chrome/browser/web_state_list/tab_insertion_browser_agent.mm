@@ -45,7 +45,7 @@ std::unique_ptr<web::WebState> CreateUnrealizedWebStateForTab(
   // Creates the session with the tab.
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
   session_storage.hasOpener = create_params.created_with_opener;
   session_storage.lastCommittedItemIndex = 0;
   session_storage.creationTime = creation_time;

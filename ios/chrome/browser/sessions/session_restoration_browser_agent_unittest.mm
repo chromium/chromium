@@ -92,7 +92,7 @@ CRWSessionUserData* CreateSessionUserData(TabInfo tab_info) {
 CRWSessionStorage* CreateSessionStorage(TabInfo tab_info) {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
   session_storage.lastCommittedItemIndex = 0;
   session_storage.itemStorages = CreateNavigationStorage();
   session_storage.userData = CreateSessionUserData(tab_info);
@@ -243,7 +243,7 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
   for (int i = 0; i < 3; i++) {
     CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
     session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-    session_storage.uniqueIdentifier = SessionID::NewUnique();
+    session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
     session_storage.lastCommittedItemIndex = -1;
     [sessions addObject:session_storage];
   }

@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/sessions/core/session_id.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -16,7 +16,7 @@ namespace {
 CRWSessionStorage* CreateSessionForTest(BOOL has_opener) {
   CRWSessionStorage* session = [[CRWSessionStorage alloc] init];
   session.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session.uniqueIdentifier = SessionID::NewUnique();
+  session.uniqueIdentifier = web::WebStateID::NewUnique();
   session.hasOpener = has_opener;
   return session;
 }

@@ -18,6 +18,7 @@
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 // Serialization keys used in NSCoding functions.
@@ -47,17 +48,13 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
 NSString* const kTabIdKey = @"TabId";
 }
 
-@implementation CRWSessionStorage {
-  // The unique identifier, stored as the underlying type since SessionID
-  // has no public default constructor, thus cannot be an ivar/property.
-  SessionID::id_type _uniqueIdentifier;
-}
+@implementation CRWSessionStorage
 
 - (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage {
   if ((self = [super init])) {
     // As the protobuf message does not contain the unique or stable
     // identifiers, generate new random values.
-    _uniqueIdentifier = SessionID::NewUnique().id();
+    _uniqueIdentifier = web::WebStateID::NewUnique();
     _stableIdentifier = [[NSUUID UUID] UUIDString];
 
     _hasOpener = storage.has_opener();
@@ -223,18 +220,19 @@ NSString* const kTabIdKey = @"TabId";
       _stableIdentifier = [[NSUUID UUID] UUIDString];
     }
 
-    // If no unique identifier was read, or it was invalid, generate a
-    // new one.
-    static_assert(sizeof(_uniqueIdentifier) == sizeof(int32_t));
-    _uniqueIdentifier = [decoder decodeInt32ForKey:kUniqueIdentifierKey];
-    if (!SessionID::IsValidValue(_uniqueIdentifier)) {
-      _uniqueIdentifier = SessionID::NewUnique().id();
-    }
-
     // Force conversion to NSString if `_stableIdentifier` happens to be a
     // NSMutableString (to prevent this value from being mutated).
     _stableIdentifier = [_stableIdentifier copy];
     DCHECK(_stableIdentifier.length);
+
+    // If no unique identifier was read, or it was invalid, generate a
+    // new one.
+    static_assert(sizeof(_uniqueIdentifier.identifier()) == sizeof(int32_t));
+    _uniqueIdentifier = web::WebStateID::FromSerializedValue(
+        [decoder decodeInt32ForKey:kUniqueIdentifierKey]);
+    if (!_uniqueIdentifier.valid()) {
+      _uniqueIdentifier = web::WebStateID::NewUnique();
+    }
 
     if ([decoder containsValueForKey:kLastActiveTimeKey]) {
       _lastActiveTime = base::Time::FromDeltaSinceWindowsEpoch(
@@ -281,22 +279,11 @@ NSString* const kTabIdKey = @"TabId";
                 forKey:kCreationTimeKey];
   }
 
-  if (SessionID::IsValidValue(_uniqueIdentifier)) {
-    static_assert(sizeof(_uniqueIdentifier) == sizeof(int32_t));
-    [coder encodeInt32:_uniqueIdentifier forKey:kUniqueIdentifierKey];
+  if (_uniqueIdentifier.valid()) {
+    static_assert(sizeof(_uniqueIdentifier.identifier()) == sizeof(int32_t));
+    [coder encodeInt32:_uniqueIdentifier.identifier()
+                forKey:kUniqueIdentifierKey];
   }
-}
-
-#pragma mark - Properties
-
-- (SessionID)uniqueIdentifier {
-  DCHECK(SessionID::IsValidValue(_uniqueIdentifier));
-  return SessionID::FromSerializedValue(_uniqueIdentifier);
-}
-
-- (void)setUniqueIdentifier:(SessionID)uniqueIdentifier {
-  DCHECK(uniqueIdentifier.is_valid());
-  _uniqueIdentifier = uniqueIdentifier.id();
 }
 
 #pragma mark Private
@@ -326,7 +313,7 @@ NSString* const kTabIdKey = @"TabId";
     return NO;
   }
 
-  if (_uniqueIdentifier != other.uniqueIdentifier.id()) {
+  if (_uniqueIdentifier != other.uniqueIdentifier) {
     return NO;
   }
 

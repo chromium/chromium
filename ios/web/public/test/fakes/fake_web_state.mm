@@ -39,9 +39,9 @@ void FakeWebState::CloseWebState() {
 
 FakeWebState::FakeWebState()
     : stable_identifier_([[NSUUID UUID] UUIDString]),
-      unique_identifier_(SessionID::NewUnique()) {
+      unique_identifier_(web::WebStateID::NewUnique()) {
   DCHECK(stable_identifier_.length);
-  DCHECK(unique_identifier_.is_valid());
+  DCHECK(unique_identifier_.valid());
 }
 
 FakeWebState::~FakeWebState() {
@@ -238,7 +238,7 @@ NSString* FakeWebState::GetStableIdentifier() const {
   return stable_identifier_;
 }
 
-SessionID FakeWebState::GetUniqueIdentifier() const {
+WebStateID FakeWebState::GetUniqueIdentifier() const {
   return unique_identifier_;
 }
 

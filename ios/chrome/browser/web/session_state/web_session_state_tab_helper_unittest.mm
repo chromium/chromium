@@ -61,9 +61,9 @@ class WebSessionStateTabHelperTest : public PlatformTest {
   }
 
   base::FilePath SessionCachePathForWebState(const web::WebState* web_state) {
-    const SessionID session_id = web_state->GetUniqueIdentifier();
-    return session_cache_directory_.AppendASCII(
-        base::StringPrintf("%08u", static_cast<uint32_t>(session_id.id())));
+    const web::WebStateID session_id = web_state->GetUniqueIdentifier();
+    return session_cache_directory_.AppendASCII(base::StringPrintf(
+        "%08u", static_cast<uint32_t>(session_id.identifier())));
   }
 
   // Flushes all the runloops internally used by the cache.

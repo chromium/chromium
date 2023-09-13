@@ -98,7 +98,7 @@ WebStateImpl::RealizedWebState::PendingSession::PendingSession(
 WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner,
                                                  base::Time creation_time,
                                                  NSString* stable_identifier,
-                                                 SessionID unique_identifier)
+                                                 WebStateID unique_identifier)
     : owner_(owner),
       interface_binder_(owner),
       creation_time_(creation_time),
@@ -107,7 +107,7 @@ WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner,
       unique_identifier_(unique_identifier) {
   DCHECK(owner_);
   DCHECK(stable_identifier_.length);
-  DCHECK(unique_identifier_.is_valid());
+  DCHECK(unique_identifier_.valid());
 }
 
 WebStateImpl::RealizedWebState::~RealizedWebState() = default;
@@ -649,7 +649,7 @@ NSString* WebStateImpl::RealizedWebState::GetStableIdentifier() const {
   return [stable_identifier_ copy];
 }
 
-SessionID WebStateImpl::RealizedWebState::GetUniqueIdentifier() const {
+WebStateID WebStateImpl::RealizedWebState::GetUniqueIdentifier() const {
   return unique_identifier_;
 }
 

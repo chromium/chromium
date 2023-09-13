@@ -45,7 +45,8 @@ class WebSessionStateCacheTest : public PlatformTest {
 
   bool StorageExists() {
     std::string identifier = base::StringPrintf(
-        "%08u", static_cast<uint32_t>(web_state_->GetUniqueIdentifier().id()));
+        "%08u",
+        static_cast<uint32_t>(web_state_->GetUniqueIdentifier().identifier()));
 
     base::FilePath file_path = session_cache_directory_.Append(identifier);
     return base::PathExists(file_path);

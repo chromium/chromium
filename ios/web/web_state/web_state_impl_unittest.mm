@@ -787,7 +787,7 @@ TEST_F(WebStateImplTest, UncommittedRestoreSession) {
   GURL url("http://test.com");
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
   session_storage.lastCommittedItemIndex = 0;
   CRWNavigationItemStorage* item_storage =
       [[CRWNavigationItemStorage alloc] init];
@@ -854,7 +854,7 @@ TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
   active_page->set_page_url(url.spec());
 
   WebStateImpl web_state =
-      WebStateImpl(GetBrowserState(), SessionID::NewUnique(), metadata,
+      WebStateImpl(GetBrowserState(), web::WebStateID::NewUnique(), metadata,
                    base::BindOnce(
                        [](proto::WebStateStorage storage,
                           proto::WebStateStorage& inner_storage) {

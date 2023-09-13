@@ -7,7 +7,6 @@
 #import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -126,11 +125,11 @@ TEST_F(SessionRestorationWebStateListObserverTest, Insert_Unrealized) {
 
   web::WebState* const web_state =
       InsertWebState(CreateWebState(CreateWebStateAs::kUnrealized));
-  const SessionID session_id = web_state->GetUniqueIdentifier();
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.inserted_web_states(), session_id));
+  EXPECT_TRUE(base::Contains(observer.inserted_web_states(), web_state_id));
   EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_EQ(call_count, 1u);
 }
@@ -146,11 +145,11 @@ TEST_F(SessionRestorationWebStateListObserverTest, Insert_Unserializable) {
 
   web::WebState* const web_state =
       InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
-  const SessionID session_id = web_state->GetUniqueIdentifier();
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.inserted_web_states(), session_id));
+  EXPECT_TRUE(base::Contains(observer.inserted_web_states(), web_state_id));
   EXPECT_TRUE(observer.detached_web_states().empty());
   EXPECT_EQ(call_count, 1u);
 }
@@ -241,7 +240,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unrealized) {
 
   web::WebState* const web_state =
       InsertWebState(CreateWebState(CreateWebStateAs::kUnrealized));
-  const SessionID session_id = web_state->GetUniqueIdentifier();
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   // Clear the dirty state and reset the call counter.
   observer.ClearDirty();
@@ -253,7 +252,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unrealized) {
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.detached_web_states(), session_id));
+  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
   EXPECT_EQ(call_count, 1u);
 }
 
@@ -269,7 +268,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unserializable) {
 
   web::WebState* const web_state =
       InsertWebState(CreateWebState(CreateWebStateAs::kRestoreInProgress));
-  const SessionID session_id = web_state->GetUniqueIdentifier();
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
 
   // Clear the dirty state and reset the call counter.
   observer.ClearDirty();
@@ -281,7 +280,7 @@ TEST_F(SessionRestorationWebStateListObserverTest, Detach_Unserializable) {
   EXPECT_TRUE(observer.is_web_state_list_dirty());
   EXPECT_TRUE(observer.dirty_web_states().empty());
   EXPECT_TRUE(observer.inserted_web_states().empty());
-  EXPECT_TRUE(base::Contains(observer.detached_web_states(), session_id));
+  EXPECT_TRUE(base::Contains(observer.detached_web_states(), web_state_id));
   EXPECT_EQ(call_count, 1u);
 }
 

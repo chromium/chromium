@@ -32,11 +32,12 @@ enum class PageLoadedSnapshotResult {
 
 // Generates an ID for WebState's snapshot.
 SnapshotID GenerateSnapshotID(const web::WebState* web_state) {
-  DCHECK(web_state->GetUniqueIdentifier().is_valid());
-  DCHECK_GT(web_state->GetUniqueIdentifier().id(), 0);
+  DCHECK(web_state->GetUniqueIdentifier().valid());
+  DCHECK_GT(web_state->GetUniqueIdentifier().identifier(), 0);
 
-  static_assert(sizeof(SessionID::id_type) == sizeof(int32_t));
-  return SnapshotID(web_state->GetUniqueIdentifier().id());
+  static_assert(sizeof(decltype(web::WebStateID().identifier())) ==
+                sizeof(int32_t));
+  return SnapshotID(web_state->GetUniqueIdentifier().identifier());
 }
 
 }  // namespace

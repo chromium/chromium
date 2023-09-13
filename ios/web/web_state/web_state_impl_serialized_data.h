@@ -31,7 +31,7 @@ class WebStateImpl::SerializedData {
   SerializedData(WebStateImpl* owner,
                  BrowserState* browser_state,
                  NSString* stable_identifier,
-                 SessionID unique_identifier,
+                 WebStateID unique_identifier,
                  proto::WebStateMetadataStorage metadata,
                  WebStateStorageLoader storage_loader,
                  NativeSessionFetcher session_fetcher);
@@ -64,7 +64,7 @@ class WebStateImpl::SerializedData {
   base::Time GetCreationTime() const;
   BrowserState* GetBrowserState() const;
   NSString* GetStableIdentifier() const;
-  SessionID GetUniqueIdentifier() const;
+  WebStateID GetUniqueIdentifier() const;
   const std::u16string& GetTitle() const;
   const FaviconStatus& GetFaviconStatus() const;
   void SetFaviconStatus(const FaviconStatus& favicon_status);
@@ -89,7 +89,7 @@ class WebStateImpl::SerializedData {
 
   // The stable and unique identifiers.
   NSString* const stable_identifier_;
-  const SessionID unique_identifier_;
+  const WebStateID unique_identifier_;
 
   // Information about this WebState available when the object is not
   // yet realized. This is limited to the information accessible in

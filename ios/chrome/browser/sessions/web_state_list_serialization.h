@@ -11,13 +11,13 @@
 
 #include "base/functional/callback_forward.h"
 
-class SessionID;
 @class CRWSessionStorage;
 @class SessionWindowIOS;
 class WebStateList;
 
 namespace web {
 class WebState;
+class WebStateID;
 }  // namespace web
 
 namespace ios::proto {
@@ -39,7 +39,7 @@ using WebStateFactory =
 
 // Factory for creating WebStates from proto.
 using WebStateFactoryFromProto =
-    base::RepeatingCallback<std::unique_ptr<web::WebState>(SessionID)>;
+    base::RepeatingCallback<std::unique_ptr<web::WebState>(web::WebStateID)>;
 
 // Serializes `web_state_list` to a SessionWindowIOS instance.
 SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list);

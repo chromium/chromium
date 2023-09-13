@@ -65,14 +65,14 @@ namespace {
 
 // Directory containing WebState session for `identifier` relative to `path`.
 base::FilePath OptimizedWebStateDirectory(const base::FilePath& path,
-                                          SessionID identifier) {
-  return path.Append(base::StringPrintf("%08x", identifier.id()));
+                                          web::WebStateID identifier) {
+  return path.Append(base::StringPrintf("%08x", identifier.identifier()));
 }
 
 // Name of the web session file for `identifier` relative to `path`.
 base::FilePath LegacyWebSessionFilename(const base::FilePath& path,
-                                        SessionID identifier) {
-  return path.Append(base::StringPrintf("%08u", identifier.id()));
+                                        web::WebStateID identifier) {
+  return path.Append(base::StringPrintf("%08u", identifier.identifier()));
 }
 
 // Writes `session` in optimized format to `path` and returns whether the
@@ -132,7 +132,7 @@ base::FilePath LegacyWebSessionFilename(const base::FilePath& path,
   // Load all the individual tabs' state.
   for (const auto& item : storage.items()) {
     const int32_t index = static_cast<int32_t>(sessions.count);
-    const SessionID ident = SessionID::FromSerializedValue(item.identifier());
+    const auto ident = web::WebStateID::FromSerializedValue(item.identifier());
     const base::FilePath item_dir = OptimizedWebStateDirectory(path, ident);
 
     CRWSessionStorage* session = LoadSessionStorageFromOptimized(item_dir);
@@ -270,7 +270,7 @@ MigrationResult MigrateSessionToOptimizedInternal(
   storage.set_active_index(session.selectedIndex);
   for (CRWSessionStorage* item in session.sessions) {
     ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
-    item_storage.set_identifier(item.uniqueIdentifier.id());
+    item_storage.set_identifier(item.uniqueIdentifier.identifier());
 
     // The legacy format stores some WebStateList metadata in the items.
     // Restore it from there and populate the information in `storage`.

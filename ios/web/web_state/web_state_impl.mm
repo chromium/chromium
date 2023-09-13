@@ -89,7 +89,7 @@ WebStateImpl::WebStateImpl(const CreateParams& params) {
 
   pimpl_ = std::make_unique<RealizedWebState>(this, base::Time::Now(),
                                               [[NSUUID UUID] UUIDString],
-                                              SessionID::NewUnique());
+                                              WebStateID::NewUnique());
   pimpl_->Init(params.browser_state, params.last_active_time,
                params.created_with_opener);
 
@@ -128,7 +128,7 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
 }
 
 WebStateImpl::WebStateImpl(BrowserState* browser_state,
-                           SessionID unique_identifier,
+                           WebStateID unique_identifier,
                            proto::WebStateMetadataStorage metadata,
                            WebStateStorageLoader storage_loader,
                            NativeSessionFetcher session_fetcher) {
@@ -160,7 +160,7 @@ WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
 
   pimpl_ = std::make_unique<RealizedWebState>(this, pimpl.GetCreationTime(),
                                               [[NSUUID UUID] UUIDString],
-                                              SessionID::NewUnique());
+                                              WebStateID::NewUnique());
   pimpl_->InitWithProto(pimpl.GetBrowserState(), base::Time::Now(),
                         pimpl.GetTitle(), pimpl.GetVisibleURL(),
                         pimpl.GetFaviconStatus(), std::move(storage),
@@ -633,7 +633,7 @@ NSString* WebStateImpl::GetStableIdentifier() const {
                         : saved_->GetStableIdentifier();
 }
 
-SessionID WebStateImpl::GetUniqueIdentifier() const {
+WebStateID WebStateImpl::GetUniqueIdentifier() const {
   return LIKELY(pimpl_) ? pimpl_->GetUniqueIdentifier()
                         : saved_->GetUniqueIdentifier();
 }

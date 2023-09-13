@@ -19,6 +19,7 @@
 #import "ios/web/content/navigation/content_navigation_manager.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
+#import "ios/web/public/web_state_id.h"
 
 @class CRCWebViewportContainerView;
 @class CRWWebViewProxy;
@@ -49,7 +50,7 @@ class ContentWebState : public WebState,
 
   // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(BrowserState* browser_state,
-                  SessionID unique_identifier,
+                  WebStateID unique_identifier,
                   proto::WebStateMetadataStorage metadata,
                   WebStateStorageLoader storage_loader,
                   NativeSessionFetcher session_fetcher);
@@ -97,7 +98,7 @@ class ContentWebState : public WebState,
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   NSString* GetStableIdentifier() const override;
-  SessionID GetUniqueIdentifier() const override;
+  WebStateID GetUniqueIdentifier() const override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
   const std::u16string& GetTitle() const override;
@@ -205,7 +206,7 @@ class ContentWebState : public WebState,
   id<CRWWebViewProxy> web_view_proxy_;
   NSString* UUID_;
   // The unique identifier. Stable across application restarts.
-  const SessionID unique_identifier_;
+  const WebStateID unique_identifier_;
   base::ObserverList<WebStatePolicyDecider, true> policy_deciders_;
   base::ObserverList<WebStateObserver, true> observers_;
   std::unique_ptr<ContentNavigationManager> navigation_manager_;

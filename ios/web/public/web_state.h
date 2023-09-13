@@ -24,6 +24,7 @@
 #include "components/sessions/core/session_id.h"
 #include "ios/web/public/js_messaging/content_world.h"
 #include "ios/web/public/navigation/referrer.h"
+#include "ios/web/public/web_state_id.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/base/page_transition_types.h"
@@ -204,7 +205,7 @@ class WebState : public base::SupportsUserData {
   // when the WebState transition to the realized state.
   static std::unique_ptr<WebState> CreateWithStorage(
       BrowserState* browser_state,
-      SessionID unique_identifier,
+      WebStateID unique_identifier,
       proto::WebStateMetadataStorage metadata,
       WebStateStorageLoader storage_loader,
       NativeSessionFetcher session_fetcher);
@@ -366,7 +367,7 @@ class WebState : public base::SupportsUserData {
   // It is local to the device and not synchronized (but may be used by
   // the sync code to uniquely identify a session on the current device).
   // It can be used as a key to identify this WebState.
-  virtual SessionID GetUniqueIdentifier() const = 0;
+  virtual WebStateID GetUniqueIdentifier() const = 0;
 
   // Gets the contents MIME type.
   virtual const std::string& GetContentsMimeType() const = 0;

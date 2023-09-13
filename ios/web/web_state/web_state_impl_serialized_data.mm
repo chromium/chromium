@@ -21,7 +21,7 @@ WebStateImpl::SerializedData::SerializedData(
     WebStateImpl* owner,
     BrowserState* browser_state,
     NSString* stable_identifier,
-    SessionID unique_identifier,
+    WebStateID unique_identifier,
     proto::WebStateMetadataStorage metadata,
     WebStateStorageLoader storage_loader,
     NativeSessionFetcher session_fetcher)
@@ -90,7 +90,7 @@ NSString* WebStateImpl::SerializedData::GetStableIdentifier() const {
   return stable_identifier_;
 }
 
-SessionID WebStateImpl::SerializedData::GetUniqueIdentifier() const {
+WebStateID WebStateImpl::SerializedData::GetUniqueIdentifier() const {
   return unique_identifier_;
 }
 

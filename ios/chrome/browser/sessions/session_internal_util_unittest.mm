@@ -6,13 +6,13 @@
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/time/time.h"
-#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/proto_util.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
+#import "ios/web/public/web_state_id.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -79,7 +79,7 @@ class UnserializableMessage : public google::protobuf::MessageLite {
 SessionWindowIOS* CreateSessionWindowIOS() {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
   session_storage.creationTime = base::Time::Now();
   session_storage.lastActiveTime = session_storage.creationTime;
   session_storage.lastCommittedItemIndex = -1;

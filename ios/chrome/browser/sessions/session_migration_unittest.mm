@@ -10,7 +10,6 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
-#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
@@ -23,6 +22,7 @@
 #import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
+#import "ios/web/public/web_state_id.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -86,15 +86,17 @@ base::FilePath GetLegacySessionDir(const base::FilePath& root,
 // tab with identifier `identifier` for a legacy session (relative
 // to the web session directory `web_sessions`).
 base::FilePath GetLegacyWebSessionsFile(const base::FilePath& web_sessions,
-                                        SessionID identifier) {
-  return web_sessions.Append(base::StringPrintf("%08u", identifier.id()));
+                                        web::WebStateID identifier) {
+  return web_sessions.Append(
+      base::StringPrintf("%08u", identifier.identifier()));
 }
 
 // Returns the path to the directory containing the optimized storage
 // for a tab named `identifier` for session `session_dir`.
 base::FilePath GetOptimizedWebStateDir(const base::FilePath& session_dir,
-                                       SessionID identifier) {
-  return session_dir.Append(base::StringPrintf("%08x", identifier.id()));
+                                       web::WebStateID identifier) {
+  return session_dir.Append(
+      base::StringPrintf("%08x", identifier.identifier()));
 }
 
 // Creates a CRWNavigationItemStorage.
@@ -120,7 +122,7 @@ CRWSessionStorage* CreateSessionStorage(TabInfo tab_info, bool is_pinned) {
 
   CRWSessionStorage* session = [[CRWSessionStorage alloc] init];
   session.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session.uniqueIdentifier = SessionID::NewUnique();
+  session.uniqueIdentifier = web::WebStateID::NewUnique();
   session.itemStorages = @[ CreateNavigationItemStorage() ];
   session.creationTime = base::Time::Now();
   session.userData = user_data;
@@ -207,13 +209,13 @@ bool GenerateOptimizedSession(const base::FilePath& root,
   // Create all the tabs for the session. Note that the WebStateList metadata
   // is stored with the tab in the legacy format.
   for (size_t index = 0; index < session_info.tabs.size(); ++index) {
-    const SessionID identifier = SessionID::NewUnique();
+    const web::WebStateID identifier = web::WebStateID::NewUnique();
     const base::FilePath item_dir =
         GetOptimizedWebStateDir(session_dir, identifier);
     const TabInfo& tab_info = session_info.tabs[index];
 
     ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
-    item_storage.set_identifier(identifier.id());
+    item_storage.set_identifier(identifier.identifier());
     if (tab_info.opener_index != -1 && tab_info.opener_navigation_index != -1) {
       item_storage.mutable_opener()->set_index(tab_info.opener_index);
       item_storage.mutable_opener()->set_navigation_index(
@@ -309,9 +311,9 @@ TEST_F(SessionMigrationTest, ToOptimized) {
                 tab_info.opener_navigation_index);
     }
 
-    ASSERT_TRUE(SessionID::IsValidValue(item_info.identifier()));
+    ASSERT_TRUE(web::WebStateID::IsValidValue(item_info.identifier()));
     const base::FilePath item_dir = GetOptimizedWebStateDir(
-        dest_dir, SessionID::FromSerializedValue(item_info.identifier()));
+        dest_dir, web::WebStateID::FromSerializedValue(item_info.identifier()));
 
     // Load the tab metadata and check for correctness.
     web::proto::WebStateMetadataStorage metadata;
@@ -398,9 +400,11 @@ TEST_F(SessionMigrationTest, ToOptimized_FailureInvalidSessions) {
   // Create some fake web sessions.
   const base::FilePath web_sessions = root.Append(kLegacyWebSessionsDirname);
   EXPECT_TRUE(ios::sessions::WriteFile(
-      GetLegacyWebSessionsFile(web_sessions, SessionID::NewUnique()), data));
+      GetLegacyWebSessionsFile(web_sessions, web::WebStateID::NewUnique()),
+      data));
   EXPECT_TRUE(ios::sessions::WriteFile(
-      GetLegacyWebSessionsFile(web_sessions, SessionID::NewUnique()), data));
+      GetLegacyWebSessionsFile(web_sessions, web::WebStateID::NewUnique()),
+      data));
 
   // Ask to migrate the invalid legacy session.
   ios::sessions::MigrateNamedSessionToOptimized(root, kSessionName, nullptr);

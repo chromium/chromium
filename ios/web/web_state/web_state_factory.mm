@@ -46,7 +46,7 @@ std::unique_ptr<WebState> WebState::CreateWithStorageSession(
 /* static */
 std::unique_ptr<WebState> WebState::CreateWithStorage(
     BrowserState* browser_state,
-    SessionID unique_identifier,
+    WebStateID unique_identifier,
     proto::WebStateMetadataStorage metadata,
     WebStateStorageLoader storage_loader,
     NativeSessionFetcher session_fetcher) {

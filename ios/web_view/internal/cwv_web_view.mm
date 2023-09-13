@@ -165,11 +165,12 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }  // namespace
 
-// Used to serialize the protobuf message and the SessionID.
+// Used to serialize the protobuf message and the WebStateID.
 @interface CWVWebViewProtobufStorage : NSObject <NSCoding>
 
 - (instancetype)initWithProto:(web::proto::WebStateStorage)storage
-                    sessionID:(SessionID)sessionID NS_DESIGNATED_INITIALIZER;
+                   webStateID:(web::WebStateID)webStateID
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder*)coder;
 
@@ -182,21 +183,20 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 // The protobuf representation.
 @property(nonatomic, readonly) const web::proto::WebStateStorage& storage;
 
-// The session identifier.
-@property(nonatomic, readonly) SessionID sessionID;
+// The web state identifier.
+@property(nonatomic, readonly) web::WebStateID webStateID;
 
 @end
 
 @implementation CWVWebViewProtobufStorage {
   web::proto::WebStateStorage _storage;
-  SessionID::id_type _sessionID;
 }
 
 - (instancetype)initWithProto:(web::proto::WebStateStorage)storage
-                    sessionID:(SessionID)sessionID {
+                   webStateID:(web::WebStateID)webStateID {
   if ((self = [super init])) {
     _storage = std::move(storage);
-    _sessionID = sessionID.id();
+    _webStateID = webStateID;
   }
   return self;
 }
@@ -218,13 +218,13 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     return nil;
   }
 
-  SessionID::id_type sessionID = [coder decodeInt32ForKey:kSessionKey];
-  if (!SessionID::IsValidValue(sessionID)) {
+  web::WebStateID webStateID = web::WebStateID::FromSerializedValue(
+      [coder decodeInt32ForKey:kSessionKey]);
+  if (!webStateID.valid()) {
     return nil;
   }
 
-  return [self initWithProto:std::move(storage)
-                   sessionID:SessionID::FromSerializedValue(sessionID)];
+  return [self initWithProto:std::move(storage) webStateID:webStateID];
 }
 
 - (void)encodeWithCoder:(NSCoder*)coder {
@@ -232,14 +232,14 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   _storage.SerializeToString(&buffer);
 
   web::nscoder_util::EncodeString(coder, kStorageKey, buffer);
-  [coder encodeInt32:_sessionID forKey:kSessionKey];
+  [coder encodeInt32:_webStateID.identifier() forKey:kSessionKey];
 }
 
 - (std::unique_ptr<web::WebState>)createWebState:
     (web::BrowserState*)browserState {
   DCHECK(web::features::UseSessionSerializationOptimizations());
   return web::WebState::CreateWithStorage(
-      browserState, self.sessionID, _storage.metadata(),
+      browserState, self.webStateID, _storage.metadata(),
       base::BindOnce(^(web::proto::WebStateStorage& storage) {
         // Capturing `self` is fine since the WebState will either be
         // deleted before the current object (since they have the same
@@ -251,10 +251,6 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
 - (const web::proto::WebStateStorage&)storage {
   return _storage;
-}
-
-- (SessionID)sessionID {
-  return SessionID::FromSerializedValue(_sessionID);
 }
 
 @end
@@ -332,7 +328,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
           initWithProto:_cachedProtobufStorage.storage];
 
       _cachedSessionStorage.stableIdentifier = [[NSUUID UUID] UUIDString];
-      _cachedSessionStorage.uniqueIdentifier = _cachedProtobufStorage.sessionID;
+      _cachedSessionStorage.uniqueIdentifier =
+          _cachedProtobufStorage.webStateID;
       _cachedProtobufStorage = nil;
     }
     DCHECK(_cachedSessionStorage);
@@ -348,7 +345,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
     _cachedProtobufStorage = [[CWVWebViewProtobufStorage alloc]
         initWithProto:std::move(storage)
-            sessionID:_cachedSessionStorage.uniqueIdentifier];
+           webStateID:_cachedSessionStorage.uniqueIdentifier];
     _cachedSessionStorage = nil;
   }
   DCHECK(_cachedProtobufStorage);
@@ -387,7 +384,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   webState->SerializeToProto(storage);
   _cachedProtobufStorage = [[CWVWebViewProtobufStorage alloc]
       initWithProto:storage
-          sessionID:webState->GetUniqueIdentifier()];
+         webStateID:webState->GetUniqueIdentifier()];
 }
 
 - (void)clearStateForWebStateIfPossible:(web::WebState*)webState {

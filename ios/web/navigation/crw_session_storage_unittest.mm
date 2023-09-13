@@ -9,7 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/sessions/core/session_id.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
@@ -20,6 +19,7 @@
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
+#import "ios/web/public/web_state_id.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -50,7 +50,7 @@ class CRWSessionStorageTest : public PlatformTest {
     session_storage_.lastCommittedItemIndex = 0;
     session_storage_.userAgentType = web::UserAgentType::DESKTOP;
     session_storage_.stableIdentifier = [[NSUUID UUID] UUIDString];
-    session_storage_.uniqueIdentifier = SessionID::NewUnique();
+    session_storage_.uniqueIdentifier = web::WebStateID::NewUnique();
     session_storage_.certPolicyCacheStorage =
         [[CRWSessionCertificatePolicyCacheStorage alloc] init];
     session_storage_.userData =

@@ -49,8 +49,8 @@ std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
 }
 
 // Creates a fake WebState from `session_id`.
-std::unique_ptr<web::WebState> CreateWebStateWithSessionID(
-    SessionID session_id) {
+std::unique_ptr<web::WebState> CreateWebStateWithWebStateID(
+    web::WebStateID web_state_id) {
   return CreateWebState();
 }
 }  // namespace
@@ -233,8 +233,8 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto) {
 
   for (int i = 0; i < web_state_list.count(); ++i) {
     const auto& item_storage = storage.items(i);
-    ASSERT_TRUE(SessionID::IsValidValue(item_storage.identifier()));
-    EXPECT_EQ(SessionID::FromSerializedValue(item_storage.identifier()),
+    ASSERT_TRUE(web::WebStateID::IsValidValue(item_storage.identifier()));
+    EXPECT_EQ(web::WebStateID::FromSerializedValue(item_storage.identifier()),
               web_state_list.GetWebStateAt(i)->GetUniqueIdentifier());
 
     const WebStateOpener opener = web_state_list.GetOpenerOfWebStateAt(i);
@@ -663,7 +663,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedEnabled_All) {
   DeserializeWebStateList(restored_web_state_list, std::move(storage),
                           SessionRestorationScope::kAll,
                           /* enable_pinned_web_states*/ true,
-                          base::BindRepeating(&CreateWebStateWithSessionID));
+                          base::BindRepeating(&CreateWebStateWithWebStateID));
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -725,7 +725,7 @@ TEST_F(WebStateListSerializationTest,
   DeserializeWebStateList(restored_web_state_list, std::move(storage),
                           SessionRestorationScope::kRegularOnly,
                           /* enable_pinned_web_states*/ true,
-                          base::BindRepeating(&CreateWebStateWithSessionID));
+                          base::BindRepeating(&CreateWebStateWithWebStateID));
 
   ASSERT_EQ(restored_web_state_list.count(), 4);
   EXPECT_EQ(restored_web_state_list.active_index(), 1);
@@ -780,7 +780,7 @@ TEST_F(WebStateListSerializationTest,
   DeserializeWebStateList(restored_web_state_list, std::move(storage),
                           SessionRestorationScope::kPinnedOnly,
                           /* enable_pinned_web_states*/ true,
-                          base::BindRepeating(&CreateWebStateWithSessionID));
+                          base::BindRepeating(&CreateWebStateWithWebStateID));
 
   ASSERT_EQ(restored_web_state_list.count(), 2);
   EXPECT_EQ(restored_web_state_list.active_index(), 1);
@@ -835,7 +835,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedDisabled_All) {
   DeserializeWebStateList(restored_web_state_list, std::move(storage),
                           SessionRestorationScope::kAll,
                           /* enable_pinned_web_states*/ false,
-                          base::BindRepeating(&CreateWebStateWithSessionID));
+                          base::BindRepeating(&CreateWebStateWithWebStateID));
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -893,7 +893,7 @@ TEST_F(WebStateListSerializationTest,
   DeserializeWebStateList(restored_web_state_list, std::move(storage),
                           SessionRestorationScope::kRegularOnly,
                           /* enable_pinned_web_states*/ false,
-                          base::BindRepeating(&CreateWebStateWithSessionID));
+                          base::BindRepeating(&CreateWebStateWithWebStateID));
 
   ASSERT_EQ(restored_web_state_list.count(), 5);
   EXPECT_EQ(restored_web_state_list.active_index(), 2);
@@ -951,7 +951,7 @@ TEST_F(WebStateListSerializationTest,
   DeserializeWebStateList(restored_web_state_list, std::move(storage),
                           SessionRestorationScope::kPinnedOnly,
                           /* enable_pinned_web_states*/ false,
-                          base::BindRepeating(&CreateWebStateWithSessionID));
+                          base::BindRepeating(&CreateWebStateWithWebStateID));
 
   ASSERT_EQ(restored_web_state_list.count(), 1);
   EXPECT_EQ(restored_web_state_list.active_index(), 0);

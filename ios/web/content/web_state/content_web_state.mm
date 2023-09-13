@@ -72,7 +72,7 @@ FaviconURL::IconType IconTypeFromContentIconType(
 // TODO(crbug.com/1383087): remove when ContentWebState supports serialization
 // using protobuf message format directly.
 CRWSessionStorage* CreateSessionStorage(
-    SessionID unique_identifier,
+    WebStateID unique_identifier,
     proto::WebStateMetadataStorage metadata,
     WebState::WebStateStorageLoader storage_loader) {
   // Load the data from disk as this is needed to create the CRWSessionStorage.
@@ -95,7 +95,7 @@ ContentWebState::ContentWebState(const CreateParams& params)
 ContentWebState::ContentWebState(const CreateParams& params,
                                  CRWSessionStorage* session_storage)
     : unique_identifier_(session_storage ? session_storage.uniqueIdentifier
-                                         : SessionID::NewUnique()) {
+                                         : WebStateID::NewUnique()) {
   content::BrowserContext* browser_context =
       ContentBrowserContext::FromBrowserState(params.browser_state);
   scoped_refptr<content::SiteInstance> site_instance;
@@ -144,7 +144,7 @@ ContentWebState::ContentWebState(const CreateParams& params,
 }
 
 ContentWebState::ContentWebState(BrowserState* browser_state,
-                                 SessionID unique_identifier,
+                                 WebStateID unique_identifier,
                                  proto::WebStateMetadataStorage metadata,
                                  WebStateStorageLoader storage_loader,
                                  NativeSessionFetcher session_fetcher)
@@ -187,7 +187,7 @@ std::unique_ptr<WebState> ContentWebState::Clone() const {
   params.last_active_time = base::Time::Now();
   CRWSessionStorage* session_storage = BuildSessionStorage();
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = SessionID::NewUnique();
+  session_storage.uniqueIdentifier = WebStateID::NewUnique();
   auto clone = std::make_unique<ContentWebState>(params, session_storage);
   IgnoreOverRealizationCheck();
   clone->ForceRealized();
@@ -319,7 +319,7 @@ NSString* ContentWebState::GetStableIdentifier() const {
   return UUID_;
 }
 
-SessionID ContentWebState::GetUniqueIdentifier() const {
+WebStateID ContentWebState::GetUniqueIdentifier() const {
   return unique_identifier_;
 }
 

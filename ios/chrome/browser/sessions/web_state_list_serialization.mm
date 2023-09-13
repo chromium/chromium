@@ -234,7 +234,7 @@ std::unique_ptr<web::WebState> DeserializeFromProto::RestoreTabAt(
   DCHECK_LT(index, storage_.items_size());
   const auto& item_storage = storage_.items(index);
   return factory_.Run(
-      SessionID::FromSerializedValue(item_storage.identifier()));
+      web::WebStateID::FromSerializedValue(item_storage.identifier()));
 }
 
 // Used to store the range of tabs to restore.
@@ -456,7 +456,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
 
     const web::WebState* web_state = web_state_list.GetWebStateAt(index);
     ios::proto::WebStateListItemStorage& item_storage = *storage.add_items();
-    item_storage.set_identifier(web_state->GetUniqueIdentifier().id());
+    item_storage.set_identifier(web_state->GetUniqueIdentifier().identifier());
 
     WebStateOpener opener = web_state_list.GetOpenerOfWebStateAt(index);
     if (!opener.opener) {
