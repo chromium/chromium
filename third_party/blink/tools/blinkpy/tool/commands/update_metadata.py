@@ -181,6 +181,15 @@ class UpdateMetadata(Command):
                 help=('Path to a wptreport log file (or directory of '
                       'log files) to use in the update. May specify '
                       'multiple times.')),
+            optparse.make_option(
+                '--update-properties',
+                action='callback',
+                callback=self._parse_update_properties,
+                type='string',
+                help=('Path to a JSON file specifying what properties to use '
+                      'in conditions. See https://web-platform-tests.org/tools'
+                      '/wptrunner/docs/expectation.html'
+                      '#properties-file-format for format.')),
             RebaselineCL.patchset_option,
             RebaselineCL.test_name_file_option,
             RebaselineCL.only_changed_tests_option,
@@ -215,13 +224,15 @@ class UpdateMetadata(Command):
         manifests = load_and_update_manifests(
             self._path_finder, force_update=options.manifest_update)
         builds = self._select_builds(options)
+        update_properties = (options.update_properties
+                             or self.default_update_properties(builds))
         updater = MetadataUpdater.from_manifests(
             manifests,
             wpt_metadata.TestConfigurations.generate(self._tool),
             self._tool.port_factory.get(),
             self._explicit_include_patterns(options, args),
             options.exclude,
-            update_properties=self.update_properties(builds),
+            update_properties=update_properties,
             overwrite_conditions=options.overwrite_conditions,
             disable_intermittent=options.disable_intermittent,
             keep_statuses=options.keep_statuses,
@@ -261,7 +272,8 @@ class UpdateMetadata(Command):
             _log.error('%s', error)
             return 1
 
-    def update_properties(self, builds: List[Build]) -> UpdateProperties:
+    def default_update_properties(self,
+                                  builds: List[Build]) -> UpdateProperties:
         primary_properties = list(UpdateProperties.DEFAULT.primary_properties)
         specifiers = frozenset(
             itertools.chain.from_iterable(
@@ -536,6 +548,36 @@ class UpdateMetadata(Command):
             raise optparse.OptionValueError(
                 '%r is neither a regular file nor a directory' % value)
         setattr(parser.values, option.dest, reports)
+
+    def _parse_update_properties(self, option: optparse.Option, _opt_str: str,
+                                 value: Optional[str],
+                                 parser: optparse.OptionParser):
+        try:
+            raw_properties = json.loads(self._fs.read_text_file(value))
+        except (IOError, ValueError) as error:
+            raise optparse.OptionValueError(
+                f'{value!r} is not a valid JSON file.') from error
+        try:
+            primary_properties = raw_properties['properties']
+            dependent_properties = raw_properties.get('dependents', {})
+            if not isinstance(primary_properties, list):
+                raise ValueError
+            if not isinstance(dependent_properties, dict):
+                raise ValueError
+            for prop in itertools.chain.from_iterable([
+                    primary_properties,
+                    dependent_properties,
+                    *dependent_properties.values(),
+            ]):
+                if not isinstance(prop, str):
+                    raise ValueError
+        except Exception as error:
+            raise optparse.OptionValueError(
+                f'{value!r} does not conform to the properties file format: '
+                '{"properties": ["<prop1>", ...], "dependents": '
+                '{"<prop1>": ["<prop2>", ...], ...}"}') from error
+        setattr(parser.values, option.dest,
+                UpdateProperties(primary_properties, dependent_properties))
 
 
 class UpdateAbortError(Exception):

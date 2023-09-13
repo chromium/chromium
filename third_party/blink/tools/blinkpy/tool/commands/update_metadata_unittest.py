@@ -639,10 +639,10 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'specifiers': ['Trusty', 'Debug'],
             },
         })
-        update_properties = self.command.update_properties(
+        update_properties = self.command.default_update_properties(
             [Build('test-linux-wpt-rel')])
         self.assertEqual(update_properties.primary_properties, ['product'])
-        update_properties = self.command.update_properties(
+        update_properties = self.command.default_update_properties(
             [Build('test-linux-wpt-rel'),
              Build('test-linux-wpt-dbg')])
         self.assertEqual(update_properties.primary_properties,
@@ -1922,3 +1922,42 @@ class UpdateMetadataArgumentParsingTest(unittest.TestCase):
         with self.assert_parse_error('is neither a regular file '
                                      'nor a directory'):
             self.command.parse_args(['--report=does/not/exist'])
+
+    def test_update_properties(self):
+        self.tool.filesystem.write_text_file(
+            'update-props.json',
+            json.dumps({
+                'properties': ['product'],
+                'dependents': {
+                    'product': ['virtual_suite'],
+                },
+            }))
+        options, _ = self.command.parse_args(
+            ['--update-properties=update-props.json'])
+        self.assertEqual(options.update_properties.primary_properties,
+                         ['product'])
+        self.assertEqual(options.update_properties.dependent_properties,
+                         {'product': ['virtual_suite']})
+
+    def test_update_properties_bad_format(self):
+        self.tool.filesystem.write_text_file('bad-props.json', json.dumps({}))
+        with self.assert_parse_error('does not conform'):
+            self.command.parse_args(['--update-properties=bad-props.json'])
+        self.tool.filesystem.write_text_file(
+            'bad-props.json',
+            json.dumps({
+                'properties': ['product'],
+                'dependents': ['os'],
+            }))
+        with self.assert_parse_error('does not conform'):
+            self.command.parse_args(['--update-properties=bad-props.json'])
+
+    def test_update_properties_invalid_json(self):
+        self.tool.filesystem.write_text_file('bad-props.json', '{')
+        with self.assert_parse_error('is not a valid JSON file'):
+            self.command.parse_args(['--update-properties=bad-props.json'])
+
+    def test_update_properties_does_not_exist(self):
+        with self.assert_parse_error('is not a valid JSON file'):
+            self.command.parse_args(
+                ['--update-properties=does-not-exist.json'])
