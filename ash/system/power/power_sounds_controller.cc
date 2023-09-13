@@ -46,14 +46,13 @@ Sound GetSoundKeyForBatteryLevel(int level) {
   if (level >= kNormalPercentageForCharging)
     return Sound::kChargeHighBattery;
 
-  if (features::IsBatterySaverAvailable()) {
-    return level >= features::kBatterySaverActivationChargePercent.Get() + 1
-               ? Sound::kChargeMediumBattery
-               : Sound::kChargeLowBattery;
-  }
+  const int threshold =
+      features::IsBatterySaverAvailable()
+          ? features::kBatterySaverActivationChargePercent.Get() + 1
+          : kMidPercentageForCharging;
 
-  return level >= kMidPercentageForCharging ? Sound::kChargeMediumBattery
-                                            : Sound::kChargeLowBattery;
+  return level >= threshold ? Sound::kChargeMediumBattery
+                            : Sound::kChargeLowBattery;
 }
 
 }  // namespace
@@ -209,25 +208,26 @@ PowerSoundsController::CalculateBatteryState(
     bool is_calculating_battery_time,
     ExternalPower external_power,
     absl::optional<base::TimeDelta> remaining_time) const {
-  if ((is_calculating_battery_time && !features::IsBatterySaverAvailable()) ||
+  const bool is_battery_saver_available = features::IsBatterySaverAvailable();
+
+  if ((is_calculating_battery_time && !is_battery_saver_available) ||
       is_ac_charger_connected_) {
     return BatteryState::kNone;
-  }
-
-  if (features::IsBatterySaverAvailable()) {
-    return GetBatteryStateFromBatteryLevel();
   }
 
   // The battery state calculation should follow the same logic used by the
   // power notification (Please see
   // `PowerNotificationController::UpdateNotificationState()`). Hence, when a
-  // low-power charger (i.e. a USB charger) is connected, we calculate the state
-  // based on the remaining `battery_level_` percentage. Otherwise, when the
-  // device is disconnected, we calculate it based on the remaining time until
-  // the battery is empty.
-  return external_power == kUsbPower
-             ? GetBatteryStateFromBatteryLevel()
-             : GetBatteryStateFromRemainingTime(remaining_time);
+  // low-power charger (i.e. a USB charger) is connected, or we are using
+  // battery saver notifications, we calculate the state based on the remaining
+  // `battery_level_` percentage. GetBatteryStateFromBatteryLevel()
+  // automatically reflects this differentiation in its logic. Otherwise, when
+  // the device is disconnected, we calculate it based on the remaining time
+  // until the battery is empty.
+  if (is_battery_saver_available || external_power == kUsbPower) {
+    return GetBatteryStateFromBatteryLevel();
+  }
+  return GetBatteryStateFromRemainingTime(remaining_time);
 }
 
 PowerSoundsController::BatteryState

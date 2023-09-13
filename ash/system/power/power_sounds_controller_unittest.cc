@@ -40,7 +40,13 @@ constexpr int kLowPowerMinutes = 15;
 
 class PowerSoundsControllerTest : public AshTestBase {
  public:
-  PowerSoundsControllerTest() = default;
+  PowerSoundsControllerTest()
+      : PowerSoundsControllerTest({features::kSystemSounds}) {}
+
+  explicit PowerSoundsControllerTest(
+      const std::vector<base::test::FeatureRef>& enabled_features) {
+    scoped_feature_.InitWithFeatures(enabled_features, {});
+  }
 
   PowerSoundsControllerTest(const PowerSoundsControllerTest&) = delete;
   PowerSoundsControllerTest& operator=(const PowerSoundsControllerTest&) =
@@ -50,7 +56,6 @@ class PowerSoundsControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_.InitAndEnableFeature(features::kSystemSounds);
     AshTestBase::SetUp();
     SetInitialPowerStatus();
   }
@@ -64,12 +69,14 @@ class PowerSoundsControllerTest : public AshTestBase {
     const auto& actual_sounds =
         GetSystemSoundsDelegate()->last_played_sound_keys();
 
-    if (actual_sounds.size() != expected_sounds.size())
+    if (actual_sounds.size() != expected_sounds.size()) {
       return false;
+    }
 
     for (size_t i = 0; i < expected_sounds.size(); ++i) {
-      if (expected_sounds[i] != actual_sounds[i])
+      if (expected_sounds[i] != actual_sounds[i]) {
         return false;
+      }
     }
 
     return true;
@@ -146,14 +153,10 @@ class PowerSoundsControllerWithBatterySaverTest
     : public PowerSoundsControllerTest,
       public testing::WithParamInterface<
           features::BatterySaverNotificationBehavior> {
-  void SetUp() override {
-    scoped_feature_.InitWithFeatures(
-        {features::kSystemSounds, features::kBatterySaver}, {});
-    AshTestBase::SetUp();
-    SetInitialPowerStatus();
-  }
-
-  void TearDown() override { PowerSoundsControllerTest::TearDown(); }
+ public:
+  PowerSoundsControllerWithBatterySaverTest()
+      : PowerSoundsControllerTest(
+            {features::kSystemSounds, features::kBatterySaver}) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
