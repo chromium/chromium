@@ -176,7 +176,6 @@ BASE_DECLARE_FEATURE(kShareSheetCustomActionsPolish);
 BASE_DECLARE_FEATURE(kShareSheetMigrationAndroid);
 BASE_DECLARE_FEATURE(kSpecialLocaleWrapper);
 BASE_DECLARE_FEATURE(kSpecialUserDecision);
-BASE_DECLARE_FEATURE(kSplitCompositorTask);
 BASE_DECLARE_FEATURE(kStoreHoursAndroid);
 BASE_DECLARE_FEATURE(kSuppressToolbarCaptures);
 BASE_DECLARE_FEATURE(kTabDragDropAndroid);

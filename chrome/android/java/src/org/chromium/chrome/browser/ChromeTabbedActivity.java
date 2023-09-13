@@ -892,14 +892,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.startNativeInitialization")) {
             // This is on the critical path so don't delay.
             setupCompositorContentPreNative();
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SPLIT_COMPOSITOR_TASK)
-                    && (!DeviceFormFactor.isTablet()
-                            || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                    ChromeFeatureList.SPLIT_COMPOSITOR_TASK, "enable_on_tablet",
-                                    false))) {
+            if (!DeviceFormFactor.isTablet()) {
                 PostTask.postTask(TaskTraits.UI_DEFAULT,
                         mCallbackController.makeCancelable(this::initializeCompositorContent));
             } else {
+                // TODO(crbug.com/1344639): Enable split compositor task on tablets.
                 initializeCompositorContent();
             }
 

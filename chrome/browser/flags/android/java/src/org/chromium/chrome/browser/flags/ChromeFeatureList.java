@@ -438,7 +438,6 @@ public abstract class ChromeFeatureList {
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SPARE_TAB = "SpareTab";
-    public static final String SPLIT_COMPOSITOR_TASK = "SplitCompositorTask";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
