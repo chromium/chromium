@@ -28,6 +28,8 @@ import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.net.httpflags.Flags;
 import org.chromium.net.httpflags.HttpFlagsInterceptor;
+import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.JavaCronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.UserAgent;
@@ -589,7 +591,21 @@ public class CronetTestRule implements TestRule {
         }
 
         private void verifyCronetEngineInstance(CronetEngine engine) {
-            // TODO(danstahr): Add assertions for expected class
+            switch (this) {
+                case STATICALLY_LINKED:
+                    checkImplClass(engine, CronetUrlRequestContext.class);
+                    break;
+                case FALLBACK:
+                    checkImplClass(engine, JavaCronetEngine.class);
+                    break;
+                case AOSP_PLATFORM:
+                    // TODO(crbug/1451404): Add once platform provider CL lands.
+                    break;
+            }
+        }
+
+        private void checkImplClass(CronetEngine engine, Class expectedClass) {
+            assertThat(engine).isInstanceOf(expectedClass);
         }
     }
 
