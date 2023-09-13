@@ -10,6 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {disableAllButtons, enableAllButtons} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -36,7 +37,13 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
   }
 
   static get properties() {
-    return {};
+    return {
+      /** @private */
+      hasPendingLaunch_: {
+        type: Boolean,
+        value: false,
+      },
+    };
   }
 
   /** @override */
@@ -52,12 +59,30 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
   }
 
   /**
+   * Ends the launch process and enables all buttons.
+   * @private
+   */
+  completeLaunch_() {
+    this.hasPendingLaunch_ = false;
+    enableAllButtons(this);
+  }
+
+  /**
    * Launch the 3p diagnostics app. This will ask if users want to install the
    * app from external storage if app files exist, or launch the installed app.
    * @public
    */
   launch3pDiagnostics() {
-    // TODO(chungsheng): Implement the logic.
+    if (!loadTimeData.getBoolean('3pDiagnosticsEnabled') ||
+        this.hasPendingLaunch_) {
+      return;
+    }
+
+    this.hasPendingLaunch_ = true;
+    disableAllButtons(this, /*showBusyStateOverlay=*/ true);
+
+    // TODO(chungsheng): Implement the launch logic.
+    this.completeLaunch_();
   }
 }
 

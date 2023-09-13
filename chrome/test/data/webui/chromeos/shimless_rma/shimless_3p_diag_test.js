@@ -25,14 +25,30 @@ suite('shimless3pDiagTest', function() {
   /** @type {?FakeShimlessRmaService} */
   let service = null;
 
+  /**
+   * Used to verify that all buttons has been disabled. This is to check if
+   * users see the UI changes.
+   * @type {boolean}
+   * */
+  let hasDisabledAllButtons = false;
+
+  const disableAllButtonsListener = () => {
+    hasDisabledAllButtons = true;
+  };
+
   setup(() => {
     document.body.innerHTML = trustedTypes.emptyHTML;
     service = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(service);
+    window.addEventListener('disable-all-buttons', disableAllButtonsListener);
+    hasDisabledAllButtons = false;
+
     loadTimeData.overrideValues({'3pDiagnosticsEnabled': true});
   });
 
   teardown(() => {
+    window.removeEventListener(
+        'disable-all-buttons', disableAllButtonsListener);
     component.remove();
     component = null;
     shimlessRmaComponent.remove();
@@ -64,4 +80,103 @@ suite('shimless3pDiagTest', function() {
     await initialize();
     assertTrue(!!component);
   });
+
+  // Verify 3p diag is disabled by flag.
+  test('3pDiagIsDisabledByFlag', async () => {
+    loadTimeData.overrideValues({'3pDiagnosticsEnabled': false});
+    await initialize();
+    assertTrue(!!component);
+
+    component.launch3pDiagnostics();
+
+    await flushTasks();
+    assertFalse(hasDisabledAllButtons);
+  });
+
+  // Test wrong shortcut don't trigger 3p diag.
+  const wrong_keyboard_shortcuts = [
+    {
+      name: 'NoAltKey',
+      key: 'D',
+      altKey: false,
+      shiftKey: true,
+    },
+    {
+      name: 'NoShiftKey',
+      key: 'D',
+      altKey: true,
+      shiftKey: false,
+    },
+    // No 'D' key
+    {
+      name: 'NotDKey',
+      key: 'X',
+      altKey: true,
+      shiftKey: true,
+    },
+    // No 'D' key, 'L' is for logging dialog.
+    {
+      name: 'LKey',
+      key: 'L',
+      altKey: true,
+      shiftKey: true,
+    },
+  ];
+  for (const {name, key, altKey, shiftKey} of wrong_keyboard_shortcuts) {
+    test(`WrongShortcutDontTrigger3pDiag${name}`, async () => {
+      await initialize();
+      assertTrue(!!component);
+
+      const keydownEventPromise = eventToPromise('keydown', component);
+      component.dispatchEvent(new KeyboardEvent(
+          'keydown',
+          {
+            bubbles: true,
+            composed: true,
+            key,
+            altKey,
+            shiftKey,
+          },
+          ));
+      await keydownEventPromise;
+      assertFalse(hasDisabledAllButtons);
+    });
+  }
+
+  // Verify 3p diag flow by trigger keyboard shortcut.
+  const correct_keyboard_shortcuts = [
+    {
+      name: 'UppercaseD',
+      key: 'D',
+      altKey: true,
+      shiftKey: true,
+    },
+    {
+      name: 'LowercaseD',
+      key: 'd',
+      altKey: true,
+      shiftKey: true,
+    },
+  ];
+  for (const {name, key, altKey, shiftKey} of correct_keyboard_shortcuts) {
+    test(`Launch3pDiagByShortcut${name}`, async () => {
+      await initialize();
+      assertTrue(!!component);
+
+      const keydownEventPromise = eventToPromise('keydown', component);
+      component.dispatchEvent(new KeyboardEvent(
+          'keydown',
+          {
+            bubbles: true,
+            composed: true,
+            key,
+            altKey,
+            shiftKey,
+          },
+          ));
+      await keydownEventPromise;
+      assertTrue(hasDisabledAllButtons);
+      // TODO(chungsheng): Verify other things after implemented them.
+    });
+  }
 });
