@@ -25,6 +25,7 @@
     background-color: var(--color-new-tab-page-module-item-background);
     border: none;
     border-radius: var(--ntp-module-item-border-radius);
+    cursor: pointer;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -102,8 +103,8 @@
     text-decoration: none;
   }
 
-  #container:focus, #container:focus-visible,
-  #suggestion-chip:focus, #suggestion-chip:focus-visible {
+  #container:focus-visible,
+  #suggestion-chip:focus-visible {
     box-shadow: var(--ntp-focus-shadow);
     outline: none;
   }
