@@ -731,6 +731,12 @@ Things to consider:
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_MAKE_SURE_YOU_CAN_ALWAYS_USE_CHROME_DATA_MESSAGE" desc="The error message in the identity error info bar related to making sure your can always use Chromium data in your Google account. [iOS only]">
         Make sure you can always use the Chrome data in your Google Account
       </message>
+      <message name="IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_TITLE" desc="Siri Shortcut for open Clear Browsing Data dialog [iOS only]">
+        Clear Browsing Data in Chrome
+      </message>
+      <message name="IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_DESCRIPTION" desc="Shortcut description to open Clear Browsing Data dialog in Chrome [iOS only].">
+        Clear Browsing Data in Chrome.
+      </message>
       <message name="IDS_IOS_INTENTS_OPEN_READING_LIST_TITLE" desc="Siri Shortcut for open reading list title [iOS only]">
         See Chrome Reading List
       </message>

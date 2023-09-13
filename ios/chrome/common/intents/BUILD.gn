@@ -26,5 +26,6 @@ intent_definition("intents") {
     "ManageSettingsIntent",
     "OpenLatestTabIntent",
     "OpenLensIntent",
+    "ClearBrowsingDataIntent",
   ]
 }

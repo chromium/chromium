@@ -403,7 +403,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>See Chrome Bookmarks</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -467,7 +467,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>See Recent Tabs In Chrome</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -531,7 +531,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Visit The Tab Grid In Chrome</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -595,7 +595,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Search with voice in Chrome</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -659,7 +659,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Open new tab in Chrome</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -723,7 +723,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Play Chrome Dino Game</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -787,7 +787,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Set Chrome As Default Browser</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -851,7 +851,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>View Your Chrome History</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -915,7 +915,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Open Chrome Incognito Tab</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -979,7 +979,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Manage Payment Methods in Chrome</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -1043,7 +1043,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Run Chrome Safety Check</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -1107,7 +1107,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Manage passwords in Chrome</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -1171,7 +1171,7 @@
           <key>INIntentParameterCombinationIsPrimary</key>
           <true/>
           <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
-          <true/>
+          <false/>
           <key>INIntentParameterCombinationTitle</key>
           <string>Manage Chrome Settings</string>
           <key>INIntentParameterCombinationTitleID</key>
@@ -1330,6 +1330,74 @@
       <string>Search Visuals in Chrome</string>
       <key>INIntentTitleID</key>
       <string>KggFtq</string>
+      <key>INIntentType</key>
+      <string>Custom</string>
+      <key>INIntentVerb</key>
+      <string>Do</string>
+    </dict>
+    <dict>
+      <key>INIntentCategory</key>
+      <string>generic</string>
+      <key>INIntentConfigurable</key>
+      <true/>
+      <key>INIntentDescriptionID</key>
+      <string>QNOy9O</string>
+      <key>INIntentEligibleForWidgets</key>
+      <true/>
+      <key>INIntentManagedParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Clear Browsing Data in Chrome.</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>G5abvV</string>
+          <key>INIntentParameterCombinationUpdatesLinked</key>
+          <true/>
+        </dict>
+      </dict>
+      <key>INIntentName</key>
+      <string>ClearBrowsingData</string>
+      <key>INIntentParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationIsPrimary</key>
+          <true/>
+          <key>INIntentParameterCombinationSubtitle</key>
+          <string>Clear Browsing Data in Chrome.</string>
+          <key>INIntentParameterCombinationSubtitleID</key>
+          <string>lfVwmu</string>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <false/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Clear Browsing Data in Chrome</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>6yFN6Z</string>
+        </dict>
+      </dict>
+      <key>INIntentResponse</key>
+      <dict>
+        <key>INIntentResponseCodes</key>
+        <array>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>success</string>
+            <key>INIntentResponseCodeSuccess</key>
+            <true/>
+          </dict>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>failure</string>
+          </dict>
+        </array>
+      </dict>
+      <key>INIntentTitle</key>
+      <string>Clear Browsing Data in Chrome</string>
+      <key>INIntentTitleID</key>
+      <string>QI9R4N</string>
       <key>INIntentType</key>
       <string>Custom</string>
       <key>INIntentVerb</key>

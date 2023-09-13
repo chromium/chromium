@@ -77,6 +77,7 @@ NSString* const kSiriManagePasswords = @"ManagePasswordsIntent";
 NSString* const kSiriManageSettings = @"ManageSettingsIntent";
 NSString* const kSiriOpenLatestTab = @"OpenLatestTabIntent";
 NSString* const kSiriOpenLensFromIntents = @"OpenLensIntent";
+NSString* const kSiriClearBrowsingData = @"ClearBrowsingDataIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -388,6 +389,11 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     [connectionInformation
         setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
                                        START_LENS_FROM_INTENTS]];
+  } else if ([userActivity.activityType
+                 isEqualToString:kSiriClearBrowsingData]) {
+    [connectionInformation
+        setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
+                                       OPEN_CLEAR_BROWSING_DATA_DIALOG]];
   }
 
   else {
