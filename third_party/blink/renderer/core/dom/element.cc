@@ -3603,6 +3603,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
       const StyleHighlightData* parent_highlights =
           parent_style ? &parent_style->HighlightData() : nullptr;
 
+      if (new_style->IsContainerForSizeContainerQueries()) {
+        new_style_recalc_context.container = this;
+      }
+
       if (UsesHighlightPseudoInheritance(kPseudoIdSelection) &&
           new_style->HasPseudoElementStyle(kPseudoIdSelection)) {
         StyleHighlightData& highlights = builder.AccessHighlightData();
