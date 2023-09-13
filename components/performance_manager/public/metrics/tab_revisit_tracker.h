@@ -47,14 +47,20 @@ class TabRevisitTracker : public GraphOwned,
   struct StateBundle {
     State state;
     absl::optional<base::TimeTicks> last_active_time;
+    base::TimeDelta total_time_active;
     base::TimeTicks last_state_change_time;
     int64_t num_revisits;
   };
 
   void RecordRevisitHistograms(const TabPageDecorator::TabHandle* tab_handle);
   void RecordCloseHistograms(const TabPageDecorator::TabHandle* tab_handle);
-  void RecordStateChangeUkm(const TabPageDecorator::TabHandle* tab_handle,
-                            State new_state);
+  void RecordStateChangeUkmAndUpdateStateBundle(
+      const TabPageDecorator::TabHandle* tab_handle,
+      StateBundle new_state_bundle);
+
+  StateBundle CreateUpdatedStateBundle(
+      const TabPageDecorator::TabHandle* tab_handle,
+      State new_state) const;
 
   int64_t StateToSample(TabRevisitTracker::State state);
   static int64_t ExponentiallyBucketedSeconds(base::TimeDelta time);

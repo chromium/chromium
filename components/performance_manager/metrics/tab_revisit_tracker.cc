@@ -60,29 +60,51 @@ void TabRevisitTracker::RecordCloseHistograms(
       /*buckets=*/200);
 }
 
-void TabRevisitTracker::RecordStateChangeUkm(
+void TabRevisitTracker::RecordStateChangeUkmAndUpdateStateBundle(
     const TabPageDecorator::TabHandle* tab_handle,
-    State new_state) {
+    StateBundle new_state_bundle) {
   ukm::builders::TabRevisitTracker_TabStateChange builder(
       tab_handle->page_node()->GetUkmSourceID());
 
-  StateBundle& bundle = tab_states_.at(tab_handle);
+  auto it = tab_states_.find(tab_handle);
+  CHECK(it != tab_states_.end());
 
-  if (new_state == State::kActive) {
-    ++bundle.num_revisits;
-  }
-
-  builder.SetPreviousState(StateToSample(bundle.state))
-      .SetNewState(StateToSample(new_state))
+  builder.SetPreviousState(StateToSample(it->second.state))
+      .SetNewState(StateToSample(new_state_bundle.state))
       .SetNumTotalRevisits(
-          GetLinearCappedBucket(bundle.num_revisits, kMaxNumRevisit))
+          GetLinearCappedBucket(new_state_bundle.num_revisits, kMaxNumRevisit))
       .SetTimeInPreviousState(ExponentiallyBucketedSeconds(
-          base::TimeTicks::Now() - bundle.last_state_change_time));
+          base::TimeTicks::Now() - it->second.last_state_change_time))
+      .SetTotalTimeActive(
+          ExponentiallyBucketedSeconds(new_state_bundle.total_time_active));
 
   builder.Record(ukm::UkmRecorder::Get());
 
-  bundle.state = new_state;
-  bundle.last_state_change_time = base::TimeTicks::Now();
+  it->second = new_state_bundle;
+}
+
+TabRevisitTracker::StateBundle TabRevisitTracker::CreateUpdatedStateBundle(
+    const TabPageDecorator::TabHandle* tab_handle,
+    State new_state) const {
+  StateBundle new_bundle = tab_states_.at(tab_handle);
+
+  if (new_state == State::kActive) {
+    ++new_bundle.num_revisits;
+  }
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  // Add the time spent in the last state to total_active_time and update
+  // last_active_time if the tab was active before this transition.
+  if (new_bundle.state == State::kActive) {
+    new_bundle.last_active_time = now;
+    new_bundle.total_time_active += (now - new_bundle.last_state_change_time);
+  }
+
+  new_bundle.state = new_state;
+  new_bundle.last_state_change_time = now;
+
+  return new_bundle;
 }
 
 int64_t TabRevisitTracker::StateToSample(TabRevisitTracker::State state) {
@@ -173,7 +195,10 @@ void TabRevisitTracker::OnBeforeTabRemoved(
     RecordCloseHistograms(tab_handle);
   }
 
-  RecordStateChangeUkm(tab_handle, State::kClosed);
+  RecordStateChangeUkmAndUpdateStateBundle(
+      tab_handle, CreateUpdatedStateBundle(tab_handle, State::kClosed));
+  // No need to update anything in the State Bundle here since the page is going
+  // away.
 
   tab_states_.erase(tab_handle);
 }
@@ -187,16 +212,14 @@ void TabRevisitTracker::OnIsActiveTabChanged(const PageNode* page_node) {
       TabPageDecorator::FromPageNode(page_node);
   CHECK(tab_handle);
 
+  State new_state =
+      live_state_data->IsActiveTab() ? State::kActive : State::kBackground;
+  CHECK_NE(tab_states_[tab_handle].state, new_state);
+  RecordStateChangeUkmAndUpdateStateBundle(
+      tab_handle, CreateUpdatedStateBundle(tab_handle, new_state));
+
   if (live_state_data->IsActiveTab()) {
-    CHECK_NE(tab_states_[tab_handle].state, State::kActive);
-    RecordStateChangeUkm(tab_handle, State::kActive);
-    tab_states_[tab_handle].state = State::kActive;
     RecordRevisitHistograms(tab_handle);
-  } else {
-    CHECK_NE(tab_states_[tab_handle].state, State::kBackground);
-    tab_states_[tab_handle].last_active_time = base::TimeTicks::Now();
-    RecordStateChangeUkm(tab_handle, State::kBackground);
-    tab_states_[tab_handle].state = State::kBackground;
   }
 }
 

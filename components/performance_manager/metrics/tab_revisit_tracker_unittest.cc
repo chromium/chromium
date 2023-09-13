@@ -47,7 +47,8 @@ class TabRevisitTrackerTest : public GraphTestHarness {
                      int64_t previous_state,
                      int64_t new_state,
                      int64_t num_total_revisits,
-                     base::TimeDelta time_in_previous_state) {
+                     base::TimeDelta time_in_previous_state,
+                     base::TimeDelta total_time_active) {
     auto entries = test_ukm_recorder_->GetEntriesByName(
         ukm::builders::TabRevisitTracker_TabStateChange::kEntryName);
     EXPECT_EQ(entries.size(), entries_count);
@@ -62,6 +63,9 @@ class TabRevisitTrackerTest : public GraphTestHarness {
         entries[entry_id], "TimeInPreviousState",
         TabRevisitTracker::ExponentiallyBucketedSeconds(
             time_in_previous_state));
+    test_ukm_recorder_->ExpectEntryMetric(
+        entries[entry_id], "TotalTimeActive",
+        TabRevisitTracker::ExponentiallyBucketedSeconds(total_time_active));
   }
 
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
@@ -92,7 +96,8 @@ TEST_F(TabRevisitTrackerTest, StartsBackgroundedThenRevisited) {
                 /*previous_state=*/kBackgroundState,
                 /*new_state=*/kActiveState,
                 /*num_total_revisits=*/1,
-                /*time_in_previous_state=*/base::Minutes(30));
+                /*time_in_previous_state=*/base::Minutes(30),
+                /*total_time_active=*/base::TimeDelta());
 
   SetIsActiveTab(mock_graph.page.get(), false);
   tester.ExpectUniqueSample(TabRevisitTracker::kTimeToRevisitHistogramName,
@@ -102,7 +107,8 @@ TEST_F(TabRevisitTrackerTest, StartsBackgroundedThenRevisited) {
                 /*previous_state=*/kActiveState,
                 /*new_state=*/kBackgroundState,
                 /*num_total_revisits=*/1,
-                /*time_in_previous_state=*/base::TimeDelta());
+                /*time_in_previous_state=*/base::TimeDelta(),
+                /*total_time_active=*/base::TimeDelta());
 
   AdvanceClock(base::Minutes(10));
   // The tab became active again after 10 minutes in the background, the revisit
@@ -118,7 +124,8 @@ TEST_F(TabRevisitTrackerTest, StartsBackgroundedThenRevisited) {
                 /*previous_state=*/kBackgroundState,
                 /*new_state=*/kActiveState,
                 /*num_total_revisits=*/2,
-                /*time_in_previous_state=*/base::Minutes(10));
+                /*time_in_previous_state=*/base::Minutes(10),
+                /*total_time_active=*/base::TimeDelta());
 }
 
 TEST_F(TabRevisitTrackerTest, CloseInBackgroundRecordsToCloseHistogram) {
@@ -146,7 +153,8 @@ TEST_F(TabRevisitTrackerTest, CloseInBackgroundRecordsToCloseHistogram) {
                 /*previous_state=*/kBackgroundState,
                 /*new_state=*/kClosedState,
                 /*num_total_revisits=*/0,
-                /*time_in_previous_state=*/base::Hours(1));
+                /*time_in_previous_state=*/base::Hours(1),
+                /*total_time_active=*/base::TimeDelta());
 }
 
 TEST_F(TabRevisitTrackerTest, CloseWhileActiveDoesntRecordClose) {
@@ -172,7 +180,8 @@ TEST_F(TabRevisitTrackerTest, CloseWhileActiveDoesntRecordClose) {
                 /*previous_state=*/kActiveState,
                 /*new_state=*/kClosedState,
                 /*num_total_revisits=*/0,
-                /*time_in_previous_state=*/base::Hours(1));
+                /*time_in_previous_state=*/base::Hours(1),
+                /*total_time_active=*/base::Hours(1));
 }
 
 }  // namespace performance_manager
