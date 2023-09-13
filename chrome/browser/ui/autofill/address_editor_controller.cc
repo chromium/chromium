@@ -149,6 +149,7 @@ void AddressEditorController::UpdateCountries(
     model = &local_model;
   }
 
+  countries_.clear();
   for (const std::unique_ptr<autofill::AutofillCountry>& country :
        model->countries()) {
     if (country) {
