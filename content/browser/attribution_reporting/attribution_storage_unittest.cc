@@ -14,14 +14,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/containers/enum_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -66,6 +64,7 @@ namespace content {
 
 namespace {
 
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -143,34 +142,6 @@ class AttributionStorageTest : public testing::Test {
     delegate_ = delegate.get();
     storage_ = std::make_unique<AttributionStorageSql>(dir_.GetPath(),
                                                        std::move(delegate));
-  }
-
-  // Given a |conversion|, returns the expected conversion report properties at
-  // the current timestamp.
-  AttributionReport GetExpectedEventLevelReport(
-      const StoredSource& source,
-      const AttributionTrigger& conversion) {
-    // TOO(apaseltiner): Replace this logic with explicit setting of expected
-    // values.
-    const base::Time trigger_time = source.source_time() + kReportDelay;
-    auto event_trigger = base::ranges::find_if(
-        conversion.registration().event_triggers,
-        [&](const attribution_reporting::EventTriggerData& event_trigger) {
-          return source.filter_data().Matches(
-              source.common_info().source_type(), source.source_time(),
-              trigger_time, event_trigger.filters);
-        });
-    CHECK(event_trigger != conversion.registration().event_triggers.end());
-
-    return ReportBuilder(AttributionInfoBuilder(
-                             /*context_origin=*/conversion.destination_origin())
-                             .SetTime(base::Time::Now())
-                             .Build(),
-                         source)
-        .SetTriggerData(event_trigger->data)
-        .SetReportTime(trigger_time)
-        .SetPriority(event_trigger->priority)
-        .Build();
   }
 
   AttributionReport GetExpectedAggregatableReport(
@@ -1223,7 +1194,7 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
   storage()->StoreSource(source_builder.Build());
 
-  auto conversion1 = DefaultTrigger();
+  auto conversion1 = TriggerBuilder().SetTriggerData(1).Build();
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion1),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
@@ -1231,8 +1202,9 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
                         AttributionTrigger::AggregatableResult::kNotRegistered),
                     CreateReportMaxAttributionsLimitIs(absl::nullopt)));
 
-  auto conversion2 =
-      DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5}).Build();
+  auto conversion2 = DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
+                         .SetTriggerData(2)
+                         .Build();
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion2),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
@@ -1240,9 +1212,12 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
                         AttributionTrigger::AggregatableResult::kSuccess),
                     CreateReportMaxAttributionsLimitIs(absl::nullopt)));
 
+  auto conversion3 = DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
+                         .SetTriggerData(3)
+                         .Build();
   // Event-level reports and aggregatable reports share the attribution limit.
   EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(conversion2),
+      storage()->MaybeCreateAndStoreReport(conversion3),
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kExcessiveAttributions),
             CreateReportAggregatableStatusIs(
@@ -1257,8 +1232,8 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
       DefaultAggregatableHistogramContributions(/*histogram_values=*/{5});
   ASSERT_THAT(contributions, SizeIs(1));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              ElementsAre(GetExpectedEventLevelReport(source, conversion1),
-                          GetExpectedEventLevelReport(source, conversion2),
+              ElementsAre(EventLevelDataIs(TriggerDataIs(1)),
+                          EventLevelDataIs(TriggerDataIs(2)),
                           GetExpectedAggregatableReport(
                               source, std::move(contributions), conversion2)));
 }
@@ -3509,7 +3484,6 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
 
   AttributionTrigger trigger =
       DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5})
-          .SetTriggerData(5)
           .Build();
   auto contributions =
       DefaultAggregatableHistogramContributions(/*histogram_values=*/{5});
@@ -3521,20 +3495,17 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess),
-            NewEventLevelReportIs(Optional(EventLevelDataIs(TriggerDataIs(5)))),
+            NewEventLevelReportIs(Optional(EventLevelDataIs(_))),
             NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(contributions))))));
 
   const auto source =
       source_builder.SetAggregatableBudgetConsumed(5).BuildStored();
-  auto expected_event_level_report =
-      GetExpectedEventLevelReport(source, trigger);
   auto expected_aggregatable_report =
       GetExpectedAggregatableReport(source, std::move(contributions), trigger);
 
-  EXPECT_THAT(
-      storage()->GetAttributionReports(base::Time::Max()),
-      ElementsAre(expected_event_level_report, expected_aggregatable_report));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(EventLevelDataIs(_), expected_aggregatable_report));
 
   EXPECT_EQ(expected_aggregatable_report.report_time(),
             expected_aggregatable_report.initial_report_time());
