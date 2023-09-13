@@ -165,33 +165,6 @@ constexpr const char kExampleManifestURL[] = "http://example.org/manifest";
 
 constexpr char kLaunchWebAppDisplayModeHistogram[] = "Launch.WebAppDisplayMode";
 
-// Opens |url| in a new popup window with the dimensions |popup_size|.
-Browser* OpenPopupAndWait(Browser* browser,
-                          const GURL& url,
-                          const gfx::Size& popup_size) {
-  content::WebContents* const web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  std::string open_window_script = base::StringPrintf(
-      "window.open('%s', '_blank', 'toolbar=none,width=%i,height=%i')",
-      url.spec().c_str(), popup_size.width(), popup_size.height());
-
-  EXPECT_TRUE(content::ExecJs(web_contents, open_window_script));
-
-  // The navigation should happen in a new window.
-  Browser* popup_browser = browser_change_observer.Wait();
-  EXPECT_NE(browser, popup_browser);
-
-  content::WebContents* popup_contents =
-      popup_browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
-  EXPECT_EQ(popup_contents->GetLastCommittedURL(), url);
-
-  return popup_browser;
-}
-
 #if BUILDFLAG(IS_WIN)
 std::vector<std::wstring> GetFileExtensionsForProgId(
     const std::wstring& file_handler_prog_id) {

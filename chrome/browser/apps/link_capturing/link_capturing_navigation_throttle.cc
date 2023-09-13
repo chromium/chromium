@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"  // nogncheck https://crbug.com/1474984
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -152,19 +153,10 @@ LinkCapturingNavigationThrottle::MaybeCreate(
     return nullptr;
   }
 
-  // Do not check apps for url if we are already in an app browser.
-  // It is possible that the web contents is not inserted to tab strip
-  // model at this stage (e.g. open url in new tab). So if we cannot
-  // find a browser at this moment, skip the check and this will be handled
-  // in `HandleRequest()`.
-  // This also checks if there is no browser attached to this web-contents yet,
-  // which means this was a middle-mouse-click action, which should not be
-  // captured.
-  // TODO(dmurph): Find a better way to detect middle-clicks.
-  // https://crbug.com/1474984
-  if (web_app::WebAppProvider::GetForWebApps(profile)
-          ->ui_manager()
-          .IsAppAffiliatedWindowOrNone(web_contents)) {
+  // If there is no browser attached to this web-contents yet, this was a
+  // middle-mouse-click action, which should not be captured.
+  // TODO(crbug.com/1474984): Find a better way to detect middle-clicks.
+  if (chrome::FindBrowserWithWebContents(web_contents) == nullptr) {
     return nullptr;
   }
 
@@ -251,19 +243,6 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  content::WebContents* web_contents = handle->GetWebContents();
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  // Check this again, as the tab may have been reparented now.
-  // TODO(dmurph): Find a better way to detect middle clicks.
-  // https://crbug.com/1474984
-  if (web_app::WebAppProvider::GetForWebApps(profile)
-          ->ui_manager()
-          .IsAppAffiliatedWindowOrNone(web_contents)) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
   if (!ShouldOverrideUrlIfRedirected(starting_url_, url)) {
     return content::NavigationThrottle::PROCEED;
   }
@@ -271,6 +250,9 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   bool is_navigation_from_link =
       IsNavigateFromNonFormNonContextMenuLink(handle);
 
+  content::WebContents* web_contents = handle->GetWebContents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   absl::optional<LaunchCallback> launch_link_capture =
       delegate_->CreateLinkCaptureLaunchClosure(profile, web_contents, url,
                                                 is_navigation_from_link);

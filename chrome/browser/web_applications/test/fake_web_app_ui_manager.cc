@@ -96,11 +96,6 @@ bool FakeWebAppUiManager::IsInAppWindow(content::WebContents* web_contents,
   return false;
 }
 
-bool FakeWebAppUiManager::IsAppAffiliatedWindowOrNone(
-    content::WebContents* web_contents) const {
-  return false;
-}
-
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
     const AppId& app_id,
     bool shortcut_created) const {

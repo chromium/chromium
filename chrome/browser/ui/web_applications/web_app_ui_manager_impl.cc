@@ -263,12 +263,6 @@ bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
   return AppBrowserController::IsWebApp(browser);
 }
 
-bool WebAppUiManagerImpl::IsAppAffiliatedWindowOrNone(
-    content::WebContents* web_contents) const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  return !browser || browser->is_type_app_popup() || browser->is_type_app();
-}
-
 void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
     content::WebContents* web_contents,
     const absl::optional<AppId>& previous_app_id,

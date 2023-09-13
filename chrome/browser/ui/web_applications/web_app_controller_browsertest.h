@@ -81,6 +81,11 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   absl::optional<AppId> FindAppWithUrlInScope(const GURL& url);
 
+  // Opens |url| in a new popup window with the dimensions |popup_size|.
+  Browser* OpenPopupAndWait(Browser* browser,
+                            const GURL& url,
+                            const gfx::Size& popup_size);
+
  protected:
   WebAppControllerBrowserTest(
       const std::vector<base::test::FeatureRef>& enabled_features,

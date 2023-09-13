@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -438,6 +439,53 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   ExpectTabs(parent_browser, {GetParentAppUrl()});
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Tests that link capturing works while inside a web app window.
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+                       LinkCaptureInWebAppWindow) {
+  AppId parent_app_id = InstallParentApp();
+  AppId nested_app_id = InstallNestedApp();
+
+  TurnOnLinkCapturing(nested_app_id);
+
+  content::WebContents* parent_app = OpenApplication(parent_app_id);
+
+  // Clicking a link from target="_self" should link capture.
+  {
+    BrowserChangeObserver added_observer(
+        nullptr, BrowserChangeObserver::ChangeType::kAdded);
+    ClickLinkAndWait(parent_app, GetNestedAppUrl(), LinkTarget::SELF,
+                     /*rel=*/"");
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(added_observer.Wait(),
+                                                  nested_app_id));
+  }
+
+  // Clicking a link from target="_blank" should also link capture.
+  {
+    BrowserChangeObserver added_observer(
+        nullptr, BrowserChangeObserver::ChangeType::kAdded);
+    ClickLinkAndWait(parent_app, GetNestedAppUrl(), LinkTarget::BLANK,
+                     /*rel=*/"");
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(added_observer.Wait(),
+                                                  nested_app_id));
+  }
+
+  // Links clicked within an app popup browser will also capture.
+  {
+    const gfx::Size size(500, 500);
+    Browser* const popup_browser =
+        OpenPopupAndWait(chrome::FindBrowserWithWebContents(parent_app),
+                         GetParentAppUrl(), size);
+
+    BrowserChangeObserver added_observer(
+        nullptr, BrowserChangeObserver::ChangeType::kAdded);
+    ClickLinkAndWait(popup_browser->tab_strip_model()->GetActiveWebContents(),
+                     GetNestedAppUrl(), LinkTarget::SELF,
+                     /*rel=*/"");
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(added_observer.Wait(),
+                                                  nested_app_id));
+  }
+}
 
 // TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 class WebAppTabStripLinkCapturingBrowserTest
