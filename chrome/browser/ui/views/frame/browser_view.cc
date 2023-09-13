@@ -41,6 +41,7 @@
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/native_window_notification_source.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -868,24 +869,27 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
 
-  // Create user education resources.
-  UserEducationService* const user_education_service =
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
-  if (user_education_service) {
-    RegisterChromeHelpBubbleFactories(
-        user_education_service->help_bubble_factory_registry());
-    MaybeRegisterChromeFeaturePromos(
-        user_education_service->feature_promo_registry());
-    MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
-    feature_promo_snooze_service_ =
-        std::make_unique<BrowserFeaturePromoSnoozeService>(GetProfile());
-    feature_promo_controller_ = std::make_unique<BrowserFeaturePromoController>(
-        this,
-        feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile()),
-        &user_education_service->feature_promo_registry(),
-        &user_education_service->help_bubble_factory_registry(),
-        feature_promo_snooze_service_.get(),
-        &user_education_service->tutorial_service());
+  // Create user education resources unless headless mode is in effect.
+  if (!headless::IsHeadlessMode()) {
+    if (UserEducationService* const user_education_service =
+            UserEducationServiceFactory::GetForBrowserContext(GetProfile())) {
+      RegisterChromeHelpBubbleFactories(
+          user_education_service->help_bubble_factory_registry());
+      MaybeRegisterChromeFeaturePromos(
+          user_education_service->feature_promo_registry());
+      MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
+      feature_promo_snooze_service_ =
+          std::make_unique<BrowserFeaturePromoSnoozeService>(GetProfile());
+      feature_promo_controller_ =
+          std::make_unique<BrowserFeaturePromoController>(
+              this,
+              feature_engagement::TrackerFactory::GetForBrowserContext(
+                  GetProfile()),
+              &user_education_service->feature_promo_registry(),
+              &user_education_service->help_bubble_factory_registry(),
+              feature_promo_snooze_service_.get(),
+              &user_education_service->tutorial_service());
+    }
   }
 
   browser_->tab_strip_model()->AddObserver(this);
