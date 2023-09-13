@@ -4,7 +4,6 @@
 
 #include "chrome/browser/flag_descriptions.h"
 
-#include "ash/constants/ash_features.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -7009,12 +7008,6 @@ const char kVirtualKeyboardRoundCornersDescription[] =
 const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";
-
-const char kWelcomeScreenName[] =
-    "Productivity Experiment: Reorient with welcome screen";
-const char kWelcomeScreenDescription[] =
-    "When a user is about to start a new task, provide them with relevant "
-    "information and tools to help them orient and get started.";
 
 const char kWelcomeTourName[] = "Welcome Tour";
 const char kWelcomeTourDescription[] =
