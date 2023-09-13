@@ -193,6 +193,10 @@
 # TODO(crbug.com/1477792): This test is flaky.
 -All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink0
 
+# TODO(crbug.com/1482265): These consistently fail.
+-All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink0
+-All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink1
+
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
 -BackForwardCacheBrowserTest.CCNSAndWebSocketBothRecorded
