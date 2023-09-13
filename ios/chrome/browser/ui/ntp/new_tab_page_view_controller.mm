@@ -356,11 +356,16 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
         -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
     [self.contentSuggestionsViewController.view setNeedsLayout];
     [self.contentSuggestionsViewController.view layoutIfNeeded];
+    [self.headerViewController updateConstraints];
+    [self updateOverscrollActionsState];
+    [self updateHeightAboveFeed];
   }
 
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     [self updateFakeOmniboxForScrollPosition];
+    [self.headerViewController updateConstraints];
+    [self updateOverscrollActionsState];
     // Subviews will receive traitCollectionDidChange after this call, so the
     // only way to ensure that the scrollview isn't scrolled up too far is to
     // circle back afterwards and adjust if needed.
@@ -369,10 +374,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
           [self updateHeightAboveFeed];
         }));
   }
-
-  [self.headerViewController updateConstraints];
-  [self updateOverscrollActionsState];
-  [self updateHeightAboveFeed];
 }
 
 #pragma mark - Public
