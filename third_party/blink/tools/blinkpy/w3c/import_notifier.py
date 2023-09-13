@@ -56,18 +56,13 @@ class ImportNotifier:
             self.host)
 
         self._monorail_api = MonorailAPI
+        self._buganizer_api = BuganizerClient
         self.default_port = host.port_factory.get()
         self.default_port.set_option_default(
             'test_types', typing.get_args(wpt_metadata.TestType))
         self.finder = path_finder.PathFinder(host.filesystem)
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
-
-        try:
-            self.buganizer_client = BuganizerClient()
-        except Exception as e:
-            _log.warning('buganizer instantiation failed')
-            _log.warning(e)
 
     def main(self,
              wpt_revision_start,
@@ -451,10 +446,16 @@ class ImportNotifier:
 
         _log.info('Filing %d bugs in the pending list to Monorail', len(bugs))
         api = self._get_monorail_api(service_account_key_json)
-        for index, bug in enumerate(bugs, start=1):
+        buganizer_api = None
+        try:
+            buganizer_api = self._get_buganizer_api()
+        except Exception as e:
+            _log.warning('buganizer instantiation failed')
+            _log.warning(e)
 
-            if USE_BUGANIZER:
-                buganizer_res = self.buganizer_client.NewIssue(
+        for index, bug in enumerate(bugs, start=1):
+            if buganizer_api and USE_BUGANIZER:
+                buganizer_res = buganizer_api.NewIssue(
                     title=bug.summary,
                     description=bug.description,
                     cc=bug.cc,
@@ -465,6 +466,9 @@ class ImportNotifier:
                 response = api.insert_issue(bug)
                 _log.info('[%d] Filed bug: %s', index,
                           MonorailIssue.crbug_link(response['id']))
+
+    def _get_buganizer_api(self):
+        return self._buganizer_api()
 
     def _get_monorail_api(self, service_account_key_json):
         if service_account_key_json:

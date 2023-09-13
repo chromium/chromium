@@ -23,13 +23,13 @@ from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import ImportNotifier, TestFailure
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
+from blinkpy.w3c.buganizer_mock import BuganizerClientMock
 
 bootstrap_wpt_imports()
 from wptrunner import metadata
 
 UMBRELLA_BUG = WPTExpectationsUpdater.UMBRELLA_BUG
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
-
 
 class ImportNotifierTest(unittest.TestCase):
     def setUp(self):
@@ -71,6 +71,8 @@ class ImportNotifierTest(unittest.TestCase):
         ])
         self.notifier = ImportNotifier(self.host, self.git, self.local_wpt,
                                        configs)
+
+        self._buganizer_api = BuganizerClientMock
 
     def test_find_changed_baselines_of_tests(self):
         changed_files = [
