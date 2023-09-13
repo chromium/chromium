@@ -185,6 +185,12 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 
 @end
 
+@implementation OpaqueView
+- (BOOL)isOpaque {
+  return YES;
+}
+@end
+
 namespace remote_cocoa {
 
 bool IsNSToolbarFullScreenWindow(NSWindow* window) {
@@ -231,12 +237,9 @@ ImmersiveModeController::ImmersiveModeController(
   overlay_content_view_ = overlay_content_view;
   [overlay_content_view removeFromSuperview];
 
-  // The original content view (top chrome) has been moved to the AppKit
-  // created NSWindow. Create a new content view but reuse the original bridge
-  // so that mouse drags are handled.
-  overlay_window_.contentView =
-      [[BridgedContentView alloc] initWithBridge:overlay_content_view.bridge
-                                          bounds:gfx::Rect()];
+  // Use a placeholder view since the content has been moved to the
+  // ImmersiveModeTitlebarViewController.
+  overlay_window_.contentView = [[OpaqueView alloc] init];
 
   // The overlay window will become a child of NSToolbarFullScreenWindow and sit
   // above it in the z-order. Allow mouse events that are not handled by the

@@ -189,4 +189,8 @@ REMOTE_COCOA_APP_SHIM_EXPORT @interface ImmersiveModeTitlebarObserver : NSObject
 
 @end
 
+// An empty NSView that is also opaque.
+@interface OpaqueView : NSView
+@end
+
 #endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_H_

@@ -47,14 +47,9 @@ void ImmersiveModeTabbedController::Enable() {
   [tab_content_view removeFromSuperview];
   tab_content_view_ = tab_content_view;
 
-  // The ordering of resetting the `contentView` is important for macOS 12 and
-  // below. `tab_content_view_` needs to be removed from the
-  // `tab_window_.contentView` property before adding
-  // `tab_content_view_` to a new NSView tree. We will be left
-  // with a blank view if this ordering is not maintained.
-  tab_window_.contentView =
-      [[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
-                                          bounds:gfx::Rect()];
+  // Use a placeholder view since the content has been moved to the
+  // NSTitlebarAccessoryViewController.
+  tab_window_.contentView = [[OpaqueView alloc] init];
 
   // This will allow the NSToolbarFullScreenWindow to become key when
   // interacting with the tab strip.
