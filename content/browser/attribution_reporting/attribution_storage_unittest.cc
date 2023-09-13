@@ -336,7 +336,7 @@ TEST_F(AttributionStorageTest, EventSourceImpressionsForConversion_Converts) {
       SourceBuilder().SetSourceType(SourceType::kEvent).Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
-                TriggerBuilder().SetEventSourceTriggerData(456).Build()));
+                TriggerBuilder().SetTriggerData(456).Build()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(456u))));
@@ -3182,10 +3182,8 @@ TEST_F(AttributionStorageTest, TriggerDataSanitized) {
                              .SetReportingOrigin(origin2)
                              .SetSourceType(SourceType::kEvent)
                              .Build());
-  MaybeCreateAndStoreEventLevelReport(TriggerBuilder()
-                                          .SetReportingOrigin(origin2)
-                                          .SetEventSourceTriggerData(4)
-                                          .Build());
+  MaybeCreateAndStoreEventLevelReport(
+      TriggerBuilder().SetReportingOrigin(origin2).SetTriggerData(4).Build());
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               UnorderedElementsAre(

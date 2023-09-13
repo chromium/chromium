@@ -202,8 +202,6 @@ class TriggerBuilder {
 
   TriggerBuilder& SetTriggerData(uint64_t trigger_data);
 
-  TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data);
-
   TriggerBuilder& SetDestinationOrigin(attribution_reporting::SuitableOrigin);
 
   TriggerBuilder& SetReportingOrigin(attribution_reporting::SuitableOrigin);
@@ -240,7 +238,6 @@ class TriggerBuilder {
 
  private:
   uint64_t trigger_data_ = 111;
-  uint64_t event_source_trigger_data_ = 0;
   attribution_reporting::SuitableOrigin destination_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   int64_t priority_ = 0;

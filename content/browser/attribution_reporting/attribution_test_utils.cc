@@ -324,12 +324,6 @@ TriggerBuilder& TriggerBuilder::SetTriggerData(uint64_t trigger_data) {
   return *this;
 }
 
-TriggerBuilder& TriggerBuilder::SetEventSourceTriggerData(
-    uint64_t event_source_trigger_data) {
-  event_source_trigger_data_ = event_source_trigger_data;
-  return *this;
-}
-
 TriggerBuilder& TriggerBuilder::SetDestinationOrigin(SuitableOrigin origin) {
   destination_origin_ = std::move(origin);
   return *this;
@@ -411,17 +405,8 @@ AttributionTrigger TriggerBuilder::Build(
   std::vector<attribution_reporting::EventTriggerData> event_triggers;
 
   if (generate_event_trigger_data) {
-    event_triggers.emplace_back(
-        trigger_data_, priority_, dedup_key_,
-        FilterPair(/*positive=*/attribution_reporting::FiltersForSourceType(
-                       SourceType::kNavigation),
-                   /*negative=*/{}));
-
-    event_triggers.emplace_back(
-        event_source_trigger_data_, priority_, dedup_key_,
-        FilterPair(/*positive=*/attribution_reporting::FiltersForSourceType(
-                       SourceType::kEvent),
-                   /*negative=*/{}));
+    event_triggers.emplace_back(trigger_data_, priority_, dedup_key_,
+                                FilterPair());
   }
 
   return AttributionTrigger(
