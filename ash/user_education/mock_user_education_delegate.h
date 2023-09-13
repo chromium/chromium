@@ -48,6 +48,10 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
               IsNewUser,
               (const AccountId& account_id),
               (const, override));
+  MOCK_METHOD(bool,
+              IsTutorialRegistered,
+              (const AccountId& account_id, TutorialId tutorial_id),
+              (const, override));
   MOCK_METHOD(void,
               RegisterTutorial,
               (const AccountId& account_id,

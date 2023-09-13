@@ -66,6 +66,12 @@ class ASH_EXPORT UserEducationDelegate {
   virtual const absl::optional<bool>& IsNewUser(
       const AccountId& account_id) const = 0;
 
+  // Returns whether the tutorial specified by `tutorial_id` is registered for
+  // the user associated with the given `account_id`.
+  // NOTE: Currently only the primary user profile is supported.
+  virtual bool IsTutorialRegistered(const AccountId& account_id,
+                                    TutorialId tutorial_id) const = 0;
+
   // Registers the tutorial defined by the specified `tutorial_id` and
   // `tutorial_description` for the user associated with the given `account_id`.
   // NOTE: Currently only the primary user profile is supported.

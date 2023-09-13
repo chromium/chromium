@@ -123,6 +123,18 @@ const absl::optional<bool>& ChromeUserEducationDelegate::IsNewUser(
   return is_primary_profile_new_user_;
 }
 
+bool ChromeUserEducationDelegate::IsTutorialRegistered(
+    const AccountId& account_id,
+    ash::TutorialId tutorial_id) const {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  auto* const profile = GetProfile(account_id);
+  CHECK(IsPrimaryProfile(profile));
+  return UserEducationServiceFactory::GetForBrowserContext(profile)
+      ->tutorial_registry()
+      .IsTutorialRegistered(ash::user_education_util::ToString(tutorial_id));
+}
+
 void ChromeUserEducationDelegate::RegisterTutorial(
     const AccountId& account_id,
     ash::TutorialId tutorial_id,

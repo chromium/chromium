@@ -185,16 +185,26 @@ TEST_F(ChromeUserEducationDelegateTest, GetElementIdentifierForAppId) {
   }
 }
 
-// Verifies `RegisterTutorial()` registers a tutorial with the browser registry.
+// Verifies `RegisterTutorial()` registers a tutorial with the browser registry
+// and that `IsTutorialRegistered()` accurately reflects browser registry state.
 TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
+  static constexpr auto kTutorialIds =
+      base::EnumSet<ash::TutorialId, ash::TutorialId::kMinValue,
+                    ash::TutorialId::kMaxValue>::All();
+
   const ash::TutorialId tutorial_id = ash::TutorialId::kTest1;
   const auto tutorial_id_str = ash::user_education_util::ToString(tutorial_id);
 
-  // Initially there should be no tutorial registered.
-  user_education::TutorialRegistry& tutorial_registry =
+  const user_education::TutorialRegistry& tutorial_registry =
       UserEducationServiceFactory::GetForBrowserContext(profile())
           ->tutorial_registry();
+
+  // Initially there should be no tutorial registered.
   EXPECT_FALSE(tutorial_registry.IsTutorialRegistered(tutorial_id_str));
+  for (ash::TutorialId candidate_tutorial_id : kTutorialIds) {
+    EXPECT_FALSE(
+        delegate()->IsTutorialRegistered(account_id(), candidate_tutorial_id));
+  }
 
   // Attempt to register a tutorial.
   delegate()->RegisterTutorial(account_id(), tutorial_id,
@@ -202,6 +212,11 @@ TEST_F(ChromeUserEducationDelegateTest, RegisterTutorial) {
 
   // Confirm tutorial registration.
   EXPECT_TRUE(tutorial_registry.IsTutorialRegistered(tutorial_id_str));
+  for (ash::TutorialId candidate_tutorial_id : kTutorialIds) {
+    EXPECT_EQ(
+        delegate()->IsTutorialRegistered(account_id(), candidate_tutorial_id),
+        candidate_tutorial_id == tutorial_id);
+  }
 }
 
 // Verifies `StartTutorial()` starts a tutorial with the browser service, and

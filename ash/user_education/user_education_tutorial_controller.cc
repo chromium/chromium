@@ -46,6 +46,15 @@ UserEducationTutorialController* UserEducationTutorialController::Get() {
   return g_instance;
 }
 
+bool UserEducationTutorialController::IsTutorialRegistered(
+    TutorialId tutorial_id) const {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  const AccountId account_id = GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  return delegate_->IsTutorialRegistered(account_id, tutorial_id);
+}
+
 void UserEducationTutorialController::RegisterTutorial(
     UserEducationPrivateApiKey,
     TutorialId tutorial_id,

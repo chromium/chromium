@@ -40,6 +40,8 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
       const std::string& app_id) const override;
   const absl::optional<bool>& IsNewUser(
       const AccountId& account_id) const override;
+  bool IsTutorialRegistered(const AccountId& account_id,
+                            ash::TutorialId tutorial_id) const override;
   void RegisterTutorial(
       const AccountId& account_id,
       ash::TutorialId tutorial_id,

@@ -39,6 +39,10 @@ class ASH_EXPORT UserEducationTutorialController {
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationTutorialController* Get();
 
+  // Returns whether a tutorial is registered for the specified `tutorial_id`.
+  // NOTE: Currently only the primary user profile is supported.
+  bool IsTutorialRegistered(TutorialId tutorial_id) const;
+
   // Registers the tutorial with the specified `tutorial_id`.
   // NOTE: Currently only the primary user profile is supported.
   void RegisterTutorial(

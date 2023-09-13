@@ -421,11 +421,12 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // app until the Welcome Tour is either completed or aborted.
   std::ignore = maybe_launch_explore_app_async.Release();
 
-  // TODO(http://b/280840559): Check if tutorial is already registered.
-  auto* tutorial_controller = UserEducationTutorialController::Get();
-  tutorial_controller->RegisterTutorial(UserEducationPrivateApiKey(),
-                                        TutorialId::kWelcomeTour,
-                                        GetTutorialDescription());
+  auto* const tutorial_controller = UserEducationTutorialController::Get();
+  if (!tutorial_controller->IsTutorialRegistered(TutorialId::kWelcomeTour)) {
+    tutorial_controller->RegisterTutorial(UserEducationPrivateApiKey(),
+                                          TutorialId::kWelcomeTour,
+                                          GetTutorialDescription());
+  }
 
   // NOTE: It is theoretically possible for the tutorial to outlive `this`
   // controller during the destruction sequence.
