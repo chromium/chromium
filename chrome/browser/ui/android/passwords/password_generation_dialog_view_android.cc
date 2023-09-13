@@ -15,7 +15,7 @@
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"

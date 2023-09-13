@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"

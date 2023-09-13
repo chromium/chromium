@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"

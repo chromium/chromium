@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
 #include "components/user_manager/user_manager.h"

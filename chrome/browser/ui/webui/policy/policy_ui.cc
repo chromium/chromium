@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
 #include "components/policy/core/common/features.h"

@@ -20,7 +20,7 @@
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
 #include "third_party/libxml/chromium/xml_writer.h"

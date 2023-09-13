@@ -1,7 +1,7 @@
 include_rules = [
   # This file is generated but otherwise would be excluded because of the
   # "-chrome" rule in a parent dir.
-  "+chrome/grit/chromium_strings.h",
+  "+chrome/grit/branded_strings.h",
 
   "+chrome/install_static",
 

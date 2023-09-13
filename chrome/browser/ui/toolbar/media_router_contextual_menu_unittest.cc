@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
 #include "chrome/browser/ui/toolbar/mock_media_router_action_controller.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/media_router/browser/test/mock_media_router.h"

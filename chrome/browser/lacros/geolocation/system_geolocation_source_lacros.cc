@@ -8,7 +8,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/l10n/l10n_util.h"

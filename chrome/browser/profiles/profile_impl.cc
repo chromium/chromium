@@ -120,7 +120,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/content_settings/core/browser/cookie_settings.h"

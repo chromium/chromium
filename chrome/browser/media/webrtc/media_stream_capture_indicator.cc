@@ -35,7 +35,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/webrtc/media_stream_focus_delegate.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"

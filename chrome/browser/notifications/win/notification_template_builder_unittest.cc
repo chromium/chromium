@@ -16,7 +16,7 @@
 #include "chrome/browser/notifications/win/fake_notification_image_retainer.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util_win.h"

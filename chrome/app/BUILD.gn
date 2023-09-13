@@ -126,17 +126,17 @@ if (is_android) {
         rebase_path(android_generated_java_resources, "java/res", ".") +
         rebase_path(strings_java_resources, "java/res", ".")
     deps = [
-      ":chromium_strings",
+      ":branded_strings",
       ":generated_resources",
     ]
   }
 }
 
-grit("chromium_strings") {
+grit("branded_strings") {
   source = "${branding_path_product}_strings.grd"
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"
-  outputs = [ "grit/chromium_strings.h" ] +
+  outputs = [ "grit/branded_strings.h" ] +
             process_file_template(
                 all_chrome_locales,
                 [ "${branding_path_product}_strings_{{source_name_part}}.pak" ])

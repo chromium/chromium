@@ -5,7 +5,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
 <grit base_dir="." latest_public_release="0" current_release="1"
       output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
   <outputs>
-    <output filename="grit/chromium_strings.h" type="rc_header">
+    <output filename="grit/branded_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
     <output filename="chromium_strings_af.pak" type="data_package" lang="af" />

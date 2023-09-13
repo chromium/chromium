@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/features.h"

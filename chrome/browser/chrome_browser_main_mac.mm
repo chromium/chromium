@@ -35,7 +35,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/metrics/metrics_service.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/version_info/channel.h"

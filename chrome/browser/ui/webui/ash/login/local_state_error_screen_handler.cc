@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 

@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/policy/core/common/policy_pref_names.h"

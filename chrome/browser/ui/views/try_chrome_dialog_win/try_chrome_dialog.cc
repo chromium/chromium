@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/views/try_chrome_dialog_win/arrow_border.h"
 #include "chrome/browser/ui/views/try_chrome_dialog_win/button_layout.h"
 #include "chrome/browser/win/taskbar_icon_finder.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/installer/util/experiment.h"

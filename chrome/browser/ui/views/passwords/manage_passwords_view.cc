@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_list_view.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"

@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"

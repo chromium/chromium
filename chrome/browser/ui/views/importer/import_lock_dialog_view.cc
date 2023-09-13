@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/importer/importer_lock_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
 #include "ui/base/buildflags.h"

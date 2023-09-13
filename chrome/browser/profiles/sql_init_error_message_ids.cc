@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 
 int SqlInitStatusToMessageId(sql::InitStatus status) {

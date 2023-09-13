@@ -13,7 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
 #include "components/vector_icons/vector_icons.h"

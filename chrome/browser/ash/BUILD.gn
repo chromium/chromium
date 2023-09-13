@@ -3892,7 +3892,7 @@ source_set("ash") {
     "//build/config/chromebox_for_meetings:buildflags",
     "//cc/base",
     "//cc/paint",
-    "//chrome/app:chromium_strings",
+    "//chrome/app:branded_strings",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/app/resources:locale_settings",

@@ -29,7 +29,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"

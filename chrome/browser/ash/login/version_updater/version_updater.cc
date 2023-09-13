@@ -14,7 +14,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler.h"

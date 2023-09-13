@@ -19,7 +19,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/password_form.h"

@@ -37,7 +37,7 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
   deps = [
-    "//chrome/app:chromium_strings",
+    "//chrome/app:branded_strings",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/strings:components_locale_settings_grd",

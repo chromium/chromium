@@ -629,7 +629,7 @@ if (is_win) {
           "main",
         ] + platform_pak_locales
 
-    deps = [ "//chrome/app:chromium_strings" ]
+    deps = [ "//chrome/app:branded_strings" ]
   }
 
   foreach(locale, locales_as_apple_outputs) {
@@ -1652,7 +1652,7 @@ if (!is_android) {
 
 group("strings") {
   public_deps = [
-    "//chrome/app:chromium_strings",
+    "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/app/resources:locale_settings",
   ]

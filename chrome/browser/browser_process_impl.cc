@@ -89,7 +89,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"

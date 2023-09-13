@@ -26,7 +26,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/shell_integration_win.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/test/base/testing_browser_process.h"

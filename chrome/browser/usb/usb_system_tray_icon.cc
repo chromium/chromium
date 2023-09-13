@@ -9,7 +9,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
 #include "chrome/browser/usb/usb_connection_tracker_factory.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"

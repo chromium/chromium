@@ -29,7 +29,7 @@
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"

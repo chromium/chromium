@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"

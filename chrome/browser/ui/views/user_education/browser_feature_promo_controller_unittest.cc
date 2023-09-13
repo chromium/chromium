@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/tracker.h"

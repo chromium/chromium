@@ -41,7 +41,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/download/public/common/download_danger_type.h"

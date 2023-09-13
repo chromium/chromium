@@ -27,7 +27,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"

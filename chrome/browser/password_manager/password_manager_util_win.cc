@@ -23,7 +23,7 @@
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"

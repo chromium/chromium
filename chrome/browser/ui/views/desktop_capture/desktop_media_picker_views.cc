@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"

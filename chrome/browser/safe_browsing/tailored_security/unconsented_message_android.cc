@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"

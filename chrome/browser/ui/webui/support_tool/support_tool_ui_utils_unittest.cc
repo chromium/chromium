@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "content/public/test/browser_task_environment.h"

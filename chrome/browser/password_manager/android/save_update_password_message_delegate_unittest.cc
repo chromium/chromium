@@ -23,7 +23,7 @@
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"

@@ -6,7 +6,7 @@
 
 #include "base/linux_util.h"
 #include "base/strings/string_util.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 const char kLinuxObsoleteUrl[] =

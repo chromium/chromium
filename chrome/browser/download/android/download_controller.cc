@@ -36,7 +36,7 @@
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_features.h"

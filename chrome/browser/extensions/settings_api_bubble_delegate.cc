@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"

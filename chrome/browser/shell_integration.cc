@@ -41,7 +41,7 @@
 
 #if !BUILDFLAG(IS_WIN)
 #include "chrome/common/channel_info.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
 

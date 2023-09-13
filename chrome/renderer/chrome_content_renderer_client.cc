@@ -43,7 +43,7 @@
 #include "chrome/common/secure_origin_allowlist.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/benchmarking_extension.h"

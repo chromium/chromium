@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/strings/grit/components_strings.h"

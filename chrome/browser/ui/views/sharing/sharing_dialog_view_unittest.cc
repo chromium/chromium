@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/url_formatter/elide_url.h"

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/uninstall_browser_prompt.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/chrome_result_codes.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/installer/util/shell_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

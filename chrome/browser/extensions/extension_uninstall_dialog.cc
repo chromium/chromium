@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"

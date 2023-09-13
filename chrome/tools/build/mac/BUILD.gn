@@ -6,9 +6,9 @@ if (current_toolchain != default_toolchain) {
   # Builds string resources with the default toolchain, then copies them into a temp
   # include directory for the current toolchain.
   copy("copy_chrome_strings_headers") {
-    sources = [ "$root_build_dir/gen/chrome/grit/chromium_strings.h" ]
+    sources = [ "$root_build_dir/gen/chrome/grit/branded_strings.h" ]
     outputs = [
-      "$root_out_dir/infoplist_strings_util_gen/chrome/grit/chromium_strings.h",
+      "$root_out_dir/infoplist_strings_util_gen/chrome/grit/branded_strings.h",
     ]
 
     deps = [ "//chrome:strings($default_toolchain)" ]

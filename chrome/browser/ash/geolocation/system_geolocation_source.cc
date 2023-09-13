@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"

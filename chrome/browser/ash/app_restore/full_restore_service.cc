@@ -28,7 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_restore_info.h"

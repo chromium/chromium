@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"

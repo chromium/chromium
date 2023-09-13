@@ -10,7 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/mac/authenticator_mac.h"
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
-#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"

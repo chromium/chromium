@@ -45,7 +45,7 @@ source_set("browser_updater_client") {
     }
 
     deps += [
-      "//chrome/app:chromium_strings_grit",
+      "//chrome/app:branded_strings_grit",
       "//chrome/app:generated_resources_grit",
       "//chrome/browser/google",
       "//chrome/common:channel_info",
