@@ -7,6 +7,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -47,6 +48,9 @@ PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host);
   registry_ = rfhi.delegate()->GetPrerenderHostRegistry()->GetWeakPtr();
+  if (registry_) {
+    observation_.Observe(registry_.get());
+  }
 }
 
 PrerendererImpl::~PrerendererImpl() {
@@ -154,10 +158,20 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   registry_->CancelHosts(removed_prerender_rules,
                          PrerenderCancellationReason(
                              PrerenderFinalStatus::kSpeculationRuleRemoved));
-  {
-    base::flat_set<int> removed_prerender_rules_set(
-        removed_prerender_rules.begin(), removed_prerender_rules.end());
 
+  base::flat_set<int> removed_prerender_rules_set(
+      removed_prerender_rules.begin(), removed_prerender_rules.end());
+
+  if (base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler)) {
+    // If kPrerender2NewLimitAndScheduler is enabled, then canceled prerenders
+    // should have already been removed from started_prerenders_ via OnCancel.
+    DCHECK(std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
+                        [&](const PrerenderInfo& x) {
+                          return base::Contains(removed_prerender_rules_set,
+                                                x.prerender_host_id);
+                        }) == started_prerenders_.end());
+
+  } else {
     // Remove the canceled entries so that the page can re-trigger prerendering.
     // Here are two options: to remove the entries whose prerender_host_id is
     // invalid, or to remove the entries whose prerender_host_id is in the
@@ -271,6 +285,19 @@ bool PrerendererImpl::MaybePrerender(
 
       int prerender_host_id =
           registry_->CreateAndStartHost(attributes, preloading_attempt);
+
+      // Under kPrerender2NewLimitAndScheduler, an existing prerender may be
+      // canceled to start a new prerender, and started_prerenders_ may be
+      // modified through this cancellation. Therefore, it is needed to
+      // re-calculate the right place here on started_prerenders_ for new
+      // candidates.
+      if (base::FeatureList::IsEnabled(
+              features::kPrerender2NewLimitAndScheduler)) {
+        end = base::ranges::upper_bound(
+            started_prerenders_.begin(), started_prerenders_.end(),
+            candidate->url, std::less<>(), &PrerenderInfo::url);
+      }
+
       started_prerenders_.insert(end,
                                  {.injection_world = candidate->injection_world,
                                   .eagerness = candidate->eagerness,
@@ -293,6 +320,41 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
     }
   }
   return begin != end;
+}
+
+void PrerendererImpl::OnCancel(const GURL& url,
+                               const PrerenderCancellationReason& reason) {
+  if (!base::FeatureList::IsEnabled(
+          features::kPrerender2NewLimitAndScheduler)) {
+    return;
+  }
+
+  switch (reason.final_status()) {
+    // TODO(crbug.com/1464021): Support other final status cases.
+    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kSpeculationRuleRemoved:
+      started_prerenders_.erase(
+          std::remove_if(started_prerenders_.begin(), started_prerenders_.end(),
+                         [&](const PrerenderInfo& prerender_info) {
+                           return prerender_info.url == url;
+                         }),
+          started_prerenders_.end());
+
+      // Notify PreloadingDecider.
+      prerender_cancellation_callback_.Run(url);
+      break;
+    default:
+      break;
+  }
+}
+
+void PrerendererImpl::OnRegistryDestroyed() {
+  observation_.Reset();
+}
+
+void PrerendererImpl::SetPrerenderCancellationCallback(
+    PrerenderCancellationCallback callback) {
+  prerender_cancellation_callback_ = std::move(callback);
 }
 
 void PrerendererImpl::CancelStartedPrerenders() {

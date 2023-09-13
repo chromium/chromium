@@ -888,6 +888,8 @@ std::set<int> PrerenderHostRegistry::CancelHosts(
       reason.ReportMetrics(prerender_host->trigger_type(),
                            prerender_host->embedder_histogram_suffix());
 
+      NotifyCancel(prerender_host->prerendering_url(), reason);
+
       // Asynchronously delete the prerender host.
       ScheduleToDeleteAbandonedHost(std::move(prerender_host), reason);
       cancelled_ids.insert(host_id);
@@ -904,6 +906,7 @@ std::set<int> PrerenderHostRegistry::CancelHosts(
 
         std::unique_ptr<PrerenderNewTabHandle> handle = std::move(iter->second);
         prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
+        // TODO(crbug.com/1350676, crbug.com/4849669): perform NotifyCancel.
         handle->CancelPrerendering(reason);
         cancelled_ids.insert(host_id);
       }
@@ -1600,8 +1603,17 @@ void PrerenderHostRegistry::DeleteAbandonedHosts() {
 }
 
 void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnTrigger(url);
+  }
+}
+
+void PrerenderHostRegistry::NotifyCancel(
+    const GURL& url,
+    const PrerenderCancellationReason& reason) {
+  for (Observer& obs : observers_) {
+    obs.OnCancel(url, reason);
+  }
 }
 
 PrerenderTriggerType PrerenderHostRegistry::GetPrerenderTriggerType(

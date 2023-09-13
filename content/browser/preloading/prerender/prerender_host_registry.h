@@ -101,6 +101,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
     // registry at the time this is called.
     virtual void OnTrigger(const GURL& url) {}
 
+    // Called when CancelHosts() actually cancels each host.
+    virtual void OnCancel(const GURL& url,
+                          const PrerenderCancellationReason& reason) {}
+
     // Called from the registry's destructor. The observer
     // should drop any reference to the registry.
     virtual void OnRegistryDestroyed() {}
@@ -266,6 +270,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
+  void NotifyCancel(const GURL& url, const PrerenderCancellationReason& reason);
 
   // Pops one PrerenderHost from the queue and starts the prerendering if
   // there's no running prerender and `kNoFrameTreeNode` is passed as

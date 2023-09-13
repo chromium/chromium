@@ -63,7 +63,8 @@ class TestPrefetchService : public PrefetchService {
     PreloadingDecider::GetForCurrentDocument(
         RenderFrameHost::FromID(
             prefetch_container->GetReferringRenderFrameHostId()))
-        ->OnPrefetchEvicted(prefetch_container->GetURL());
+        ->OnPreloadDiscarded({prefetch_container->GetURL(),
+                              blink::mojom::SpeculationAction::kPrefetch});
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
@@ -89,6 +90,9 @@ class MockPrerenderer : public Prerenderer {
   bool ShouldWaitForPrerenderResult(const GURL& url) override {
     return prerenders_.find(url) != prerenders_.end();
   }
+
+  void SetPrerenderCancellationCallback(
+      PrerenderCancellationCallback callback) override {}
 
   std::set<GURL> prerenders_;
 };

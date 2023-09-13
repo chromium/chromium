@@ -8078,7 +8078,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kConservative) {
   EXPECT_TRUE(prerender_observer.was_activated());
 }
 
-// TODO(crbug.com/1464021): This test is turned off on Fuchsia and iOS
+// TODO(crbug.com/1464021): These tests are turned off on Fuchsia and iOS
 // tentatively because pointer simulation on them doesn't work properly on this
 // test.
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
@@ -8176,6 +8176,91 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest,
               base::BucketsAre(base::Bucket(0, 1), base::Bucket(3, 1)));
   EXPECT_THAT(GetAllSamples("Total"),
               base::BucketsAre(base::Bucket(1, 1), base::Bucket(7, 1)));
+}
+
+class PrerenderNewLimitAndSchedulerBrowserTest
+    : public PrerenderEagernessBrowserTest {
+ public:
+  PrerenderNewLimitAndSchedulerBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrerender2NewLimitAndScheduler,
+          {{"max_num_of_running_speculation_rules_eager_prerenders",
+            base::NumberToString(
+                MaxNumOfRunningSpeculationRulesEagerPrerenders())},
+           {"max_num_of_running_speculation_rules_non_eager_prerenders",
+            base::NumberToString(
+                MaxNumOfRunningSpeculationRulesNonEagerPrerenders())},
+           {"max_num_of_running_embedder_prerenders",
+            base::NumberToString(MaxNumOfRunningEmbedderPrerenders())}}}},
+        {});
+  }
+  int MaxNumOfRunningSpeculationRulesEagerPrerenders() { return 2; }
+  int MaxNumOfRunningSpeculationRulesNonEagerPrerenders() { return 1; }
+  int MaxNumOfRunningEmbedderPrerenders() { return 2; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderNewLimitAndSchedulerBrowserTest,
+                       ResetForNonEagerPrerener) {
+  const GURL initial_url = GetUrl("/empty.html");
+  std::vector<GURL> prerendering_urls;
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Add moderate prerenders as many times as limit + 1 and trigger all of them
+  // by hovering their links. All prerenders should be started at the time of
+  // hovering, and the oldest started prerender should be canceled and removed
+  // from the registry for the limit after the last prerender is started.
+  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+       i++) {
+    PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
+        current_frame_host());
+    const GURL prerendering_url =
+        GetUrl("/empty.html?prerender" + base::ToString(i));
+    prerendering_urls.push_back(prerendering_url);
+    InsertAnchor(prerendering_url);
+    AddPrerenderWithEagernessAsync(
+        prerendering_url, blink::mojom::SpeculationEagerness::kModerate);
+    preloading_decider_observer.WaitUpdateSpeculationCandidates();
+    PointerHoverToAnchor(prerendering_url);
+    WaitForPrerenderLoadCompletion(prerendering_url);
+  }
+  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+       i++) {
+    bool host_existing_in_registry =
+        web_contents_impl()
+            ->GetPrerenderHostRegistry()
+            ->FindHostByUrlForTesting(prerendering_urls[i]);
+    if (i == 0) {
+      // The first (= oldest) prerender is removed since the (limit + 1)-th
+      // prerender was started.
+      ASSERT_FALSE(host_existing_in_registry);
+    } else {
+      ASSERT_TRUE(host_existing_in_registry);
+    }
+  }
+
+  // Hover the first link again. This should be retriggered.
+  PointerHoverToAnchor(prerendering_urls[0]);
+  WaitForPrerenderLoadCompletion(prerendering_urls[0]);
+
+  // The oldest prerender in registry at this point should be removed due to the
+  // limit.
+  for (int i = 0; i < MaxNumOfRunningSpeculationRulesNonEagerPrerenders() + 1;
+       i++) {
+    bool host_existing_in_registry =
+        web_contents_impl()
+            ->GetPrerenderHostRegistry()
+            ->FindHostByUrlForTesting(prerendering_urls[i]);
+    if (i == 1) {
+      EXPECT_FALSE(host_existing_in_registry);
+    } else {
+      EXPECT_TRUE(host_existing_in_registry);
+    }
+  }
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 
