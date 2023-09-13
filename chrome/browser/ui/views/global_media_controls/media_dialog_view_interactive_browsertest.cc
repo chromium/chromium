@@ -615,11 +615,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription subscription_;
 };
 
-// This test was first disabled on BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// for https://crbug.com/1222873.
-// Then got disabled on all platforms for https://crbug.com/1225531.
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       DISABLED_ShowsMetadataAndControlsMedia) {
+                       ShowsMetadataAndControlsMedia) {
   // The toolbar icon should not start visible.
   EXPECT_FALSE(ui_.IsToolbarIconVisible());
 
@@ -667,16 +664,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_FALSE(ui_.IsDialogVisible());
 }
 
-// TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
-  DISABLED_ShowsMetadataAndControlsMediaInRTL
-#else
-#define MAYBE_ShowsMetadataAndControlsMediaInRTL \
-  ShowsMetadataAndControlsMediaInRTL
-#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       MAYBE_ShowsMetadataAndControlsMediaInRTL) {
+                       ShowsMetadataAndControlsMediaInRTL) {
   base::i18n::SetICUDefaultLocale("ar");
   ASSERT_TRUE(base::i18n::IsRTL());
 
@@ -919,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 }
 
 // TODO(crbug.com/1225531, crbug.com/1222873, crbug.com/1271131): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_LiveCaption DISABLED_LiveCaption
 #else
 #define MAYBE_LiveCaption LiveCaption
@@ -994,7 +983,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
             GetLiveCaptionTitleLabel()->GetText());
 }
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 // https://crbug.com/1222873
 // Flaky on all Mac bots: https://crbug.com/1274967
 // TODO(https://crbug.com/1425041): Renable on WinArm64 when live captioning is
@@ -1067,8 +1056,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 // TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
 // TODO(https://crbug.com/1425041): Renable on WinArm64 when live captioning is
 // enabled.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 #define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage
 #else
 #define MAYBE_LiveCaptionShowLanguage LiveCaptionShowLanguage
