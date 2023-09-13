@@ -13,6 +13,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -86,10 +90,11 @@ TEST_F(ChromeInternalLogSourceTest, VersionTagContainsExtendedLabel) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
   auto response = GetChromeInternalLogs();
   auto value = response->at("cpu_arch");
+#if BUILDFLAG(IS_MAC)
   switch (base::mac::GetCPUType()) {
     case base::mac::CPUType::kIntel:
       EXPECT_EQ(value, "x86-64");
@@ -101,6 +106,26 @@ TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
       EXPECT_EQ(value, "arm64");
       break;
   }
+#else
+#if defined(ARCH_CPU_ARM64)
+  EXPECT_EQ(value, "arm64");
+#else
+  bool emulated = base::win::OSInfo::IsRunningEmulatedOnArm64();
+#if defined(ARCH_CPU_X86)
+  if (emulated) {
+    EXPECT_EQ(value, "32-bit emulated");
+  } else {
+    EXPECT_EQ(value, "32-bit");
+  }
+#else   // defined(ARCH_CPU_X86)
+  if (emulated) {
+    EXPECT_EQ(value, "64-bit emulated");
+  } else {
+    EXPECT_EQ(value, "64-bit");
+  }
+#endif  // defined(ARCH_CPU_X86)
+#endif  // defined(ARCH_CPU_ARM64)
+#endif
 }
 #endif
 

@@ -61,6 +61,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/google/google_update_win.h"
 #endif
@@ -124,7 +125,7 @@ constexpr char kInstallLocation[] = "install_location";
 #endif
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 constexpr char kCpuArch[] = "cpu_arch";
 #endif
 
@@ -368,6 +369,25 @@ std::string MacCpuArchAsString() {
       return "arm64";
   }
 }
+#elif BUILDFLAG(IS_WIN)
+std::string WinCpuArchAsString() {
+#if defined(ARCH_CPU_ARM64)
+  return "arm64";
+#else
+  bool emulated = base::win::OSInfo::IsRunningEmulatedOnArm64();
+#if defined(ARCH_CPU_X86)
+  if (emulated) {
+    return "32-bit emulated";
+  }
+  return "32-bit";
+#else   // defined(ARCH_CPU_X86)
+  if (emulated) {
+    return "64-bit emulated";
+  }
+  return "64-bit";
+#endif  // defined(ARCH_CPU_X86)
+#endif  // defined(ARCH_CPU_ARM64)
+}
 #endif
 
 }  // namespace
@@ -411,6 +431,8 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 
 #if BUILDFLAG(IS_MAC)
   response->emplace(kCpuArch, MacCpuArchAsString());
+#elif BUILDFLAG(IS_WIN)
+  response->emplace(kCpuArch, WinCpuArchAsString());
 #endif
 
   if (ProfileManager::GetLastUsedProfile()->IsChild())
