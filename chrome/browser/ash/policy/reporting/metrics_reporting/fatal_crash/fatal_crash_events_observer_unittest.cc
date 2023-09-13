@@ -11,14 +11,15 @@
 #include <utility>
 
 #include "ash/test/ash_test_base.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "components/reporting/util/test_support_callbacks.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,19 +63,40 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
 
   // Let the fake cros_healthd emit the crash event and wait for the
   // `FatalCrashTelemetry` message to become available.
+  //
+  // If fatal_crash_events_observer is null, then it creates the
+  // `FatalCrashEventsObserver` object internally and enables reporting. If
+  // test_event is null, then it creates the
+  // `base::test::TestFuture<MetricData>` object internally and sets the
+  // observer's OnEventObserved callback accordingly. If test_event is provided,
+  // does not set the observer's OnEventObserved callback, which should be set
+  // by the caller. This is useful when the caller needs to wait for fatal crash
+  // telemetry for multiple times from the same observer, as the observer's
+  // OnEventObserved callback cannot be set twice.
   FatalCrashTelemetry WaitForFatalCrashTelemetry(
-      CrashEventInfoPtr crash_event_info) {
-    test::TestEvent<MetricData> result_metric_data;
-    FatalCrashEventsObserver fatal_crash_observer;
-    fatal_crash_observer.SetOnEventObservedCallback(
-        result_metric_data.repeating_cb());
-    fatal_crash_observer.SetReportingEnabled(true);
+      CrashEventInfoPtr crash_event_info,
+      FatalCrashEventsObserver* fatal_crash_events_observer = nullptr,
+      base::test::TestFuture<MetricData>* result_metric_data = nullptr) {
+    std::unique_ptr<FatalCrashEventsObserver> internal_observer;
+    if (fatal_crash_events_observer == nullptr) {
+      internal_observer.reset(new FatalCrashEventsObserver());
+      fatal_crash_events_observer = internal_observer.get();
+      fatal_crash_events_observer->SetReportingEnabled(true);
+    }
+
+    std::unique_ptr<base::test::TestFuture<MetricData>> internal_test_event;
+    if (result_metric_data == nullptr) {
+      internal_test_event.reset(new base::test::TestFuture<MetricData>());
+      result_metric_data = internal_test_event.get();
+      fatal_crash_events_observer->SetOnEventObservedCallback(
+          result_metric_data->GetRepeatingCallback());
+    }
 
     FakeCrosHealthd::Get()->EmitEventForCategory(
         EventCategoryEnum::kCrash,
         EventInfo::NewCrashEventInfo(std::move(crash_event_info)));
 
-    auto metric_data = result_metric_data.result();
+    auto metric_data = result_metric_data->Take();
     EXPECT_TRUE(metric_data.has_telemetry_data());
     EXPECT_TRUE(metric_data.telemetry_data().has_fatal_crash_telemetry());
     return std::move(metric_data.telemetry_data().fatal_crash_telemetry());
@@ -212,6 +234,23 @@ TEST_P(FatalCrashEventsObserverTest, FieldUserEmailAbsentIfUnaffiliated) {
   const auto fatal_crash_telemetry =
       WaitForFatalCrashTelemetry(std::move(crash_event_info));
   EXPECT_FALSE(fatal_crash_telemetry.has_affiliated_user());
+}
+
+TEST_P(FatalCrashEventsObserverTest, ObserveMultipleEvents) {
+  FatalCrashEventsObserver observer;
+  base::test::TestFuture<MetricData> test_event;
+  observer.SetOnEventObservedCallback(test_event.GetRepeatingCallback());
+  observer.SetReportingEnabled(true);
+
+  for (int i = 0; i < 10; ++i) {
+    const auto local_id = base::NumberToString(i);
+    auto crash_event_info = NewCrashEventInfo(is_uploaded());
+    crash_event_info->local_id = local_id;
+    const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
+        std::move(crash_event_info), &observer, &test_event);
+    ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
+    EXPECT_EQ(fatal_crash_telemetry.local_id(), local_id);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
