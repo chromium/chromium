@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
-#include "extensions/grit/extensions_browser_resources.h"
+#include "chrome/grit/app_icon_resources.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -51,12 +51,9 @@ void PromiseAppIconCache::GetIconAndApplyEffects(const PackageId& package_id,
   if (iter == icon_cache_.end() || iter->second.size() == 0) {
     VLOG(1) << "Using placeholder icon for promise app with Package Id: "
             << package_id.ToString();
-
-    // TODO(b/261910028): Find a way to apply the specified icon effects without
-    // cutting off the corners of the placeholder icon.
     LoadIconFromResource(
         /*profile=*/nullptr, absl::nullopt, IconType::kStandard, size_in_dip,
-        IDR_APP_DEFAULT_ICON,
+        IDR_APP_ICON_PLACEHOLDER_CUBE,
         /*is_placeholder_icon=*/true, icon_effects, std::move(callback));
     return;
   }

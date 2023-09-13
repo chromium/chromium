@@ -418,6 +418,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/metrics/structured:features",
+      "//chrome/browser/resources:app_icon_resources_grit",
       "//chromeos/ash/components/dbus/cicerone",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/standalone_browser",

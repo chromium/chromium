@@ -10,8 +10,8 @@
 #include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/grit/app_icon_resources.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/grit/extensions_browser_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -54,7 +54,7 @@ class PromiseAppIconCacheTest : public testing::Test {
     base::test::TestFuture<std::unique_ptr<apps::IconValue>> callback;
     apps::LoadIconFromResource(
         /*profile=*/nullptr, absl::nullopt, IconType::kStandard, size_in_dip,
-        IDR_APP_DEFAULT_ICON,
+        IDR_APP_ICON_PLACEHOLDER_CUBE,
         /*is_placeholder_icon=*/true, icon_effects, callback.GetCallback());
     apps::IconValue* placeholder_iv = callback.Get().get();
     return *placeholder_iv->uncompressed.bitmap();
@@ -162,7 +162,7 @@ TEST_F(PromiseAppIconCacheTest, GetPlaceholderIconWhenNoIconsAvailable) {
 
   // Load icon for test package.
   base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
-  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128,
+  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 96,
                                        IconEffects::kCrOsStandardMask,
                                        test_callback.GetCallback());
 
@@ -171,12 +171,12 @@ TEST_F(PromiseAppIconCacheTest, GetPlaceholderIconWhenNoIconsAvailable) {
   EXPECT_FALSE(result_icon->uncompressed.isNull());
   EXPECT_EQ(result_icon->icon_type, IconType::kStandard);
   EXPECT_TRUE(result_icon->is_placeholder_icon);
-  EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 128);
+  EXPECT_EQ(result_icon->uncompressed.bitmap()->width(), 96);
 
   // Confirm that the icon is the correct one.
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       *result_icon->uncompressed.bitmap(),
-      GetPlaceholderIconBitmap(/*size_in_dip=*/128,
+      GetPlaceholderIconBitmap(/*size_in_dip=*/96,
                                IconEffects::kCrOsStandardMask)));
 }
 

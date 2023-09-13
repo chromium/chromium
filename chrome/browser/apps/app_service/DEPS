@@ -3,6 +3,7 @@ include_rules = [
   "+components/app_constants",
   "+components/app_restore",
   "+components/webapk",
+  "+chrome/grit/app_icon_resources.h"
 ]
 
 specific_include_rules = {
