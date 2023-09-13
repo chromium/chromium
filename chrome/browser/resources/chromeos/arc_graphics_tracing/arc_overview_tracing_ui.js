@@ -167,7 +167,7 @@ function addModelHeader(model) {
   header.getElementsByClassName('arc-tracing-app-fps')[0].textContent =
       calculateFPS(getAppCommitEvents(model), model.information.duration)
           .toFixed(2);
-  header.getElementsByClassName('arc-tracing-chrome-fps')[0].textContent =
+  header.getElementsByClassName('arc-tracing-chromeos-fps')[0].textContent =
       calculateFPS(getChromeSwapEvents(model), model.information.duration)
           .toFixed(2);
   const renderQualityAndCommitDeviation =
@@ -260,7 +260,7 @@ function getAveragePower(model, eventType) {
 }
 
 /**
- * Helper that analyzes model, extracts Chrome swap events and creates
+ * Helper that analyzes model, extracts ChromeOS swap events and creates
  * composited events. These events are distributed per different buffers and
  * output contains these events in one line.
  *
@@ -428,19 +428,18 @@ function addGPUFrequencyView(parent, resolution, duration) {
 }
 
 /**
- * Creates view that shows FPS change for app commits or swaps for Chrome
- * updates.
+ * Creates view that shows FPS based on a sequence of swap or commit events.
  *
  * @param {HTMLElement} parent container for the newly created view.
  * @param {number} resolution scale of the chart in microseconds per pixel.
  * @param {number} duration length of the chart in microseconds.
- * @param {boolean} appView true for commits for app or false for swaps for
- *                  Chrome.
+ * @param {string} title the title of the view
+ * @param {function} modelToEventsFn function which takes a model and returns
+ *                                   the events whose rate to track
  */
-function addFPSView(parent, resolution, duration, appView) {
+function addFPSView(parent, resolution, duration, title, modelToEventsFn) {
   // FPS range from 10 to 70.
   // 1 fps 1 pixel resolution.
-  const title = appView ? 'App FPS' : 'ChromeOS FPS';
   const bands = createChart(
       parent, title, resolution, duration, 60 /* height */,
       5 /* gridLinesCount */);
@@ -458,8 +457,7 @@ function addFPSView(parent, resolution, duration, appView) {
       }
       content += models[i].information.title;
 
-      const events = appView ? getAppCommitEvents(models[i]) :
-                               getChromeSwapEvents(models[i]);
+      const events = modelToEventsFn(models[i]);
       modelEvents.push(createDeltaEvents(events));
     }
     fileName = content.replace(',', '_') + '_frame_times.csv';
@@ -501,8 +499,7 @@ function addFPSView(parent, resolution, duration, appView) {
       {maxValue: 70, minValue: 10, name: 'fps', scale: 1.0, width: 1.0};
   for (i = 0; i < models.length; i++) {
     const attributes = Object.assign({}, attributesTemplate);
-    const events = appView ? getAppCommitEvents(models[i]) :
-                             getChromeSwapEvents(models[i]);
+    const events = modelToEventsFn(models[i]);
     const fpsEvents = createFPSEvents(
         events, duration, 200000 /* windowSize, 0.2s */, targetFrameTime);
     attributes.color = modelColors.get(models[i]);
@@ -511,7 +508,7 @@ function addFPSView(parent, resolution, duration, appView) {
 }
 
 /**
- * Creates view that shows FPS histograms based on app and Chrome updates.
+ * Creates view that shows FPS histograms based on app and ChromeOS updates.
  *
  * @param {HTMLElement} parent container for the newly created view.
  * @param {HTMLElement} anchor insert point. View will be added after this.
@@ -546,7 +543,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
       fullBarsWidth * basketFPSs.length + basketGap * (basketFPSs.length - 1);
   const fullSectionWidth = titleXOffset + titleWidth + fullBasketsWidth;
 
-  // Both for App and for Chrome view.
+  // Both for App and for ChromeOS view.
   const totalWidth = fullSectionWidth * 2;
 
   const title = timeBasedView ? 'SPF Histograms' : 'FPS Histograms';
@@ -719,17 +716,17 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
 
 /**
  * Creates view that shows commit time delta for app or swap time delta for
- * Chrome updates.
+ * ChromeOS updates.
  *
  * @param {HTMLElement} parent container for the newly created view.
  * @param {number} resolution scale of the chart in microseconds per pixel.
  * @param {number} duration length of the chart in microseconds.
- * @param {boolean} appView true for commit time for app or false for swap time
- *                  for Chrome.
+ * @param {string} title the title of the view
+ * @param {function} modelToEventsFn function which takes a model and returns
+ *                                   the events whose rate to track
  */
-function addDeltaView(parent, resolution, duration, appView) {
+function addDeltaView(parent, resolution, duration, title, modelToEventsFn) {
   // time range from 0 to 67ms. 66.67ms is for 15 FPS.
-  const title = appView ? 'App commit time' : 'Chrome swap time';
   // 1 ms 1 pixel resolution.  Each grid lines correspond 1/120 FPS time update.
   const bands = createChart(
       parent, title, resolution, duration, 67 /* height */,
@@ -743,8 +740,7 @@ function addDeltaView(parent, resolution, duration, appView) {
   };
   for (i = 0; i < models.length; i++) {
     const attributes = Object.assign({}, attributesTemplate);
-    const events = appView ? getAppCommitEvents(models[i]) :
-                             getChromeSwapEvents(models[i]);
+    const events = modelToEventsFn(models[i]);
     const timeEvents = createDeltaEvents(events);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources([timeEvents], false /* smooth */, attributes);
@@ -819,10 +815,14 @@ function refreshModels() {
   addCPUFrequencyView(parent, resolution, duration);
   addCPUTempView(parent, resolution, duration);
   addGPUFrequencyView(parent, resolution, duration);
-  addFPSView(parent, resolution, duration, true /* appView */);
-  addDeltaView(parent, resolution, duration, true /* appView */);
-  addFPSView(parent, resolution, duration, false /* appView */);
-  addDeltaView(parent, resolution, duration, false /* appView */);
+  addFPSView(parent, resolution, duration, 'App FPS', getAppCommitEvents);
+  addDeltaView(
+      parent, resolution, duration, 'App commit time', getAppCommitEvents);
+  // TODO(b/296595454) Remove ChromeOS FPS and replace with perceived FPS and
+  // perceived swap time.
+  addFPSView(parent, resolution, duration, 'ChromeOS FPS', getChromeSwapEvents);
+  addDeltaView(
+      parent, resolution, duration, 'ChromeOS swap time', getChromeSwapEvents);
   addFPSHistograms(parent, parent.lastChild, false /* timeBasedView */);
   addPowerView(
       parent, 'Package power constraint', resolution, duration,
