@@ -2018,6 +2018,10 @@ const char kInstantHotspotRebrandName[] = "Instant Hotspot Improvements";
 const char kInstantHotspotRebrandDescription[] =
     "Enables Instant Hotspot rebrand/feature improvements.";
 
+const char kJapaneseOSSettingsName[] = "Japanese OS Settings Page";
+const char kJapaneseOSSettingsDescription[] =
+    "Enable OS Settings Page for Japanese input methods";
+
 const char kJavascriptHarmonyName[] = "Experimental JavaScript";
 const char kJavascriptHarmonyDescription[] =
     "Enable web pages to use experimental JavaScript features.";

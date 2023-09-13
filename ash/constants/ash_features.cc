@@ -1583,6 +1583,11 @@ BASE_FEATURE(kJapaneseFunctionRow,
              "JapaneseFunctionRow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables OS Settings page for japanese.
+BASE_FEATURE(kJapaneseOSSettings,
+             "JapaneseOSSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the "Remember password" button in the Kerberos "Add account"
 // dialog should be checked by default.
 BASE_FEATURE(kKerberosRememberPasswordByDefault,

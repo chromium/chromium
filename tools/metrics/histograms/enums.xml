@@ -61583,6 +61583,7 @@ from previous Chrome versions.
   <int value="-1549356351" label="SyncPseudoUSSExtensionSettings:enabled"/>
   <int value="-1548904154" label="MediaAppMultiWindow:enabled"/>
   <int value="-1547953198" label="FullRestore:enabled"/>
+  <int value="-1547923809" label="JapaneseOSSettings:enabled"/>
   <int value="-1547247328" label="OverrideTranslateTriggerInIndia:disabled"/>
   <int value="-1546903171" label="enable-touch-drag-drop"/>
   <int value="-1546461079" label="CCTResizableForFirstParties:disabled"/>
@@ -65582,6 +65583,7 @@ from previous Chrome versions.
   <int value="417742858" label="ImprovedSemanticsActivityIndicators:enabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
+  <int value="420200188" label="JapaneseOSSettings:disabled"/>
   <int value="420356964" label="OobeJelly:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
   <int value="421986951" label="UseRealColorSpaceForAndroidVideo:disabled"/>
