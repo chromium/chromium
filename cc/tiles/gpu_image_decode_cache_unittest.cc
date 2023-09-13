@@ -4712,9 +4712,6 @@ GpuImageDecodeCachePurgeOnTimerTest*
     GpuImageDecodeCachePurgeOnTimerTest::last_setup_test_ = nullptr;
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeOneImage) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
-
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
   ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
@@ -4742,9 +4739,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeOneImage) {
 
 // Tests that we are able to purge multiple images from cache.
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeMultipleImages) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
-
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
   ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
@@ -4771,9 +4765,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeMultipleImages) {
 }
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
-
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
   ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
@@ -4825,9 +4816,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithDelay) {
 }
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithTimeGap) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
-
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
   ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
@@ -4861,9 +4849,6 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, MultipleImagesWithTimeGap) {
 }
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoDeadlock) {
-  base::test::ScopedFeatureList fl;
-  fl.InitAndEnableFeature(kPurgeOldCacheEntriesOnTimer);
-
   ASSERT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   ASSERT_FALSE(cache_->HasPendingPurgeTaskForTesting());
   ASSERT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
