@@ -105,6 +105,8 @@ class ExtensionContextMenuApiCountTest
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
+// TODO(crbug.com/1475294): Re-enable on Mac.
+#if !BUILDFLAG(IS_MAC)
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          ExtensionContextMenuApiCountTest,
                          ::testing::Values(ContextType::kEventPage));
@@ -127,6 +129,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiCountTest, Count) {
   histogram_tester_->ExpectUniqueSample("Extensions.MenuManager.MenuItemsCount",
                                         6, 1);
 }
+#endif
 
 // crbug.com/51436 -- creating context menus from multiple script contexts
 // should work.
