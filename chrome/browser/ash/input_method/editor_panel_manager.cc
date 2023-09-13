@@ -13,14 +13,6 @@
 
 namespace ash::input_method {
 
-EditorPanelPresetTextQuery::EditorPanelPresetTextQuery() = default;
-
-EditorPanelPresetTextQuery::~EditorPanelPresetTextQuery() = default;
-
-EditorPanelContext::EditorPanelContext() = default;
-
-EditorPanelContext::~EditorPanelContext() = default;
-
 EditorPanelManager::EditorPanelManager(Delegate* delegate)
     : delegate_(delegate) {}
 

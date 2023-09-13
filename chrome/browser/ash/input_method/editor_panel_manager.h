@@ -16,49 +16,6 @@
 
 namespace ash::input_method {
 
-enum class EditorPanelMode {
-  // Editor panel should not be shown (due to consent rejected or other
-  // restrictions).
-  kBlocked = 0,
-  // Editor panel should be shown in write mode.
-  kWrite,
-  // Editor panel should be shown in rewrite mode.
-  kRewrite,
-  // Editor panel feature promo card should be shown (to inform the user about
-  // the feature and ask if they want to learn more).
-  kPromoCard,
-};
-
-// Categories of preset text prompts to be shown on editor panel chips.
-enum class EditorPanelPresetQueryCategory {
-  kUnknown = 0,
-};
-
-struct EditorPanelPresetTextQuery {
-  EditorPanelPresetTextQuery();
-  EditorPanelPresetTextQuery(const EditorPanelPresetTextQuery&) = delete;
-  EditorPanelPresetTextQuery& operator=(const EditorPanelPresetTextQuery&) =
-      delete;
-  ~EditorPanelPresetTextQuery();
-
-  std::string text_query_id;
-  std::string name;
-  std::string description;
-  EditorPanelPresetQueryCategory category =
-      EditorPanelPresetQueryCategory::kUnknown;
-};
-
-// Context to determine what should be shown on the editor panel.
-struct EditorPanelContext {
-  EditorPanelContext();
-  EditorPanelContext(const EditorPanelContext&) = delete;
-  EditorPanelContext& operator=(const EditorPanelContext&) = delete;
-  ~EditorPanelContext();
-
-  EditorPanelMode editor_panel_mode = EditorPanelMode::kPromoCard;
-  std::vector<EditorPanelPresetTextQuery> preset_text_queries;
-};
-
 // Interface to handle communication between the context menu editor panel entry
 // point and the backend of the editor feature. This includes providing context
 // to determine what should be shown on the editor panel and handling events
