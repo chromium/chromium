@@ -350,7 +350,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Sets voting data and update |parsed_submitted_form_| with the correct
   // username value for a password form without a username field.
   void HandleUsernameFirstFlow(const PossibleUsernameData& possible_username,
-                               bool password_form_had_username);
+                               bool password_form_had_matching_username);
 
   // Sets voting data for a password form that is likely a forgot password form
   // (a form, into which the user inputs their username to start the

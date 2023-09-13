@@ -803,17 +803,17 @@ bool PasswordFormManager::ProvisionallySave(
     // matches the username value (`possible_username`) in the single username
     // form.
     // TODO(crbug.com/4037883): The distinction between (1) and (2), i.e.
-    // `password_form_had_possible_username`, is used only to assess the impact
+    // `password_form_had_matching_username`, is used only to assess the impact
     // of (2) with metrics. The variable can be removed once the metrics are not
     // needed anymore.
-    bool password_form_had_possible_username = FormMatchesUsername(
+    bool password_form_had_matching_username = FormMatchesUsername(
         parsed_submitted_form_.get(), possible_username.value);
     if (IsPasswordFormWithoutUsername(
             parsed_submitted_form_.get()) ||    // Case (1).
-        password_form_had_possible_username) {  // Case (2).
+        password_form_had_matching_username) {  // Case (2).
       // TODO(crbug.com/959776): Reset `possible_username` after it's used.
       HandleUsernameFirstFlow(possible_username,
-                              password_form_had_possible_username);
+                              password_form_had_matching_username);
     }
   }
   HandleForgotPasswordFormData();
@@ -1204,7 +1204,7 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
 
 void PasswordFormManager::HandleUsernameFirstFlow(
     const PossibleUsernameData& possible_username,
-    bool password_form_had_username) {
+    bool password_form_had_matching_username) {
   if (IsPossibleSingleUsernameAvailable(possible_username)) {
     // Suggest the possible username value in a prompt in two cases:
     // (1) If the server confirmed it is a single username field.
@@ -1236,7 +1236,7 @@ void PasswordFormManager::HandleUsernameFirstFlow(
     votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
         possible_username.renderer_id, possible_username.value,
         possible_username.form_predictions.value_or(FormPredictions()),
-        form_fetcher_->GetBestMatches(), password_form_had_username));
+        form_fetcher_->GetBestMatches(), password_form_had_matching_username));
   } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
     // If no single username typing preceded single password typing, set
     // empty single username vote data for the fallback classifier.
@@ -1277,24 +1277,24 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
       continue;
     }
 
-    bool password_form_had_possible_username =
+    bool password_form_had_matching_username =
         FormMatchesUsername(parsed_submitted_form_.get(), field.value);
     // Consider possible username field for voting if either:
     // 1) A password form without a username was submitted after the single
     // username form. 2) The submitted password form contains the potential
     // username.
     // TODO(crbug.com/4037883): The distinction between (1) and (2), i.e.
-    // 'password_form_had_possible_username', is used only to assess the impact
+    // 'password_form_had_matching_username', is used only to assess the impact
     // of (2) with metrics. The variable can be removed once the metrics are not
     // needed anymore.
     if (IsPasswordFormWithoutUsername(
             parsed_submitted_form_.get()) ||    // Case 1.
-        password_form_had_possible_username) {  // Case 2.
+        password_form_had_matching_username) {  // Case 2.
       votes_uploader_.AddForgotPasswordVoteData(SingleUsernameVoteData(
           field.field_id, field.value,
           field.stored_predictions.value_or(FormPredictions()),
           form_fetcher_->GetBestMatches(),
-          password_form_had_possible_username));
+          password_form_had_matching_username));
     }
   }
 }

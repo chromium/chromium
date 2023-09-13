@@ -295,17 +295,17 @@ SingleUsernameVoteData::SingleUsernameVoteData()
                              /*username_value=*/std::u16string(),
                              FormPredictions(),
                              /*stored_credentials=*/{},
-                             /*password_form_had_username_field=*/false) {}
+                             /*password_form_had_matching_username=*/false) {}
 
 SingleUsernameVoteData::SingleUsernameVoteData(
     FieldRendererId renderer_id,
     const std::u16string& username_value,
     const FormPredictions& form_predictions,
     const std::vector<const PasswordForm*>& stored_credentials,
-    bool password_form_had_username_field)
+    bool password_form_had_matching_username)
     : renderer_id(renderer_id),
       form_predictions(form_predictions),
-      password_form_had_username_field(password_form_had_username_field) {
+      password_form_had_matching_username(password_form_had_matching_username) {
   base::TrimWhitespace(username_value, base::TrimPositions::TRIM_ALL,
                        &username_candidate_value);
   value_type = GetValueType(username_candidate_value, stored_credentials);
@@ -637,7 +637,7 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
                                   /*is_forgot_password_vote=*/false)) {
     base::UmaHistogramBoolean(
         "PasswordManager.SingleUsername.PasswordFormHadUsernameField",
-        single_username_vote_data_->password_form_had_username_field);
+        single_username_vote_data_->password_form_had_matching_username);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
