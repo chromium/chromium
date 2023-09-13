@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_AUDIO_AUDIO_SURVEY_HANDLER_H_
 #define CHROME_BROWSER_ASH_AUDIO_AUDIO_SURVEY_HANDLER_H_
 
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
@@ -25,8 +26,16 @@ class AudioSurveyHandler : public CrasAudioHandler::AudioObserver {
   void OnSurveyTriggered(
       const CrasAudioHandler::AudioSurveyData& survey_specific_data) override;
 
+  void OnHardwareInfoFetched(
+      const CrasAudioHandler::AudioSurveyData& audio_specific_data,
+      base::SysInfo::HardwareInfo hardware_info);
+
  private:
   scoped_refptr<HatsNotificationController> hats_notification_controller_;
+
+  bool has_triggered_ = false;
+
+  base::WeakPtrFactory<AudioSurveyHandler> weak_ptr_factory_{this};
 };
 }  // namespace ash
 
