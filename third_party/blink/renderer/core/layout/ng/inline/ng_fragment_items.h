@@ -85,10 +85,13 @@ class CORE_EXPORT NGFragmentItems final {
   // Return true if any items inside the culled inline occur here. In that case,
   // |is_first_container| and |is_last_container| will also be set to indicate
   // whether this is the first/last container for the culled inline. If false is
-  // returned, these out-parameters must be ignored.
+  // returned, the |is_first_container| and |is_last_container| out-parameters
+  // must be ignored. |child_has_any_child_items| will be set to true if there
+  // are any items inside the LayoutInline at all, regardless of return value.
   bool IsContainerForCulledInline(const LayoutInline&,
                                   bool* is_first_container,
-                                  bool* is_last_container) const;
+                                  bool* is_last_container,
+                                  bool* child_has_any_child_items) const;
 
   // Mark items dirty when |child| is removed from the tree.
   static void DirtyLinesFromChangedChild(const LayoutObject& child,

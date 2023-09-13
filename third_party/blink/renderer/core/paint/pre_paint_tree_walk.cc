@@ -989,9 +989,23 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         if (!parent_fragment->HasItems())
           continue;
 
+        bool child_has_any_items;
         if (!parent_fragment->Items()->IsContainerForCulledInline(
-                *layout_inline_child, &is_first_for_node, &is_last_for_node))
-          continue;
+                *layout_inline_child, &is_first_for_node, &is_last_for_node,
+                &child_has_any_items)) {
+          if (child_has_any_items) {
+            continue;
+          }
+          // The inline has no fragment items inside, although it does have
+          // child objects. This may happen for an AREA elements with
+          // out-of-flow positioned children.
+          //
+          // Set the first/last flags, since they may have been messed up above.
+          // This means that we're going to visit the descendants for every
+          // container fragment that has items, but this harmless, and rare.
+          is_first_for_node = true;
+          is_last_for_node = true;
+        }
       } else {
         // Childless and culled. This can happen for AREA elements, if nothing
         // else. Enter them when visiting the parent for the first time.
