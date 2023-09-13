@@ -232,7 +232,6 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kNavigationBadHttpStatus:
     case PrerenderFinalStatus::kClientCertRequested:
     case PrerenderFinalStatus::kNavigationRequestNetworkError:
-    case PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded:
     case PrerenderFinalStatus::kCancelAllHostsForTesting:
     case PrerenderFinalStatus::kDidFailLoad:
     case PrerenderFinalStatus::kStop:
@@ -297,6 +296,9 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
     case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
+    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
       NOTREACHED_NORETURN();
   }
 
@@ -684,8 +686,23 @@ int PrerenderHostRegistry::CreateAndStartHost(
       // experiment groups for analysis. To prevent this we set
       // TriggeringOutcome to kFailure and look into the failure reason to
       // learn more.
-      builder.RejectAsFailure(
-          attributes, PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus final_status;
+      switch (GetPrerenderLimitGroup(attributes.trigger_type,
+                                     attributes.eagerness)) {
+        case PrerenderLimitGroup::kSpeculationRulesEager:
+          final_status =
+              PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded;
+          break;
+        case PrerenderLimitGroup::kSpeculationRulesNonEager:
+          final_status =
+              PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded;
+          break;
+        case PrerenderLimitGroup::kEmbedder:
+          final_status =
+              PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded;
+          break;
+      }
+      builder.RejectAsFailure(attributes, final_status);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -1607,9 +1624,6 @@ PrerenderHostRegistry::PrerenderLimitGroup
 PrerenderHostRegistry::GetPrerenderLimitGroup(
     PrerenderTriggerType trigger_type,
     absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler));
-
   switch (trigger_type) {
     case PrerenderTriggerType::kSpeculationRule:
     case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
@@ -1695,9 +1709,9 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
           } while (!prerender_host_by_frame_tree_node_id_.contains(
               oldest_prerender_host_id));
 
-          CHECK(CancelHost(
-              oldest_prerender_host_id,
-              PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded));
+          CHECK(CancelHost(oldest_prerender_host_id,
+                           PrerenderFinalStatus::
+                               kMaxNumOfRunningNonEagerPrerendersExceeded));
 
           CHECK_LT(GetHostCountByLimitGroup(limit_group), limit_non_eager);
         }

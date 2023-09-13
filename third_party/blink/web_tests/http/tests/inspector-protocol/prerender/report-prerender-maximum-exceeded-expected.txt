@@ -2,7 +2,7 @@ Test that prerender navigations reports failure on triggering
 {
     method : Preload.prerenderAttemptCompleted
     params : {
-        finalStatus : MaxNumOfRunningPrerendersExceeded
+        finalStatus : MaxNumOfRunningEagerPrerendersExceeded
         initiatingFrameId : <string>
         key : {
             action : Prerender

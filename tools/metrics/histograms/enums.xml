@@ -88369,7 +88369,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="18" label="kNavigationBadHttpStatus"/>
   <int value="19" label="kClientCertRequested"/>
   <int value="20" label="kNavigationRequestNetworkFailure"/>
-  <int value="21" label="kMaxNumOfRunningPrerendersExceeded"/>
+  <int value="21" label="kMaxNumOfRunningPrerendersExceeded (obsoleted)"/>
   <int value="22" label="kCancelAllHostsForTesting"/>
   <int value="23" label="kDidFailLoad"/>
   <int value="24" label="kStop"/>
@@ -88429,6 +88429,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="70" label="kResourceLoadBlockedByClient"/>
   <int value="71" label="kSpeculationRuleRemoved"/>
   <int value="72" label="kActivatedWithAuxiliaryBrowsingContexts"/>
+  <int value="73" label="kMaxNumOfRunningEagerPrerendersExceeded"/>
+  <int value="74" label="kMaxNumOfRunningNonEagerPrerendersExceeded"/>
+  <int value="75" label="kMaxNumOfRunningEmbedderPrerendersExceeded"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

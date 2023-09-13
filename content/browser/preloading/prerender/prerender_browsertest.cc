@@ -5507,7 +5507,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // from speculation rules exceeds its limit of 4.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 1);
 }
 
 // Test that the requests from embedder are handled immediately regardless of
@@ -8668,7 +8668,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 0);
 
   // Start prerendering by embedder triggered prerendering; this should be
   // trigger successfully.
@@ -8684,7 +8684,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded, 0);
 
   // Start prerendering by embedder triggered prerendering; this should hit the
   // limit.
@@ -8700,7 +8700,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded, 1);
 }
 
 // Tests that PrerenderHostRegistry can hold up to two prerendering for the
@@ -8722,12 +8722,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // successfully.
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 0);
 
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded, 0);
 
   // Start the first embedder triggered prerendering; this should be triggered
   // successfully.
@@ -8754,7 +8754,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded, 0);
 
   // Start the third embedder triggered prerendering; this should hit the limit.
   std::unique_ptr<PrerenderHandle> prerender_handle3 =
@@ -8769,7 +8769,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded, 1);
 
   // Cancel the second embedder triggered prerendering and start a new one;
   // this should succeed as one of the prerenders is freed.
@@ -8968,7 +8968,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   EXPECT_FALSE(HasHostForUrl(kExceededPrerenderingUrl));
 
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
   const GURL kEmbedderTriggeredPrerenderingUrl =
       GetUrl("/empty.html?embedder-triggered-prerender");

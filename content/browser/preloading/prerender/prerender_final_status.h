@@ -46,7 +46,9 @@ enum class PrerenderFinalStatus {
   kNavigationBadHttpStatus = 18,
   kClientCertRequested = 19,
   kNavigationRequestNetworkError = 20,
-  kMaxNumOfRunningPrerendersExceeded = 21,
+  // This is split into
+  // kMaxNumOfRunning(Eager|NonEager|Embedder)PrerendersExceeded
+  // kMaxNumOfRunningPrerendersExceeded = 21,
   kCancelAllHostsForTesting = 22,
   kDidFailLoad = 23,
   kStop = 24,
@@ -142,7 +144,11 @@ enum class PrerenderFinalStatus {
   // status is specified.
   kActivatedWithAuxiliaryBrowsingContexts = 72,
 
-  kMaxValue = kActivatedWithAuxiliaryBrowsingContexts,
+  kMaxNumOfRunningEagerPrerendersExceeded = 73,
+  kMaxNumOfRunningNonEagerPrerendersExceeded = 74,
+  kMaxNumOfRunningEmbedderPrerendersExceeded = 75,
+
+  kMaxValue = kMaxNumOfRunningEmbedderPrerendersExceeded,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

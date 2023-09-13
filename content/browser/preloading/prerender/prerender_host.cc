@@ -1030,7 +1030,6 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kNavigationBadHttpStatus:
     case PrerenderFinalStatus::kClientCertRequested:
     case PrerenderFinalStatus::kNavigationRequestNetworkError:
-    case PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded:
     case PrerenderFinalStatus::kCancelAllHostsForTesting:
     case PrerenderFinalStatus::kDidFailLoad:
     case PrerenderFinalStatus::kStop:
@@ -1074,6 +1073,9 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
     case PrerenderFinalStatus::kResourceLoadBlockedByClient:
     case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
+    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+    case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
       if (attempt_) {
         attempt_->SetFailureReason(
             ToPreloadingFailureReason(reason.final_status()));

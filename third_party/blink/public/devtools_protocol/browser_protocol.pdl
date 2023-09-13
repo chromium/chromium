@@ -11296,7 +11296,6 @@ experimental domain Preload
       NavigationBadHttpStatus
       ClientCertRequested
       NavigationRequestNetworkError
-      MaxNumOfRunningPrerendersExceeded
       CancelAllHostsForTesting
       DidFailLoad
       Stop
@@ -11341,6 +11340,9 @@ experimental domain Preload
       ResourceLoadBlockedByClient
       SpeculationRuleRemoved
       ActivatedWithAuxiliaryBrowsingContexts
+      MaxNumOfRunningEagerPrerendersExceeded
+      MaxNumOfRunningNonEagerPrerendersExceeded
+      MaxNumOfRunningEmbedderPrerendersExceeded
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

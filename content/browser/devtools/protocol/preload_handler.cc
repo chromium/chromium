@@ -51,9 +51,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::LowEndDevice;
     case PrerenderFinalStatus::kMainFrameNavigation:
       return Preload::PrerenderFinalStatusEnum::MainFrameNavigation;
-    case PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded:
-      return Preload::PrerenderFinalStatusEnum::
-          MaxNumOfRunningPrerendersExceeded;
     case PrerenderFinalStatus::kMemoryLimitExceeded:
       return Preload::PrerenderFinalStatusEnum::MemoryLimitExceeded;
     case PrerenderFinalStatus::kMixedContent:
@@ -166,6 +163,15 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts:
       return Preload::PrerenderFinalStatusEnum::
           ActivatedWithAuxiliaryBrowsingContexts;
+    case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
+      return Preload::PrerenderFinalStatusEnum::
+          MaxNumOfRunningEagerPrerendersExceeded;
+    case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
+      return Preload::PrerenderFinalStatusEnum::
+          MaxNumOfRunningNonEagerPrerendersExceeded;
+    case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
+      return Preload::PrerenderFinalStatusEnum::
+          MaxNumOfRunningEmbedderPrerendersExceeded;
   }
 }
 

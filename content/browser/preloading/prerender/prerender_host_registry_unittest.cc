@@ -458,7 +458,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
           blink::mojom::SpeculationEagerness::kEager,
           contents()->GetPrimaryMainFrame()));
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
   EXPECT_NE(frame_tree_node_id1, kNoFrameTreeNodeId);
@@ -479,7 +479,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
           contents()->GetPrimaryMainFrame()));
   EXPECT_NE(frame_tree_node_id2, kNoFrameTreeNodeId);
   ExpectBucketCountOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 }
 
 // Tests that PrerenderHostRegistry limits the number of started prerenders
@@ -501,7 +501,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   ASSERT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   ASSERT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
   // The initiator document navigates away.
   render_frame_host =
@@ -517,7 +517,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
 
   EXPECT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
   ExpectBucketCountOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 }
 
 // Tests that PrerenderHostRegistry limits the number of started prerenders
@@ -539,7 +539,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   ASSERT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   ASSERT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 
   // The initiator document navigates away to a cross-origin page.
   render_frame_host =
@@ -555,7 +555,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   SendCandidate(kPrerenderingUrl3, remote2);
   EXPECT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl3), nullptr);
   ExpectBucketCountOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded);
 }
 
 class PrerenderHostRegistryNewLimitAndSchedulerTest
@@ -621,12 +621,12 @@ TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
   }
 
   // If we try to start eager prerenders after reaching the limit, that should
-  // be canceled with kMaxNumOfRunningPrerendersExceeded.
+  // be canceled with kMaxNumOfRunningEagerPrerendersExceeded.
   int frame_tree_node_id_eager_exceeded = CreateAndStartHostByLimitGroup(
       PrerenderHostRegistry::PrerenderLimitGroup::kSpeculationRulesEager);
   EXPECT_EQ(frame_tree_node_id_eager_exceeded, kNoFrameTreeNodeId);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 1);
 
   // On the other hand, prerenders belonging to different limit
   // group(non-eager, embedder) can still be started.
@@ -637,9 +637,9 @@ TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
   EXPECT_NE(frame_tree_node_id_non_eager, kNoFrameTreeNodeId);
   EXPECT_NE(frame_tree_node_id_embedder, kNoFrameTreeNodeId);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 1);
   ExpectUniqueSampleOfEmbedderFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded,
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
       embedder_histogram_suffix, 0);
 }
 
@@ -659,13 +659,13 @@ TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
 
   // Even after the limit of non-eager speculation rules is reached, it is
   // permissible to start a new prerender. Instead, the oldest prerender will be
-  // canceled with kMaxNumOfRunningPrerendersExceeded to make room for a new
-  // one.
+  // canceled with kMaxNumOfRunningNonEagerPrerendersExceeded to make room for a
+  // new one.
   int frame_tree_node_id_non_eager_exceeded = CreateAndStartHostByLimitGroup(
       PrerenderHostRegistry::PrerenderLimitGroup::kSpeculationRulesNonEager);
   ASSERT_NE(frame_tree_node_id_non_eager_exceeded, kNoFrameTreeNodeId);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+      PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded, 1);
   for (auto id : started_prerender_ids) {
     PrerenderHost* prerender_host = registry().FindNonReservedHostById(id);
     if (id == started_prerender_ids[0]) {
@@ -686,9 +686,9 @@ TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
   EXPECT_NE(frame_tree_node_id_eager, kNoFrameTreeNodeId);
   EXPECT_NE(frame_tree_node_id_embedder, kNoFrameTreeNodeId);
   ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+      PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded, 1);
   ExpectUniqueSampleOfEmbedderFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded,
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
       embedder_histogram_suffix, 0);
 }
 
@@ -703,12 +703,12 @@ TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
   }
 
   // If we try to start embedder prerenders after reaching the limit, that
-  // should be canceled with kMaxNumOfRunningPrerendersExceeded.
+  // should be canceled with kMaxNumOfRunningEmbedderPrerendersExceeded.
   int frame_tree_node_id_embedder_exceeded = CreateAndStartHostByLimitGroup(
       PrerenderHostRegistry::PrerenderLimitGroup::kEmbedder);
   EXPECT_EQ(frame_tree_node_id_embedder_exceeded, kNoFrameTreeNodeId);
   ExpectUniqueSampleOfEmbedderFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded,
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
       embedder_histogram_suffix, 1);
 
   // On the other hand, prerenders belonging to different limit group(eager,
@@ -719,10 +719,12 @@ TEST_F(PrerenderHostRegistryNewLimitAndSchedulerTest,
       PrerenderHostRegistry::PrerenderLimitGroup::kSpeculationRulesNonEager);
   EXPECT_NE(frame_tree_node_id_eager, kNoFrameTreeNodeId);
   EXPECT_NE(frame_tree_node_id_non_eager, kNoFrameTreeNodeId);
-  ExpectUniqueSampleOfSpeculationRuleFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+  ExpectBucketCountOfSpeculationRuleFinalStatus(
+      PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded, 0);
+  ExpectBucketCountOfSpeculationRuleFinalStatus(
+      PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded, 0);
   ExpectUniqueSampleOfEmbedderFinalStatus(
-      PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded,
+      PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded,
       embedder_histogram_suffix, 1);
 }
 
