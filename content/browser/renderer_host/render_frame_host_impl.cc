@@ -8173,15 +8173,11 @@ void RenderFrameHostImpl::CreateNewWindow(
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CreateNewWindow",
                "render_frame_host", this, "url", params->target_url);
 
-  // Only top-most frames from https:// or file:// URLs
-  // can open picture-in-picture windows.
+  // Only top-most frames can open picture-in-picture windows.
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&
-      ((!GetLastCommittedURL().SchemeIs(url::kHttpsScheme) &&
-        !GetLastCommittedURL().SchemeIsFile()) ||
-       GetParentOrOuterDocumentOrEmbedder())) {
+      GetParentOrOuterDocumentOrEmbedder()) {
     frame_host_associated_receiver_.ReportBadMessage(
-        "Only top-most frames from https:// or file:// URLs "
-        "can open picture-in-picture windows.");
+        "Only top-most frames can open picture-in-picture windows.");
     return;
   }
 
