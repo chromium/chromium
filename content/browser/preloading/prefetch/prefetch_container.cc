@@ -745,7 +745,15 @@ void PrefetchContainer::SetStreamingURLLoader(
 
 const base::WeakPtr<PrefetchStreamingURLLoader>&
 PrefetchContainer::GetStreamingURLLoader() const {
+  // Streaming loaders scheduled for deletion shouldn't be used.
+  CHECK(!streaming_loader_ ||
+        !streaming_loader_->IsDeletionScheduledForCHECK());
   return streaming_loader_;
+}
+
+bool PrefetchContainer::IsStreamingURLLoaderDeletionScheduledForTesting()
+    const {
+  return streaming_loader_ && streaming_loader_->IsDeletionScheduledForCHECK();
 }
 
 const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()

@@ -214,6 +214,8 @@ class CONTENT_EXPORT PrefetchContainer {
   const base::WeakPtr<PrefetchStreamingURLLoader>& GetStreamingURLLoader()
       const;
 
+  bool IsStreamingURLLoaderDeletionScheduledForTesting() const;
+
   // Returns the PrefetchResponseReader corresponding to the last non-redirect
   // response, if already received its head, or otherwise nullptr.
   const PrefetchResponseReader* GetNonRedirectResponseReader() const;

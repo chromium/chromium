@@ -882,7 +882,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
       /*prefetch_document_manager=*/nullptr);
   prefetch_container->MakeResourceRequest({});
 
-  EXPECT_EQ(prefetch_container->GetStreamingURLLoader(), nullptr);
+  EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
 
   EXPECT_NE(prefetch_container->GetServableState(base::TimeDelta::Max()),
             PrefetchContainer::ServableState::kServable);
@@ -896,7 +896,8 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   // As the prefetch is already completed, the streaming loader is deleted
   // asynchronously.
-  EXPECT_TRUE(prefetch_container->GetStreamingURLLoader());
+  EXPECT_TRUE(
+      prefetch_container->IsStreamingURLLoaderDeletionScheduledForTesting());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
 
