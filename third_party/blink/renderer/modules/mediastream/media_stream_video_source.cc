@@ -605,18 +605,6 @@ void MediaStreamVideoSource::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   OnFrameDroppedInternal(reason);
-  if (reason ==
-      media::VideoCaptureFrameDropReason::
-          kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame) {
-    // Black frame events only happen when the track is disabled, ignore.
-    return;
-  }
-  if (reason == media::VideoCaptureFrameDropReason::
-                    kResolutionAdapterFrameRateIsHigherThanRequested) {
-    ++discarded_frames_;
-  } else {
-    ++dropped_frames_;
-  }
 }
 
 }  // namespace blink

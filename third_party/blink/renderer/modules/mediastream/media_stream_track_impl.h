@@ -157,8 +157,10 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
 
-  void OnDeliverableVideoFramesCount(Persistent<ScriptPromiseResolver> resolver,
-                                     size_t deliverable_frames) const;
+  void OnVideoFrameStats(Persistent<ScriptPromiseResolver> resolver,
+                         size_t deliverable_frames,
+                         size_t discarded_frames,
+                         size_t dropped_frames) const;
 
   // MediaStreamSource::Observer
   void SourceChangedState() override;
@@ -198,18 +200,6 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   bool muted_ = false;
   MediaConstraints constraints_;
   absl::optional<bool> suppress_local_audio_playback_setting_;
-  // Video-only.
-  //   It is the source' job to keep track of the true number of discarded or
-  // dropped frames. But tracks, unlike sources, can be cloned or disabled so
-  // we need to keep track of the baseline for when the track was cloned and
-  // a snapshot for when the track was disabled.
-  size_t video_source_discarded_frames_baseline_ = 0u;
-  size_t video_source_dropped_frames_baseline_ = 0u;
-  // To avoid counters increasing while the track is disabled, a snapshot of the
-  // discarded/dropped stats are taken at the time of disabling the track. These
-  // are also used when adjusting the baseline when the track is re-enabled.
-  size_t discarded_frames_at_last_disable_ = 0u;
-  size_t dropped_frames_at_last_disable_ = 0u;
 };
 
 }  // namespace blink

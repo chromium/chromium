@@ -54,7 +54,8 @@ void MockMediaStreamVideoSink::DeliverEncodedVideoFrame(
   OnEncodedVideoFrame(estimated_capture_time);
 }
 
-void MockMediaStreamVideoSink::NotifyFrameDropped() {
+void MockMediaStreamVideoSink::NotifyFrameDropped(
+    media::VideoCaptureFrameDropReason reason) {
   OnNotifyFrameDropped();
 }
 

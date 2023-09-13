@@ -100,7 +100,7 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks estimated_capture_time);
 
-  void OnNotifyVideoFrameDroppedOnIO();
+  void OnNotifyVideoFrameDroppedOnIO(media::VideoCaptureFrameDropReason);
 
  private:
   friend class WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter>;
@@ -180,7 +180,7 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::OnVideoFrameOnIO(
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
-    OnNotifyVideoFrameDroppedOnIO() {
+    OnNotifyVideoFrameDroppedOnIO(media::VideoCaptureFrameDropReason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   DVLOG(1) << __func__;
   PostCrossThreadTask(

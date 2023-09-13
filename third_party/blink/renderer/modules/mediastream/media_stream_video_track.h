@@ -89,9 +89,8 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
       WebMediaStreamTrack::ContentHintType content_hint) override;
   void StopAndNotify(base::OnceClosure callback) override;
   void GetSettings(MediaStreamTrackPlatform::Settings& settings) const override;
-  void AsyncGetDeliverableVideoFramesCount(
-      base::OnceCallback<void(size_t)> deliverable_video_frames_callback)
-      override;
+  void AsyncGetVideoFrameStats(base::OnceCallback<void(size_t, size_t, size_t)>
+                                   video_frame_stats_callback) override;
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
   void AddCropVersionCallback(uint32_t crop_version,
                               base::OnceClosure callback) override;
@@ -183,7 +182,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   MediaStreamVideoSource* source() const { return source_.get(); }
 
-  void OnFrameDropped(media::VideoCaptureFrameDropReason reason);
+  // Invokes `OnFrameDropped` on the source. This does not affect track stats.
+  // TODO(https://crbug.com/1472978): Having multiple frame drop methods is
+  // confusing, can this be deleted?
+  void NotifySourceFrameDropped(media::VideoCaptureFrameDropReason reason);
 
   bool IsRefreshFrameTimerRunningForTesting() {
     return refresh_timer_.IsRunning();
@@ -198,6 +200,14 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   }
 
   bool UsingAlpha();
+
+  // Today the source does not tell the track of frame drops, only the other way
+  // around. For this reason we need a test-only method to test frame stats.
+  // TODO(https://crbug.com/1472978): When source frame drops are forwarded to
+  // the track (instead of the other way around), delete this test-only method
+  // in favor of testing drops via a fake source instead.
+  base::RepeatingCallback<void(media::VideoCaptureFrameDropReason)>
+  NotifyFrameDroppedOnVideoTaskRunnerCallbackForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamRemoteVideoSourceTest, StartTrack);

@@ -128,7 +128,7 @@ class MODULES_EXPORT VideoTrackAdapter
           std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
           base::TimeTicks estimated_capture_time)>;
   using VideoCaptureNotifyFrameDroppedInternalCallback =
-      WTF::CrossThreadFunction<void()>;
+      WTF::CrossThreadFunction<void(media::VideoCaptureFrameDropReason)>;
   using DeliverEncodedVideoFrameInternalCallback =
       WTF::CrossThreadFunction<void(
           scoped_refptr<EncodedVideoFrame> video_frame,

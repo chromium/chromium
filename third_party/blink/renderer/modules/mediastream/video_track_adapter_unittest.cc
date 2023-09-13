@@ -326,9 +326,9 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     }
   }
 
-  void OnFrameDropped() {
+  void OnFrameDropped(media::VideoCaptureFrameDropReason reason) {
     if (frame_dropped_callback_) {
-      frame_dropped_callback_.Run();
+      frame_dropped_callback_.Run(reason);
       frame_processed_.Signal();
     }
   }
@@ -366,12 +366,13 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
             did_process_all_frames.Signal();
           }
         }));
-    SetFrameDroppedCallback(base::BindLambdaForTesting([&]() {
-      num_dropped++;
-      if (num_delivered + num_dropped == num_frames) {
-        did_process_all_frames.Signal();
-      }
-    }));
+    SetFrameDroppedCallback(
+        base::BindLambdaForTesting([&](media::VideoCaptureFrameDropReason) {
+          num_dropped++;
+          if (num_delivered + num_dropped == num_frames) {
+            did_process_all_frames.Signal();
+          }
+        }));
 
     for (int i = 0; i < num_frames; ++i) {
       auto frame = CreateTestFrame(

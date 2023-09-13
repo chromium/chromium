@@ -414,8 +414,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliverFramesAndGetSettings) {
   sink.DisconnectFromTrack();
 }
 
-TEST_F(MediaStreamVideoTrackTest,
-       DeliveredFrameCounterIncrementsForEnabledTracks) {
+TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
   InitializeSource();
   MockMediaStreamVideoSink sink;
   WebMediaStreamTrack track = CreateTrack();
@@ -424,45 +423,130 @@ TEST_F(MediaStreamVideoTrackTest,
       MediaStreamVideoTrack::From(track);
   EXPECT_FALSE(native_track->max_frame_rate().has_value());
 
-  const auto kGetDeliverableVideoFrames =
-      base::BindRepeating([](MediaStreamVideoTrack* const native_track) {
-        size_t result = 0u;
+  size_t deliverable_frames = 0u;
+  size_t discarded_frames = 0u;
+  size_t dropped_frames = 0u;
+  const auto kUpdateFrameStats = base::BindRepeating(
+      [](MediaStreamVideoTrack* const native_track,
+         size_t* out_deliverable_frames, size_t* out_discarded_frames,
+         size_t* out_dropped_frames) {
         base::RunLoop run_loop;
-        native_track->AsyncGetDeliverableVideoFramesCount(base::BindOnce(
-            [](size_t* result, base::RunLoop* run_loop,
-               size_t deliverable_frames) {
-              *result = deliverable_frames;
+        native_track->AsyncGetVideoFrameStats(base::BindOnce(
+            [](size_t* out_deliverable_frames, size_t* out_discarded_frames,
+               size_t* out_dropped_frames, base::RunLoop* run_loop,
+               size_t deliverable_frames, size_t discarded_frames,
+               size_t dropped_frames) {
+              *out_deliverable_frames = deliverable_frames;
+              *out_discarded_frames = discarded_frames;
+              *out_dropped_frames = dropped_frames;
               run_loop->Quit();
             },
-            base::Unretained(&result), base::Unretained(&run_loop)));
+            out_deliverable_frames, out_discarded_frames, out_dropped_frames,
+            base::Unretained(&run_loop)));
         run_loop.Run();
-        return result;
       });
+  const auto kOnFrameDropped = base::BindRepeating(
+      [](base::SequencedTaskRunner* video_task_runner,
+         MediaStreamVideoTrack* const native_track,
+         media::VideoCaptureFrameDropReason reason) {
+        base::RunLoop run_loop;
+        video_task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](MediaStreamVideoTrack* const native_track,
+                   media::VideoCaptureFrameDropReason reason,
+                   base::RunLoop* run_loop) {
+                  native_track
+                      ->NotifyFrameDroppedOnVideoTaskRunnerCallbackForTesting()
+                      .Run(reason);
+                  run_loop->Quit();
+                },
+                base::Unretained(native_track), reason,
+                base::Unretained(&run_loop)));
+        run_loop.Run();
+      },
+      base::Unretained(mock_source()->video_task_runner()));
 
   // Initially, no fames have been delivered.
-  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 0u);
+  kUpdateFrameStats.Run(native_track, &deliverable_frames, &discarded_frames,
+                        &dropped_frames);
+  EXPECT_EQ(deliverable_frames, 0u);
+  EXPECT_EQ(discarded_frames, 0u);
+  EXPECT_EQ(dropped_frames, 0u);
 
   // Deliver a frame an expect counter to increment to 1.
   DeliverVideoFrameAndWaitForRenderer(
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
-  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 1u);
+  kUpdateFrameStats.Run(native_track, &deliverable_frames, &discarded_frames,
+                        &dropped_frames);
+  EXPECT_EQ(deliverable_frames, 1u);
+  EXPECT_EQ(discarded_frames, 0u);
+  EXPECT_EQ(dropped_frames, 0u);
 
-  // And another one...
+  // Discard one frame (due to frame rate decimation) and drop two frames (other
+  // reasons);
+  kOnFrameDropped.Run(native_track,
+                      media::VideoCaptureFrameDropReason::
+                          kResolutionAdapterFrameRateIsHigherThanRequested);
+  kOnFrameDropped.Run(
+      native_track,
+      media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+  kOnFrameDropped.Run(
+      native_track,
+      media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+  kUpdateFrameStats.Run(native_track, &deliverable_frames, &discarded_frames,
+                        &dropped_frames);
+  EXPECT_EQ(deliverable_frames, 1u);
+  EXPECT_EQ(discarded_frames, 1u);
+  EXPECT_EQ(dropped_frames, 2u);
+
+  // And some more...
   DeliverVideoFrameAndWaitForRenderer(
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
-  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 2u);
+  kOnFrameDropped.Run(native_track,
+                      media::VideoCaptureFrameDropReason::
+                          kResolutionAdapterFrameRateIsHigherThanRequested);
+  kOnFrameDropped.Run(native_track,
+                      media::VideoCaptureFrameDropReason::
+                          kResolutionAdapterFrameRateIsHigherThanRequested);
+  kUpdateFrameStats.Run(native_track, &deliverable_frames, &discarded_frames,
+                        &dropped_frames);
+  EXPECT_EQ(deliverable_frames, 2u);
+  EXPECT_EQ(discarded_frames, 3u);
+  EXPECT_EQ(dropped_frames, 2u);
 
-  // Disable the track and verify the frame counter does NOT increment.
+  // Disable the track and verify the frame counters do NOT increment, even as
+  // frame delivery and dropped callbacks are invoked.
   native_track->SetEnabled(false);
   DeliverVideoFrameAndWaitForRenderer(
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
-  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 2u);
+  kOnFrameDropped.Run(native_track,
+                      media::VideoCaptureFrameDropReason::
+                          kResolutionAdapterFrameRateIsHigherThanRequested);
+  kOnFrameDropped.Run(
+      native_track,
+      media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+  kUpdateFrameStats.Run(native_track, &deliverable_frames, &discarded_frames,
+                        &dropped_frames);
+  EXPECT_EQ(deliverable_frames, 2u);
+  EXPECT_EQ(discarded_frames, 3u);
+  EXPECT_EQ(dropped_frames, 2u);
 
   // Enable it again, and business as usual...
   native_track->SetEnabled(true);
   DeliverVideoFrameAndWaitForRenderer(
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
-  EXPECT_EQ(kGetDeliverableVideoFrames.Run(native_track), 3u);
+  kOnFrameDropped.Run(native_track,
+                      media::VideoCaptureFrameDropReason::
+                          kResolutionAdapterFrameRateIsHigherThanRequested);
+  kOnFrameDropped.Run(
+      native_track,
+      media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+  kUpdateFrameStats.Run(native_track, &deliverable_frames, &discarded_frames,
+                        &dropped_frames);
+  EXPECT_EQ(deliverable_frames, 3u);
+  EXPECT_EQ(discarded_frames, 4u);
+  EXPECT_EQ(dropped_frames, 3u);
 
   sink.DisconnectFromTrack();
 }

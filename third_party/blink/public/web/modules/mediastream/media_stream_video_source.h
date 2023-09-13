@@ -147,16 +147,22 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Request underlying source to capture a new frame.
   virtual void RequestRefreshFrame() {}
 
-  // Updates discarded/dropped counters for MediaStreamTrack statistics.
+  // Called when a frame is dropped by VideoTrackAdapter indicating a frame
+  // was not delivered to the sink, or by the MediaStreamVideoSink indicating
+  // that the <video> tag was not in a started state. Note that the
+  // MediaStreamTrack Statistics API does not consider the latter a dropped
+  // frame, since it was delivered to the sink. Also note that if multiple
+  // VideoTrackAdapters are used, the same frame could be reported as dropped
+  // multiple times. This method should not be used for frame counters.
+  // TODO(https://crbug.com/1481448): Consider if it would be better to delete
+  // this to avoid differences with the stats API or rename it to avoid
+  // confusion.
+  //
   // Internally calls `OnFrameDroppedInternal`, which can optionally be
   // overridden by a subclass for further handling of the frame drop events.
+  // TODO(https://crbug.com/1472978): Merge this method and
+  // OnFrameDroppedInternal() into a single method.
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason);
-
-  // The total number of discarded/dropped frames. A discarded frame is a frame
-  // that was dropped for frame rate reasons, a dropped frame was one that was
-  // dropped for other reasons.
-  size_t discarded_frames() const { return discarded_frames_; }
-  size_t dropped_frames() const { return dropped_frames_; }
 
   // Optionally overridden by subclasses to implement handling log messages.
   virtual void OnLog(const std::string& message) {}
@@ -420,10 +426,6 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // died before this callback is resolved, we still need to trigger the
   // callback to notify the caller that the request is canceled.
   base::OnceClosure remove_last_track_callback_;
-
-  // Discarded and dropped counters for MediaStreamTrack statistics.
-  size_t discarded_frames_ = 0;
-  size_t dropped_frames_ = 0;
 };
 
 }  // namespace blink

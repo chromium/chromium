@@ -82,7 +82,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
       base::TimeTicks estimated_capture_time);
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
-  void NotifyFrameDropped();
+  void NotifyFrameDropped(media::VideoCaptureFrameDropReason reason);
 
   MediaStreamVideoSink::UsesAlpha uses_alpha_ =
       MediaStreamVideoSink::UsesAlpha::kDefault;

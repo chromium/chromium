@@ -81,8 +81,12 @@ void MediaStreamVideoSink::OnFrameDropped(
   if (connected_track_.IsNull())
     return;
 
-  if (auto* const video_track = MediaStreamVideoTrack::From(connected_track_))
-    video_track->OnFrameDropped(reason);
+  // For UMA reasons we want to report this to the source, but note that the
+  // frame is not considered dropped for the purpose of the MediaStreamTrack
+  // Statistics API.
+  if (auto* const video_track = MediaStreamVideoTrack::From(connected_track_)) {
+    video_track->NotifySourceFrameDropped(reason);
+  }
 }
 
 double MediaStreamVideoSink::GetRequiredMinFramesPerSec() const {

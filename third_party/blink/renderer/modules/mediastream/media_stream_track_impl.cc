@@ -259,14 +259,6 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
   DCHECK(component_);
   component_->AddSourceObserver(this);
 
-  // Set discarded/dropped frames baselines to the snapshot at construction.
-  if (component_->GetSourceType() == MediaStreamSource::kTypeVideo) {
-    MediaStreamVideoSource* source =
-        MediaStreamVideoSource::GetVideoSource(component_->Source());
-    video_source_discarded_frames_baseline_ = source->discarded_frames();
-    video_source_dropped_frames_baseline_ = source->dropped_frames();
-  }
-
   // If the source is already non-live at this point, the observer won't have
   // been called. Update the muted state manually.
   muted_ = ready_state_ == MediaStreamSource::kReadyStateMuted;
@@ -331,27 +323,6 @@ void MediaStreamTrackImpl::setEnabled(bool enabled) {
   }
 
   component_->SetEnabled(enabled);
-
-  if (component_->GetSourceType() == MediaStreamSource::kTypeVideo) {
-    MediaStreamVideoSource* video_source =
-        MediaStreamVideoSource::GetVideoSource(component_->Source());
-    CHECK(video_source);
-    if (!enabled) {
-      // Upon disabling, take a snapshot of the current frame counters. This
-      // ensures frames does not increment while we are disabled.
-      discarded_frames_at_last_disable_ =
-          video_source->discarded_frames() -
-          video_source_discarded_frames_baseline_;
-      dropped_frames_at_last_disable_ = video_source->dropped_frames() -
-                                        video_source_dropped_frames_baseline_;
-    } else {
-      // Upon enabling, refresh our baseline to exclude the disabled period.
-      video_source_discarded_frames_baseline_ =
-          video_source->discarded_frames() - discarded_frames_at_last_disable_;
-      video_source_dropped_frames_baseline_ =
-          video_source->dropped_frames() - dropped_frames_at_last_disable_;
-    }
-  }
 
   SendLogMessage(
       String::Format("%s({enabled=%s})", __func__, enabled ? "true" : "false"));
@@ -710,35 +681,25 @@ ScriptPromise MediaStreamTrackImpl::getFrameStats(
           "tracks."));
       break;
     case MediaStreamSource::kTypeVideo:
-      component_->GetPlatformTrack()->AsyncGetDeliverableVideoFramesCount(
-          WTF::BindOnce(&MediaStreamTrackImpl::OnDeliverableVideoFramesCount,
+      component_->GetPlatformTrack()->AsyncGetVideoFrameStats(
+          WTF::BindOnce(&MediaStreamTrackImpl::OnVideoFrameStats,
                         WrapPersistent(this), WrapPersistent(resolver)));
       break;
   }
   return promise;
 }
 
-void MediaStreamTrackImpl::OnDeliverableVideoFramesCount(
+void MediaStreamTrackImpl::OnVideoFrameStats(
     Persistent<ScriptPromiseResolver> resolver,
-    size_t deliverable_frames) const {
+    size_t deliverable_frames,
+    size_t discarded_frames,
+    size_t dropped_frames) const {
   MediaStreamVideoSource* video_source =
       MediaStreamVideoSource::GetVideoSource(component_->Source());
   CHECK(video_source);
 
   MediaTrackFrameStats* track_stats = MediaTrackFrameStats::Create();
   track_stats->setDeliveredFrames(deliverable_frames);
-  size_t discarded_frames, dropped_frames;
-  if (enabled()) {
-    // The dropped/discarded counters are relative to our baseline.
-    discarded_frames = video_source->discarded_frames() -
-                       video_source_discarded_frames_baseline_;
-    dropped_frames =
-        video_source->dropped_frames() - video_source_dropped_frames_baseline_;
-  } else {
-    // The track is disabled, so we return the frozen disabled snapshots.
-    discarded_frames = discarded_frames_at_last_disable_;
-    dropped_frames = dropped_frames_at_last_disable_;
-  }
   track_stats->setDiscardedFrames(discarded_frames);
   track_stats->setTotalFrames(deliverable_frames + discarded_frames +
                               dropped_frames);

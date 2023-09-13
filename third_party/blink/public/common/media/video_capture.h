@@ -47,7 +47,9 @@ using VideoCaptureDeliverFrameCB = base::RepeatingCallback<void(
     base::TimeTicks estimated_capture_time)>;
 
 // Callback for delivering dropped frame notifications.
-using VideoCaptureNotifyFrameDroppedCB = base::RepeatingClosure;
+// Used to implement the MediaStreamTrack Statistics API.
+using VideoCaptureNotifyFrameDroppedCB =
+    base::RepeatingCallback<void(media::VideoCaptureFrameDropReason)>;
 
 // Callback for informing when new crop-versions are applied.
 using VideoCaptureCropVersionCB =

@@ -617,53 +617,6 @@ TEST_F(MediaStreamVideoSourceTest, DropFrameAtTooHighRateAndThenStopDropping) {
   sink.DisconnectFromTrack();
 }
 
-TEST_F(MediaStreamVideoSourceTest, DroppedAndDiscardedFrameCounters) {
-  constexpr int kMaxFps = 10;
-  WebMediaStreamTrack track = CreateTrackAndStartSource(640, 480, kMaxFps);
-  MockMediaStreamVideoSink sink;
-  sink.ConnectToTrack(track);
-
-  // By default, no frames are discarded or dropped.
-  EXPECT_EQ(mock_source()->discarded_frames(), 0u);
-  EXPECT_EQ(mock_source()->dropped_frames(), 0u);
-
-  // Discarded frames go up when a frame is dropped for frame rate decimation
-  // reasons and this does not increment the dropped frames counter.
-  mock_source()->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::
-          kResolutionAdapterFrameRateIsHigherThanRequested);
-  EXPECT_EQ(mock_source()->discarded_frames(), 1u);
-  EXPECT_EQ(mock_source()->dropped_frames(), 0u);
-
-  // The "black frame due to being disabled" event does not affect any counter.
-  mock_source()->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::
-          kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame);
-  EXPECT_EQ(mock_source()->discarded_frames(), 1u);
-  EXPECT_EQ(mock_source()->dropped_frames(), 0u);
-
-  // Dropped frames go up for any other reason.
-  mock_source()->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
-  EXPECT_EQ(mock_source()->discarded_frames(), 1u);
-  EXPECT_EQ(mock_source()->dropped_frames(), 1u);
-  mock_source()->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kCropVersionNotCurrent);
-  EXPECT_EQ(mock_source()->discarded_frames(), 1u);
-  EXPECT_EQ(mock_source()->dropped_frames(), 2u);
-  mock_source()->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
-  EXPECT_EQ(mock_source()->discarded_frames(), 1u);
-  EXPECT_EQ(mock_source()->dropped_frames(), 3u);
-
-  // Successfully delivering a frame does not affect the dropped counters.
-  DeliverVideoFrameAndWaitForRenderer(100, 100, base::TimeDelta(), &sink);
-  EXPECT_EQ(mock_source()->discarded_frames(), 1u);
-  EXPECT_EQ(mock_source()->dropped_frames(), 3u);
-
-  sink.DisconnectFromTrack();
-}
-
 TEST_F(MediaStreamVideoSourceTest, ReconfigureTrack) {
   WebMediaStreamTrack track =
       CreateTrackAndStartSource(640, 480, kSourceFrameRate - 2);

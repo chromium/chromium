@@ -103,8 +103,11 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // Retrieves a snapshot of the deliverable frames counter (via a round-trip to
   // the video task runner). The callback with the result is invoked on the main
   // task runner.
-  virtual void AsyncGetDeliverableVideoFramesCount(
-      base::OnceCallback<void(size_t)> deliverable_video_frames_callback) {
+  // TODO(https://crbug.com/1472978): Replace size_t's with a struct for
+  // `deliverable_frames`, `discarded_frames` and `dropped_frames`.
+  virtual void AsyncGetVideoFrameStats(
+      base::OnceCallback<void(size_t, size_t, size_t)>
+          video_frame_stats_callback) {
     // This method is only callable on video tracks.
     NOTREACHED();
   }
