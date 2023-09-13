@@ -503,7 +503,7 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureParam
     kCCTPageInsightsHubAutotriggerDurationTesting[] = {
-        {"page_insights_can_autotrigger_after_end", "2000"}  // 2s
+        {"page_insights_can_autotrigger_after_end", "1000"}  // 1s
 };
 
 const FeatureEntry::FeatureVariation
