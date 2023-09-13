@@ -93,11 +93,13 @@ struct common_policy_traits {
   struct Rank0 : Rank1 {};
 
   // Use auto -> decltype as an enabler.
+  // P::transfer returns std::true_type if transfer uses memcpy (e.g. in
+  // node_slot_policy).
   template <class Alloc, class P = Policy>
   static auto transfer_impl(Alloc* alloc, slot_type* new_slot,
                             slot_type* old_slot, Rank0)
-      -> decltype((void)P::transfer(alloc, new_slot, old_slot)) {
-    P::transfer(alloc, new_slot, old_slot);
+      -> decltype(P::transfer(alloc, new_slot, old_slot)) {
+    return P::transfer(alloc, new_slot, old_slot);
   }
 #if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
   // This overload returns true_type for the trait below.

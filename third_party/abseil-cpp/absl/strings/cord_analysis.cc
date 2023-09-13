@@ -24,7 +24,6 @@
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_crc.h"
-#include "absl/strings/internal/cord_rep_ring.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -131,16 +130,6 @@ void AnalyzeDataEdge(CordRepRef<mode> rep, RawUsage<mode>& raw_usage) {
   raw_usage.Add(size, rep);
 }
 
-// Computes the memory size of the provided Ring tree.
-template <Mode mode>
-void AnalyzeRing(CordRepRef<mode> rep, RawUsage<mode>& raw_usage) {
-  const CordRepRing* ring = rep.rep->ring();
-  raw_usage.Add(CordRepRing::AllocSize(ring->capacity()), rep);
-  ring->ForEach([&](CordRepRing::index_type pos) {
-    AnalyzeDataEdge(rep.Child(ring->entry_child(pos)), raw_usage);
-  });
-}
-
 // Computes the memory size of the provided Btree tree.
 template <Mode mode>
 void AnalyzeBtree(CordRepRef<mode> rep, RawUsage<mode>& raw_usage) {
@@ -175,8 +164,6 @@ size_t GetEstimatedUsage(const CordRep* rep) {
     AnalyzeDataEdge(repref, raw_usage);
   } else if (repref.rep->tag == BTREE) {
     AnalyzeBtree(repref, raw_usage);
-  } else if (repref.rep->tag == RING) {
-    AnalyzeRing(repref, raw_usage);
   } else {
     assert(false);
   }

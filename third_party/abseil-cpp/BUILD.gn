@@ -198,6 +198,7 @@ if (build_with_chromium) {
         # TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.
         # "absl/container:btree_test",
         "absl/container:common_policy_traits_test",
+        "absl/container:flat_hash_set_test",
         "absl/container:inlined_vector_test",
         "absl/container:node_slot_policy_test",
         "absl/container:raw_hash_set_allocator_test",

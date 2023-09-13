@@ -26,10 +26,8 @@ absl_source_set("crc_internal") {
   ]
   deps = [
     ":cpu_detect",
-    "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:dynamic_annotations",
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/base:prefetch",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
@@ -49,7 +47,7 @@ absl_source_set("crc32c") {
     "crc32c.cc",
     "internal/crc32c_inline.h",
     "internal/crc_memcpy_fallback.cc",
-    "internal/crc_memcpy_x86_64.cc",
+    "internal/crc_memcpy_x86_arm_combined.cc",
     "internal/crc_non_temporal_memcpy.cc",
   ]
   deps = [
@@ -58,7 +56,6 @@ absl_source_set("crc32c") {
     ":non_temporal_memcpy",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:dynamic_annotations",
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/base:prefetch",
     "//third_party/abseil-cpp/absl/strings:str_format",
@@ -78,9 +75,7 @@ absl_test("crc32c_test") {
 
 absl_source_set("non_temporal_arm_intrinsics") {
   public = [ "internal/non_temporal_arm_intrinsics.h" ]
-  deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-  ]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
   visibility = [ ":*" ]
 }
 
@@ -108,9 +103,7 @@ absl_test("crc_memcpy_test") {
 
 absl_test("non_temporal_memcpy_test") {
   sources = [ "internal/non_temporal_memcpy_test.cc" ]
-  deps = [
-    ":non_temporal_memcpy",
-  ]
+  deps = [ ":non_temporal_memcpy" ]
 }
 
 absl_source_set("crc_cord_state") {
@@ -123,8 +116,8 @@ absl_source_set("crc_cord_state") {
     "//third_party/abseil-cpp/absl/strings",
   ]
   visibility = [
-    "//third_party/abseil-cpp/absl/strings:*",
     "//third_party/abseil-cpp/absl/crc/*",
+    "//third_party/abseil-cpp/absl/strings:*",
   ]
 }
 

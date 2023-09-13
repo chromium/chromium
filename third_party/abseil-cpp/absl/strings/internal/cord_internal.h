@@ -55,23 +55,14 @@ struct CordRepExternal;
 struct CordRepFlat;
 struct CordRepSubstring;
 struct CordRepCrc;
-class CordRepRing;
 class CordRepBtree;
 
 class CordzInfo;
 
 // Default feature enable states for cord ring buffers
-enum CordFeatureDefaults {
-  kCordEnableRingBufferDefault = false,
-  kCordShallowSubcordsDefault = false
-};
+enum CordFeatureDefaults { kCordShallowSubcordsDefault = false };
 
-extern std::atomic<bool> cord_ring_buffer_enabled;
 extern std::atomic<bool> shallow_subcords_enabled;
-
-inline void enable_cord_ring_buffer(bool enable) {
-  cord_ring_buffer_enabled.store(enable, std::memory_order_relaxed);
-}
 
 inline void enable_shallow_subcords(bool enable) {
   shallow_subcords_enabled.store(enable, std::memory_order_relaxed);
@@ -215,7 +206,7 @@ enum CordRepKind {
   SUBSTRING = 1,
   CRC = 2,
   BTREE = 3,
-  RING = 4,
+  UNUSED_4 = 4,
   EXTERNAL = 5,
 
   // We have different tags for different sized flat arrays,
@@ -234,12 +225,8 @@ enum CordRepKind {
 // There are various locations where we want to check if some rep is a 'plain'
 // data edge, i.e. an external or flat rep. By having FLAT == EXTERNAL + 1, we
 // can perform this check in a single branch as 'tag >= EXTERNAL'
-// Likewise, we have some locations where we check for 'ring or external/flat',
-// so likewise align RING to EXTERNAL.
 // Note that we can leave this optimization to the compiler. The compiler will
 // DTRT when it sees a condition like `tag == EXTERNAL || tag >= FLAT`.
-static_assert(RING == BTREE + 1, "BTREE and RING not consecutive");
-static_assert(EXTERNAL == RING + 1, "BTREE and EXTERNAL not consecutive");
 static_assert(FLAT == EXTERNAL + 1, "EXTERNAL and FLAT not consecutive");
 
 struct CordRep {
@@ -283,15 +270,12 @@ struct CordRep {
   // # LINT.ThenChange(cord_rep_btree.h:copy_raw)
 
   // Returns true if this instance's tag matches the requested type.
-  constexpr bool IsRing() const { return tag == RING; }
   constexpr bool IsSubstring() const { return tag == SUBSTRING; }
   constexpr bool IsCrc() const { return tag == CRC; }
   constexpr bool IsExternal() const { return tag == EXTERNAL; }
   constexpr bool IsFlat() const { return tag >= FLAT; }
   constexpr bool IsBtree() const { return tag == BTREE; }
 
-  inline CordRepRing* ring();
-  inline const CordRepRing* ring() const;
   inline CordRepSubstring* substring();
   inline const CordRepSubstring* substring() const;
   inline CordRepCrc* crc();

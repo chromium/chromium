@@ -14,8 +14,15 @@
 
 #include "absl/container/flat_hash_set.h"
 
+#include <cstdint>
+#include <memory>
+#include <utility>
 #include <vector>
 
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
+#include "absl/base/config.h"
+#include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/unordered_set_constructor_test.h"
 #include "absl/container/internal/unordered_set_lookup_test.h"
@@ -169,6 +176,64 @@ TEST(FlatHashSet, EraseIf) {
     flat_hash_set<int> s = {1, 2, 3, 4, 5};
     EXPECT_EQ(erase_if(s, &IsEven), 2);
     EXPECT_THAT(s, UnorderedElementsAre(1, 3, 5));
+  }
+}
+
+class PoisonInline {
+  int64_t data_;
+
+ public:
+  explicit PoisonInline(int64_t d) : data_(d) {
+    SanitizerPoisonObject(&data_);
+  }
+  PoisonInline(const PoisonInline& that) : PoisonInline(*that) {}
+  ~PoisonInline() { SanitizerUnpoisonObject(&data_); }
+
+  int64_t operator*() const {
+    SanitizerUnpoisonObject(&data_);
+    const int64_t ret = data_;
+    SanitizerPoisonObject(&data_);
+    return ret;
+  }
+  template <typename H>
+  friend H AbslHashValue(H h, const PoisonInline& pi) {
+    return H::combine(std::move(h), *pi);
+  }
+  bool operator==(const PoisonInline& rhs) const { return **this == *rhs; }
+};
+
+// Tests that we don't touch the poison_ member of PoisonInline.
+TEST(FlatHashSet, PoisonInline) {
+  PoisonInline a(0), b(1);
+  {  // basic usage
+    flat_hash_set<PoisonInline> set;
+    set.insert(a);
+    EXPECT_THAT(set, UnorderedElementsAre(a));
+    set.insert(b);
+    EXPECT_THAT(set, UnorderedElementsAre(a, b));
+    set.erase(a);
+    EXPECT_THAT(set, UnorderedElementsAre(b));
+    set.rehash(0);  // shrink to inline
+    EXPECT_THAT(set, UnorderedElementsAre(b));
+  }
+  {  // test move constructor from inline to inline
+    flat_hash_set<PoisonInline> set;
+    set.insert(a);
+    flat_hash_set<PoisonInline> set2(std::move(set));
+    EXPECT_THAT(set2, UnorderedElementsAre(a));
+  }
+  {  // test move assignment from inline to inline
+    flat_hash_set<PoisonInline> set, set2;
+    set.insert(a);
+    set2 = std::move(set);
+    EXPECT_THAT(set2, UnorderedElementsAre(a));
+  }
+  {  // test alloc move constructor from inline to inline
+    flat_hash_set<PoisonInline> set;
+    set.insert(a);
+    flat_hash_set<PoisonInline> set2(std::move(set),
+                                     std::allocator<PoisonInline>());
+    EXPECT_THAT(set2, UnorderedElementsAre(a));
   }
 }
 

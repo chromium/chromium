@@ -283,12 +283,14 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["no_test_loonix"],
     deps = [
+        ":container_memory",
         ":flat_hash_set",
         ":hash_generator_testing",
         ":unordered_set_constructor_test",
         ":unordered_set_lookup_test",
         ":unordered_set_members_test",
         ":unordered_set_modifiers_test",
+        "//absl/base:config",
         "//absl/log:check",
         "//absl/memory",
         "//absl/strings",
@@ -497,6 +499,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":common_policy_traits",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -580,6 +583,7 @@ cc_test(
     deps = [
         ":hash_policy_traits",
         ":node_slot_policy",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )

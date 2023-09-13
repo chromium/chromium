@@ -2965,6 +2965,20 @@ TYPED_TEST(BtreeMultiKeyTest, Count) {
   EXPECT_EQ(set.count(2), 2);
 }
 
+TEST(Btree, SetIteratorsAreConst) {
+  using Set = absl::btree_set<int>;
+  EXPECT_TRUE(
+      (std::is_same<typename Set::iterator::reference, const int &>::value));
+  EXPECT_TRUE(
+      (std::is_same<typename Set::iterator::pointer, const int *>::value));
+
+  using MSet = absl::btree_multiset<int>;
+  EXPECT_TRUE(
+      (std::is_same<typename MSet::iterator::reference, const int &>::value));
+  EXPECT_TRUE(
+      (std::is_same<typename MSet::iterator::pointer, const int *>::value));
+}
+
 TEST(Btree, AllocConstructor) {
   using Alloc = CountingAllocator<int>;
   using Set = absl::btree_set<int, std::less<int>, Alloc>;

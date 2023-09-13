@@ -54,10 +54,8 @@ cc_library(
     visibility = ["//visibility:private"],
     deps = [
         ":cpu_detect",
-        "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:dynamic_annotations",
         "//absl/base:endian",
         "//absl/base:prefetch",
         "//absl/base:raw_logging_internal",
@@ -72,7 +70,7 @@ cc_library(
         "crc32c.cc",
         "internal/crc32c_inline.h",
         "internal/crc_memcpy_fallback.cc",
-        "internal/crc_memcpy_x86_64.cc",
+        "internal/crc_memcpy_x86_arm_combined.cc",
         "internal/crc_non_temporal_memcpy.cc",
     ],
     hdrs = [
@@ -89,7 +87,6 @@ cc_library(
         ":non_temporal_memcpy",
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:dynamic_annotations",
         "//absl/base:endian",
         "//absl/base:prefetch",
         "//absl/strings",

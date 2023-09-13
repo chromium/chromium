@@ -2110,8 +2110,6 @@ TEST_P(CordTest, DiabolicalGrowth) {
   // This test exercises a diabolical Append(<one char>) on a cord, making the
   // cord shared before each Append call resulting in a terribly fragmented
   // resulting cord.
-  // TODO(b/183983616): Apply some minimum compaction when copying a shared
-  // source cord into a mutable copy for updates in CordRepRing.
   RandomEngine rng(GTEST_FLAG_GET(random_seed));
   const std::string expected = RandomLowercaseString(&rng, 5000);
   absl::Cord cord;

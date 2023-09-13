@@ -16,10 +16,12 @@
 
 #include <functional>
 #include <memory>
-#include <new>
+#include <type_traits>
+#include <utility>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/config.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -51,8 +53,13 @@ std::function<Slot&(Slot*)> PolicyWithoutOptionalOps::element;
 struct PolicyWithOptionalOps : PolicyWithoutOptionalOps {
   static std::function<void(void*, Slot*, Slot*)> transfer;
 };
-
 std::function<void(void*, Slot*, Slot*)> PolicyWithOptionalOps::transfer;
+
+struct PolicyWithMemcpyTransfer : PolicyWithoutOptionalOps {
+  static std::function<std::true_type(void*, Slot*, Slot*)> transfer;
+};
+std::function<std::true_type(void*, Slot*, Slot*)>
+    PolicyWithMemcpyTransfer::transfer;
 
 struct Test : ::testing::Test {
   Test() {
@@ -112,6 +119,13 @@ TEST_F(Test, with_transfer) {
   int b = 42;
   EXPECT_CALL(transfer, Call(&alloc, &a, &b));
   common_policy_traits<PolicyWithOptionalOps>::transfer(&alloc, &a, &b);
+}
+
+TEST(TransferUsesMemcpy, Basic) {
+  EXPECT_FALSE(
+      common_policy_traits<PolicyWithOptionalOps>::transfer_uses_memcpy());
+  EXPECT_TRUE(
+      common_policy_traits<PolicyWithMemcpyTransfer>::transfer_uses_memcpy());
 }
 
 }  // namespace

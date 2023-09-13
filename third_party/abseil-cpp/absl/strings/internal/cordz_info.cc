@@ -21,7 +21,6 @@
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_crc.h"
-#include "absl/strings/internal/cord_rep_ring.h"
 #include "absl/strings/internal/cordz_handle.h"
 #include "absl/strings/internal/cordz_statistics.h"
 #include "absl/strings/internal/cordz_update_tracker.h"
@@ -97,14 +96,11 @@ class CordRepAnalyzer {
     repref = CountLinearReps(repref, memory_usage_);
 
     switch (repref.tag()) {
-      case CordRepKind::RING:
-        AnalyzeRing(repref);
-        break;
       case CordRepKind::BTREE:
         AnalyzeBtree(repref);
         break;
       default:
-        // We should have either a btree or ring node if not null.
+        // We should have a btree node if not null.
         ABSL_ASSERT(repref.tag() == CordRepKind::UNUSED_0);
         break;
     }
@@ -202,17 +198,6 @@ class CordRepAnalyzer {
     }
 
     return rep;
-  }
-
-  // Analyzes the provided ring.
-  void AnalyzeRing(RepRef rep) {
-    statistics_.node_count++;
-    statistics_.node_counts.ring++;
-    const CordRepRing* ring = rep.rep->ring();
-    memory_usage_.Add(CordRepRing::AllocSize(ring->capacity()), rep.refcount);
-    ring->ForEach([&](CordRepRing::index_type pos) {
-      CountLinearReps(rep.Child(ring->entry_child(pos)), memory_usage_);
-    });
   }
 
   // Analyzes the provided btree.

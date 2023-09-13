@@ -168,7 +168,6 @@ absl_source_set("cord_internal") {
     "internal/cord_rep_btree_reader.cc",
     "internal/cord_rep_consume.cc",
     "internal/cord_rep_crc.cc",
-    "internal/cord_rep_ring.cc",
   ]
   public = [
     "internal/cord_data_edge.h",
@@ -179,8 +178,6 @@ absl_source_set("cord_internal") {
     "internal/cord_rep_consume.h",
     "internal/cord_rep_crc.h",
     "internal/cord_rep_flat.h",
-    "internal/cord_rep_ring.h",
-    "internal/cord_rep_ring_reader.h",
   ]
   visibility = [ ":*" ]
   deps = [

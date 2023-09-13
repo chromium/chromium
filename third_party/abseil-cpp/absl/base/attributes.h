@@ -687,7 +687,7 @@
 
 // When deprecating Abseil code, it is sometimes necessary to turn off the
 // warning within Abseil, until the deprecated code is actually removed. The
-// deprecated code can be surrounded with these directives to acheive that
+// deprecated code can be surrounded with these directives to achieve that
 // result.
 //
 // class ABSL_DEPRECATED("Use Bar instead") Foo;

@@ -42,10 +42,8 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::crc_cpu_detect
-    absl::base
     absl::config
     absl::core_headers
-    absl::dynamic_annotations
     absl::endian
     absl::prefetch
     absl::raw_logging_internal
@@ -64,7 +62,7 @@ absl_cc_library(
     "crc32c.cc"
     "internal/crc32c_inline.h"
     "internal/crc_memcpy_fallback.cc"
-    "internal/crc_memcpy_x86_64.cc"
+    "internal/crc_memcpy_x86_arm_combined.cc"
     "internal/crc_non_temporal_memcpy.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
@@ -74,7 +72,6 @@ absl_cc_library(
     absl::non_temporal_memcpy
     absl::config
     absl::core_headers
-    absl::dynamic_annotations
     absl::endian
     absl::prefetch
     absl::str_format

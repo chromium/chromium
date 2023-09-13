@@ -100,6 +100,23 @@ absl_source_set("flat_hash_set") {
   ]
 }
 
+absl_test("flat_hash_set_test") {
+  sources = [ "flat_hash_set_test.cc" ]
+  deps = [
+    ":container_memory",
+    ":flat_hash_set",
+    ":hash_generator_testing",
+    ":unordered_set_constructor_test",
+    ":unordered_set_lookup_test",
+    ":unordered_set_members_test",
+    ":unordered_set_modifiers_test",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/log:check",
+    "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
 absl_source_set("node_hash_map") {
   public = [ "node_hash_map.h" ]
   deps = [
@@ -185,7 +202,10 @@ absl_source_set("common_policy_traits") {
 
 absl_test("common_policy_traits_test") {
   sources = [ "internal/common_policy_traits_test.cc" ]
-  deps = [ ":common_policy_traits" ]
+  deps = [
+    ":common_policy_traits",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
 }
 
 absl_source_set("hashtable_debug") {
@@ -229,6 +249,7 @@ absl_test("node_slot_policy_test") {
   deps = [
     ":hash_policy_traits",
     ":node_slot_policy",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 

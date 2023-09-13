@@ -16,6 +16,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <limits>
@@ -684,7 +685,11 @@ TEST_F(FormatConvertTest, Float) {
   }
 
   // Remove duplicates to speed up the logic below.
-  std::sort(floats.begin(), floats.end());
+  std::sort(floats.begin(), floats.end(), [](const float a, const float b) {
+    if (std::isnan(a)) return false;
+    if (std::isnan(b)) return true;
+    return a < b;
+  });
   floats.erase(std::unique(floats.begin(), floats.end()), floats.end());
 
   TestWithMultipleFormatsHelper(floats, {});
@@ -758,7 +763,11 @@ TEST_F(FormatConvertTest, Double) {
   }
 
   // Remove duplicates to speed up the logic below.
-  std::sort(doubles.begin(), doubles.end());
+  std::sort(doubles.begin(), doubles.end(), [](const double a, const double b) {
+    if (std::isnan(a)) return false;
+    if (std::isnan(b)) return true;
+    return a < b;
+  });
   doubles.erase(std::unique(doubles.begin(), doubles.end()), doubles.end());
 
   TestWithMultipleFormatsHelper(doubles, skip_verify);

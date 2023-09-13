@@ -338,6 +338,8 @@ absl_cc_test(
     "-DUNORDERED_SET_CXX17"
   DEPS
     absl::check
+    absl::config
+    absl::container_memory
     absl::flat_hash_set
     absl::hash_generator_testing
     absl::memory
@@ -575,6 +577,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::common_policy_traits
+    absl::config
     GTest::gmock_main
 )
 
@@ -658,6 +661,7 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::config
     absl::hash_policy_traits
     absl::node_slot_policy
     GTest::gmock_main

@@ -360,7 +360,6 @@ cc_library(
         "internal/cord_rep_btree_reader.cc",
         "internal/cord_rep_consume.cc",
         "internal/cord_rep_crc.cc",
-        "internal/cord_rep_ring.cc",
     ],
     hdrs = [
         "internal/cord_data_edge.h",
@@ -371,8 +370,6 @@ cc_library(
         "internal/cord_rep_consume.h",
         "internal/cord_rep_crc.h",
         "internal/cord_rep_flat.h",
-        "internal/cord_rep_ring.h",
-        "internal/cord_rep_ring_reader.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -884,41 +881,6 @@ cc_test(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "cord_ring_test",
-    size = "medium",
-    srcs = ["cord_ring_test.cc"],
-    copts = ABSL_TEST_COPTS,
-    visibility = ["//visibility:private"],
-    deps = [
-        ":cord_internal",
-        ":strings",
-        "//absl/base:config",
-        "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
-        "//absl/debugging:leak_check",
-        "//absl/types:span",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "cord_ring_reader_test",
-    size = "medium",
-    srcs = ["cord_ring_reader_test.cc"],
-    copts = ABSL_TEST_COPTS,
-    visibility = ["//visibility:private"],
-    deps = [
-        ":cord_internal",
-        ":strings",
-        "//absl/base:config",
-        "//absl/base:core_headers",
-        "//absl/debugging:leak_check",
-        "//absl/types:span",
         "@com_google_googletest//:gtest_main",
     ],
 )

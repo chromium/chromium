@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Simultaneous memcopy and CRC-32C for x86-64.  Uses integer registers because
-// XMM registers do not support the CRC instruction (yet).  While copying,
-// compute the running CRC of the data being copied.
+// Simultaneous memcopy and CRC-32C for x86-64 and ARM 64. Uses integer
+// registers because XMM registers do not support the CRC instruction (yet).
+// While copying, compute the running CRC of the data being copied.
 //
 // It is assumed that any CPU running this code has SSE4.2 instructions
 // available (for CRC32C).  This file will do nothing if that is not true.
@@ -57,10 +57,12 @@
 #include "absl/base/prefetch.h"
 #include "absl/crc/crc32c.h"
 #include "absl/crc/internal/cpu_detect.h"
+#include "absl/crc/internal/crc32_x86_arm_combined_simd.h"
 #include "absl/crc/internal/crc_memcpy.h"
 #include "absl/strings/string_view.h"
 
-#ifdef ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE
+#if defined(ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE) || \
+    defined(ABSL_INTERNAL_HAVE_ARM_ACCELERATED_CRC_MEMCPY_ENGINE)
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -75,7 +77,7 @@ inline crc32c_t ShortCrcCopy(char* dst, const char* src, std::size_t length,
   uint32_t crc_uint32 = static_cast<uint32_t>(crc);
   for (std::size_t i = 0; i < length; i++) {
     uint8_t data = *reinterpret_cast<const uint8_t*>(src);
-    crc_uint32 = _mm_crc32_u8(crc_uint32, data);
+    crc_uint32 = CRC32_u8(crc_uint32, data);
     *reinterpret_cast<uint8_t*>(dst) = data;
     ++src;
     ++dst;
@@ -83,36 +85,35 @@ inline crc32c_t ShortCrcCopy(char* dst, const char* src, std::size_t length,
   return crc32c_t{crc_uint32};
 }
 
-constexpr size_t kIntLoadsPerVec = sizeof(__m128i) / sizeof(uint64_t);
+constexpr size_t kIntLoadsPerVec = sizeof(V128) / sizeof(uint64_t);
 
 // Common function for copying the tails of multiple large regions.
 template <size_t vec_regions, size_t int_regions>
 inline void LargeTailCopy(crc32c_t* crcs, char** dst, const char** src,
                           size_t region_size, size_t copy_rounds) {
-  std::array<__m128i, vec_regions> data;
+  std::array<V128, vec_regions> data;
   std::array<uint64_t, kIntLoadsPerVec * int_regions> int_data;
 
   while (copy_rounds > 0) {
     for (size_t i = 0; i < vec_regions; i++) {
       size_t region = i;
 
-      auto* vsrc =
-          reinterpret_cast<const __m128i*>(*src + region_size * region);
-      auto* vdst = reinterpret_cast<__m128i*>(*dst + region_size * region);
+      auto* vsrc = reinterpret_cast<const V128u*>(*src + region_size * region);
+      auto* vdst = reinterpret_cast<V128*>(*dst + region_size * region);
 
       // Load the blocks, unaligned
-      data[i] = _mm_loadu_si128(vsrc);
+      data[i] = V128_LoadU(vsrc);
 
       // Store the blocks, aligned
-      _mm_store_si128(vdst, data[i]);
+      V128_Store(vdst, data[i]);
 
       // Compute the running CRC
       crcs[region] = crc32c_t{static_cast<uint32_t>(
-          _mm_crc32_u64(static_cast<uint32_t>(crcs[region]),
-                        static_cast<uint64_t>(_mm_extract_epi64(data[i], 0))))};
+          CRC32_u64(static_cast<uint32_t>(crcs[region]),
+                    static_cast<uint64_t>(V128_Extract64<0>(data[i]))))};
       crcs[region] = crc32c_t{static_cast<uint32_t>(
-          _mm_crc32_u64(static_cast<uint32_t>(crcs[region]),
-                        static_cast<uint64_t>(_mm_extract_epi64(data[i], 1))))};
+          CRC32_u64(static_cast<uint32_t>(crcs[region]),
+                    static_cast<uint64_t>(V128_Extract64<1>(data[i]))))};
     }
 
     for (size_t i = 0; i < int_regions; i++) {
@@ -126,7 +127,7 @@ inline void LargeTailCopy(crc32c_t* crcs, char** dst, const char** src,
         size_t data_index = i * kIntLoadsPerVec + j;
 
         int_data[data_index] = *(usrc + j);
-        crcs[region] = crc32c_t{static_cast<uint32_t>(_mm_crc32_u64(
+        crcs[region] = crc32c_t{static_cast<uint32_t>(CRC32_u64(
             static_cast<uint32_t>(crcs[region]), int_data[data_index]))};
 
         *(udst + j) = int_data[data_index];
@@ -134,8 +135,8 @@ inline void LargeTailCopy(crc32c_t* crcs, char** dst, const char** src,
     }
 
     // Increment pointers
-    *src += sizeof(__m128i);
-    *dst += sizeof(__m128i);
+    *src += sizeof(V128);
+    *dst += sizeof(V128);
     --copy_rounds;
   }
 }
@@ -161,7 +162,7 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
   constexpr std::size_t kRegions = vec_regions + int_regions;
   static_assert(kRegions > 0, "Must specify at least one region.");
   constexpr uint32_t kCrcDataXor = uint32_t{0xffffffff};
-  constexpr std::size_t kBlockSize = sizeof(__m128i);
+  constexpr std::size_t kBlockSize = sizeof(V128);
   constexpr std::size_t kCopyRoundSize = kRegions * kBlockSize;
 
   // Number of blocks per cacheline.
@@ -237,7 +238,7 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
   const std::size_t tail_size = length - (kRegions * region_size);
 
   // Holding registers for data in each region.
-  std::array<__m128i, vec_regions> vec_data;
+  std::array<V128, vec_regions> vec_data;
   std::array<uint64_t, int_regions * kIntLoadsPerVec> int_data;
 
   // Main loop.
@@ -245,7 +246,10 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
     // Prefetch kPrefetchAhead bytes ahead of each pointer.
     for (size_t i = 0; i < kRegions; i++) {
       absl::PrefetchToLocalCache(src_bytes + kPrefetchAhead + region_size * i);
+#ifdef ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE
+      // TODO(b/297082454): investigate dropping prefetch on x86.
       absl::PrefetchToLocalCache(dst_bytes + kPrefetchAhead + region_size * i);
+#endif
     }
 
     // Load and store data, computing CRC on the way.
@@ -258,21 +262,20 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
         size_t region = (j + i) % kRegions;
 
         auto* vsrc =
-            reinterpret_cast<const __m128i*>(src_bytes + region_size * region);
-        auto* vdst =
-            reinterpret_cast<__m128i*>(dst_bytes + region_size * region);
+            reinterpret_cast<const V128u*>(src_bytes + region_size * region);
+        auto* vdst = reinterpret_cast<V128*>(dst_bytes + region_size * region);
 
         // Load and CRC data.
-        vec_data[j] = _mm_loadu_si128(vsrc + i);
-        crcs[region] = crc32c_t{static_cast<uint32_t>(_mm_crc32_u64(
-            static_cast<uint32_t>(crcs[region]),
-            static_cast<uint64_t>(_mm_extract_epi64(vec_data[j], 0))))};
-        crcs[region] = crc32c_t{static_cast<uint32_t>(_mm_crc32_u64(
-            static_cast<uint32_t>(crcs[region]),
-            static_cast<uint64_t>(_mm_extract_epi64(vec_data[j], 1))))};
+        vec_data[j] = V128_LoadU(vsrc + i);
+        crcs[region] = crc32c_t{static_cast<uint32_t>(
+            CRC32_u64(static_cast<uint32_t>(crcs[region]),
+                      static_cast<uint64_t>(V128_Extract64<0>(vec_data[j]))))};
+        crcs[region] = crc32c_t{static_cast<uint32_t>(
+            CRC32_u64(static_cast<uint32_t>(crcs[region]),
+                      static_cast<uint64_t>(V128_Extract64<1>(vec_data[j]))))};
 
         // Store the data.
-        _mm_store_si128(vdst + i, vec_data[j]);
+        V128_Store(vdst + i, vec_data[j]);
       }
 
       // Preload the partial CRCs for the CLMUL subregions.
@@ -292,7 +295,7 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
 
           // Load and CRC the data.
           int_data[data_index] = *(usrc + i * kIntLoadsPerVec + k);
-          crcs[region] = crc32c_t{static_cast<uint32_t>(_mm_crc32_u64(
+          crcs[region] = crc32c_t{static_cast<uint32_t>(CRC32_u64(
               static_cast<uint32_t>(crcs[region]), int_data[data_index]))};
 
           // Store the data.
@@ -443,4 +446,5 @@ std::unique_ptr<CrcMemcpyEngine> CrcMemcpy::GetTestEngine(int vector,
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE
+#endif  // ABSL_INTERNAL_HAVE_X86_64_ACCELERATED_CRC_MEMCPY_ENGINE ||
+        // ABSL_INTERNAL_HAVE_ARM_ACCELERATED_CRC_MEMCPY_ENGINE

@@ -169,7 +169,7 @@
 #define DCHECK_OK(status) ABSL_LOG_INTERNAL_DCHECK_OK_IMPL((status), #status)
 
 // `CHECK_STREQ` and friends provide `CHECK_EQ` functionality for C strings,
-// i.e., nul-terminated char arrays.  The `CASE` versions are case-insensitive.
+// i.e., null-terminated char arrays.  The `CASE` versions are case-insensitive.
 //
 // Example:
 //

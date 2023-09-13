@@ -250,7 +250,7 @@ class FormatCountCapture {
 // `v` uses `d` for signed integer values, `u` for unsigned integer values, `g`
 // for floating point values, and formats boolean values as "true"/"false"
 // (instead of 1 or 0 for booleans formatted using d). `const char*` is not
-// supported; please use `std:string` and `string_view`. `char` is also not
+// supported; please use `std::string` and `string_view`. `char` is also not
 // supported due to ambiguity of the type. This specifier does not support
 // modifiers.
 //

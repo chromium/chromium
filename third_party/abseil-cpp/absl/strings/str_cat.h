@@ -498,10 +498,27 @@ inline std::string SingleArgStrCat(unsigned long long x) {
 inline std::string SingleArgStrCat(float x) { return FloatToString(x); }
 inline std::string SingleArgStrCat(double x) { return FloatToString(x); }
 
+// As of September 2023, the SingleArgStrCat() optimization is only enabled for
+// libc++. The reasons for this are:
+// 1) The SSO size for libc++ is 23, while libstdc++ and MSSTL have an SSO size
+// of 15. Since IntegerToString unconditionally resizes the string to 22 bytes,
+// this causes both libstdc++ and MSSTL to allocate.
+// 2) strings_internal::STLStringResizeUninitialized() only has an
+// implementation that avoids initialization when using libc++. This isn't as
+// relevant as (1), and the cost should be benchmarked if (1) ever changes on
+// libstc++ or MSSTL.
+#ifdef _LIBCPP_VERSION
+#define ABSL_INTERNAL_STRCAT_ENABLE_FAST_CASE true
+#else
+#define ABSL_INTERNAL_STRCAT_ENABLE_FAST_CASE false
+#endif
 
-template <typename T, typename = std::enable_if_t<std::is_arithmetic<T>{} &&
-                                                  !std::is_same<T, char>{}>>
+template <typename T, typename = std::enable_if_t<
+                          ABSL_INTERNAL_STRCAT_ENABLE_FAST_CASE &&
+                          std::is_arithmetic<T>{} && !std::is_same<T, char>{}>>
 using EnableIfFastCase = T;
+
+#undef ABSL_INTERNAL_STRCAT_ENABLE_FAST_CASE
 
 }  // namespace strings_internal
 

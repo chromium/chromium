@@ -25,7 +25,6 @@
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_crc.h"
 #include "absl/strings/internal/cord_rep_flat.h"
-#include "absl/strings/internal/cord_rep_ring.h"
 #include "absl/strings/internal/cordz_info.h"
 #include "absl/strings/internal/cordz_sample_token.h"
 #include "absl/strings/internal/cordz_statistics.h"
@@ -123,11 +122,6 @@ size_t SizeOf(const CordRepExternal* rep) {
   return sizeof(CordRepExternalImpl<intptr_t>) + rep->length;
 }
 
-template <>
-size_t SizeOf(const CordRepRing* rep) {
-  return CordRepRing::AllocSize(rep->capacity());
-}
-
 // Computes fair share memory used in a naive 'we dare to recurse' way.
 double FairShareImpl(CordRep* rep, size_t ref) {
   double self = 0.0, children = 0.0;
@@ -144,11 +138,6 @@ double FairShareImpl(CordRep* rep, size_t ref) {
     for (CordRep*edge : rep->btree()->Edges()) {
       children += FairShareImpl(edge, ref);
     }
-  } else if (rep->tag == RING) {
-    self = SizeOf(rep->ring());
-    rep->ring()->ForEach([&](CordRepRing::index_type i) {
-      self += FairShareImpl(rep->ring()->entry_child(i), 1);
-    });
   } else {
     assert(false);
   }
@@ -289,64 +278,6 @@ TEST(CordzInfoStatisticsTest, SharedSubstring) {
   expected.node_count = 2;
   expected.node_counts.flat = 1;
   expected.node_counts.flat_512 = 1;
-  expected.node_counts.substring = 1;
-
-  EXPECT_THAT(SampleCord(substring), EqStatistics(expected));
-}
-
-
-TEST(CordzInfoStatisticsTest, Ring) {
-  RefHelper ref;
-  auto* flat1 = Flat(240);
-  auto* flat2 = Flat(2000);
-  auto* flat3 = Flat(70);
-  auto* external = External(3000);
-  CordRepRing* ring = CordRepRing::Create(flat1);
-  ring = CordRepRing::Append(ring, flat2);
-  ring = CordRepRing::Append(ring, flat3);
-  ring = ref.NeedsUnref(CordRepRing::Append(ring, external));
-
-  CordzStatistics expected;
-  expected.size = ring->length;
-  expected.estimated_memory_usage = SizeOf(ring) + SizeOf(flat1) +
-                                    SizeOf(flat2) + SizeOf(flat3) +
-                                    SizeOf(external);
-  expected.estimated_fair_share_memory_usage = expected.estimated_memory_usage;
-  expected.node_count = 5;
-  expected.node_counts.flat = 3;
-  expected.node_counts.flat_128 = 1;
-  expected.node_counts.flat_256 = 1;
-  expected.node_counts.external = 1;
-  expected.node_counts.ring = 1;
-
-  EXPECT_THAT(SampleCord(ring), EqStatistics(expected));
-}
-
-TEST(CordzInfoStatisticsTest, SharedSubstringRing) {
-  RefHelper ref;
-  auto* flat1 = ref.Ref(Flat(240));
-  auto* flat2 = Flat(200);
-  auto* flat3 = Flat(70);
-  auto* external = ref.Ref(External(3000), 5);
-  CordRepRing* ring = CordRepRing::Create(flat1);
-  ring = CordRepRing::Append(ring, flat2);
-  ring = CordRepRing::Append(ring, flat3);
-  ring = ref.Ref(CordRepRing::Append(ring, external), 4);
-  auto* substring = ref.Ref(ref.NeedsUnref(Substring(ring)));
-
-
-  CordzStatistics expected;
-  expected.size = substring->length;
-  expected.estimated_memory_usage = SizeOf(ring) + SizeOf(flat1) +
-                                    SizeOf(flat2) + SizeOf(flat3) +
-                                    SizeOf(external) + SizeOf(substring);
-  expected.estimated_fair_share_memory_usage = FairShare(substring);
-  expected.node_count = 6;
-  expected.node_counts.flat = 3;
-  expected.node_counts.flat_128 = 1;
-  expected.node_counts.flat_256 = 2;
-  expected.node_counts.external = 1;
-  expected.node_counts.ring = 1;
   expected.node_counts.substring = 1;
 
   EXPECT_THAT(SampleCord(substring), EqStatistics(expected));
@@ -528,14 +459,10 @@ TEST(CordzInfoStatisticsTest, ThreadSafety) {
                 CordRep::Unref(cord.as_tree());
                 cord.set_inline_size(0);
               } else {
-                // Coin toss to 25% ring, 25% btree, and 50% flat.
+                // Coin toss to 50% btree, and 50% flat.
                 CordRep* rep = Flat(256);
                 if (coin_toss(gen) != 0) {
-                  if (coin_toss(gen) != 0) {
-                    rep = CordRepRing::Create(rep);
-                  } else {
-                    rep = CordRepBtree::Create(rep);
-                  }
+                  rep = CordRepBtree::Create(rep);
                 }
 
                 // Maybe CRC this cord
