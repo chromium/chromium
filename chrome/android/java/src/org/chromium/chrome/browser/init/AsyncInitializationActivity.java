@@ -748,7 +748,7 @@ public abstract class AsyncInitializationActivity
      * @param context {@link Context} used to get system service and target display.
      * @return Smallest screen width in dp.
      */
-    protected int getCurrentSmallestScreenWidth(Context context) {
+    public int getCurrentSmallestScreenWidth(Context context) {
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
         // Android T does not receive updated width upon foldable unfold from window context.
         // Continue to rely on context on this case.

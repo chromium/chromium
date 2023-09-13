@@ -28,6 +28,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -470,6 +471,32 @@ public class RequestDesktopUtils {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, true);
         return true;
+    }
+
+    /**
+     * Default-enables the desktop site window setting if Chrome is opened on a tablet-sized
+     * internal display.
+     * @param activity The current {@link Activity}.
+     * @param profile The current {@link Profile}.
+     */
+    public static void maybeDefaultEnableWindowSetting(Activity activity, Profile profile) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
+            return;
+        }
+        if (!(activity instanceof AsyncInitializationActivity)) {
+            return;
+        }
+        int smallestScreenWidthDp =
+                ((AsyncInitializationActivity) activity).getCurrentSmallestScreenWidth(activity);
+        boolean isOnExternalDisplay = isOnExternalDisplay(activity);
+        if (isOnExternalDisplay
+                || smallestScreenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
+            return;
+        }
+        PrefService prefService = UserPrefs.get(profile);
+        if (prefService.isDefaultValuePreference(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
+            prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, /*newValue*/ true);
+        }
     }
 
     /**

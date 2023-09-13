@@ -828,6 +828,9 @@ public class RootUiCoordinator
             }
         }
 
+        RequestDesktopUtils.maybeDefaultEnableWindowSetting(
+                mActivity, Profile.getLastUsedRegularProfile());
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             ViewStub miniPlayerStub = mActivity.findViewById(R.id.readaloud_mini_player_stub);
             ReadAloudController controller = new ReadAloudController(mActivity, mProfileSupplier,

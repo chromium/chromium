@@ -75,6 +75,7 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabIntentDataProvider.java",
   ],
   'RequestDesktopUtils\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/init/AsyncInitializationActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/crash/ChromePureJavaExceptionReporter.java",
