@@ -858,6 +858,10 @@ class ASH_EXPORT WallpaperControllerImpl
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
 
+  base::ScopedObservation<ScheduledFeature,
+                          ScheduledFeature::CheckpointObserver>
+      daily_refresh_observation_{this};
+
   std::unique_ptr<ui::CompositorLock> compositor_lock_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

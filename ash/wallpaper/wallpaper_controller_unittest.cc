@@ -3470,8 +3470,7 @@ TEST_P(WallpaperControllerTest, CancelPreviewWallpaper) {
       kAccountId1, kAssetId, online_wallpaper, kDummyUrl,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
       /*preview_mode=*/true, /*from_user=*/true, kUnitId,
-      /*variants=*/std::vector<OnlineWallpaperVariant>(),
-      WallpaperController::SetWallpaperCallback());
+      /*variants=*/std::vector<OnlineWallpaperVariant>(), base::DoNothing());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(online_wallpaper_color, GetWallpaperColor());
@@ -3578,8 +3577,7 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
       kAccountId1, kAssetId, online_wallpaper, kDummyUrl,
       TestWallpaperControllerClient::kDummyCollectionId, layout,
       /*preview_mode=*/true, /*from_user=*/true, kUnitId,
-      /*variants=*/std::vector<OnlineWallpaperVariant>(),
-      WallpaperController::SetWallpaperCallback());
+      /*variants=*/std::vector<OnlineWallpaperVariant>(), base::DoNothing());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -3600,8 +3598,7 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
       TestWallpaperControllerClient::kDummyCollectionId, layout,
       /*preview_mode=*/false,
       /*from_user=*/true, kUnitId,
-      /*variants=*/std::vector<OnlineWallpaperVariant>(),
-      WallpaperController::SetWallpaperCallback());
+      /*variants=*/std::vector<OnlineWallpaperVariant>(), base::DoNothing());
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
