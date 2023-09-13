@@ -331,8 +331,6 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
       State state,
       ColorScheme color_scheme,
       const ColorProvider* color_provider) const;
-  SkColor GetHighContrastControlColor(ControlColorId color_id,
-                                      ColorScheme color_scheme) const;
   SkColor GetDarkModeControlColor(ControlColorId color_id) const;
 
   SkColor GetControlColorFromColorProvider(
