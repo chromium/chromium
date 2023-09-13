@@ -6,6 +6,7 @@
 #define NET_CERT_PKI_GENERAL_NAMES_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "net/base/net_export.h"
