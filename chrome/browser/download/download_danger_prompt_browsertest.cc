@@ -14,11 +14,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -395,6 +398,61 @@ IN_PROC_BROWSER_TEST_F(DownloadDangerPromptTestNewCsbrrTrigger, TestAll) {
   EXPECT_CALL(download(), IsDangerous()).WillRepeatedly(Return(true));
   SimulatePromptAction(DownloadDangerPrompt::CANCEL);
   VerifyExpectations(false);
+}
+
+class DownloadDangerPromptTestTrustSafetySentimentService
+    : public DownloadDangerPromptTest {
+ public:
+  DownloadDangerPromptTestTrustSafetySentimentService() = default;
+
+  void SetUpMockServiceExpectations() {
+    mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+        TrustSafetySentimentServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                browser()->profile(),
+                base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+    EXPECT_CALL(*mock_sentiment_service_,
+                InteractedWithDownloadWarningUI(
+                    DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
+                    DownloadItemWarningData::WarningAction::PROCEED));
+  }
+
+  DownloadDangerPromptTestTrustSafetySentimentService(
+      const DownloadDangerPromptTestTrustSafetySentimentService&) = delete;
+  DownloadDangerPromptTestTrustSafetySentimentService& operator=(
+      const DownloadDangerPromptTestTrustSafetySentimentService&) = delete;
+
+  ~DownloadDangerPromptTestTrustSafetySentimentService() override = default;
+
+ private:
+  raw_ptr<MockTrustSafetySentimentService, DanglingUntriaged>
+      mock_sentiment_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(DownloadDangerPromptTestTrustSafetySentimentService,
+                       TrustSafetySentimentSurveyMethodCalled) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingSurveysEnabled, true);
+  GURL download_url(kTestDownloadUrl);
+  ON_CALL(download(), GetURL()).WillByDefault(ReturnRef(download_url));
+  ON_CALL(download(), GetReferrerUrl())
+      .WillByDefault(ReturnRef(GURL::EmptyGURL()));
+  base::FilePath empty_file_path;
+  ON_CALL(download(), GetTargetFilePath())
+      .WillByDefault(ReturnRef(empty_file_path));
+
+  OpenNewTab(browser());
+  // Expect Trust and Safety Sentiment Service to call
+  // InteractedWithDownloadWarningUI.
+  SetUpMockServiceExpectations();
+  // Click the Accept button on the prompt.
+  SetUpExpectations(DownloadDangerPrompt::ACCEPT,
+                    download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+                    ClientDownloadResponse::DANGEROUS, kDownloadResponseToken,
+                    false, browser());
+  EXPECT_CALL(download(), IsDangerous()).WillRepeatedly(Return(true));
+  SimulatePromptAction(DownloadDangerPrompt::ACCEPT);
+  VerifyExpectations(true);
 }
 
 // Class for testing interactive dialogs.

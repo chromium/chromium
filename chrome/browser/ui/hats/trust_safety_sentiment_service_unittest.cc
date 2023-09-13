@@ -167,6 +167,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string trusted_surface_time = "5s";
     std::string browsing_data_probability = "0.4";
     std::string control_group_probability = "0.4";
+    std::string download_warning_ui_probability = "0.0";
     std::string password_check_probability = "0.4";
     std::string safety_check_probability = "0.4";
     std::string trusted_surface_probability = "0.4";
@@ -178,6 +179,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string safe_browsing_interstitial_probability = "0.4";
     std::string browsing_data_trigger_id = "browsing-data-test";
     std::string control_group_trigger_id = "control-group-test";
+    std::string download_warning_ui_trigger_id = "download-warning-ui-test";
     std::string password_check_trigger_id = "password-check-test";
     std::string safety_check_trigger_id = "safety-check-test";
     std::string trusted_surface_trigger_id = "trusted-surface-test";
@@ -206,6 +208,8 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"trusted-surface-time", params.trusted_surface_time},
             {"browsing-data-probability", params.browsing_data_probability},
             {"control-group-probability", params.control_group_probability},
+            {"download-warning-ui-probability",
+             params.download_warning_ui_probability},
             {"password-check-probability", params.password_check_probability},
             {"safety-check-probability", params.safety_check_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
@@ -222,6 +226,8 @@ class TrustSafetySentimentServiceTest : public testing::Test {
              params.safe_browsing_interstitial_probability},
             {"browsing-data-trigger-id", params.browsing_data_trigger_id},
             {"control-group-trigger-id", params.control_group_trigger_id},
+            {"download-warning-ui-trigger-id",
+             params.download_warning_ui_trigger_id},
             {"password-check-trigger-id", params.password_check_trigger_id},
             {"safety-check-trigger-id", params.safety_check_trigger_id},
             {"trusted-surface-trigger-id", params.trusted_surface_trigger_id},
@@ -1074,6 +1080,7 @@ TEST_F(TrustSafetySentimentServiceTest, V2_AllFeatureAreasHaveProbabilities) {
   FeatureParamsV2 params;
   params.browsing_data_probability = "1.0";
   params.control_group_probability = "1.0";
+  params.download_warning_ui_probability = "1.0";
   params.password_check_probability = "1.0";
   params.safety_check_probability = "1.0";
   params.trusted_surface_probability = "1.0";
@@ -1461,4 +1468,29 @@ TEST_F(TrustSafetySentimentServiceTest, V2_SafeBrowsingInterstitial) {
   CheckCallTriggerOccurredHistogram(
       {{TrustSafetySentimentService::FeatureArea::kSafeBrowsingInterstitial,
         1}});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, V2_DownloadWarningUI) {
+  // Making a final decision on a safe browsing interstitial is considered a
+  // trigger, and should make a user eligible to receive a survey.
+  FeatureParamsV2 params;
+  params.download_warning_ui_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParametersV2(params);
+
+  // The correct survey should be launched.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2DownloadWarningUI, _,
+                           _, _, _));
+  service()->InteractedWithDownloadWarningUI(
+      DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
+      DownloadItemWarningData::WarningAction::PROCEED);
+  service()->OpenedNewTabPage();
+  CheckHistograms(
+      {TrustSafetySentimentService::FeatureArea::kDownloadWarningUI},
+      {TrustSafetySentimentService::FeatureArea::kDownloadWarningUI});
+  CheckCallTriggerOccurredHistogram(
+      {{TrustSafetySentimentService::FeatureArea::kDownloadWarningUI, 1}});
 }

@@ -1420,6 +1420,9 @@ const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2ControlGroupProbability{
         &kTrustSafetySentimentSurveyV2, "control-group-probability", 0.0};
 const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2DownloadWarningUIProbability{
+        &kTrustSafetySentimentSurveyV2, "download-warning-ui-probability", 0.0};
+const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PasswordCheckProbability{
         &kTrustSafetySentimentSurveyV2, "password-check-probability", 0.0};
 const base::FeatureParam<double>
@@ -1459,6 +1462,9 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2ControlGroupTriggerId{
         &kTrustSafetySentimentSurveyV2, "control-group-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2DownloadWarningUITriggerId{
+        &kTrustSafetySentimentSurveyV2, "download-warning-ui-trigger-id", ""};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PasswordCheckTriggerId{
         &kTrustSafetySentimentSurveyV2, "password-check-trigger-id", ""};

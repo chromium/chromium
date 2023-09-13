@@ -55,6 +55,11 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
               InteractedWithSafeBrowsingInterstitial,
               (bool, safe_browsing::SBThreatType),
               (override));
+  MOCK_METHOD(void,
+              InteractedWithDownloadWarningUI,
+              (DownloadItemWarningData::WarningSurface,
+               DownloadItemWarningData::WarningAction),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(

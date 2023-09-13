@@ -35,6 +35,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
@@ -42,6 +44,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 
@@ -249,17 +252,26 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
   DownloadCommands commands(model);
   base::UmaHistogramExactLinear("Download.Bubble.ProcessedCommand", command,
                                 DownloadCommands::MAX + 1);
+  DownloadItemWarningData::WarningSurface warning_surface =
+      is_main_view ? DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE
+                   : DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE;
+  DownloadItemWarningData::WarningAction warning_action =
+      command == DownloadCommands::KEEP
+          ? DownloadItemWarningData::WarningAction::PROCEED
+          : DownloadItemWarningData::WarningAction::DISCARD;
   switch (command) {
     case DownloadCommands::KEEP:
     case DownloadCommands::DISCARD:
+      if (safe_browsing::IsSafeBrowsingSurveysEnabled(*profile_->GetPrefs())) {
+        TrustSafetySentimentService* trust_safety_sentiment_service =
+            TrustSafetySentimentServiceFactory::GetForProfile(profile_);
+        if (trust_safety_sentiment_service) {
+          trust_safety_sentiment_service->InteractedWithDownloadWarningUI(
+              warning_surface, warning_action);
+        }
+      }
       DownloadItemWarningData::AddWarningActionEvent(
-          model->GetDownloadItem(),
-          is_main_view
-              ? DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE
-              : DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
-          command == DownloadCommands::KEEP
-              ? DownloadItemWarningData::WarningAction::PROCEED
-              : DownloadItemWarningData::WarningAction::DISCARD);
+          model->GetDownloadItem(), warning_surface, warning_action);
       commands.ExecuteCommand(command);
       break;
     case DownloadCommands::REVIEW:

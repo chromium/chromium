@@ -75,6 +75,8 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2BrowsingData[] =
     "ts-v2-browsing-data";
 constexpr char kHatsSurveyTriggerTrustSafetyV2ControlGroup[] =
     "ts-v2-control-group";
+constexpr char kHatsSurveyTriggerTrustSafetyV2DownloadWarningUI[] =
+    "ts-v2-download-warning-ui";
 constexpr char kHatsSurveyTriggerTrustSafetyV2PasswordCheck[] =
     "ts-v2-password-check";
 constexpr char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[] =
@@ -289,6 +291,13 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &features::kTrustSafetySentimentSurveyV2,
       kHatsSurveyTriggerTrustSafetyV2ControlGroup,
       features::kTrustSafetySentimentSurveyV2ControlGroupTriggerId.Get());
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurveyV2,
+      kHatsSurveyTriggerTrustSafetyV2DownloadWarningUI,
+      features::kTrustSafetySentimentSurveyV2DownloadWarningUITriggerId.Get(),
+      std::vector<std::string>{"Is mainpage UI", "Is subpage UI",
+                               "Is downloads page UI", "Is download prompt UI",
+                               "User proceeded past warning"});
   survey_configs.emplace_back(
       &features::kTrustSafetySentimentSurveyV2,
       kHatsSurveyTriggerTrustSafetyV2PasswordCheck,

@@ -13,6 +13,8 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -155,9 +157,25 @@ class DownloadBubbleContentsViewTest
         bubble_delegate_);
   }
 
+  void SetUpMockTrustSafetySentimentSurveys() {
+    mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
+        TrustSafetySentimentServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_,
+                base::BindRepeating(&BuildMockTrustSafetySentimentService)));
+  }
+
+  void ExpectInteractedWithDownloadUICalled() {
+    EXPECT_CALL(*mock_sentiment_service_,
+                InteractedWithDownloadWarningUI(
+                    DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
+                    DownloadItemWarningData::WarningAction::DISCARD));
+  }
+
   void TearDown() override {
     profile_ = nullptr;
     bubble_delegate_ = nullptr;
+    mock_sentiment_service_ = nullptr;
     // All windows need to be closed before tear down.
     anchor_widget_.reset();
     ChromeViewsTestBase::TearDown();
@@ -183,6 +201,7 @@ class DownloadBubbleContentsViewTest
   std::unique_ptr<views::Widget> anchor_widget_;
 
   std::unique_ptr<DownloadBubbleContentsView> contents_view_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_ = nullptr;
 };
 
 // The test parameter is whether the primary view is the partial view.
@@ -283,6 +302,17 @@ TEST_P(DownloadBubbleContentsViewTest, ProcessSecuritySubpageButtonPress) {
   EXPECT_TRUE(contents_view_->security_view_for_testing()->IsInitialized());
 
   EXPECT_CALL(*download_items_[0], Remove());
+  contents_view_->ProcessSecuritySubpageButtonPress(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
+      DownloadCommands::Command::DISCARD);
+}
+
+TEST_P(DownloadBubbleContentsViewTest,
+       TrustSafetySentimentInteractedWithDownloadWarningUI) {
+  SetUpMockTrustSafetySentimentSurveys();
+  ExpectInteractedWithDownloadUICalled();
+  contents_view_->ShowSecurityPage(
+      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()));
   contents_view_->ProcessSecuritySubpageButtonPress(
       OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()),
       DownloadCommands::Command::DISCARD);

@@ -108295,6 +108295,7 @@ Full version information for the fingerprint enum values:
   <int value="17" label="Privacy Sandbox 4 Notice Ok"/>
   <int value="18" label="Privacy Sandbox 4 Notice Settings"/>
   <int value="19" label="Safe Browsing Interstitial"/>
+  <int value="20" label="Download Warning UI"/>
 </enum>
 
 <enum name="TrustTokenRequestHelperFactoryOutcome">

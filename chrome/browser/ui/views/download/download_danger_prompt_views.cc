@@ -12,6 +12,8 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,6 +21,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -262,10 +265,23 @@ void DownloadDangerPromptViews::RunDone(Action action) {
   // the window to close, and |callback| refers to a member variable.
   OnDone done = std::move(done_);
   if (download_) {
+    const bool accept = action == DownloadDangerPrompt::ACCEPT;
     // If this download is no longer dangerous, is already canceled or
     // completed, don't send any report.
     if (download_->IsDangerous() && !download_->IsDone()) {
-      const bool accept = action == DownloadDangerPrompt::ACCEPT;
+      // Survey triggered on ACCEPT action, since this is where the user
+      // confirms their choice to keep a dangerous download, rather than
+      // triggering a survey after selecting to KEEP in the downloads page UI.
+      if (safe_browsing::IsSafeBrowsingSurveysEnabled(*profile_->GetPrefs()) &&
+          accept) {
+        TrustSafetySentimentService* trust_safety_sentiment_service =
+            TrustSafetySentimentServiceFactory::GetForProfile(profile_);
+        if (trust_safety_sentiment_service) {
+          trust_safety_sentiment_service->InteractedWithDownloadWarningUI(
+              DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
+              DownloadItemWarningData::WarningAction::PROCEED);
+        }
+      }
       RecordDownloadDangerPrompt(accept, *download_);
       RecordDownloadWarningEvent(action, download_);
       if (!download_->GetURL().is_empty() &&

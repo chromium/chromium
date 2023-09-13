@@ -834,6 +834,9 @@ extern const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2ControlGroupProbability;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2DownloadWarningUIProbability;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2PasswordCheckProbability;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double>
@@ -865,6 +868,9 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2ControlGroupTriggerId;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2DownloadWarningUITriggerId;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2PasswordCheckTriggerId;

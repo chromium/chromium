@@ -37,6 +37,8 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/fileicon_source.h"
 #include "chrome/common/chrome_switches.h"
@@ -47,6 +49,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -208,6 +211,24 @@ void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS);
   download::DownloadItem* download = GetDownloadByStringId(id);
   if (download) {
+    content::DownloadManager* manager = GetMainNotifierManager();
+    if (manager) {
+      Profile* profile =
+          Profile::FromBrowserContext(manager->GetBrowserContext());
+      if (profile &&
+          safe_browsing::IsSafeBrowsingSurveysEnabled(*(profile->GetPrefs()))) {
+        TrustSafetySentimentService* trust_safety_sentiment_service =
+            TrustSafetySentimentServiceFactory::GetForProfile(profile);
+        if (trust_safety_sentiment_service) {
+          // Survey triggered on DISCARD action only. If the user clicks to
+          // PROCEED in the downloads page, their choice is not confirmed until
+          // they PROCEED within the dangerous download prompt.
+          trust_safety_sentiment_service->InteractedWithDownloadWarningUI(
+              DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
+              DownloadItemWarningData::WarningAction::DISCARD);
+        }
+      }
+    }
     // The warning action event needs to be added before Safe Browsing report is
     // sent, because this event should be included in the report.
     DownloadItemWarningData::AddWarningActionEvent(
