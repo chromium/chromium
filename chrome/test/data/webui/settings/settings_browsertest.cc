@@ -660,8 +660,8 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kPrivacyGuide3};
 };
 
-// TODO(crbug.com/1482266): flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1482266): flaky on Linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_PrivacyGuidePage DISABLED_PrivacyGuidePage
 #else
 #define MAYBE_PrivacyGuidePage PrivacyGuidePage
