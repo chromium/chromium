@@ -1,6 +1,5 @@
 <style include="cr-icons tangible-sync-style-shared">
   :host {
-    --iron-icon-fill-color: var(--google-blue-700);
     --iron-icon-height: 24px;
     --scrollbar-height: 116px;
     --submit-button-margins: 40px;
@@ -186,10 +185,6 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :host {
-      --iron-icon-fill-color: var(--google-blue-300);
-    }
-
     .hint-placeholder {
       background-color: var(--google-grey-800);
     }
@@ -213,6 +208,10 @@
 
     .button-container {
       --button-container-background-color: var(--md-background-color);
+    }
+
+    iron-icon {
+      --iron-icon-fill-color: var(--google-blue-300);
     }
   }
 
