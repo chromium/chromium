@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -178,7 +179,7 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventSuccess) {
 }
 
 TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterRegularEventAppUiOpenButUnfocusSuccess) {
+       RegisterRegularEventAppUiOpenButUnfocusByNewTabSuccess) {
   const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
   CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
 
@@ -202,7 +203,38 @@ TEST_F(TelemetryExtensionEventManagerTest,
 }
 
 TEST_F(TelemetryExtensionEventManagerTest,
-       RegisterFocusRestrictedEventAppUiOpenButUnfocusFail) {
+       RegisterRegularEventAppUiOpenButUnfocusByNewWindowSuccess) {
+  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
+  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
+
+  OpenAppUiUrlAndSetCertificateWithStatus(
+      GURL("https://googlechromelabs.github.io/"),
+      /*cert_status=*/net::OK);
+  auto new_window = CreateBrowserWindow();
+  auto new_browser = CreateBrowser(GetProfile(), Browser::Type::TYPE_NORMAL,
+                                   false, new_window.get());
+  BrowserList::SetLastActive(new_browser.get());
+
+  EXPECT_EQ(EventManager::kSuccess,
+            event_manager()->RegisterExtensionForEvent(
+                extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
+  EXPECT_TRUE(app_ui_observers().contains(extension_id));
+  EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
+  EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(
+      extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
+
+  // Closing the tab cuts the observation.
+  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
+                                                   TabCloseTypes::CLOSE_NONE);
+  EXPECT_FALSE(app_ui_observers().contains(extension_id));
+  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
+
+  new_browser.reset();
+  new_window.reset();
+}
+
+TEST_F(TelemetryExtensionEventManagerTest,
+       RegisterFocusRestrictedEventAppUiOpenButUnfocusByNewTabFail) {
   const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
   CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
 
@@ -222,6 +254,36 @@ TEST_F(TelemetryExtensionEventManagerTest,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(app_ui_observers().contains(extension_id));
   EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
+}
+
+TEST_F(TelemetryExtensionEventManagerTest,
+       RegisterFocusRestrictedEventAppUiOpenButUnfocusByNewWindowFail) {
+  const std::string extension_id = "gogonhoemckpdpadfnjnpgbjpbjnodgc";
+  CreateExtension(extension_id, {"*://googlechromelabs.github.io/*"});
+
+  OpenAppUiUrlAndSetCertificateWithStatus(
+      GURL("https://googlechromelabs.github.io/"),
+      /*cert_status=*/net::OK);
+  auto new_window = CreateBrowserWindow();
+  auto new_browser = CreateBrowser(GetProfile(), Browser::Type::TYPE_NORMAL,
+                                   false, new_window.get());
+  BrowserList::SetLastActive(new_browser.get());
+
+  EXPECT_EQ(EventManager::kAppUiNotFocused,
+            event_manager()->RegisterExtensionForEvent(
+                extension_id,
+                crosapi::TelemetryEventCategoryEnum::kTouchpadConnected));
+  EXPECT_FALSE(app_ui_observers().contains(extension_id));
+  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
+
+  // Closing the tab should not change the observation.
+  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
+                                                   TabCloseTypes::CLOSE_NONE);
+  EXPECT_FALSE(app_ui_observers().contains(extension_id));
+  EXPECT_FALSE(event_router().IsExtensionObserving(extension_id));
+
+  new_browser.reset();
+  new_window.reset();
 }
 
 TEST_F(TelemetryExtensionEventManagerTest,
