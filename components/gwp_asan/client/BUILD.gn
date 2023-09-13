@@ -5,10 +5,29 @@
 import("//base/allocator/allocator.gni")
 import("//base/allocator/partition_allocator/partition_alloc.gni")
 
+config("gwp_asan_implementation") {
+  defines = [ "GWP_ASAN_IMPLEMENTATION" ]
+}
+
+source_set("export") {
+  sources = [ "export.h" ]
+}
+
+source_set("features") {
+  sources = [
+    "gwp_asan_features.cc",
+    "gwp_asan_features.h",
+  ]
+  deps = [
+    ":export",
+    "//base",
+  ]
+  configs += [ ":gwp_asan_implementation" ]
+}
+
 component("client") {
   output_name = "gwp_asan_client"
   sources = [
-    "export.h",
     "guarded_page_allocator.cc",
     "guarded_page_allocator.h",
     "gwp_asan.cc",
@@ -44,15 +63,17 @@ component("client") {
     ]
   }
 
-  defines = [ "GWP_ASAN_IMPLEMENTATION" ]
-
   deps = [
+    ":export",
+    ":features",
     "//base",
     "//base/allocator:buildflags",
     "//components/crash/core/common:crash_key",
     "//components/gwp_asan/common",
     "//components/gwp_asan/common:crash_keys",
   ]
+
+  configs += [ ":gwp_asan_implementation" ]
 
   if (is_android) {
     deps += [ "//components/crash/core/app" ]

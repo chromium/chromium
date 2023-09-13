@@ -21,6 +21,7 @@
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/gwp_asan_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -84,14 +85,6 @@ constexpr int kDefaultProcessSamplingBoost2 = 10;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr base::FeatureState kDefaultEnabled = base::FEATURE_ENABLED_BY_DEFAULT;
-#else
-constexpr base::FeatureState kDefaultEnabled =
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#endif
-
 // The aim is to have the same memory overhead as the default GWP-ASan mode,
 // which is:
 //   sizeof(SlotMetadata) * kDefaultMaxMetadata +
@@ -100,8 +93,6 @@ constexpr base::FeatureState kDefaultEnabled =
 //   sizeof(LightweightSlotMetadata) * kDefaultMaxLightweightMetadata
 constexpr int kDefaultMaxLightweightMetadata = 3000;
 
-BASE_FEATURE(kGwpAsanMalloc, "GwpAsanMalloc", kDefaultEnabled);
-BASE_FEATURE(kGwpAsanPartitionAlloc, "GwpAsanPartitionAlloc", kDefaultEnabled);
 BASE_FEATURE(kLightweightUafDetector,
              "LightweightUafDetector",
              base::FEATURE_DISABLED_BY_DEFAULT);
