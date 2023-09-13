@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import type {ICdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
   UnknownCommandException,

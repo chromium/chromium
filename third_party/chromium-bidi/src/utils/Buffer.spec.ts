@@ -18,7 +18,7 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {Buffer} from './buffer.js';
+import {Buffer} from './Buffer.js';
 
 describe('Buffer', () => {
   it('should keep values', () => {

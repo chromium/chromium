@@ -18,8 +18,8 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {Deferred} from './deferred.js';
-import {ProcessingQueue} from './processingQueue.js';
+import {Deferred} from './Deferred.js';
+import {ProcessingQueue} from './ProcessingQueue.js';
 import type {Result} from './result.js';
 import {LogType} from './log.js';
 

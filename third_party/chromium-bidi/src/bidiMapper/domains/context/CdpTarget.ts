@@ -17,8 +17,8 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import {Deferred} from '../../../utils/deferred.js';
+import type {ICdpClient} from '../../../cdp/CdpClient.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import type {Result} from '../../../utils/result.js';
 import type {EventManager} from '../events/EventManager.js';
 import {LogManager} from '../log/LogManager.js';

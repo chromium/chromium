@@ -17,7 +17,7 @@
 
 import {expect} from 'chai';
 
-import {Deferred} from './deferred.js';
+import {Deferred} from './Deferred.js';
 
 describe('Deferred', () => {
   describe('isFinished', () => {

@@ -180,14 +180,9 @@ export class ChannelProxy {
             serializationOptions: {
               serialization:
                 Protocol.Runtime.SerializationOptionsSerialization.Deep,
-              ...(this.#properties.serializationOptions?.maxObjectDepth ===
-                undefined ||
-              this.#properties.serializationOptions.maxObjectDepth === null
-                ? {}
-                : {
-                    maxDepth:
-                      this.#properties.serializationOptions.maxObjectDepth,
-                  }),
+              maxDepth:
+                this.#properties.serializationOptions?.maxObjectDepth ??
+                undefined,
             },
           }
         );

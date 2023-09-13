@@ -17,21 +17,12 @@
  * @license
  */
 
-import {
-  BidiServer,
-  OutgoingMessage,
-  type BidiTransport,
-} from '../bidiMapper/bidiMapper.js';
-import {CdpConnection} from '../cdp/cdpConnection.js';
-import {
-  ErrorCode,
-  type ChromiumBidi,
-  type ErrorResponse,
-} from '../protocol/protocol.js';
+import {BidiServer, OutgoingMessage} from '../bidiMapper/bidiMapper.js';
+import {CdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
-import type {ITransport} from '../utils/transport.js';
 
-import {BidiParserImpl} from './BidiParserImpl';
+import {BidiParser} from './BidiParser.js';
+import {WindowBidiTransport, WindowCdpTransport} from './Transport.js';
 import {generatePage, log} from './mapperTabPage.js';
 
 declare global {
@@ -66,7 +57,17 @@ void (async () => {
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await waitSelfTargetIdPromise;
 
-  const bidiServer = await createBidiServer(selfTargetId);
+  const bidiServer = await BidiServer.createAndStart(
+    new WindowBidiTransport(),
+    /**
+     * A CdpTransport implementation that uses the window.cdp bindings
+     * injected by Target.exposeDevToolsProtocol.
+     */
+    new CdpConnection(new WindowCdpTransport(), log),
+    selfTargetId,
+    new BidiParser(),
+    log
+  );
 
   log(LogType.debugInfo, 'Launched');
 
@@ -77,197 +78,6 @@ void (async () => {
     'launched'
   );
 })();
-
-function createCdpConnection() {
-  /**
-   * A CdpTransport implementation that uses the window.cdp bindings
-   * injected by Target.exposeDevToolsProtocol.
-   */
-  class WindowCdpTransport implements ITransport {
-    #onMessage: ((message: string) => void) | null = null;
-
-    constructor() {
-      window.cdp.onmessage = (message: string) => {
-        this.#onMessage?.call(null, message);
-      };
-    }
-
-    setOnMessage(onMessage: Parameters<ITransport['setOnMessage']>[0]) {
-      this.#onMessage = onMessage;
-    }
-
-    sendMessage(message: string) {
-      window.cdp.send(message);
-    }
-
-    close() {
-      this.#onMessage = null;
-      window.cdp.onmessage = null;
-    }
-  }
-
-  return new CdpConnection(new WindowCdpTransport(), log);
-}
-
-function createBidiServer(selfTargetId: string) {
-  class WindowBidiTransport implements BidiTransport {
-    static readonly LOGGER_PREFIX_RECV = `${LogType.bidi}:RECV ◂` as const;
-    static readonly LOGGER_PREFIX_SEND = `${LogType.bidi}:SEND ▸` as const;
-
-    #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
-
-    constructor() {
-      window.onBidiMessage = (message: string) => {
-        log(WindowBidiTransport.LOGGER_PREFIX_RECV, message);
-        let command: ChromiumBidi.Command;
-        try {
-          command = WindowBidiTransport.#parseBidiMessage(message);
-        } catch (e: any) {
-          // Transport-level error does not provide channel.
-          this.#respondWithError(
-            message,
-            ErrorCode.InvalidArgument,
-            e.message,
-            null
-          );
-          return;
-        }
-        this.#onMessage?.call(null, command);
-      };
-    }
-
-    setOnMessage(onMessage: Parameters<BidiTransport['setOnMessage']>[0]) {
-      this.#onMessage = onMessage;
-    }
-
-    sendMessage(message: ChromiumBidi.Message) {
-      const messageStr = JSON.stringify(message);
-      window.sendBidiResponse(messageStr);
-      log(WindowBidiTransport.LOGGER_PREFIX_SEND, message);
-    }
-
-    close() {
-      this.#onMessage = null;
-      window.onBidiMessage = null;
-    }
-
-    #respondWithError(
-      plainCommandData: string,
-      errorCode: ErrorCode,
-      errorMessage: string,
-      channel: string | null
-    ) {
-      const errorResponse = WindowBidiTransport.#getErrorResponse(
-        plainCommandData,
-        errorCode,
-        errorMessage
-      );
-
-      if (channel) {
-        // XXX: get rid of any, same code existed in BidiServer.
-        this.sendMessage({
-          ...errorResponse,
-          channel,
-        });
-      } else {
-        this.sendMessage(errorResponse);
-      }
-    }
-
-    static #getJsonType(value: unknown) {
-      if (value === null) {
-        return 'null';
-      }
-      if (Array.isArray(value)) {
-        return 'array';
-      }
-      return typeof value;
-    }
-
-    static #getErrorResponse(
-      message: string,
-      errorCode: ErrorCode,
-      errorMessage: string
-    ): ErrorResponse {
-      // XXX: this is bizarre per spec. We reparse the payload and
-      // extract the ID, regardless of what kind of value it was.
-      let messageId;
-      try {
-        const command = JSON.parse(message);
-        if (
-          WindowBidiTransport.#getJsonType(command) === 'object' &&
-          'id' in command
-        ) {
-          messageId = command.id;
-        }
-      } catch {}
-
-      return {
-        type: 'error',
-        id: messageId,
-        error: errorCode,
-        message: errorMessage,
-        // XXX: optional stacktrace field.
-      };
-    }
-
-    static #parseBidiMessage(messageStr: string): ChromiumBidi.Command {
-      let messageObject: ChromiumBidi.Command;
-      try {
-        messageObject = JSON.parse(messageStr);
-      } catch {
-        throw new Error('Cannot parse data as JSON');
-      }
-
-      const parsedType = WindowBidiTransport.#getJsonType(messageObject);
-      if (parsedType !== 'object') {
-        throw new Error(`Expected JSON object but got ${parsedType}`);
-      }
-
-      // Extract and validate id, method and params.
-      const {id, method, params} = messageObject;
-
-      const idType = WindowBidiTransport.#getJsonType(id);
-      if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
-        // TODO: should uint64_t be the upper limit?
-        // https://tools.ietf.org/html/rfc7049#section-2.1
-        throw new Error(`Expected unsigned integer but got ${idType}`);
-      }
-
-      const methodType = WindowBidiTransport.#getJsonType(method);
-      if (methodType !== 'string') {
-        throw new Error(`Expected string method but got ${methodType}`);
-      }
-
-      const paramsType = WindowBidiTransport.#getJsonType(params);
-      if (paramsType !== 'object') {
-        throw new Error(`Expected object params but got ${paramsType}`);
-      }
-
-      let channel = messageObject.channel;
-      if (channel !== undefined) {
-        const channelType = WindowBidiTransport.#getJsonType(channel);
-        if (channelType !== 'string') {
-          throw new Error(`Expected string channel but got ${channelType}`);
-        }
-        // Empty string channel is considered as no channel provided.
-        if (channel === '') {
-          channel = undefined;
-        }
-      }
-
-      return {id, method, params, channel} as ChromiumBidi.Command;
-    }
-  }
-
-  return BidiServer.createAndStart(
-    new WindowBidiTransport(),
-    createCdpConnection(),
-    selfTargetId,
-    new BidiParserImpl(),
-    log
-  );
-}
 
 // Needed to filter out info related to BiDi target.
 async function waitSelfTargetId(): Promise<string> {

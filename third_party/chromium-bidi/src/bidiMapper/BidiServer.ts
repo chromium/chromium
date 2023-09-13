@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import type {ICdpConnection} from '../cdp/cdpConnection.js';
+import type {ICdpConnection} from '../cdp/CdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, type LoggerFn} from '../utils/log.js';
-import {ProcessingQueue} from '../utils/processingQueue.js';
+import {ProcessingQueue} from '../utils/ProcessingQueue.js';
 import type {Result} from '../utils/result.js';
 
 import type {IBidiParser} from './BidiParser.js';

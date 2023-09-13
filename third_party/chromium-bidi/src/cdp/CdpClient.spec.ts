@@ -22,7 +22,7 @@ import chaiAsPromised from 'chai-as-promised';
 
 import {StubTransport} from '../utils/transportStub.spec.js';
 
-import {CdpConnection} from './cdpConnection.js';
+import {CdpConnection} from './CdpConnection.js';
 
 chai.use(chaiAsPromised);
 

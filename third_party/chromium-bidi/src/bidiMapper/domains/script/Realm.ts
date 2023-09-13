@@ -27,7 +27,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../events/EventManager.js';
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
+import type {ICdpClient} from '../../../cdp/CdpClient.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 
 import {ChannelProxy} from './ChannelProxy.js';

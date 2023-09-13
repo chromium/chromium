@@ -21,7 +21,7 @@ import type {ITransport} from '../utils/transport.js';
 import {LogType} from '../utils/log.js';
 import type {LoggerFn} from '../utils/log.js';
 
-import {CloseError, CdpClient, type ICdpClient} from './cdpClient.js';
+import {CloseError, CdpClient, type ICdpClient} from './CdpClient.js';
 import type {CdpMessage} from './cdpMessage.js';
 
 interface CdpCallbacks {

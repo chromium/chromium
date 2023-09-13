@@ -17,7 +17,7 @@
 
 import {expect} from 'chai';
 
-import {IdWrapper} from './idWrapper.js';
+import {IdWrapper} from './IdWrapper.js';
 
 describe('IdWrapper', () => {
   it('wraps value with unique id', () => {

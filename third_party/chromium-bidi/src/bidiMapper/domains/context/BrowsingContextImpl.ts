@@ -28,7 +28,7 @@ import {
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import {Deferred} from '../../../utils/deferred.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
 import type {EventManager} from '../events/EventManager.js';

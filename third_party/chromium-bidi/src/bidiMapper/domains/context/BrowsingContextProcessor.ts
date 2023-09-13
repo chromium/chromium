@@ -16,8 +16,8 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
+import type {ICdpClient} from '../../../cdp/CdpClient.js';
+import type {ICdpConnection} from '../../../cdp/CdpConnection.js';
 import {
   BrowsingContext,
   InvalidArgumentException,

@@ -20,7 +20,7 @@ import type Protocol from 'devtools-protocol';
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
-import type {CdpConnection} from './cdpConnection.js';
+import type {CdpConnection} from './CdpConnection.js';
 
 export type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
