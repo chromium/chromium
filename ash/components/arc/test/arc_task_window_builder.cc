@@ -6,7 +6,9 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/exo/shell_surface_util.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace arc {
 
@@ -18,6 +20,11 @@ ArcTaskWindowBuilder::ArcTaskWindowBuilder() {
 ArcTaskWindowBuilder& ArcTaskWindowBuilder::SetPackageName(
     std::string_view package_name) {
   package_name_ = package_name;
+  return *this;
+}
+
+ArcTaskWindowBuilder& ArcTaskWindowBuilder::SetTitle(std::string_view title) {
+  title_ = title;
   return *this;
 }
 
@@ -58,6 +65,11 @@ std::unique_ptr<views::Widget> ArcTaskWindowBuilder::BuildOwnsNativeWidget() {
 void ArcTaskWindowBuilder::Prepare(views::Widget* widget) {
   DCHECK(!built_);
   built_ = true;
+
+  auto delegate = std::make_unique<views::WidgetDelegate>();
+  delegate->SetOwnedByWidget(true);
+  delegate->SetTitle(base::ASCIIToUTF16(title_));
+  init_params_.delegate = delegate.release();
 
   widget->Init(std::move(init_params_));
   // Set ARC id before showing the window to be recognized in

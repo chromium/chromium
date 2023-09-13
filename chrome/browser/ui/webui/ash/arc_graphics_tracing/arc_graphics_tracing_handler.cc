@@ -379,6 +379,10 @@ base::Time ArcGraphicsTracingHandler::Now() {
   return base::Time::Now();
 }
 
+aura::Window* ArcGraphicsTracingHandler::GetWebUIWindow() {
+  return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
+}
+
 void ArcGraphicsTracingHandler::StartTracingOnController(
     const base::trace_event::TraceConfig& trace_config,
     content::TracingController::StartTracingDoneCallback after_start) {
@@ -405,8 +409,8 @@ base::FilePath ArcGraphicsTracingHandler::GetDownloadsFolder() {
 }
 
 void ArcGraphicsTracingHandler::ActivateWebUIWindow() {
-  aura::Window* const window =
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto* const window = GetWebUIWindow();
   if (!window) {
     LOG(ERROR) << "Failed to activate, no top level window.";
     return;
@@ -449,7 +453,13 @@ void ArcGraphicsTracingHandler::StopTracing() {
 
 void ArcGraphicsTracingHandler::StopTracingAndActivate() {
   StopTracing();
-  ActivateWebUIWindow();
+  // If we are running in response to a window activation from within an
+  // observer, activating the web UI immediately will cause a DCHECK failure.
+  // Post as a UI task so we activate the web UI after the observer has
+  // returned.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ArcGraphicsTracingHandler::ActivateWebUIWindow,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcGraphicsTracingHandler::SetStatus(const std::string& status) {

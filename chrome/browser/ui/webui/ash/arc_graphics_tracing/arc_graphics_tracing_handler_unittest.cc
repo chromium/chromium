@@ -7,6 +7,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/test/test_window_builder.h"
 #include "base/files/file_path.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
@@ -29,6 +30,7 @@ namespace {
 
 class TestHandler : public ArcGraphicsTracingHandler {
  public:
+  using ArcGraphicsTracingHandler::max_tracing_time_;
   using content::WebUIMessageHandler::set_web_ui;
 
   void StartTracingOnControllerRespond() {
@@ -55,6 +57,8 @@ class TestHandler : public ArcGraphicsTracingHandler {
     trace_time_base_ = trace_time_base;
   }
 
+  aura::Window* GetWebUIWindow() override { return web_ui_window_.get(); }
+
  private:
   void StartTracingOnController(
       const base::trace_event::TraceConfig& trace_config,
@@ -68,11 +72,6 @@ class TestHandler : public ArcGraphicsTracingHandler {
     after_stop_ = std::move(after_stop);
   }
 
-  void ActivateWebUIWindow() override {
-    // TODO(matvore): See if we can make the default implementation for this
-    // method run in tests.
-  }
-
   base::FilePath GetDownloadsFolder() override { return downloads_folder_; }
 
   content::TracingController::StartTracingDoneCallback after_start_;
@@ -81,6 +80,10 @@ class TestHandler : public ArcGraphicsTracingHandler {
   base::Time trace_time_base_;
   base::FilePath downloads_folder_;
   base::Time now_;
+  std::unique_ptr<aura::Window> web_ui_window_ =
+      TestWindowBuilder()
+          .SetWindowTitle(u"arc-overview-tracing web UI")
+          .Build();
 };
 
 class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
@@ -196,7 +199,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
   handler_->StartTracingOnControllerRespond();
 
   // Fast forward past the max tracing interval.
-  FastForwardClockAndTaskQueue(handler_->max_tracing_time() +
+  FastForwardClockAndTaskQueue(handler_->max_tracing_time_ +
                                base::Milliseconds(500));
 
   // Pass results from trace controller to handler. First and last events should
@@ -265,7 +268,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
 
   // Fast forward past the max tracing interval. This will stop the trace at the
   // end of the fast-forward, which is 400ms after the timeout.
-  FastForwardClockAndTaskQueue(handler_->max_tracing_time() +
+  FastForwardClockAndTaskQueue(handler_->max_tracing_time_ +
                                base::Milliseconds(400));
 
   // While model is being built, switch to the ARC window to change
@@ -293,6 +296,60 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
     const auto& cpu_events = (*events_by_cpu)[3].GetList();
     ASSERT_EQ(1UL, cpu_events.size()) << cpu_events;
   }
+}
+
+TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
+  handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
+  handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
+  handler_->max_tracing_time_ = base::Seconds(5);
+
+  exo::Surface s;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s)
+                        .SetTitle("the first app")
+                        .BuildOwnsNativeWidget();
+
+  auto other_arc_widget = arc::ArcTaskWindowBuilder()
+                              .SetTaskId(88)
+                              .SetPackageName("net.differentapp")
+                              .SetShellRootSurface(&s)
+                              .SetTitle("another ARC app")
+                              .BuildOwnsNativeWidget();
+
+  arc_widget->Show();
+  other_arc_widget->ShowInactive();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+
+  FastForwardClockAndTaskQueue(base::Seconds(1));
+  other_arc_widget->Activate();
+  FastForwardClockAndTaskQueue(base::Seconds(1));
+  task_environment()->RunUntilIdle();
+
+  // Fast forward past the max tracing interval. This will stop the trace at the
+  // end of the fast-forward, which is 400ms after the timeout.
+  FastForwardClockAndTaskQueue(base::Milliseconds(4500));
+
+  // Pass results from trace controller to handler.
+  handler_->StopTracingOnControllerRespond(std::make_unique<std::string>(
+      "{\"traceEvents\":[],\"systemTraceEvents\":\""
+      // clang-format off
+      "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
+      // clang-format on
+      "\"}"));
+
+  task_environment()->RunUntilIdle();
+
+  // The current behavior when activating a separate window during a trace is to
+  // stop the trace and switch to the web UI. This behavior may change, but this
+  // test was originally added to avoid a DCHECK failure upon switching the
+  // active window. NOTE even if the below asserts are no longer valid, this
+  // test is still important for what has occurred before this line.
+  const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+  EXPECT_EQ(*dict.FindStringByDottedPath("information.title"), "the first app");
+  EXPECT_TRUE(handler_->GetWebUIWindow()->HasFocus());
 }
 
 }  // namespace

@@ -29,6 +29,10 @@ class Surface;
 class WMHelper;
 }  // namespace exo
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ash {
 
 class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
@@ -70,10 +74,12 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void OnSurfaceDestroying(exo::Surface* surface) override;
   void OnCommit(exo::Surface* surface) override;
 
-  // Visible for testing.
-  base::TimeDelta max_tracing_time() const { return max_tracing_time_; }
+ protected:
+  // Traces stop automatically when they get this long. Visible for testing.
+  base::TimeDelta max_tracing_time_ = base::Seconds(5);
 
  private:
+  virtual aura::Window* GetWebUIWindow();
   virtual void StartTracingOnController(
       const base::trace_event::TraceConfig& trace_config,
       content::TracingController::StartTracingDoneCallback after_start);
@@ -95,7 +101,7 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   // needed for comparison with trace timestamps.
   virtual base::TimeTicks SystemTicksNow();
 
-  virtual void ActivateWebUIWindow();
+  void ActivateWebUIWindow();
   void StartTracing();
   void StopTracing();
   void StopTracingAndActivate();
@@ -121,9 +127,6 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void DiscardActiveArcWindow();
 
   std::unique_ptr<ActiveTrace> active_trace_;
-
-  // Determines the maximum tracing time.
-  base::TimeDelta max_tracing_time_ = base::Seconds(5);
 
   const raw_ptr<exo::WMHelper, ExperimentalAsh> wm_helper_;
 
