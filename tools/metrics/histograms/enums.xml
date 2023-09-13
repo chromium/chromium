@@ -68666,6 +68666,7 @@ from previous Chrome versions.
   <int value="1951020379" label="ArcRoundedWindowCompat:disabled"/>
   <int value="1951466218" label="enable-data-reduction-proxy-lite-page"/>
   <int value="1951645673" label="PasswordsKeyboardAccessory:disabled"/>
+  <int value="1952183277" label="CrOSLateBootCrOSSOUL:enabled"/>
   <int value="1952339754"
       label="SignedExchangePrefetchCacheForNavigations:enabled"/>
   <int value="1952349593" label="FedCmHostedDomain:disabled"/>
@@ -68800,6 +68801,7 @@ from previous Chrome versions.
   <int value="2009362691" label="AllowStartingServiceManagerOnly:enabled"/>
   <int value="2009697597"
       label="DownloadServiceForegroundSessionIOSFeature:disabled"/>
+  <int value="2013589943" label="CrOSLateBootCrOSSOUL:disabled"/>
   <int value="2013593624"
       label="HappinessTrackingSurveysForDesktopDemo:enabled"/>
   <int value="2014331873" label="NTPDownloadSuggestions:disabled"/>

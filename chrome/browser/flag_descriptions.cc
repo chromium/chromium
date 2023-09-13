@@ -5665,6 +5665,9 @@ const char kCrosBatterySaverAlwaysOnDescription[] =
     "Turns on ChomeOS Battery Saver all the time, even when charging or fully "
     "charged. Used for testing ChromeOS Battery Saver Mode.";
 
+const char kCrosSoulName[] = "CrOS SOUL";
+const char kCrosSoulDescription[] = "Enable the CrOS SOUL feature.";
+
 const char kCrosBatterySaverName[] =
     "Enable ChromeOS Battery Saver Mode Support";
 const char kCrosBatterySaverDescription[] =

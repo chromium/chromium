@@ -1448,6 +1448,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "cros-soul",
+    "owners": [ "cschlosser", "cros-privacy-features-dev@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "cros-web-app-shortcut-ui-update",
     "owners": [ "mxcai", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 120

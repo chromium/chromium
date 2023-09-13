@@ -3270,6 +3270,9 @@ extern const char kCrosBatterySaverAlwaysOnDescription[];
 extern const char kCrosBatterySaverName[];
 extern const char kCrosBatterySaverDescription[];
 
+extern const char kCrosSoulName[];
+extern const char kCrosSoulDescription[];
+
 extern const char kCrosWebAppShortcutUiUpdateName[];
 extern const char kCrosWebAppShortcutUiUpdateDescription[];
 
