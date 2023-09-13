@@ -207,27 +207,18 @@ DispatchEventResult EventDispatcher::Dispatch() {
   const bool is_click =
       event_->IsMouseEvent() && event_->type() == event_type_names::kClick;
 
-  Node* target_node = event_->target() ? event_->target()->ToNode() : nullptr;
-  const bool is_target_body_element =
-      target_node && target_node->IsHTMLElement() &&
-      DynamicTo<HTMLElement>(target_node)->IsHTMLBodyElement();
-  const bool is_unfocused_keydown =
-      event_->IsKeyboardEvent() &&
-      event_->type() == event_type_names::kKeydown && is_target_body_element;
-
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
-  if ((is_click || is_unfocused_keydown) && event_->isTrusted() && frame) {
+  if (is_click && event_->isTrusted() && frame) {
     if (window && frame->IsMainFrame()) {
       soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
           SoftNavigationHeuristics::From(*window),
-          ToScriptStateForMainWorld(frame), is_unfocused_keydown);
+          ToScriptStateForMainWorld(frame));
     }
     // A genuine mouse click cannot be triggered by script so we don't expect
     // there are any script in the stack.
-    DCHECK(!is_click || !frame->GetAdTracker() ||
-           !frame->GetAdTracker()->IsAdScriptInStack(
-               AdTracker::StackType::kBottomAndTop));
-    if (is_click && frame->IsAdFrame()) {
+    DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
+                                         AdTracker::StackType::kBottomAndTop));
+    if (frame->IsAdFrame()) {
       UseCounter::Count(document, WebFeature::kAdClick);
     }
   }
@@ -275,6 +266,9 @@ DispatchEventResult EventDispatcher::Dispatch() {
                            pre_dispatch_event_handler_result);
 
   auto result = EventTarget::GetDispatchEventResult(*event_);
+  if (soft_navigation_scope) {
+    soft_navigation_scope->SetResult(result);
+  }
 
   return result;
 }
