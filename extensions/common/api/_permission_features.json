@@ -533,22 +533,10 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
-  "socket": [
-    {
-      "channel": "stable",
-      "extension_types": ["platform_app"]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["extension"],
-      "allowlist": [
-        // The connectivity diagnostic utility is a component extension that is
-        // used to try to provide suggestions on how to fix connection issues.
-        // It should be the only non-app allowed to use the socket API.
-        "32A1BA997F8AB8DE29ED1BA94AAF00CF2A3FEFA7"
-      ]
-    }
-  ],
+  "socket": {
+    "channel": "stable",
+    "extension_types": ["platform_app"]
+  },
   "storage": [
     {
       "channel": "stable",
