@@ -90,6 +90,7 @@ class VideoSourceImpl : public mojom::VideoSource {
   bool restart_device_once_when_stop_complete_;
   mojo::PendingRemote<mojom::VideoEffectsManager>
       pending_video_effects_manager_;
+  base::TimeTicks device_startup_start_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
