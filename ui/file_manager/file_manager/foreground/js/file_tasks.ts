@@ -23,6 +23,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FileTasks as StoreFileTasks} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getStore} from '../../state/store.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
 import {constants} from './constants.js';
@@ -575,10 +576,18 @@ export class FileTasks {
               str('OFFLINE_COLUMN_LABEL'));
 
       this.ui_.alertDialog.showHtml(str('OFFLINE_HEADER'), msg);
+      const isBulkPinningEnabled =
+          !!getStore().getState()?.preferences?.driveFsBulkPinningEnabled;
       for (const entry of this.entries_) {
         metrics.recordEnum(
             'DriveOfflineOpen.Unavailable', FileTasks.getViewFileType(entry),
             UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+        if (isBulkPinningEnabled) {
+          metrics.recordEnum(
+              'GoogleDrive.BulkPinning.OfflineOpen',
+              FileTasks.getViewFileType(entry),
+              UMA_INDEX_KNOWN_EXTENSIONS as string[]);
+        }
       }
       return Promise.reject('drive is offline');
     }
