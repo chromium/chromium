@@ -7695,10 +7695,6 @@
     },
 
     'ios_simulator_noncq_tests': {
-      'ios_common_tests': {
-        'variants': [
-        ]
-      },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization', 'record_failed_tests'],
         'variants': [

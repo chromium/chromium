@@ -4028,6 +4028,27 @@ MATRIX_COMPOUND_CONFLICTING_TEST_SUITES = """\
 }
 """
 
+MATRIX_COMPOUND_EMPTY_VARIANTS = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'baz_tests': {
+        'args': [
+          '--foo',
+        ],
+      }
+    },
+  },
+  'matrix_compound_suites': {
+    'matrix_tests': {
+      'foo_tests': {
+        'variants': [],
+      }
+    },
+  },
+}
+"""
+
 MATRIX_COMPOUND_TARGETS_ARGS = """\
 {
   'basic_suites': {
@@ -4502,6 +4523,15 @@ class MatrixCompositionTests(TestCase):
     with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
                                 'Conflicting test definitions.*'):
       fbb.check_input_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_empty_variants(self):
+    fbb = FakeBBGen(self.args,
+                    MATRIX_GTEST_SUITE_WATERFALL,
+                    MATRIX_COMPOUND_EMPTY_VARIANTS,
+                    LUCI_MILO_CFG,
+                    mixins=SWARMING_MIXINS)
+    fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_variants_swarming_dict_merge_args(self):

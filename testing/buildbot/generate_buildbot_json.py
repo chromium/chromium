@@ -1194,11 +1194,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
               if t not in tests_for_name:
                 tests_for_name.append(t)
 
-        if 'variants' in mtx_test_suite_config:
+        if (variants := mtx_test_suite_config.get('variants')):
           mixins = mtx_test_suite_config.get('mixins', [])
-          result = self.resolve_variants(basic_test_def,
-                                         mtx_test_suite_config['variants'],
-                                         mixins)
+          result = self.resolve_variants(basic_test_def, variants, mixins)
           update_tests(result)
         else:
           suite = basic_suites[test_suite]
