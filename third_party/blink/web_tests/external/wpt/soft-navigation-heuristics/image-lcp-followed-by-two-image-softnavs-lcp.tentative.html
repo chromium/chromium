@@ -31,7 +31,7 @@
 
       const first_click_paint_promise = waitOnPaintEntriesPromise();
 
-      interact(link);
+      click(link);
       await new Promise(resolve => {
         (new PerformanceObserver(resolve)).observe({
           type: 'soft-navigation'
@@ -54,7 +54,7 @@
 
       const second_click_paint_promise = waitOnPaintEntriesPromise();
       const preClickLcp2 = await getLcpEntries();
-      interact(link);
+      click(link);
       await new Promise(resolve => {
         (new PerformanceObserver(() => resolve())).observe({
           type: 'soft-navigation'

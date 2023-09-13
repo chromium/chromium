@@ -941,8 +941,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
         // navigation (as this is the first we hear of it in the renderer). We
         // need to do that now.
         soft_navigation_event_scope =
-            std::make_unique<SoftNavigationEventScope>(
-                heuristics, script_state, /*is_unfocused_keydown=*/false);
+            std::make_unique<SoftNavigationEventScope>(heuristics,
+                                                       script_state);
         heuristics->SameDocumentNavigationStarted(script_state);
       }
     }
