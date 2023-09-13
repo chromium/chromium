@@ -298,7 +298,7 @@ void DownloadToolbarButtonView::Hide() {
   PreferredSizeChanged();
 }
 
-bool DownloadToolbarButtonView::IsShowing() {
+bool DownloadToolbarButtonView::IsShowing() const {
   return GetVisible();
 }
 
@@ -319,12 +319,12 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(bool show_animation) {
   UpdateIcon();
 }
 
-bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() {
+bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() const {
   return browser_->window() && browser_->window()->IsFullscreen() &&
          !browser_->window()->IsToolbarVisible();
 }
 
-bool DownloadToolbarButtonView::ShouldShowExclusiveAccessBubble() {
+bool DownloadToolbarButtonView::ShouldShowExclusiveAccessBubble() const {
   if (!IsFullscreenWithParentViewHidden()) {
     return false;
   }
@@ -371,7 +371,7 @@ void DownloadToolbarButtonView::HideDetails() {
   CloseDialog(views::Widget::ClosedReason::kUnspecified);
 }
 
-bool DownloadToolbarButtonView::IsShowingDetails() {
+bool DownloadToolbarButtonView::IsShowingDetails() const {
   return bubble_delegate_ != nullptr &&
          bubble_delegate_->GetWidget()->IsVisible();
 }

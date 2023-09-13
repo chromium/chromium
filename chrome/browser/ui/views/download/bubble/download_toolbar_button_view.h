@@ -8,9 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -70,15 +70,15 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // DownloadDisplay implementation.
   void Show() override;
   void Hide() override;
-  bool IsShowing() override;
+  bool IsShowing() const override;
   void Enable() override;
   void Disable() override;
   void UpdateDownloadIcon(bool show_animation) override;
   void ShowDetails() override;
   void HideDetails() override;
-  bool IsShowingDetails() override;
-  bool IsFullscreenWithParentViewHidden() override;
-  bool ShouldShowExclusiveAccessBubble() override;
+  bool IsShowingDetails() const override;
+  bool IsFullscreenWithParentViewHidden() const override;
+  bool ShouldShowExclusiveAccessBubble() const override;
   void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) override;
 

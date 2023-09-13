@@ -3720,8 +3720,6 @@ static_library("browser") {
       "download/bubble/download_bubble_update_service_factory.h",
       "download/bubble/download_bubble_utils.cc",
       "download/bubble/download_bubble_utils.h",
-      "download/bubble/download_display.cc",
-      "download/bubble/download_display.h",
       "download/bubble/download_display_controller.cc",
       "download/bubble/download_display_controller.h",
       "download/bubble/download_icon_state.h",

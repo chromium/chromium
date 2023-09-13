@@ -1115,6 +1115,7 @@ static_library("ui") {
       "content_settings/content_setting_image_model.h",
       "content_settings/content_setting_image_model_states.cc",
       "content_settings/content_setting_image_model_states.h",
+      "download/download_display.h",
       "download/download_item_mode.cc",
       "download/download_item_mode.h",
       "download/download_started_animation.h",

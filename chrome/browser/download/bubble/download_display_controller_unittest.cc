@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
-#include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -75,7 +75,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
     detail_shown_ = false;
   }
 
-  bool IsShowing() override { return shown_; }
+  bool IsShowing() const override { return shown_; }
 
   void Enable() override { enabled_ = true; }
 
@@ -88,9 +88,11 @@ class FakeDownloadDisplay : public DownloadDisplay {
 
   void ShowDetails() override { detail_shown_ = true; }
   void HideDetails() override { detail_shown_ = false; }
-  bool IsShowingDetails() override { return detail_shown_; }
-  bool IsFullscreenWithParentViewHidden() override { return is_fullscreen_; }
-  bool ShouldShowExclusiveAccessBubble() override {
+  bool IsShowingDetails() const override { return detail_shown_; }
+  bool IsFullscreenWithParentViewHidden() const override {
+    return is_fullscreen_;
+  }
+  bool ShouldShowExclusiveAccessBubble() const override {
     return IsFullscreenWithParentViewHidden() &&
            should_show_exclusive_access_bubble_;
   }
