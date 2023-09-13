@@ -316,6 +316,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   int GetMainImageLeftInsets() const;
 
+  gfx::Point GetButtonAreaTopRight() const;
+
+  gfx::Size GetButtonAreaSize() const;
+
   // Helper method to create a label with text style
   static std::unique_ptr<Label> CreateLabelWithContextAndStyle(
       const std::u16string& label_text,
