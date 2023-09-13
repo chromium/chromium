@@ -666,6 +666,7 @@ ci.builder(
         category = "mac",
         short_name = "off",
     ),
+    contact_team_email = "bling-engprod@google.com",
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in try/chromium.star.
     execution_timeout = 15 * time.hour,

@@ -84,6 +84,7 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "bling-engprod@google.com",
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -112,6 +113,7 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.builder(
@@ -140,6 +142,7 @@ ci.builder(
         category = "release|arm64",
         short_name = "a64",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.builder(
@@ -166,6 +169,7 @@ ci.builder(
         category = "release|arm64",
         short_name = "bld",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.builder(
@@ -218,6 +222,7 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "11",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -272,6 +277,7 @@ ci.thin_tester(
         category = "release|arm64",
         short_name = "13",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -299,6 +305,7 @@ ci.thin_tester(
         short_name = "15",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
@@ -324,6 +331,7 @@ ci.thin_tester(
         category = "mac",
         short_name = "11",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(
