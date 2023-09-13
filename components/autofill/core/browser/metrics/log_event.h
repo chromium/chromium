@@ -47,7 +47,8 @@ enum class SkipStatus {
   kExpiredCards = 11,
   kFillingLimitReachedType = 12,
   kUnrecognizedAutocompleteAttribute = 13,
-  kMaxValue = kUnrecognizedAutocompleteAttribute
+  kFieldDoesNotMatchTargetFieldsSet = 14,
+  kMaxValue = kFieldDoesNotMatchTargetFieldsSet
 };
 
 // Enum for different data types filled during autofill filling events,

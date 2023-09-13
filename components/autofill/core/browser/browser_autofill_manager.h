@@ -449,14 +449,21 @@ class BrowserAutofillManager : public AutofillManager,
   // It is assumed here that `form` and `form_structure` have the same
   // number of fields, and this would be the size of the returned list.
   // TODO(crbug/1331312): Keep only one of 'form' and 'form_structure'.
+  // `field_types_to_fill` denotes a set of field types we are interested in
+  // filling, and the actual fields filled will be the intersection between
+  // `field_types_to_fill` and the classified fields for which we have data
+  // stored.
   // TODO(crbug/1275649): Add the case removed in crrev.com/c/4675831 when the
   // experiment resumes.
+  // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
+  // a ServerFieldTypeSet.
   std::vector<SkipStatus> GetSkipStatuses(
       const FormData& form,
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const Section& filling_section,
       const CreditCard* optional_credit_card,
+      const ServerFieldTypeSet& field_types_to_fill,
       const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
       bool skip_unrecognized_autocomplete_fields,
       bool is_refill) const;

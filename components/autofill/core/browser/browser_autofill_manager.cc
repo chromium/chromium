@@ -164,6 +164,8 @@ std::string_view GetSkipFieldFillLogMessage(SkipStatus skip_status) {
       return "Skipped: Expired expiration date for credit card";
     case SkipStatus::kFillingLimitReachedType:
       return "Skipped: Field type filling limit reached";
+    case SkipStatus::kFieldDoesNotMatchTargetFieldsSet:
+      return "Skipped: The field type does not match the targeted fields.";
     case SkipStatus::kNotSkipped:
       return "Fillable";
     case SkipStatus::kUnknown:
@@ -2247,6 +2249,7 @@ std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
     const FormFieldData& trigger_field,
     const Section& filling_section,
     const CreditCard* optional_credit_card,
+    const ServerFieldTypeSet& field_types_to_fill,
     const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
     bool skip_unrecognized_autocomplete_fields,
     bool is_refill) const {
@@ -2335,6 +2338,14 @@ std::vector<SkipStatus> BrowserAutofillManager::GetSkipStatuses(
          optional_credit_card->IsExpired(AutofillClock::Now()))) {
       skip_statuses[i] = SkipStatus::kExpiredCards;
       continue;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable)) {
+      if (!field_types_to_fill.contains(field_type)) {
+        skip_statuses[i] = SkipStatus::kFieldDoesNotMatchTargetFieldsSet;
+        continue;
+      }
     }
 
     // A field with a specific type is only allowed to be filled a limited
@@ -2453,6 +2464,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
           ? absl::get<const CreditCard*>(profile_or_credit_card)
           : nullptr,
+      trigger_details.field_types_to_fill,
       filling_context ? &filling_context->type_groups_originally_filled
                       : nullptr,
       /*skip_unrecognized_autocomplete_fields=*/
@@ -2766,11 +2778,14 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   // those fields. Function BrowserAutofillManager::GetSkipStatuses assumes that
   // the passed FormData and FormStructure have the same size. If it's not the
   // case we just assume as a fallback that all fields are relevant.
+  // TODO(crbug.com/1459990): Use the last `field_types_to_fill`
+  // so that `GetSuggestionsForProfiles` can filter out fields that
+  // are not part of the target granularity.
   std::vector<SkipStatus> skip_statuses =
       form.fields.size() == form_structure.field_count()
           ? GetSkipStatuses(
                 form, form_structure, field, autofill_field.section,
-                /*optional_credit_card=*/nullptr,
+                /*optional_credit_card=*/nullptr, kAllServerFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
                     AutofillSuggestionTriggerSource::
