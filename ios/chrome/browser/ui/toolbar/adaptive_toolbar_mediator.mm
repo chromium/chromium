@@ -323,7 +323,7 @@
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
   [self updateShareMenuForWebState:self.webState];
-  if (base::FeatureList::IsEnabled(kThemeColorInToolbar)) {
+  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar)) {
     [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
   }
 }

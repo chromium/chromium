@@ -1627,9 +1627,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
      flags_ui::kOsIos,
      MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)},
-    {"toolbar-theme-color", flag_descriptions::kThemeColorInToolbarName,
-     flag_descriptions::kThemeColorInToolbarDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kThemeColorInToolbar)},
     {"tab-grid-refactoring", flag_descriptions::kTabGridRefactoringName,
      flag_descriptions::kTabGridRefactoringDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridRefactoring)},
@@ -1714,6 +1711,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)},
+    {"top-toolbar-theme-color", flag_descriptions::kThemeColorInTopToolbarName,
+     flag_descriptions::kThemeColorInTopToolbarDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kThemeColorInTopToolbar)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

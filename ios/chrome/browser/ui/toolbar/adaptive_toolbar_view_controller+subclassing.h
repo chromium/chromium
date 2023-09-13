@@ -18,6 +18,13 @@
 - (void)setLocationBarViewController:
     (UIViewController*)locationBarViewController;
 
+/// Returns the page's theme color. Only available when kThemeColorInTopToolbar
+/// flag is enabled.
+- (UIColor*)pageThemeColor;
+
+/// Updates the toolbar background color.
+- (void)updateBackgroundColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_SUBCLASSING_H_

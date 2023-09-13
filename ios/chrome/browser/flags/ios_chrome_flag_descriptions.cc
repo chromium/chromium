@@ -1060,9 +1060,10 @@ const char kTFLiteLanguageDetectionIgnoreDescription[] =
     "Computes the TFLite language detection but ignore the result and uses the "
     "CLD3 detection instead.";
 
-const char kThemeColorInToolbarName[] = "Use page's theme color";
-const char kThemeColorInToolbarDescription[] =
-    "When enabled, the omnibox background color is the page's theme color";
+const char kThemeColorInTopToolbarName[] = "Top toolbar use page's theme color";
+const char kThemeColorInTopToolbarDescription[] =
+    "When enabled with bottom omnibox, the top toolbar background color is the "
+    "page's theme color";
 
 const char kIOSLensUseDirectUploadName[] =
     "Use direct upload for Lens searches";

@@ -7965,14 +7965,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "toolbar-theme-color",
-    "owners": [
-      "bling-flags@google.com",
-      "gambard"
-    ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "top-chrome-touch-ui",
     "owners": [ "pbos", "chrome-desktop-ui-sea@google.com" ],
     // This flag is used to easily swap into touch-mode for UI development where
@@ -7980,6 +7972,14 @@
     // exposed in chrome://flags to allow QA and UXers to verify touch-related
     // behavior without access to touch devices.
     "expiry_milestone": -1
+  },
+  {
+    "name": "top-toolbar-theme-color",
+    "owners": [
+      "bling-flags@google.com",
+      "christianxu"
+    ],
+    "expiry_milestone": 125
   },
   {
     "name": "touch-drag-and-context-menu",

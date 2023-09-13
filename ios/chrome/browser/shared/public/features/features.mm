@@ -264,8 +264,8 @@ BASE_FEATURE(kFullScreenPromoOnOmniboxCopyPaste,
              "FullScreenPromoOnOmniboxCopyPaste",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThemeColorInToolbar,
-             "ThemeColorInToolbar",
+BASE_FEATURE(kThemeColorInTopToolbar,
+             "ThemeColorInTopToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGridRefactoring,

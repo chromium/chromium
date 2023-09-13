@@ -923,9 +923,9 @@ extern const char kTFLiteLanguageDetectionIgnoreName[];
 extern const char kTFLiteLanguageDetectionIgnoreDescription[];
 
 // Title and description for the flag to use the page's theme color in the
-// toolbar.
-extern const char kThemeColorInToolbarName[];
-extern const char kThemeColorInToolbarDescription[];
+// top toolbar.
+extern const char kThemeColorInTopToolbarName[];
+extern const char kThemeColorInTopToolbarDescription[];
 
 // Title and description for the flag to enable using Lens to search using
 // the device camera from the home screen widget.

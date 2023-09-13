@@ -53,12 +53,12 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // The last progress of fullscreen registered. The progress range is between 0
 // and 1.
 @property(nonatomic, assign) CGFloat previousFullscreenProgress;
+// The page's theme color.
+@property(nonatomic, strong) UIColor* pageThemeColor;
+
 @end
 
-@implementation AdaptiveToolbarViewController {
-  // The page's theme color.
-  UIColor* _themeColor;
-}
+@implementation AdaptiveToolbarViewController
 
 @dynamic view;
 @synthesize buttonFactory = _buttonFactory;
@@ -331,9 +331,9 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   _isNTP = isNTP;
 }
 
-- (void)setPageThemeColor:(UIColor*)themeColor {
-  _themeColor = themeColor;
-  [self updateForFullscreenProgress:self.previousFullscreenProgress];
+- (void)setPageThemeColor:(UIColor*)pageThemeColor {
+  _pageThemeColor = pageThemeColor;
+  [self updateBackgroundColor];
 }
 
 #pragma mark - NewTabPageControllerDelegate
@@ -351,10 +351,8 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
   [self updateLocationBarHeightForFullscreenProgress:progress];
   self.view.locationBarContainer.backgroundColor =
-      _themeColor ? _themeColor
-                  : [self.buttonFactory.toolbarConfiguration
-                        locationBarBackgroundColorWithVisibility:alphaValue];
-
+      [self.buttonFactory.toolbarConfiguration
+          locationBarBackgroundColorWithVisibility:alphaValue];
   self.view.collapsedToolbarButton.hidden = progress > 0.05;
 }
 
@@ -389,6 +387,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 - (void)collapsedToolbarButtonTapped {
   base::RecordAction(base::UserMetricsAction("MobileFullscreenExitedManually"));
   [self exitFullscreen];
+}
+
+- (void)updateBackgroundColor {
+  // Implemented in subclass.
 }
 
 #pragma mark - PopupMenuUIUpdating

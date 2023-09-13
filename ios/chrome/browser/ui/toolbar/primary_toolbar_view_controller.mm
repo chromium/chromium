@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
+#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -80,6 +81,17 @@
   [super setLocationBarViewController:locationBarViewController];
 
   self.view.separator.hidden = !self.hasOmnibox;
+  [self updateBackgroundColor];
+}
+
+- (void)updateBackgroundColor {
+  UIColor* backgroundColor =
+      self.buttonFactory.toolbarConfiguration.backgroundColor;
+  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) &&
+      !self.hasOmnibox && self.pageThemeColor) {
+    backgroundColor = self.pageThemeColor;
+  }
+  self.view.backgroundColor = backgroundColor;
 }
 
 #pragma mark - NewTabPageControllerDelegate
