@@ -68,6 +68,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/root_window_layout_manager.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
@@ -679,6 +680,7 @@ void RootWindowController::Shutdown() {
 
   touch_exploration_manager_.reset();
   wallpaper_widget_controller_.reset();
+  EndSplitViewOverviewSession();
   CloseAmbientWidget(/*immediately=*/true);
 
   CloseChildWindows();
@@ -976,6 +978,15 @@ void RootWindowController::ClearSecurityCurtainWidgetController() {
 curtain::SecurityCurtainWidgetController*
 RootWindowController::security_curtain_widget_controller() {
   return security_curtain_widget_controller_.get();
+}
+
+void RootWindowController::StartSplitViewOverviewSession(aura::Window* window) {
+  split_view_overview_session_ =
+      std::make_unique<SplitViewOverviewSession>(window);
+}
+
+void RootWindowController::EndSplitViewOverviewSession() {
+  split_view_overview_session_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

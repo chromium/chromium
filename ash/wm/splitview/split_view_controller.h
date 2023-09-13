@@ -210,9 +210,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     return split_view_metrics_controller_.get();
   }
   aura::Window* to_be_activated_window() { return to_be_activated_window_; }
-  SplitViewOverviewSession* split_view_overview_session_for_testing() {
-    return split_view_overview_session_.get();
-  }
 
   // Returns true if the divider is resizing (not animating) in tablet mode
   // split view, or between two windows in Snap Groups.
@@ -762,10 +759,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Observes windows and performs auto snapping if needed.
   std::unique_ptr<AutoSnapController> auto_snap_controller_;
-
-  // Observes a single window in intermediate split view and makes calls to
-  // overview.
-  std::unique_ptr<SplitViewOverviewSession> split_view_overview_session_;
 
   // The metrics controller for the same root window.
   std::unique_ptr<SplitViewMetricsController> split_view_metrics_controller_;

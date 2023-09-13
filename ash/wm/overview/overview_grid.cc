@@ -460,6 +460,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 
   EndNudge();
 
+  RootWindowController::ForWindow(root_window_)->EndSplitViewOverviewSession();
   SplitViewController::Get(root_window_)->RemoveObserver(this);
   ScreenRotationAnimator::GetForRootWindow(root_window_)->RemoveObserver(this);
   Shell::Get()->wallpaper_controller()->RemoveObserver(this);

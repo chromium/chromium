@@ -5,20 +5,28 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_OVERVIEW_SESSION_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_OVERVIEW_SESSION_H_
 
+#include "ash/wm/overview/overview_metrics.h"
+#include "ash/wm/overview/overview_types.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 
 namespace ash {
 
-// Encapsulates the clamshell split view state with one snapped window and
-// overview, also known as intermediate split view or the
-// snap group creation session.
+// Encapsulates the split view state with a single snapped window and
+// overview, also known as intermediate split view or the snap group creation
+// session.
+//
+// While `this` is alive, both split view and overview will be active;
+// however, the converse is not always true. `This` will automatically be
+// destroyed upon split view or overview ending.
+//
+// There may be at most one SplitViewOverviewSession per root window. Consumers
+// should create and manage this via the
+// `RootWindowController::ForWindow(aura::Window*)` function.
 //
 // Note that clamshell split view does *not* have a divider, and resizing
 // overview is done via resizing the window directly.
-//
-// TODO(sophiewen): Consider renaming this to ClamshellSplitViewSession.
 class SplitViewOverviewSession : public aura::WindowObserver {
  public:
   SplitViewOverviewSession(aura::Window* window);
@@ -33,6 +41,7 @@ class SplitViewOverviewSession : public aura::WindowObserver {
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   // Records the presentation time of resize operation in clamshell split view

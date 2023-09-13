@@ -496,6 +496,62 @@ TEST_F(SplitViewControllerTest, WindowCloseTest) {
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
+// Tests that split view overview session is started and ended correctly.
+TEST_F(SplitViewControllerTest, StartEndSplitViewOverviewSession) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kNoSnap);
+  EXPECT_FALSE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
+                   ->split_view_overview_session());
+
+  // Snap `window1`. Test we are in kPrimarySnapped state and split view
+  // overview.
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_FALSE(split_view_controller()->secondary_window());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
+                  ->split_view_overview_session());
+
+  // Snap `window2`. Test we are in kBothSnapped state and not overview or split
+  // view overview.
+  split_view_controller()->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kBothSnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
+                   ->split_view_overview_session());
+
+  // Close `window1`. Test we are in kSecondarySnapped state and split view
+  // overview.
+  window1.reset();
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kSecondarySnapped);
+  EXPECT_FALSE(split_view_controller()->primary_window());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
+                  ->split_view_overview_session());
+
+  // Close `window2`. Test we are in kNoSnap state and in overview but not
+  // split view overview.
+  window2.reset();
+  EXPECT_EQ(split_view_controller()->state(),
+            SplitViewController::State::kNoSnap);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
+                   ->split_view_overview_session());
+}
+
 // Tests that if there are two snapped windows, minimizing one of them will open
 // overview window grid on the minimized window side of the screen. If there is
 // only one snapped windows, minimizing the sanpped window will end split view

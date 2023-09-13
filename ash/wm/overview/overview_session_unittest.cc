@@ -25,6 +25,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view_test_api.h"
@@ -8978,8 +8979,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTest, ResizeWindowTest) {
   EXPECT_NE(GetGridBounds(), overview_full_bounds);
   EXPECT_NE(GetGridBounds(), overview_snapped_bounds);
   EXPECT_EQ(GetGridBounds(), GetSplitViewRightWindowBounds());
-  EXPECT_TRUE(
-      split_view_controller()->split_view_overview_session_for_testing());
+  EXPECT_TRUE(RootWindowController::ForWindow(Shell::GetPrimaryRootWindow())
+                  ->split_view_overview_session());
+
   // Verify the overview width has decreased by the same amount the window has
   // increased.
   EXPECT_EQ(overview_snapped_bounds.width() - drag_x, GetGridBounds().width());

@@ -255,6 +255,20 @@ void MaybeRemoveSnapGroupContainingWindow(aura::Window* window) {
   }
 }
 
+void StartSplitViewOverviewSession(aura::Window* window,
+                                   absl::optional<OverviewStartAction> action,
+                                   absl::optional<OverviewEnterExitType> type) {
+  if (!IsInOverviewSession()) {
+    // Overview may already be in session, if a window was dragged to split view
+    // from overview in clamshell mode.
+    CHECK(action && type);
+    Shell::Get()->overview_controller()->StartOverview(*action, *type);
+  }
+
+  RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
+      window);
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -660,7 +674,8 @@ bool SplitViewController::WillStartOverview() const {
   // only one of `primary_window_` or `secondary_window_` are snapped.
   return !IsInOverviewSession() && !DesksController::Get()->animation() &&
          (split_view_type_ == SplitViewType::kTabletType ||
-          IsSnapGroupEnabledInClamshellMode()) &&
+          (IsSnapGroupEnabledInClamshellMode() &&
+           SnapGroupController::Get()->CanEnterOverview())) &&
          !!primary_window_ != !!secondary_window_;
 }
 
@@ -822,8 +837,8 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
       // this in `OnOverviewModeStarting()`, since overview will already have
       // started and we are dragging `window` into split view.
       // TODO(b/294580642): Move this to SnapGroupController.
-      split_view_overview_session_ =
-          std::make_unique<SplitViewOverviewSession>(window);
+      StartSplitViewOverviewSession(window, /*action=*/absl::nullopt,
+                                    /*type=*/absl::nullopt);
     }
 
     // Get the divider position given by `snap_ratio`, or if there is
@@ -1197,7 +1212,14 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   }
 
   auto_snap_controller_.reset();
-  split_view_overview_session_.reset();
+
+  if (end_reason != EndReason::kRootWindowDestroyed) {
+    // `EndSplitView()` is also called upon `~RootWindowController()` and
+    // `~SplitViewController()`, during which `root_window_` would have been
+    // destroyed.
+    RootWindowController::ForWindow(root_window_)
+        ->EndSplitViewOverviewSession();
+  }
 
   // This may be an exit point for snap group as the window state changes unless
   // split view ends due to overview starts.
@@ -1289,9 +1311,9 @@ void SplitViewController::OnOverviewButtonTrayLongPressed(
   }
 
   // Start overview mode if we aren't already in it.
-  overview_controller->StartOverview(
-      OverviewStartAction::kOverviewButtonLongPress,
-      OverviewEnterExitType::kImmediateEnter);
+  StartSplitViewOverviewSession(target_window,
+                                OverviewStartAction::kOverviewButtonLongPress,
+                                OverviewEnterExitType::kImmediateEnter);
 
   SnapWindow(target_window, SnapPosition::kPrimary,
              WindowSnapActionSource::kLongPressOverviewButtonToSnap,
@@ -1381,7 +1403,9 @@ void SplitViewController::OpenPartialOverviewToUpdateSnapGroup(
         primary_window_);
     split_view_divider_.reset();
     in_snap_group_creation_session_ = true;
-    Shell::Get()->overview_controller()->StartOverview(
+    StartSplitViewOverviewSession(
+        snap_position == SnapPosition::kPrimary ? primary_window_
+                                                : secondary_window_,
         OverviewStartAction::kSplitView, OverviewEnterExitType::kNormal);
   }
 }
@@ -1632,7 +1656,8 @@ void SplitViewController::OnDisplayRemoved(
   // If we are in tablet split view with only one snapped window, make sure we
   // are in overview (see https://crbug.com/1027179).
   if (state_ == State::kPrimarySnapped || state_ == State::kSecondarySnapped) {
-    Shell::Get()->overview_controller()->StartOverview(
+    StartSplitViewOverviewSession(
+        primary_window_ ? primary_window_ : secondary_window_,
         OverviewStartAction::kSplitView,
         OverviewEnterExitType::kImmediateEnter);
   }
@@ -2355,16 +2380,9 @@ void SplitViewController::OnWindowSnapped(
   // `OverviewController`.
   if (WillStartOverview()) {
     in_snap_group_creation_session_ = snap_group_enabled_in_clamshell;
-    Shell::Get()->overview_controller()->StartOverview(
-        OverviewStartAction::kSplitView, OverviewEnterExitType::kNormal);
-    if (snap_group_enabled_in_clamshell && !split_view_overview_session_) {
-      // Normally when `IsSnapGroupEnabledInClamshellMode()` is true, overview
-      // will be initialized here, but a window could already be snapped with
-      // overview open, then swap positions with overview open.
-      // TODO(b/294580642): Move this to SnapGroupController.
-      split_view_overview_session_ =
-          std::make_unique<SplitViewOverviewSession>(window);
-    }
+    // TODO(b/294580642): Move this to SnapGroupController.
+    StartSplitViewOverviewSession(window, OverviewStartAction::kSplitView,
+                                  OverviewEnterExitType::kNormal);
     return;
   }
 
@@ -2443,7 +2461,8 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     default_snap_position_ =
         primary_window_ ? SnapPosition::kPrimary : SnapPosition::kSecondary;
     UpdateStateAndNotifyObservers();
-    Shell::Get()->overview_controller()->StartOverview(
+    StartSplitViewOverviewSession(
+        primary_window_ ? primary_window_ : secondary_window_,
         OverviewStartAction::kSplitView,
         reason == WindowDetachedReason::kWindowDragged
             ? OverviewEnterExitType::kImmediateEnter

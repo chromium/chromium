@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_overview_session.h"
 
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -22,7 +23,7 @@ namespace {
 // following conditions:
 // a) clamshell split view, empty overview grid;
 // b) clamshell split view, nonempty overview grid;
-// c) clamshell split view, two snapped windows;
+// c) clamshell split view, two snapped windows (for Snap Groups);
 constexpr char kClamshellSplitViewResizeSingleHistogram[] =
     "Ash.SplitViewResize.PresentationTime.ClamshellMode.SingleWindow";
 constexpr char kClamshellSplitViewResizeMultiHistogram[] =
@@ -45,8 +46,9 @@ bool InClamshellSplitViewMode(SplitViewController* controller) {
 }  // namespace
 
 SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window) {
-  CHECK(window);
+  CHECK(window && IsInOverviewSession());
   window_observation_.Observe(window);
+  // TODO(sophiewen): Update overview grid bounds.
 }
 
 SplitViewOverviewSession::~SplitViewOverviewSession() = default;
@@ -79,6 +81,7 @@ void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
   if (IsSnapGroupEnabledInClamshellMode() &&
       split_view_controller->state() ==
           SplitViewController::State::kBothSnapped) {
+    // TODO(b/300180664): Unreached. Move this to SnapGroup.
     presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
         window->layer()->GetCompositor(),
         kClamshellSplitViewResizeMultiHistogram,
@@ -161,6 +164,12 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
   // SplitViewController to update `divider_position_`.
   split_view_controller->UpdateDividerPositionOnWindowResize(window,
                                                              new_bounds);
+}
+
+void SplitViewOverviewSession::OnWindowDestroying(aura::Window* window) {
+  CHECK(window_observation_.IsObservingSource(window));
+  // Destroys `this`.
+  RootWindowController::ForWindow(window)->EndSplitViewOverviewSession();
 }
 
 }  // namespace ash
