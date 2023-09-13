@@ -58,13 +58,9 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/login/login_state/login_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::NavigationEntry;
 using sessions::ContentTestHelper;
@@ -197,22 +193,6 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
     UpdateNavigation(window2_id, tab2_id, *nav2, true);
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void FakeKioskSession() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ASSERT_TRUE(ash::LoginState::IsInitialized());
-    ash::LoginState::Get()->SetLoggedInState(
-        ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-        ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   SessionService* service() { return helper_.service(); }
 
@@ -1488,7 +1468,7 @@ TEST_F(SessionServiceTest, OpenedWindowNotRestoredInKiosk) {
   // Make sure `ShouldRestore` returns true for the regular user session.
   EXPECT_TRUE(session_service_->ShouldRestore(browser()));
 
-  FakeKioskSession();
+  chromeos::SetUpFakeKioskSession();
   EXPECT_FALSE(session_service_->ShouldRestore(browser()));
 }
 #endif  //  BUILDFLAG(IS_CHROMEOS)

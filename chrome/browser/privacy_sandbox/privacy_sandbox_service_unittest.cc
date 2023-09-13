@@ -65,9 +65,15 @@
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1668,6 +1674,11 @@ TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  user_manager::ScopedUserManager user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // No prompt should be shown if the user is associated with a device local
   // account on CrOS.
   SetupPromptTestState(feature_list(), prefs(),
@@ -1689,19 +1700,6 @@ TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
   EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
             privacy_sandbox_service()->GetRequiredPromptType());
 
-  // No prompt should be shown for a web kiosk account.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::LoginState::Get()->SetLoggedInState(
-      ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  init_params = crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif
-  EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
-            privacy_sandbox_service()->GetRequiredPromptType());
-
   // A prompt should be shown for a regular user.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::LoginState::Get()->SetLoggedInState(
@@ -1713,6 +1711,11 @@ TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif
   EXPECT_EQ(PrivacySandboxService::PromptType::kConsent,
+            privacy_sandbox_service()->GetRequiredPromptType());
+
+  // No prompt should be shown for a web kiosk account.
+  chromeos::SetUpFakeKioskSession();
+  EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
             privacy_sandbox_service()->GetRequiredPromptType());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

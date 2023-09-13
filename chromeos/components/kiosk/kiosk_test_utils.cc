@@ -8,7 +8,12 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/login/login_state/login_state.h"  // nogncheck
+#include "base/check.h"
+#include "components/account_id/account_id.h"  // nogncheck
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_base.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_init_params.h"  // nogncheck
 #endif
@@ -17,22 +22,23 @@ namespace chromeos {
 
 void SetUpFakeKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::LoginState::Initialize();
-  ash::LoginState::Get()->SetLoggedInState(
-      ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+  CHECK(user_manager::UserManager::Get());
+
+  auto* user_manager = static_cast<user_manager::UserManagerBase*>(
+      user_manager::UserManager::Get());
+  auto account_id = AccountId::FromUserEmail("example@example.com");
+  auto* user = user_manager->AddKioskAppUserForTesting(
+      account_id,
+      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                             /* browser_restart= */ false,
+                             /* is_child= */ false);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::BrowserInitParamsPtr init_params =
       chromeos::BrowserInitParams::GetForTests()->Clone();
   init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif
-}
-
-void TearDownFakeKioskSession() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::LoginState::Shutdown();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace chromeos

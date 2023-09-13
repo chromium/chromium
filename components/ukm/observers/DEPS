@@ -5,3 +5,10 @@ include_rules = [
   "+components/sync",
   "+google_apis",
 ]
+
+specific_include_rules = {
+  "ukm_consent_state_observer_unittest.cc": [
+    "+components/user_manager/fake_user_manager.h",
+    "+components/user_manager/scoped_user_manager.h",
+  ]
+}

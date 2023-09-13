@@ -8,6 +8,8 @@
 namespace chromeos {
 
 // Sets up a fake kiosk session for unit tests.
+// Make sure to enable `UserManagerBase` to be returned from
+// `UserManager::Get()` prior to calling this function.
 extern void SetUpFakeKioskSession();
 
 // Tears down a fake kiosk session for unit tests.

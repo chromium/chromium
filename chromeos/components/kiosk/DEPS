@@ -1,5 +1,5 @@
 include_rules = [
-    "+chromeos/ash/components/login/login_state",
+    "+components/account_id",
     "+chromeos/crosapi/mojom",
     "+chromeos/startup",
     "+components/user_manager",

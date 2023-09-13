@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -200,8 +201,6 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
 // This class contains chrome.filesystem.requestFileSystem API tests.
 class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
  public:
-  FileSystemApiTestForRequestFileSystem() : fake_user_manager_(nullptr) {}
-
   bool SetUpUserDataDirectory() override {
     return drive::SetUpUserDataDirectoryForDriveFsTest();
   }
@@ -229,8 +228,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
   void TearDownOnMainThread() override {
     PlatformAppBrowserTest::TearDownOnMainThread();
-    user_manager_enabler_.reset();
-    fake_user_manager_ = nullptr;
+    user_manager_.Reset();
   }
 
   // Simulates mounting a removable volume.
@@ -245,9 +243,8 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
 
   // Creates a testing file system in a testing directory.
   void CreateTestingFileSystem(const std::string& mount_point_name,
@@ -270,14 +267,8 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
   // Simulates entering the kiosk session.
   void EnterKioskSession() {
-    fake_user_manager_ = new ash::FakeChromeUserManager();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
-
-    const AccountId kiosk_app_account_id =
-        AccountId::FromUserEmail("kiosk@foobar.com");
-    fake_user_manager_->AddKioskAppUser(kiosk_app_account_id);
-    fake_user_manager_->LoginUser(kiosk_app_account_id);
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    chromeos::SetUpFakeKioskSession();
   }
 
  private:

@@ -14,7 +14,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
@@ -68,7 +67,7 @@ TabletModeMultitaskMenuController::~TabletModeMultitaskMenuController() {
 bool TabletModeMultitaskMenuController::CanShowMenu(aura::Window* window) {
   // Cannot show the menu in the lock screen, or in app/kiosk mode.
   if (Shell::Get()->session_controller()->IsScreenLocked() ||
-      chromeos::IsKioskSession()) {
+      Shell::Get()->session_controller()->IsRunningInAppMode()) {
     return false;
   }
 

@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chromeos/components/kiosk:test_support",
     "//components/webapps/browser:constants",
     "//content/test:test_support",
     "//ui/base/idle",

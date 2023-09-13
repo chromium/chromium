@@ -158,6 +158,9 @@ source_set("unit_tests") {
   if (is_chromeos) {
     deps += [ "//chromeos/components/kiosk:test_support" ]
   }
+  if (is_chromeos_ash) {
+    deps += [ "//components/user_manager:test_support" ]
+  }
 }
 
 # Convenience testing target

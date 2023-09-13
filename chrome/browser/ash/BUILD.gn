@@ -6132,6 +6132,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/ash/services/secure_channel/public/mojom",
     "//chromeos/components/disks:prefs",
+    "//chromeos/components/kiosk:test_support",
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
     "//chromeos/components/print_management/mojom",

@@ -1291,6 +1291,16 @@ void UserManagerBase::Initialize() {
   NotifyLoginStateUpdated();
 }
 
+const User* UserManagerBase::AddKioskAppUserForTesting(
+    const AccountId& account_id,
+    const std::string& username_hash) {
+  User* user = User::CreateKioskAppUser(account_id);
+  user->set_username_hash(username_hash);
+  user_storage_.emplace_back(user);
+  users_.push_back(user);
+  return user;
+}
+
 void UserManagerBase::SetLRUUser(User* user) {
   local_state_->SetString(kLastActiveUser, user->GetAccountId().GetUserEmail());
   local_state_->CommitPendingWrite();

@@ -33,7 +33,9 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1519,16 +1521,16 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-
-    LoginState::Initialize();
-    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                        LoginState::LOGGED_IN_USER_KIOSK);
+    chromeos::SetUpFakeKioskSession();
   }
 
   void TearDown() override {
-    LoginState::Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
   }
+
+ private:
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      user_manager_{std::make_unique<user_manager::FakeUserManager>()};
 };
 
 // Checks that SWA manager is not created in Kiosk sessions.
