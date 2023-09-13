@@ -95,7 +95,7 @@ underlying_sink)JS";
                   ->Get(context, V8String(isolate, "result"))
                   .ToLocal(&result));
   ASSERT_TRUE(result->IsString());
-  EXPECT_EQ(ToCoreString(result.As<v8::String>()), "a");
+  EXPECT_EQ(ToCoreString(scope.GetIsolate(), result.As<v8::String>()), "a");
 }
 
 }  // namespace

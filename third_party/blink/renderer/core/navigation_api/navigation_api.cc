@@ -882,8 +882,8 @@ void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
   std::unique_ptr<SourceLocation> location =
       blink::CaptureSourceLocation(isolate, message, window_);
   ErrorEvent* event = ErrorEvent::Create(
-      ToCoreStringWithNullCheck(message->Get()), std::move(location), value,
-      &DOMWrapperWorld::MainWorld());
+      ToCoreStringWithNullCheck(isolate, message->Get()), std::move(location),
+      value, &DOMWrapperWorld::MainWorld());
   event->SetType(event_type_names::kNavigateerror);
   DispatchEvent(*event);
 

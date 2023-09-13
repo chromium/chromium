@@ -79,7 +79,8 @@ class BodyStreamBufferTest : public testing::Test,
     v8::TryCatch block(script_state->GetIsolate());
     ScriptValue r = Eval(script_state, s);
     if (block.HasCaught()) {
-      ADD_FAILURE() << ToCoreString(block.Exception()
+      ADD_FAILURE() << ToCoreString(script_state->GetIsolate(),
+                                    block.Exception()
                                         ->ToString(script_state->GetContext())
                                         .ToLocalChecked())
                            .Utf8();

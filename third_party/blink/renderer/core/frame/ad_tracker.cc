@@ -114,7 +114,7 @@ String AdTracker::ScriptAtTopOfStack() {
   if (script_name.IsEmpty() || !script_name->Length())
     return GenerateFakeUrlFromScriptId(frame->GetScriptId());
 
-  return ToCoreString(script_name);
+  return ToCoreString(isolate, script_name);
 }
 
 ExecutionContext* AdTracker::GetCurrentExecutionContext() {
@@ -205,12 +205,13 @@ void AdTracker::Will(const probe::CallFunction& probe) {
       probe.function->GetScriptOrigin().ResourceName();
   String script_url;
   if (!resource_name.IsEmpty()) {
+    v8::Isolate* isolate = ToIsolate(local_root_);
     v8::MaybeLocal<v8::String> resource_name_string =
-        resource_name->ToString(ToIsolate(local_root_)->GetCurrentContext());
+        resource_name->ToString(isolate->GetCurrentContext());
     // Rarely, ToString() can return an empty result, even if |resource_name|
     // isn't empty (crbug.com/1086832).
     if (!resource_name_string.IsEmpty())
-      script_url = ToCoreString(resource_name_string.ToLocalChecked());
+      script_url = ToCoreString(isolate, resource_name_string.ToLocalChecked());
   }
   WillExecuteScript(probe.context, probe.v8_context, script_url,
                     probe.function->ScriptId());

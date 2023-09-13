@@ -55,13 +55,8 @@ class V8StringResource {
   V8StringResource(const V8StringResource&) = delete;
   V8StringResource& operator=(const V8StringResource&) = delete;
 
-  V8StringResource() : mode_(kExternalize) {}
-
-  V8StringResource(v8::Local<v8::Value> object)
-      : v8_object_(object), mode_(kExternalize) {}
-
-  V8StringResource(const String& string)
-      : mode_(kExternalize), string_(string) {}
+  V8StringResource(v8::Isolate* isolate, v8::Local<v8::Value> object)
+      : isolate_(isolate), v8_object_(object), mode_(kExternalize) {}
 
   void operator=(v8::Local<v8::Value> object) { v8_object_ = object; }
 
@@ -69,8 +64,8 @@ class V8StringResource {
 
   void operator=(std::nullptr_t) { SetString(String()); }
 
-  bool Prepare(v8::Isolate* isolate, ExceptionState& exception_state) {
-    return PrepareFast() || PrepareSlow(isolate, exception_state);
+  bool Prepare(ExceptionState& exception_state) {
+    return PrepareFast() || PrepareSlow(exception_state);
   }
 
   // Implicit conversions needed to make Blink bindings easier to use.
@@ -84,8 +79,8 @@ class V8StringResource {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator StringView() const {
     if (LIKELY(!v8_object_.IsEmpty())) {
-      return ToBlinkStringView(v8_object_.As<v8::String>(), backing_store_,
-                               mode_);
+      return ToBlinkStringView(isolate_, v8_object_.As<v8::String>(),
+                               backing_store_, mode_);
     }
 
     return string_;
@@ -113,9 +108,9 @@ class V8StringResource {
     return false;
   }
 
-  bool PrepareSlow(v8::Isolate* isolate, ExceptionState& exception_state) {
-    v8::TryCatch try_catch(isolate);
-    if (!v8_object_->ToString(isolate->GetCurrentContext())
+  bool PrepareSlow(ExceptionState& exception_state) {
+    v8::TryCatch try_catch(isolate_);
+    if (!v8_object_->ToString(isolate_->GetCurrentContext())
              .ToLocal(&v8_object_)) {
       exception_state.RethrowV8Exception(try_catch.Exception());
       return false;
@@ -133,12 +128,15 @@ class V8StringResource {
 
   template <class StringType>
   StringType ToString() const {
-    if (LIKELY(!v8_object_.IsEmpty()))
-      return ToBlinkString<StringType>(v8_object_.As<v8::String>(), mode_);
+    if (LIKELY(!v8_object_.IsEmpty())) {
+      return ToBlinkString<StringType>(isolate_, v8_object_.As<v8::String>(),
+                                       mode_);
+    }
 
     return StringType(string_);
   }
 
+  v8::Isolate* isolate_;
   v8::Local<v8::Value> v8_object_;
   ExternalMode mode_;
   String string_;

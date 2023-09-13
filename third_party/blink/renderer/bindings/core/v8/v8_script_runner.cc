@@ -436,7 +436,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
 
     // ToCoreString here should be zero copy due to externalized string
     // unpacked.
-    String url = ToCoreString(script_url);
+    String url = ToCoreString(isolate, script_url);
     probe::ExecuteScript probe(context, isolate->GetCurrentContext(), url,
                                script->GetUnboundScript()->GetId());
     result = script->Run(isolate->GetCurrentContext(), host_defined_options);

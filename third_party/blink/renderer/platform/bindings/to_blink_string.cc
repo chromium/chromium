@@ -180,7 +180,9 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
 }  // namespace
 
 template <typename StringType>
-StringType ToBlinkString(v8::Local<v8::String> v8_string, ExternalMode mode) {
+StringType ToBlinkString(v8::Isolate* isolate,
+                         v8::Local<v8::String> v8_string,
+                         ExternalMode mode) {
   // Be very careful in this code to ensure it is RVO friendly. Accidentally
   // breaking RVO will degrade some of the blink_perf benchmarks by a few
   // percent. This includes moving the StringTraits<>::FromStringResource() call
@@ -203,21 +205,23 @@ StringType ToBlinkString(v8::Local<v8::String> v8_string, ExternalMode mode) {
   // calls will recreate the string.
   bool was_externalized;
   const bool is_one_byte = v8_string->IsOneByte();
-  // TODO(ajwong): Avoid v8::Isolate::GetCurrent() call.
   return ConvertAndExternalizeString<StringType>(
-      v8::Isolate::GetCurrent(), v8_string,
-      CanExternalize(v8_string, mode, is_one_byte), is_one_byte,
-      &was_externalized);
+      isolate, v8_string, CanExternalize(v8_string, mode, is_one_byte),
+      is_one_byte, &was_externalized);
 }
 
 // Explicitly instantiate the above template with the expected
 // parameterizations, to ensure the compiler generates the code; otherwise link
 // errors can result in GCC 4.4.
-template String ToBlinkString<String>(v8::Local<v8::String>, ExternalMode);
-template AtomicString ToBlinkString<AtomicString>(v8::Local<v8::String>,
+template String ToBlinkString<String>(v8::Isolate* isolate,
+                                      v8::Local<v8::String>,
+                                      ExternalMode);
+template AtomicString ToBlinkString<AtomicString>(v8::Isolate* isolate,
+                                                  v8::Local<v8::String>,
                                                   ExternalMode);
 
-StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
+StringView ToBlinkStringView(v8::Isolate* isolate,
+                             v8::Local<v8::String> v8_string,
                              StringView::StackBackingStore& backing_store,
                              ExternalMode mode) {
   // Be very careful in this code to ensure it is RVO friendly. Accidentally
@@ -238,13 +242,8 @@ StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
   // there is no attempt to create either an AtomicString or an String. This
   // can very likely avoid a heap allocation and definitely avoids refcount
   // churn which can be significantly faster in some hot paths.
-  //
-  // TODO(ajwong): Pass in isolate to avoid extra TLS lookups? Especially with
-  // small identifiers on 64-bit platforms, externalizations are less frequent
-  // so this path is hotter.
   const bool is_one_byte = v8_string->IsOneByte();
   bool can_externalize = CanExternalize(v8_string, mode, is_one_byte);
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   if (LIKELY(can_externalize)) {
     bool was_externalized;
     // An AtomicString is always used here for externalization. Using a String

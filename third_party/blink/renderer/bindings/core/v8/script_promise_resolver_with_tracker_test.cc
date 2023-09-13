@@ -23,6 +23,7 @@ class TestHelperFunction : public ScriptFunction::Callable {
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     DCHECK(!value.IsEmpty());
     *value_ = ToCoreString(
+        script_state->GetIsolate(),
         value.V8Value()->ToString(script_state->GetContext()).ToLocalChecked());
     return value;
   }

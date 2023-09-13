@@ -31,10 +31,10 @@ ScriptValue UpdatePaymentDetailsFunction::Call(ScriptState* script_state,
       delegate_->OnUpdatePaymentDetails(value);
       break;
     case ResolveType::kReject:
-      delegate_->OnUpdatePaymentDetailsFailure(
-          ToCoreString(value.V8Value()
-                           ->ToString(script_state->GetContext())
-                           .ToLocalChecked()));
+      delegate_->OnUpdatePaymentDetailsFailure(ToCoreString(
+          script_state->GetIsolate(), value.V8Value()
+                                          ->ToString(script_state->GetContext())
+                                          .ToLocalChecked()));
       break;
   }
   delegate_ = nullptr;

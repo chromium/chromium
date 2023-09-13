@@ -909,7 +909,8 @@ void V8ScriptValueSerializer::ThrowDataCloneError(
                                  exception_state_->GetContext());
   exception_state.ThrowDOMException(
       DOMExceptionCode::kDataCloneError,
-      ToBlinkString<String>(v8_message, kDoNotExternalize));
+      ToBlinkString<String>(script_state_->GetIsolate(), v8_message,
+                            kDoNotExternalize));
 }
 
 v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(

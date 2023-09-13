@@ -184,7 +184,7 @@ void PaymentsValidators::ValidateAndStringifyObject(
     return;
   }
 
-  output = ToBlinkString<String>(value, kDoNotExternalize);
+  output = ToBlinkString<String>(isolate, value, kDoNotExternalize);
 
   // Implementation defined constant controlling the allowed JSON length.
   static constexpr size_t kMaxJSONStringLength = 1024 * 1024;

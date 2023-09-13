@@ -81,7 +81,7 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
   }
 
   String url = ToCoreStringWithUndefinedOrNullCheck(
-      message->GetScriptOrigin().ResourceName());
+      isolate, message->GetScriptOrigin().ResourceName());
   if (url.empty()) {
     url = execution_context->Url();
   }

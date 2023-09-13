@@ -227,7 +227,8 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
     PerformMicrotaskCheckpoint();
     {
       ScriptState::Scope scope(MainScriptState());
-      actual = ToCoreString(actual_value.V8Value()
+      actual = ToCoreString(MainScriptState()->GetIsolate(),
+                            actual_value.V8Value()
                                 ->ToString(MainScriptState()->GetContext())
                                 .ToLocalChecked());
     }

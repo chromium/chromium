@@ -234,12 +234,14 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
   NativeValueTraitsStringAdapter(const NativeValueTraitsStringAdapter&) =
       delete;
   NativeValueTraitsStringAdapter(NativeValueTraitsStringAdapter&&) = default;
-  explicit NativeValueTraitsStringAdapter(v8::Local<v8::String> value)
-      : v8_string_(value) {}
-  explicit NativeValueTraitsStringAdapter(const String& value)
-      : wtf_string_(value) {}
-  explicit NativeValueTraitsStringAdapter(int32_t value)
-      : wtf_string_(ToBlinkString(value)) {}
+  explicit NativeValueTraitsStringAdapter(v8::Isolate* isolate,
+                                          v8::Local<v8::String> value)
+      : isolate_(isolate), v8_string_(value) {}
+  explicit NativeValueTraitsStringAdapter(v8::Isolate* isolate,
+                                          const String& value)
+      : isolate_(isolate), wtf_string_(value) {}
+  explicit NativeValueTraitsStringAdapter(v8::Isolate* isolate, int32_t value)
+      : isolate_(isolate), wtf_string_(ToBlinkString(value)) {}
 
   NativeValueTraitsStringAdapter& operator=(
       const NativeValueTraitsStringAdapter&) = delete;
@@ -251,10 +253,11 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
     return *this;
   }
 
-  void Init(v8::Local<v8::String> value) {
+  void Init(v8::Isolate* isolate, v8::Local<v8::String> value) {
     DCHECK(v8_string_.IsEmpty());
     DCHECK(wtf_string_.IsNull());
     v8_string_ = value;
+    isolate_ = isolate;
   }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -270,18 +273,19 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
   template <class StringType>
   StringType ToString() const {
     if (LIKELY(!v8_string_.IsEmpty()))
-      return ToBlinkString<StringType>(v8_string_, kExternalize);
+      return ToBlinkString<StringType>(isolate_, v8_string_, kExternalize);
     return StringType(wtf_string_);
   }
 
   StringView ToStringView() const& {
     if (LIKELY(!v8_string_.IsEmpty())) {
-      return ToBlinkStringView(v8_string_, string_view_backing_store_,
+      return ToBlinkStringView(isolate_, v8_string_, string_view_backing_store_,
                                kExternalize);
     }
     return wtf_string_;
   }
 
+  v8::Isolate* isolate_ = nullptr;
   v8::Local<v8::String> v8_string_;
   String wtf_string_;
   mutable StringView::StackBackingStore string_view_backing_store_;
@@ -297,11 +301,13 @@ struct NativeValueTraits<IDLByteStringBase<mode>>
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) {
-    if (value->IsString() and value.As<v8::String>()->ContainsOnlyOneByte())
-      return bindings::NativeValueTraitsStringAdapter(value.As<v8::String>());
+    if (value->IsString() and value.As<v8::String>()->ContainsOnlyOneByte()) {
+      return bindings::NativeValueTraitsStringAdapter(isolate,
+                                                      value.As<v8::String>());
+    }
     if (value->IsInt32()) {
       return bindings::NativeValueTraitsStringAdapter(
-          value.As<v8::Int32>()->Value());
+          isolate, value.As<v8::Int32>()->Value());
     }
 
     if (mode == bindings::IDLStringConvMode::kNullable) {
@@ -320,7 +326,7 @@ struct NativeValueTraits<IDLByteStringBase<mode>>
           "String contains non ISO-8859-1 code point.");
       return bindings::NativeValueTraitsStringAdapter();
     }
-    return bindings::NativeValueTraitsStringAdapter(v8_string);
+    return bindings::NativeValueTraitsStringAdapter(isolate, v8_string);
   }
 };
 
@@ -357,11 +363,13 @@ struct NativeValueTraits<IDLStringBase<mode>>
       v8::Isolate* isolate,
       v8::Local<v8::Value> value,
       ExceptionState& exception_state) {
-    if (value->IsString())
-      return bindings::NativeValueTraitsStringAdapter(value.As<v8::String>());
+    if (value->IsString()) {
+      return bindings::NativeValueTraitsStringAdapter(isolate,
+                                                      value.As<v8::String>());
+    }
     if (value->IsInt32()) {
       return bindings::NativeValueTraitsStringAdapter(
-          value.As<v8::Int32>()->Value());
+          isolate, value.As<v8::Int32>()->Value());
     }
 
     if (mode == bindings::IDLStringConvMode::kNullable) {
@@ -369,8 +377,10 @@ struct NativeValueTraits<IDLStringBase<mode>>
         return bindings::NativeValueTraitsStringAdapter();
     }
     if (mode == bindings::IDLStringConvMode::kLegacyNullToEmptyString) {
-      if (value->IsNull())
-        return bindings::NativeValueTraitsStringAdapter(g_empty_string);
+      if (value->IsNull()) {
+        return bindings::NativeValueTraitsStringAdapter(isolate,
+                                                        g_empty_string);
+      }
     }
 
     v8::TryCatch try_catch(isolate);
@@ -379,7 +389,7 @@ struct NativeValueTraits<IDLStringBase<mode>>
       exception_state.RethrowV8Exception(try_catch.Exception());
       return bindings::NativeValueTraitsStringAdapter();
     }
-    return bindings::NativeValueTraitsStringAdapter(v8_string);
+    return bindings::NativeValueTraitsStringAdapter(isolate, v8_string);
   }
 };
 
@@ -422,7 +432,7 @@ struct NativeValueTraits<IDLUSVStringBase<mode>>
       return bindings::NativeValueTraitsStringAdapter();
 
     return bindings::NativeValueTraitsStringAdapter(
-        ReplaceUnmatchedSurrogates(string));
+        isolate, ReplaceUnmatchedSurrogates(string));
   }
 };
 

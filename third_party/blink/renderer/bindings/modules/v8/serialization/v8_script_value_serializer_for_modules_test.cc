@@ -1876,9 +1876,9 @@ TEST(V8ScriptValueSerializerForModulesTest,
       V8ScriptValueSerializerForModules(script_state, serialize_options)
           .Serialize(v8_ab, exception_state));
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_THAT(ToCoreString(exception_state.GetException()
-                               ->ToString(scope.GetContext())
-                               .ToLocalChecked())
+  EXPECT_THAT(ToCoreString(isolate, exception_state.GetException()
+                                        ->ToString(scope.GetContext())
+                                        .ToLocalChecked())
                   .Ascii(),
               testing::StartsWith("TypeError"));
   EXPECT_FALSE(v8_ab->WasDetached());

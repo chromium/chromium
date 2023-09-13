@@ -627,7 +627,7 @@ String GetTrustedTypesLiteral(const ScriptValue& script_value,
         first_value->IsString()) {
       v8::Local<v8::String> first_value_as_string =
           v8::Local<v8::String>::Cast(first_value);
-      return ToCoreString(first_value_as_string);
+      return ToCoreString(script_state->GetIsolate(), first_value_as_string);
     }
   }
 

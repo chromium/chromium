@@ -107,7 +107,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
     return;
   }
 
-  String details = ToCoreString(details_value);
+  String details = ToCoreString(script_state->GetIsolate(), details_value);
   DCHECK(!details.empty());
 
   String payer_name = response->hasPayerName() ? response->payerName() : "";

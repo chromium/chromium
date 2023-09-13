@@ -752,8 +752,9 @@ def make_v8_to_blink_value(blink_var_name,
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.
         fast_path_cond = "LIKELY({}->IsString())".format(v8_value_expr)
-        fast_path_body_text = "{}.Init({}.As<v8::String>());".format(
-            blink_var_name, v8_value_expr)
+        fast_path_body_text = _format(
+            "{}.Init(${isolate}, {}.As<v8::String>());", blink_var_name,
+            v8_value_expr)
     elif idl_type.unwrap(typedef=True).is_callback_function:
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.
