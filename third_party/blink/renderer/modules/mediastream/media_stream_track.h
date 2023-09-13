@@ -36,6 +36,7 @@ class MediaConstraints;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
 class MediaStream;
+class MediaStreamTrackVideoStats;
 class MediaTrackSettings;
 class ScriptState;
 
@@ -101,7 +102,7 @@ class MODULES_EXPORT MediaStreamTrack
   virtual MediaTrackCapabilities* getCapabilities() const = 0;
   virtual MediaTrackConstraints* getConstraints() const = 0;
   virtual MediaTrackSettings* getSettings() const = 0;
-  virtual ScriptPromise getFrameStats(ScriptState*) const = 0;
+  virtual MediaStreamTrackVideoStats* videoStats(ExceptionState&) = 0;
   virtual CaptureHandle* getCaptureHandle() const = 0;
   virtual ScriptPromise applyConstraints(ScriptState*,
                                          const MediaTrackConstraints*) = 0;

@@ -6089,13 +6089,13 @@ interface MediaStreamTrack : EventTarget
     getter onmute
     getter onunmute
     getter readyState
+    getter videoStats
     method applyConstraints
     method clone
     method constructor
     method getCapabilities
     method getCaptureHandle
     method getConstraints
-    method getFrameStats
     method getSettings
     method stop
     setter contentHint
@@ -6116,6 +6116,12 @@ interface MediaStreamTrackGenerator : MediaStreamTrack
 interface MediaStreamTrackProcessor
     attribute @@toStringTag
     getter readable
+    method constructor
+interface MediaStreamTrackVideoStats
+    attribute @@toStringTag
+    getter deliveredFrames
+    getter discardedFrames
+    getter totalFrames
     method constructor
 interface MerchantValidationEvent : Event
     attribute @@toStringTag

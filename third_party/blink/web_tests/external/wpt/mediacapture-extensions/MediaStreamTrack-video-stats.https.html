@@ -6,12 +6,22 @@
 <script>
 'use strict';
 
+// We have to manually copy as opposed to {...videoStats} because videoStats is
+// an interface, not a dictionary.
+function copyStats(videoStats) {
+  return { deliveredFrames: videoStats.deliveredFrames,
+           discardedFrames: videoStats.discardedFrames,
+           totalFrames: videoStats.totalFrames };
+}
+
 async function getFrameStatsUntil(track, condition) {
   while (true) {
-    const stats = await track.getFrameStats();
+    const stats = copyStats(track.videoStats);
     if (condition(stats)) {
       return stats;
     }
+    // Repeat in the next task execution cycle.
+    await Promise.resolve();
   }
 }
 
@@ -23,7 +33,7 @@ promise_test(async t => {
   const firstStats =
       await getFrameStatsUntil(track, stats => stats.totalFrames > 0);
   await getFrameStatsUntil(track,
-                      stats => stats.totalFrames > firstStats.totalFrames);
+                           stats => stats.totalFrames > firstStats.totalFrames);
 }, `totalFrames increases over time`);
 
 promise_test(async t => {
@@ -77,6 +87,18 @@ promise_test(async t => {
 }, `totalFrames is the sum of deliveredFrames and discardedFrames`);
 
 promise_test(async t => {
+  const stream = await navigator.mediaDevices.getUserMedia({video:true});
+  const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
+
+  const a = track.videoStats;
+  await getFrameStatsUntil(track, stats => stats.totalFrames > 0);
+  const b = track.videoStats;
+  // The counters may have changed, but `a` and `b` are still the same object.
+  assert_equals(a, b);
+}, `SameObject policy applies`);
+
+promise_test(async t => {
   const stream = await navigator.mediaDevices.getUserMedia({
           video:{frameRate:{ideal:20}}
       });
@@ -94,7 +116,7 @@ promise_test(async t => {
       stats.totalFrames > 10);
   track.enabled = false;
   // Upon disabling, the counters are not reset.
-  const disabledSnapshot = await track.getFrameStats();
+  const disabledSnapshot = copyStats(track.videoStats);
   assert_greater_than_equal(disabledSnapshot.deliveredFrames,
                             initialStats.deliveredFrames);
   assert_greater_than_equal(disabledSnapshot.discardedFrames,
@@ -108,12 +130,12 @@ promise_test(async t => {
   // Frame metrics should be frozen, but because `enabled = false` does not
   // return a promise, we allow some lee-way in case a frame was still in flight
   // during the disabling.
-  const stats = await track.getFrameStats();
   assert_approx_equals(
-      stats.deliveredFrames, disabledSnapshot.deliveredFrames, 1);
+      track.videoStats.deliveredFrames, disabledSnapshot.deliveredFrames, 1);
   assert_approx_equals(
-      stats.discardedFrames, disabledSnapshot.discardedFrames, 1);
-  assert_approx_equals(stats.totalFrames, disabledSnapshot.totalFrames, 1);
+      track.videoStats.discardedFrames, disabledSnapshot.discardedFrames, 1);
+  assert_approx_equals(
+      track.videoStats.totalFrames, disabledSnapshot.totalFrames, 1);
 }, `Stats are frozen while disabled`);
 
 promise_test(async t => {
@@ -136,12 +158,11 @@ promise_test(async t => {
   // Re-enable the track. The stats counters should be greater than or equal to
   // what they were previously.
   track.enabled = true;
-  const stats = await track.getFrameStats();
-  assert_greater_than_equal(stats.deliveredFrames,
+  assert_greater_than_equal(track.videoStats.deliveredFrames,
                             initialStats.deliveredFrames);
-  assert_greater_than_equal(stats.discardedFrames,
+  assert_greater_than_equal(track.videoStats.discardedFrames,
                             initialStats.discardedFrames);
-  assert_greater_than_equal(stats.totalFrames,
+  assert_greater_than_equal(track.videoStats.totalFrames,
                             initialStats.totalFrames);
 }, `Disabling and re-enabling does not reset the counters`);
 
@@ -161,13 +182,13 @@ promise_test(async t => {
   await getFrameStatsUntil(originalTrack, stats =>
       stats.deliveredFrames > 0 && stats.discardedFrames > 0);
   originalTrack.enabled = false;
-  const originalTrackInitialStats = await originalTrack.getFrameStats();
+  const originalTrackInitialStats = copyStats(originalTrack.videoStats);
 
   // Clone the track, its counters should be zero initially.
   // This is not racy because the cloned track is also disabled.
   const clonedTrack = originalTrack.clone();
   t.add_cleanup(() => clonedTrack.stop());
-  const clonedTrackStats = await clonedTrack.getFrameStats();
+  const clonedTrackStats = copyStats(clonedTrack.videoStats);
   assert_equals(clonedTrackStats.deliveredFrames, 0);
   assert_equals(clonedTrackStats.discardedFrames, 0);
   assert_equals(clonedTrackStats.totalFrames, 0);
@@ -179,12 +200,11 @@ promise_test(async t => {
 
   // This does not affect the original track's stats, which are still frozen due
   // to the original track being disabled.
-  const originalTrackSecondStats = await originalTrack.getFrameStats();
-  assert_equals(originalTrackSecondStats.deliveredFrames,
+  assert_equals(originalTrack.videoStats.deliveredFrames,
                 originalTrackInitialStats.deliveredFrames);
-  assert_equals(originalTrackSecondStats.discardedFrames,
+  assert_equals(originalTrack.videoStats.discardedFrames,
                 originalTrackInitialStats.discardedFrames);
-  assert_equals(originalTrackSecondStats.totalFrames,
+  assert_equals(originalTrack.videoStats.totalFrames,
                 originalTrackInitialStats.totalFrames);
 }, `New stats baselines when a track is cloned from a disabled track`);
 
@@ -214,13 +234,12 @@ promise_test(async t => {
   // will have started from zero.
   const clonedTrackStats = await getFrameStatsUntil(clonedTrack, stats =>
       stats.deliveredFrames > 0 && stats.discardedFrames > 0);
-  const originalTrackStats = await originalTrack.getFrameStats();
   assert_less_than(clonedTrackStats.deliveredFrames,
-                   originalTrackStats.deliveredFrames);
+                   originalTrack.videoStats.deliveredFrames);
   assert_less_than(clonedTrackStats.discardedFrames,
-                   originalTrackStats.discardedFrames);
+                   originalTrack.videoStats.discardedFrames);
   assert_less_than(clonedTrackStats.totalFrames,
-                   originalTrackStats.totalFrames);
+                   originalTrack.videoStats.totalFrames);
 }, `New stats baselines when a track is cloned from an enabled track`);
 
 promise_test(async t => {
@@ -253,9 +272,9 @@ promise_test(async t => {
 
   // Because every clone reset its counters and every waits for media before
   // cloning, this must be true: originalStats > cloneAStats > cloneBStats.
-  const originalStats = await originalTrack.getFrameStats();
-  const cloneAStats = await cloneA.getFrameStats();
-  const cloneBStats = await cloneB.getFrameStats();
+  const originalStats = copyStats(originalTrack.videoStats);
+  const cloneAStats = copyStats(cloneA.videoStats);
+  const cloneBStats = copyStats(cloneB.videoStats);
   assert_greater_than(originalStats.totalFrames, cloneAStats.totalFrames);
   assert_greater_than(cloneAStats.totalFrames, cloneBStats.totalFrames);
 }, `New stats baselines for the clone of a clone`);
@@ -291,7 +310,7 @@ promise_test(async t => {
   t.add_cleanup(() => track.stop());
 
   try {
-    await track.getFrameStats();
+    const stats = copyStats(track.videoStats);
     assert_not_reached();
   } catch (e) {
     assert_equals(e.name, 'NotSupportedError');

@@ -462,7 +462,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/mediastream/media_track_capabilities.idl",
   "//third_party/blink/renderer/modules/mediastream/media_track_constraint_set.idl",
   "//third_party/blink/renderer/modules/mediastream/media_track_constraints.idl",
-  "//third_party/blink/renderer/modules/mediastream/media_track_frame_stats.idl",
+  "//third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.idl",
   "//third_party/blink/renderer/modules/mediastream/media_track_settings.idl",
   "//third_party/blink/renderer/modules/mediastream/media_track_supported_constraints.idl",
   "//third_party/blink/renderer/modules/mediastream/navigator_media_stream.idl",

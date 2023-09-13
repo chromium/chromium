@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_frame_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -666,34 +665,24 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
   return settings;
 }
 
-ScriptPromise MediaStreamTrackImpl::getFrameStats(
-    ScriptState* script_state) const {
-  if (!script_state->ContextIsValid()) {
-    return ScriptPromise();
-  }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+MediaStreamTrackVideoStats* MediaStreamTrackImpl::videoStats(
+    ExceptionState& exception_state) {
   switch (component_->GetSourceType()) {
     case MediaStreamSource::kTypeAudio:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "MediaStreamTrack.getFrameStats() is not supported for audio "
-          "tracks."));
-      break;
-    case MediaStreamSource::kTypeVideo: {
-      MediaStreamTrackPlatform::VideoFrameStats video_stats =
-          component_->GetPlatformTrack()->GetVideoFrameStats();
-      MediaTrackFrameStats* stats_dictionary = MediaTrackFrameStats::Create();
-      stats_dictionary->setDeliveredFrames(video_stats.deliverable_frames);
-      stats_dictionary->setDiscardedFrames(video_stats.discarded_frames);
-      stats_dictionary->setTotalFrames(video_stats.deliverable_frames +
-                                       video_stats.discarded_frames +
-                                       video_stats.dropped_frames);
-      resolver->Resolve(stats_dictionary);
-      break;
-    }
+          "MediaStreamTrack.videoStats is not supported for audio tracks.");
+      return nullptr;
+    case MediaStreamSource::kTypeVideo:
+      if (!video_stats_) {
+        video_stats_ = MakeGarbageCollected<MediaStreamTrackVideoStats>();
+      }
+      // TODO(https://crbug.com/1472978): Only update the result if this is a
+      // new task execution cycle to preserve JS run-to-completion policy.
+      video_stats_->setStats(
+          component_->GetPlatformTrack()->GetVideoFrameStats());
+      return video_stats_;
   }
-  return promise;
 }
 
 CaptureHandle* MediaStreamTrackImpl::getCaptureHandle() const {
@@ -1017,6 +1006,7 @@ void MediaStreamTrackImpl::Trace(Visitor* visitor) const {
   visitor->Trace(image_capture_);
   visitor->Trace(execution_context_);
   visitor->Trace(observers_);
+  visitor->Trace(video_stats_);
   EventTarget::Trace(visitor);
   MediaStreamTrack::Trace(visitor);
 }

@@ -1,0 +1,12 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    RuntimeEnabled=MediaStreamTrackGetFrameStats
+] interface MediaStreamTrackVideoStats {
+    readonly attribute unsigned long long deliveredFrames;
+    readonly attribute unsigned long long discardedFrames;
+    readonly attribute unsigned long long totalFrames;
+};

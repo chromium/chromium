@@ -25,6 +25,7 @@
 
 namespace blink {
 
+class MediaStreamTrackVideoStats;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
 class MediaTrackSettings;
@@ -54,7 +55,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   MediaTrackCapabilities* getCapabilities() const override;
   MediaTrackConstraints* getConstraints() const override;
   MediaTrackSettings* getSettings() const override;
-  ScriptPromise getFrameStats(ScriptState*) const override;
+  MediaStreamTrackVideoStats* videoStats(ExceptionState&) override;
   CaptureHandle* getCaptureHandle() const override;
   ScriptPromise applyConstraints(ScriptState*,
                                  const MediaTrackConstraints*) override;
