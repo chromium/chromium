@@ -169,7 +169,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // TODO(crbug.com/1474951): Make this the screen reader default speed if a
   // TTS speed has been set
-  private rate_: number = 1;
+  rate: number = 1;
 
   constructor() {
     super();
@@ -375,7 +375,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   onSpeechRateChange(rate: number) {
-    this.rate_ = rate;
+    this.rate = rate;
   }
 
   stopSpeech() {
@@ -460,7 +460,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(crbug.com/1474951): Ensure rate change happens immediately, rather
     // than on the next set of text.
-    message.rate = this.rate_;
+    message.rate = this.rate;
 
     this.speechStarted = true;
     this.synth.cancel();
@@ -534,9 +534,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.updateLineSpacing(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing(chrome.readingMode.letterSpacing);
     this.updateFont(chrome.readingMode.fontName);
-    this.updateStyles({
-      '--font-size': chrome.readingMode.fontSize + 'em',
-    });
+    this.updateFontSize();
     let colorSuffix: string|undefined;
     switch (chrome.readingMode.colorTheme) {
       case chrome.readingMode.defaultTheme:
@@ -609,10 +607,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :
         'var(--color-side-panel-card-secondary-foreground)';
     this.updateStyles({
-      '--background-color':
-          `var(--color-read-anything-background${colorSuffix})`,
-      '--foreground-color':
-          `var(--color-read-anything-foreground${colorSuffix})`,
+      '--background-color': this.getBackgroundColorVar(colorSuffix),
+      '--foreground-color': this.getForegroundColorVar(colorSuffix),
       '--sp-empty-state-heading-color':
           `var(--color-read-anything-foreground${colorSuffix})`,
       '--sp-empty-state-body-color': emptyStateBodyColor,
@@ -622,6 +618,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       '--visited-link-color':
           `var(--color-read-anything-link-visited${colorSuffix})`,
     });
+  }
+
+  getBackgroundColorVar(colorSuffix: string) {
+    return `var(--color-read-anything-background${colorSuffix})`;
+  }
+
+  getForegroundColorVar(colorSuffix: string) {
+    return `var(--color-read-anything-foreground${colorSuffix})`;
   }
 
   updateTheme() {
