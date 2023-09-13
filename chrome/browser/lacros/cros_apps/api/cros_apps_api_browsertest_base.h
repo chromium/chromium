@@ -19,9 +19,6 @@ class CrosAppsApiBrowserTestBase : public InProcessBrowserTest {
   // InProcessBrowserTest
   ~CrosAppsApiBrowserTestBase() override;
 
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };

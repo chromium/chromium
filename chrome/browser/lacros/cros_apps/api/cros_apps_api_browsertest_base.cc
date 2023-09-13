@@ -8,14 +8,8 @@
 #include "content/public/common/content_switches.h"
 
 CrosAppsApiBrowserTestBase::CrosAppsApiBrowserTestBase() {
-  scoped_feature_list_.InitAndEnableFeature(chromeos::features::kCrosAppsApis);
+  scoped_feature_list_.InitAndEnableFeature(
+      chromeos::features::kBlinkExtension);
 }
 
 CrosAppsApiBrowserTestBase::~CrosAppsApiBrowserTestBase() = default;
-
-void CrosAppsApiBrowserTestBase::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "BlinkExtensionChromeOS");
-}

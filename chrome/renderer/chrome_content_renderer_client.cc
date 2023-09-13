@@ -256,6 +256,10 @@
 #include "chrome/renderer/cco/multiline_detector.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 using autofill::AutofillAgent;
 using autofill::PasswordAutofillAgent;
 using autofill::PasswordGenerationAgent;
@@ -1658,6 +1662,16 @@ void ChromeContentRendererClient::
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::features::IsBlinkExtensionEnabled()) {
+    blink::WebRuntimeFeatures::EnableBlinkExtensionChromeOS(true);
+  }
+
+  if (chromeos::features::IsBlinkExtensionDiagnosticsEnabled()) {
+    blink::WebRuntimeFeatures::EnableBlinkExtensionDiagnostics(true);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(

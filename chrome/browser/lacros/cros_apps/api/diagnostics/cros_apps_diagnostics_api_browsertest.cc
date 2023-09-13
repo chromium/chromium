@@ -23,14 +23,7 @@ class CrosAppsDiagnosticsApiBrowserTest : public CrosAppsApiBrowserTestBase {
  public:
   CrosAppsDiagnosticsApiBrowserTest() : CrosAppsApiBrowserTestBase() {
     scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kCrosDiagnosticsApi);
-  }
-
-  // CrosAppsApiBrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CrosAppsApiBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "BlinkExtensionChromeOSDiagnostics");
+        chromeos::features::kBlinkExtensionDiagnostics);
   }
 
  protected:

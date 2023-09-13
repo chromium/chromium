@@ -475,11 +475,8 @@
       name: "BlinkExtensionChromeOS",
       browser_process_read_write_access: true,
       base_feature: "none",
-    },
-    {
-      name: "BlinkExtensionChromeOSDiagnostics",
-      depends_on: ["BlinkExtensionChromeOS"],
-      base_feature: "none",
+      // TODO(b/294479032): Remove when access control is implemented.
+      public: true,
     },
     {
       name: "BlinkExtensionChromeOSHID",
@@ -495,6 +492,13 @@
       name: "BlinkExtensionChromeOSWindowManagement",
       depends_on: ["BlinkExtensionChromeOS"],
       base_feature: "none",
+    },
+    {
+      name: "BlinkExtensionDiagnostics",
+      depends_on: ["BlinkExtensionChromeOS"],
+      base_feature: "none",
+      // TODO(b/294479032): Remove when access control is implemented.
+      public: true,
     },
     {
       name: "BlinkLifecycleScriptForbidden",

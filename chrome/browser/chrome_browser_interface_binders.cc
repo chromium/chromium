@@ -927,7 +927,7 @@ void PopulateChromeFrameBinders(
         base::BindRepeating(&apps::DigitalGoodsFactoryStub::Bind));
   }
 
-  if (chromeos::features::IsCrosDiagnosticsApiEnabled()) {
+  if (chromeos::features::IsBlinkExtensionDiagnosticsEnabled()) {
     map->Add<blink::mojom::CrosDiagnostics>(
         base::BindRepeating(&CrosDiagnosticsImpl::Create));
   }

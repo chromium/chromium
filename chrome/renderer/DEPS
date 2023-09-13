@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/common/accessibility",
   "+chrome/grit",
   "+chrome/services/speech/buildflags/buildflags.h",
+  "+chromeos/constants/chromeos_features.h",
   "+components/autofill/content/common",
   "+components/autofill/content/renderer",
   "+components/autofill/core/common",

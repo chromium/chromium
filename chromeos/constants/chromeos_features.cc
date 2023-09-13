@@ -32,11 +32,13 @@ BASE_FEATURE(kCloudGamingDevice,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables ChromeOS Apps APIs.
-BASE_FEATURE(kCrosAppsApis, "CrosAppsApis", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBlinkExtension,
+             "BlinkExtension",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the ChromeOS Diagnostics API.
-BASE_FEATURE(kCrosDiagnosticsApi,
-             "CrosDiagnosticsApi",
+BASE_FEATURE(kBlinkExtensionDiagnostics,
+             "BlinkExtensionDiagnostics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of cros-component UI elements. Contact:
@@ -135,13 +137,13 @@ bool IsCloudGamingDeviceEnabled() {
 #endif
 }
 
-bool IsCrosAppsApisEnabled() {
-  return base::FeatureList::IsEnabled(kCrosAppsApis);
+bool IsBlinkExtensionEnabled() {
+  return base::FeatureList::IsEnabled(kBlinkExtension);
 }
 
-bool IsCrosDiagnosticsApiEnabled() {
-  return base::FeatureList::IsEnabled(kCrosDiagnosticsApi) &&
-         IsCrosAppsApisEnabled();
+bool IsBlinkExtensionDiagnosticsEnabled() {
+  return IsBlinkExtensionEnabled() &&
+         base::FeatureList::IsEnabled(kBlinkExtensionDiagnostics);
 }
 
 bool IsCrosComponentsEnabled() {
