@@ -27,7 +27,7 @@ class LocalTabGroupListener {
       tab_groups::TabGroupId local_id,
       base::Uuid saved_guid,
       SavedTabGroupModel* model,
-      std::vector<std::pair<content::WebContents*, base::Uuid>> mapping);
+      std::map<content::WebContents*, base::Uuid> web_contents_to_uuid);
   virtual ~LocalTabGroupListener();
 
   // Pauses listening to changes to the local tab group. Call this before

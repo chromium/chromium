@@ -86,11 +86,19 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
   // WebContents in the local TabGroup.
-  std::vector<std::pair<content::WebContents*, base::Uuid>>
+  std::map<content::WebContents*, base::Uuid>
   GetWebContentsToTabGuidMappingForSavedGroup(
       const TabStripModel* const tab_strip_model,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
+
+  // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
+  // WebContents that will open.
+  std::map<content::WebContents*, base::Uuid>
+  GetWebContentsToTabGuidMappingForOpening(
+      Browser* browser,
+      const SavedTabGroup* const saved_group,
+      const base::Uuid& saved_group_guid);
 
   // Activates the first tab in saved group that is already opened when its
   // button is pressed.

@@ -20,9 +20,9 @@ LocalTabGroupListener::LocalTabGroupListener(
     const tab_groups::TabGroupId local_id,
     const base::Uuid saved_guid,
     SavedTabGroupModel* const model,
-    std::vector<std::pair<content::WebContents*, base::Uuid>> mapping)
+    std::map<content::WebContents*, base::Uuid> web_contents_to_uuid)
     : model_(model), local_id_(local_id), saved_guid_(saved_guid) {
-  for (const auto& [contents, saved_tab_guid] : mapping) {
+  for (const auto& [contents, saved_tab_guid] : web_contents_to_uuid) {
     const base::Token local_tab_id = base::Token::CreateRandom();
 
     web_contents_to_tab_id_map_.try_emplace(contents, contents, local_tab_id,

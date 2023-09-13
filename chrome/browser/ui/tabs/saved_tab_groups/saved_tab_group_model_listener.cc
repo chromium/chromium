@@ -179,19 +179,20 @@ void SavedTabGroupModelListener::WillCloseAllTabs(
 
 void SavedTabGroupModelListener::ConnectToLocalTabGroup(
     const SavedTabGroup& saved_tab_group,
-    std::vector<std::pair<content::WebContents*, base::Uuid>> mapping) {
+    std::map<content::WebContents*, base::Uuid> web_contents_map) {
   const tab_groups::TabGroupId local_group_id =
       saved_tab_group.local_group_id().value();
 
-  // `mapping` should have one entry per tab in the local group. This may not
-  // equal the saved group's size, if the saved group contains invalid URLs.
+  // `web_contents_map` should have one entry per tab in the local group. This
+  // may not equal the saved group's size, if the saved group contains invalid
+  // URLs.
   const size_t local_group_size =
       SavedTabGroupUtils::GetTabGroupWithId(local_group_id)->tab_count();
-  CHECK_EQ(local_group_size, mapping.size());
+  CHECK_EQ(local_group_size, web_contents_map.size());
 
   auto [iterator, success] = local_tab_group_listeners_.try_emplace(
       local_group_id, local_group_id, saved_tab_group.saved_guid(), model_,
-      mapping);
+      web_contents_map);
   CHECK(success);
 }
 
