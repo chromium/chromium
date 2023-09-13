@@ -377,6 +377,16 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     nav_observer.Wait();
   }
 
+  // Mimics a user clicking a link in the main page to `url` that opens a new
+  // tab
+  void ClickNewTabUrlInMainPage(const GURL& url) {
+    std::string script =
+        "const link = document.createElement('a');link.target = "
+        "\"blank_\";link.href=\"" +
+        url.spec() + "\";document.body.appendChild(link);link.click();";
+    ExecJsInMainPage(script);
+  }
+
   // Mimics pressing the back arrow
   void PressBackButton() {
     content::TestNavigationObserver nav_observer(web_contents());
@@ -546,6 +556,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
   void WaitForTabCount(int expected) {
     while (browser()->tab_strip_model()->count() != expected) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
+  void WaitForSidePanelEntryShowing(SidePanelEntry::Id expected) {
+    while (side_panel_coordinator()->GetCurrentEntryId() != expected) {
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -1755,6 +1771,82 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   proto = GetLastCompanionProtoFromUrlLoad();
   EXPECT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+}
+
+// This test verifies that a new tab that was opened from a page with Search
+// Companion open, also opens Search Companion in the new tab.
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, NewTabFromMainPageOpensCsc) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 SidePanelOpenTrigger::kComboboxSelected);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  ClickNewTabUrlInMainPage(CreateUrl(kHost, kRelativeUrl2));
+
+  WaitForTabCount(2);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion)));
+}
+
+// This test verifies that a new tab that was opened from a page with side panel
+// open but not on Search Companion, does not open Search Companion in the new
+// tab.
+IN_PROC_BROWSER_TEST_F(
+    CompanionPageBrowserTest,
+    NewTabFromMainPageWhileCompanionHiddenDoesNotOpenCompanion) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 SidePanelOpenTrigger::kComboboxSelected);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Hide Search Companion
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kReadingList);
+  WaitForSidePanelEntryShowing(SidePanelEntry::Id::kReadingList);
+
+  ClickNewTabUrlInMainPage(CreateUrl(kHost, kRelativeUrl2));
+
+  WaitForTabCount(2);
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion)));
+}
+
+// This test verifies that a new tab that was opened from a page with side panel
+// closed, does not open Search Companion in the new tab.
+IN_PROC_BROWSER_TEST_F(
+    CompanionPageBrowserTest,
+    NewTabFromMainPageWhileSidePanelClosedDoesNotOpenCompanion) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion,
+                                 SidePanelOpenTrigger::kComboboxSelected);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  side_panel_coordinator()->Close();
+  ClickNewTabUrlInMainPage(CreateUrl(kHost, kRelativeUrl2));
+
+  WaitForTabCount(2);
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion)));
 }
 
 class CompanionPageDisabledBrowserTest : public CompanionPageBrowserTest {
