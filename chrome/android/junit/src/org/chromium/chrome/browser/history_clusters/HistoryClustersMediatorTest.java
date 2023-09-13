@@ -499,7 +499,7 @@ public class HistoryClustersMediatorTest {
     public void testOpenInFullPageTablet() {
         doReturn(2).when(mResources).getInteger(R.integer.min_screen_width_bucket);
         mMediator.openHistoryClustersUi("pandas");
-        verify(mTab).loadUrl(argThat(hasSameUrl("chrome://history/2?q=pandas")));
+        verify(mTab).loadUrl(argThat(hasSameUrl("chrome://history/grouped?q=pandas")));
     }
 
     @Test
