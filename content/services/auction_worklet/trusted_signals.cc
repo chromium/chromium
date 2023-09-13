@@ -329,7 +329,7 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
   result = v8_helper->InsertValue("renderUrl", render_url_v8_object, out);
   DCHECK(result);
 
-  // If there are any ad components, assemble and add an `adComponentRenderUrls`
+  // If there are any ad components, assemble and add an `adComponentRenderURLs`
   // object as well.
   if (!ad_component_render_urls.empty()) {
     v8::Local<v8::Object> ad_components_v8_object = CreateObjectFromMap(

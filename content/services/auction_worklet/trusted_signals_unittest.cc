@@ -602,7 +602,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNestedEntriesNotObjects) {
           GURL("https://url.test/?hostname=publisher"
                "&renderUrls=https%3A%2F%2Ffoo.test%2F"
                "&adComponentRenderUrls=https%3A%2F%2Fbar.test%2F"),
-          R"({"renderUrls":4,"adComponentRenderUrls":5})",
+          R"({"renderUrls":4,"adComponentRenderURLs":5})",
           /*render_urls=*/{"https://foo.test/"},
           /*ad_component_render_urls=*/{"https://bar.test/"}, kHostname,
           /*experiment_group_id=*/absl::nullopt);
@@ -651,7 +651,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
                "&renderUrls=https%3A%2F%2Ffoo.test%2F"
                "&adComponentRenderUrls=https%3A%2F%2Fbar.test%2F"),
           R"({"renderUrls":{"these":"are not"},")"
-          R"(adComponentRenderUrls":{"the values":"you're looking for"}})",
+          R"(adComponentRenderURLs":{"the values":"you're looking for"}})",
           /*render_urls=*/{"https://foo.test/"},
           /*ad_component_render_urls=*/{"https://bar.test/"}, kHostname,
           /*experiment_group_id=*/absl::nullopt);
@@ -996,7 +996,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsEscapeQueryParams) {
     "renderUrls": {
       "https://foo.test/?&=": 4
     },
-    "adComponentRenderUrls": {
+    "adComponentRenderURLs": {
       "https://bar.test/?&=": 5
     }
   }

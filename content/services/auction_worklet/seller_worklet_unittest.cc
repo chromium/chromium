@@ -62,7 +62,7 @@ constexpr base::TimeDelta kTinyTime = base::Microseconds(1);
 const char kTrustedScoringSignalsResponse[] = R"(
   {
     "renderUrls": {"https://render.url.test/": 4},
-    "adComponentRenderUrls": {
+    "adComponentRenderURLs": {
       "https://component1.test/": 1,
       "https://component2.test/": 2
     }
@@ -1668,7 +1668,7 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/1);
   RunScoreAdWithReturnValueExpectingResultInExactTime(
-      "trustedScoringSignals.adComponentRenderUrls === undefined ? 1 : 0", 1,
+      "trustedScoringSignals.adComponentRenderURLs === undefined ? 1 : 0", 1,
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/1);
@@ -1705,13 +1705,13 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/5);
   RunScoreAdWithReturnValueExpectingResultInExactTime(
-      "trustedScoringSignals.adComponentRenderUrls['https://component1.test/']",
+      "trustedScoringSignals.adComponentRenderURLs['https://component1.test/']",
       1 /* Magic value in trustedScoringSignals */,
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/5);
   RunScoreAdWithReturnValueExpectingResultInExactTime(
-      "trustedScoringSignals.adComponentRenderUrls['https://component2.test/']",
+      "trustedScoringSignals.adComponentRenderURLs['https://component2.test/']",
       2 /* Magic value in trustedScoringSignals */,
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},

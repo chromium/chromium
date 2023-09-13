@@ -56,7 +56,7 @@ const char kBaseScoringJson[] = R"(
       "https://foo.test/": 1,
       "https://bar.test/": [2]
     },
-    "adComponentRenderUrls": {
+    "adComponentRenderURLs": {
       "https://foosub.test/": 2,
       "https://barsub.test/": [3],
       "https://bazsub.test/": "4"
@@ -551,7 +551,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsSequentialRequests) {
   "renderUrls": {
     "https://bar.test/": 4
   },
-  "adComponentRenderUrls": {
+  "adComponentRenderURLs": {
     "https://barsub.test/": 5,
     "https://bazsub.test/": 6
   }
@@ -699,7 +699,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   "renderUrls": {
     "https://foo.test/": 1
   },
-  "adComponentRenderUrls": {
+  "adComponentRenderURLs": {
     "https://foosub.test/": 2,
     "https://bazsub.test/": 3
   }
@@ -711,7 +711,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   "renderUrls": {
     "https://bar.test/": 4
   },
-  "adComponentRenderUrls": {
+  "adComponentRenderURLs": {
     "https://barsub.test/": 5,
     "https://bazsub.test/": 6
   }
