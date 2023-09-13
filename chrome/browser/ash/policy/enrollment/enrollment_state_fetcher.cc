@@ -55,9 +55,14 @@ RlwePlaintextId ConstructPlainttextId(const std::string& rlz_brand_code,
                                       const std::string& serial_number) {
   RlwePlaintextId rlwe_id;
   // See http://shortn/_tkT6f7xV0F for format specification.
-  std::string rlz_brand_code_hex =
+  const std::string rlz_brand_code_hex =
       base::HexEncode(rlz_brand_code.data(), rlz_brand_code.size());
-  rlwe_id.set_sensitive_id(rlz_brand_code_hex + "/" + serial_number);
+  const std::string id = rlz_brand_code_hex + "/" + serial_number;
+  // The PSM client library, which consumes this proto, will hash non-sensitive
+  // identifier and truncate to a few bits before sending it to the server,
+  // ensuring privacy. Hence, we can use the same identifier for both fields.
+  rlwe_id.set_non_sensitive_id(id);
+  rlwe_id.set_sensitive_id(id);
 
   return rlwe_id;
 }

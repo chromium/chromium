@@ -81,7 +81,7 @@ std::unique_ptr<EnrollmentStateFetcher::RlweClient> CreateRlweClientForTesting(
   // to ensure that Query/OPRF requests and responses match the ones in the
   // test_case. Hence we check that computed plaintext_id is correct here.
   EXPECT_EQ(plaintext_id.sensitive_id(), kTestPsmId);
-  EXPECT_TRUE(plaintext_id.non_sensitive_id().empty());
+  EXPECT_EQ(plaintext_id.non_sensitive_id(), kTestPsmId);
   auto client =
       private_membership::rlwe::PrivateMembershipRlweClient::CreateForTesting(
           private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE,
