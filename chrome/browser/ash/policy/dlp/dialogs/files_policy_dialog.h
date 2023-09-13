@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -43,7 +44,8 @@ class FilesPolicyDialogFactory {
       const std::vector<DlpConfidentialFile>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
-      absl::optional<DlpFileDestination> destination) = 0;
+      absl::optional<DlpFileDestination> destination,
+      FilesPolicyWarnSettings settings) = 0;
 
   virtual views::Widget* CreateErrorDialog(
       const std::map<DlpConfidentialFile, Policy>& files,
@@ -72,7 +74,8 @@ class FilesPolicyDialog : public PolicyDialogBase {
       const std::vector<DlpConfidentialFile>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
-      absl::optional<DlpFileDestination> destination = absl::nullopt);
+      absl::optional<DlpFileDestination> destination = absl::nullopt,
+      FilesPolicyWarnSettings settings = FilesPolicyWarnSettings());
 
   // Creates and shows an instance of FilesPolicyErrorDialog. Returns owning
   // Widget.

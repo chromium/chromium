@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -94,7 +95,8 @@ class FilesPolicyNotificationManager
       OnDlpRestrictionCheckedWithJustificationCallback callback,
       file_manager::io_task::IOTaskId task_id,
       std::vector<base::FilePath> warning_files,
-      dlp::FileAction action);
+      dlp::FileAction action,
+      FilesPolicyWarnSettings warn_settings);
 
   // Shows a Files Policy warning or error desktop notification with
   // `notification_id` based on `status`. Used for IO tasks.
@@ -152,7 +154,8 @@ class FilesPolicyNotificationManager
         std::vector<base::FilePath> files_paths,
         Policy warning_reason,
         OnDlpRestrictionCheckedWithJustificationCallback warning_callback,
-        OnDlpRestrictionCheckedWithJustificationCallback dialog_callback);
+        OnDlpRestrictionCheckedWithJustificationCallback dialog_callback,
+        FilesPolicyWarnSettings warn_settings);
     WarningInfo(
         std::vector<DlpConfidentialFile> files,
         Policy warning_reason,
@@ -172,6 +175,9 @@ class FilesPolicyNotificationManager
     // performs additional actions before running `callback` with the same
     // `should_proceed` parameter.
     OnDlpRestrictionCheckedWithJustificationCallback dialog_callback;
+    // Holds warning settings such as a custom warning message, a custom learn
+    // more URL or whether bypassing the warning requires a user justification.
+    FilesPolicyWarnSettings warn_settings;
   };
 
   // Holds needed information for each tracked file task.
@@ -371,11 +377,13 @@ class FilesPolicyNotificationManager
       dlp::FileAction action);
 
   // Pauses IO task due to `warning_reason`.
-  void PauseIOTask(file_manager::io_task::IOTaskId task_id,
-                   OnDlpRestrictionCheckedWithJustificationCallback callback,
-                   std::vector<base::FilePath> warning_files,
-                   dlp::FileAction action,
-                   Policy warning_reason);
+  void PauseIOTask(
+      file_manager::io_task::IOTaskId task_id,
+      OnDlpRestrictionCheckedWithJustificationCallback callback,
+      std::vector<base::FilePath> warning_files,
+      dlp::FileAction action,
+      Policy warning_reason,
+      FilesPolicyWarnSettings warn_settings = FilesPolicyWarnSettings());
 
   // Called after opening the Files App times out.
   // Stops waiting for the app and shows a dialog for `task_id` without a modal

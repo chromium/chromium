@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -303,11 +304,13 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
   // Depending on the policy, calls FPNM::ShowDlpWarning() or
   // FPNM::ShowConnectorsWarning(), both of which store all the info about the
   // task to later show notifications/dialogs.
-  void AddWarnedFiles(Policy policy,
-                      OnDlpRestrictionCheckedWithJustificationCallback cb,
-                      file_manager::io_task::IOTaskId task_id,
-                      std::vector<base::FilePath> warned_files,
-                      dlp::FileAction action) {
+  void AddWarnedFiles(
+      Policy policy,
+      OnDlpRestrictionCheckedWithJustificationCallback cb,
+      file_manager::io_task::IOTaskId task_id,
+      std::vector<base::FilePath> warned_files,
+      dlp::FileAction action,
+      FilesPolicyWarnSettings warn_settings = FilesPolicyWarnSettings()) {
     switch (policy) {
       case Policy::kDlp:
         fpnm_->ShowDlpWarning(std::move(cb), task_id, std::move(warned_files),
@@ -315,7 +318,8 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
         break;
       case Policy::kEnterpriseConnectors:
         fpnm_->ShowConnectorsWarning(std::move(cb), task_id,
-                                     std::move(warned_files), action);
+                                     std::move(warned_files), action,
+                                     std::move(warn_settings));
         break;
     }
   }

@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "components/enterprise/data_controls/component.h"
@@ -378,13 +379,36 @@ bool CopyOrMoveIOTaskPolicyImpl::MaybeShowConnectorsWarning() {
     return false;
   }
 
+  // The values of custom warning message, custom learn more URL and whether a
+  // bypass justification is required are consistent across all valid
+  // `file_transfer_analysis_delegates_`, so we just retrieve these values from
+  // the first valid delegate. There are as many delegates as the number of
+  // sources. A delegate in `file_transfer_analysis_delegates_` is valid if for
+  // the source-destination-pair scanning is enabled, nullptr otherwise.
+  auto delegate_it = base::ranges::find_if(
+      file_transfer_analysis_delegates_,
+      [](const std::unique_ptr<
+          enterprise_connectors::FileTransferAnalysisDelegate>& delegate) {
+        return delegate != nullptr;
+      });
+
+  policy::FilesPolicyWarnSettings warn_settings;
+  if (delegate_it != file_transfer_analysis_delegates_.end()) {
+    auto* valid_delegate = delegate_it->get();
+    warn_settings.bypass_requires_justification =
+        valid_delegate->BypassRequiresJustification();
+    warn_settings.warning_message = valid_delegate->GetCustomMessage();
+    warn_settings.learn_more_url = valid_delegate->GetCustomLearnMoreUrl();
+  }
+
   fpnm->ShowConnectorsWarning(
       base::BindOnce(&CopyOrMoveIOTaskPolicyImpl::OnConnectorsWarnDialogResult,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(progress_->task_id), std::move(warning_files_paths),
       progress_->type == file_manager::io_task::OperationType::kMove
           ? policy::dlp::FileAction::kMove
-          : policy::dlp::FileAction::kCopy);
+          : policy::dlp::FileAction::kCopy,
+      std::move(warn_settings));
   return true;
 }
 

@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -90,7 +91,8 @@ class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
                const std::vector<DlpConfidentialFile>&,
                dlp::FileAction,
                gfx::NativeWindow,
-               absl::optional<DlpFileDestination>),
+               absl::optional<DlpFileDestination>,
+               FilesPolicyWarnSettings),
               (override));
 
   MOCK_METHOD(views::Widget*,
@@ -340,22 +342,23 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
       CreateWarnDialog(base::test::IsNotNullCallback(),
                        std::vector<DlpConfidentialFile>(
                            {warning_files.begin(), warning_files.end()}),
-                       action, testing::NotNull(), testing::Eq(absl::nullopt)))
+                       action, testing::NotNull(), testing::Eq(absl::nullopt),
+                       FilesPolicyWarnSettings()))
       .Times(2)
-      .WillRepeatedly([](OnDlpRestrictionCheckedWithJustificationCallback
-                             callback,
-                         const std::vector<DlpConfidentialFile>& files,
-                         dlp::FileAction file_action,
-                         gfx::NativeWindow modal_parent,
-                         absl::optional<DlpFileDestination> destination) {
-        views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-            std::make_unique<FilesPolicyWarnDialog>(std::move(callback), files,
-                                                    file_action, modal_parent,
-                                                    destination),
-            /*context=*/nullptr, modal_parent);
-        widget->Show();
-        return widget;
-      });
+      .WillRepeatedly(
+          [](OnDlpRestrictionCheckedWithJustificationCallback callback,
+             const std::vector<DlpConfidentialFile>& files,
+             dlp::FileAction file_action, gfx::NativeWindow modal_parent,
+             absl::optional<DlpFileDestination> destination,
+             FilesPolicyWarnSettings warn_settings) {
+            views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+                std::make_unique<FilesPolicyWarnDialog>(
+                    std::move(callback), files, file_action, modal_parent,
+                    destination, std::move(warn_settings)),
+                /*context=*/nullptr, modal_parent);
+            widget->Show();
+            return widget;
+          });
 
   // No Files app opened.
   ASSERT_FALSE(FindFilesApp());
@@ -430,15 +433,18 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
       CreateWarnDialog(base::test::IsNotNullCallback(),
                        std::vector<DlpConfidentialFile>(
                            {warning_files.begin(), warning_files.end()}),
-                       action, testing::IsNull(), testing::Eq(absl::nullopt)))
+                       action, testing::IsNull(), testing::Eq(absl::nullopt),
+                       FilesPolicyWarnSettings()))
       .Times(1)
       .WillOnce([](OnDlpRestrictionCheckedWithJustificationCallback callback,
                    const std::vector<DlpConfidentialFile>& files,
                    dlp::FileAction file_action, gfx::NativeWindow modal_parent,
-                   absl::optional<DlpFileDestination> destination) {
+                   absl::optional<DlpFileDestination> destination,
+                   FilesPolicyWarnSettings warn_settings) {
         views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
             std::make_unique<FilesPolicyWarnDialog>(
-                std::move(callback), files, file_action, nullptr, destination),
+                std::move(callback), files, file_action, nullptr, destination,
+                std::move(warn_settings)),
             /*context=*/nullptr, /*parent=*/nullptr);
         widget->Show();
         return widget;
@@ -796,7 +802,9 @@ class IOTaskBrowserTest
       const file_manager::io_task::IOTaskId task_id,
       const dlp::FileAction action,
       const bool expected_should_proceed,
-      const std::vector<base::FilePath>& warning_files) {
+      const std::vector<base::FilePath>& warning_files,
+      Policy type = Policy::kDlp,
+      FilesPolicyWarnSettings warn_settings = FilesPolicyWarnSettings()) {
     bool is_move = (action == dlp::FileAction::kMove) ? true : false;
     auto warn_on_check =
         [=](absl::optional<file_manager::io_task::IOTaskId> task_id,
@@ -814,8 +822,14 @@ class IOTaskBrowserTest
                 std::move(cb).Run({});
               },
               std::move(result_callback), expected_should_proceed);
-          fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
-                                warning_files, DlpFileDestination(), action);
+          if (type == Policy::kDlp) {
+            fpnm_->ShowDlpWarning(std::move(warn_cb), task_id.value(),
+                                  warning_files, DlpFileDestination(), action);
+          } else {
+            fpnm_->ShowConnectorsWarning(std::move(warn_cb), task_id.value(),
+                                         warning_files, action,
+                                         std::move(warn_settings));
+          }
         };
 
     EXPECT_CALL(*files_controller_,
@@ -994,6 +1008,43 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
                          /*action_timedout_buckets=*/{base::Bucket(action, 1)});
 }
 
+// Test that warning settings are properly propagated to the warn dialog for
+// Enterprise Connectors.
+IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, FilesPolicyWarnSettings) {
+  auto [type, action] = GetParam();
+
+  std::vector<base::FilePath> warning_files;
+  warning_files.emplace_back("file1.txt");
+  warning_files.emplace_back("file2.txt");
+
+  FilesPolicyWarnSettings settings;
+  settings.bypass_requires_justification = true;
+  settings.warning_message = u"Custom warning message";
+  settings.learn_more_url = GURL("https://learnmore.com");
+
+  ExpectCheckIfTransferAllowedToWarn(
+      kTaskId1, action, /*expected_should_proceed=*/false, warning_files,
+      Policy::kEnterpriseConnectors, std::move(settings));
+
+  // Add the task.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_FALSE(policy::AddCopyOrMoveIOTask(
+                     browser()->profile(), file_system_context_, kTaskId1, type,
+                     temp_dir_.GetPath(), "test1.txt", kTestStorageKey)
+                     .empty());
+  }
+
+  ASSERT_TRUE(fpnm_->HasIOTask(kTaskId1));
+
+  auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
+  ASSERT_TRUE(notification.has_value());
+
+  // Show the dialog.
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+  bridge_->Click(kNotificationId1, NotificationButton::OK);
+}
+
 // Tests that clicking the OK button on a warning notification shown for copy or
 // move IO task with multiple warning files shows a dialog instead of continuing
 // the action, and opens the Files App only if there's not one opened already.
@@ -1010,13 +1061,15 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
       CreateWarnDialog(base::test::IsNotNullCallback(),
                        std::vector<DlpConfidentialFile>(
                            {warning_files.begin(), warning_files.end()}),
-                       action, testing::NotNull(), testing::Eq(absl::nullopt)))
+                       action, testing::NotNull(), testing::Eq(absl::nullopt),
+                       FilesPolicyWarnSettings()))
       .Times(2)
       .WillRepeatedly(
           [](OnDlpRestrictionCheckedWithJustificationCallback callback,
              std::vector<DlpConfidentialFile> files,
              dlp::FileAction file_action, gfx::NativeWindow modal_parent,
-             absl::optional<DlpFileDestination> destination) {
+             absl::optional<DlpFileDestination> destination,
+             FilesPolicyWarnSettings warn_settings) {
             // Cancel the task so it's deleted properly.
             std::move(callback).Run(/*user_justification=*/absl::nullopt,
                                     /*should_proceed=*/false);

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -31,7 +32,8 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
       const std::vector<DlpConfidentialFile>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent,
-      absl::optional<DlpFileDestination> destination);
+      absl::optional<DlpFileDestination> destination,
+      FilesPolicyWarnSettings settings);
   FilesPolicyWarnDialog(const FilesPolicyWarnDialog&) = delete;
   FilesPolicyWarnDialog(FilesPolicyWarnDialog&&) = delete;
   FilesPolicyWarnDialog& operator=(const FilesPolicyWarnDialog&) = delete;

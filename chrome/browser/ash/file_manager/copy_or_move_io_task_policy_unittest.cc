@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
@@ -568,7 +569,10 @@ class CopyOrMoveIOTaskWithScansTest
                                 : policy::dlp::FileAction::kMove));
   }
 
-  void ExpectFPNMFilesWarningDialogAndProceed(CopyOrMoveIOTask& task) {
+  void ExpectFPNMFilesWarningDialogAndProceed(
+      CopyOrMoveIOTask& task,
+      policy::FilesPolicyWarnSettings warn_settings =
+          policy::FilesPolicyWarnSettings()) {
     std::vector<base::FilePath> warned_files;
     for (auto&& file : warned_files_) {
       warned_files.push_back(file.path());
@@ -580,7 +584,8 @@ class CopyOrMoveIOTaskWithScansTest
                             UnorderedElementsAreArray(warned_files),
                             GetOperationType() == OperationType::kCopy
                                 ? policy::dlp::FileAction::kCopy
-                                : policy::dlp::FileAction::kMove))
+                                : policy::dlp::FileAction::kMove,
+                            warn_settings))
         .WillOnce([&](auto&&... args) {
           warning_callback_ = std::move(std::get<0>(std::tie(args...)));
 
@@ -605,7 +610,8 @@ class CopyOrMoveIOTaskWithScansTest
                             UnorderedElementsAreArray(warned_files),
                             GetOperationType() == OperationType::kCopy
                                 ? policy::dlp::FileAction::kCopy
-                                : policy::dlp::FileAction::kMove))
+                                : policy::dlp::FileAction::kMove,
+                            policy::FilesPolicyWarnSettings()))
         .WillOnce([&, cancelCallback](auto&&... args) {
           warning_callback_ = std::move(std::get<0>(std::tie(args...)));
 

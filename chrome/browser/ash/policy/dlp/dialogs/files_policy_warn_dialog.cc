@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_string_util.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_warn_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -82,7 +83,8 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
     const std::vector<DlpConfidentialFile>& files,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
-    absl::optional<DlpFileDestination> destination)
+    absl::optional<DlpFileDestination> destination,
+    FilesPolicyWarnSettings settings)
     : FilesPolicyDialog(files.size(), action, modal_parent),
       files_(files),
       destination_(destination) {
@@ -98,6 +100,10 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
 
   AddGeneralInformation();
   MaybeAddConfidentialRows();
+
+  // TODO(b/299578935): Customize the warning dialog according to
+  // `warning_message`, `learn_more_url` and
+  // `bypass_requires_justification` values stored in `settings`.
 
   DlpHistogramEnumeration(dlp::kFileActionWarnReviewedUMA, action);
 }
