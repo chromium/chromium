@@ -11524,28 +11524,6 @@
             ]
         }
     ],
-    "PartialCustomTabsSideSheet": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230419",
-                    "enable_features": [
-                        "CCTResizableSideSheet",
-                        "CCTResizableSideSheetDiscoverFeedSettings"
-                    ]
-                },
-                {
-                    "name": "Enabled_20230523",
-                    "enable_features": [
-                        "CCTResizableSideSheet"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocBackupRefPtr": [
         {
             "platforms": [
