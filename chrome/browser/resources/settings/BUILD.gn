@@ -166,6 +166,7 @@ build_webui("build") {
     "safety_hub/safety_hub_card.ts",
     "safety_hub/safety_hub_entry_point.ts",
     "safety_hub/safety_hub_module.ts",
+    "safety_hub/extensions_module.ts",
     "safety_hub/safety_hub_page.ts",
     "safety_hub/notification_permissions_module.ts",
     "safety_hub/unused_site_permissions_module.ts",

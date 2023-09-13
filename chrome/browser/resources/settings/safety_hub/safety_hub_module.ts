@@ -49,6 +49,12 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
       // The strinπg for the subheader label.
       subheader: String,
 
+      // The icon for the module.
+      headerIcon: {
+        String,
+        value: 'cr:error',
+      },
+
       // The icon for button of the list item.
       buttonIcon: String,
 
@@ -63,6 +69,7 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
   sites: SiteInfo[];
   header: string;
   subheader: string;
+  headerIcon: string;
   buttonIcon: string;
   moreActionVisible: boolean;
 

@@ -34,6 +34,10 @@ class SafetyCheckExtensionsHandler : public settings::SettingsPageUIHandler {
   // user.
   void HandleGetNumberOfExtensionsThatNeedReview(const base::Value::List& args);
 
+  // Let listeners know that the number of extensions that need
+  // review may have changed.
+  void HandleUpdateNumberOfExtensionsThatNeedReview();
+
   // Return the number of extensions that should be reviewed by the user.
   // There are currently three triggers the `SafetyCheckExtensionsHandler`
   // tracks:

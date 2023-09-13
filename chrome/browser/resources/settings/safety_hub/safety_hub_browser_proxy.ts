@@ -24,6 +24,7 @@ export enum SafetyHubEvent {
       'unused-permission-review-list-maybe-changed',
   NOTIFICATION_PERMISSIONS_MAYBE_CHANGED =
       'notification-permission-review-list-maybe-changed',
+  EXTENSIONS_CHANGED = 'extensions-review-list-maybe-changed',
 }
 
 // The notification permission information passed from safety_hub_handler.cc.
@@ -122,6 +123,9 @@ export interface SafetyHubBrowserProxy {
 
   /** Gets data for the version top card. */
   getVersionCardData(): Promise<CardInfo>;
+
+  /** Get the number of extensions that should be reviewed by the user. */
+  getNumberOfExtensionsThatNeedReview(): Promise<number>;
 }
 
 export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
@@ -194,6 +198,10 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
       subheader: 'dummy subheader',
       state: CardState.SAFE,
     });
+  }
+
+  getNumberOfExtensionsThatNeedReview() {
+    return sendWithPromise('getNumberOfExtensionsThatNeedReview');
   }
 
   static getInstance(): SafetyHubBrowserProxy {

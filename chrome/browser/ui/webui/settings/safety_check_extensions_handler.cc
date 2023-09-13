@@ -38,6 +38,13 @@ void SafetyCheckExtensionsHandler::HandleGetNumberOfExtensionsThatNeedReview(
                             base::Value(GetNumberOfExtensionsThatNeedReview()));
 }
 
+void SafetyCheckExtensionsHandler::
+    HandleUpdateNumberOfExtensionsThatNeedReview() {
+  AllowJavascript();
+  FireWebUIListener("extensions-review-list-maybe-changed",
+                    GetNumberOfExtensionsThatNeedReview());
+}
+
 void SafetyCheckExtensionsHandler::SetCWSInfoServiceForTest(
     extensions::CWSInfoService* cws_info_service) {
   cws_info_service_ = cws_info_service;

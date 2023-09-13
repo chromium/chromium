@@ -23,6 +23,7 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
 
   private unusedSitePermissions_: UnusedSitePermissions[] = [];
   private reviewNotificationList_: NotificationPermission[] = [];
+  private numberOfExtensionsThatNeedReview_: number = 0;
   private passwordCardData_: CardInfo = this.dummyCardInfo;
   private safeBrowsingCardData_: CardInfo = this.dummyCardInfo;
   private versionCardData_: CardInfo = this.dummyCardInfo;
@@ -32,6 +33,7 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
       'acknowledgeRevokedUnusedSitePermissionsList',
       'allowPermissionsAgainForUnusedSite',
       'getRevokedUnusedSitePermissionsList',
+      'getNumberOfExtensionsThatNeedReview',
       'undoAcknowledgeRevokedUnusedSitePermissionsList',
       'undoAllowPermissionsAgainForUnusedSite',
       'getNotificationPermissionReview',
@@ -104,6 +106,15 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
 
   resetNotificationPermissionForOrigins(origins: string[]): void {
     this.methodCalled('resetNotificationPermissionForOrigins', origins);
+  }
+
+  setNumberOfExtensionsThatNeedReview(numberExtensions: number) {
+    this.numberOfExtensionsThatNeedReview_ = numberExtensions;
+  }
+
+  getNumberOfExtensionsThatNeedReview(): Promise<number> {
+    this.methodCalled('getNumberOfExtensionsThatNeedReview');
+    return Promise.resolve(this.numberOfExtensionsThatNeedReview_);
   }
 
   getPasswordCardData(): Promise<CardInfo> {

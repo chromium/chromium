@@ -106,6 +106,23 @@ suite('SafetyHubPage', function() {
         assertFalse(isChildVisible(testElement, '#emptyStateModule'));
       });
 
+  test(
+      'No Recommendation State Visibility With Extensions Module',
+      async function() {
+        // The element is visible when there is nothing to review.
+        assertTrue(isChildVisible(testElement, '#emptyStateModule'));
+
+        // The element becomes hidden if the is any module that needs attention.
+        webUIListenerCallback(SafetyHubEvent.EXTENSIONS_CHANGED, 1);
+        await flushTasks();
+        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+
+        // Returns when extension module goes away.
+        webUIListenerCallback(SafetyHubEvent.EXTENSIONS_CHANGED, 0);
+        await flushTasks();
+        assertTrue(isChildVisible(testElement, '#emptyStateModule'));
+      });
+
   test('Unused Site Permissions Module Visibility', async function() {
     // The element is not visible when there is nothing to review.
     const unusedSitePermissionsElementTag =
@@ -157,6 +174,24 @@ suite('SafetyHubPage', function() {
         notificationPermissionMockData);
     await flushTasks();
     assertTrue(isChildVisible(testElement, notificationPermissionsElementTag));
+  });
+
+  test('Extensions Module Visibility', async function() {
+    // The element is not visible when there is nothing to review.
+    assertFalse(
+        isChildVisible(testElement, 'settings-safety-hub-extensions-module'));
+
+    // The element becomes visible if the there are extensions to review.
+    webUIListenerCallback(SafetyHubEvent.EXTENSIONS_CHANGED, 2);
+    await flushTasks();
+    assertTrue(
+        isChildVisible(testElement, 'settings-safety-hub-extensions-module'));
+
+    // Once visible, it goes away if all extensions are handled.
+    webUIListenerCallback(SafetyHubEvent.EXTENSIONS_CHANGED, 0);
+    await flushTasks();
+    assertFalse(
+        isChildVisible(testElement, 'settings-safety-hub-extensions-module'));
   });
 
   test('Password Card', async function() {

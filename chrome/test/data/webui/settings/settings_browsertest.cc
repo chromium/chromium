@@ -1023,6 +1023,10 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, NotificationPermissionsModule) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubExtensions) {
+  RunTest("settings/safety_hub_extensions_module_test.js", "mocha.run()");
+}
+
 class SettingsSecurityPageTest : public SettingsBrowserTest {
  protected:
   SettingsSecurityPageTest() {

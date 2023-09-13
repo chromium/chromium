@@ -66,10 +66,16 @@ export class SettingsSafetyHubPageElement extends
         value: false,
       },
 
+      // Whether Extensions module should be visible.
+      showExtensions_: {
+        type: Boolean,
+        value: false,
+      },
+
       showNoRecommendationsState_: {
         type: Boolean,
         computed:
-            'computeShowNoRecommendationsState_(showUnusedSitePermissions_.*, showNotificationPermissions_.*)',
+            'computeShowNoRecommendationsState_(showUnusedSitePermissions_.*, showExtensions_.*, showNotificationPermissions_.*)',
       },
     };
   }
@@ -80,6 +86,7 @@ export class SettingsSafetyHubPageElement extends
   private showNotificationPermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
   private showNoRecommendationsState_: boolean;
+  private showExtensions_: boolean;
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
 
@@ -115,6 +122,10 @@ export class SettingsSafetyHubPageElement extends
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
 
+    this.addWebUiListener(
+        SafetyHubEvent.EXTENSIONS_CHANGED,
+        (num: number) => this.onExtensionsChanged_(num));
+
     this.browserProxy_.getNotificationPermissionReview().then(
         (sites: NotificationPermission[]) =>
             this.onNotificationPermissionListChanged_(sites));
@@ -122,6 +133,9 @@ export class SettingsSafetyHubPageElement extends
     this.browserProxy_.getRevokedUnusedSitePermissionsList().then(
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
+
+    this.browserProxy_.getNumberOfExtensionsThatNeedReview().then(
+        (num: number) => this.onExtensionsChanged_(num));
   }
 
   private onPasswordsClick_() {
@@ -159,7 +173,12 @@ export class SettingsSafetyHubPageElement extends
 
   private computeShowNoRecommendationsState_(): boolean {
     return !(
-        this.showUnusedSitePermissions_ || this.showNotificationPermissions_);
+        this.showUnusedSitePermissions_ || this.showNotificationPermissions_ ||
+        this.showExtensions_);
+  }
+
+  private onExtensionsChanged_(numberOfExtensions: number) {
+    this.showExtensions_ = !!numberOfExtensions;
   }
 }
 

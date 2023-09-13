@@ -62,6 +62,10 @@
   <settings-safety-hub-unused-site-permissions class="module box">
   </settings-safety-hub-unused-site-permissions>
 </template>
+<template is="dom-if" if="[[showExtensions_]]">
+  <settings-safety-hub-extensions-module class="module box">
+  </settings-safety-hub-extensions-module>
+</template>
 <template is="dom-if" if="[[showNoRecommendationsState_]]">
   <settings-safety-hub-module id="emptyStateModule" class="module box"
     header="$i18n{safetyHubEmptyStateModuleHeader}"
