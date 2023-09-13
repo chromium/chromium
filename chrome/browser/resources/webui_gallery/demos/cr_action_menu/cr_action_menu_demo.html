@@ -1,88 +1,186 @@
-<style include="cr-icons demo">
-  cr-input {
-    --cr-input-error-display: none;
+<style include="demo">
+  .demos {
+    align-items: center;
+    border: var(--cr-hairline);
+    display: flex;
+    height: 150px;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
   }
 
-  fieldset {
-    margin-block-start: 16px;
+  .min-max-anchor {
+    position: absolute;
+    margin: 0;
+  }
+
+  .min-max-anchor.top-left {
+    top: 16px;
+    left: 16px;
+  }
+
+  .min-max-anchor.top-right {
+    top: 16px;
+    right: 16px;
+  }
+
+  .min-max-anchor.bottom-left {
+    bottom: 16px;
+    left: 16px;
+  }
+
+  .min-max-anchor.bottom-right {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  #anchorAlignmentDemoOptions {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-block-end: 4px;
+  }
+
+  .anchor-alignment-option {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+  }
+
+  #anchorAlignmentDemo {
+    width: 200px;
+    height: 100px;
+    display: flex;
+    position: relative;
+    border: dashed 1px var(--cr-primary-text-color);
+    white-space: nowrap;
     padding: 16px;
   }
 
-  fieldset cr-button {
-    margin-inline-start: auto;
+  .anchor-alignment-label {
+    position: absolute;
+    font-size: 11px;
+    text-align: center;
+    width: fit-content;
+    height: fit-content;
+    font-style: italic;
+    padding: 2px;
   }
 
-  hr {
-    border-top: var(--cr-separator-line);
-    height: 0;
+  .anchor-alignment-label.center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .anchor-alignment-label.start-y {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .anchor-alignment-label.end-y {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .anchor-alignment-label.start-x {
+    top: 50%;
+    right: 100%;
+    transform: translateY(-50%);
+  }
+
+  .anchor-alignment-label.end-x {
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
   }
 </style>
 
 <h1>cr-action-menu</h1>
 
+<h2>Typical action menu</h2>
 <div class="demos">
-  <div class="row center">
-    Click to see menu anchored to an icon button:
+  <cr-icon-button
+      title="Show menu"
+      aria-haspopup="menu"
+      iron-icon="cr:more-vert"
+      on-click="onShowAnchoredMenuClick_">
+  </cr-icon-button>
+</div>
 
-    <cr-icon-button
-        title="Show menu"
-        aria-haspopup="menu"
-        iron-icon="cr:more-vert"
-        on-click="onShowAnchoredMenuClick_">
-    </cr-icon-button>
+<h2>As context menu</h2>
+<div class="demos" on-contextmenu="onContextMenu_">
+  Right-click anywhere in this area.
+</div>
+
+<h2>With custom min/max positioning</h2>
+<div id="minMaxContainer" class="demos">
+  Action menus opened from this area are automatically confined to this area
+
+  <cr-icon-button class="min-max-anchor top-left"
+      iron-icon="cr:add"
+      on-click="onShowMinMaxMenu_">
+  </cr-icon-button>
+  <button class="min-max-anchor top-right"
+      on-click="onShowMinMaxMenu_">
+    Open menu
+  </button>
+  <cr-icon-button class="min-max-anchor bottom-left"
+      iron-icon="cr20:menu"
+      on-click="onShowMinMaxMenu_">
+  </cr-icon-button>
+  <cr-button class="min-max-anchor bottom-right"
+      on-click="onShowMinMaxMenu_">
+    Open menu
+  </cr-icon-button>
+</div>
+
+<h2>Custom anchor alignment</h2>
+<div id="anchorAlignmentDemoOptions">
+  <div class="anchor-alignment-option">
+    <label id="alignmentXLabel">x alignment</label>
+    <select
+        aria-labelledby="alignmentXLabel"
+        value="{{customAlignmentX_::input}}">
+      <template is="dom-repeat" items="[[alignmentOptions_]]">
+        <option value="[[item]]"
+            selected$="[[isSelectedAlignment_(customAlignmentX_, item)]]">
+          [[item]]
+        </option>
+      </template>
+    </select>
   </div>
 
-  <div class="row">
-    <cr-checkbox checked="{{enableCustomContextMenu_}}">
-      Show menu as context menu
-    </cr-checkbox>
-    <div hidden$="[[!enableCustomContextMenu_]]">
-      Right-click on the page to see menu.
-    </div>
+  <div class="anchor-alignment-option">
+    <label id="alignmentYLabel">y alignment</label>
+    <select
+        aria-labelledby="alignmentYLabel"
+        value="{{customAlignmentY_::input}}">
+      <template is="dom-repeat" items="[[alignmentOptions_]]">
+        <option value="[[item]]"
+            selected$="[[isSelectedAlignment_(customAlignmentY_, item)]]">
+          [[item]]
+        </option>
+      </template>
+    </select>
   </div>
 
-  <fieldset class="demos">
-    <legend>Custom positioning</legend>
+  <cr-button on-click="onAnchorAlignmentDemoClick_">Show at anchor</cr-button>
+</div>
 
-    <template is="dom-repeat" items="[[numberInputs_]]">
-      <cr-input
-          type="number"
-          label="[[item]] (px)"
-          placeholder="Default"
-          on-change="onNumberInputChanged_">
-      </cr-input>
-    </template>
+<div class="demos">
+  <div id="anchorAlignmentDemo">
+    Anchor box
 
-    <div class="row">
-      <label id="alignmentXLabel">AlignmentX</label>
-      <select
-          aria-labelledby="alignmentXLabel"
-          on-change="onAlignmentChangedX_">
-        <option value="">Default</option>
-        <template is="dom-repeat" items="[[alignmentOptions_]]">
-          <option value="[[item]]">[[item]]</option>
-        </template>
-      </select>
-    </div>
-
-    <div class="row">
-      <label id="alignmentYLabel">AlignmentY</label>
-      <select
-          aria-labelledby="alignmentYLabel"
-          on-change="onAlignmentChangedY_">
-        <option value="">Default</option>
-        <template is="dom-repeat" items="[[alignmentOptions_]]">
-          <option value="[[item]]">[[item]]</option>
-        </template>
-      </select>
-    </div>
-
-    <cr-button class="action-button" on-click="onShowMenuClick_">
-      Show menu
-    </cr-button>
-  </fieldset>
-
-  <div>[[statusText_]]</div>
+    <span class="anchor-alignment-label center">center</span>
+    <span class="anchor-alignment-label start-y">y start</span>
+    <span class="anchor-alignment-label end-y">y end</span>
+    <span class="anchor-alignment-label start-x">x start</span>
+    <span class="anchor-alignment-label end-x">x end</span>
+  </div>
 </div>
 
 <cr-action-menu id="menu">
