@@ -11,48 +11,65 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
 
+namespace {
+// Used to control the behavior of the controller's `plus_address_service_`
+// (though mocking would also be fine). Most importantly, this avoids the
+// requirement to mock the identity portions of the `PlusAddressService`.
+class MockPlusAddressService : public PlusAddressService {
+ public:
+  MockPlusAddressService() = default;
+
+  void OfferPlusAddressCreation(const url::Origin& origin,
+                                PlusAddressCallback callback) override {
+    std::move(callback).Run("plus+plus@plus.plus");
+  }
+};
+}  // namespace
+
 // Testing very basic functionality for now. As UI complexity increases, this
 // class will grow and mutate.
-class PlusAddressCreationControllerImplEnabledTest
-    : public ChromeRenderViewHostTestHarness {
+class PlusAddressCreationControllerDesktopEnabledTest : public testing::Test {
  public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    identity_test_env_.MakeAccountAvailable("plus@plus.plus",
-                                            {signin::ConsentLevel::kSignin});
-    PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
-        browser_context(),
-        base::BindRepeating(&PlusAddressCreationControllerImplEnabledTest::
-                                PlusAddressServiceTestFactory,
-                            base::Unretained(this)));
+  std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
+      content::BrowserContext* context) {
+    return std::make_unique<MockPlusAddressService>();
   }
 
  protected:
-  std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
-      content::BrowserContext* context) {
-    return std::make_unique<PlusAddressService>(
-        identity_test_env_.identity_manager(), nullptr);
-  }
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList features_{kFeature};
-  signin::IdentityTestEnvironment identity_test_env_;
 };
 
-// TODO(crbug.com/1479967): test is flaky across platforms.
-TEST_F(PlusAddressCreationControllerImplEnabledTest, DISABLED_DirectCallback) {
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
+  // Ensure that the feature is known to be enabled, such that
+  // `PlusAddressServiceFactory` doesn't bail early with a null return.
+  profiles::testing::ScopedProfileSelectionsForFactoryTesting
+      overide_profile_selections(
+          PlusAddressServiceFactory::GetInstance(),
+          PlusAddressServiceFactory::CreateProfileSelections());
+
+  TestingProfile test_profile;
   std::unique_ptr<content::WebContents> web_contents =
-      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+      content::WebContentsTester::CreateTestWebContents(&test_profile, nullptr);
+  PlusAddressServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      &test_profile,
+      base::BindRepeating(&PlusAddressCreationControllerDesktopEnabledTest::
+                              PlusAddressServiceTestFactory,
+                          base::Unretained(this)));
 
   PlusAddressCreationController* controller =
       PlusAddressCreationController::GetOrCreate(web_contents.get());
@@ -66,7 +83,7 @@ TEST_F(PlusAddressCreationControllerImplEnabledTest, DISABLED_DirectCallback) {
 // With the feature disabled, the `KeyedService` is not present; ensure this is
 // handled. While this code path should not be called in that case, it is
 // validated here for safety.
-class PlusAddressCreationControllerImplDisabledTest
+class PlusAddressCreationControllerDesktopDisabledTest
     : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -79,7 +96,7 @@ class PlusAddressCreationControllerImplDisabledTest
   }
 };
 
-TEST_F(PlusAddressCreationControllerImplDisabledTest, NullService) {
+TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 

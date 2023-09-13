@@ -58,8 +58,9 @@ class PlusAddressService : public KeyedService {
   // Asks the PlusAddressClient to get a plus address for use on `origin` and on
   // completion: runs`callback` with the created plus address, and stores the
   // plus address in this service.
-  void OfferPlusAddressCreation(const url::Origin& origin,
-                                PlusAddressCallback callback);
+  // Virtual to allow overriding the behavior in tests.
+  virtual void OfferPlusAddressCreation(const url::Origin& origin,
+                                        PlusAddressCallback callback);
 
   // The label for an autofill suggestion offering to create a new plus address.
   // While only debatably relevant to this class, this function allows for
