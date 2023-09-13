@@ -2777,13 +2777,17 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
     error_ = error_ + "\n";  // Add visual separation between errors.
   error_ = error_ + new_error;
 
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  // Suppress fatal error logging in builds that target fuzzing, as fuzzers
+  // generate invalid trees by design to shake out bugs.
+  is_fatal = false;
+#elif defined(AX_FAIL_FAST_BUILD)
   // In fast-failing-builds, crash immediately with a full message, otherwise
   // rely on AccessibilityFatalError(), which will not crash until multiple
   // errors occur.
   // TODO(accessibility) Make AXTree errors fatal in Canary and Dev builds, as
   // they indicate fundamental problems in part of the engine. They are much
   // less frequent than in the past -- it should not be highimpact on users.
-#if defined(AX_FAIL_FAST_BUILD)
   is_fatal = true;
 #endif
 
@@ -2796,9 +2800,7 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
                 << data_.ToString() + "\n** AXTree **\n"
                 << TreeToStringHelper(root_, 0, false).substr(0, 1000);
 
-  if (is_fatal && !disallow_fail_fast_) {
-    LOG(FATAL) << verbose_error.str();
-  }
+  LOG_IF(FATAL, is_fatal) << verbose_error.str();
 
   // If this is the first error, will dump without crashing in
   // RenderAccessibilityImpl::OnFatalError().

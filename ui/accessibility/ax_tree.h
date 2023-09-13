@@ -208,8 +208,6 @@ class AX_EXPORT AXTree {
   // for testing and debugging.
   const std::string& error() const { return error_; }
 
-  void DisallowFailFastForFuzzing() { disallow_fail_fast_ = true; }
-
   int size() { return static_cast<int>(id_map_.size()); }
 
   // Return a negative number that's suitable to use for a node ID for
@@ -415,7 +413,6 @@ class AX_EXPORT AXTree {
   raw_ptr<AXNode> root_ = nullptr;
   std::unordered_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
   std::string error_;
-  bool disallow_fail_fast_ = false;
   AXTreeData data_;
 
   // Map from an int attribute (if IsNodeIdIntAttribute is true) to
