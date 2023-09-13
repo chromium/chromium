@@ -41,6 +41,7 @@
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/preloading_decider.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -323,7 +324,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
          blink::features::kPrerender2MainFrameNavigation,
 
          // To enable Content-Security-Policy navigate-to support.
-         features::kExperimentalContentSecurityPolicyFeatures},
+         ::features::kExperimentalContentSecurityPolicyFeatures},
         {});
   }
   ~PrerenderBrowserTest() override = default;
@@ -7512,10 +7513,10 @@ class PrerenderBackForwardCacheBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderBackForwardCacheBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {}},
+        {{::features::kBackForwardCache, {}},
          {kBackForwardCacheNoTimeEviction, {}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        {::features::kBackForwardCacheMemoryControls});
   }
 
  private:
@@ -7652,7 +7653,7 @@ class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
  public:
   PrerenderWithProactiveBrowsingInstanceSwap() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kProactivelySwapBrowsingInstance,
+        /*enabled_features=*/{{::features::kProactivelySwapBrowsingInstance,
                                {{"level", "SameSite"}}}},
         /*disabled_features=*/{});
   }
@@ -7716,7 +7717,7 @@ class PrerenderWithBackForwardCacheBrowserTest
   PrerenderWithBackForwardCacheBrowserTest() {
     switch (GetParam()) {
       case BackForwardCacheType::kDisabled:
-        feature_list_.InitAndDisableFeature(features::kBackForwardCache);
+        feature_list_.InitAndDisableFeature(::features::kBackForwardCache);
         break;
       case BackForwardCacheType::kEnabled:
         feature_list_.InitWithFeaturesAndParameters(
@@ -8819,7 +8820,7 @@ class MultiplePrerendersWithLimitedMemoryBrowserTest
            // Allow prerendering on low-end trybot devices so that prerendering
            // can run on any bots.
            {"memory_threshold_in_mb", "0"}}}},
-        {kPrerender2BypassMemoryLimitCheck});
+        {features::kPrerender2BypassMemoryLimitCheck});
   }
 
  private:
@@ -10645,7 +10646,7 @@ class PrerenderFencedFrameBrowserTest : public PrerenderBrowserTest {
   PrerenderFencedFrameBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}},
+         {::features::kPrivacySandboxAdsAPIsOverride, {}},
          {blink::features::kFencedFramesAPIChanges, {}},
          {blink::features::kFencedFramesDefaultMode, {}}},
         {/* disabled_features */});

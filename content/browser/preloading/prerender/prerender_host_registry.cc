@@ -448,15 +448,6 @@ void PrerenderHostBuilder::RejectAsFailure(
 
 }  // namespace
 
-// Kill-switch controlled by the field trial. When this feature is enabled,
-// PrerenderHostRegistry doesn't query about the current memory footprint and
-// bypasses the memory limit check, while it still checks the limit on the
-// number of ongoing prerendering requests and memory pressure events to prevent
-// excessive memory usage. See https://crbug.com/1382697 for details.
-BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
-             "Prerender2BypassMemoryLimitCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kMaxNumOfRunningSpeculationRulesEagerPrerenders[] =
     "max_num_of_running_speculation_rules_eager_prerenders";
 const char kMaxNumOfRunningSpeculationRulesNonEagerPrerenders[] =
@@ -1743,7 +1734,8 @@ void PrerenderHostRegistry::DestroyWhenUsingExcessiveMemory(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kPrerender2BypassMemoryLimitCheck)) {
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2BypassMemoryLimitCheck)) {
     return;
   }
 
