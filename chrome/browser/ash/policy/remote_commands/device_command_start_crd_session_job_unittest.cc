@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/notreached.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 
 #include <map>
@@ -12,6 +11,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -823,6 +823,9 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
        ShouldNotAllowFileTransferForAnySessionWhenFeatureIsNotEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnableCrdFileTransferForKiosk);
+
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
