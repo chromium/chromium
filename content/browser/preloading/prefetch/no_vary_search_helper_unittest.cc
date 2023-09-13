@@ -6,7 +6,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/cpp/features.h"

@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_status.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -34,7 +34,7 @@ class PrefetchStreamingURLLoader;
 //   as long as `PrefetchContainer` is alive,
 // - `PrefetchResponseReader::self_pointer_`
 //   while it is serving to its `mojom::URLLoaderClient`, or
-// - The `RequestHandler` returned by `CreateRequestHandler()`
+// - The `PrefetchRequestHandler` returned by `CreateRequestHandler()`
 //   until it is called.
 //
 // TODO(crbug.com/1449360): Currently at most one client per
@@ -68,13 +68,9 @@ class CONTENT_EXPORT PrefetchResponseReader final
   void OnTransferSizeUpdated(int32_t transfer_size_diff);
   void OnComplete(network::URLLoaderCompletionStatus completion_status);
 
-  using RequestHandler = base::OnceCallback<void(
-      const network::ResourceRequest& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)>;
 
   // Creates a request handler to serve the response of the prefetch.
-  RequestHandler CreateRequestHandler();
+  PrefetchRequestHandler CreateRequestHandler();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
@@ -222,24 +218,6 @@ class CONTENT_EXPORT PrefetchResponseReader final
 class CONTENT_EXPORT PrefetchStreamingURLLoader
     : public network::mojom::URLLoaderClient {
  public:
-  // This callback is used by the owner to determine if the prefetch is valid
-  // based on |head|. If the prefetch should be servable based on |head|, then
-  // the callback should return |kHeadReceivedWaitingOnBody|. Otherwise it
-  // should return a valid failure reason.
-  using OnPrefetchResponseStartedCallback =
-      base::OnceCallback<PrefetchStreamingURLLoaderStatus(
-          network::mojom::URLResponseHead* head)>;
-
-  using OnPrefetchResponseCompletedCallback = base::OnceCallback<void(
-      const network::URLLoaderCompletionStatus& completion_status)>;
-
-  // This callback is used by the owner to determine if the redirect should be
-  // followed. |HandleRedirect| should be called with the appropriate status for
-  // how the redirect should be handled.
-  using OnPrefetchRedirectCallback = base::RepeatingCallback<void(
-      const net::RedirectInfo& redirect_info,
-      network::mojom::URLResponseHeadPtr response_head)>;
-
   static base::WeakPtr<PrefetchStreamingURLLoader> Create(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const network::ResourceRequest& request,

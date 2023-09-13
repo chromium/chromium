@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -119,8 +120,7 @@ MakeManuallyServableStreamingURLLoaderForTest(
   return std::move(test_url_loader_factory.pending_requests()->at(0));
 }
 
-PrefetchStreamingURLLoader::OnPrefetchRedirectCallback
-CreatePrefetchRedirectCallbackForTest(
+OnPrefetchRedirectCallback CreatePrefetchRedirectCallbackForTest(
     base::RunLoop* on_receive_redirect_loop,
     net::RedirectInfo* out_redirect_info,
     network::mojom::URLResponseHeadPtr* out_redirect_head) {

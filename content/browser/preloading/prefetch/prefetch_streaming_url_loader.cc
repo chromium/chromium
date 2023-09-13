@@ -358,8 +358,7 @@ void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
   MaybeReleaseSoonSelfPointer();
 }
 
-PrefetchResponseReader::RequestHandler
-PrefetchResponseReader::CreateRequestHandler() {
+PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
   if (streaming_url_loader_) {
     streaming_url_loader_->OnStartServing();
   }

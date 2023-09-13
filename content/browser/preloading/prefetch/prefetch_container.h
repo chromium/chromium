@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
@@ -33,6 +33,7 @@ namespace content {
 class PrefetchCookieListener;
 class PrefetchDocumentManager;
 class PrefetchNetworkContext;
+class PrefetchResponseReader;
 class PrefetchService;
 class PrefetchServingPageMetricsContainer;
 class PrefetchStreamingURLLoader;
@@ -423,9 +424,9 @@ class CONTENT_EXPORT PrefetchContainer {
     // Returns the `SinglePrefetch` to be served next.
     const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
-    // Set up a RequestHandler from the Reader. After this point, the
+    // Set up a PrefetchRequestHandler from the Reader. After this point, the
     // PrefetchResponseReader starts keeping alive itself.
-    PrefetchResponseReader::RequestHandler CreateRequestHandler();
+    PrefetchRequestHandler CreateRequestHandler();
 
    private:
     base::WeakPtr<PrefetchContainer> prefetch_container_;
@@ -463,8 +464,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
 
-  PrefetchResponseReader::RequestHandler CreateRequestHandlerInternal(
-      Reader& reader);
+  PrefetchRequestHandler CreateRequestHandlerInternal(Reader& reader);
 
   // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;

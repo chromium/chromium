@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -34,8 +34,7 @@ network::TestURLLoaderFactory::PendingRequest
 MakeManuallyServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container);
 
-PrefetchStreamingURLLoader::OnPrefetchRedirectCallback
-CreatePrefetchRedirectCallbackForTest(
+OnPrefetchRedirectCallback CreatePrefetchRedirectCallbackForTest(
     base::RunLoop* on_receive_redirect_loop,
     net::RedirectInfo* out_redirect_info,
     network::mojom::URLResponseHeadPtr* out_redirect_head);

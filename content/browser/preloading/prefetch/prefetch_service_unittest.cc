@@ -659,8 +659,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         GetPrefetchMatchResolverForMostRecentNavigation();
     prefetch_match_resolver->SetOnPrefetchToServeReadyCallback(base::BindOnce(
         [](base::test::TestFuture<PrefetchContainer::Reader>* future,
-           std::vector<PrefetchResponseReader::RequestHandler>*
-               request_handler_keep_alive,
+           std::vector<PrefetchRequestHandler>* request_handler_keep_alive,
            PrefetchContainer::Reader prefetch_to_serve) {
           if (prefetch_to_serve) {
             // When GetPrefetchToServe() is successful, also call
@@ -669,7 +668,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
             // which is the primary non-test `GetPrefetchToServe()` code path.
             auto request_handler = prefetch_to_serve.CreateRequestHandler();
             CHECK(request_handler);
-            // Keep-alive the RequestHandler, because destructing
+            // Keep-alive the PrefetchRequestHandler, because destructing
             // `request_handler` here can signal that the serving is finished,
             // and e.g. close body mojo pipe.
             request_handler_keep_alive->push_back(std::move(request_handler));
@@ -790,8 +789,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 
-  std::vector<PrefetchResponseReader::RequestHandler>
-      request_handler_keep_alive_;
+  std::vector<PrefetchRequestHandler> request_handler_keep_alive_;
 };
 
 TEST_F(PrefetchServiceTest, SuccessCase) {

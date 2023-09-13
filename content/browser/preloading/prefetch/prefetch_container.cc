@@ -769,16 +769,15 @@ const PrefetchResponseReader* PrefetchContainer::GetNonRedirectResponseReader()
   return redirect_chain_.back()->response_reader_.get();
 }
 
-PrefetchResponseReader::RequestHandler
-PrefetchContainer::Reader::CreateRequestHandler() {
+PrefetchRequestHandler PrefetchContainer::Reader::CreateRequestHandler() {
   return GetPrefetchContainer()->CreateRequestHandlerInternal(*this);
 }
 
-PrefetchResponseReader::RequestHandler
-PrefetchContainer::CreateRequestHandlerInternal(Reader& reader) {
+PrefetchRequestHandler PrefetchContainer::CreateRequestHandlerInternal(
+    Reader& reader) {
   DCHECK_EQ(reader.GetPrefetchContainer(), this);
 
-  // Create a `RequestHandler` from the current `SinglePrefetch` (==
+  // Create a `PrefetchRequestHandler` from the current `SinglePrefetch` (==
   // `reader`) and its corresponding `PrefetchStreamingURLLoader`.
   auto handler = reader.GetCurrentSinglePrefetchToServe()
                      .response_reader_->CreateRequestHandler();

@@ -13,7 +13,6 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -136,13 +135,10 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     return;
   }
 
-  PrefetchResponseReader::RequestHandler request_handler =
-      reader.CreateRequestHandler();
-
   scoped_refptr<network::SingleRequestURLLoaderFactory>
       single_request_url_loader_factory =
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-              std::move(request_handler));
+              reader.CreateRequestHandler());
 
   // If |prefetch_container| is done serving the prefetch, clear out
   // |redirect_reader_|, but otherwise cache it in |redirect_reader_|.

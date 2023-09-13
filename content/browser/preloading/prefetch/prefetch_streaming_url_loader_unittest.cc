@@ -254,7 +254,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   // after this point.
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler request_handler =
+  PrefetchRequestHandler request_handler =
       weak_response_reader->CreateRequestHandler();
   response_reader.reset();
 
@@ -357,7 +357,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   // after this point.
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler request_handler =
+  PrefetchRequestHandler request_handler =
       weak_response_reader->CreateRequestHandler();
   response_reader.reset();
 
@@ -727,7 +727,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   // after this point.
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler request_handler =
+  PrefetchRequestHandler request_handler =
       weak_response_reader->CreateRequestHandler();
   response_reader.reset();
 
@@ -872,7 +872,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   // Simulates serving the redirect.
   base::WeakPtr<PrefetchResponseReader> weak_redirect_response_reader =
       redirect_response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler redirect_handler =
+  PrefetchRequestHandler redirect_handler =
       weak_redirect_response_reader->CreateRequestHandler();
   redirect_response_reader.reset();
 
@@ -910,7 +910,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   // Simulates serving the final response.
   base::WeakPtr<PrefetchResponseReader> weak_final_response_reader =
       final_response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler final_response_handler =
+  PrefetchRequestHandler final_response_handler =
       weak_final_response_reader->CreateRequestHandler();
   final_response_reader.reset();
 
@@ -1073,7 +1073,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   EXPECT_FALSE(response_reader->Servable(base::TimeDelta::Max()));
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler redirect_handler =
+  PrefetchRequestHandler redirect_handler =
       weak_response_reader->CreateRequestHandler();
   response_reader.reset();
 
@@ -1354,7 +1354,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
   // Simulate serving the prefetch. This should stop the timeout timer.
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler request_handler =
+  PrefetchRequestHandler request_handler =
       weak_response_reader->CreateRequestHandler();
   response_reader.reset();
 
@@ -1538,7 +1538,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   // after this point.
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
-  PrefetchResponseReader::RequestHandler request_handler =
+  PrefetchRequestHandler request_handler =
       weak_response_reader->CreateRequestHandler();
   response_reader.reset();
 

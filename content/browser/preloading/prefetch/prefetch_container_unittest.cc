@@ -9,7 +9,6 @@
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
-#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_test_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/public/browser/browser_context.h"
@@ -905,13 +904,11 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   base::WeakPtr<PrefetchResponseReader> weak_first_response_reader =
       reader.GetCurrentResponseReaderToServeForTesting();
-  PrefetchResponseReader::RequestHandler first_request_handler =
-      reader.CreateRequestHandler();
+  PrefetchRequestHandler first_request_handler = reader.CreateRequestHandler();
 
   base::WeakPtr<PrefetchResponseReader> weak_second_response_reader =
       reader.GetCurrentResponseReaderToServeForTesting();
-  PrefetchResponseReader::RequestHandler second_request_handler =
-      reader.CreateRequestHandler();
+  PrefetchRequestHandler second_request_handler = reader.CreateRequestHandler();
 
   // `CreateRequestHandler()` itself doesn't make the PrefetchContainer
   // non-servable.
@@ -1024,7 +1021,7 @@ enum class Event {
   // Call CreateRequestHandler().
   kCreateRequestHandler,
 
-  // Call the RequestHandler returned by CreateRequestHandler().
+  // Call the PrefetchRequestHandler returned by CreateRequestHandler().
   kRequestHandler,
 
   // Disconnect `serving_url_loader_client`.
@@ -1119,7 +1116,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
       prefetch_container->GetStreamingURLLoader();
 
-  PrefetchResponseReader::RequestHandler request_handler;
+  PrefetchRequestHandler request_handler;
   std::unique_ptr<PrefetchTestURLLoaderClient> serving_url_loader_client;
 
   // `PrefetchStreamingURLLoader` and `PrefetchResponseReader` are initially
@@ -1140,7 +1137,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
         request_handler = reader.CreateRequestHandler();
         break;
 
-      // Call the RequestHandler returned by CreateRequestHandler().
+      // Call the PrefetchRequestHandler returned by CreateRequestHandler().
       case Event::kRequestHandler: {
         ASSERT_TRUE(request_handler);  // NOLINT(bugprone-use-after-move)
         ASSERT_FALSE(serving_url_loader_client);
@@ -1286,8 +1283,8 @@ std::vector<std::vector<Event>> ValidEventPermutations() {
                   Event::kDestructPrefetchContainer, Event::kPrefetchOnComplete,
                   Event::kCompleteBody, Event::kDisconnectServingClient}));
 
-  // - `PrefetchContainer` is destructed before RequestHandler is invoked and
-  // prefetch is completed:
+  // - `PrefetchContainer` is destructed before PrefetchRequestHandler is
+  // invoked and prefetch is completed:
   CHECK(base::Contains(
       params,
       std::vector<Event>{
@@ -1295,8 +1292,8 @@ std::vector<std::vector<Event>> ValidEventPermutations() {
           Event::kRequestHandler, Event::kPrefetchOnComplete,
           Event::kCompleteBody, Event::kDisconnectServingClient}));
 
-  // - `PrefetchContainer` is destructed before RequestHandler is invoked but
-  // after prefetch is completed:
+  // - `PrefetchContainer` is destructed before PrefetchRequestHandler is
+  // invoked but after prefetch is completed:
   CHECK(base::Contains(
       params, std::vector<Event>{
                   Event::kPrefetchOnComplete, Event::kCreateRequestHandler,
