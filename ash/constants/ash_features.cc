@@ -2877,7 +2877,7 @@ BASE_FEATURE(kPerUserMetrics,
 // Allows Files App to find and execute tasks using App Service for ARC apps.
 BASE_FEATURE(kArcFileTasksUseAppService,
              "ArcFileTasksUseAppService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 
