@@ -538,6 +538,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
         continue;
       }
     }
+    if (stop_at_first_match) {
+      return true;
+    }
     const ContainerQuery* container_query =
         container_query_seeker.Seek(rule_data.GetPosition());
     if (container_query) {
@@ -592,9 +595,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
           result_.SetDependsOnStateContainerQueries();
         }
       }
-    }
-    if (stop_at_first_match) {
-      return true;
     }
 
     matched++;
