@@ -32,13 +32,15 @@ import fnmatch
 import optparse
 import os
 import re
+import shlex
 import sys
 from copy import deepcopy
+from typing import List
 
 from blinkpy.common.path_finder import PathFinder
 
 
-class PortFactory(object):
+class PortFactory:
     PORT_CLASSES = (
         'android.AndroidPort',
         'fuchsia.FuchsiaPort',
@@ -473,6 +475,13 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
         action='store_true',
         help=('If set, exit with a success code when no tests are run. '
               'Used on trybots when web tests are retried without patch.'))
+    testing_group.add_argument(
+        '--wrapper',
+        type=command_wrapper,
+        default=[],
+        help=('Wrapper command to insert before invocations of the driver; '
+              'option is split on whitespace before running. (Example: '
+              '--wrapper="valgrind --smc-check=all")'))
     if rwt:
         testing_group.add_argument(
             '--build',
@@ -607,12 +616,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             '--initialize-webgpu-adapter-at-startup-timeout-ms',
             type=float,
             help='Initialize WebGPU adapter before running any tests.')
-        testing_group.add_argument(
-            '--wrapper',
-            help=(
-                'wrapper command to insert before invocations of the driver; '
-                'option is split on whitespace before running. (Example: '
-                '--wrapper="valgrind --smc-check=all")'))
         # FIXME: Display the default number of child processes that will run.
         testing_group.add_argument('-f',
                                    '--fully-parallel',
@@ -813,3 +816,7 @@ def _read_configuration_from_gn(fs, options):
     # If is_debug is set to anything other than false, or if it
     # does not exist at all, we should use the default value (True).
     return 'Debug'
+
+
+def command_wrapper(wrapper: str) -> List[str]:
+    return shlex.split(wrapper)
