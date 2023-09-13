@@ -161,6 +161,11 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
                                   SourceRange* new_range,
                                   String* old_text,
                                   ExceptionState&);
+  CSSPropertyRule* SetPropertyName(const SourceRange&,
+                                   const String& text,
+                                   SourceRange* new_range,
+                                   String* old_text,
+                                   ExceptionState&);
   CSSRule* SetStyleText(const SourceRange&,
                         const String& text,
                         SourceRange* new_range,

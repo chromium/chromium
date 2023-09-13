@@ -369,6 +369,9 @@ class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {
   const CSSValue* Inherits() const;
   const CSSValue* GetInitialValue() const;
 
+  bool SetNameText(const ExecutionContext* execution_context,
+                   const String& name_text);
+
   void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
   const CascadeLayer* GetCascadeLayer() const { return layer_; }
 

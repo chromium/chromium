@@ -277,6 +277,10 @@ StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,
   return To<StyleRuleKeyframe>(keyframe);
 }
 
+String CSSParser::ParseCustomPropertyName(const String& name_text) {
+  return CSSParserImpl::ParseCustomPropertyName(name_text);
+}
+
 StyleRuleTry* CSSParser::ParseTryRule(const CSSParserContext* context,
                                       const String& rule) {
   StyleRuleBase* try_rule = CSSParserImpl::ParseRule(

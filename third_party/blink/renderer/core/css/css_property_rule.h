@@ -26,6 +26,8 @@ class CSSPropertyRule final : public CSSRule {
   String cssText() const override;
   void Reattach(StyleRuleBase*) override;
   StyleRuleProperty* Property() const;
+  bool SetNameText(const ExecutionContext* execution_context,
+                   const String& name_text);
 
   String name() const;
   String syntax() const;
