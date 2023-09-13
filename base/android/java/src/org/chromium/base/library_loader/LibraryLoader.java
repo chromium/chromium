@@ -839,7 +839,6 @@ public class LibraryLoader {
         assert libraryProcessType == mLibraryProcessType;
     }
 
-    // Invoke base::android::LibraryLoaded in library_loader_hooks.cc
     @GuardedBy("mLock")
     private void initializeAlreadyLocked() {
         if (mInitialized) {
@@ -871,6 +870,8 @@ public class LibraryLoader {
 
         ensureCommandLineSwitchedAlreadyLocked();
 
+        // Invoke content::LibraryLoaded() in //content/app/android/library_loader_hooks.cc
+        // via a hook stored in //base/android/library_loader/library_loader_hooks.cc.
         if (!LibraryLoaderJni.get().libraryLoaded(mLibraryProcessType)) {
             Log.e(TAG, "error calling LibraryLoaderJni.get().libraryLoaded");
             throw new ProcessInitException(LoaderErrors.FAILED_TO_REGISTER_JNI);
