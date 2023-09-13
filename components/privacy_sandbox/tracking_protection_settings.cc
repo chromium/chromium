@@ -84,6 +84,12 @@ bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
 
 void TrackingProtectionSettings::OnTrackingProtectionOnboarded() {
   pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  if (pref_service_->GetBoolean(prefs::kEnableDoNotTrack)) {
+    pref_service_->SetInteger(
+        prefs::kTrackingProtectionLevel,
+        static_cast<int>(
+            tracking_protection::TrackingProtectionLevel::kCustom));
+  }
 }
 
 void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
