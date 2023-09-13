@@ -181,6 +181,7 @@ class MODULES_EXPORT RemotePlayback final
   Member<ScriptPromiseResolver> prompt_promise_resolver_;
   Vector<KURL> availability_urls_;
   bool is_listening_;
+  bool is_background_availability_monitoring_disabled_for_testing_ = false;
 
   String presentation_id_;
   KURL presentation_url_;

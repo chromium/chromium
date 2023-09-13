@@ -458,7 +458,8 @@ void RemotePlayback::SourceChanged(const WebURL& source,
 }
 
 void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
-  if (IsBackgroundAvailabilityMonitoringDisabled() ||
+  if (is_background_availability_monitoring_disabled_for_testing_ ||
+      IsBackgroundAvailabilityMonitoringDisabled() ||
       !RuntimeEnabledFeatures::RemotePlaybackBackendEnabled()) {
     return;
   }
@@ -511,6 +512,10 @@ void RemotePlayback::RemoveObserver(RemotePlaybackObserver* observer) {
 void RemotePlayback::AvailabilityChangedForTesting(bool screen_is_available) {
   // AvailabilityChanged() is only normally called when |is_listening_| is true.
   is_listening_ = true;
+  // Disable the background availability monitoring so that the availability
+  // won't be overridden later.
+  is_background_availability_monitoring_disabled_for_testing_ = true;
+
   AvailabilityChanged(screen_is_available
                           ? mojom::blink::ScreenAvailability::AVAILABLE
                           : mojom::blink::ScreenAvailability::UNAVAILABLE);
@@ -676,8 +681,10 @@ void RemotePlayback::StopListeningForAvailability() {
 }
 
 void RemotePlayback::MaybeStartListeningForAvailability() {
-  if (IsBackgroundAvailabilityMonitoringDisabled())
+  if (IsBackgroundAvailabilityMonitoringDisabled() ||
+      is_background_availability_monitoring_disabled_for_testing_) {
     return;
+  }
 
   if (is_listening_)
     return;

@@ -13,9 +13,8 @@ async_test(function(t) {
     var video = document.querySelector("video");
     video.src = "../content/test.ogv";
 
-    video.onloadeddata = t.step_func_done(function() {
-        internals.mediaPlayerRemoteRouteAvailabilityChanged(video, true);
-    });
+    // Pretend we have a cast device.
+    internals.mediaPlayerRemoteRouteAvailabilityChanged(video, true);
 
     video.onplaying = t.step_func(function() {
         setTimeout(t.step_func(function() {
