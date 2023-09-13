@@ -350,9 +350,10 @@ struct ServerCvc {
 //                      database, but always returned as an empty string in
 //                      CreditCard. Added in version 71.
 //
-// ibans                This table contains International Bank Account
-//                      Number(IBAN) data added by the user. The columns are
-//                      standard entries in an Iban form.
+// local_ibans          This table contains International Bank Account
+//                      Numbers (IBANs) added by the user. The columns are
+//                      standard entries in an Iban form. Those are local IBANs
+//                      and exist on Chrome client only.
 //
 //   guid               A guid string to uniquely identify the IBAN.
 //   use_count          The number of times this IBAN has been used to fill
@@ -363,6 +364,31 @@ struct ServerCvc {
 //                      encrypted.
 //   nickname           A nickname for the IBAN, entered by the user.
 //
+//
+// masked_ibans         This table contains "masked" International Bank Account
+//                      Numbers (IBANs) added by the user. Those are server
+//                      IBANs saved on GPay server and are available across all
+//                      the Chrome devices.
+//
+//   instrument_id      String assigned by the server to identify this IBAN.
+//                      This is opaque to the client.
+//   prefix             Contains the prefix of the full IBAN value that is
+//                      shown when in a masked format.
+//   suffix             Contains the suffix of the full IBAN value that is
+//                      shown when in a masked format.
+//   length             Length of the full IBAN value.
+//   nickname           A nickname for the IBAN, entered by the user.
+//
+// masked_ibans_metadata
+//                      Metadata (currently, usage data) about server IBANS.
+//                      This will be synced from Chrome sync.
+//
+//   instrument_id      The instrument ID, which matches an ID from the
+//                      masked_ibans table.
+//   use_count          The number of times this IBAN has been used to fill
+//                      a form.
+//   use_date           The date this IBAN was last used to fill a form,
+//                      in time_t.
 //
 // server_addresses     This table contains Autofill address data synced from
 //                      the wallet server. It's basically the same as the
@@ -892,6 +918,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion116AddStoredCvcTable();
   bool MigrateToVersion117AddProfileObservationColumn();
   bool MigrateToVersion118RemovePaymentsUpiVpaTable();
+  bool MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -999,6 +1026,8 @@ class AutofillTable : public WebDatabaseTable,
   bool InitLegacyProfilePhonesTable();
   bool InitLegacyProfileBirthdatesTable();
   bool InitMaskedCreditCardsTable();
+  bool InitMaskedIbansTable();
+  bool InitMaskedIbansMetadataTable();
   bool InitUnmaskedCreditCardsTable();
   bool InitServerCardMetadataTable();
   bool InitServerAddressesTable();

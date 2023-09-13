@@ -221,12 +221,27 @@ constexpr std::string_view kServerCardMetadataTable = "server_card_metadata";
 // kUseDate = "use_date"
 // kBillingAddressId = "billing_address_id"
 
+// This shouldn't be used in new code, and it only exists for the purposes of
+// migration logic. It has renamed to `local_ibans`.
 constexpr std::string_view kIbansTable = "ibans";
+constexpr std::string_view kLocalIbansTable = "local_ibans";
 // kGuid = "guid"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
 constexpr std::string_view kValueEncrypted = "value_encrypted";
 // kNickname = "nickname"
+
+constexpr std::string_view kMaskedIbansTable = "masked_ibans";
+// kInstrumentId = "instrument_id"
+constexpr std::string_view kPrefix = "prefix";
+// kSuffix = "suffix";
+constexpr std::string_view kLength = "length";
+// kNickname = "nickname"
+
+constexpr std::string_view kMaskedIbansMetadataTable = "masked_ibans_metadata";
+// kInstrumentId = "instrument_id"
+// kUseCount = "use_count"
+// kUseDate = "use_date"
 
 constexpr std::string_view kServerAddressesTable = "server_addresses";
 // kId = "id"
@@ -1173,7 +1188,8 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitProfileMetadataTable(AutofillProfile::Source::kLocalOrSyncable) &&
          InitProfileTypeTokensTable(
              AutofillProfile::Source::kLocalOrSyncable) &&
-         InitVirtualCardUsageDataTable() && InitStoredCvcTable();
+         InitVirtualCardUsageDataTable() && InitStoredCvcTable() &&
+         InitMaskedIbansTable() && InitMaskedIbansMetadataTable();
 }
 
 bool AutofillTable::MigrateToVersion(int version,
@@ -1287,6 +1303,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 118:
       *update_compatible_version = true;
       return MigrateToVersion118RemovePaymentsUpiVpaTable();
+    case 119:
+      *update_compatible_version = true;
+      return MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable();
   }
   return true;
 }
@@ -1974,7 +1993,7 @@ void AutofillTable::SetServerProfiles(
 
 bool AutofillTable::AddIban(const Iban& iban) {
   sql::Statement s;
-  InsertBuilder(db_, s, kIbansTable,
+  InsertBuilder(db_, s, kLocalIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname});
   BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
   if (!s.Run())
@@ -1997,7 +2016,7 @@ bool AutofillTable::UpdateIban(const Iban& iban) {
   }
 
   sql::Statement s;
-  UpdateBuilder(db_, s, kIbansTable,
+  UpdateBuilder(db_, s, kLocalIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "guid=?1");
   BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
@@ -2009,13 +2028,13 @@ bool AutofillTable::UpdateIban(const Iban& iban) {
 
 bool AutofillTable::RemoveIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  return DeleteWhereColumnEq(db_, kIbansTable, kGuid, guid);
+  return DeleteWhereColumnEq(db_, kLocalIbansTable, kGuid, guid);
 }
 
 std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Statement s;
-  SelectBuilder(db_, s, kIbansTable,
+  SelectBuilder(db_, s, kLocalIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "WHERE guid = ?");
   s.BindString(0, guid);
@@ -2031,7 +2050,8 @@ bool AutofillTable::GetIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
   ibans->clear();
 
   sql::Statement s;
-  SelectBuilder(db_, s, kIbansTable, {kGuid}, "ORDER BY use_date DESC, guid");
+  SelectBuilder(db_, s, kLocalIbansTable, {kGuid},
+                "ORDER BY use_date DESC, guid");
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
@@ -3545,6 +3565,25 @@ bool AutofillTable::MigrateToVersion118RemovePaymentsUpiVpaTable() {
          transaction.Commit();
 }
 
+bool AutofillTable::
+    MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         CreateTable(db_, kMaskedIbansTable,
+                     {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
+                      {kPrefix, "VARCHAR NOT NULL"},
+                      {kSuffix, "VARCHAR NOT NULL"},
+                      {kLength, "INTEGER NOT NULL DEFAULT 0"},
+                      {kNickname, "VARCHAR"}}) &&
+         CreateTable(db_, kMaskedIbansMetadataTable,
+                     {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
+                      {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                      {kUseDate, "INTEGER NOT NULL DEFAULT 0"}}) &&
+         (!db_->DoesTableExist(kIbansTable) ||
+          RenameTable(db_, kIbansTable, kLocalIbansTable)) &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3817,7 +3856,7 @@ bool AutofillTable::InitCreditCardsTable() {
 }
 
 bool AutofillTable::InitIbansTable() {
-  return CreateTableIfNotExists(db_, kIbansTable,
+  return CreateTableIfNotExists(db_, kLocalIbansTable,
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -3944,6 +3983,24 @@ bool AutofillTable::InitMaskedCreditCardsTable() {
        {kProductDescription, "VARCHAR"},
        {kCardIssuerId, "VARCHAR"},
        {kVirtualCardEnrollmentType, "INTEGER DEFAULT 0"}});
+}
+
+bool AutofillTable::InitMaskedIbansTable() {
+  return CreateTableIfNotExists(
+      db_, kMaskedIbansTable,
+      {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
+       {kPrefix, "VARCHAR NOT NULL"},
+       {kSuffix, "VARCHAR NOT NULL"},
+       {kLength, "INTEGER NOT NULL DEFAULT 0"},
+       {kNickname, "VARCHAR"}});
+}
+
+bool AutofillTable::InitMaskedIbansMetadataTable() {
+  return CreateTableIfNotExists(
+      db_, kMaskedIbansMetadataTable,
+      {{kInstrumentId, "VARCHAR PRIMARY KEY NOT NULL"},
+       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+       {kUseDate, "INTEGER NOT NULL DEFAULT 0"}});
 }
 
 bool AutofillTable::InitUnmaskedCreditCardsTable() {
