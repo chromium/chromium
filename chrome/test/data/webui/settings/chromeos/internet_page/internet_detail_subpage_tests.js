@@ -185,6 +185,7 @@ suite('InternetDetailPage', function() {
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
       showMeteredToggle: true,
       isApnRevampEnabled: false,
+      isSuppressTextMessagesEnabled: false,
     });
 
     PolymerTest.clearBody();
@@ -1731,6 +1732,81 @@ suite('InternetDetailPage', function() {
       await flushAsync();
 
       assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
+    });
+
+    // Syntactic sugar for running test twice with different values for the
+    // suppressTextMessages feature flag.
+    [true, false].forEach(isSuppressTextMessagesEnabled => {
+      test(
+          'Show/Hide toggle correspondingly to SuppressTextMessages flag',
+          async () => {
+            loadTimeData.overrideValues({isSuppressTextMessagesEnabled});
+            init();
+            mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+            const cellularNetwork =
+                getManagedProperties(NetworkType.kCellular, 'cellular');
+            mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+            internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+
+            await flushAsync();
+            const getSuppressTextMessagesToggle = () =>
+                internetDetailPage.shadowRoot.querySelector(
+                    '#suppressTextMessagesToggle');
+            if (isSuppressTextMessagesEnabled) {
+              assertTrue(!!getSuppressTextMessagesToggle());
+            } else {
+              assertFalse(!!getSuppressTextMessagesToggle());
+            }
+          });
+    });
+
+    test('Suppress text messages manually', async () => {
+      loadTimeData.overrideValues({isSuppressTextMessagesEnabled: true});
+      init();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+
+      const cellularNetwork =
+          getManagedProperties(NetworkType.kCellular, 'cellular');
+      cellularNetwork.typeProperties.cellular.allowTextMessages = {
+        activeValue: true,
+        policySource: PolicySource.kNone,
+      };
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      await flushAsync();
+
+      const networkToggle = internetDetailPage.shadowRoot.querySelector(
+          '#suppressTextMessagesToggle');
+      assertTrue(networkToggle.checked);
+      networkToggle.click();
+      await mojoApi_.whenCalled('setProperties');
+      const props = mojoApi_.getPropertiesToSetForTest();
+      assertFalse(
+          props.typeConfig.cellular.textMessageAllowState.allowTextMessages);
+    });
+
+    test('Suppress text messages via policy', async () => {
+      loadTimeData.overrideValues({isSuppressTextMessagesEnabled: true});
+      init();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+
+      const cellularNetwork =
+          getManagedProperties(NetworkType.kCellular, 'cellular');
+      cellularNetwork.typeProperties.cellular.allowTextMessages = {
+        activeValue: true,
+        policySource: PolicySource.kDevicePolicyEnforced,
+      };
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      await flushAsync();
+
+      const networkToggle = internetDetailPage.shadowRoot.querySelector(
+          '#suppressTextMessagesToggle');
+      assertTrue(networkToggle.checked);
+      assertTrue(
+          !!networkToggle.shadowRoot.querySelector('cr-toggle').disabled);
+      assertTrue(!!networkToggle.shadowRoot.querySelector(
+          'cr-policy-network-indicator-mojo'));
     });
   });
 

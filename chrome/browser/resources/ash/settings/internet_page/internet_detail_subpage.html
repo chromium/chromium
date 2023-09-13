@@ -355,6 +355,21 @@
             </network-siminfo>
           </div>
         </template>
+
+        <!-- Suppress Text Messages (Cellular only). -->
+        <template is="dom-if"
+            if="[[shouldShowSuppressTextMessagesToggle_(managedProperties_)]]" restamp>
+          <div class="single-column stretch">
+            <network-config-toggle id="suppressTextMessagesToggle" policy-on-left
+                property="[[managedProperties_.typeProperties.cellular.allowTextMessages]]"
+                label="$i18n{networkSuppressTextMessages}"
+                checked="{{suppressTextMessagesOverride_}}"
+                on-checked-changed="suppressTextMessagesChanged_"
+                disabled="[[disabled_]]">
+            </network-config-toggle>
+          </div>
+        </template>
+
         <!-- Metered (WiFi and Cellular only). -->
         <template is="dom-if"
             if="[[showMetered_(managedProperties_, showMeteredToggle_)]]">

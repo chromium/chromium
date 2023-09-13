@@ -295,6 +295,14 @@ class SettingsInternetDetailPageElement extends
         },
       },
 
+      isSuppressTextMessagesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isSuppressTextMessagesEnabled') &&
+              loadTimeData.getBoolean('isSuppressTextMessagesEnabled');
+        },
+      },
+
       isPasspointEnabled_: {
         type: Boolean,
         value() {
@@ -396,6 +404,8 @@ class SettingsInternetDetailPageElement extends
   private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
+  private isSuppressTextMessagesEnabled_: boolean;
+  private suppressTextMessagesOverride_: boolean;
   private isPasspointEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
@@ -701,6 +711,13 @@ class SettingsInternetDetailPageElement extends
     this.updateAutoConnectPref_();
     this.updateHiddenPref_();
 
+    if (this.isSuppressTextMessagesEnabled_ &&
+        this.isCellular_(this.managedProperties_) &&
+        this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
+      this.suppressTextMessagesOverride_ = !!OncMojo.getActiveValue(
+          this.managedProperties_!.typeProperties.cellular!.allowTextMessages);
+    }
+
     const metered = this.managedProperties_.metered;
     if (metered && metered.activeValue !== this.meteredOverride_) {
       this.meteredOverride_ = metered.activeValue;
@@ -928,6 +945,28 @@ class SettingsInternetDetailPageElement extends
     }
 
     this.hiddenPref_ = newPrefValue;
+  }
+
+  private suppressTextMessagesChanged_(e: CustomEvent<{value: boolean}>): void {
+    if (!this.isSuppressTextMessagesEnabled_ || !this.propertiesReceived_ ||
+        !this.isCellular_(this.managedProperties_) ||
+        !this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
+      return;
+    }
+    const config =
+        OncMojo.getDefaultConfigProperties(this.managedProperties_!.type);
+    config.typeConfig.cellular = {
+      textMessageAllowState: {
+        allowTextMessages: e.detail.value,
+      },
+      roaming: undefined,
+      apn: undefined,
+    };
+    this.networkConfig_.setProperties(this.guid, config).then(response => {
+      if (!response.success) {
+        console.warn('Unable to set properties: ' + JSON.stringify(config));
+      }
+    });
   }
 
   private meteredChanged_(e: CustomEvent<{value: boolean}>): void {
@@ -1221,6 +1260,11 @@ class SettingsInternetDetailPageElement extends
 
   private shouldShowApnList_(): boolean {
     return !this.isApnRevampEnabled_ &&
+        this.isCellular_(this.managedProperties_);
+  }
+
+  private shouldShowSuppressTextMessagesToggle_(): boolean {
+    return this.isSuppressTextMessagesEnabled_ &&
         this.isCellular_(this.managedProperties_);
   }
 

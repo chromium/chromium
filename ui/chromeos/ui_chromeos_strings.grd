@@ -1773,6 +1773,9 @@
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SETTING_MANAGED_BY_ADMIN_TOOLTIP" desc="Text displayed in the controlled settings bubble when a setting's value is managed by policy.">
         This setting is managed by your administrator.
       </message>
+      <message name="IDS_SUPPRESS_TEXT_MESSAGES" desc="Text displayed for a toggle button allowing user to show or hide text messages">
+        Show text messages
+      </message>
 
       <!-- Settings > Internet > SIM lock/unlock dialog -->
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN" desc="Settings > Internet > Network details > Lock/unlock SIM card: Label for buton to change the PIN.">

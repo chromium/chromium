@@ -841,6 +841,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_INFORMATION},
       {"networkSectionPasspointGoToSubscriptionButtonLabel",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_BUTTON},
+      {"networkSuppressTextMessages", IDS_SUPPRESS_TEXT_MESSAGES},
       {"passpointRemoveGoToSubscriptionButtonA11yLabel",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_BUTTON_A11Y_LABEL},
       {"networkSectionProxy", IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY},
@@ -1082,6 +1083,9 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isPasspointSettingsEnabled",
                           ash::features::IsPasspointSettingsEnabled() &&
                               ash::features::IsPasspointARCSupportEnabled());
+
+  html_source->AddBoolean("isSuppressTextMessagesEnabled",
+                          ash::features::IsSuppressTextMessagesEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
