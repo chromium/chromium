@@ -59,7 +59,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
     @Mock
     private ImprovedBookmarkFolderView mView;
     @Mock
-    private ImprovedBookmarkFolderView mSubstitueView;
+    private ImprovedBookmarkFolderView mSubstituteView;
     @Mock
     private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock
@@ -137,7 +137,7 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         mCoordinator.setBookmarkItem(mFolderItem);
         assertEquals(mView, mCoordinator.getViewForTesting());
 
-        mCoordinator.setView(mSubstitueView);
-        assertEquals(mSubstitueView, mCoordinator.getViewForTesting());
+        mCoordinator.setView(mSubstituteView);
+        assertEquals(mSubstituteView, mCoordinator.getViewForTesting());
     }
 }
