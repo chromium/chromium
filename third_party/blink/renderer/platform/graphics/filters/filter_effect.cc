@@ -141,15 +141,18 @@ sk_sp<PaintFilter> FilterEffect::CreateTransparentBlack() const {
 }
 
 absl::optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {
-  if (!ClipsToBounds())
+  if (!ClipsToBounds()) {
     return {};
+  }
   gfx::RectF computed_bounds = FilterPrimitiveSubregion();
   // This and the filter region check is a workaround for crbug.com/512453.
-  if (computed_bounds.IsEmpty())
+  if (computed_bounds.IsEmpty()) {
     return {};
+  }
   gfx::RectF filter_region = GetFilter()->FilterRegion();
-  if (!filter_region.IsEmpty())
+  if (!filter_region.IsEmpty()) {
     computed_bounds.Intersect(filter_region);
+  }
   return gfx::RectFToSkRect(
       GetFilter()->MapLocalRectToAbsoluteRect(computed_bounds));
 }

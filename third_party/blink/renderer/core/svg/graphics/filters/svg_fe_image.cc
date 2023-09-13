@@ -145,22 +145,11 @@ WTF::TextStream& FEImage::ExternalRepresentation(WTF::TextStream& ts,
   return ts;
 }
 
-static gfx::RectF IntersectWithFilterRegion(const Filter* filter,
-                                            const gfx::RectF& rect) {
-  gfx::RectF filter_region = filter->FilterRegion();
-  // Workaround for crbug.com/512453.
-  if (filter_region.IsEmpty())
-    return rect;
-  return IntersectRects(rect,
-                        filter->MapLocalRectToAbsoluteRect(filter_region));
-}
-
 sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
-    const LayoutObject& layout_object) {
-  gfx::RectF dst_rect =
-      GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
+    const LayoutObject& layout_object,
+    const gfx::RectF& dst_rect,
+    const gfx::RectF& crop_rect) {
   gfx::RectF src_rect = GetLayoutObjectRepaintRect(layout_object);
-
   AffineTransform transform;
   if (element_->HasRelativeLengths()) {
     auto viewport_transform =
@@ -176,11 +165,8 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
   }
   // Intersect with the (transformed) source rect to remove "empty" bits of the
   // image.
-  dst_rect.Intersect(src_rect);
+  const gfx::RectF cull_rect = gfx::IntersectRects(crop_rect, src_rect);
 
-  // Clip the filter primitive rect by the filter region and use that as the
-  // cull rect for the paint record.
-  gfx::RectF crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
   PaintRecorder paint_recorder;
   cc::PaintCanvas* canvas = paint_recorder.beginRecording();
   canvas->concat(AffineTransformToSkM44(transform));
@@ -190,25 +176,26 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     builder->EndRecording(*canvas);
   }
   return sk_make_sp<RecordPaintFilter>(
-      paint_recorder.finishRecordingAsPicture(), gfx::RectFToSkRect(crop_rect));
+      paint_recorder.finishRecordingAsPicture(), gfx::RectFToSkRect(cull_rect));
 }
 
 sk_sp<PaintFilter> FEImage::CreateImageFilter() {
   // The current implementation assumes this primitive is always set to clip to
   // the filter bounds.
   DCHECK(ClipsToBounds());
-  if (const auto* layout_object = ReferencedLayoutObject())
-    return CreateImageFilterForLayoutObject(*layout_object);
-
+  gfx::RectF crop_rect =
+      gfx::SkRectToRectF(GetCropRect().value_or(PaintFilter::CropRect()));
+  gfx::RectF dst_rect =
+      GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
+  if (const auto* layout_object = ReferencedLayoutObject()) {
+    return CreateImageFilterForLayoutObject(*layout_object, dst_rect,
+                                            crop_rect);
+  }
   if (PaintImage image =
           image_ ? image_->PaintImageForCurrentFrame() : PaintImage()) {
     gfx::RectF src_rect(gfx::SizeF(image_->Size()));
-    gfx::RectF dst_rect =
-        GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
     preserve_aspect_ratio_->TransformRect(dst_rect, src_rect);
-    // Clip the filter primitive rect by the filter region and adjust the source
-    // rectangle if needed.
-    gfx::RectF crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
+    // Adjust the source rectangle if the primitive has been cropped.
     if (crop_rect != dst_rect)
       src_rect = gfx::MapRect(crop_rect, dst_rect, src_rect);
     return sk_make_sp<ImagePaintFilter>(
