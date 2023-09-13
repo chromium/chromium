@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_IBAN_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -24,6 +25,9 @@ class Iban : public AutofillDataModel {
   ~Iban() override;
 
   Iban& operator=(const Iban& iban);
+
+  std::string guid() const { return guid_; }
+  void set_guid(std::string_view guid) { guid_ = guid; }
 
   // Returns true if IBAN value is valid. This method is case-insensitive.
   // The validation follows the below steps:
@@ -68,14 +72,9 @@ class Iban : public AutofillDataModel {
   // the IBANs themselves.
   int Compare(const Iban& iban) const;
 
-  // Equality operators compare GUIDs, origins, |value_|,
-  // |nickname_| and the |server_id_|.
+  // Equality operators compare GUIDs, origins, |value_| and |nickname_|.
   bool operator==(const Iban& iban) const;
   bool operator!=(const Iban& iban) const;
-
-  // Returns the ID assigned by the server. |server_id_| is empty if it's a
-  // local IBAN.
-  const std::string& server_id() const { return server_id_; }
 
   // Returns the value (the actual bank account number) of IBAN.
   const std::u16string& value() const { return value_; }
@@ -108,9 +107,9 @@ class Iban : public AutofillDataModel {
   std::u16string GetStrippedValue() const;
 
  private:
-  // This is the ID assigned by the server to uniquely identify this IBAN.
-  // Note: server_id is empty for now as only local IBAN is supported.
-  std::string server_id_;
+  // A globally unique ID for this object. It identifies the IBAN across browser
+  // restarts and is used as the primary key in the database.
+  std::string guid_;
 
   // The IBAN's value, i.e., the actual bank account number.
   std::u16string value_;

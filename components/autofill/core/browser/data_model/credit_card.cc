@@ -162,15 +162,20 @@ std::u16string CreditCard::GetObfuscatedStringForCardDigits(
 }
 
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
-    : AutofillDataModel(guid),
-      origin_(origin),
+    : origin_(origin),
       record_type_(RecordType::kLocalCard),
       network_(kGenericCard),
       expiration_month_(0),
       expiration_year_(0),
       card_issuer_(Issuer::kIssuerUnknown),
-      instrument_id_(0) {}
+      instrument_id_(0) {
+  set_guid(guid);
+}
 
+// TODO(crbug.com/1121806): Calling the CreditCard's default constructor
+// initializes the `guid_`. This shouldn't happen for server cards, since they
+// are not identified by guids. However, some of the server card logic relies
+// by them for historical reasons.
 CreditCard::CreditCard(RecordType type, const std::string& server_id)
     : CreditCard() {
   DCHECK(type == RecordType::kMaskedServerCard ||
@@ -179,6 +184,7 @@ CreditCard::CreditCard(RecordType type, const std::string& server_id)
   server_id_ = server_id;
 }
 
+// TODO(crbug.com/1121806): See `server_id` constructor.
 CreditCard::CreditCard(RecordType type, int64_t instrument_id) : CreditCard() {
   DCHECK(type == RecordType::kMaskedServerCard ||
          type == RecordType::kFullServerCard);

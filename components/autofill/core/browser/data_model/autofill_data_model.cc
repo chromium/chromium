@@ -6,17 +6,13 @@
 
 #include <math.h>
 
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "url/gurl.h"
 
 namespace autofill {
 
-AutofillDataModel::AutofillDataModel(const std::string& guid)
-    : guid_(guid), use_count_(1) {
+AutofillDataModel::AutofillDataModel() : use_count_(1) {
   set_use_date(AutofillClock::Now());
   set_modification_date(AutofillClock::Now());
 }
@@ -36,7 +32,7 @@ double AutofillDataModel::GetRankingScore(base::Time current_time) const {
 
 bool AutofillDataModel::UseDateEqualsInSeconds(
     const AutofillDataModel* other) const {
-  return !((other->use_date() - use_date()).InSeconds());
+  return (other->use_date() - use_date()).InSeconds() == 0;
 }
 
 bool AutofillDataModel::HasGreaterRankingThan(
@@ -45,15 +41,11 @@ bool AutofillDataModel::HasGreaterRankingThan(
   double score = GetRankingScore(comparison_time);
   double other_score = other->GetRankingScore(comparison_time);
 
-  // Ties are broken by MRU, then by GUID comparison.
   const double kEpsilon = 0.00001;
   if (std::fabs(score - other_score) > kEpsilon)
     return score > other_score;
 
-  if (use_date_ != other->use_date_)
-    return use_date_ > other->use_date_;
-
-  return guid_ > other->guid_;
+  return use_date_ > other->use_date_;
 }
 
 AutofillMetadata AutofillDataModel::GetMetadata() const {

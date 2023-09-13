@@ -11,6 +11,7 @@
 #include <iosfwd>
 #include <list>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -77,6 +78,9 @@ class AutofillProfile : public AutofillDataModel {
   ~AutofillProfile() override;
 
   AutofillProfile& operator=(const AutofillProfile& profile);
+
+  std::string guid() const { return guid_; }
+  void set_guid(std::string_view guid) { guid_ = guid; }
 
   // Android/Java API.
 #if BUILDFLAG(IS_ANDROID)
@@ -355,6 +359,11 @@ class AutofillProfile : public AutofillDataModel {
   void MergeFormGroupTokenQuality(const FormGroup& merged_group,
                                   const AutofillProfile& other_profile);
 
+  // A globally unique ID for this object. It identifies the profile across
+  // browser restarts and is used as the primary key in the database.
+  // The `guid_` is unique across profile sources.
+  std::string guid_;
+
   // Personal information for this profile.
   NameInfo name_;
   EmailInfo email_;
@@ -374,6 +383,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // ID used for identifying this profile. Only set for SERVER_PROFILEs. This is
   // a hash of the contents.
+  // TODO(crbug.com/1457187): Remove.
   std::string server_id_;
 
   RecordType record_type_;

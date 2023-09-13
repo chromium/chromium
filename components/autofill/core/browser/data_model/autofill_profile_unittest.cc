@@ -1780,10 +1780,8 @@ TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
 
 enum Expectation { GREATER, LESS };
 struct ProfileRankingTestCase {
-  const std::string guid_a;
   const int use_count_a;
   const base::Time use_date_a;
-  const std::string guid_b;
   const int use_count_b;
   const base::Time use_date_b;
   Expectation expectation;
@@ -1804,12 +1802,10 @@ TEST_P(ProfileRankingTest, HasGreaterRankingThan) {
   auto test_case = GetParam();
 
   AutofillProfile profile1 = test::GetFullProfile();
-  profile1.set_guid(test_case.guid_a);
   profile1.set_use_count(test_case.use_count_a);
   profile1.set_use_date(test_case.use_date_a);
 
   AutofillProfile profile2 = test::GetFullProfile();
-  profile2.set_guid(test_case.guid_b);
   profile2.set_use_count(test_case.use_count_b);
   profile2.set_use_date(test_case.use_date_b);
 
@@ -1823,31 +1819,24 @@ INSTANTIATE_TEST_SUITE_P(
     AutofillProfileTest,
     ProfileRankingTest,
     testing::Values(
-        // Same ranking score, profile1 has a smaller GUID (tie breaker).
-        ProfileRankingTestCase{"guid_a", 8, current, "guid_b", 8, current,
-                               LESS},
         // Same days since last use, profile1 has a bigger use count.
-        ProfileRankingTestCase{"guid_a", 10, current, "guid_b", 8, current,
-                               GREATER},
+        ProfileRankingTestCase{10, current, 8, current, GREATER},
         // Same days since last use, profile1 has a smaller use count.
-        ProfileRankingTestCase{"guid_a", 8, current, "guid_b", 10, current,
-                               LESS},
+        ProfileRankingTestCase{8, current, 10, current, LESS},
         // Same days since last use, profile1 has larger use count.
-        ProfileRankingTestCase{"guid_a", 8, current, "guid_b", 8,
-                               current - base::Days(1), GREATER},
+        ProfileRankingTestCase{8, current, 8, current - base::Days(1), GREATER},
         // Same use count, profile1 has smaller days since last use.
-        ProfileRankingTestCase{"guid_a", 8, current - base::Days(1), "guid_b",
-                               8, current, LESS},
+        ProfileRankingTestCase{8, current - base::Days(1), 8, current, LESS},
         // Special case: occasional profiles. A profile with relatively low
         // usage and used recently (profile2) should not rank higher than a more
         // used profile that has been unused for a short amount of time
         // (profile1).
-        ProfileRankingTestCase{"guid_a", 300, current - base::Days(5), "guid_b",
-                               10, current - base::Days(1), GREATER},
+        ProfileRankingTestCase{300, current - base::Days(5), 10,
+                               current - base::Days(1), GREATER},
         // Special case: moving. A new profile used frequently (profile2) should
         // rank higher than a profile with more usage that has not been used for
         // a while (profile1).
-        ProfileRankingTestCase{"guid_a", 90, current - base::Days(20), "guid_b",
-                               10, current - base::Days(5), LESS}));
+        ProfileRankingTestCase{90, current - base::Days(20), 10,
+                               current - base::Days(5), LESS}));
 
 }  // namespace autofill

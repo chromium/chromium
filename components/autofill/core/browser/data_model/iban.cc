@@ -176,7 +176,9 @@ constexpr char16_t kCapitalizedIbanPattern[] =
 constexpr char16_t kEllipsisOneDot = u'\u2022';
 constexpr char16_t kEllipsisOneSpace = u'\u2006';
 
-Iban::Iban(const std::string& guid) : AutofillDataModel(guid) {}
+Iban::Iban(const std::string& guid) {
+  set_guid(guid);
+}
 
 Iban::Iban() : Iban(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
@@ -265,12 +267,7 @@ bool Iban::IsEmpty(const std::string& app_locale) const {
 }
 
 int Iban::Compare(const Iban& iban) const {
-  int comparison = server_id_.compare(iban.server_id_);
-  if (comparison != 0) {
-    return comparison;
-  }
-
-  comparison = nickname_.compare(iban.nickname_);
+  int comparison = nickname_.compare(iban.nickname_);
   if (comparison != 0) {
     return comparison;
   }

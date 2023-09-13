@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
@@ -129,6 +130,9 @@ class CreditCard : public AutofillDataModel {
   CreditCard& operator=(const CreditCard& credit_card);
   CreditCard& operator=(CreditCard&& credit_card);
   ~CreditCard() override;
+
+  std::string guid() const { return guid_; }
+  void set_guid(std::string_view guid) { guid_ = guid; }
 
   std::string origin() const { return origin_; }
   void set_origin(const std::string& origin) { origin_ = origin; }
@@ -469,6 +473,17 @@ class CreditCard : public AutofillDataModel {
 
   // Sets the name_on_card_ value based on the saved name parts.
   void SetNameOnCardFromSeparateParts();
+
+  // A unique identifier for cards of `record_type()` `kLocalCard`. For them,
+  // the `guid_` identifies the card across browser restarts and is used as the
+  // primary key in the database.
+  // For server cards, see `server_id_` and `instrument_id_`. Unfortunately,
+  // some dependencies around `guid_` for server cards exist. See the server_id
+  // constructor of `CreditCard()`. Notably, for server cards the `guid_` is
+  // not persisted and should not be used.
+  // TODO(crbug.com/1121806): Create a variant of the different ids, since
+  // only one of them should be populated based on the `record_type()`.
+  std::string guid_;
 
   // The origin of this data.  This should be
   //   (a) a web URL for the domain of the form from which the data was
