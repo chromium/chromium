@@ -117,6 +117,14 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 // enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
 
+// Enables downloading Google TTS High Quality voices.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kExperimentalAccessibilityGoogleTtsHighQualityVoices);
+
+// Returns true if downloading High Quality Google TTS voices is enabled.
+AX_BASE_EXPORT bool
+IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
+
 // Enables the experimental color enhancements settings.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kExperimentalAccessibilityColorEnhancementSettings);

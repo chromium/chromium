@@ -63175,6 +63175,8 @@ from previous Chrome versions.
   <int value="-772040705" label="ChromeWhatsNewInMainMenuNewBadge:disabled"/>
   <int value="-771080109" label="GrantNotificationsToDSE:disabled"/>
   <int value="-770319039" label="enable-touch-editing"/>
+  <int value="-770144964"
+      label="ExperimentalAccessibilityGoogleTtsHighQualityVoices:enabled"/>
   <int value="-769865314" label="AutofillCacheQueryResponses:disabled"/>
   <int value="-768240392" label="CertificateTransparency2022Policy:enabled"/>
   <int value="-767903409" label="EarlyBodyLoad:enabled"/>
@@ -63234,6 +63236,8 @@ from previous Chrome versions.
   <int value="-743590125" label="TabEngagementReportingAndroid:enabled"/>
   <int value="-743103250" label="enable-linkable-ephemeral-apps"/>
   <int value="-742469530" label="DriveFS:disabled"/>
+  <int value="-742455458"
+      label="ExperimentalAccessibilityGoogleTtsHighQualityVoices:disabled"/>
   <int value="-741806604" label="DownloadsUi:disabled"/>
   <int value="-741751264" label="SafetyCheckPermissions:disabled"/>
   <int value="-740850824"

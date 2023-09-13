@@ -2618,6 +2618,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "enable-experimental-accessibility-google-tts-high-quality-voices",
+    "owners": [ "josiahk", "akihiroota", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-experimental-accessibility-google-tts-language-packs",
     "owners": [ "akihiroota", "josiahk", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 119

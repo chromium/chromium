@@ -6270,6 +6270,11 @@ const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[] =
 const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[] =
     "Enables downloading Google TTS voices using Langauge Packs.";
 
+const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesName[] =
+    "Experimental accessibility Google TTS High Quality Voices.";
+const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesDescription[] =
+    "Enables downloading Google TTS High Quality Voices.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

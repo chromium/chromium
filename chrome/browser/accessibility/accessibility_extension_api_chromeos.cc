@@ -272,6 +272,11 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_GOOGLETTSHIGHQUALITYVOICES:
+      enabled = ::features::
+          IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_DICTATIONCONTEXTCHECKING:
       enabled = ::features::
           IsExperimentalAccessibilityDictationContextCheckingEnabled();

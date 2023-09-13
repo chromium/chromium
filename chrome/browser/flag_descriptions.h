@@ -3613,6 +3613,10 @@ extern const char
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
 
+extern const char kExperimentalAccessibilityGoogleTtsHighQualityVoicesName[];
+extern const char
+    kExperimentalAccessibilityGoogleTtsHighQualityVoicesDescription[];
+
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 

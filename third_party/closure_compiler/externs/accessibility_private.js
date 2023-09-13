@@ -278,6 +278,7 @@ chrome.accessibilityPrivate.AccessibilityFeature = {
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
   CHROMEVOX_SETTINGS_MIGRATION: 'chromevoxSettingsMigration',
   GAME_FACE_INTEGRATION: 'gameFaceIntegration',
+  GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
 };
 
 /**
