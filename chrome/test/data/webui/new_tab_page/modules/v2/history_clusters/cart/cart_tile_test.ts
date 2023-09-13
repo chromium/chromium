@@ -17,11 +17,13 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileV2Test', () => {
 
   async function initializeModule(
       cart: Cart, showRelatedSearches: boolean = true,
-      format: string = 'narrow'): Promise<CartTileModuleElementV2> {
+      format: string = 'narrow',
+      imagesEnabled: boolean = true): Promise<CartTileModuleElementV2> {
     const tileElement = new CartTileModuleElementV2();
     tileElement.showRelatedSearches = showRelatedSearches;
     tileElement.cart = cart;
     tileElement.format = format;
+    tileElement.imagesEnabled = imagesEnabled;
     document.body.append(tileElement);
     await waitAfterNextRender(tileElement);
     return tileElement;
@@ -162,7 +164,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileV2Test', () => {
     assertEquals(
         tileElement.shadowRoot!.querySelectorAll('.small-image').length, 0);
     assertEquals(
-        tileElement.shadowRoot!.querySelectorAll('.large-image').length, 0);
+        tileElement.shadowRoot!.querySelectorAll('.large-image').length, 1);
     assertFalse(isVisible($$(tileElement, '#extraImageCard')!));
     assertTrue(isVisible($$(tileElement, '#fallbackImage')!));
     assertEquals($$(tileElement, '#label')!.textContent!, 'foo.com');
@@ -213,7 +215,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileV2Test', () => {
   });
 
   test(
-      'Tile shows single image for wide format eith no related searches',
+      'Tile shows single image for wide format with no related searches',
       async () => {
         // Arrange.
         const tileElement =

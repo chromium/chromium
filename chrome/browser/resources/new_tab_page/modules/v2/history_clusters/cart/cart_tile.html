@@ -73,6 +73,10 @@
     gap: 4px;
   }
 
+  :host(:not([format='wide']):not([images-enabled])) #images {
+    height: 60px;
+  }
+
   :host([format='wide']:not([show-related-searches])) #images {
     height: 68px;
   }
@@ -82,11 +86,13 @@
   }
 
   .large-image {
+    background-color: var(--color-new-tab-page-module-background);
     height: 100%;
     width: 100%;
   }
 
-  .small-image {
+  .small-image,
+  :host([show-related-searches][format='wide']:not([image-count_='2']):not([image-count_='3'])) .small-image {
     background: var(--color-new-tab-page-module-background);
     border-radius: var(--ntp-module-item-border-radius);
     height: calc(100%/2 - 2px); /* subtract half of gap for each image */
@@ -95,7 +101,8 @@
 
   :host([format='wide']:not([show-related-searches])) .small-image,
   :host([image-count_='2']) .small-image,
-  :host([image-count_='3']) .small-image {
+  :host([image-count_='3']) .small-image,
+  :host(:not([images-enabled]):not([image-count_='2']):not([image-count_='3'])) .small-image {
     height: 100%;
     width: calc(100%/2 - 2px); /* subtract half of gap for each image */
   }
@@ -131,6 +138,10 @@
     line-height: 20px;
     margin: 16px 16px 4px 16px;
     white-space: initial;
+  }
+
+  :host(:not([format='wide']):not([images-enabled])) #title {
+    margin-top: 8px;
   }
 
   :host([format='narrow'][show-discount-chip_]) #title {
@@ -216,8 +227,8 @@
         </img>
       </template>
       <template is="dom-if" if="[[!cart.productImageUrls.length]]" restamp>
-        <page-favicon id ="fallbackImage" url="[[cart.cartUrl]]"
-            is-known-to-sync="true" size="24">
+        <page-favicon class="large-image" id="fallbackImage"
+            url="[[cart.cartUrl]]" is-known-to-sync="true" size="24">
         </page-favicon>
       </template>
     </template>

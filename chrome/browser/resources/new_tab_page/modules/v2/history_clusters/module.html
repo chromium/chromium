@@ -1,7 +1,7 @@
 <style include="cr-icons cr-shared-style">
   :host {
     --grid-gap: 8px;
-    height: 410px;
+    height: 432px;
   }
 
   :host([images-enabled_]) {
@@ -157,7 +157,8 @@
     <ntp-history-clusters-cart-tile-v2
         id="last-tile" cart="[[cart]]"
         on-click="recordClick_" on-aux-click="recordClick_"
-        format="[[format]]" show-related-searches$="[[showRelatedSearches]]">
+        format="[[format]]" show-related-searches$="[[showRelatedSearches]]"
+        images-enabled="[[imagesEnabled_]]">
     </ntp-history-clusters-cart-tile-v2>
   </template>
   <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
