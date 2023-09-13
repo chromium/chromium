@@ -47,7 +47,7 @@ namespace cx_diag = api::os_diagnostics;
 
 void NotifyExtensionAppUiClosed(
     extensions::ExtensionId extension_id,
-    raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context) {
+    raw_ptr<content::BrowserContext> browser_context) {
   cx_diag::ExceptionInfo exception;
   exception.reason = cx_diag::ExceptionReason::kAppUiClosed;
 

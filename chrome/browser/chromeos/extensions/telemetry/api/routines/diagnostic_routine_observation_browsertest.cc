@@ -58,8 +58,7 @@ class EventRegistrationObserver : public extensions::EventRouter::Observer {
   }
 
  private:
-  raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
-      context_;
+  raw_ptr<content::BrowserContext> context_;
   std::string event_name_;
   base::OnceClosure on_event_added_;
 };

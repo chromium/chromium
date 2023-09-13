@@ -113,7 +113,7 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
       routines_per_extension_;
 
   std::unique_ptr<RemoteDiagnosticRoutineServiceStrategy> remote_strategy_;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace chromeos

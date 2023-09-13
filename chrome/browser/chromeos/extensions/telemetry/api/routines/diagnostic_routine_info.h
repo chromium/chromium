@@ -14,7 +14,7 @@ namespace chromeos {
 struct DiagnosticRoutineInfo {
   extensions::ExtensionId extension_id;
   base::Uuid uuid;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context;
+  raw_ptr<content::BrowserContext> browser_context;
 };
 
 }  // namespace chromeos
