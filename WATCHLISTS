@@ -1830,6 +1830,19 @@
     'screen_ai': {
       'filepath': 'screen_ai',
     },
+    'search_engine_choice_screen': {
+      'filepath': 'chrome/browser/ui/search_engine_choice/'\
+                  '|chrome/browser/ui/views/search_engine_choice/'\
+                  '|chrome/browser/ui/webui/search_engine_choice/'\
+                  '|chrome/browser/resources/search_engine_choice/'\
+                  '|chrome/browser/search_engine_choice/'\
+                  '|chrome/test/data/webui/search_engine_choice/'\
+                  '|components/search_engines/search_engine_choice_utils.cc'\
+                  '|components/search_engine_choice_strings.grdp'\
+                  '|ios/chrome/browser/providers/signin/chromium_choice.mm'\
+                  '|ios/chrome/test/providers/signin/test_choice.mm'\
+                  '|ios/public/provider/chrome/browser/signin/choice_api.h',
+    },
     'search_prefetch': {
       'filepath': 'chrome/browser/preloading/prefetch/search_prefetch',
     },
@@ -3021,6 +3034,7 @@
     'scanning': ['gavinwill+scanning-watch@chromium.org',
                  'zentaro+scanning-watch@chromium.org'],
     'screen_ai': ['rhalavati+watch@chromium.org'],
+    'search_engine_choice_screen': ['chrome-waffle-eng+watch@google.com'],
     'search_prefetch': ['lingqi+watch@chromium.org'],
     'security': ['security-watchlist@chromium.org'],
     'select_to_speak': ['katie+watch@chromium.org',
