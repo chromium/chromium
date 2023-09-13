@@ -59,7 +59,6 @@ public class LocaleUtilsTest {
     // This is also a part of test for toLanguageTags when API level is 24 or higher
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
     public void testGetUpdatedLocaleForChromium() {
         Locale locale = new Locale("jp");
         Locale updatedLocale = LocaleUtils.getUpdatedLocaleForChromium(locale);
@@ -102,7 +101,6 @@ public class LocaleUtilsTest {
     // This is also a part of test for forLanguageTag when API level is 21 or higher
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
     public void testGetUpdatedLocaleForAndroid() {
         Locale locale = new Locale("jp");
         Locale updatedLocale = LocaleUtils.getUpdatedLocaleForAndroid(locale);
@@ -192,80 +190,6 @@ public class LocaleUtilsTest {
         localeList = new LocaleList(locale1);
         localeString = LocaleUtils.toLanguageTags(localeList);
         Assert.assertEquals("nn-NO", localeString);
-    }
-
-    // Test for forLanguageTag when API level is lower than 21
-    @Test
-    @SmallTest
-    public void testForLanguageTagCompat() {
-        String languageTag = "";
-        Locale locale = new Locale("");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "und";
-        locale = new Locale("");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "en";
-        locale = new Locale("en");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "mas";
-        locale = new Locale("mas");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "en-GB";
-        locale = new Locale("en", "GB");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "es-419";
-        locale = new Locale("es", "419");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        // Tests if updated Chromium language code and deprecated language code
-        // are pointing to the same Locale Object.
-        languageTag = "he";
-        locale = new Locale("iw");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "iw";
-        locale = new Locale("he");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "ji";
-        locale = new Locale("yi");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "yi";
-        locale = new Locale("ji");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "in";
-        locale = new Locale("id");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "id";
-        locale = new Locale("in");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        // Tests for Tagalog/Filipino if updated Chromium language code and
-        // language code are pointing to the same Locale Object.
-        languageTag = "tl";
-        locale = new Locale("tl");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "fil";
-        locale = new Locale("tl");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        // Test with invalid inputs.
-        languageTag = "notValidLanguage";
-        locale = new Locale("");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
-
-        languageTag = "en-notValidCountry";
-        locale = new Locale("en");
-        Assert.assertEquals(locale, LocaleUtils.forLanguageTagCompat(languageTag));
     }
 
     // Test for toLanguage.

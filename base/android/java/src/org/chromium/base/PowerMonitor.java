@@ -95,9 +95,6 @@ public class PowerMonitor {
 
     @CalledByNative
     private static int getRemainingBatteryCapacity() {
-        // BatteryManager's property for charge level is only supported since Lollipop.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return 0;
-
         // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
         // battery power is requested prior to the browser triggering the creation, force it to be
         // created now.

@@ -106,39 +106,12 @@ public class LocaleUtils {
 
     /**
      * This function creates a Locale object from xx-XX style string where xx is language code
-     * and XX is a country code. This works for API level lower than 21.
-     * @return the locale that best represents the language tag.
-     */
-    public static Locale forLanguageTagCompat(String languageTag) {
-        String[] tag = languageTag.split("-");
-        if (tag.length == 0) {
-            return new Locale("");
-        }
-        String language = getUpdatedLanguageForAndroid(tag[0]);
-        if ((language.length() != 2 && language.length() != 3)) {
-            return new Locale("");
-        }
-        if (tag.length == 1) {
-            return new Locale(language);
-        }
-        String country = tag[1];
-        if (country.length() != 2 && country.length() != 3) {
-            return new Locale(language);
-        }
-        return new Locale(language, country);
-    }
-
-    /**
-     * This function creates a Locale object from xx-XX style string where xx is language code
      * and XX is a country code.
      * @return the locale that best represents the language tag.
      */
     public static Locale forLanguageTag(String languageTag) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Locale locale = Locale.forLanguageTag(languageTag);
-            return getUpdatedLocaleForAndroid(locale);
-        }
-        return forLanguageTagCompat(languageTag);
+        Locale locale = Locale.forLanguageTag(languageTag);
+        return getUpdatedLocaleForAndroid(locale);
     }
 
     /**

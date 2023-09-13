@@ -301,11 +301,7 @@ public class BuildInfo {
         }
         resourcesVersion = currentResourcesVersion;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            abiString = TextUtils.join(", ", Build.SUPPORTED_ABIS);
-        } else {
-            abiString = String.format("ABI1: %s, ABI2: %s", Build.CPU_ABI, Build.CPU_ABI2);
-        }
+        abiString = TextUtils.join(", ", Build.SUPPORTED_ABIS);
 
         // The value is truncated, as this is used for crash and UMA reporting.
         androidBuildFingerprint = Build.FINGERPRINT.substring(

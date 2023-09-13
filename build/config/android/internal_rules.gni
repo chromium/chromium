@@ -1477,6 +1477,9 @@ if (enable_java_templates) {
     if (defined(invoker.min_sdk_version)) {
       _min_sdk_version = invoker.min_sdk_version
     }
+    assert(
+        _min_sdk_version >= min_supported_sdk_version,
+        get_label_info(":$target_name", "label_no_toolchain") + " has an unsupported min_sdk_version of $_min_sdk_version (min is $min_supported_sdk_version)")
 
     _proguard_enabled =
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
@@ -1943,6 +1946,9 @@ if (enable_java_templates) {
 
   template("merge_manifests") {
     action_with_pydeps(target_name) {
+      assert(
+          invoker.min_sdk_version >= min_supported_sdk_version,
+          get_label_info(":$target_name", "label_no_toolchain") + " has an unsupported min_sdk_version of ${invoker.min_sdk_version} (min is $min_supported_sdk_version)")
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       script = "//build/android/gyp/merge_manifest.py"
       depfile = "$target_gen_dir/$target_name.d"

@@ -84,6 +84,13 @@ if (is_android || is_chromeos) {
     }
   }
 
+  # Our build system no longer supports legacy multidex.
+  min_supported_sdk_version = 21
+
+  assert(
+      default_min_sdk_version >= min_supported_sdk_version,
+      "default_min_sdk_version ($default_min_sdk_version) must be >= min_supported_sdk_version ($min_supported_sdk_version)")
+
   # Avoid typos when setting android_static_analysis in args.gn.
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
          android_static_analysis == "build_server")
