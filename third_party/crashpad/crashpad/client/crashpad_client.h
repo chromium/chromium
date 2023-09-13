@@ -456,6 +456,24 @@ class CrashpadClient {
   //! \param[in] handler The custom crash signal handler to install.
   static void SetFirstChanceExceptionHandler(FirstChanceHandler handler);
 
+  //! \brief Installs a custom crash signal handler which runs after the
+  //!     currently installed Crashpad handler.
+  //!
+  //! Handling signals appropriately can be tricky and use of this method
+  //! should be avoided, if possible.
+  //!
+  //! A handler must have already been installed before calling this method.
+  //!
+  //! The custom handler runs in a signal handler context and must be safe for
+  //! that purpose.
+  //!
+  //! If the custom handler returns `true`, the signal is not reraised.
+  //!
+  //! \param[in] handler The custom crash signal handler to install.
+  static void SetLastChanceExceptionHandler(bool (*handler)(int,
+                                                            siginfo_t*,
+                                                            ucontext_t*));
+
   //! \brief Configures a set of signals that shouldn't have Crashpad signal
   //!     handlers installed.
   //!
