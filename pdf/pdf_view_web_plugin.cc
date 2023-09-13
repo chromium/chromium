@@ -518,7 +518,13 @@ void PdfViewWebPlugin::UpdateFocus(bool focused,
   if (has_focus_ != focused) {
     engine_->UpdateFocus(focused);
     client_->UpdateTextInputState();
+
+    // Make sure `this` is still alive after the UpdateSelectionBounds() call.
+    auto weak_this = weak_factory_.GetWeakPtr();
     client_->UpdateSelectionBounds();
+    if (!weak_this) {
+      return;
+    }
   }
   has_focus_ = focused;
 
