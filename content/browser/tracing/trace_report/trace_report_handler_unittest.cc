@@ -9,6 +9,7 @@
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -146,7 +147,7 @@ TEST_F(TraceReportHandlerTest, DownloadTrace) {
   base::Uuid uuid = base::Uuid::GenerateRandomV4();
   base::MockCallback<TraceReportHandler::DownloadTraceCallback> callback;
 
-  const absl::optional<std::string> result = "PROTO RESULT";
+  const auto result = absl::optional<base::span<const char>>("PROTO RESULT");
 
   EXPECT_CALL(fake_trace_upload_list_, DownloadTrace)
       .WillOnce(
@@ -155,7 +156,14 @@ TEST_F(TraceReportHandlerTest, DownloadTrace) {
             EXPECT_EQ(uuid, passed_uuid);
             std::move(callback).Run(result);
           });
-  EXPECT_CALL(callback, Run(result));
+  EXPECT_CALL(callback, Run)
+      .WillOnce(
+          [&result](absl::optional<mojo_base::BigBuffer> converted_value) {
+            EXPECT_EQ(std::string_view(
+                          reinterpret_cast<char*>(converted_value->data()),
+                          converted_value->size()),
+                      std::string_view(result->data(), result->size()));
+          });
   handler_->DownloadTrace(uuid, callback.Get());
 }
 

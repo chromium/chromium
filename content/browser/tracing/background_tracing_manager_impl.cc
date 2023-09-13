@@ -332,7 +332,16 @@ void BackgroundTracingManagerImpl::DownloadTrace(const base::Uuid& trace_uuid,
       FROM_HERE,
       base::BindOnce(&TraceReportDatabase::GetProtoValue,
                      base::Unretained(trace_database_.get()), trace_uuid),
-      std::move(callback));
+      base::BindOnce(
+          [](GetProtoCallback callback,
+             const absl::optional<std::string>& result) {
+            if (result) {
+              std::move(callback).Run(base::span<const char>(*result));
+            } else {
+              std::move(callback).Run(absl::nullopt);
+            }
+          },
+          std::move(callback)));
 }
 
 void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(

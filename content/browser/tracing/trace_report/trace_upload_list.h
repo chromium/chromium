@@ -26,7 +26,7 @@ class TraceUploadList {
   using GetReportsCallback =
       base::OnceCallback<void(std::vector<ClientTraceReport> result)>;
   using GetProtoCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& result)>;
+      base::OnceCallback<void(absl::optional<base::span<const char>> result)>;
 
   virtual void OpenDatabaseIfExists() = 0;
 
