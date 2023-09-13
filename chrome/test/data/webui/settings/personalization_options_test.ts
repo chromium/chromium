@@ -325,12 +325,19 @@ suite('PageContentSettingOff', function() {
 suite('OfficialBuild', function() {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let testElement: SettingsPersonalizationOptionsElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
 
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-personalization-options');
+    testElement.prefs = settingsPrefs.prefs!;
     document.body.appendChild(testElement);
   });
 
@@ -344,37 +351,20 @@ suite('OfficialBuild', function() {
   // Settings supports TypeScript tests.
   // <if expr="not chromeos_ash">
   test('Spellcheck toggle', function() {
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: ['en-US']}},
-    };
+    testElement.set('prefs.spellcheck.dictionaries.value', ['en-US']);
     flush();
     const shadowRoot = testElement.shadowRoot!;
     assertFalse(
         shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
 
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: []}},
-    };
+    testElement.set('prefs.spellcheck.dictionaries.value', []);
     flush();
     assertTrue(
         shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
 
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      browser: {enable_spellchecking: {value: false}},
-      spellcheck: {
-        dictionaries: {value: ['en-US']},
-        use_spelling_service: {value: false},
-      },
-    };
+    testElement.set('prefs.browser.enable_spellchecking.value', false);
+    testElement.set('prefs.spellcheck.dictionaries.value', ['en-US']);
+    testElement.set('prefs.spellcheck.use_spelling_service.value', false);
     flush();
     shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
     assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
@@ -384,23 +374,13 @@ suite('OfficialBuild', function() {
   // Only the spellcheck link is shown on Chrome OS in Browser settings.
   // <if expr="chromeos_ash">
   test('Spellcheck link', function() {
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: ['en-US']}},
-    };
+    testElement.set('prefs.spellcheck.dictionaries.value', ['en-US']);
     flush();
     const shadowRoot = testElement.shadowRoot!;
     assertFalse(
         shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
 
-    testElement.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing:
-          {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: []}},
-    };
+    testElement.set('prefs.spellcheck.dictionaries.value', []);
     flush();
     assertTrue(
         shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
