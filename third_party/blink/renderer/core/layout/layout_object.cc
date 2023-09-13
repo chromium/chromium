@@ -4750,9 +4750,9 @@ void LayoutObject::SetIsBackgroundAttachmentFixedObject(
 }
 
 void LayoutObject::SetCanCompositeBackgroundAttachmentFixed(
-    bool can_fast_scroll) {
-  if (can_fast_scroll != bitfields_.CanCompositeBackgroundAttachmentFixed()) {
-    bitfields_.SetCanCompositeBackgroundAttachmentFixed(can_fast_scroll);
+    bool can_composite) {
+  if (can_composite != bitfields_.CanCompositeBackgroundAttachmentFixed()) {
+    bitfields_.SetCanCompositeBackgroundAttachmentFixed(can_composite);
     SetNeedsPaintPropertyUpdate();
   }
 }

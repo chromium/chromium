@@ -7147,7 +7147,6 @@ TEST_P(PaintPropertyTreeBuilderTest, DontPromoteTrivial3DWithLowEndDevice) {
   } while (false)
 
 TEST_P(PaintPropertyTreeBuilderTest, BackgroundClip) {
-  ScopedCompositeBackgroundAttachmentFixedForTest enabled(true);
   SetPreferCompositingToLCDText(true);
 
   SetBodyInnerHTML(R"HTML(
@@ -7228,7 +7227,6 @@ TEST_P(PaintPropertyTreeBuilderTest, BackgroundClip) {
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, BackgroundClipFragmented) {
-  ScopedCompositeBackgroundAttachmentFixedForTest enabled(true);
   SetPreferCompositingToLCDText(true);
 
   SetBodyInnerHTML(R"HTML(

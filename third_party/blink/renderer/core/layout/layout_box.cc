@@ -4436,9 +4436,6 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
 bool LayoutBox::ComputeCanCompositeBackgroundAttachmentFixed() const {
   NOT_DESTROYED();
   DCHECK(IsBackgroundAttachmentFixedObject());
-  if (!RuntimeEnabledFeatures::CompositeBackgroundAttachmentFixedEnabled()) {
-    return false;
-  }
   if (GetDocument().GetSettings()->GetLCDTextPreference() ==
       LCDTextPreference::kStronglyPreferred) {
     return false;
