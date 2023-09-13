@@ -114,7 +114,7 @@ public class TabModelImplUnitTest {
         final int launchType = TabLaunchType.FROM_CHROME_UI;
         MockTab tab = new MockTab(mNextTabId++, model.isIncognito());
         CriticalPersistedTabData data = new CriticalPersistedTabData(tab);
-        data.setTimestampMillis(activeTimestampMillis);
+        tab.setTimestampMillis(activeTimestampMillis);
         data.setParentId(parentId);
         tab = (MockTab) MockTab.initializeWithCriticalPersistedTabData(tab, data);
         tab.setIsInitialized(true);

@@ -212,7 +212,7 @@ public class TabModelUtils {
             final Tab currentTab = model.getTabAt(i);
             if (currentTab.getId() == tabId || currentTab.isClosing()) continue;
 
-            final long currentTime = CriticalPersistedTabData.from(currentTab).getTimestampMillis();
+            final long currentTime = currentTab.getTimestampMillis();
             if (currentTime != CriticalPersistedTabData.INVALID_TIMESTAMP
                     && mostRecentTabTime < currentTime) {
                 mostRecentTabTime = currentTime;

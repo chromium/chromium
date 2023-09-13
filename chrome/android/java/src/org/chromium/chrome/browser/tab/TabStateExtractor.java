@@ -32,7 +32,7 @@ public class TabStateExtractor {
         tabState.contentsState = getWebContentsState(tab);
         tabState.openerAppId = TabAssociatedApp.getAppId(tab);
         tabState.parentId = CriticalPersistedTabData.from(tab).getParentId();
-        tabState.timestampMillis = CriticalPersistedTabData.from(tab).getTimestampMillis();
+        tabState.timestampMillis = tab.getTimestampMillis();
         tabState.tabLaunchTypeAtCreation =
                 CriticalPersistedTabData.from(tab).getTabLaunchTypeAtCreation();
         // Don't save the actual default theme color because it could change on night mode state

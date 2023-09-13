@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorage;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorageJni;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
@@ -923,7 +922,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             MockTab tab = (MockTab) MockTab.createAndInitialize(1, false);
             tab.setGurlOverrideForTesting(TEST_GURL);
             tab.setIsInitialized(true);
-            CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+            tab.setTimestampMillis(System.currentTimeMillis());
             TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
                     new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
             mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);

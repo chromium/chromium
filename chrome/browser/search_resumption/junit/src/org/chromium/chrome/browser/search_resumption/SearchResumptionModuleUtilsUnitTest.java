@@ -168,7 +168,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(false).when(mGurl1).isEmpty();
         doReturn(true).when(mGurl1).isValid();
         long lastVisitedTimestampMs = 0;
-        doReturn(lastVisitedTimestampMs).when(mCriticalPersistedTabData).getTimestampMillis();
+        doReturn(lastVisitedTimestampMs).when(mTab).getTimestampMillis();
         int expirationTimeSeconds = 1;
         mFeatureListValues.addFieldTrialParamOverride(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,

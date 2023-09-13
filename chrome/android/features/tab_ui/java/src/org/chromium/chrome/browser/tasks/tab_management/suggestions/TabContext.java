@@ -95,9 +95,8 @@ public class TabContext {
         public static TabInfo createFromTab(Tab tab) {
             // TODO(crbug/783819): convert TabInfo to GURL
             return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrl().getSpec(),
-                    tab.getOriginalUrl().getSpec(),
-                    CriticalPersistedTabData.from(tab).getTimestampMillis(), tab.getUrl().getSpec(),
-                    tab.isIncognito());
+                    tab.getOriginalUrl().getSpec(), tab.getTimestampMillis(),
+                    tab.getUrl().getSpec(), tab.isIncognito());
         }
 
         public double getSiteEngagementScore() {

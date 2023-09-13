@@ -104,7 +104,7 @@ public class AuxiliarySearchProvider {
         if (TextUtils.isEmpty(title) || url == null || !url.isValid()) return null;
 
         var tabBuilder = AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url.getSpec());
-        final long lastAccessTime = CriticalPersistedTabData.from(tab).getTimestampMillis();
+        final long lastAccessTime = tab.getTimestampMillis();
         if (lastAccessTime != CriticalPersistedTabData.INVALID_TIMESTAMP) {
             tabBuilder.setLastAccessTimestamp(lastAccessTime);
         }

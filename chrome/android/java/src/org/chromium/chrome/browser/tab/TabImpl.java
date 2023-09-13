@@ -210,6 +210,7 @@ public class TabImpl implements Tab {
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
     private boolean mIsWebContentObscured;
+    private long mTimestampMillis;
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -741,7 +742,7 @@ public class TabImpl implements Tab {
 
             // Updating the timestamp has to happen after the showInternal() call since subclasses
             // may use it for logging.
-            CriticalPersistedTabData.from(this).setTimestampMillis(System.currentTimeMillis());
+            setTimestampMillis(System.currentTimeMillis());
         } finally {
             TraceEvent.end("Tab.show");
         }
@@ -949,8 +950,8 @@ public class TabImpl implements Tab {
             }
 
         } finally {
-            if (CriticalPersistedTabData.from(this).getTimestampMillis() == INVALID_TIMESTAMP) {
-                CriticalPersistedTabData.from(this).setTimestampMillis(System.currentTimeMillis());
+            if (mTimestampMillis == INVALID_TIMESTAMP) {
+                setTimestampMillis(System.currentTimeMillis());
             }
             registerTabSaving();
             String appId = null;
@@ -989,7 +990,7 @@ public class TabImpl implements Tab {
     void restoreFieldsFromState(TabState state) {
         assert state != null;
         CriticalPersistedTabData.from(this).setWebContentsState(state.contentsState);
-        CriticalPersistedTabData.from(this).setTimestampMillis(state.timestampMillis);
+        setTimestampMillis(state.timestampMillis);
         CriticalPersistedTabData.from(this).setUrl(
                 new GURL(state.contentsState.getVirtualUrlFromState()));
         CriticalPersistedTabData.from(this).setTitle(
@@ -1364,7 +1365,7 @@ public class TabImpl implements Tab {
 
     @CalledByNative
     private long getLastShownTimestamp() {
-        return CriticalPersistedTabData.from(this).getTimestampMillis();
+        return mTimestampMillis;
     }
 
     @CalledByNative
@@ -1639,6 +1640,18 @@ public class TabImpl implements Tab {
     public boolean isCustomTab() {
         ChromeActivity activity = getActivity();
         return activity != null && activity.isCustomTab();
+    }
+
+    @Override
+    public long getTimestampMillis() {
+        return mTimestampMillis;
+    }
+
+    private void setTimestampMillis(long timestampMillis) {
+        mTimestampMillis = timestampMillis;
+        for (TabObserver tabObserver : mObservers) {
+            tabObserver.onTimestampChanged(this, timestampMillis);
+        }
     }
 
     /**

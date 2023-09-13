@@ -90,7 +90,7 @@ public class AuxiliarySearchProviderTest {
             MockTab tab = (MockTab) mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
             CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + Integer.toString(i));
-            CriticalPersistedTabData.from(tab).setTimestampMillis(i);
+            tab.setTimestampMillis(i);
         }
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
@@ -161,12 +161,12 @@ public class AuxiliarySearchProviderTest {
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
-        CriticalPersistedTabData.from(tab).setTimestampMillis(0);
+        tab.setTimestampMillis(0);
 
         // Add a null title tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(1)));
-        CriticalPersistedTabData.from(tab).setTimestampMillis(1);
+        tab.setTimestampMillis(1);
         CriticalPersistedTabData.from(tab).setTitle(null);
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
@@ -188,12 +188,12 @@ public class AuxiliarySearchProviderTest {
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
-        CriticalPersistedTabData.from(tab).setTimestampMillis(0);
+        tab.setTimestampMillis(0);
 
         // Add an empty title tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "1"));
-        CriticalPersistedTabData.from(tab).setTimestampMillis(1);
+        tab.setTimestampMillis(1);
         CriticalPersistedTabData.from(tab).setTitle("");
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
@@ -215,12 +215,12 @@ public class AuxiliarySearchProviderTest {
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
-        CriticalPersistedTabData.from(tab).setTimestampMillis(0);
+        tab.setTimestampMillis(0);
 
         // Add a null url tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(null);
-        CriticalPersistedTabData.from(tab).setTimestampMillis(1);
+        tab.setTimestampMillis(1);
         CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
@@ -242,12 +242,12 @@ public class AuxiliarySearchProviderTest {
         MockTab tab = (MockTab) mockTabModel.addTab(0);
         tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
         CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
-        CriticalPersistedTabData.from(tab).setTimestampMillis(0);
+        tab.setTimestampMillis(0);
 
         // Add an invalid url tab
         tab = (MockTab) mockTabModel.addTab(1);
         tab.setGurlOverrideForTesting(new GURL("invalid"));
-        CriticalPersistedTabData.from(tab).setTimestampMillis(1);
+        tab.setTimestampMillis(1);
         CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + "0");
 
         doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
@@ -271,7 +271,7 @@ public class AuxiliarySearchProviderTest {
             MockTab tab = (MockTab) mockTabModel.addTab(i);
             tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
             CriticalPersistedTabData.from(tab).setTitle(TAB_TITLE + Integer.toString(i));
-            CriticalPersistedTabData.from(tab).setTimestampMillis(i);
+            tab.setTimestampMillis(i);
             if (i >= 100) {
                 tabList.add(tab);
             }

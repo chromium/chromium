@@ -209,7 +209,7 @@ public class PseudoTab {
      */
     public long getTimestampMillis() {
         if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
-            return CriticalPersistedTabData.from(mTab.get()).getTimestampMillis();
+            return mTab.get().getTimestampMillis();
         }
         assert mTabId != null;
         return TabAttributeCache.getTimestampMillis(mTabId);

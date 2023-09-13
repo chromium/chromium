@@ -88,7 +88,7 @@ public class TabAttributeCache {
             @Override
             public void onTimestampChanged(Tab tab, long timestampMillis) {
                 if (tab.isIncognito()) return;
-                assert timestampMillis == CriticalPersistedTabData.from(tab).getTimestampMillis();
+                assert timestampMillis == tab.getTimestampMillis();
                 cacheTimestampMillis(tab.getId(), timestampMillis);
             }
 
@@ -135,7 +135,7 @@ public class TabAttributeCache {
                     editor.putString(getTitleKey(id), tab.getTitle());
                     CriticalPersistedTabData tabData = CriticalPersistedTabData.from(tab);
                     editor.putInt(getRootIdKey(id), tabData.getRootId());
-                    editor.putLong(getTimestampMillisKey(id), tabData.getTimestampMillis());
+                    editor.putLong(getTimestampMillisKey(id), tab.getTimestampMillis());
                 }
                 editor.apply();
                 Tab currentTab = mTabModelSelector.getCurrentTab();

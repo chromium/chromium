@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -128,8 +127,7 @@ public class ImplicitPriceDropSubscriptionsManager {
     // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time
     // limit a field parameter.
     private boolean isStaleTab(Tab tab) {
-        long timeSinceLastOpened = System.currentTimeMillis()
-                - CriticalPersistedTabData.from(tab).getTimestampMillis();
+        long timeSinceLastOpened = System.currentTimeMillis() - tab.getTimestampMillis();
 
         return timeSinceLastOpened
                 <= TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())

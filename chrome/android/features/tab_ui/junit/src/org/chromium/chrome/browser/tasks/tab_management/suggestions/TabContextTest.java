@@ -98,7 +98,7 @@ public class TabContextTest {
         WebContents webContents = mock(WebContents.class);
         doReturn(GURL.emptyGURL()).when(webContents).getVisibleUrl();
         doReturn(webContents).when(tab).getWebContents();
-        doReturn(timestampMillis).when(criticalPersistedTabData).getTimestampMillis();
+        doReturn(timestampMillis).when(tab).getTimestampMillis();
         return tab;
     }
 

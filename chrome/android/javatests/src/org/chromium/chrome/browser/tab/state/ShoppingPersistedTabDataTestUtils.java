@@ -209,7 +209,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
             MockTab tab = (MockTab) MockTab.createAndInitialize(tabId, isIncognito);
             tab.setIsInitialized(true);
             tab.setGurlOverrideForTesting(DEFAULT_GURL);
-            CriticalPersistedTabData.from(tab).setTimestampMillis(System.currentTimeMillis());
+            tab.setTimestampMillis(System.currentTimeMillis());
             res.set(tab);
         });
         return res.get();

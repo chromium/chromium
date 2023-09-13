@@ -129,8 +129,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         long fakeTimestamp = System.currentTimeMillis()
                 - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
                 + TimeUnit.DAYS.toMillis(7);
-        doReturn(fakeTimestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
-        doReturn(fakeTimestamp).when(mCriticalPersistedTabData2).getTimestampMillis();
+        doReturn(fakeTimestamp).when(mTab1).getTimestampMillis();
+        doReturn(fakeTimestamp).when(mTab2).getTimestampMillis();
         mSubscription1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
                 IdentifierType.OFFER_ID, OFFER1_ID, ManagementType.CHROME_MANAGED, null);
         mSubscription2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
@@ -159,6 +159,11 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     public void testInitialSubscription_WithDuplicateURL() {
         mTab1 = prepareTab(TAB1_ID, URL1, POSITION1, mCriticalPersistedTabData1);
         mTab2 = prepareTab(TAB2_ID, URL1, POSITION2, mCriticalPersistedTabData2);
+        long fakeTimestamp = System.currentTimeMillis()
+                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                + TimeUnit.DAYS.toMillis(7);
+        doReturn(fakeTimestamp).when(mTab1).getTimestampMillis();
+        doReturn(fakeTimestamp).when(mTab2).getTimestampMillis();
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, OFFER1_ID, OFFER2_ID);
 
         initializeSubscriptionsAndVerify(true, false);
@@ -177,7 +182,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         doReturn(System.currentTimeMillis()
                 - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
                 - TimeUnit.DAYS.toMillis(7))
-                .when(mCriticalPersistedTabData1)
+                .when(mTab1)
                 .getTimestampMillis();
 
         initializeSubscriptionsAndVerify(false, true);
@@ -186,7 +191,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Test
     public void testInitialSubscription_TabTooNew() {
-        doReturn(System.currentTimeMillis()).when(mCriticalPersistedTabData1).getTimestampMillis();
+        doReturn(System.currentTimeMillis()).when(mTab1).getTimestampMillis();
 
         initializeSubscriptionsAndVerify(false, true);
         verifyEligibleSubscriptionMetrics(1, 2);

@@ -350,4 +350,11 @@ public interface TabObserver {
      * CloseWatcher registered/unregistered to update whether the CloseWatcher should intercept.
      */
     void onDidChangeCloseSignalInterceptStatus();
+
+    /**
+     * Broadcast that the timestamp on a {@link Tab} has changed
+     * @param tab {@link Tab} timestamp has changed on
+     * @param timestampMillis new value of the timestamp
+     */
+    default void onTimestampChanged(Tab tab, long timestampMillis) {}
 }

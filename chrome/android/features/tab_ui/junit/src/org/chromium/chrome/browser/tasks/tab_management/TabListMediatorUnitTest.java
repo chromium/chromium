@@ -1938,10 +1938,8 @@ public class TabListMediatorUnitTest {
 
         long timestamp1 = 1;
         long timestamp2 = 2;
-        CriticalPersistedTabData criticalPersistedTabData1 = CriticalPersistedTabData.from(mTab1);
-        CriticalPersistedTabData criticalPersistedTabData2 = CriticalPersistedTabData.from(mTab2);
-        doReturn(timestamp1).when(criticalPersistedTabData1).getTimestampMillis();
-        doReturn(timestamp2).when(criticalPersistedTabData2).getTimestampMillis();
+        doReturn(timestamp1).when(mTab1).getTimestampMillis();
+        doReturn(timestamp2).when(mTab2).getTimestampMillis();
         mMediator.resetWithListOfTabs(
                 PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/true);
 
@@ -1951,8 +1949,8 @@ public class TabListMediatorUnitTest {
         assertThat(mMediator.indexOfTab(TAB1_ID), equalTo(1));
         assertThat(mMediator.indexOfTab(TAB2_ID), equalTo(0));
 
-        doReturn(timestamp2).when(criticalPersistedTabData1).getTimestampMillis();
-        doReturn(timestamp1).when(criticalPersistedTabData2).getTimestampMillis();
+        doReturn(timestamp2).when(mTab1).getTimestampMillis();
+        doReturn(timestamp1).when(mTab2).getTimestampMillis();
         mMediator.resetWithListOfTabs(
                 PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/true);
 
@@ -1985,12 +1983,9 @@ public class TabListMediatorUnitTest {
         long timestamp1 = 1;
         long timestamp2 = 2;
         long timestamp3 = 3;
-        CriticalPersistedTabData criticalPersistedTabData1 = CriticalPersistedTabData.from(mTab1);
-        CriticalPersistedTabData criticalPersistedTabData2 = CriticalPersistedTabData.from(mTab2);
-        CriticalPersistedTabData criticalPersistedTabData3 = CriticalPersistedTabData.from(tab3);
-        doReturn(timestamp1).when(criticalPersistedTabData1).getTimestampMillis();
-        doReturn(timestamp2).when(criticalPersistedTabData2).getTimestampMillis();
-        doReturn(timestamp3).when(criticalPersistedTabData3).getTimestampMillis();
+        doReturn(timestamp1).when(mTab1).getTimestampMillis();
+        doReturn(timestamp2).when(mTab2).getTimestampMillis();
+        doReturn(timestamp3).when(tab3).getTimestampMillis();
 
         mMediator.resetWithListOfTabs(
                 PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/true);
@@ -2078,14 +2073,10 @@ public class TabListMediatorUnitTest {
         long timestamp2 = 2;
         long timestamp3 = 3;
         long timestamp4 = 4;
-        CriticalPersistedTabData criticalPersistedTabData1 = CriticalPersistedTabData.from(mTab1);
-        CriticalPersistedTabData criticalPersistedTabData2 = CriticalPersistedTabData.from(mTab2);
-        CriticalPersistedTabData criticalPersistedTabData3 = CriticalPersistedTabData.from(tab3);
-        CriticalPersistedTabData criticalPersistedTabData4 = CriticalPersistedTabData.from(tab4);
-        doReturn(timestamp1).when(criticalPersistedTabData1).getTimestampMillis();
-        doReturn(timestamp2).when(criticalPersistedTabData2).getTimestampMillis();
-        doReturn(timestamp3).when(criticalPersistedTabData3).getTimestampMillis();
-        doReturn(timestamp4).when(criticalPersistedTabData4).getTimestampMillis();
+        doReturn(timestamp1).when(mTab1).getTimestampMillis();
+        doReturn(timestamp2).when(mTab2).getTimestampMillis();
+        doReturn(timestamp3).when(tab3).getTimestampMillis();
+        doReturn(timestamp4).when(tab4).getTimestampMillis();
 
         mMediator.resetWithListOfTabs(
                 PseudoTab.getListOfPseudoTab(tabs), /*quickMode =*/false, /*mruMode =*/true);
@@ -2628,13 +2619,9 @@ public class TabListMediatorUnitTest {
                     doReturn(incognito).when(mTab2).isIncognito();
 
                     for (int i = 0; i < 2; i++) {
-                        CriticalPersistedTabData criticalPersistedTabData =
-                                mock(CriticalPersistedTabData.class);
-                        doReturn(System.currentTimeMillis())
-                                .when(criticalPersistedTabData)
-                                .getTimestampMillis();
-                        mTabModel.getTabAt(i).getUserDataHost().setUserData(
-                                CriticalPersistedTabData.class, criticalPersistedTabData);
+                        long timestamp = System.currentTimeMillis();
+                        Tab tab = mTabModel.getTabAt(i);
+                        doReturn(timestamp).when(tab).getTimestampMillis();
                     }
 
                     tabs.add(mTabModel.getTabAt(0));

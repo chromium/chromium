@@ -1027,7 +1027,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     private static long getTimeSinceTabLastOpenedMs(Tab tab) {
-        return System.currentTimeMillis() - CriticalPersistedTabData.from(tab).getTimestampMillis();
+        return System.currentTimeMillis() - tab.getTimestampMillis();
     }
 
     /**
