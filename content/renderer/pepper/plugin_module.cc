@@ -525,7 +525,8 @@ PepperPluginInstanceImpl* PluginModule::CreateInstance(
     blink::WebPluginContainer* container,
     const GURL& plugin_url) {
   PepperPluginInstanceImpl* instance = PepperPluginInstanceImpl::Create(
-      render_frame, this, container, plugin_url);
+      render_frame, this, container, plugin_url,
+      render_frame->GetWebFrame()->GetAgentGroupScheduler()->Isolate());
   if (!instance) {
     LOG(WARNING) << "Plugin doesn't support instance interface, failing.";
     return nullptr;

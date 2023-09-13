@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/configuration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class TestSuite;
@@ -67,6 +68,8 @@ class UnitTestTestSuite {
   ~UnitTestTestSuite();
 
   int Run();
+
+  static v8::Isolate* MainThreadIsolateForUnitTestSuite();
 
  private:
   class UnitTestEventListener;

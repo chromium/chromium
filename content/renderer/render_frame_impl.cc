@@ -2273,7 +2273,8 @@ void RenderFrameImpl::SetResourceCache(
 
 void RenderFrameImpl::SetWantErrorMessageStackTrace() {
   want_error_message_stack_trace_ = true;
-  v8::Isolate::GetCurrent()->SetCaptureStackTraceForUncaughtExceptions(true);
+  GetAgentGroupScheduler().Isolate()->SetCaptureStackTraceForUncaughtExceptions(
+      true);
 }
 
 void RenderFrameImpl::NotifyObserversOfFailedProvisionalLoad() {
@@ -2383,7 +2384,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
 }
 
 void RenderFrameImpl::ExecuteJavaScript(const std::u16string& javascript) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(GetAgentGroupScheduler().Isolate());
   frame_->ExecuteScript(WebScriptSource(WebString::FromUTF16(javascript)));
 }
 
@@ -3534,8 +3535,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   // Note that Blink can't be changed to just pass |fallback_name| as |name| in
   // the case |name| is empty: |fallback_name| should never affect the actual
   // browsing context name, only unique name generation.
-  bool is_created_by_script =
-      v8::Isolate::GetCurrent() && v8::Isolate::GetCurrent()->InContext();
+  bool is_created_by_script = GetAgentGroupScheduler().Isolate()->InContext();
   std::string frame_unique_name =
       unique_name_helper_.GenerateNameForNewChildFrame(
           name.IsEmpty() ? fallback_name.Utf8() : name.Utf8(),

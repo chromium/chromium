@@ -56,6 +56,10 @@ class TestEnvironment {
   // empty.
   void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
+  v8::Isolate* MainThreadIsolate() {
+    return blink_test_support_->MainThreadIsolate();
+  }
+
  private:
   std::unique_ptr<TestBlinkWebUnitTestSupport> blink_test_support_;
   TestContentClientInitializer content_initializer_;
@@ -99,6 +103,10 @@ void TearDownBlinkTestEnvironment() {
 
   delete test_environment;
   test_environment = nullptr;
+}
+
+v8::Isolate* GetMainThreadIsolateForTestEnvironment() {
+  return test_environment->MainThreadIsolate();
 }
 
 }  // namespace content

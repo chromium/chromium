@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_TEST_BLINK_TEST_ENVIRONMENT_H_
 #define CONTENT_PUBLIC_TEST_BLINK_TEST_ENVIRONMENT_H_
 
+#include "v8/include/v8-forward.h"
+
 // This package provides functions used by blink_unittests.
 namespace content {
 
@@ -13,6 +15,9 @@ void SetUpBlinkTestEnvironment();
 
 // Terminates Blink test environment for unit tests.
 void TearDownBlinkTestEnvironment();
+
+// Returns the Isolate associated with the test environment.
+v8::Isolate* GetMainThreadIsolateForTestEnvironment();
 
 }  // namespace content
 

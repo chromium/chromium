@@ -128,7 +128,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   static PepperPluginInstanceImpl* Create(RenderFrameImpl* render_frame,
                                           PluginModule* module,
                                           blink::WebPluginContainer* container,
-                                          const GURL& plugin_url);
+                                          const GURL& plugin_url,
+                                          v8::Isolate* isolate);
 
   // Return the PepperPluginInstanceImpl for the given |instance_id|. Will
   // return the instance even if it is in the process of being deleted.
@@ -508,7 +509,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
                            PluginModule* module,
                            ppapi::PPP_Instance_Combined* instance_interface,
                            blink::WebPluginContainer* container,
-                           const GURL& plugin_url);
+                           const GURL& plugin_url,
+                           v8::Isolate* isolate);
 
   bool LoadInputEventInterface();
   bool LoadMouseLockInterface();

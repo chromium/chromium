@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 class PageState;
@@ -91,6 +92,7 @@ class RenderViewTest : public testing::Test {
   // Returns a pointer to the main frame.
   blink::WebLocalFrame* GetMainFrame();
   RenderFrame* GetMainRenderFrame();
+  v8::Isolate* Isolate();
 
   // Executes the given JavaScript in the context of the main frame. The input
   // is a NULL-terminated UTF-8 string.

@@ -262,6 +262,10 @@ RenderFrame* RenderViewTest::GetMainRenderFrame() {
   return RenderFrame::FromWebFrame(GetMainFrame());
 }
 
+v8::Isolate* RenderViewTest::Isolate() {
+  return GetMainFrame()->GetAgentGroupScheduler()->Isolate();
+}
+
 void RenderViewTest::ExecuteJavaScriptForTests(const char* js) {
   GetMainFrame()->ExecuteScript(WebScriptSource(WebString::FromUTF8(js)));
 }
@@ -269,7 +273,7 @@ void RenderViewTest::ExecuteJavaScriptForTests(const char* js) {
 bool RenderViewTest::ExecuteJavaScriptAndReturnIntValue(
     const std::u16string& script,
     int* int_result) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(Isolate());
   v8::Local<v8::Value> result = GetMainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource(blink::WebString::FromUTF16(script)));
   if (result.IsEmpty() || !result->IsInt32())
@@ -284,7 +288,7 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnIntValue(
 bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
     const std::u16string& script,
     double* number_result) {
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(Isolate());
   v8::Local<v8::Value> result = GetMainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource(blink::WebString::FromUTF16(script)));
   if (result.IsEmpty() || !result->IsNumber())
@@ -604,7 +608,7 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
   std::string script =
       base::ReplaceStringPlaceholders(kGetCoordinatesScript, params, nullptr);
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Value> value = GetMainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource(WebString::FromUTF8(script)));

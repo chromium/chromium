@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "content/public/test/unittest_test_suite.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/mock_resource.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -87,7 +88,9 @@ TEST_F(HostVarTrackerTest, DeleteObjectVarWithInstance) {
 
   // Make a second instance (the test harness already creates & manages one).
   scoped_refptr<PepperPluginInstanceImpl> instance2(
-      PepperPluginInstanceImpl::Create(nullptr, module(), nullptr, GURL()));
+      PepperPluginInstanceImpl::Create(
+          nullptr, module(), nullptr, GURL(),
+          UnitTestTestSuite::MainThreadIsolateForUnitTestSuite()));
   PP_Instance pp_instance2 = instance2->pp_instance();
 
   {

@@ -8,6 +8,7 @@
 
 #include "content/public/common/content_plugin_info.h"
 #include "content/public/renderer/ppapi_gfx_conversion.h"
+#include "content/public/test/unittest_test_suite.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
@@ -93,8 +94,9 @@ void PpapiUnittest::SetUp() {
   CHECK(module_->renderer_ppapi_host());
 
   // Initialize the mock instance.
-  instance_ =
-      PepperPluginInstanceImpl::Create(nullptr, module(), nullptr, GURL());
+  instance_ = PepperPluginInstanceImpl::Create(
+      nullptr, module(), nullptr, GURL(),
+      UnitTestTestSuite::MainThreadIsolateForUnitTestSuite());
 }
 
 void PpapiUnittest::TearDown() {

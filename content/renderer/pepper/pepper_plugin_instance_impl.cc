@@ -398,7 +398,8 @@ PepperPluginInstanceImpl* PepperPluginInstanceImpl::Create(
     RenderFrameImpl* render_frame,
     PluginModule* module,
     WebPluginContainer* container,
-    const GURL& plugin_url) {
+    const GURL& plugin_url,
+    v8::Isolate* isolate) {
   base::RepeatingCallback<const void*(const char*)> get_plugin_interface_func =
       base::BindRepeating(&PluginModule::GetPluginInterface, module);
   PPP_Instance_Combined* ppp_instance_combined =
@@ -406,11 +407,9 @@ PepperPluginInstanceImpl* PepperPluginInstanceImpl::Create(
   if (!ppp_instance_combined)
     return nullptr;
 
-  return new PepperPluginInstanceImpl(render_frame,
-                                      module,
-                                      ppp_instance_combined,
-                                      container,
-                                      plugin_url);
+  return new PepperPluginInstanceImpl(render_frame, module,
+                                      ppp_instance_combined, container,
+                                      plugin_url, isolate);
 }
 
 // static
@@ -494,7 +493,8 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
     PluginModule* module,
     ppapi::PPP_Instance_Combined* instance_interface,
     WebPluginContainer* container,
-    const GURL& plugin_url)
+    const GURL& plugin_url,
+    v8::Isolate* isolate)
     : RenderFrameObserver(render_frame),
       render_frame_(render_frame),
       module_(module),
@@ -532,7 +532,7 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
       selection_anchor_(0),
       document_loader_(nullptr),
       external_document_load_(false),
-      isolate_(v8::Isolate::GetCurrent()),
+      isolate_(isolate),
       is_deleted_(false),
       initialized_(false),
       created_in_process_instance_(false),

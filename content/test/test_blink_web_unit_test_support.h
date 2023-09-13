@@ -65,6 +65,9 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   // cross-test side effects.
   static bool SetThreadedAnimationEnabled(bool enabled);
 
+  // Returns the main thread isolate created for this test environment.
+  v8::Isolate* MainThreadIsolate();
+
  private:
   void BindClipboardHost(mojo::ScopedMessagePipeHandle handle);
 

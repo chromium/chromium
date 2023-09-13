@@ -232,4 +232,10 @@ bool TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(bool enabled) {
   return old;
 }
 
+v8::Isolate* TestBlinkWebUnitTestSupport::MainThreadIsolate() {
+  // TODO(dtapuska): When multiple main thread isolates are available, have this
+  // test support class allocate the isolate itself.
+  return blink::MainThreadIsolate();
+}
+
 }  // namespace content

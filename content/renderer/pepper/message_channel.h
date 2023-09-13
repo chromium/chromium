@@ -127,7 +127,8 @@ class MessageChannel :
 
   PluginObject* GetPluginObject(v8::Isolate* isolate);
 
-  void EnqueuePluginMessage(v8::Local<v8::Value> v8_value);
+  void EnqueuePluginMessage(v8::Isolate* isolate,
+                            v8::Local<v8::Value> v8_value);
 
   void FromV8ValueComplete(VarConversionResult* result_holder,
                            const ppapi::ScopedPPVar& result_var,

@@ -46,6 +46,7 @@ include_rules = [
   "+ui/platform_window/common/platform_window_defaults.h",
   "+ui/views",
   "+v8/include/v8.h",
+  "+v8/include/v8-forward.h",
 ]
 
 specific_include_rules = {
