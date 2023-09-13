@@ -63,8 +63,10 @@ enum class StreamType : uint8_t {
   kHardwareEchoRescaled,
   // TDM loopback, e.g., from DSP output processing output.
   kTdmLoopback,
+  // USB audio input.
+  kUsbAudio,
   // Mark the last type.
-  kLastType = kTdmLoopback,
+  kLastType = kUsbAudio,
 };
 
 enum class AudioCodec : uint8_t {
