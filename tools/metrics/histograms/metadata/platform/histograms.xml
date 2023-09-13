@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
-    units="number of boot attempts" expires_after="2023-10-06">
+    units="number of boot attempts" expires_after="2024-10-06">
   <owner>kendraketsui@google.com</owner>
   <owner>mutexlox@google.com</owner>
   <owner>cros-telemetry@google.com</owner>
