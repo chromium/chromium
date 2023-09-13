@@ -159,9 +159,7 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
     }
   }
 
-  void* Alloc(size_t size) override {
-    return alloc_.AllocInline(size, nullptr);
-  }
+  void* Alloc(size_t size) override { return alloc_.AllocInline(size); }
 
   void Free(void* data) override {
     // Even though it's easy to invoke the fast path with alloc_.Free(),

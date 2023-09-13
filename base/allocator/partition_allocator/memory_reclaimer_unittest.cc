@@ -63,7 +63,7 @@ class MemoryReclaimerTest : public ::testing::Test {
   void Reclaim() { MemoryReclaimer::Instance()->ReclaimNormal(); }
 
   void AllocateAndFree() {
-    void* data = allocator_->root()->Alloc(1, "");
+    void* data = allocator_->root()->Alloc(1);
     allocator_->root()->Free(data);
   }
 

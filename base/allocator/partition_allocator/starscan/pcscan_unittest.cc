@@ -662,7 +662,7 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
   // Make sure to commit more memory than requested to have slack for storing
   // dangling reference outside of the raw size.
   const size_t big_size = kMaxBucketed - SystemPageSize() + 1;
-  void* ptr = root().Alloc(big_size, nullptr);
+  void* ptr = root().Alloc(big_size);
 
   uintptr_t slot_start = root().ObjectToSlotStart(ptr);
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);

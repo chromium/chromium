@@ -68,7 +68,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   allocator.init(kAllocatorOptions);
 
   raw_ptr<void, base::RawPtrTraits::kMayDangle> ptr =
-      allocator.root()->Alloc(1, "");
+      allocator.root()->Alloc(1);
   allocator.root()->Free(ptr);
 
   if (GetLightweightDetectorForTesting().HasAllocationForTesting(

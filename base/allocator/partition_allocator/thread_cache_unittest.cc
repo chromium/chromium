@@ -1452,7 +1452,7 @@ TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingRealloc) {
       {8 << 20, 4 << 20},
       {(8 << 20) - internal::SystemPageSize(), 8 << 20}};
   for (auto [size, new_size] : size_new_sizes) {
-    void* ptr = root()->Alloc(size, "");
+    void* ptr = root()->Alloc(size);
     ASSERT_TRUE(ptr);
     alloc_count++;
     size_t usable_size = root()->GetUsableSize(ptr);
@@ -1499,7 +1499,7 @@ TEST(AlternateBucketDistributionTest, SwitchBeforeAlloc) {
   EXPECT_NE(internal::BucketIndexLookup::GetIndex(n),
             internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
 
-  void* ptr = root->Alloc(n, "");
+  void* ptr = root->Alloc(n);
 
   root->ResetBucketDistributionForTesting();
 
@@ -1516,11 +1516,11 @@ TEST(AlternateBucketDistributionTest, SwitchAfterAlloc) {
             internal::BucketIndexLookup::GetIndexForNeutralBuckets(n));
 
   PartitionRoot* root = allocator->root();
-  void* ptr = root->Alloc(n, "");
+  void* ptr = root->Alloc(n);
 
   root->SwitchToDenserBucketDistribution();
 
-  void* ptr2 = root->Alloc(n, "");
+  void* ptr2 = root->Alloc(n);
 
   root->Free(ptr2);
   root->Free(ptr);

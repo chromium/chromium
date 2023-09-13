@@ -33,8 +33,8 @@ TEST(HardeningTest, PartialCorruption) {
   root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
-  void* data = root.Alloc(kAllocSize, "");
-  void* data2 = root.Alloc(kAllocSize, "");
+  void* data = root.Alloc(kAllocSize);
+  void* data2 = root.Alloc(kAllocSize);
   root.Free(data2);
   root.Free(data);
 
@@ -45,7 +45,7 @@ TEST(HardeningTest, PartialCorruption) {
   // encoded_next_.
   EncodedNextFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
                                                   to_corrupt, false);
-  EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
+  EXPECT_DEATH(root.Alloc(kAllocSize), "");
 }
 
 TEST(HardeningTest, OffHeapPointerCrashing) {
@@ -58,8 +58,8 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
   root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
-  void* data = root.Alloc(kAllocSize, "");
-  void* data2 = root.Alloc(kAllocSize, "");
+  void* data = root.Alloc(kAllocSize);
+  void* data2 = root.Alloc(kAllocSize);
   root.Free(data2);
   root.Free(data);
 
@@ -69,7 +69,7 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
                                                   to_corrupt, true);
 
   // Crashes, because |to_corrupt| is not on the same superpage as data.
-  EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
+  EXPECT_DEATH(root.Alloc(kAllocSize), "");
 }
 
 TEST(HardeningTest, MetadataPointerCrashing) {
@@ -79,8 +79,8 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   root.UncapEmptySlotSpanMemoryForTesting();
 
   const size_t kAllocSize = 100;
-  void* data = root.Alloc(kAllocSize, "");
-  void* data2 = root.Alloc(kAllocSize, "");
+  void* data = root.Alloc(kAllocSize);
+  void* data2 = root.Alloc(kAllocSize);
   root.Free(data2);
   root.Free(data);
 
@@ -89,7 +89,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   EncodedNextFreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
 
   // Crashes, because |metadata| points inside the metadata area.
-  EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
+  EXPECT_DEATH(root.Alloc(kAllocSize), "");
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
         // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
@@ -112,8 +112,8 @@ TEST(HardeningTest, SuccessfulCorruption) {
   uintptr_t* to_corrupt = zero_vector + 20;
 
   const size_t kAllocSize = 100;
-  void* data = root.Alloc(kAllocSize, "");
-  void* data2 = root.Alloc(kAllocSize, "");
+  void* data = root.Alloc(kAllocSize);
+  void* data2 = root.Alloc(kAllocSize);
   root.Free(data2);
   root.Free(data);
 
@@ -123,16 +123,16 @@ TEST(HardeningTest, SuccessfulCorruption) {
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   // This part crashes with freeslot bitmap because it detects freelist
   // corruptions, which is rather desirable behavior.
-  EXPECT_DEATH_IF_SUPPORTED(root.Alloc(kAllocSize, ""), "");
+  EXPECT_DEATH_IF_SUPPORTED(root.Alloc(kAllocSize), "");
 #else
   // Next allocation is what was in
   // root->bucket->active_slot_span_head->freelist_head, so not the corrupted
   // pointer.
-  void* new_data = root.Alloc(kAllocSize, "");
+  void* new_data = root.Alloc(kAllocSize);
   ASSERT_EQ(new_data, data);
 
   // Not crashing, because a zeroed area is a "valid" freelist entry.
-  void* new_data2 = root.Alloc(kAllocSize, "");
+  void* new_data2 = root.Alloc(kAllocSize);
   // Now we have a pointer to the middle of an existing allocation.
   EXPECT_EQ(new_data2, to_corrupt);
 #endif  // BUILDFLAG(USE_FREESLOT_BITMAP)

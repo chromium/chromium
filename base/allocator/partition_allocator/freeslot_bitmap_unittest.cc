@@ -36,7 +36,7 @@ class PartitionAllocFreeSlotBitmapTest : public ::testing::Test {
     // the allocated region.
     allocator_.init(PartitionOptions{});
     allocated_ptr_ = reinterpret_cast<uintptr_t>(
-        allocator_.root()->Alloc(2 * kSuperPageSize, ""));
+        allocator_.root()->Alloc(2 * kSuperPageSize));
     super_page_ = (allocated_ptr_ + kSuperPageSize) & kSuperPageBaseMask;
 
     // Checks that the whole superpage is in the allocated region.
