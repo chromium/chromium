@@ -446,7 +446,7 @@ ServiceWorkerRouterEvaluator::~ServiceWorkerRouterEvaluator() = default;
 
 void ServiceWorkerRouterEvaluator::Compile() {
   for (const auto& r : rules_.rules) {
-    std::unique_ptr<RouterRule> rule = absl::make_unique<RouterRule>();
+    std::unique_ptr<RouterRule> rule = std::make_unique<RouterRule>();
     if (!rule->SetRule(r)) {
       return;
     }

@@ -36,7 +36,7 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
       base::Unretained(this)));
   if (router_rules) {
     router_evaluator_ =
-        absl::make_unique<content::ServiceWorkerRouterEvaluator>(*router_rules);
+        std::make_unique<content::ServiceWorkerRouterEvaluator>(*router_rules);
     CHECK(router_evaluator_->IsValid());
     if (remote_cache_storage) {
       cache_storage_.Bind(std::move(remote_cache_storage));

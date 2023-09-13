@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -88,7 +89,7 @@ class MacKeyRotationCommandTest : public testing::Test {
         std::move(mock_network_delegate),
         std::move(mock_persistence_delegate)));
 
-    rotation_command_ = absl::WrapUnique(
+    rotation_command_ = base::WrapUnique(
         new MacKeyRotationCommand(test_shared_loader_factory_));
   }
 
