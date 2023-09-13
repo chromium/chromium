@@ -196,6 +196,7 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(6u, observer_.hotspot_capabilities_changed_count());
 
   hotspot_capabilities_provider_->SetPolicyAllowed(/*allowed=*/true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kAllowed,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
@@ -236,6 +237,43 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness_NotAllowed) {
   histogram_tester_.ExpectBucketCount(
       HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
       HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kNotAllowed, 1);
+}
+
+TEST_F(HotspotCapabilitiesProviderTest, Tethering_PolicyNotAllowed) {
+  auto capabilities_dict =
+      base::Value::Dict()
+          .Set(shill::kTetheringCapUpstreamProperty, base::Value::List())
+          .Set(shill::kTetheringCapDownstreamProperty, base::Value::List())
+          .Set(shill::kTetheringCapSecurityProperty, base::Value::List());
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringCapabilitiesProperty,
+      base::Value(capabilities_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  capabilities_dict.Set(shill::kTetheringCapUpstreamProperty,
+                        base::Value::List().Append(shill::kTypeCellular));
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringCapabilitiesProperty,
+      base::Value(capabilities_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  capabilities_dict.Set(shill::kTetheringCapDownstreamProperty,
+                        base::Value::List().Append(shill::kTypeWifi));
+  capabilities_dict.Set(shill::kTetheringCapSecurityProperty,
+                        base::Value::List()
+                            .Append(shill::kSecurityWpa2)
+                            .Append(shill::kSecurityWpa3));
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringCapabilitiesProperty,
+      base::Value(capabilities_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  hotspot_capabilities_provider_->SetPolicyAllowed(false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
 }
 
 TEST_F(HotspotCapabilitiesProviderTest,
