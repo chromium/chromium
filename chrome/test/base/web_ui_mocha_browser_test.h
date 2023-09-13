@@ -49,7 +49,6 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override;
 
   void set_test_loader_host(const std::string& host);
-  void set_requires_web_contents_focus_(const bool& value);
 
  private:
   // The host to use when invoking the test loader URL, like
