@@ -59,6 +59,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -189,7 +190,7 @@ public class CreditCardAccessorySheetViewTest {
         // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
         // above url.
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(TEST_CARD_ART_IMAGE);
+                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.add(new AccessorySheetDataPiece(
@@ -225,7 +226,7 @@ public class CreditCardAccessorySheetViewTest {
         // Return null when PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is
         // called for the above url.
         when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.add(new AccessorySheetDataPiece(

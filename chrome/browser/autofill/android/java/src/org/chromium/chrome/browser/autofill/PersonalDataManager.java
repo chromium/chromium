@@ -7,32 +7,24 @@ package org.chromium.chrome.browser.autofill;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Android wrapper of the PersonalDataManager which provides access from the Java
@@ -352,19 +344,14 @@ public class PersonalDataManager {
     private final long mPersonalDataManagerAndroid;
     private final List<PersonalDataManagerObserver> mDataObservers =
             new ArrayList<PersonalDataManagerObserver>();
-    private final Map<String, Bitmap> mCreditCardArtImages = new HashMap<>();
-    private ImageFetcher mImageFetcher = ImageFetcherFactory.createImageFetcher(
-            ImageFetcherConfig.DISK_CACHE_ONLY, ProfileKey.getLastUsedRegularProfileKey());
-    // TODO (crbug.com/1467754): Move the logic to fetch and manage the images to
-    // AutofillImageFetcher.
-    private final AutofillImageFetcher mAutofillImageFetcher;
+    private AutofillImageFetcher mImageFetcher;
 
     private PersonalDataManager() {
         // Note that this technically leaks the native object, however, PersonalDataManager
         // is a singleton that lives forever and there's no clean shutdown of Chrome on Android
         mPersonalDataManagerAndroid = PersonalDataManagerJni.get().init(PersonalDataManager.this);
         // Get the AutofillImageFetcher instance that was created during browser startup.
-        mAutofillImageFetcher = PersonalDataManagerJni.get().getOrCreateJavaImageFetcher(
+        mImageFetcher = PersonalDataManagerJni.get().getOrCreateJavaImageFetcher(
                 mPersonalDataManagerAndroid);
     }
 
@@ -678,8 +665,12 @@ public class PersonalDataManager {
     }
 
     protected void clearImageDataForTesting() {
+        if (mImageFetcher == null) {
+            return;
+        }
+
         ThreadUtils.assertOnUiThread();
-        mCreditCardArtImages.clear();
+        mImageFetcher.clearCachedImagesForTesting();
     }
 
     public static void setInstanceForTesting(PersonalDataManager manager) {
@@ -840,75 +831,29 @@ public class PersonalDataManager {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
-    // TODO (crbug.com/1384128): Add icon dimensions to card art URL.
     private void fetchCreditCardArtImages() {
-        for (CreditCard card : getCreditCardsToSuggest()) {
-            // Fetch the image using the ImageFetcher only if it is not present in the cache.
-            if (card.getCardArtUrl() != null && card.getCardArtUrl().isValid()
-                    && !mCreditCardArtImages.containsKey(card.getCardArtUrl().getSpec())) {
-                fetchImage(card.getCardArtUrl(),
-                        bitmap -> mCreditCardArtImages.put(card.getCardArtUrl().getSpec(), bitmap));
-            }
-        }
+        mImageFetcher.prefetchImages(getCreditCardsToSuggest()
+                                             .stream()
+                                             .map(card -> card.getCardArtUrl())
+                                             .toArray(GURL[] ::new));
     }
 
     /**
      * Return the card art image for the given `customImageUrl`.
-     * @param context required to get resources.
      * @param customImageUrl  URL of the image. If the image is available, it is returned, otherwise
      *         it is fetched from this URL.
      * @param cardIconSpecs {@code CardIconSpecs} instance containing the specs for the card icon.
-     * @return Bitmap if found in the local cache, else return null.
+     * @return Bitmap image if found in the local cache, else return an empty object.
      */
-    public Bitmap getCustomImageForAutofillSuggestionIfAvailable(
+    public Optional<Bitmap> getCustomImageForAutofillSuggestionIfAvailable(
             GURL customImageUrl, AutofillUiUtils.CardIconSpecs cardIconSpecs) {
-        // TODO(crbug.com/1313616): The Capital One icon for virtual cards is available in a single
-        // size via a static URL. Cache this image at different sizes so it can be used by different
-        // surfaces.
-        GURL urlToCache = AutofillUiUtils.getCreditCardIconUrlWithParams(
-                customImageUrl, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
-        GURL urlToFetch = customImageUrl.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL)
-                ? customImageUrl
-                : urlToCache;
-
-        if (mCreditCardArtImages.containsKey(urlToCache.getSpec())) {
-            return mCreditCardArtImages.get(urlToCache.getSpec());
-        }
-        // Schedule the fetching of image and return null so that the UI thread does not have to
-        // wait and can show the default network icon.
-        fetchImage(urlToFetch, bitmap -> {
-            RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
-
-            // If the image fetching was unsuccessful, silently return.
-            if (bitmap == null) {
-                return;
-            }
-
-            // When adding new sizes for card icons, check if the corner radius needs to be added as
-            // a suffix for caching (crbug.com/1431283).
-            mCreditCardArtImages.put(urlToCache.getSpec(),
-                    AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(bitmap, cardIconSpecs,
-                            ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList
-                                            .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)));
-        });
-        return null;
+        return mImageFetcher.getImageIfAvailable(customImageUrl, cardIconSpecs);
     }
 
     public void setImageFetcherForTesting(ImageFetcher imageFetcher) {
         var oldValue = this.mImageFetcher;
-        this.mImageFetcher = imageFetcher;
+        this.mImageFetcher = new AutofillImageFetcher(imageFetcher);
         ResettersForTesting.register(() -> this.mImageFetcher = oldValue);
-    }
-
-    private void fetchImage(GURL customImageUrl, Callback<Bitmap> callback) {
-        if (!customImageUrl.isValid()) {
-            Log.w(TAG, "Tried to fetch an invalid url %s", customImageUrl.getSpec());
-            return;
-        }
-        ImageFetcher.Params params = ImageFetcher.Params.create(
-                customImageUrl.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
-        mImageFetcher.fetchImage(params, bitmap -> callback.onResult(bitmap));
     }
 
     @NativeMethods

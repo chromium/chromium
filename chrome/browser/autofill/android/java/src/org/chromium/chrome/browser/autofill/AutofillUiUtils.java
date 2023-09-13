@@ -58,6 +58,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Helper methods that can be used across multiple Autofill UIs.
@@ -98,7 +99,7 @@ public class AutofillUiUtils {
      * Different sizes in which we show the credit card art images. Update the {@code NUM_SIZES}
      * entry when adding/removing entries.
      */
-    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE})
+    @IntDef({CardIconSize.SMALL, CardIconSize.LARGE, CardIconSize.NUM_SIZES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CardIconSize {
         int SMALL = 0;
@@ -594,14 +595,14 @@ public class AutofillUiUtils {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 
-        Bitmap customIconBitmap =
+        Optional<Bitmap> customIconBitmap =
                 PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
                         cardArtUrl, CardIconSpecs.create(context, cardIconSize));
-        if (customIconBitmap == null) {
+        if (!customIconBitmap.isPresent()) {
             return defaultIcon;
         }
 
-        return new BitmapDrawable(context.getResources(), customIconBitmap);
+        return new BitmapDrawable(context.getResources(), customIconBitmap.get());
     }
 
     /**
