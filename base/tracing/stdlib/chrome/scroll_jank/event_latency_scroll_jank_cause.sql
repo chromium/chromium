@@ -11,14 +11,14 @@
 --          notice.
 
 
-SELECT IMPORT('chrome.scroll_jank.event_latency_scroll_jank');
+IMPORT PERFETTO MODULE chrome.scroll_jank.event_latency_scroll_jank;
 
 -- Calculating the jank delta for EventLatency events which are janky relatively to its next EventLatency event.
 -- For breakdowns that exist in the current EventLatency but not the next EventLatency
 -- we use a default of 0 so that the full duration is considered when looking for the maximum increase.
 -- Breakdowns that exist in the next EventLatency event, but not in the current EventLatency event,
 -- are ignored because they do not cause a jank anyway.
-CREATE VIEW internal_event_latency_scroll_breakdowns_next_jank_deltas
+CREATE PERFETTO TABLE internal_event_latency_scroll_breakdowns_next_jank_deltas
 AS
 SELECT
     cur_breakdowns.*,
