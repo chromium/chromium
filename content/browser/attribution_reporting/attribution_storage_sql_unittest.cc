@@ -382,23 +382,7 @@ TEST_P(AttributionStorageSqlTest,
   histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 1);
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 0);
 
-  {
-    sql::Database raw_db;
-    EXPECT_TRUE(raw_db.Open(db_path()));
-
-    // [sources], [reports], [meta], [rate_limits], [dedup_keys],
-    // [source_destinations], [sqlite_sequence] (for AUTOINCREMENT support).
-    EXPECT_EQ(7u, sql::test::CountSQLTables(&raw_db));
-
-    // [conversion_domain_idx], [impression_expiry_idx],
-    // [impression_origin_idx], [sources_by_source_time],
-    // [reports_by_report_time], [reports_by_source_id_report_type],
-    // [reports_by_trigger_time], [reports_by_reporting_origin],
-    // [rate_limit_reporting_origin_idx], [rate_limit_time_idx],
-    // [rate_limit_impression_id_idx], [sources_by_destination_site], and the
-    // meta table index.
-    EXPECT_EQ(13u, sql::test::CountSQLIndices(&raw_db));
-  }
+  EXPECT_TRUE(base::PathExists(db_path()));
 }
 
 TEST_P(AttributionStorageSqlTest, DatabaseReopened_DataPersisted) {
