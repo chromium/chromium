@@ -4839,6 +4839,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.RTCVideoEncoder.Initialize" units="ms"
+    expires_after="2024-01-31">
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
+  <summary>
+    The duration of initializing a hardware encoder in WebRTC API. It is
+    recorded whenever RTCVideoEncoder::InitEncode() is called.
+  </summary>
+</histogram>
+
 <histogram name="Media.RTCVideoEncoderInitEncodeSuccess" enum="BooleanSuccess"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->

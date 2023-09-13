@@ -1761,7 +1761,7 @@ int32_t RTCVideoEncoder::InitializeEncoder(
   // webrtc::VideoEncoder expects this call to be synchronous.
   initialization_waiter.Wait();
   if (initialization_retval == WEBRTC_VIDEO_CODEC_OK) {
-    UMA_HISTOGRAM_TIMES("WebRTC.RTCVideoEncoder.Initialize",
+    UMA_HISTOGRAM_TIMES("Media.RTCVideoEncoder.Initialize",
                         base::TimeTicks::Now() - init_start);
   }
   RecordInitEncodeUMA(initialization_retval, profile_);
