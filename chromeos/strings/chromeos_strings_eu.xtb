@@ -433,7 +433,7 @@
 <translation id="4422041425070339732">behera egiteko gezi-tekla</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
 <translation id="4428374560396076622">Desaktibatuta dago <ph name="NETWORK_NAME" /></translation>
-<translation id="4429881212383817840">Laster iraungiko da Kerberos-eko zerbitzu-eskaera</translation>
+<translation id="4429881212383817840">Laster iraungiko da Kerberos-eko txartela</translation>
 <translation id="4431821876790500265">Ikusi txostena</translation>
 <translation id="445059817448385655">Pasahitz zaharra</translation>
 <translation id="4453205916657964690">Azpisare-maskara</translation>
@@ -1047,7 +1047,7 @@
 <translation id="9088306295921699330">Oraingo erabilera</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="9100765901046053179">Ezarpen aurreratuak</translation>
-<translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen zerbitzu-eskaera</translation>
+<translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen txartela</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
 <translation id="9122602430962285795">Berriro konektatzeko, joan ezarpenetara</translation>
