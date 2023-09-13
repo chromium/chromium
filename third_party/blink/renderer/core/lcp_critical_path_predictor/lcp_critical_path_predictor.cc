@@ -95,6 +95,9 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
         base::UmaHistogramCounts10000(
             "Blink.LCPP.LCPInfluencerUrlsMaxLength",
             base::checked_cast<int>(max_url_length_encountered));
+        base::UmaHistogramCounts10000(
+            "Blink.LCPP.LCPInfluencerUrlsPredictionMatchCount",
+            base::checked_cast<int>(prediction_match_count));
         if (!lcp_influencer_scripts_.empty()) {
           base::UmaHistogramCounts10000(
               "Blink.LCPP.LCPInfluencerUrlsPredictionMatchPercent",
