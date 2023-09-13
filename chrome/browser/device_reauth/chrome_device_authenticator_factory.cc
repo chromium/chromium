@@ -55,6 +55,8 @@ ChromeDeviceAuthenticatorFactory::GetForProfile(Profile* profile) {
   DeviceAuthenticatorProxy* proxy = static_cast<DeviceAuthenticatorProxy*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 
+  CHECK(proxy);
+
 #if BUILDFLAG(IS_ANDROID)
   auto device_authenticator =
       base::WrapRefCounted(new DeviceAuthenticatorAndroid(
