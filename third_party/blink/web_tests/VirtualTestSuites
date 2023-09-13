@@ -1688,20 +1688,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "css-highlight-inheritance",
-    "owners": ["schenney@chromium.org", "andruud@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "wpt_internal/css/css-pseudo",
-      "external/wpt/css/css-pseudo",
-      "external/wpt/css/css-highlight-api",
-      "http/tests/inspector-protocol/css/highlight-pseudo-inheritance.js"
-    ],
-    "args": ["--enable-blink-features=HighlightInheritance",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Mar 1, 2024"
-  },
-  {
     "prefix": "browsing-topics",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
@@ -1839,22 +1825,6 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
-  {
-    "prefix": "css-highlight-overlay-painting",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-pseudo",
-      "external/wpt/css/css-highlight-api",
-      "paint/markers/inline_spelling_markers.html",
-      "paint/markers/inline-spelling-markers-hidpi.html",
-      "paint/markers/inline-spelling-markers-hidpi-composited.html",
-      "paint/invalidation/selection/selection-after-remove.html"
-    ],
-    "args": ["--enable-blink-features=HighlightOverlayPainting",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-
   "The following tests never pass in the default Blink test runner due to",
   "forced frame updates, but still pass in the full browser.",
   {
