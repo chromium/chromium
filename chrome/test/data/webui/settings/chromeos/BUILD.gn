@@ -141,7 +141,7 @@ build_webui_tests("build") {
 
     "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
 
-    "main_page_container/main_page_container_test.js",
+    "main_page_container/main_page_container_test.ts",
     "main_page_container/page_displayer_test.ts",
     "main_page_container/route_navigation_test.ts",
 

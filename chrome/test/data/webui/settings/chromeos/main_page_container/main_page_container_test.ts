@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/lazy_load.js';
+import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, createRouterForTesting, CrSettingsPrefs, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import {createPageAvailabilityForTesting, createRouterForTesting, CrSettingsPrefs, MainPageContainerElement, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -18,16 +18,10 @@ suite('<main-page-container>', () => {
   const isRevampWayfindingEnabled =
       loadTimeData.getBoolean('isRevampWayfindingEnabled');
 
-  /** @type {?MainPageContainerElement} */
-  let mainPageContainer = null;
-
-  /** @type {?SettingsPrefsElement} */
-  let prefElement = null;
-
-  /** @type {!FakeContactManager} */
-  let fakeContactManager = null;
-  /** @type {!FakeNearbyShareSettings} */
-  let fakeNearbyShareSettings = null;
+  let mainPageContainer: MainPageContainerElement;
+  let prefElement: SettingsPrefsElement;
+  let fakeContactManager: FakeContactManager;
+  let fakeNearbyShareSettings: FakeNearbyShareSettings;
 
   suiteSetup(async () => {
     loadTimeData.overrideValues({isKerberosEnabled: true});
@@ -39,20 +33,18 @@ suite('<main-page-container>', () => {
     fakeNearbyShareSettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeNearbyShareSettings);
 
-    PolymerTest.clearBody();
     prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
     await CrSettingsPrefs.initialized;
   });
 
-  /** @return {MainPageContainerElement} */
-  function init() {
+  function init(): MainPageContainerElement {
     // Reinitialize Router and routes based on load time data.
     const testRouter = createRouterForTesting();
     Router.resetInstanceForTesting(testRouter);
 
     const element = document.createElement('main-page-container');
-    element.prefs = prefElement.prefs;
+    element.prefs = prefElement.prefs!;
     element.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(element);
     flush();
@@ -65,7 +57,8 @@ suite('<main-page-container>', () => {
       mainPageContainer = init();
 
       const idleRender =
-          mainPageContainer.shadowRoot.querySelector('settings-idle-load');
+          mainPageContainer.shadowRoot!.querySelector('settings-idle-load');
+      assertTrue(!!idleRender);
       await idleRender.get();
     });
 
@@ -75,7 +68,12 @@ suite('<main-page-container>', () => {
       Router.getInstance().resetRouteForTesting();
     });
 
-    let pages;
+    interface Pages {
+      pageName: keyof typeof Section;
+      elementName: string;
+    }
+
+    let pages: Pages[];
     if (isRevampWayfindingEnabled) {
       pages = [
         {
@@ -210,7 +208,7 @@ suite('<main-page-container>', () => {
     }
 
     pages.forEach(({pageName, elementName}) => {
-      test(`${pageName} page is controlled by pageAvailability`, () => {
+      test(`${String(pageName)} page is controlled by pageAvailability`, () => {
         // Make page available
         mainPageContainer.pageAvailability = {
           ...mainPageContainer.pageAvailability,
@@ -219,7 +217,7 @@ suite('<main-page-container>', () => {
         flush();
 
         let pageElement =
-            mainPageContainer.shadowRoot.querySelector(elementName);
+            mainPageContainer.shadowRoot!.querySelector(elementName);
         assertTrue(!!pageElement, `<${elementName}> should exist.`);
 
         // Make page unavailable
@@ -229,8 +227,8 @@ suite('<main-page-container>', () => {
         };
         flush();
 
-        pageElement = mainPageContainer.shadowRoot.querySelector(elementName);
-        assertEquals(null, pageElement, `<${elementName}> should not exist.`);
+        pageElement = mainPageContainer.shadowRoot!.querySelector(elementName);
+        assertNull(pageElement, `<${elementName}> should not exist.`);
       });
     });
   });
@@ -249,13 +247,13 @@ suite('<main-page-container>', () => {
     if (isRevampWayfindingEnabled) {
       test('Advanced toggle should not be stamped', () => {
         const advancedToggle =
-            mainPageContainer.shadowRoot.querySelector('#advancedToggle');
+            mainPageContainer.shadowRoot!.querySelector('#advancedToggle');
         assertNull(advancedToggle);
       });
     } else {
       test('Advanced toggle should be visible', () => {
         const advancedToggle =
-            mainPageContainer.shadowRoot.querySelector('#advancedToggle');
+            mainPageContainer.shadowRoot!.querySelector('#advancedToggle');
         assertTrue(isVisible(advancedToggle));
       });
     }
