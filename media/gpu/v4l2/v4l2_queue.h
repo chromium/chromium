@@ -116,6 +116,10 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // buffer get out of scope, or |V4L2Queue::Streamoff()| is called.
   [[nodiscard]] bool QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
                                  V4L2RequestRef* request_ref = nullptr) &&;
+  // Queue a DMABUF that has already been set in the queue for this buffer. This
+  // is used during secure playback where we recycle the buffers being used for
+  // decoding so they never need to be re-set in the queue slots.
+  [[nodiscard]] bool QueueDMABuf(V4L2RequestRef* request_ref) &&;
 
   // Returns the number of planes in this buffer.
   size_t PlanesCount() const;
@@ -499,6 +503,12 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // V4L2 buffers allocated on the queue.
   [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
       const VideoFrame& frame);
+  // This returns the V4L2 buffer that is attached to the corresponding
+  // |secure_handle|. This will always return a valid buffer since it already
+  // will be linked from a prior call to GetFreeSecureHandle(). It returns an
+  // optional for compatibility on return with the above methods.
+  [[nodiscard]] absl::optional<V4L2WritableBufferRef>
+  GetFreeBufferForSecureHandle(uint64_t secure_handle);
 
   // Attempt to dequeue a buffer, and return a reference to it if one was
   // available.

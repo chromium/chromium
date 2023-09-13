@@ -131,7 +131,11 @@ bool V4L2RequestDecodeSurface::Submit() {
   };
   input_buffer().SetTimeStamp(timestamp);
 
-  if (!std::move(input_buffer()).QueueMMap(&request_ref_)) {
+  if (input_buffer().Memory() == V4L2_MEMORY_DMABUF) {
+    if (!std::move(input_buffer()).QueueDMABuf(&request_ref_)) {
+      return false;
+    }
+  } else if (!std::move(input_buffer()).QueueMMap(&request_ref_)) {
     return false;
   }
 

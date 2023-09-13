@@ -619,7 +619,8 @@ void H264VaapiVideoDecoderDelegate::Reset() {
 
 DecodeStatus H264VaapiVideoDecoderDelegate::SetStream(
     base::span<const uint8_t> /*stream*/,
-    const DecryptConfig* decrypt_config) {
+    const DecryptConfig* decrypt_config,
+    uint64_t /*secure_handle*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!decrypt_config)
     return Status::kOk;

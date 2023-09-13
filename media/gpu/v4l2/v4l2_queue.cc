@@ -813,6 +813,22 @@ bool V4L2WritableBufferRef::QueueDMABuf(
   return std::move(self).DoQueue(request_ref, nullptr);
 }
 
+bool V4L2WritableBufferRef::QueueDMABuf(V4L2RequestRef* request_ref) && {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(buffer_data_);
+
+  // Move ourselves so our data gets freed no matter when we return
+  V4L2WritableBufferRef self(std::move(*this));
+
+  if (self.Memory() != V4L2_MEMORY_DMABUF) {
+    VLOGF(1) << "Called on invalid buffer type!";
+    return false;
+  }
+
+  // The FD should already be set in the plane data, so submit it.
+  return std::move(self).DoQueue(request_ref, nullptr);
+}
+
 size_t V4L2WritableBufferRef::PlanesCount() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
@@ -1331,6 +1347,27 @@ void V4L2Queue::ReleaseSecureHandle(uint64_t secure_handle) {
       return;
     }
   }
+}
+
+absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForSecureHandle(
+    uint64_t secure_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This method should always return a valid buffer because it should have been
+  // claimed for the corresponding secure handle already.
+  CHECK(!!free_buffers_);
+
+  // Go through the list of buffers and find the matching one with the secure
+  // handle. It should be claimed, and then we should be able to get the free
+  // buffer w/ the corresponding ID.
+  for (auto& buf : buffers_) {
+    if (buf->GetSecureHandle() == secure_handle) {
+      auto rv = GetFreeBuffer((buf->v4l2_buffer().index));
+      CHECK(!!rv);
+      return rv;
+    }
+  }
+  NOTREACHED();
+  return absl::nullopt;
 }
 
 absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer() {

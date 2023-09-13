@@ -141,9 +141,10 @@ class MockH264Accelerator : public H264Decoder::H264Accelerator {
                       size_t size,
                       const std::vector<SubsampleEntry>& subsamples));
   MOCK_METHOD1(OutputPicture, bool(scoped_refptr<H264Picture> pic));
-  MOCK_METHOD2(SetStream,
+  MOCK_METHOD3(SetStream,
                Status(base::span<const uint8_t> stream,
-                      const DecryptConfig* decrypt_config));
+                      const DecryptConfig* decrypt_config,
+                      uint64_t secure_handle));
 
   void Reset() override {}
 
@@ -209,7 +210,7 @@ void H264DecoderTest::SetUp() {
   ON_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _))
       .With(Args<6, 7>(SubsampleSizeMatches()))
       .WillByDefault(Return(H264Decoder::H264Accelerator::Status::kOk));
-  ON_CALL(*accelerator_, SetStream(_, _))
+  ON_CALL(*accelerator_, SetStream(_, _, _))
       .WillByDefault(
           Return(H264Decoder::H264Accelerator::Status::kNotSupported));
 }
@@ -773,7 +774,7 @@ TEST_F(H264DecoderTest, SubmitDecodeRetry) {
 TEST_F(H264DecoderTest, SetStreamRetry) {
   SetInputFrameFiles({kBaselineFrame0});
 
-  EXPECT_CALL(*accelerator_, SetStream(_, _))
+  EXPECT_CALL(*accelerator_, SetStream(_, _, _))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kOk));
   ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode());
