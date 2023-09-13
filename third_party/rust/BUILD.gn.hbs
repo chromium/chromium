@@ -54,15 +54,18 @@ cargo_crate("{{this.0}}") {
   {{#each deps}}
   {{#if @first}}
   deps = [
-    {{#each this.rules}}
-    "{{this}}",
+    {{#if ../dep_on_lib}}
+    ":lib",
+    {{/if}}
+    {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:lib",
     {{/each}}
   ]
   {{else}}
   if ({{this.cond}}) {
     deps += [
-      {{#each this.rules}}
-      "{{this}}",
+      {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:lib",
       {{/each}}
     ]
   }
@@ -78,16 +81,16 @@ cargo_crate("{{this.0}}") {
   {{#each build_deps}}
   {{#if @first}}
   build_deps = [
-    {{#each this.rules}}
-    "{{this}}",
+    {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:buildrs_support",
     {{/each}}
   ]
   {{else}}
   if ({{this.cond}}) {
     build_deps += [
-      {{#each this.rules}}
-      "{{this}}",
-      {{/each}}
+    {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:buildrs_support",
+    {{/each}}
     ]
   }
   {{/if}}

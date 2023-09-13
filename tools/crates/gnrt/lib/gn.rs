@@ -29,6 +29,16 @@ pub struct BuildFile {
     pub rules: Vec<(String, Rule)>,
 }
 
+/// Identifies a package version. A package's dependency list uses this to refer
+/// to other targets.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct PackageId {
+    /// Package name in normalized form, as used in GN target and path names.
+    pub name: String,
+    /// Package epoch if relevant (i.e. when needed as part of target paths).
+    pub epoch: Option<String>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct RuleCommon {
     pub testonly: bool,
@@ -59,6 +69,9 @@ pub struct RuleConcrete {
     pub build_root: Option<String>,
     pub build_script_outputs: Vec<String>,
     pub extra_kv: HashMap<String, serde_json::Value>,
+    /// Whether this rule depends on the main lib target in its group (e.g. a
+    /// bin target alongside a lib inside a package).
+    pub dep_on_lib: bool,
 }
 
 /// Describes a single GN build rule for a crate configuration. Each field
@@ -89,8 +102,9 @@ pub enum Rule {
 pub struct DepGroup {
     /// `if` condition for GN, or `None` for unconditional deps.
     cond: Option<Condition>,
-    /// GN rule names to depend on.
-    rules: Vec<String>,
+    /// Packages to depend on. The build file template determines the exact name
+    /// based on the identified package and context.
+    packages: Vec<PackageId>,
 }
 
 /// Extra metadata influencing GN output for a particular crate.
@@ -224,7 +238,10 @@ pub fn build_rule_from_std_dep(
     // Group the dependencies by condition, where the unconditional deps come
     // first. `group_deps` always returns at least one element, even if the
     // first set is empty.
-    rule.deps = group_deps(&dep_deps, |d| format!(":{}", normalize_target_name(&d.package_name)));
+    rule.deps = group_deps(&dep_deps, |d| PackageId {
+        name: normalize_target_name(&d.package_name),
+        epoch: None,
+    });
 
     for dep in dep_deps {
         let target_name = normalize_target_name(&dep.package_name);
@@ -234,7 +251,7 @@ pub fn build_rule_from_std_dep(
     }
 
     // If there are still no deps after `extra_deps`, simply clear the list.
-    if rule.deps.len() == 1 && rule.deps[0].rules.len() == 0 {
+    if rule.deps.len() == 1 && rule.deps[0].packages.len() == 0 {
         rule.deps.clear();
     }
 
@@ -255,7 +272,6 @@ fn make_build_file_for_chromium_dep(
     details: &CrateFiles,
     metadata: PerCrateMetadata,
 ) -> Option<(VendoredCrate, BuildFile)> {
-    let third_party_path_str = paths.third_party.to_str().unwrap();
     let crate_id = dep.crate_id();
     let crate_path_from_chromium_src =
         paths.third_party.join(ThirdPartySource::build_path(&crate_id));
@@ -288,10 +304,10 @@ fn make_build_file_for_chromium_dep(
     // then it should only depend on other ":cargo_tests_support" targets. We
     // should also define a group("cargo_tests_support") that points to ":lib"
     // if there is no Development library rule definition.
-    for (target_name, gn_deps, cargo_deps) in [
-        ("lib", &mut rule_template.deps, &dep.dependencies),
-        ("cargo_tests_support", &mut rule_template.dev_deps, &dep.dev_dependencies),
-        ("buildrs_support", &mut rule_template.build_deps, &dep.build_dependencies),
+    for (gn_deps, cargo_deps) in [
+        (&mut rule_template.deps, &dep.dependencies),
+        (&mut rule_template.dev_deps, &dep.dev_dependencies),
+        (&mut rule_template.build_deps, &dep.build_dependencies),
     ] {
         let cargo_deps: Vec<_> = cargo_deps.iter().collect();
 
@@ -300,13 +316,13 @@ fn make_build_file_for_chromium_dep(
         // first set is empty.
         *gn_deps = group_deps(&cargo_deps, |d| {
             let crate_id = d.crate_id();
-            let normalized_name = crate_id.normalized_name();
-            let epoch = Epoch::from_version(&crate_id.version);
-            format!("//{third_party_path_str}/{normalized_name}/{epoch}:{target_name}")
+            let normalized_name = crate_id.normalized_name().to_string();
+            let epoch = Some(Epoch::from_version(&crate_id.version).to_string());
+            PackageId { name: normalized_name, epoch }
         });
 
         // If there are still no deps after `extra_deps`, simply clear the list.
-        if gn_deps.len() == 1 && gn_deps[0].rules.len() == 0 {
+        if gn_deps.len() == 1 && gn_deps[0].packages.len() == 0 {
             gn_deps.clear();
         }
     }
@@ -337,10 +353,10 @@ fn make_build_file_for_chromium_dep(
         };
 
         if dep.lib_target.is_some() {
+            bin_rule.dep_on_lib = true;
             if bin_rule.deps.is_empty() {
-                bin_rule.deps.push(DepGroup { cond: None, rules: Vec::new() });
+                bin_rule.deps.push(DepGroup { cond: None, packages: Vec::new() });
             }
-            bin_rule.deps[0].rules.push(":lib".to_string());
         }
 
         rules.push((
@@ -421,11 +437,11 @@ fn make_build_file_for_chromium_dep(
 
 /// Group dependencies by condition, with unconditional deps first. The first
 /// element is always present even if its set is empty.
-fn group_deps<F: Fn(&DepOfDep) -> String>(deps: &[&DepOfDep], target_name: F) -> Vec<DepGroup>
+fn group_deps<F: Fn(&DepOfDep) -> PackageId>(deps: &[&DepOfDep], target_name: F) -> Vec<DepGroup>
 where
-    F: Fn(&DepOfDep) -> String,
+    F: Fn(&DepOfDep) -> PackageId,
 {
-    let mut groups = HashMap::<Option<Condition>, Vec<String>>::new();
+    let mut groups = HashMap::<Option<Condition>, Vec<_>>::new();
     for dep in deps {
         let cond = match &dep.platform {
             None => None,
@@ -438,10 +454,10 @@ where
     groups.entry(None).or_default();
 
     let mut groups: Vec<DepGroup> =
-        groups.into_iter().map(|(cond, rules)| DepGroup { cond, rules }).collect();
+        groups.into_iter().map(|(cond, rules)| DepGroup { cond, packages: rules }).collect();
 
     for group in groups.iter_mut() {
-        group.rules.sort_unstable();
+        group.packages.sort_unstable();
     }
     groups.sort_unstable_by(|l, r| l.cond.cmp(&r.cond));
     groups

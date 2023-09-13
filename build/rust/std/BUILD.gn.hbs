@@ -71,15 +71,15 @@ cargo_crate("{{this.0}}") {
   {{/unless}}
   {{#each deps}}
   {{#if @first}}
-    {{#each this.rules}}
-    "{{this}}",
+    {{#each this.packages}}
+    ":{{this.name}}",
     {{/each}}
   ]
   {{else}}
   if ({{this.cond}}) {
     deps += [
-      {{#each this.rules}}
-      "{{this}}",
+      {{#each this.packages}}
+      ":{{this.name}}",
       {{/each}}
     ]
   }

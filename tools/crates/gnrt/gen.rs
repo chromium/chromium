@@ -204,6 +204,10 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
 
     ensure!(!has_error, "Generated build rules don't match input dependencies");
 
+    if args.get_flag("dump-template-input") {
+        todo!("option is currently unsupported for third-party output")
+    }
+
     // Wipe all previous BUILD.gn files. If we fail, we don't want to leave a
     // mix of old and new build files.
     for build_file in present_crates.iter().map(|(crate_id, _)| build_file_path(crate_id, paths)) {
@@ -423,6 +427,14 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
         gn::build_file_from_std_deps(dependencies.iter(), paths, &config, |crate_id| {
             crate_inputs.get(crate_id).unwrap()
         });
+
+    if args.get_flag("dump-template-input") {
+        return serde_json::to_writer_pretty(
+            std::fs::File::create("gnrt-template-input.json").context("opening dump file")?,
+            &build_file,
+        )
+        .context("dumping gn information");
+    }
 
     let gn_str = handlebars.render("template", &build_file)?;
     write_build_file(&paths.std_build.join("BUILD.gn"), gn_str).unwrap();
