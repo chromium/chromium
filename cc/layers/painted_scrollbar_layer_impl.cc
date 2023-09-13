@@ -136,6 +136,11 @@ void PaintedScrollbarLayerImpl::AppendQuads(
     ValidateQuadResources(quad);
   }
 
+  if (IsFluentOverlayScrollbarEnabled() &&
+      thumb_thickness_scale_factor() <= kIdleThicknessScale) {
+    return;
+  }
+
   gfx::Rect track_quad_rect(bounds());
   gfx::Rect scaled_track_quad_rect(internal_content_bounds_);
   gfx::Rect visible_track_quad_rect =
@@ -145,7 +150,22 @@ void PaintedScrollbarLayerImpl::AppendQuads(
       visible_track_quad_rect, internal_contents_scale_);
   if (track_resource_id && !visible_track_quad_rect.IsEmpty()) {
     bool needs_blending = !contents_opaque();
-    const float opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    if (IsFluentOverlayScrollbarEnabled()) {
+      // Scale the opacity value linearly in function of the current thumb
+      // thickness. When thickness scale factor is kIdleThickness, then the
+      // track's opacity should be zero. When the thickness scale factor reaches
+      // its maximum value (1.f), then the opacity of the tracks should reach
+      // it's maximum value (1.f).
+      CHECK_GE(thumb_thickness_scale_factor(), kIdleThicknessScale);
+      CHECK_LE(thumb_thickness_scale_factor(), 1.f);
+      const float opacity_scaled =
+          (thumb_thickness_scale_factor() - kIdleThicknessScale) /
+          (1.f - kIdleThicknessScale);
+      for (auto& v : opacity) {
+        v = opacity_scaled;
+      }
+    }
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
     quad->SetNew(shared_quad_state, scaled_track_quad_rect,
                  scaled_visible_track_quad_rect, needs_blending,
@@ -345,7 +365,8 @@ const char* PaintedScrollbarLayerImpl::LayerTypeAsString() const {
 
 LayerTreeSettings::ScrollbarAnimator
 PaintedScrollbarLayerImpl::GetScrollbarAnimator() const {
-  return LayerTreeSettings::NO_ANIMATOR;
+  return IsFluentOverlayScrollbarEnabled() ? LayerTreeSettings::AURA_OVERLAY
+                                           : LayerTreeSettings::NO_ANIMATOR;
 }
 
 }  // namespace cc

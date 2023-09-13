@@ -18,6 +18,11 @@ class LayerTreeImpl;
 
 class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
  public:
+  // Note that this constant is a redefinition from
+  // SingleScrollbarAnimationControllerThinning. It was redefined to avoid
+  // plumbing/moving the constant.
+  static constexpr float kIdleThicknessScale = 0.4f;
+
   static std::unique_ptr<PaintedScrollbarLayerImpl> Create(
       LayerTreeImpl* tree_impl,
       int id,

@@ -307,6 +307,10 @@ bool ScrollbarLayerImplBase::IsFluentScrollbarEnabled() const {
   return layer_tree_impl()->settings().enable_fluent_scrollbar;
 }
 
+bool ScrollbarLayerImplBase::IsFluentOverlayScrollbarEnabled() const {
+  return layer_tree_impl()->settings().enable_fluent_overlay_scrollbar;
+}
+
 gfx::Rect ScrollbarLayerImplBase::BackButtonRect() const {
   return gfx::Rect(0, 0);
 }

@@ -88,6 +88,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual float OverlayScrollbarOpacity() const;
 
   bool IsFluentScrollbarEnabled() const;
+  bool IsFluentOverlayScrollbarEnabled() const;
 
  protected:
   ScrollbarLayerImplBase(LayerTreeImpl* tree_impl,

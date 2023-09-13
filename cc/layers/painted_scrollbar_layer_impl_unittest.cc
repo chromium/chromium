@@ -214,5 +214,32 @@ TEST_F(PaintedScrollbarLayerImplFluentTest, ComputeHitTestableThumbQuadRect) {
             gfx::Rect(0, 0, 30, 14));
 }
 
+// Since the thumb's drawn thickness is smaller than the track's thickness,
+// verify that the computed thickness is the width of the track. This prevents
+// cases where clicking on the margin of the thumb would cause the thumb to not
+// consider itself clicked/captured.
+TEST(PaintedScrollbarLayerImplTest, OverlayFluentThumbHasNoMargin) {
+  LayerTreeSettings settings;
+  settings.enable_fluent_overlay_scrollbar = true;
+  {
+    LayerTreeImplTestBase impl(settings);
+    ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
+    PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+        impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false,
+                                                 /*is_overlay=*/true);
+    gfx::Rect thumb = scrollbar_layer_impl->ComputeExpandedThumbQuadRect();
+    EXPECT_EQ(scrollbar_layer_impl->bounds().width(), thumb.width());
+  }
+  {
+    LayerTreeImplTestBase impl(settings);
+    ScrollbarOrientation orientation = ScrollbarOrientation::kHorizontal;
+    PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+        impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false,
+                                                 /*is_overlay=*/true);
+    gfx::Rect thumb = scrollbar_layer_impl->ComputeExpandedThumbQuadRect();
+    EXPECT_EQ(scrollbar_layer_impl->bounds().height(), thumb.height());
+  }
+}
+
 }  // namespace
 }  // namespace cc

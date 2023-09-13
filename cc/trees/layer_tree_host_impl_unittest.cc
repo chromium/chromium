@@ -113,6 +113,7 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::Mock;
+using ::testing::Range;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -902,6 +903,88 @@ class LayerTreeHostImplTimelinesTest : public LayerTreeHostImplTest {
     // world. In tests, we force it on for consistency. Can be removed when
     // https://crbug.com/574283 is fixed.
     host_impl_->set_force_smooth_wheel_scrolling_for_testing(true);
+  }
+};
+
+class FluentOverlayScrollbarLayerTreeHostImplTest
+    : public LayerTreeHostImplTest {
+ public:
+  void SetUp() override {
+    LayerTreeSettings settings = DefaultSettings();
+    settings.enable_fluent_overlay_scrollbar = true;
+    settings.scrollbar_animator = LayerTreeSettings::AURA_OVERLAY;
+    settings.scrollbar_fade_delay = base::Milliseconds(500);
+    settings.scrollbar_fade_duration = base::Milliseconds(300);
+    CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  }
+
+  PaintedScrollbarLayerImpl* CreateAndRegisterPaintedScrollbarLayer() {
+    // Set up the viewport.
+    const gfx::Size viewport_size = gfx::Size(360, 600);
+    const gfx::Size content_size = gfx::Size(345, 3800);
+    SetupViewportLayersOuterScrolls(viewport_size, content_size);
+    LayerImpl* scroll_layer = OuterViewportScrollLayer();
+
+    // Create the scrollbar layer object and register it.
+    LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+    auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+        layer_tree_impl, ScrollbarOrientation::kVertical, false, true);
+    // SetupScrollbarLayerCommon will register the scrollbar, which sets the
+    // layer's opacity to 0. An effect node for the scrollbar layer object needs
+    // to be registered in the EffectTree before this happens.
+    auto& effect_node = CreateEffectNode(
+        scrollbar, layer_tree_impl->root_layer()->effect_tree_index());
+    SetupScrollbarLayerCommon(scroll_layer, scrollbar);
+    // SetupScrollbarLayerCommon calls CopyProperties which overrides the effect
+    // tree node registered to the scrollbar layer. We need to reset it to the
+    // one we registered above.
+    scrollbar->SetEffectTreeIndex(effect_node.id);
+    scrollbar->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+
+    // Set up scrollbar layer dimensions.
+    scrollbar->SetBounds(gfx::Size(15, 600));
+    scrollbar->SetThumbThickness(9);
+    scrollbar->SetThumbLength(50);
+    scrollbar->SetTrackRect(gfx::Rect(0, 12, 15, 575));
+    scrollbar->SetForwardButtonRect(gfx::Rect(0, 584, 15, 16));
+    scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
+
+    // Set up track resource id.
+    UIResourceId ui_resource_id = 1;
+    UIResourceBitmap bitmap(gfx::Size(1, 1), true);
+    host_impl_->CreateUIResource(ui_resource_id, bitmap);
+    scrollbar->set_track_ui_resource_id(ui_resource_id);
+    UpdateDrawProperties(host_impl_->active_tree());
+
+    return scrollbar;
+  }
+};
+
+class FluentOverlayScrollbarOpacityLayerTreeHostImplTest
+    : public FluentOverlayScrollbarLayerTreeHostImplTest,
+      public testing::WithParamInterface<int> {
+ public:
+  constexpr static int kParamSteps = 10;
+
+  void VerifyCorrectOpacityForThickness(PaintedScrollbarLayerImpl* scrollbar,
+                                        float thickness,
+                                        float expected_opacity) {
+    scrollbar->SetThumbThicknessScaleFactor(thickness);
+    auto render_pass = viz::CompositorRenderPass::Create();
+    AppendQuadsData append_quads_data;
+    scrollbar->AppendQuads(render_pass.get(), &append_quads_data);
+    viz::DrawQuad* track_quad = *(render_pass->quad_list.BackToFrontBegin());
+    if (expected_opacity == 0.f) {
+      // If the opacity of the track is expected to be zero, the layer code
+      // makes an early return and doesn't append the track's quads.
+      EXPECT_EQ(track_quad, nullptr);
+    } else {
+      const viz::TextureDrawQuad* texture_quad =
+          viz::TextureDrawQuad::MaterialCast(track_quad);
+      for (auto& opacity_value : texture_quad->vertex_opacity) {
+        EXPECT_FLOAT_EQ(expected_opacity, opacity_value);
+      }
+    }
   }
 };
 
@@ -13705,6 +13788,41 @@ TEST_F(LayerTreeHostImplTest, ScrollAnimatedUpdateInnerViewport) {
     EXPECT_EQ(5, CurrentScrollOffset(OuterViewportScrollLayer()).x());
     host_impl_->DidFinishImplFrame(begin_frame_args);
   }
+}
+
+// Fluent Overlay Scrollbars track opacity is scaled depending on the thickness
+// scale factor of the scrollbar's thumb. When the thumb's thickness is at it's
+// minimum the track should be invisible
+// (`thickness_scale_factor_` == `kIdleThicknessScale`) => (`opacity_` == 0).
+// When the thumb's thickness is at it's maximum, the track should be fully
+// visible.
+// (`thickness_scale_factor_` == 1) => (`opacity_` == 1).
+// For every thickness value in between `kIdleThicknessScale` and 1.f the
+// opacity should be scaled appropriately This test ensures the correlation
+// between thickness of the thumb and opacity of the track.
+TEST_P(FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
+       PaintedOverlayScrollbarTrackOpacityTest) {
+  auto* scrollbar = CreateAndRegisterPaintedScrollbarLayer();
+
+  int const step = GetParam();
+  float const thickness_scale_step =
+      (1 - scrollbar->kIdleThicknessScale) / kParamSteps;
+  VerifyCorrectOpacityForThickness(
+      scrollbar, scrollbar->kIdleThicknessScale + thickness_scale_step * step,
+      step / static_cast<float>(kParamSteps));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ScaleOpacity,
+    FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
+    Range(0,
+          FluentOverlayScrollbarOpacityLayerTreeHostImplTest::kParamSteps + 1));
+
+// Fluent Overlay Scrollbars opacity should be set to zero when creating
+// the animation controller.
+TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,
+       PaintedOverlayLayerOnLoadOpacityTest) {
+  EXPECT_FLOAT_EQ(CreateAndRegisterPaintedScrollbarLayer()->Opacity(), 0.f);
 }
 
 // This tests that faded-out Aura scrollbars can't be interacted with.
