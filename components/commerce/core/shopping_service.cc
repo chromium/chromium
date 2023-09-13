@@ -54,6 +54,7 @@
 #include "components/session_proto_db/session_proto_storage.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/url_constants.h"
@@ -275,7 +276,14 @@ void ShoppingService::ScheduleProductInfoJavascript(WebWrapper* web) {
     return;
   }
 
-  auto it = product_info_cache_.find(web->GetLastCommittedURL().spec());
+  // Skip execution on local host URLs to avoid failing unrelated tests due to
+  // the injection of the script.
+  const GURL url = web->GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url)) {
+    return;
+  }
+
+  auto it = product_info_cache_.find(url.spec());
 
   if (it == product_info_cache_.end() || !it->second->needs_javascript_run) {
     return;
@@ -727,8 +735,7 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     std::move(callback).Run(url, absl::nullopt);
 
     // If doing local PDP detection, we might still want to run this.
-    if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection) &&
-        url.SchemeIsHTTPOrHTTPS()) {
+    if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
       UpdateProductInfoCache(url, true, nullptr);
       if (web) {
         ScheduleProductInfoJavascript(web);
