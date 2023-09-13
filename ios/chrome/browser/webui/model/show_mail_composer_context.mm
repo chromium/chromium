@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webui/show_mail_composer_context.h"
+#import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
 
 #import "base/check.h"
 #import "base/files/file_path.h"

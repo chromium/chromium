@@ -96,7 +96,7 @@ source_set("webui") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
     "//ios/chrome/browser/web/java_script_console",
-    "//ios/chrome/browser/webui",
+    "//ios/chrome/browser/webui/model",
     "//ios/chrome/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",

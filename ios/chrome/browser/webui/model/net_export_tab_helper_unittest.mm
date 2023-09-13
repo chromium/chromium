@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webui/net_export_tab_helper.h"
+#import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
 
 #import <Foundation/Foundation.h>
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
-#import "ios/chrome/browser/webui/show_mail_composer_context.h"
+#import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
+#import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 // A test object that conforms to the NetExportTabHelperDelegate protocol.
-@interface TestNetExportTabHelperDelegate : NSObject<NetExportTabHelperDelegate>
+@interface TestNetExportTabHelperDelegate
+    : NSObject <NetExportTabHelperDelegate>
 
 // The last context passed to `netExportTabHelper:showMailComposerWithContext:`.
 // `lastContext` is nil if `netExportTabHelper:showMailComposerWithContext:` has

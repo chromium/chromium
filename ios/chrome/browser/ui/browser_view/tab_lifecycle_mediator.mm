@@ -37,8 +37,8 @@
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
+#import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
+#import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ui/base/device_form_factor.h"
 
 @interface TabLifecycleMediator () <DependencyInstalling>

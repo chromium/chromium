@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
-#import "ios/chrome/browser/webui/show_mail_composer_context.h"
+#import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface NetExportCoordinator () <MFMailComposeViewControllerDelegate> {

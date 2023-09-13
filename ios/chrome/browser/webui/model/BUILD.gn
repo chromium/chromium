@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("webui") {
+source_set("model") {
   sources = [
     "net_export_tab_helper.h",
     "net_export_tab_helper.mm",
@@ -20,7 +20,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "net_export_tab_helper_unittest.mm" ]
   deps = [
-    ":webui",
+    ":model",
     "//base",
     "//components/strings",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
