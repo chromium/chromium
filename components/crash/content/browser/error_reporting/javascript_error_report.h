@@ -46,6 +46,7 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
     kUnknown,
     kCrashReportApi,
     kWebUIObserver,
+    kDevToolsObserver,
   };
   SourceSystem source_system = SourceSystem::kUnknown;
 

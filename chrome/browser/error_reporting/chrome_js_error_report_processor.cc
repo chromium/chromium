@@ -210,6 +210,9 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     case JavaScriptErrorReport::SourceSystem::kWebUIObserver:
       params[kSourceSystemParamName] = "webui_observer";
       break;
+    case JavaScriptErrorReport::SourceSystem::kDevToolsObserver:
+      params[kSourceSystemParamName] = "devtools_observer";
+      break;
   }
   params["full_url"] = source.spec();
   params["url"] = source.path();

@@ -2345,6 +2345,7 @@ test("content_unittests") {
     "../browser/cookie_deprecation_label/cookie_deprecation_label_manager_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
     "../browser/devtools/devtools_background_services_context_impl_unittest.cc",
+    "../browser/devtools/devtools_frontend_host_impl_unittest.cc",
     "../browser/devtools/devtools_http_handler_unittest.cc",
     "../browser/devtools/devtools_video_consumer_unittest.cc",
     "../browser/devtools/protocol/tracing_handler_unittest.cc",

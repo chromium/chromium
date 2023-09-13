@@ -2,7 +2,8 @@ include_rules = [
   "+content/shell/browser/shell.h", # for access to web contents from devtools_protocol_test_support.cc
   # V8 version info
   "+v8/include/v8-version-string.h",
-
   # For converting between JSON and CBOR in devtools_session_encoding.cc.
   "+third_party/inspector_protocol/crdtp",
+  # For error reporting.
+  "+components/crash/content/browser/error_reporting",
 ]

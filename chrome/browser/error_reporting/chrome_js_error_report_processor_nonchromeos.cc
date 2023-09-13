@@ -121,13 +121,14 @@ void ChromeJsErrorReportProcessor::SendReport(
         sender: "JavaScript error reporter"
         description:
           "Chrome can send JavaScript errors that occur within built-in "
-          "component extensions and chrome:// webpages. If enabled, the error "
-          "message, along with information about Chrome and the operating "
-          "system, is sent to Google for debugging."
+          "component extensions, chrome:// webpages and DevTools. If enabled, "
+          "the error message, along with information about Chrome and the "
+          "operating system, is sent to Google for debugging."
         trigger:
           "A JavaScript error occurs in a Chrome component extension (an "
           "extension bundled with the Chrome browser, not downloaded "
-          "separately) or in certain chrome:// webpages."
+          "separately) or in certain chrome:// webpages or "
+          "in Chrome DevTools (devtools:// pages)."
         data:
           "The JavaScript error message, the version and channel of Chrome, "
           "the URL of the extension or webpage, the line and column number of "

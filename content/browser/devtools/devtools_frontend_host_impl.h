@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_FRONTEND_HOST_IMPL_H_
 
 #include "content/public/browser/devtools_frontend_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/mojom/devtools/devtools_frontend.mojom.h"
 
@@ -14,7 +15,8 @@ namespace content {
 class WebContents;
 
 class DevToolsFrontendHostImpl : public DevToolsFrontendHost,
-                                 public blink::mojom::DevToolsFrontendHost {
+                                 public blink::mojom::DevToolsFrontendHost,
+                                 public WebContentsObserver {
  public:
   DevToolsFrontendHostImpl(
       RenderFrameHost* frame_host,
@@ -25,7 +27,21 @@ class DevToolsFrontendHostImpl : public DevToolsFrontendHost,
 
   ~DevToolsFrontendHostImpl() override;
 
+  static CONTENT_EXPORT std::unique_ptr<DevToolsFrontendHostImpl>
+  CreateForTesting(RenderFrameHost* frame_host,
+                   const HandleMessageCallback& handle_message_callback);
+
   void BadMessageReceived() override;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  void OnDidAddMessageToConsole(
+      RenderFrameHost* source_frame,
+      blink::mojom::ConsoleMessageLevel log_level,
+      const std::u16string& message,
+      int32_t line_no,
+      const std::u16string& source_id,
+      const absl::optional<std::u16string>& untrusted_stack_trace) override;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
  private:
   // blink::mojom::DevToolsFrontendHost implementation.

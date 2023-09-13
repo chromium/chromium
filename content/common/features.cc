@@ -146,6 +146,13 @@ BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
              "EnableBackForwardCacheForScreenReader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables error reporting for JS errors inside DevTools frontend host
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kEnableDevToolsJsErrorReporting,
+             "EnableDevToolsJsErrorReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 // TODO(https://crbug.com/1442346): Feature flag to guard extra CHECKs put in
 // place to ensure that the AllowBindings API on RenderFrameHost is not called
 // for documents outside of WebUI ones.
