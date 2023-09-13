@@ -59,10 +59,6 @@ void EditorMediator::BindEditorPanelManager(
   panel_manager_.BindReceiver(std::move(pending_receiver));
 }
 
-void EditorMediator::HandleTrigger() {
-  mako_page_handler_ = std::make_unique<ash::MakoPageHandler>();
-}
-
 void EditorMediator::OnFocus(int context_id) {
   GetTextFieldContextualInfo(
       base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
@@ -95,9 +91,15 @@ void EditorMediator::OnConsentActionReceived(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
 }
 
-void EditorMediator::OnPromoCardActionReceived(
-    PromoCardAction promo_card_action) {
-  consent_store_->ProcessPromoCardAction(promo_card_action);
+void EditorMediator::OnPromoCardDeclined() {
+  consent_store_->ProcessPromoCardAction(PromoCardAction::kDeclined);
+}
+
+void EditorMediator::HandleTrigger() {
+  if (!editor_switch_->CanBeTriggered()) {
+    return;
+  }
+  mako_page_handler_ = std::make_unique<ash::MakoPageHandler>();
 }
 
 void EditorMediator::CommitEditorResult(std::string_view text) {

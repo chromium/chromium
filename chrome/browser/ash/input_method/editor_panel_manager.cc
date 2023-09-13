@@ -32,15 +32,14 @@ void EditorPanelManager::GetEditorPanelContext(
 }
 
 void EditorPanelManager::OnPromoCardDismissed() {
-  delegate_->OnPromoCardActionReceived(PromoCardAction::kDismissed);
 }
 
 void EditorPanelManager::OnPromoCardDeclined() {
-  delegate_->OnPromoCardActionReceived(PromoCardAction::kDeclined);
+  delegate_->OnPromoCardDeclined();
 }
 
 void EditorPanelManager::StartEditingFlow() {
-  delegate_->OnPromoCardActionReceived(PromoCardAction::kAccepted);
+  delegate_->HandleTrigger();
 }
 
 void EditorPanelManager::StartEditingFlowWithPreset(

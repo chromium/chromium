@@ -25,8 +25,8 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual void OnPromoCardActionReceived(
-        PromoCardAction promo_card_action) = 0;
+    virtual void OnPromoCardDeclined() = 0;
+    virtual void HandleTrigger() = 0;
   };
 
   explicit EditorPanelManager(Delegate* delegate);

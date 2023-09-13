@@ -54,17 +54,16 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
       mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
           pending_receiver);
 
-  // Handles a trigger event received from the system. This event could come
-  // from a number of system locations.
-  void HandleTrigger();
-
   // EditorEventSink
   void OnFocus(int context_id) override;
   void OnBlur() override;
   void OnActivateIme(std::string_view engine_id) override;
 
   void OnConsentActionReceived(ConsentAction consent_action);
-  void OnPromoCardActionReceived(PromoCardAction promo_card_action) override;
+
+  // EditorPanelManager::Delegate
+  void OnPromoCardDeclined() override;
+  void HandleTrigger() override;
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
