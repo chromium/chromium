@@ -52,7 +52,13 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, AboutBlank) {
+// TODO(crbug.com/1482180): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AboutBlank DISABLED_AboutBlank
+#else
+#define MAYBE_AboutBlank AboutBlank
+#endif
+IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_AboutBlank) {
   ExpectCounts(0, 0, 0, 0);
   ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   ExpectCounts(1, 1, 0, 0);
