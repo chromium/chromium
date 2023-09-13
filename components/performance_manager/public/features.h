@@ -209,10 +209,6 @@ enum class DiscardTabTreatmentOptions {
   kFadeSmallFaviconWithRing = 2
 };
 
-// This enables the performance controls side panel for learning about and
-// configuring performance settings.
-BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
-
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the

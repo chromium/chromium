@@ -17,7 +17,6 @@ enum class SidePanelEntryId {
   kUserNote,
   kFeed,
   kWebView,
-  kPerformance,
   // Contextual Entries
   kSideSearch,
   kLens,
