@@ -31,7 +31,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -40,7 +39,6 @@ import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
-import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.renderer_host.ChromeNavigationUIData;
@@ -294,7 +292,7 @@ public class IntentHandler {
             ExternalAppId.TWITTER, ExternalAppId.CHROME, ExternalAppId.HANGOUTS,
             ExternalAppId.MESSENGER, ExternalAppId.NEWS, ExternalAppId.LINE, ExternalAppId.WHATSAPP,
             ExternalAppId.GSA, ExternalAppId.WEBAPK, ExternalAppId.YAHOO_MAIL, ExternalAppId.VIBER,
-            ExternalAppId.YOUTUBE})
+            ExternalAppId.YOUTUBE, ExternalAppId.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ExternalAppId {
         int OTHER = 0;
@@ -389,17 +387,6 @@ public class IntentHandler {
         int SEARCH_ACTIVITY = 2;
     }
 
-    /**
-     * A delegate interface for users of IntentHandler.
-     */
-    public static interface IntentHandlerDelegate {
-        /**
-         * Processes a URL VIEW Intent.
-         */
-        void processUrlViewIntent(LoadUrlParams loadUrlParams, @TabOpenType int tabOpenType,
-                String externalAppId, int tabIdToBringToFront, Intent intent);
-    }
-
     /** Sets whether or not test intents are enabled. */
     @VisibleForTesting
     public static void setTestIntentsEnabled(boolean enabled) {
@@ -478,72 +465,6 @@ public class IntentHandler {
             return ExternalAppId.VIBER;
         }
         return ExternalAppId.OTHER;
-    }
-
-    private static void recordExternalIntentSourceUMA(Intent intent) {
-        @ExternalAppId
-        int externalId = determineExternalIntentSource(intent);
-
-        // Don't record external app page loads for intents we sent.
-        if (externalId == ExternalAppId.CHROME) return;
-        RecordHistogram.recordEnumeratedHistogram(
-                "MobileIntent.PageLoadDueToExternalApp", externalId, ExternalAppId.NUM_ENTRIES);
-    }
-
-    /**
-     * Records an action when a user chose to handle a URL in Chrome that could have been handled
-     * by an application installed on the phone. Also records the name of that application.
-     * This doesn't include generic URL handlers, such as browsers.
-     */
-    private static void recordAppHandlersForIntent(Intent intent) {
-        List<String> packages = IntentUtils.safeGetStringArrayListExtra(
-                intent, ExternalNavigationHandler.EXTRA_EXTERNAL_NAV_PACKAGES);
-        if (packages != null && packages.size() > 0) {
-            RecordUserAction.record("MobileExternalNavigationReceived");
-        }
-    }
-
-    /**
-     * Handles an Intent after the ChromeTabbedActivity decides that it shouldn't ignore the
-     * Intent.
-     * @param intent Target intent.
-     * @return Whether the Intent was successfully handled.
-     */
-    public static boolean onNewIntent(
-            Intent intent, IntentHandlerDelegate delegate, long intentHandlingUptimeMillis) {
-        assert intentHasValidUrl(intent);
-        String url = getUrlFromIntent(intent);
-        @TabOpenType
-        int tabOpenType = getTabOpenType(intent);
-        int tabIdToBringToFront = getBringTabToFrontId(intent);
-        if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID) return false;
-
-        var asyncTabParams = AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().get(
-                getTabId(intent));
-        LoadUrlParams loadUrlParams =
-                (asyncTabParams == null || asyncTabParams.getLoadUrlParams() == null)
-                ? createLoadUrlParamsForIntent(url, intent, intentHandlingUptimeMillis)
-                : asyncTabParams.getLoadUrlParams();
-
-        if (isIntentForMhtmlFileOrContent(intent) && tabOpenType == TabOpenType.OPEN_NEW_TAB
-                && loadUrlParams.getReferrer() == null
-                && loadUrlParams.getVerbatimHeaders() == null) {
-            handleMhtmlFileOrContentIntent(url, intent, delegate);
-            return true;
-        }
-        processUrlViewIntent(loadUrlParams, tabOpenType,
-                IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
-                tabIdToBringToFront, intent, delegate);
-        return true;
-    }
-
-    private static void processUrlViewIntent(LoadUrlParams loadUrlParams,
-            @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,
-            Intent intent, IntentHandlerDelegate delegate) {
-        delegate.processUrlViewIntent(
-                loadUrlParams, tabOpenType, externalAppId, tabIdToBringToFront, intent);
-        recordExternalIntentSourceUMA(intent);
-        recordAppHandlersForIntent(intent);
     }
 
     /**
@@ -717,16 +638,6 @@ public class IntentHandler {
                     .getUrlForVoiceSearchQuery(query)
                     .getSpec();
         }
-    }
-
-    private static void handleMhtmlFileOrContentIntent(
-            final String url, final Intent intent, IntentHandlerDelegate delegate) {
-        OfflinePageUtils.getLoadUrlParamsForOpeningMhtmlFileOrContent(url, (loadUrlParams) -> {
-            loadUrlParams.setVerbatimHeaders(maybeAddAdditionalContentHeaders(
-                    intent, url, loadUrlParams.getVerbatimHeaders()));
-            processUrlViewIntent(loadUrlParams, TabOpenType.OPEN_NEW_TAB, null, Tab.INVALID_TAB_ID,
-                    intent, delegate);
-        }, Profile.getLastUsedRegularProfile());
     }
 
     /**
@@ -1052,7 +963,7 @@ public class IntentHandler {
      * The default behavior here is to open in a new tab.  If this is changed, ensure
      * intents with action NDEF_DISCOVERED (links beamed over NFC) are handled properly.
      */
-    private static @TabOpenType int getTabOpenType(Intent intent) {
+    public static @TabOpenType int getTabOpenType(Intent intent) {
         if (IntentUtils.safeGetBooleanExtra(
                     intent, WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false)) {
             return TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB;
@@ -1191,8 +1102,8 @@ public class IntentHandler {
                 : null;
     }
 
-    @VisibleForTesting
-    static String maybeAddAdditionalContentHeaders(Intent intent, String url, String extraHeaders) {
+    public static String maybeAddAdditionalContentHeaders(
+            Intent intent, String url, String extraHeaders) {
         // For some apps, ContentResolver.getType(contentUri) returns "application/octet-stream",
         // instead of the registered MIME type when opening a document from Downloads. To work
         // around this, we pass the intent type in extra headers such that content request job can
@@ -1458,6 +1369,12 @@ public class IntentHandler {
      */
     public static LoadUrlParams createLoadUrlParamsForIntent(
             String url, Intent intent, long intentHandlingUptimeMillis) {
+        var asyncTabParams = AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().get(
+                getTabId(intent));
+        if (asyncTabParams != null && asyncTabParams.getLoadUrlParams() != null) {
+            return asyncTabParams.getLoadUrlParams();
+        }
+
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         RequestMetadata metadata =
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent);

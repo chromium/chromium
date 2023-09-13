@@ -66,8 +66,6 @@ import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
-import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
@@ -305,10 +303,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private boolean mPartnerBrowserRefreshNeeded;
 
-    protected final IntentHandlerDelegate mIntentHandlerDelegate;
-    // Time at which an intent was received and handled.
-    protected long mIntentHandlingTimeMs;
-
     /** Set if {@link #postDeferredStartupIfNeeded()} is called before native has loaded. */
     private boolean mDeferredStartupQueued;
 
@@ -414,8 +408,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
     protected ChromeActivity() {
-        mIntentHandlerDelegate = createIntentHandlerDelegate();
-        mIntentHandlingTimeMs = SystemClock.uptimeMillis();
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
     }
 
@@ -1280,12 +1272,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @Override
-    public void onNewIntent(Intent intent) {
-        mIntentHandlingTimeMs = SystemClock.uptimeMillis();
-        super.onNewIntent(intent);
-    }
-
-    @Override
     public void onNewIntentWithNative(Intent intent) {
         if (mFullscreenVideoPictureInPictureController != null) {
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
@@ -1293,11 +1279,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.onNewIntentWithNative(intent);
         getLaunchCauseMetrics().onReceivedIntent();
-        if (IntentHandler.shouldIgnoreIntent(intent, isCustomTab())) {
-            return;
-        }
-
-        IntentHandler.onNewIntent(intent, mIntentHandlerDelegate, mIntentHandlingTimeMs);
     }
 
     /**
@@ -1834,15 +1815,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         return true;
-    }
-
-    protected IntentHandlerDelegate createIntentHandlerDelegate() {
-        return new IntentHandlerDelegate() {
-            @Override
-            public void processUrlViewIntent(LoadUrlParams loadUrlParams,
-                    @TabOpenType int tabOpenType, String externalAppId, int tabIdToBringToFront,
-                    Intent intent) {}
-        };
     }
 
     /**

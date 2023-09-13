@@ -7,9 +7,6 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 
 import android.app.KeyguardManager;
 import android.content.ComponentName;
@@ -30,9 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -164,8 +158,6 @@ public class IntentHandlerRobolectricTest {
     @Rule
     public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    public IntentHandler.IntentHandlerDelegate mDelegate;
     @Captor
     ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -223,19 +215,14 @@ public class IntentHandlerRobolectricTest {
     public void testNewIntentInitiator() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
-        InOrder inOrder = Mockito.inOrder(mDelegate);
 
-        IntentHandler.onNewIntent(intent, mDelegate, 0);
-        inOrder.verify(mDelegate).processUrlViewIntent(
-                mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
-        Assert.assertTrue(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin().isOpaque());
+        LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        Assert.assertTrue(params.getInitiatorOrigin().isOpaque());
 
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
-        IntentHandler.onNewIntent(intent, mDelegate, 0);
-        inOrder.verify(mDelegate).processUrlViewIntent(
-                mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
-        Assert.assertNull(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin());
+        params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        Assert.assertNull(params.getInitiatorOrigin());
     }
 
     @Test
@@ -244,21 +231,16 @@ public class IntentHandlerRobolectricTest {
     public void testNewIntentInitiatorFromRenderer() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
-        InOrder inOrder = Mockito.inOrder(mDelegate);
 
-        IntentHandler.onNewIntent(intent, mDelegate, 0);
-        inOrder.verify(mDelegate).processUrlViewIntent(
-                mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
-        Assert.assertNull(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin());
+        LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        Assert.assertNull(params.getInitiatorOrigin());
 
         RequestMetadata metadata = new RequestMetadata(true, true);
         IntentWithRequestMetadataHandler.getInstance().onNewIntentWithRequestMetadata(
                 intent, metadata);
 
-        IntentHandler.onNewIntent(intent, mDelegate, 0);
-        inOrder.verify(mDelegate).processUrlViewIntent(
-                mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
-        Assert.assertTrue(mLoadUrlParamsCaptor.getValue().getInitiatorOrigin().isOpaque());
+        params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        Assert.assertTrue(params.getInitiatorOrigin().isOpaque());
     }
 
     @Test
@@ -547,7 +529,6 @@ public class IntentHandlerRobolectricTest {
         int tabId = 1;
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
-        InOrder inOrder = Mockito.inOrder(mDelegate);
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
         IntentHandler.setTabId(intent, tabId);
@@ -559,13 +540,9 @@ public class IntentHandlerRobolectricTest {
         AsyncTabParamsManagerSingleton.getInstance().add(
                 tabId, new AsyncTabCreationParams(loadUrlParams));
 
-        IntentHandler.onNewIntent(intent, mDelegate, 0);
-        inOrder.verify(mDelegate).processUrlViewIntent(
-                mLoadUrlParamsCaptor.capture(), anyInt(), any(), anyInt(), eq(intent));
-        Assert.assertEquals(
-                "LoadUrlParams should match.", loadUrlParams, mLoadUrlParamsCaptor.getValue());
-        Assert.assertNotNull(
-                "The referrer should be non-null.", mLoadUrlParamsCaptor.getValue().getReferrer());
+        LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        Assert.assertEquals("LoadUrlParams should match.", loadUrlParams, params);
+        Assert.assertNotNull("The referrer should be non-null.", params.getReferrer());
     }
 
     @Test
