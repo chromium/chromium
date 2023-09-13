@@ -61,7 +61,7 @@ int GetWebStateIndex(WebStateList* web_state_list,
 }
 
 NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
-                                      WebStateSearchCriteria criteria) {
+                                      PinnedState pinned_state) {
   if (!web_state_list) {
     return nil;
   }
@@ -73,7 +73,7 @@ NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
 
   if (IsPinnedTabsEnabled() &&
       web_state_list->IsWebStatePinnedAt(web_state_index) &&
-      criteria.pinned_state != PinnedState::kPinned) {
+      pinned_state != PinnedState::kPinned) {
     return nil;
   }
 

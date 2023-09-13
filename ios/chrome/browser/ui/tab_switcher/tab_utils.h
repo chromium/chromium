@@ -38,9 +38,10 @@ int GetWebStateIndex(WebStateList* web_state_list,
                      WebStateSearchCriteria criteria);
 
 // Returns the identifier of the active tab in `web_state_list` with `the given
-// `criteria`. Returns `nil` if the tab is not found.
-NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
-                                      WebStateSearchCriteria criteria);
+// `pinned_state`. Returns `nil` if the tab is not found.
+NSString* GetActiveWebStateIdentifier(
+    WebStateList* web_state_list,
+    WebStateSearchCriteria::PinnedState pinned_state);
 
 // Returns the WebState with `the given `criteria`.
 // Returns `nullptr` if not found.

@@ -128,6 +128,11 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   return nullptr;
 }
 
+// Returns the identifier of the currently active unpinned tab.
+NSString* GetActiveNonPinnedTabID(WebStateList* web_state_list) {
+  return GetActiveWebStateIdentifier(web_state_list, PinnedState::kNonPinned);
+}
+
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver,
@@ -241,13 +246,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   web::WebState* detachedWebState = detachChange.detached_web_state();
   // If the WebState is pinned and it is not in the consumer's items list,
   // consumer will filter it out in the method's implementation.
-  [self.consumer
-      removeItemWithID:detachedWebState->GetStableIdentifier()
-        selectedItemID:GetActiveWebStateIdentifier(
-                           webStateList,
-                           WebStateSearchCriteria{
-                               .pinned_state = PinnedState::kNonPinned,
-                           })];
+  [self.consumer removeItemWithID:detachedWebState->GetStableIdentifier()
+                   selectedItemID:GetActiveNonPinnedTabID(webStateList)];
 
   // The pinned WebState could be detached only in case it was displayed in
   // the Tab Search and was closed from the context menu. In such a case
@@ -322,12 +322,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     }
     case WebStateListChange::Type::kInsert: {
       if ([self isPinnedWebState:status.index]) {
-        [self.consumer
-            selectItemWithID:GetActiveWebStateIdentifier(
-                                 webStateList,
-                                 WebStateSearchCriteria{
-                                     .pinned_state = PinnedState::kNonPinned,
-                                 })];
+        [self.consumer selectItemWithID:GetActiveNonPinnedTabID(webStateList)];
         break;
       }
 
@@ -339,11 +334,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:status.index];
       [self.consumer insertItem:item
                         atIndex:itemIndex
-                 selectedItemID:GetActiveWebStateIdentifier(
-                                    webStateList,
-                                    WebStateSearchCriteria{
-                                        .pinned_state = PinnedState::kNonPinned,
-                                    })];
+                 selectedItemID:GetActiveNonPinnedTabID(webStateList)];
 
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
@@ -949,11 +940,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 // Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems {
   [self.consumer populateItems:CreateItems(self.webStateList)
-                selectedItemID:GetActiveWebStateIdentifier(
-                                   self.webStateList,
-                                   WebStateSearchCriteria{
-                                       .pinned_state = PinnedState::kNonPinned,
-                                   })];
+                selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
 }
 
 // Adds an observations to every non-pinned WebState.
@@ -1057,13 +1044,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 - (void)changePinnedStateForWebState:(web::WebState*)webState
                              atIndex:(int)index {
   if ([self isPinnedWebState:index]) {
-    [self.consumer
-        removeItemWithID:webState->GetStableIdentifier()
-          selectedItemID:GetActiveWebStateIdentifier(
-                             self.webStateList,
-                             WebStateSearchCriteria{
-                                 .pinned_state = PinnedState::kNonPinned,
-                             })];
+    [self.consumer removeItemWithID:webState->GetStableIdentifier()
+                     selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
 
     _scopedWebStateObservation->RemoveObservation(webState);
   } else {
@@ -1072,11 +1054,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
     [self.consumer insertItem:item
                       atIndex:itemIndex
-               selectedItemID:GetActiveWebStateIdentifier(
-                                  self.webStateList,
-                                  WebStateSearchCriteria{
-                                      .pinned_state = PinnedState::kNonPinned,
-                                  })];
+               selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
 
     _scopedWebStateObservation->AddObservation(webState);
   }
