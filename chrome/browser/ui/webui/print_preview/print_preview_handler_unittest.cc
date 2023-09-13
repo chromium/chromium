@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_writer.h"
@@ -24,6 +25,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/ui/webui/print_preview/fake_print_render_frame.h"
@@ -466,9 +468,18 @@ class PrintPreviewHandlerTest : public testing::Test {
 #endif
 
   void SetProfileForInitialSettings(TestingProfile* profile) {
+    auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+    CHECK(dialog_controller);
+    if (preview_web_contents_) {
+      dialog_controller->DisassociateWebContentsesForTesting(
+          preview_web_contents_.get());
+    }
+
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile));
     web_ui_->set_web_contents(preview_web_contents_.get());
+    dialog_controller->AssociateWebContentsesForTesting(
+        initiator_web_contents_.get(), preview_web_contents_.get());
   }
 
   void SetUp() override {
@@ -481,6 +492,8 @@ class PrintPreviewHandlerTest : public testing::Test {
     ash::LoginState::Initialize();
     manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
 #endif
+
+    // Create the initiator.
     initiator_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&profile_));
     content::WebContents* initiator = initiator_web_contents_.get();
@@ -488,13 +501,15 @@ class PrintPreviewHandlerTest : public testing::Test {
     // the print code will not bother to send IPCs to a non-live RenderFrame.
     content::NavigationSimulator::NavigateAndCommitFromDocument(
         GURL("about:blank"), initiator->GetPrimaryMainFrame());
-    preview_web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(&profile_));
+
+    // Create the print preview.
+    web_ui_ = std::make_unique<content::TestWebUI>();
+    SetProfileForInitialSettings(&profile_);
+
+    // Create the PrintViewManager and put it to work.
     PrintViewManager::CreateForWebContents(initiator);
     PrintViewManager::FromWebContents(initiator)->PrintPreviewNow(
         initiator->GetPrimaryMainFrame(), false);
-    web_ui_ = std::make_unique<content::TestWebUI>();
-    web_ui_->set_web_contents(preview_web_contents_.get());
 
     printers_.push_back(GetSimplePrinterInfo(test::kPrinterName, true));
     auto printer_handler = CreatePrinterHandler(printers_);
@@ -524,6 +539,11 @@ class PrintPreviewHandlerTest : public testing::Test {
 #endif
     PrintViewManager::FromWebContents(initiator_web_contents_.get())
         ->PrintPreviewDone();
+
+    auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+    CHECK(dialog_controller);
+    dialog_controller->DisassociateWebContentsesForTesting(
+        preview_web_contents_.get());
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -453,12 +453,10 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
 
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);
-  dialog_controller->PrintPreview(web_contents());
-
   mojom::RequestPrintPreviewParams params;
   params.is_modifiable = source_is_modifiable;
-  PrintPreviewUI::SetInitialParams(
-      dialog_controller->GetPrintPreviewForContents(web_contents()), params);
+  dialog_controller->PrintPreview(web_contents(), params);
+
   PrintPreviewAllowedForTesting();
 }
 
@@ -497,10 +495,8 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
 
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);
-  dialog_controller->PrintPreview(web_contents());
+  dialog_controller->PrintPreview(web_contents(), *params);
 
-  PrintPreviewUI::SetInitialParams(
-      dialog_controller->GetPrintPreviewForContents(web_contents()), *params);
   PrintPreviewAllowedForTesting();
 }
 

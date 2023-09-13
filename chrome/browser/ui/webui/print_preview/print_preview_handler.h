@@ -119,6 +119,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   virtual void BadMessageReceived();
 
   // Gets the initiator for the print preview dialog.
+  // Virtual so tests can override.
   virtual content::WebContents* GetInitiator();
 
   // Initiates print after any content analysis checks have been passed
@@ -149,6 +150,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   content::WebContents* preview_web_contents();
 
   PrintPreviewUI* print_preview_ui();
+
+  const mojom::RequestPrintPreviewParams* GetRequestParams();
 
   PrefService* GetPrefs();
 

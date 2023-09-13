@@ -453,6 +453,7 @@ static_library("test_support") {
     public_deps += [
       "//printing",
       "//printing/backend",
+      "//printing/mojom",
     ]
   }
 
