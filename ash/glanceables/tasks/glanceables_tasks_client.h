@@ -6,7 +6,6 @@
 #define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_CLIENT_H_
 
 #include <string>
-#include <vector>
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
@@ -43,6 +42,10 @@ class ASH_EXPORT GlanceablesTasksClient {
   virtual void MarkAsCompleted(const std::string& task_list_id,
                                const std::string& task_id,
                                bool completed) = 0;
+
+  // Adds a new task to the specified task list with the specified title.
+  virtual void AddTask(const std::string& task_list_id,
+                       const std::string& title) = 0;
 
   // Method called when the glanceables bubble UI closes. The client can use
   // this as a signal to invalidate cached tasks data.

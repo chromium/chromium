@@ -42,6 +42,8 @@ class ASH_EXPORT FakeGlanceablesTasksClient : public GlanceablesTasksClient {
   void MarkAsCompleted(const std::string& task_list_id,
                        const std::string& task_id,
                        bool checked) override;
+  void AddTask(const std::string& task_list_id,
+               const std::string& title) override;
   void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
                                      callback = base::DoNothing()) override;
 

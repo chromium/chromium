@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 
 namespace ash {
@@ -64,6 +65,11 @@ void FakeGlanceablesTasksClient::MarkAsCompleted(
         pending_completed_tasks_.begin(), pending_completed_tasks_.end(),
         base::JoinString({task_list_id, task_id}, ":")));
   }
+}
+
+void FakeGlanceablesTasksClient::AddTask(const std::string& task_list_id,
+                                         const std::string& title) {
+  NOTIMPLEMENTED();
 }
 
 void FakeGlanceablesTasksClient::OnGlanceablesBubbleClosed(

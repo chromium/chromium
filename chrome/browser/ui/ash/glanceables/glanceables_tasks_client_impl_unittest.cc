@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -121,6 +122,18 @@ class TestRequestHandler {
   MOCK_METHOD(std::unique_ptr<HttpResponse>,
               HandleRequest,
               (const HttpRequest&));
+};
+
+// Observer for `ui::ListModel` changes.
+class TestListModelObserver : public ui::ListModelObserver {
+ public:
+  MOCK_METHOD(void, ListItemsAdded, (size_t start, size_t count), (override));
+  MOCK_METHOD(void, ListItemsRemoved, (size_t start, size_t count), (override));
+  MOCK_METHOD(void,
+              ListItemMoved,
+              (size_t index, size_t target_index),
+              (override));
+  MOCK_METHOD(void, ListItemsChanged, (size_t start, size_t count), (override));
 };
 
 }  // namespace
@@ -1171,6 +1184,61 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.PatchTask.Status",
       ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, /*expected_bucket_count=*/1);
+}
+
+// ----------------------------------------------------------------------------
+// Add a new task:
+
+TEST_F(GlanceablesTasksClientImplTest, AddsNewTask) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {
+                "id": "task-id",
+                "title": "Task 1",
+                "status": "needsAction"
+              }
+            ]
+          }
+        )"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_POST))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#task",
+            "id": "new-task-id",
+            "title": "New task"
+          }
+        )"))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> get_tasks_future;
+  client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
+  ASSERT_TRUE(get_tasks_future.Wait());
+
+  auto* const tasks = get_tasks_future.Get();
+  EXPECT_EQ(tasks->item_count(), 1u);
+  EXPECT_EQ(tasks->GetItemAt(0)->id, "task-id");
+  EXPECT_EQ(tasks->GetItemAt(0)->title, "Task 1");
+
+  testing::StrictMock<TestListModelObserver> observer;
+  tasks->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, ListItemsAdded(/*start=*/0, /*count=*/1))
+      .WillOnce([&]() {
+        run_loop.Quit();
+
+        EXPECT_EQ(tasks->item_count(), 2u);
+        EXPECT_EQ(tasks->GetItemAt(0)->id, "new-task-id");
+        EXPECT_EQ(tasks->GetItemAt(0)->title, "New task");
+      });
+  client()->AddTask("test-task-list-id", "New task");
+  run_loop.Run();
 }
 
 }  // namespace ash
