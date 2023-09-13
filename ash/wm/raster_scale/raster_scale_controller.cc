@@ -115,8 +115,6 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
 }
 
 float RasterScaleController::ComputeRasterScaleForWindow(aura::Window* window) {
-  // TODO(crbug.com/1473882): Consider adding slop threshold for not updating
-  // the raster scale.
   auto iter = window_scales_.find(window);
   if (iter == window_scales_.end() || iter->second.empty()) {
     return 1.0f;
@@ -142,8 +140,16 @@ void RasterScaleController::MaybeSetRasterScale(aura::Window* window) {
   }
 
   const float previous_scale = window->GetProperty(aura::client::kRasterScale);
-  const auto current_scale = ComputeRasterScaleForWindow(window);
-  if (current_scale != previous_scale) {
+  const float current_scale = ComputeRasterScaleForWindow(window);
+
+  // Allow updating the raster scale if the relative change is at least the slop
+  // proportion.
+  const bool slop_condition =
+      previous_scale != 0.0 &&
+      std::abs((previous_scale - current_scale) / previous_scale) >=
+          raster_scale_slop_proportion_;
+  if (previous_scale != current_scale &&
+      (slop_condition || current_scale == 1.0f)) {
     window->SetProperty(aura::client::kRasterScale, current_scale);
   }
 }

@@ -3586,6 +3586,9 @@ using OverviewRasterScaleTest = OverviewSessionTest;
 // overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAnimatedSingleWindowEnterGrowExitShrink) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3622,6 +3625,9 @@ TEST_P(OverviewRasterScaleTest,
 // overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAnimatedSingleWindowEnterShrinkExitGrow) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(600, 600)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3655,6 +3661,9 @@ TEST_P(OverviewRasterScaleTest,
 // entering overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMinimizedSingleWindowEnterGrowExitShrink) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3693,6 +3702,9 @@ TEST_P(OverviewRasterScaleTest,
 // entering overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMinimizedSingleWindowEnterShrinkExitGrow) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(600, 600)));
   auto tracker = RasterScaleChangeTracker(window.get());
 
@@ -3730,6 +3742,9 @@ TEST_P(OverviewRasterScaleTest,
 // Tests raster scale changes for a more complex case with multiple windows in
 // different states.
 TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindows) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow_animated(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink_animated(
@@ -3821,6 +3836,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindows) {
 // Tests raster scale changes when a maximized window exists with windows on
 // top.
 TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_maximized(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_grow(
@@ -3889,6 +3907,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
 
 // Tests raster scale changes when a maximized window exists with windows below.
 TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink(
@@ -3962,6 +3983,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
 // different states when the overview mode animation is cancelled while entering
 // and exiting.
 TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow_covered(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink_covered(
@@ -4194,6 +4218,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
 
 // Tests raster scale changes for transient windows.
 TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window_grow_covered(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_shrink_covered(
@@ -4753,6 +4780,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
 // update its raster scale.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAddRemoveTransientChildWindowsDuringOverviewMode) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
 
   std::unique_ptr<aura::Window> window_transient(
@@ -4799,6 +4829,9 @@ TEST_P(OverviewRasterScaleTest,
 // scales.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAddWindowsDuringOverviewModeByCombiningAVirtualDesk) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -4891,6 +4924,9 @@ TEST_P(OverviewRasterScaleTest,
 // works.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMoveWindowToVirtualDeskDuringOverviewMode) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -4955,6 +4991,9 @@ TEST_P(OverviewRasterScaleTest,
 
 // Tests raster scale changes work in tablet mode.
 TEST_P(OverviewRasterScaleTest, RasterScaleTabletMode) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   EnterTabletMode();
 
   std::unique_ptr<aura::Window> window_maximized(
@@ -5062,6 +5101,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleTabletMode) {
 
 // Tests raster scale changes work during screen rotations.
 TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotation) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   UpdateDisplay("1600x1200");
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
@@ -5124,6 +5166,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotation) {
 
 // Tests raster scale changes work during screen rotations in tablet mode.
 TEST_P(OverviewRasterScaleTest, RasterScaleScreenRotationTabletMode) {
+  Shell::Get()
+      ->raster_scale_controller()
+      ->set_raster_scale_slop_proportion_for_testing(0.0f);
   UpdateDisplay("1600x1200");
   EnterTabletMode();
 
