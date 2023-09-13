@@ -146,10 +146,10 @@ declare_args() {
   # final binary. When enabled, the separated text sections with prefix
   # '.text.hot', '.text.unlikely', '.text.startup' and '.text.exit' will not be
   # merged to '.text' section. This allows us to identify the hot code section
-  # ('.text.hot') in the binary which may be mlocked or mapped to huge page to
-  # reduce TLB misses which gives performance improvement on cpu usage.
-  # The gold linker by default has text section splitting enabled.
-  use_text_section_splitting = false
+  # ('.text.hot') in the binary, which allows our data collection pipelines to
+  # more easily identify code that we assume to be hot/cold that doesn't turn
+  # out to be such in the field.
+  use_text_section_splitting = is_chromeos
 
   # Enable DWARF v5.
   use_dwarf5 = false
