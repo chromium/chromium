@@ -53,6 +53,7 @@ ci.builder(
             short_name = "det",
         ),
     ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
     execution_timeout = 6 * time.hour,
 )
 
@@ -91,6 +92,7 @@ ci.builder(
             short_name = "cast",
         ),
     ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
 ci.builder(
@@ -128,6 +130,7 @@ ci.builder(
             short_name = "rel",
         ),
     ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
 ci.builder(
@@ -163,6 +166,7 @@ ci.builder(
             short_name = "cast",
         ),
     ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
 ci.builder(
@@ -197,6 +201,7 @@ ci.builder(
             short_name = "dbg",
         ),
     ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
 ci.builder(
@@ -232,4 +237,5 @@ ci.builder(
             short_name = "rel",
         ),
     ],
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
