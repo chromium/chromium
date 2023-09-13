@@ -222,13 +222,8 @@ class NET_EXPORT ParsedCertificate {
     return policy_mappings_;
   }
 
-  // Returns true if the certificate has a InhibitAnyPolicy extension.
-  bool has_inhibit_any_policy() const { return has_inhibit_any_policy_; }
-
-  // Returns the Inhibit Any Policy extension. Caller must check
-  // has_inhibit_any_policy() before accessing this.
-  uint8_t inhibit_any_policy() const {
-    BSSL_CHECK(has_inhibit_any_policy_);
+  // Returns the Inhibit Any Policy extension.
+  const absl::optional<uint8_t>& inhibit_any_policy() const {
     return inhibit_any_policy_;
   }
 
@@ -316,8 +311,7 @@ class NET_EXPORT ParsedCertificate {
   std::vector<ParsedPolicyMapping> policy_mappings_;
 
   // Inhibit Any Policy extension.
-  bool has_inhibit_any_policy_ = false;
-  uint8_t inhibit_any_policy_;
+  absl::optional<uint8_t> inhibit_any_policy_;
 
   // AuthorityKeyIdentifier extension.
   absl::optional<ParsedAuthorityKeyIdentifier> authority_key_identifier_;

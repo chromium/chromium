@@ -998,9 +998,9 @@ void PathVerifier::ApplyPolicyConstraints(const ParsedCertificate& cert) {
   //      (j)  If the inhibitAnyPolicy extension is included in the
   //           certificate and is less than inhibit_anyPolicy, set
   //           inhibit_anyPolicy to the value of inhibitAnyPolicy.
-  if (cert.has_inhibit_any_policy() &&
-      cert.inhibit_any_policy() < inhibit_any_policy_) {
-    inhibit_any_policy_ = cert.inhibit_any_policy();
+  if (cert.inhibit_any_policy() &&
+      cert.inhibit_any_policy().value() < inhibit_any_policy_) {
+    inhibit_any_policy_ = cert.inhibit_any_policy().value();
   }
 }
 

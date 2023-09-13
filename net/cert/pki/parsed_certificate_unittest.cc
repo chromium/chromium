@@ -569,9 +569,9 @@ TEST(ParsedCertificateTest, InhibitAnyPolicy) {
   ParsedExtension extension;
   ASSERT_TRUE(cert->GetExtension(der::Input(kInhibitAnyPolicyOid), &extension));
 
-  uint8_t skip_count;
-  ASSERT_TRUE(ParseInhibitAnyPolicy(extension.value, &skip_count));
-  EXPECT_EQ(3, skip_count);
+  absl::optional<uint8_t> skip_count = ParseInhibitAnyPolicy(extension.value);
+  ASSERT_TRUE(skip_count.has_value());
+  EXPECT_EQ(3, skip_count.value());
 }
 
 // Tests a subjectKeyIdentifier that is not an OCTET_STRING.

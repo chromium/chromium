@@ -310,19 +310,22 @@ bool ParsePolicyConstraints(const der::Input& policy_constraints_tlv,
 //   InhibitAnyPolicy ::= SkipCerts
 //
 //   SkipCerts ::= INTEGER (0..MAX)
-bool ParseInhibitAnyPolicy(const der::Input& inhibit_any_policy_tlv,
-                           uint8_t* num_certs) {
+absl::optional<uint8_t> ParseInhibitAnyPolicy(
+    const der::Input& inhibit_any_policy_tlv) {
   der::Parser parser(inhibit_any_policy_tlv);
+  absl::optional<uint8_t> num_certs = absl::make_optional<uint8_t>();
 
   // TODO(eroman): Surface reason for failure if length was longer than uint8.
-  if (!parser.ReadUint8(num_certs))
-    return false;
+  if (!parser.ReadUint8(&num_certs.value())) {
+    return absl::nullopt;
+  }
 
   // There should be no remaining data.
-  if (parser.HasMore())
-    return false;
+  if (parser.HasMore()) {
+    return absl::nullopt;
+  }
 
-  return true;
+  return num_certs;
 }
 
 // From RFC 5280:

@@ -243,9 +243,8 @@ std::shared_ptr<const ParsedCertificate> ParsedCertificate::Create(
 
     // Inhibit Any Policy.
     if (result->GetExtension(der::Input(kInhibitAnyPolicyOid), &extension)) {
-      result->has_inhibit_any_policy_ = true;
-      if (!ParseInhibitAnyPolicy(extension.value,
-                                 &result->inhibit_any_policy_)) {
+      result->inhibit_any_policy_ = ParseInhibitAnyPolicy(extension.value);
+      if (!result->inhibit_any_policy_) {
         errors->AddError(kFailedParsingInhibitAnyPolicy);
         return nullptr;
       }

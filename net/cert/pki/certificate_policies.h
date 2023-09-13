@@ -113,11 +113,10 @@ struct ParsedPolicyConstraints {
     const der::Input& policy_constraints_tlv,
     ParsedPolicyConstraints* out);
 
-// Parses an InhibitAnyPolicy as defined by RFC 5280. Returns true on success,
-// and sets |num_certs|.
-[[nodiscard]] NET_EXPORT bool ParseInhibitAnyPolicy(
-    const der::Input& inhibit_any_policy_tlv,
-    uint8_t* num_certs);
+// Parses an InhibitAnyPolicy as defined by RFC 5280. Returns num certs on
+// success, or empty if parser fails.
+[[nodiscard]] NET_EXPORT absl::optional<uint8_t> ParseInhibitAnyPolicy(
+    const der::Input& inhibit_any_policy_tlv);
 
 struct ParsedPolicyMapping {
   der::Input issuer_domain_policy;
