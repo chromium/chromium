@@ -390,7 +390,7 @@ TEST_F(ContentSuggestionsMediatorTest,
           {segmentation_platform::features::
                kSegmentationPlatformIosModuleRanker,
            {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
-          {kMagicStack, {}},
+          {kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
       },
       {});
   OCMExpect(
@@ -426,7 +426,7 @@ TEST_F(ContentSuggestionsMediatorTest,
       {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
        {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
         {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
-       {kMagicStack, {}},
+       {kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
        {kSafetyCheckMagicStack, {}}},
       {});
   OCMExpect(
