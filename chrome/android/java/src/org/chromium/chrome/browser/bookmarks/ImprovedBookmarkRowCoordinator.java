@@ -107,8 +107,7 @@ public class ImprovedBookmarkRowCoordinator {
                 item.isFolder() && useImages ? ImageVisibility.FOLDER_DRAWABLE
                                              : ImageVisibility.DRAWABLE);
 
-        @BookmarkType
-        int type = item.getId().getType();
+        final @BookmarkType int type = item.getId().getType();
         if (item.isFolder()) {
             if (displayPref == BookmarkRowDisplayPref.VISUAL) {
                 propertyModel.set(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
