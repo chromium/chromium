@@ -117,7 +117,7 @@ void UserContext::CryptohomeContext::ClearAuthFactorsConfiguration() {
 }
 
 const AuthFactorsConfiguration&
-UserContext::CryptohomeContext::GetAuthFactorsConfiguration() {
+UserContext::CryptohomeContext::GetAuthFactorsConfiguration() const {
   if (!auth_factors_configuration_.has_value()) {
     // Crash with debug assertions, try to stay alive otherwise. This method
     // could be const if we didn't set auth_factors_configuration_ if
@@ -430,7 +430,8 @@ void UserContext::ClearAuthFactorsConfiguration() {
   cryptohome_.ClearAuthFactorsConfiguration();
 }
 
-const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
+const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration()
+    const {
   return cryptohome_.GetAuthFactorsConfiguration();
 }
 

@@ -84,7 +84,7 @@ void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
 }
 
 bool PasswordSelectionScreen::MaybeSkip(WizardContext& wizard_context) {
-  UserContext* user_context = nullptr;
+  const UserContext* user_context = nullptr;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     CHECK(wizard_context.extra_factors_token.has_value());
     auto* storage = ash::AuthSessionStorage::Get();
