@@ -81,9 +81,7 @@ constexpr ui::KeyboardCode kIconKeyCodes[] = {ui::VKEY_BROWSER_BACK,
 
 class CaptureModeDemoToolsTest : public AshTestBase {
  public:
-  CaptureModeDemoToolsTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kCaptureModeDemoTools);
-  }
+  CaptureModeDemoToolsTest() = default;
   CaptureModeDemoToolsTest(const CaptureModeDemoToolsTest&) = delete;
   CaptureModeDemoToolsTest& operator=(const CaptureModeDemoToolsTest&) = delete;
   ~CaptureModeDemoToolsTest() override = default;
@@ -239,7 +237,6 @@ class CaptureModeDemoToolsTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<ui::FakeTextInputClient> fake_text_input_client_;
 };

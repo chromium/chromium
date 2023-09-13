@@ -251,8 +251,7 @@ VideoRecordingWatcher::VideoRecordingWatcher(
 
   controller_->camera_controller()->OnRecordingStarted(active_behavior_);
 
-  if (features::AreCaptureModeDemoToolsEnabled() &&
-      controller_->enable_demo_tools()) {
+  if (controller_->enable_demo_tools()) {
     demo_tools_controller_ =
         std::make_unique<CaptureModeDemoToolsController>(this);
   }

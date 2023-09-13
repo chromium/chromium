@@ -31,7 +31,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -63,11 +62,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -113,12 +110,6 @@ constexpr char kUsesDefaultCapturePathPrefName[] =
     "ash.capture_mode.uses_default_capture_path";
 
 constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
-
-// The name of a boolean pref that determines whether we can show the selfie
-// camera user nudge. When this pref is false, it means that we showed the
-// nudge at some point and the user interacted with the capture mode session UI
-// in such a way that the nudge no longer needs to be displayed again.
-constexpr char kCanShowCameraNudge[] = "ash.capture_mode.can_show_camera_nudge";
 
 // The name of a boolean pref that determines whether we can show the demo tools
 // user nudge. When this pref is false, it means that we showed the nudge at
@@ -579,9 +570,7 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                  /*default_value=*/base::FilePath());
   registry->RegisterBooleanPref(kUsesDefaultCapturePathPrefName,
                                 /*default_value=*/false);
-  registry->RegisterBooleanPref(features::AreCaptureModeDemoToolsEnabled()
-                                    ? kCanShowDemoToolsNudge
-                                    : kCanShowCameraNudge,
+  registry->RegisterBooleanPref(kCanShowDemoToolsNudge,
                                 /*default_value=*/true);
 }
 
@@ -737,16 +726,11 @@ bool CaptureModeController::CanShowUserNudge() const {
 
   auto* pref_service = session_controller->GetActivePrefService();
   DCHECK(pref_service);
-  return pref_service->GetBoolean(features::AreCaptureModeDemoToolsEnabled()
-                                      ? kCanShowDemoToolsNudge
-                                      : kCanShowCameraNudge);
+  return pref_service->GetBoolean(kCanShowDemoToolsNudge);
 }
 
 void CaptureModeController::DisableUserNudgeForever() {
-  GetActiveUserPrefService()->SetBoolean(
-      features::AreCaptureModeDemoToolsEnabled() ? kCanShowDemoToolsNudge
-                                                 : kCanShowCameraNudge,
-      false);
+  GetActiveUserPrefService()->SetBoolean(kCanShowDemoToolsNudge, false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {

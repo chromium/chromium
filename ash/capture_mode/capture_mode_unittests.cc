@@ -202,12 +202,9 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeTest& operator=(const CaptureModeTest&) = delete;
   ~CaptureModeTest() override = default;
 
-  bool demo_tools_enabled() const { return demo_tools_enabled_; }
-
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    demo_tools_enabled_ = features::AreCaptureModeDemoToolsEnabled();
   }
 
   views::Widget* GetCaptureModeLabelWidget() const {
@@ -354,8 +351,6 @@ class CaptureModeTest : public AshTestBase {
     return child;
   }
 
- private:
-  bool demo_tools_enabled_ = false;
 };
 
 class CaptureSessionWidgetClosed {
@@ -7042,7 +7037,6 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
   Switch* toggle_button =
       settings_test_api.GetDemoToolsMenuToggleButton()->toggle_button();
 
-  if (demo_tools_enabled()) {
     // The demo tools toggle button will be disabled by default.
     EXPECT_FALSE(toggle_button->GetIsOn());
 
@@ -7054,7 +7048,6 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForSettingsMenu) {
     }
     SendKey(ui::VKEY_SPACE, event_generator);
     EXPECT_TRUE(toggle_button->GetIsOn());
-  }
 
   // Tab until focus reaches the `Select folder...` menu item.
   auto* select_folder_option = settings_test_api.GetSelectFolderMenuItem();

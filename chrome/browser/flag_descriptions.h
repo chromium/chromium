@@ -3258,9 +3258,6 @@ extern const char kCalendarJellyDescription[];
 extern const char kCaptureModeAudioMixingName[];
 extern const char kCaptureModeAudioMixingDescription[];
 
-extern const char kCaptureModeDemoToolsName[];
-extern const char kCaptureModeDemoToolsDescription[];
-
 extern const char kCaptureModeGifRecordingName[];
 extern const char kCaptureModeGifRecordingDescription[];
 

@@ -408,12 +408,6 @@ BASE_FEATURE(kCaptureModeAudioMixing,
              "CaptureModeAudioMixing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the capture mode demo tools feature is enabled for Capture
-// Mode.
-BASE_FEATURE(kCaptureModeDemoTools,
-             "CaptureModeDemoTools",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the tour that walks new users through the Capture Mode feature.
 BASE_FEATURE(kCaptureModeTour,
              "CaptureModeTour",
@@ -2880,10 +2874,6 @@ BASE_FEATURE(kArcFileTasksUseAppService,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
-
-bool AreCaptureModeDemoToolsEnabled() {
-  return base::FeatureList::IsEnabled(kCaptureModeDemoTools);
-}
 
 bool AreContextualNudgesEnabled() {
   if (!IsHideShelfControlsInTabletModeEnabled()) {

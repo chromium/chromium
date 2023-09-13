@@ -413,11 +413,6 @@
     "expiry_milestone": 127
   },
   {
-    "name": "ash-capture-mode-demo-tools",
-    "owners": [ "michelefan", "gzadina" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "ash-capture-mode-gif-recording",
     "owners": [ "afakhry", "gzadina" ],
     "expiry_milestone": 123

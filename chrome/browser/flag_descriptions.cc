@@ -5639,12 +5639,6 @@ const char kCaptureModeAudioMixingDescription[] =
     "separately, or mix them together in a single stream in the screen capture "
     "tool.";
 
-const char kCaptureModeDemoToolsName[] =
-    "Enable demo tools feature in screen capture";
-const char kCaptureModeDemoToolsDescription[] =
-    "Enables the ability to show clicks and keys during video recordings to "
-    "enhance demo experience.";
-
 const char kCaptureModeGifRecordingName[] =
     "Enable GIF recording in screen capture";
 const char kCaptureModeGifRecordingDescription[] =
