@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A field trial parameter in the variations framework that is cached by {@link CachedFeatureFlags}.
+ * A field trial parameter in the variations framework that is cached to disk be used before native.
  */
 public abstract class CachedFieldTrialParameter {
     /**
@@ -118,7 +118,7 @@ public abstract class CachedFieldTrialParameter {
      */
     public static void setForTesting(
             String featureName, String variationName, String stringVariationValue) {
-        CachedFeatureFlags.setOverrideForTesting(
-                generateSharedPreferenceKey(featureName, variationName), stringVariationValue);
+        String preferenceKey = generateSharedPreferenceKey(featureName, variationName);
+        ValuesOverridden.setOverrideForTesting(preferenceKey, stringVariationValue);
     }
 }

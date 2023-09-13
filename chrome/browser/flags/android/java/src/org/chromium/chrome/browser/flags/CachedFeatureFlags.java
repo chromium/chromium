@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import androidx.annotation.AnyThread;
-
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-
 import java.util.List;
 import java.util.Map;
 
@@ -87,121 +83,9 @@ public class CachedFeatureFlags {
         return CachedFlagsSafeMode.getInstance().getBehaviorForTesting();
     }
 
-    @AnyThread
-    static boolean getConsistentBooleanValue(String preferenceName, boolean defaultValue) {
-        CachedFlagsSafeMode.getInstance().onFlagChecked();
-
-        Boolean value = ValuesOverridden.getBool(preferenceName);
-        if (value != null) {
-            return value;
-        }
-
-        synchronized (ValuesReturned.sBoolValues) {
-            value = ValuesReturned.sBoolValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
-
-            value = CachedFlagsSafeMode.getInstance().getBooleanFieldTrialParam(
-                    preferenceName, defaultValue);
-            if (value == null) {
-                value = SharedPreferencesManager.getInstance().readBoolean(
-                        preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sBoolValues.put(preferenceName, value);
-        }
-        return value;
-    }
-
-    @AnyThread
-    static String getConsistentStringValue(String preferenceName, String defaultValue) {
-        CachedFlagsSafeMode.getInstance().onFlagChecked();
-
-        String value = ValuesOverridden.getString(preferenceName);
-        if (value != null) {
-            return value;
-        }
-
-        synchronized (ValuesReturned.sStringValues) {
-            value = ValuesReturned.sStringValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
-
-            value = CachedFlagsSafeMode.getInstance().getStringFieldTrialParam(
-                    preferenceName, defaultValue);
-            if (value == null) {
-                value = SharedPreferencesManager.getInstance().readString(
-                        preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sStringValues.put(preferenceName, value);
-        }
-        return value;
-    }
-
-    @AnyThread
-    static int getConsistentIntValue(String preferenceName, int defaultValue) {
-        CachedFlagsSafeMode.getInstance().onFlagChecked();
-
-        Integer value = ValuesOverridden.getInt(preferenceName);
-        if (value != null) {
-            return value;
-        }
-
-        synchronized (ValuesReturned.sIntValues) {
-            value = ValuesReturned.sIntValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
-
-            value = CachedFlagsSafeMode.getInstance().getIntFieldTrialParam(
-                    preferenceName, defaultValue);
-            if (value == null) {
-                value = SharedPreferencesManager.getInstance().readInt(
-                        preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sIntValues.put(preferenceName, value);
-        }
-        return value;
-    }
-
-    @AnyThread
-    static double getConsistentDoubleValue(String preferenceName, double defaultValue) {
-        CachedFlagsSafeMode.getInstance().onFlagChecked();
-
-        Double value = ValuesOverridden.getDouble(preferenceName);
-        if (value != null) {
-            return value;
-        }
-
-        synchronized (ValuesReturned.sDoubleValues) {
-            value = ValuesReturned.sDoubleValues.get(preferenceName);
-            if (value != null) {
-                return value;
-            }
-
-            value = CachedFlagsSafeMode.getInstance().getDoubleFieldTrialParam(
-                    preferenceName, defaultValue);
-            if (value == null) {
-                value = SharedPreferencesManager.getInstance().readDouble(
-                        preferenceName, defaultValue);
-            }
-
-            ValuesReturned.sDoubleValues.put(preferenceName, value);
-        }
-        return value;
-    }
-
     public static void resetFlagsForTesting() {
         ValuesReturned.clearForTesting();
         ValuesOverridden.removeOverrides();
         CachedFlagsSafeMode.getInstance().clearMemoryForTesting();
-    }
-
-    static void setOverrideForTesting(String preferenceKey, String overrideValue) {
-        ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
     }
 }

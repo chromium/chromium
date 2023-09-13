@@ -121,6 +121,7 @@ public class TabUiThemeUtil {
      * @param isIncognito Whether the color is used for incognito mode.
      * @return The color for the detached tab container.
      */
+    @SuppressWarnings("AssertionSideEffect")
     private static int getTabStripDetachedTabColor(
             Context context, boolean isIncognito, boolean isReordering) {
         assert TabManagementFieldTrial.isTabStripDetachedEnabled();

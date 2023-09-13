@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.flags;
 
+import androidx.annotation.AnyThread;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,9 +49,36 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
     /**
      * Returns a map of field trial parameter to value.
      */
+    @AnyThread
     public Map<String, String> getParams() {
-        return decodeJsonEncodedMap(
-                CachedFeatureFlags.getConsistentStringValue(getSharedPreferenceKey(), ""));
+        return decodeJsonEncodedMap(getConsistentStringValue());
+    }
+
+    @AnyThread
+    private String getConsistentStringValue() {
+        CachedFlagsSafeMode.getInstance().onFlagChecked();
+
+        String preferenceName = getSharedPreferenceKey();
+
+        String value = ValuesOverridden.getString(preferenceName);
+        if (value != null) {
+            return value;
+        }
+
+        synchronized (ValuesReturned.sStringValues) {
+            value = ValuesReturned.sStringValues.get(preferenceName);
+            if (value != null) {
+                return value;
+            }
+
+            value = CachedFlagsSafeMode.getInstance().getStringFieldTrialParam(preferenceName, "");
+            if (value == null) {
+                value = SharedPreferencesManager.getInstance().readString(preferenceName, "");
+            }
+
+            ValuesReturned.sStringValues.put(preferenceName, value);
+        }
+        return value;
     }
 
     @Override
@@ -64,7 +93,8 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
      * Sets the parameters for the specified feature when used in tests.
      */
     public static void setForTesting(String featureName, Map<String, String> params) {
-        CachedFeatureFlags.setOverrideForTesting(
-                generateSharedPreferenceKey(featureName, ""), encodeParams(params));
+        String preferenceKey = generateSharedPreferenceKey(featureName, "");
+        String overrideValue = encodeParams(params);
+        ValuesOverridden.setOverrideForTesting(preferenceKey, overrideValue);
     }
 }

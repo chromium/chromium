@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.flags;
 
+import androidx.annotation.AnyThread;
+
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
@@ -21,9 +23,34 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
     /**
      * @return the value of the field trial parameter that should be used in this run.
      */
+    @AnyThread
     public boolean getValue() {
-        return CachedFeatureFlags.getConsistentBooleanValue(
-                getSharedPreferenceKey(), getDefaultValue());
+        CachedFlagsSafeMode.getInstance().onFlagChecked();
+
+        String preferenceName = getSharedPreferenceKey();
+        boolean defaultValue = getDefaultValue();
+
+        Boolean value = ValuesOverridden.getBool(preferenceName);
+        if (value != null) {
+            return value;
+        }
+
+        synchronized (ValuesReturned.sBoolValues) {
+            value = ValuesReturned.sBoolValues.get(preferenceName);
+            if (value != null) {
+                return value;
+            }
+
+            value = CachedFlagsSafeMode.getInstance().getBooleanFieldTrialParam(
+                    preferenceName, defaultValue);
+            if (value == null) {
+                value = SharedPreferencesManager.getInstance().readBoolean(
+                        preferenceName, defaultValue);
+            }
+
+            ValuesReturned.sBoolValues.put(preferenceName, value);
+        }
+        return value;
     }
 
     public boolean getDefaultValue() {
@@ -46,7 +73,7 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
      * @param overrideValue the value to be returned
      */
     public void setForTesting(boolean overrideValue) {
-        CachedFeatureFlags.setOverrideForTesting(
+        ValuesOverridden.setOverrideForTesting(
                 getSharedPreferenceKey(), String.valueOf(overrideValue));
     }
 }
