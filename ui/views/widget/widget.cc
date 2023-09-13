@@ -812,9 +812,7 @@ void Widget::Show() {
         !initial_restored_bounds_.IsEmpty() && !IsFullscreen()) {
       native_widget_->Show(ui::SHOW_STATE_MAXIMIZED, initial_restored_bounds_);
     } else {
-      native_widget_->Show(
-          IsFullscreen() ? ui::SHOW_STATE_FULLSCREEN : saved_show_state_,
-          gfx::Rect());
+      native_widget_->Show(saved_show_state_, gfx::Rect());
     }
     // |saved_show_state_| only applies the first time the window is shown.
     // If we don't reset the value the window may be shown maximized every time
