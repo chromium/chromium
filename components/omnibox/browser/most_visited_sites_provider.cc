@@ -113,6 +113,10 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
         match.fill_into_edit = query;
         match.contents = query;
         match.suggest_type = omnibox::TYPE_QUERY;
+
+        // Supply blanket SearchTermsArgs so we can also report SearchBoxStats.
+        match.search_terms_args =
+            std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
       }
       matches.emplace_back(std::move(match));
       --relevance;
