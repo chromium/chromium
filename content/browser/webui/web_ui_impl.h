@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -31,9 +30,9 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
  public:
   explicit WebUIImpl(WebContents* web_contents);
   explicit WebUIImpl(NavigationRequest* request);
-  ~WebUIImpl() override;
   WebUIImpl(const WebUIImpl&) = delete;
   WebUIImpl& operator=(const WebUIImpl&) = delete;
+  ~WebUIImpl() override;
 
   // A WebUIImpl object is created and owned by the WebUI navigation's
   // NavigationRequest, until a RenderFrameHost has been picked for the
@@ -120,8 +119,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // Options that may be overridden by individual Web UI implementations. The
   // bool options default to false. See the public getters for more information.
   std::u16string overridden_title_;  // Defaults to empty string.
-  int bindings_;  // The bindings from BindingsPolicy that should be enabled for
-                  // this page.
+  // The bindings from BindingsPolicy that should be enabled for this page.
+  int bindings_;
 
   // The URL schemes that can be requested by this document.
   std::vector<std::string> requestable_schemes_;
@@ -135,7 +134,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // This lead to one UAF. See https://crbug.com/1308391
   // See regression test:
   // `WebUIImplBrowserTest::SynchronousWebContentDeletionInUnload`
-  raw_ptr<WebContents, DisableDanglingPtrDetection> web_contents_;
+  const raw_ptr<WebContents, DisableDanglingPtrDetection> web_contents_;
 
   // During WebUI construction, `frame_host_` might stay unset for a while,
   // as the WebUIImpl object is created early in a navigation, and a
@@ -152,7 +151,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
 
   // Notifies this WebUI about notifications in the main frame.
-  std::unique_ptr<WebUIMainFrameObserver> web_contents_observer_;
+  const std::unique_ptr<WebUIMainFrameObserver> web_contents_observer_;
 
   std::unique_ptr<WebUIController> controller_;
 
