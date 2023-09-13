@@ -364,6 +364,10 @@ BASE_FEATURE(kSkiaGraphite,
 #endif
 );
 
+// Whether the Dawn "skip_validation" toggle is enabled for Skia Graphite.
+const base::FeatureParam<bool> kSkiaGraphiteDawnSkipValidation{
+    &kSkiaGraphite, "dawn_skip_validation", true};
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              "SkiaGraphiteDawnUseD3D12",

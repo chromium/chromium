@@ -9,6 +9,7 @@
 #define GPU_CONFIG_GPU_FINCH_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"
 
@@ -73,6 +74,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiWebPImageDecodeAcceleration);
 GPU_EXPORT BASE_DECLARE_FEATURE(kVulkan);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphite);
+GPU_EXPORT extern const base::FeatureParam<bool>
+    kSkiaGraphiteDawnSkipValidation;
 
 #if BUILDFLAG(IS_WIN)
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);

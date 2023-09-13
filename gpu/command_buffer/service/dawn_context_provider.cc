@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -16,6 +17,7 @@
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -40,6 +42,10 @@ void LogInfo(WGPULoggingType type, char const* message, void* userdata) {
 
 void LogError(WGPUErrorType type, char const* message, void* userdata) {
   LOG(ERROR) << message;
+  static crash_reporter::CrashKeyString<1024> error_key(
+      "dawn-validation-error");
+  error_key.Set(message);
+  base::debug::DumpWithoutCrashing();
 }
 
 void LogDeviceLost(WGPUDeviceLostReason reason,
@@ -195,10 +201,10 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
 #if DCHECK_IS_ON()
   enabled_toggles.push_back("use_user_defined_labels_in_backend");
 #else
-  // Disable validation in non-DCHECK builds.
-  // TODO(crbug.com/1456492): check if below toggles are necessary.
+  if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
+    enabled_toggles.push_back("skip_validation");
+  }
   enabled_toggles.push_back("disable_robustness");
-  enabled_toggles.push_back("skip_validation");
 #endif
 
 #if BUILDFLAG(IS_APPLE)
