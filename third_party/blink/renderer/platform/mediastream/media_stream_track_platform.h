@@ -60,6 +60,12 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     absl::optional<bool> suppress_local_audio_playback;
   };
 
+  struct VideoFrameStats {
+    size_t deliverable_frames = 0u;
+    size_t discarded_frames = 0u;
+    size_t dropped_frames = 0u;
+  };
+
   struct CaptureHandle {
     bool IsEmpty() const { return origin.empty() && handle.empty(); }
 
@@ -100,16 +106,10 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // TODO(hta): Make method pure virtual when all tracks have the method.
   virtual void GetSettings(Settings& settings) const {}
 
-  // Retrieves a snapshot of the deliverable frames counter (via a round-trip to
-  // the video task runner). The callback with the result is invoked on the main
-  // task runner.
-  // TODO(https://crbug.com/1472978): Replace size_t's with a struct for
-  // `deliverable_frames`, `discarded_frames` and `dropped_frames`.
-  virtual void AsyncGetVideoFrameStats(
-      base::OnceCallback<void(size_t, size_t, size_t)>
-          video_frame_stats_callback) {
+  virtual VideoFrameStats GetVideoFrameStats() const {
     // This method is only callable on video tracks.
     NOTREACHED();
+    return {};
   }
 
   virtual CaptureHandle GetCaptureHandle();

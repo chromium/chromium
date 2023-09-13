@@ -130,9 +130,10 @@ class MediaStreamVideoTrack::FrameDeliverer
       std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       base::TimeTicks estimated_capture_time);
 
-  void AsyncGetVideoFrameStats(
-      WTF::CrossThreadOnceFunction<void(size_t, size_t, size_t)>
-          video_frame_stats_callback);
+  // Can be called from any task runner (is atomic).
+  size_t deliverable_frames() const { return deliverable_frames_; }
+  size_t discarded_frames() const { return discarded_frames_; }
+  size_t dropped_frames() const { return dropped_frames_; }
 
   // Triggers all registered dropped frame callbacks. Must be called on the
   // video task runner.
@@ -216,12 +217,12 @@ class MediaStreamVideoTrack::FrameDeliverer
   Vector<VideoIdCallbacks> callbacks_;
   HashMap<VideoSinkId, EncodedVideoFrameInternalCallback> encoded_callbacks_;
 
-  // Frame counters for the MediaStreamTrack Statistics API. Only touched on the
-  // `video_task_runner_`. The counters are only incremented when the track is
-  // enabled (even though a disabled track delivers black frames).
-  size_t deliverable_frames_ = 0;
-  size_t discarded_frames_ = 0;
-  size_t dropped_frames_ = 0;
+  // Frame counters for the MediaStreamTrack Statistics API. The counters are
+  // only incremented when the track is enabled (even though a disabled track
+  // delivers black frames).
+  std::atomic<size_t> deliverable_frames_ = 0;
+  std::atomic<size_t> discarded_frames_ = 0;
+  std::atomic<size_t> dropped_frames_ = 0;
 
   // Callbacks that will be invoked a single time when a crop-version
   // is observed that is at least equal to the key.
@@ -536,24 +537,6 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnVideoTaskRunner(
         CrossThreadBindOnce(&MediaStreamVideoTrack::ResetRefreshTimer,
                             media_stream_video_track_));
   }
-}
-
-void MediaStreamVideoTrack::FrameDeliverer::AsyncGetVideoFrameStats(
-    WTF::CrossThreadOnceFunction<void(size_t, size_t, size_t)>
-        video_frame_stats_callback) {
-  if (!video_task_runner_->RunsTasksInCurrentSequence()) {
-    PostCrossThreadTask(
-        *video_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(&FrameDeliverer::AsyncGetVideoFrameStats,
-                            WrapRefCounted(this),
-                            std::move(video_frame_stats_callback)));
-    return;
-  }
-  DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  PostCrossThreadTask(*main_render_task_runner_, FROM_HERE,
-                      CrossThreadBindOnce(std::move(video_frame_stats_callback),
-                                          deliverable_frames_,
-                                          discarded_frames_, dropped_frames_));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::NotifyFrameDroppedOnVideoTaskRunner(
@@ -1012,15 +995,14 @@ void MediaStreamVideoTrack::GetSettings(
   }
 }
 
-void MediaStreamVideoTrack::AsyncGetVideoFrameStats(
-    base::OnceCallback<void(size_t, size_t, size_t)>
-        video_frame_stats_callback) {
+MediaStreamTrackPlatform::VideoFrameStats
+MediaStreamVideoTrack::GetVideoFrameStats() const {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  // WTF bindings complain if we don't convert this to a CrossThreadBindOnce,
-  // but note that `deliverable_video_frames_callback` is only called on
-  // `main_render_thread_checker_`. This is effectively a PostTaskAndReply.
-  frame_deliverer_->AsyncGetVideoFrameStats(
-      CrossThreadBindOnce(std::move(video_frame_stats_callback)));
+  MediaStreamTrackPlatform::VideoFrameStats stats;
+  stats.deliverable_frames = frame_deliverer_->deliverable_frames();
+  stats.discarded_frames = frame_deliverer_->discarded_frames();
+  stats.dropped_frames = frame_deliverer_->dropped_frames();
+  return stats;
 }
 
 MediaStreamTrackPlatform::CaptureHandle

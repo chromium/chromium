@@ -680,30 +680,20 @@ ScriptPromise MediaStreamTrackImpl::getFrameStats(
           "MediaStreamTrack.getFrameStats() is not supported for audio "
           "tracks."));
       break;
-    case MediaStreamSource::kTypeVideo:
-      component_->GetPlatformTrack()->AsyncGetVideoFrameStats(
-          WTF::BindOnce(&MediaStreamTrackImpl::OnVideoFrameStats,
-                        WrapPersistent(this), WrapPersistent(resolver)));
+    case MediaStreamSource::kTypeVideo: {
+      MediaStreamTrackPlatform::VideoFrameStats video_stats =
+          component_->GetPlatformTrack()->GetVideoFrameStats();
+      MediaTrackFrameStats* stats_dictionary = MediaTrackFrameStats::Create();
+      stats_dictionary->setDeliveredFrames(video_stats.deliverable_frames);
+      stats_dictionary->setDiscardedFrames(video_stats.discarded_frames);
+      stats_dictionary->setTotalFrames(video_stats.deliverable_frames +
+                                       video_stats.discarded_frames +
+                                       video_stats.dropped_frames);
+      resolver->Resolve(stats_dictionary);
       break;
+    }
   }
   return promise;
-}
-
-void MediaStreamTrackImpl::OnVideoFrameStats(
-    Persistent<ScriptPromiseResolver> resolver,
-    size_t deliverable_frames,
-    size_t discarded_frames,
-    size_t dropped_frames) const {
-  MediaStreamVideoSource* video_source =
-      MediaStreamVideoSource::GetVideoSource(component_->Source());
-  CHECK(video_source);
-
-  MediaTrackFrameStats* track_stats = MediaTrackFrameStats::Create();
-  track_stats->setDeliveredFrames(deliverable_frames);
-  track_stats->setDiscardedFrames(discarded_frames);
-  track_stats->setTotalFrames(deliverable_frames + discarded_frames +
-                              dropped_frames);
-  resolver->Resolve(track_stats);
 }
 
 CaptureHandle* MediaStreamTrackImpl::getCaptureHandle() const {

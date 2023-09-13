@@ -157,11 +157,6 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   void applyConstraints(ScriptPromiseResolver*,
                         const MediaTrackConstraints*) override;
 
-  void OnVideoFrameStats(Persistent<ScriptPromiseResolver> resolver,
-                         size_t deliverable_frames,
-                         size_t discarded_frames,
-                         size_t dropped_frames) const;
-
   // MediaStreamSource::Observer
   void SourceChangedState() override;
   void SourceChangedCaptureConfiguration() override;
