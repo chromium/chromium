@@ -44,6 +44,7 @@ import {beforeNextRender, microTask, PolymerElement} from 'chrome://resources/po
 
 import {castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {PrefsState} from '../common/types.js';
 import {MainPageMixin} from '../main_page_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
@@ -172,6 +173,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     };
   }
 
+  prefs: PrefsState;
   androidAppsInfo?: AndroidAppsInfo;
   pageAvailability: OsPageAvailability;
   advancedToggleExpanded: boolean;

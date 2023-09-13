@@ -12,8 +12,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
-import {assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
+import {createPageAvailabilityForTesting, CrSettingsPrefs, MainPageContainerElement, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -22,19 +22,10 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 const {Section} = routesMojom;
 
 suite('<main-page-container> Route Navigation', () => {
-  let mainPageContainer;
-  let prefElement;
-  let fakeContactManager;
-  let fakeNearbyShareSettings;
-
-  async function initElement() {
-    const element = document.createElement('main-page-container');
-    element.prefs = prefElement.prefs;
-    element.pageAvailability = createPageAvailabilityForTesting();
-    document.body.appendChild(element);
-    await flushTasks();
-    return element;
-  }
+  let mainPageContainer: MainPageContainerElement;
+  let prefElement: SettingsPrefsElement;
+  let fakeContactManager: FakeContactManager;
+  let fakeNearbyShareSettings: FakeNearbyShareSettings;
 
   suiteSetup(async () => {
     // Simulate feature flag enabled for CSS styling purposes.
@@ -50,6 +41,15 @@ suite('<main-page-container> Route Navigation', () => {
     await CrSettingsPrefs.initialized;
   });
 
+  async function initElement(): Promise<MainPageContainerElement> {
+    const element = document.createElement('main-page-container');
+    element.prefs = prefElement.prefs!;
+    element.pageAvailability = createPageAvailabilityForTesting();
+    document.body.appendChild(element);
+    await flushTasks();
+    return element;
+  }
+
   setup(async () => {
     Router.getInstance().navigateTo(routes.BASIC);
     mainPageContainer = await initElement();
@@ -64,9 +64,9 @@ suite('<main-page-container> Route Navigation', () => {
   /**
    * Asserts the page with the given |section| is the only visible page.
    */
-  function assertIsOnlyVisiblePage(section) {
+  function assertIsOnlyVisiblePage(section: routesMojom.Section): void {
     const pages =
-        mainPageContainer.shadowRoot.querySelectorAll('page-displayer');
+        mainPageContainer.shadowRoot!.querySelectorAll('page-displayer');
     for (const page of pages) {
       if (page.section === section) {
         assertTrue(isVisible(page));
@@ -79,9 +79,9 @@ suite('<main-page-container> Route Navigation', () => {
   /**
    * Asserts the page with the given |section| is the only page marked active.
    */
-  function assertIsOnlyActivePage(section) {
+  function assertIsOnlyActivePage(section: routesMojom.Section): void {
     const pages =
-        mainPageContainer.shadowRoot.querySelectorAll('page-displayer');
+        mainPageContainer.shadowRoot!.querySelectorAll('page-displayer');
     for (const page of pages) {
       if (page.section === section) {
         assertTrue(page.active);
@@ -94,17 +94,18 @@ suite('<main-page-container> Route Navigation', () => {
   /**
    * Asserts the page with the given |section| is focused.
    */
-  function assertPageIsFocused(section) {
-    const page = mainPageContainer.shadowRoot.querySelector(
+  function assertPageIsFocused(section: routesMojom.Section): void {
+    const page = mainPageContainer.shadowRoot!.querySelector(
         `page-displayer[section="${section}"`);
-    assertEquals(page, mainPageContainer.shadowRoot.activeElement);
+    assertEquals(page, mainPageContainer.shadowRoot!.activeElement);
   }
 
   /**
    * Executes |wrappedFn| and then waits for the show-container event to
    * fire before proceeding.
    */
-  async function runAndWaitForContainerShown(wrappedFn) {
+  async function runAndWaitForContainerShown(wrappedFn: () => void):
+      Promise<void> {
     const showContainerPromise = eventToPromise('show-container', window);
     wrappedFn();
     await flushTasks();
@@ -114,7 +115,7 @@ suite('<main-page-container> Route Navigation', () => {
   test('Network page is initially visible but not focused', () => {
     assertIsOnlyActivePage(Section.kNetwork);
     assertIsOnlyVisiblePage(Section.kNetwork);
-    assertNull(mainPageContainer.shadowRoot.activeElement);
+    assertNull(mainPageContainer.shadowRoot!.activeElement);
   });
 
   test('Advanced page is not directly navigable', () => {
