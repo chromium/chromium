@@ -130,19 +130,6 @@ void SVGLength::SetValueAsNumber(float value) {
       value, CSSPrimitiveValue::UnitType::kUserUnits);
 }
 
-void SVGLength::SetValue(float value, const SVGLengthContext& context) {
-  // |value| is in user units.
-  if (IsCalculated()) {
-    value_ = CSSNumericLiteralValue::Create(
-        value, CSSPrimitiveValue::UnitType::kUserUnits);
-    return;
-  }
-  value_ = CSSNumericLiteralValue::Create(
-      context.ConvertValueFromUserUnits(value, UnitMode(),
-                                        NumericLiteralType()),
-      NumericLiteralType());
-}
-
 void SVGLength::SetValueInSpecifiedUnits(float value) {
   DCHECK(!IsCalculated());
   value_ = CSSNumericLiteralValue::Create(value, NumericLiteralType());
@@ -293,8 +280,14 @@ bool SVGLength::NegativeValuesForbiddenForAnimatedLengthAttribute(
 void SVGLength::Add(const SVGPropertyBase* other,
                     const SVGElement* context_element) {
   SVGLengthContext length_context(context_element);
-  SetValue(Value(length_context) + To<SVGLength>(other)->Value(length_context),
-           length_context);
+  const float sum =
+      Value(length_context) + To<SVGLength>(other)->Value(length_context);
+  if (IsCalculated()) {
+    SetValueAsNumber(sum);
+    return;
+  }
+  SetValueInSpecifiedUnits(length_context.ConvertValueFromUserUnits(
+      sum, UnitMode(), NumericLiteralType()));
 }
 
 void SVGLength::CalculateAnimatedValue(

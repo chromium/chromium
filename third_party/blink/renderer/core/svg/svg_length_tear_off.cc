@@ -142,7 +142,8 @@ void SVGLengthTearOff::setValue(float value, ExceptionState& exception_state) {
     Target()->SetValueAsNumber(value);
   } else {
     SVGLengthContext length_context(ContextElement());
-    Target()->SetValue(value, length_context);
+    Target()->SetValueInSpecifiedUnits(length_context.ConvertValueFromUserUnits(
+        value, Target()->UnitMode(), Target()->NumericLiteralType()));
   }
   CommitChange();
 }
