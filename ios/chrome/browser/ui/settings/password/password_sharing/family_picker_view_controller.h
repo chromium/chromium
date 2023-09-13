@@ -18,6 +18,12 @@
 @property(nonatomic, weak) id<FamilyPickerViewControllerPresentationDelegate>
     delegate;
 
+// Sets up the back button on the left side of the navigation bar.
+- (void)setupLeftBackButton;
+
+// Sets up the cancel button on the left side of the navigation bar.
+- (void)setupLeftCancelButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PICKER_VIEW_CONTROLLER_H_

@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+// The accessibility identifier of the family picker back button.
+extern NSString* const kFamilyPickerBackButtonId;
+
 // The accessibility identifier of the family picker cancel button.
 extern NSString* const kFamilyPickerCancelButtonId;
 
@@ -15,6 +18,9 @@ extern NSString* const kFamilyPickerShareButtonId;
 
 // The accessibility identifier of the password picker cancel button.
 extern NSString* const kPasswordPickerCancelButtonId;
+
+// The accessibility identifier of the password picker next button.
+extern NSString* const kPasswordPickerNextButtonId;
 
 // Link for creating family group with Google Families.
 extern const char kFamilyGroupSiteURL[];

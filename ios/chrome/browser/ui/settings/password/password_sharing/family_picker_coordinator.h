@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PICKER_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PICKER_COORDINATOR_H_
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol FamilyPickerCoordinatorDelegate;
@@ -23,8 +24,16 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Stops this coordinator and calls `completion` on view controller dismissal.
+- (void)stopWithDismissViewCompletion:(ProceduralBlock)completion;
+
 // Delegate handling coordinator dismissal.
 @property(nonatomic, weak) id<FamilyPickerCoordinatorDelegate> delegate;
+
+// Indicates whether the back button should be displayed (navigating back to the
+// password group selection). If false, cancel button will be displayed
+// (dismissing the view).
+@property(nonatomic) BOOL shouldDisplayBackButton;
 
 @end
 

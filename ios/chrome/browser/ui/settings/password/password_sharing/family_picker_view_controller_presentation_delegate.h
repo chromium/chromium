@@ -18,6 +18,10 @@
 - (void)familyPickerClosed:(FamilyPickerViewController*)controller
     withSelectedRecipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients;
 
+// Called when the user clicks back button to navigate to the password picker
+// view.
+- (void)familyPickerNavigatedBack:(FamilyPickerViewController*)controller;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PICKER_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

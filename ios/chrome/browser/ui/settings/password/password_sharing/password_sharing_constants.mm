@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 
+NSString* const kFamilyPickerBackButtonId = @"FamilyPickerBackButtonId";
+
 NSString* const kFamilyPickerCancelButtonId = @"FamilyPickerCancelButtonId";
 
 NSString* const kFamilyPickerShareButtonId = @"FamilyPickerShareButtonId";
 
 NSString* const kPasswordPickerCancelButtonId = @"PasswordPickerCancelButtonId";
+
+NSString* const kPasswordPickerNextButtonId = @"PasswordPickerNextButtonId";
 
 const char kFamilyGroupSiteURL[] = "https://families.google.com/families/";

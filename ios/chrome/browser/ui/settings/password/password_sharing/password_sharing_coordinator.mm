@@ -131,7 +131,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.navigationController = nil;
   self.mediator = nil;
 
-  [self stopFamilyPickerCoordinator];
+  [self stopFamilyPickerCoordinatorWithDismissViewCompletion:nil];
   [self stopFamilyPromoCoordinator];
   [self stopAlertCoordinator];
   [self stopPasswordPickerCoordinatorWithDismissViewCompletion:nil];
@@ -142,7 +142,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)familyPickerCoordinatorWasDismissed:
     (FamilyPickerCoordinator*)coordinator {
   if (self.familyPickerCoordinator == coordinator) {
-    [self stopFamilyPickerCoordinator];
+    [self stopFamilyPickerCoordinatorWithDismissViewCompletion:nil];
   }
 
   [self.delegate passwordSharingCoordinatorDidRemove:self];
@@ -153,7 +153,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
                      withSelectedRecipients:
                          (NSArray<RecipientInfoForIOSDisplay*>*)recipients {
   if (self.familyPickerCoordinator == coordinator) {
-    [self stopFamilyPickerCoordinator];
+    [self stopFamilyPickerCoordinatorWithDismissViewCompletion:nil];
   }
 
   // TODO(crbug.com/1463882): Implement status view that should be displayed
@@ -162,6 +162,15 @@ using password_manager::FetchFamilyMembersRequestStatus;
   // with more than 1 password group.
   [self.mediator sendPasswords:_credentials toRecipients:recipients];
   [self.delegate passwordSharingCoordinatorDidRemove:self];
+}
+
+- (void)familyPickerCoordinatorNavigatedBack:
+    (FamilyPickerCoordinator*)coordinator {
+  if (self.familyPickerCoordinator == coordinator) {
+    [self stopFamilyPickerCoordinatorWithDismissViewCompletion:^{
+      [self startPasswordPickerCoordinator];
+    }];
+  }
 }
 
 #pragma mark - FamilyPromoCoordinatorDelegate
@@ -214,12 +223,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
       if (_credentials.size() == 1) {
         [self startFamilyPickerCoordinator];
       } else {
-        self.passwordPickerCoordinator = [[PasswordPickerCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser
-                           credentials:_credentials];
-        self.passwordPickerCoordinator.delegate = self;
-        [self.passwordPickerCoordinator start];
+        [self startPasswordPickerCoordinator];
       }
       break;
     case FetchFamilyMembersRequestStatus::kNoFamily:
@@ -252,7 +256,19 @@ using password_manager::FetchFamilyMembersRequestStatus;
                          browser:self.browser
                       recipients:self.recipients];
   self.familyPickerCoordinator.delegate = self;
+  self.familyPickerCoordinator.shouldDisplayBackButton =
+      _credentials.size() > 1;
   [self.familyPickerCoordinator start];
+}
+
+- (void)startPasswordPickerCoordinator {
+  [self.passwordPickerCoordinator stop];
+  self.passwordPickerCoordinator = [[PasswordPickerCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                     credentials:_credentials];
+  self.passwordPickerCoordinator.delegate = self;
+  [self.passwordPickerCoordinator start];
 }
 
 - (void)startAlertCoordinator {
@@ -278,10 +294,18 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.alertCoordinator start];
 }
 
-- (void)stopFamilyPickerCoordinator {
-  [self.familyPickerCoordinator stop];
+- (void)stopFamilyPickerCoordinatorWithDismissViewCompletion:
+    (ProceduralBlock)completion {
+  [self.familyPickerCoordinator stopWithDismissViewCompletion:completion];
   self.familyPickerCoordinator.delegate = nil;
   self.familyPickerCoordinator = nil;
+}
+
+- (void)stopPasswordPickerCoordinatorWithDismissViewCompletion:
+    (ProceduralBlock)completion {
+  [self.passwordPickerCoordinator stopWithDismissViewCompletion:completion];
+  self.passwordPickerCoordinator.delegate = nil;
+  self.passwordPickerCoordinator = nil;
 }
 
 - (void)stopFamilyPromoCoordinator {
@@ -293,13 +317,6 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)stopAlertCoordinator {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
-}
-
-- (void)stopPasswordPickerCoordinatorWithDismissViewCompletion:
-    (ProceduralBlock)completion {
-  [self.passwordPickerCoordinator stopWithDismissViewCompletion:completion];
-  self.passwordPickerCoordinator.delegate = nil;
-  self.passwordPickerCoordinator = nil;
 }
 
 @end

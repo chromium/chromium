@@ -47,12 +47,6 @@ const CGFloat kAccessorySymbolSize = 22;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(cancelButtonTapped)];
-  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
-      kFamilyPickerCancelButtonId;
   self.navigationItem.title =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
   UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
@@ -186,6 +180,29 @@ const CGFloat kAccessorySymbolSize = 22;
   return item;
 }
 
+#pragma mark - Public
+
+- (void)setupLeftBackButton {
+  UIBarButtonItem* backButton = [[UIBarButtonItem alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_BACK_BUTTON)
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(backButtonTapped)];
+  self.navigationItem.leftBarButtonItem = backButton;
+  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+      kFamilyPickerBackButtonId;
+}
+
+- (void)setupLeftCancelButton {
+  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelButtonTapped)];
+  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+      kFamilyPickerCancelButtonId;
+}
+
 #pragma mark - Private
 
 - (UIImage*)checkmarkCircleIcon {
@@ -235,6 +252,10 @@ const CGFloat kAccessorySymbolSize = 22;
   [self presentViewController:popoverViewController
                      animated:YES
                    completion:nil];
+}
+
+- (void)backButtonTapped {
+  [self.delegate familyPickerNavigatedBack:self];
 }
 
 - (void)cancelButtonTapped {

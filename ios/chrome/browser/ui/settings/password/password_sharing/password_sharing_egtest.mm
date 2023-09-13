@@ -267,4 +267,42 @@ void SignInAndEnableSync() {
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testNavigationBetweenPasswordAndFamilyPicker {
+  SignInAndEnableSync();
+  [self saveExamplePasswordsAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  // Check that the next button is not visible without any rows selected.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordPickerNextButtonId)]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Select first row and click "Next".
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              @"username1, example.com"),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordPickerNextButtonId)]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordPickerNextButtonId)]
+      performAction:grey_tap()];
+
+  // Tap "Back" in family picker view and confirm it opens password picker.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerBackButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerBackButtonId)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordPickerNextButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end

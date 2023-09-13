@@ -21,6 +21,11 @@
                      withSelectedRecipients:
                          (NSArray<RecipientInfoForIOSDisplay*>*)recipients;
 
+// Called when the user navigates back from family recipients selection to
+// password selection.
+- (void)familyPickerCoordinatorNavigatedBack:
+    (FamilyPickerCoordinator*)coordinator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_FAMILY_PICKER_COORDINATOR_DELEGATE_H_

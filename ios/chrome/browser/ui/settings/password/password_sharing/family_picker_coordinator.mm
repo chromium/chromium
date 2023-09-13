@@ -64,15 +64,26 @@
         @[ [UISheetPresentationControllerDetent mediumDetent] ];
   }
 
+  if (self.shouldDisplayBackButton) {
+    [self.viewController setupLeftBackButton];
+  } else {
+    [self.viewController setupLeftCancelButton];
+  }
+
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
+  [self stopWithDismissViewCompletion:nil];
+}
+
+- (void)stopWithDismissViewCompletion:(ProceduralBlock)completion {
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:YES
-                         completion:nil];
+                         completion:completion];
+  self.navigationController = nil;
   self.viewController = nil;
   self.mediator = nil;
 }
@@ -87,6 +98,10 @@
     withSelectedRecipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients {
   [self.delegate familyPickerCoordinatorWasDismissed:self
                               withSelectedRecipients:recipients];
+}
+
+- (void)familyPickerNavigatedBack:(FamilyPickerViewController*)controller {
+  [self.delegate familyPickerCoordinatorNavigatedBack:self];
 }
 
 @end

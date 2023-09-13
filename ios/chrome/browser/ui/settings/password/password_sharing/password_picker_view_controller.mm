@@ -58,6 +58,8 @@ const CGFloat kAccessorySymbolSize = 22;
              action:@selector(nextButtonTapped)];
   nextButton.enabled = NO;
   self.navigationItem.rightBarButtonItem = nextButton;
+  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
+      kPasswordPickerNextButtonId;
 
   self.tableView.allowsMultipleSelection = YES;
 
@@ -115,6 +117,8 @@ const CGFloat kAccessorySymbolSize = 22;
   cell.userInteractionEnabled = YES;
   cell.textLabel.numberOfLines = 1;
   cell.detailTextLabel.numberOfLines = 1;
+  cell.accessibilityIdentifier =
+      [self accessibilityIdentifierForIndexPath:indexPath];
   cell.accessoryView = [[UIImageView alloc]
       initWithImage:cell.isSelected ? [self checkmarkCircleIcon]
                                     : [self circleIcon]];
@@ -175,6 +179,14 @@ const CGFloat kAccessorySymbolSize = 22;
 - (void)setNextButtonStatus {
   self.navigationItem.rightBarButtonItem.enabled =
       self.tableView.indexPathsForSelectedRows.count > 0;
+}
+
+- (NSString*)accessibilityIdentifierForIndexPath:(NSIndexPath*)indexPath {
+  password_manager::CredentialUIEntry credential = _credentials[indexPath.row];
+  return [NSString
+      stringWithFormat:@"%@, %@", base::SysUTF16ToNSString(credential.username),
+                       base::SysUTF8ToNSString(password_manager::GetShownOrigin(
+                           credential.facets[0]))];
 }
 
 @end
