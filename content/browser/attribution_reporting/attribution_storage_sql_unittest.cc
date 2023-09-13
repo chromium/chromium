@@ -1410,10 +1410,9 @@ TEST_P(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
   ExpectImpressionRows(2);
 }
 
-// Tests that a "source_type" filter present in the serialized data is
-// removed.
-TEST_P(AttributionStorageSqlTest,
-       DeserializeFilterData_RemovesSourceTypeFilter) {
+// Tests that a "source_type" or "_lookback_window" filter key present in the
+// serialized data is removed.
+TEST_P(AttributionStorageSqlTest, DeserializeFilterData_RemovesReservedKeys) {
   {
     OpenDatabase();
     storage()->StoreSource(SourceBuilder().Build());
@@ -1426,37 +1425,11 @@ TEST_P(AttributionStorageSqlTest,
 
     static constexpr char kUpdateSql[] = "UPDATE sources SET filter_data=?";
     sql::Statement statement(raw_db.GetUniqueStatement(kUpdateSql));
-    statement.BindBlob(0, CreateSerializedFilterData(
-                              {{"source_type", {"abc"}}, {"x", {"y"}}}));
-    ASSERT_TRUE(statement.Run());
-  }
-
-  OpenDatabase();
-
-  std::vector<StoredSource> sources = storage()->GetActiveSources();
-  ASSERT_EQ(sources.size(), 1u);
-  ASSERT_THAT(sources.front().filter_data().filter_values(),
-              ElementsAre(Pair("x", ElementsAre("y"))));
-}
-
-// Tests that a "_lookback_window" filter present in the serialized data is
-// removed.
-TEST_P(AttributionStorageSqlTest,
-       DeserializeFilterData_RemovesLookbackWindowFilter) {
-  {
-    OpenDatabase();
-    storage()->StoreSource(SourceBuilder().Build());
-    CloseDatabase();
-  }
-
-  {
-    sql::Database raw_db;
-    ASSERT_TRUE(raw_db.Open(db_path()));
-
-    static constexpr char kUpdateSql[] = "UPDATE sources SET filter_data=?";
-    sql::Statement statement(raw_db.GetUniqueStatement(kUpdateSql));
-    statement.BindBlob(0, CreateSerializedFilterData(
-                              {{"_lookback_window", {"abc"}}, {"x", {"y"}}}));
+    statement.BindBlob(0, CreateSerializedFilterData({
+                              {"source_type", {"abc"}},
+                              {"x", {"y"}},
+                              {"_lookback_window", {"def"}},
+                          }));
     ASSERT_TRUE(statement.Run());
   }
 
