@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -50,9 +51,8 @@ constexpr gfx::Insets kLabelButtonBorderInsets = gfx::Insets::VH(6, 16);
 // TabSliderButton:
 
 TabSliderButton::TabSliderButton(PressedCallback callback,
-                                 const std::u16string& tooltip_text_base)
-    : views::Button(std::move(callback)),
-      tooltip_text_base_(tooltip_text_base) {
+                                 const std::u16string& tooltip_text)
+    : views::Button(std::move(callback)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -70,7 +70,7 @@ TabSliderButton::TabSliderButton(PressedCallback callback,
   // drop to use.
   views::InstallPillHighlightPathGenerator(this);
 
-  UpdateTooltipAndAccessibleName();
+  SetTooltipText(tooltip_text);
 }
 
 TabSliderButton::~TabSliderButton() = default;
@@ -91,7 +91,6 @@ void TabSliderButton::SetSelected(bool selected) {
   }
 
   OnSelectedChanged();
-  UpdateTooltipAndAccessibleName();
 }
 
 SkColor TabSliderButton::GetColorIdOnButtonState() {
@@ -101,17 +100,19 @@ SkColor TabSliderButton::GetColorIdOnButtonState() {
              : (enabled ? kUnselectedColorId : kDisabledUnselectedColorId);
 }
 
+void TabSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  Button::GetAccessibleNodeData(node_data);
+  const std::u16string tooltip = GetTooltipText(gfx::Point());
+  node_data->role = ax::mojom::Role::kToggleButton;
+  node_data->SetName(tooltip);
+  node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
+                                       : ax::mojom::CheckedState::kFalse);
+}
+
 void TabSliderButton::NotifyClick(const ui::Event& event) {
   // Select the button on clicking.
   SetSelected(true);
   views::Button::NotifyClick(event);
-}
-
-void TabSliderButton::UpdateTooltipAndAccessibleName() {
-  SetTooltipText(l10n_util::GetStringFUTF16(
-      selected_ ? TAB_SLIDER_BUTTON_STATE_SELECTED
-                : TAB_SLIDER_BUTTON_STATE_NOT_SELECTED,
-      tooltip_text_base_));
 }
 
 BEGIN_METADATA(TabSliderButton, views::Button)
@@ -122,8 +123,8 @@ END_METADATA
 
 IconSliderButton::IconSliderButton(PressedCallback callback,
                                    const gfx::VectorIcon* icon,
-                                   const std::u16string& tooltip_text_base)
-    : TabSliderButton(std::move(callback), tooltip_text_base), icon_(icon) {
+                                   const std::u16string& tooltip_text)
+    : TabSliderButton(std::move(callback), tooltip_text), icon_(icon) {
   SetPreferredSize(gfx::Size(kIconButtonSize, kIconButtonSize));
 
   // Replace the pill shaped highlight path of focus ring with a circle shaped
@@ -168,14 +169,19 @@ END_METADATA
 
 LabelSliderButton::LabelSliderButton(PressedCallback callback,
                                      const std::u16string& text,
-                                     const std::u16string& tooltip_text_base)
-    : TabSliderButton(std::move(callback), tooltip_text_base),
+                                     const std::u16string& tooltip_text)
+    : TabSliderButton(std::move(callback), tooltip_text),
       label_(AddChildView(std::make_unique<views::Label>(text))) {
   SetBorder(views::CreateEmptyBorder(kLabelButtonBorderInsets));
   SetUseDefaultFillLayout(true);
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
+
+  // If custom tooltip is not indicated, use the label text as the tooltip.
+  if (tooltip_text.empty()) {
+    SetTooltipText(text);
+  }
 }
 
 LabelSliderButton::~LabelSliderButton() = default;
@@ -219,13 +225,12 @@ END_METADATA
 //------------------------------------------------------------------------------
 // IconLabelSliderButton:
 
-IconLabelSliderButton::IconLabelSliderButton(
-    PressedCallback callback,
-    const gfx::VectorIcon* icon,
-    const std::u16string& text,
-    const std::u16string& tooltip_text_base)
+IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
+                                             const gfx::VectorIcon* icon,
+                                             const std::u16string& text,
+                                             const std::u16string& tooltip_text)
     : TabSliderButton(std::move(callback),
-                      tooltip_text_base.empty() ? text : tooltip_text_base),
+                      tooltip_text.empty() ? text : tooltip_text),
       image_view_(AddChildView(std::make_unique<views::ImageView>())),
       label_(AddChildView(std::make_unique<views::Label>(text))) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(

@@ -35,8 +35,7 @@ class ASH_EXPORT TabSliderButton : public views::Button {
  public:
   METADATA_HEADER(TabSliderButton);
 
-  TabSliderButton(PressedCallback callback,
-                  const std::u16string& tooltip_text_base);
+  TabSliderButton(PressedCallback callback, const std::u16string& tooltip_text);
   TabSliderButton(const TabSliderButton&) = delete;
   TabSliderButton& operator=(const TabSliderButton&) = delete;
   ~TabSliderButton() override;
@@ -52,13 +51,12 @@ class ASH_EXPORT TabSliderButton : public views::Button {
   // Returns the recommended color id for the current button state.
   SkColor GetColorIdOnButtonState();
 
+  // views::Button:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  private:
   // Called when the button selected state is changed.
   virtual void OnSelectedChanged() = 0;
-
-  // Updates the accessible name and tooltip with `tooltip_text_base_` and the
-  // buttons state.
-  void UpdateTooltipAndAccessibleName();
 
   // views::Button:
   void NotifyClick(const ui::Event& event) override;
@@ -67,10 +65,6 @@ class ASH_EXPORT TabSliderButton : public views::Button {
   raw_ptr<TabSlider, ExperimentalAsh> tab_slider_ = nullptr;
   // The selected state indicating if the button is selected.
   bool selected_ = false;
-
-  // The base for the buttons accessible name and tooltip. The state is appended
-  // in `UpdateAccessibleName()`.
-  const std::u16string tooltip_text_base_;
 };
 
 // An extension of `TabSliderButton` which is a circle button with an icon in
