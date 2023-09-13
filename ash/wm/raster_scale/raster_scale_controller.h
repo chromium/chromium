@@ -78,6 +78,14 @@ class ASH_EXPORT RasterScaleController : public aura::WindowObserver {
   RasterScaleController& operator=(const RasterScaleController&) = delete;
   ~RasterScaleController() override;
 
+  // With raster slop (see comment on `raster_scale_slop_`), there is degenerate
+  // exponential updating behaviour as raster scale tends towards 0. The
+  // `kMinimumRasterScale` value denotes a minimum value for raster scale. This
+  // is set such that the largest windows we expect (e.g. on 4k displays) can
+  // still have their raster scales reduced down so the width and height of
+  // their buffers is on the order of a few hundred pixels at most.
+  static inline constexpr float kMinimumRasterScale = 0.05;
+
   // Computes the appropriate raster scale given a transform. Normally we expect
   // x and y scaling to be the same, but in case they are not, this takes the
   // larger of the two as the raster scale, to make sure that the scale along

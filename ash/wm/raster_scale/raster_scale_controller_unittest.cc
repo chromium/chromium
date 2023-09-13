@@ -157,4 +157,35 @@ TEST_F(RasterScaleControllerTest, RasterScaleSlop) {
   EXPECT_EQ(std::vector<float>{1.0f}, tracker.TakeRasterScaleChanges());
 }
 
+// Tests that raster scale is not reduced below `kMinimumRasterScale`.
+TEST_F(RasterScaleControllerTest, RasterScaleMinimumValue) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
+  auto tracker = RasterScaleChangeTracker(window.get());
+
+  EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
+  EXPECT_EQ(std::vector<float>{}, tracker.TakeRasterScaleChanges());
+
+  {
+    // Expect to be able to set raster scale down to the minimum value.
+    const auto target_scale = RasterScaleController::kMinimumRasterScale;
+    ScopedSetRasterScale scoped1(window.get(), target_scale);
+    EXPECT_EQ(target_scale, window->GetProperty(aura::client::kRasterScale));
+    EXPECT_EQ(std::vector<float>{target_scale},
+              tracker.TakeRasterScaleChanges());
+  }
+
+  EXPECT_EQ(1.0f, window->GetProperty(aura::client::kRasterScale));
+  EXPECT_EQ(std::vector<float>{1.0f}, tracker.TakeRasterScaleChanges());
+
+  {
+    // Expect raster scale to not be able to be set below the minimum value.
+    const auto target_scale = RasterScaleController::kMinimumRasterScale * 0.9f;
+    ScopedSetRasterScale scoped1(window.get(), target_scale);
+    EXPECT_EQ(RasterScaleController::kMinimumRasterScale,
+              window->GetProperty(aura::client::kRasterScale));
+    EXPECT_EQ(std::vector<float>{RasterScaleController::kMinimumRasterScale},
+              tracker.TakeRasterScaleChanges());
+  }
+}
+
 }  // namespace ash

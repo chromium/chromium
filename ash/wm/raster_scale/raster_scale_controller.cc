@@ -124,7 +124,7 @@ float RasterScaleController::ComputeRasterScaleForWindow(aura::Window* window) {
   for (auto scale : iter->second) {
     raster_scale = std::max(raster_scale, scale);
   }
-  return raster_scale;
+  return std::max(raster_scale, kMinimumRasterScale);
 }
 
 void RasterScaleController::OnWindowDestroying(aura::Window* window) {
