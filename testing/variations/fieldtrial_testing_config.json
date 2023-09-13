@@ -6316,7 +6316,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230831",
+                    "name": "EnabledWithStagingLinks_Dogfood",
                     "params": {
                         "pwa-companion-app-id": "kncedjianpafagdchkiinagaaokkhpaa",
                         "pwa-companion-install-uri": "https://mypixelbuds-preprod.corp.google.com/",
