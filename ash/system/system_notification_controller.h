@@ -49,6 +49,10 @@ class SystemNotificationController {
     return screen_security_controller_.get();
   }
 
+  PowerNotificationController* power_notification_controller() {
+    return power_.get();
+  }
+
  private:
   friend class AutoConnectNotifierTest;
   friend class CellularSetupNotifierTest;

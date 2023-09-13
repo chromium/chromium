@@ -2650,6 +2650,10 @@ Style notes:
         About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
 Connect your device to power.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE_WITHOUT_TIME" translateable="false" desc="The label in the tray dialog to show the remaining battery power as a percent.">
+        About <ph name="percentage">$1<ex>56%</ex></ph>% left.
+Connect your device to power.
+      </message>
       <message name="IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT" translateable="false" desc="The toast message when battery saver mode is disabled.">
         Battery Saver has been turned off
       </message>
@@ -2658,7 +2662,7 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE" translateable="false" desc="The label in the tray dialog to show the remaining battery power as a percent, with additional text stating battery saver mode has been enabled.">
         About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
-Turning on battery saver to increase your battery life.
+Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE_WITHOUT_TIME" translateable="false" desc="The notification body text stating features are limited because of battery saver, alongside the remaining battery percentage.">
         About <ph name="percentage">$1<ex>56%</ex></ph>% left.

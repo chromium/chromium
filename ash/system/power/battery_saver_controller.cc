@@ -8,8 +8,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_notification_controller.h"
+#include "ash/system/system_notification_controller.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -18,6 +20,25 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
+
+namespace {
+
+ash::PowerNotificationController* GetPowerNotificationController() {
+  if (ash::Shell::Get()->system_notification_controller()) {
+    return ash::Shell::Get()
+        ->system_notification_controller()
+        ->power_notification_controller();
+  }
+  return nullptr;
+}
+
+void SetUserOptStatus(bool status) {
+  if (GetPowerNotificationController()) {
+    GetPowerNotificationController()->SetUserOptStatus(status);
+  }
+}
+
+}  // namespace
 
 namespace ash {
 
@@ -86,6 +107,15 @@ void BatterySaverController::OnPowerStatusChanged() {
 void BatterySaverController::OnSettingsPrefChanged() {
   if (always_on_) {
     SetState(true, UpdateReason::kAlwaysOn);
+    return;
+  }
+
+  // We can tell whenever a user issued a toggle by counting the number of
+  // system issued updates. OnSettingsPrefChanged() will get called user toggled
+  // + system toggled number of times. Therefore, we will end up calling
+  // SetState user toggled number of times. This works since the order of the
+  // requests (user vs. system) doesn't matter.
+  if (in_set_state_) {
     return;
   }
 
@@ -208,11 +238,31 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     }
   }
 
+  if (GetPowerNotificationController()) {
+    const bool crossed_threshold =
+        PowerStatus::Get()->GetRoundedBatteryPercent() <=
+        GetPowerNotificationController()->GetLowPowerPercentage();
+
+    // Only update the user_opt_status_ when we are at or below the threshold.
+    // This way, auto-enable kicks in from threshold+1% -> threshold% even if
+    // the user has BSM disabled (either manually or via restored local pref)
+    // beforehand.
+    if (reason == UpdateReason::kSettings && crossed_threshold) {
+      // Whether user_opt_status_ is true or false when active is true or false
+      // depends on the experiment arm we are in.
+      SetUserOptStatus(features::kBatterySaverNotificationBehavior.Get() ==
+                               features::kBSMAutoEnable
+                           ? !active
+                           : active);
+    }
+  }
+
   // Update pref and Power Manager state.
   if (active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
-    // NB: This call is re-entrant. SetBoolean will call OnSettingsPrefChanged
-    // which will call SetState recursively. So we want to do the metrics
-    // before this, so that the correct reason is put in enable_record_.
+    // Note: Prevents call from being re-entrant, and also allows us to
+    // differentiate between the system changing this perf, vs. the user doing
+    // it (e.g. from somewhere else like Settings).
+    base::AutoReset<bool> in_set_state(&in_set_state_, true);
     local_state_->SetBoolean(prefs::kPowerBatterySaver, active);
   }
   if (active != PowerStatus::Get()->IsBatterySaverActive()) {

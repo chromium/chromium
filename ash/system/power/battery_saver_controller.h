@@ -80,6 +80,9 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   bool threshold_crossed_ = false;
 
+  // Whether OnSettingsPrefChanged() was called from `SetState`.
+  bool in_set_state_ = false;
+
   absl::optional<EnableRecord> enable_record_{absl::nullopt};
 
   base::WeakPtrFactory<BatterySaverController> weak_ptr_factory_{this};

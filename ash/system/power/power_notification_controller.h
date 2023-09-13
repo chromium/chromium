@@ -31,9 +31,11 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
     // Low battery charge, different battery saver notification behavior.
     // Note: When battery saver is not available, both of these act like the
     // original low power notification.
-    NOTIFICATION_BSM_THRESHOLD_OPT_OUT,
+    NOTIFICATION_BSM_ENABLING_AT_THRESHOLD,
 
     NOTIFICATION_BSM_THRESHOLD_OPT_IN,
+
+    NOTIFICATION_GENERIC_LOW_POWER,
 
     // Critically low battery charge.
     NOTIFICATION_CRITICAL,
@@ -59,6 +61,13 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   ~PowerNotificationController() override;
 
   void NotifyUsbNotificationClosedByUser();
+  void SetUserOptStatus(bool status);
+
+  double GetLowPowerPercentage() const { return low_power_percentage_; }
+  double GetCriticalPowerPercentage() const { return critical_percentage_; }
+  double GetNoWarningPercentage() const { return no_warning_percentage_; }
+
+  NotificationState GetNotificationState() const { return notification_state_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerNotificationControllerTest,
@@ -66,6 +75,7 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   FRIEND_TEST_ALL_PREFIXES(PowerNotificationControllerTest,
                            UpdateNotificationState);
   friend class PowerNotificationControllerTest;
+  friend class BatteryNotificationTest;
 
   // Overridden from PowerStatus::Observer.
   void OnPowerStatusChanged() override;
@@ -113,6 +123,9 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // Has the battery saver threshold been crossed? Also gets reset to false when
   // an AC charger is plugged in.
   bool battery_saver_triggered_ = false;
+
+  // User opt status.
+  bool user_opt_status_ = false;
 
   const double battery_saver_activation_charge_percent_;
 
