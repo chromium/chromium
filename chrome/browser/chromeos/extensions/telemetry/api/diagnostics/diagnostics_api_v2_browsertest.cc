@@ -8,14 +8,12 @@
 
 #include "base/check_deref.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -90,98 +88,8 @@ class TelemetryExtensionDiagnosticsApiV2BrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
-                       CreateMemoryRoutineWithoutFeatureFlagError) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function createMemoryRoutineFail() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.createMemoryRoutine({
-            maxTestingMemKib: 42,
-          });
-        }, [],
-          'chrome.os.diagnostics.createMemoryRoutine is not a function'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
-                       StartRoutineWithoutFeatureFlagError) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function startRoutineFail() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.startRoutine({
-            uuid: 123,
-          });
-        }, [],
-          'chrome.os.diagnostics.startRoutine is not a function'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
-                       CancelRoutineWithoutFeatureFlagError) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function cancelRoutineFail() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.cancelRoutine({
-            uuid: 123,
-          });
-        }, [],
-          'chrome.os.diagnostics.cancelRoutine is not a function'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticsApiV2BrowserTest,
-    IsMemoryRoutineArgumentSupportedWithoutFeatureFlagError) {
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function isMemoryRoutineArgumentSupportedFail() {
-        chrome.test.assertThrows(() => {
-          chrome.os.diagnostics.isMemoryRoutineArgumentSupported({
-            maxTestingMemKib: 123,
-          });
-        }, [],
-          'chrome.os.diagnostics.isMemoryRoutineArgumentSupported ' +
-          'is not a function'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-class TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval
-    : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
- public:
-  TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
     CreateMemoryRoutineWithFeatureFlagCompanionUiNotOpenError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -199,9 +107,8 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    CreateMemoryRoutineWithFeatureFlagResetConnection) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateMemoryRoutineWithFeatureFlagResetConnection) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
@@ -244,9 +151,8 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    FinishedRoutineIsRemovedWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       FinishedRoutineIsRemovedWithFeatureFlagSuccess) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
@@ -314,9 +220,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    ClosingAppUiResultsInException) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       ClosingAppUiResultsInException) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     // Closing the tab results in an exception.
     ASSERT_TRUE(browser()->tab_strip_model()->ContainsIndex(0));
@@ -350,9 +255,8 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    CreateMemoryRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateMemoryRoutineWithFeatureFlagSuccess) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
@@ -428,9 +332,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    StartRoutineWithFeatureFlagUnknownUuidError) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       StartRoutineWithFeatureFlagUnknownUuidError) {
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -449,9 +352,8 @@ IN_PROC_BROWSER_TEST_F(
     )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    StartRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       StartRoutineWithFeatureFlagSuccess) {
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -493,9 +395,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    CancelRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CancelRoutineWithFeatureFlagSuccess) {
   OpenAppUiAndMakeItSecure();
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -527,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
     IsMemoryRoutineArgSupportedWithFeatureFlagApiInternalError) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
@@ -549,9 +450,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    IsMemoryRoutineArgSupportedWithFeatureFlagException) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       IsMemoryRoutineArgSupportedWithFeatureFlagException) {
   auto exception = crosapi::TelemetryExtensionException::New();
   exception->debug_message = "TEST_MESSAGE";
   fake_service().SetIsRoutineArgumentSupportedResponse(
@@ -575,9 +475,8 @@ IN_PROC_BROWSER_TEST_F(
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
-    IsMemoryRoutineArgSupportedWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       IsMemoryRoutineArgSupportedWithFeatureFlagSuccess) {
   fake_service().SetIsRoutineArgumentSupportedResponse(
       crosapi::TelemetryExtensionSupportStatus::NewSupported(
           crosapi::TelemetryExtensionSupported::New()));
