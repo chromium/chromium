@@ -645,6 +645,11 @@
       status: "stable",
     },
     {
+      // https://www.w3.org/TR/css-shapes/#supported-basic-shapes
+      name: "ClipPathXYWHAndRect",
+      status: "experimental",
+    },
+    {
       name: "CloseWatcher",
     },
     {

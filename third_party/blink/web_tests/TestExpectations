@@ -586,6 +586,8 @@ crbug.com/1308431 external/wpt/css/css-masking/clip-path/clip-path-shape-004.htm
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-001.html [ Failure ]
 crbug.com/1308431 external/wpt/css/css-masking/clip-path/animations/clip-path-shape-interpolation-002.html [ Failure ]
 
+crbug.com/1481244 external/wpt/css/css-masking/animations/clip-path-interpolation-xywh-rect.html [ Crash ]
+
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
 
@@ -2860,8 +2862,6 @@ crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/sc
 crbug.com/626703 virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/counter-scoping-004.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-rect-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/animation/offset-path-interpolation-006.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/web-locks/bfcache/sharedworker-multiple.tentative.https.html [ Skip Timeout ]
@@ -2888,9 +2888,6 @@ crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-f
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-conic-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-linear-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-radial-gradient.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-xywh-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-xywh-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/clip-path/clip-path-xywh-003.html [ Failure ]
 crbug.com/626703 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-xywh-interpolation-001.html [ Failure ]
 crbug.com/626703 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-xywh-interpolation-001.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/html/canvas/element/text/2d.text.fontVariantCaps3.html [ Failure ]

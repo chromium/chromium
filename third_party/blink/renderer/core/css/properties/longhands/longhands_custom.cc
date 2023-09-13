@@ -1724,7 +1724,13 @@ const CSSValue* ClipPath::ParseSingleValue(CSSParserTokenRange& range,
     geometry_box = css_parsing_utils::ConsumeGeometryBox(range);
   }
   CSSValue* basic_shape = css_parsing_utils::ConsumeBasicShape(
-      range, context, css_parsing_utils::AllowPathValue::kAllow);
+      range, context, css_parsing_utils::AllowPathValue::kAllow,
+      RuntimeEnabledFeatures::ClipPathXYWHAndRectEnabled()
+          ? css_parsing_utils::AllowBasicShapeRectValue::kAllow
+          : css_parsing_utils::AllowBasicShapeRectValue::kForbid,
+      RuntimeEnabledFeatures::ClipPathXYWHAndRectEnabled()
+          ? css_parsing_utils::AllowBasicShapeXYWHValue::kAllow
+          : css_parsing_utils::AllowBasicShapeXYWHValue::kForbid);
   if (basic_shape && !geometry_box &&
       RuntimeEnabledFeatures::ClipPathGeometryBoxEnabled()) {
     geometry_box = css_parsing_utils::ConsumeGeometryBox(range);
