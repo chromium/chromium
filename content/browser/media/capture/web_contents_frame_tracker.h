@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -48,10 +49,9 @@ class CONTENT_EXPORT WebContentsFrameTracker final
     // Get bounds of the attached screen, if any.
     virtual absl::optional<gfx::Rect> GetScreenBounds() = 0;
 
-    // While the DOM always has a FrameSinkId, we may want to capture
-    // a different frame sink ID overlaying the DOM content that represents
-    // what we actually want to capture.
-    virtual viz::FrameSinkId GetFrameSinkIdForCapture() = 0;
+    // Get the capture target that we should use. This may be different from the
+    // frame sink target associated with the DOM.
+    virtual WebContentsImpl::CaptureTarget GetCaptureTarget() = 0;
 
     // Capturer count handling is tricky in testing, since setting it
     // on the web contents uses a view even though the view may not be

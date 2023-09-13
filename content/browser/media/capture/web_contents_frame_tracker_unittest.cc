@@ -48,8 +48,9 @@ class SimpleContext : public WebContentsFrameTracker::Context {
   absl::optional<gfx::Rect> GetScreenBounds() override {
     return screen_bounds_;
   }
-  viz::FrameSinkId GetFrameSinkIdForCapture() override {
-    return frame_sink_id_;
+
+  WebContentsImpl::CaptureTarget GetCaptureTarget() override {
+    return WebContentsImpl::CaptureTarget{frame_sink_id_, gfx::NativeView{}};
   }
   void IncrementCapturerCount(const gfx::Size& capture_size) override {
     ++capturer_count_;
@@ -157,7 +158,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     raw_context_->set_screen_bounds(gfx::Rect{size});
   }
 
-  void SetFrameSinkId(const viz::FrameSinkId id) {
+  void SetFrameSinkId(viz::FrameSinkId id) {
     raw_context_->set_frame_sink_id(id);
   }
 

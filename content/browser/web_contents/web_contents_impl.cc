@@ -9218,9 +9218,13 @@ void WebContentsImpl::OnXrHasRenderTarget(
   observers_.NotifyObservers(&WebContentsObserver::CaptureTargetChanged);
 }
 
-viz::FrameSinkId WebContentsImpl::GetCaptureFrameSinkId() {
-  if (xr_render_target_.is_valid())
-    return xr_render_target_;
+WebContentsImpl::CaptureTarget WebContentsImpl::GetCaptureTarget() {
+  // We don't provide a view for the Android AR capturer. This is not a problem
+  // because it is currently only used by the MouseCursorOverlayController,
+  // which isn't used on Android anyway.
+  if (xr_render_target_.is_valid()) {
+    return CaptureTarget{.sink_id = xr_render_target_};
+  }
 
   RenderWidgetHostView* host_view = GetRenderWidgetHostView();
   if (!host_view) {
@@ -9229,7 +9233,8 @@ viz::FrameSinkId WebContentsImpl::GetCaptureFrameSinkId() {
 
   RenderWidgetHostViewBase* base_view =
       static_cast<RenderWidgetHostViewBase*>(host_view);
-  return base_view->GetFrameSinkId();
+  return CaptureTarget{.sink_id = base_view->GetFrameSinkId(),
+                       .view = host_view->GetNativeView()};
 }
 
 #if BUILDFLAG(IS_ANDROID)

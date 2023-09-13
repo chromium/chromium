@@ -1344,9 +1344,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Because something else may be rendering as the primary contents of this
   // WebContents rather than the RenderHostView, targets that wish to capture
-  // the contents of this WebContents should query for the FrameSinkId of the
-  // base compositor here.
-  viz::FrameSinkId GetCaptureFrameSinkId();
+  // the contents of this WebContents should query its capture target here.
+  struct CaptureTarget {
+    viz::FrameSinkId sink_id;
+    gfx::NativeView view;
+  };
+  CaptureTarget GetCaptureTarget();
 
   void set_show_popup_menu_callback_for_testing(
       base::OnceCallback<void(const gfx::Rect&)> callback) {

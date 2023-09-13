@@ -66,8 +66,8 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
     return absl::nullopt;
   }
 
-  viz::FrameSinkId GetFrameSinkIdForCapture() override {
-    return static_cast<WebContentsImpl*>(contents_)->GetCaptureFrameSinkId();
+  WebContentsImpl::CaptureTarget GetCaptureTarget() override {
+    return static_cast<WebContentsImpl*>(contents_)->GetCaptureTarget();
   }
 
   void IncrementCapturerCount(const gfx::Size& capture_size) override {
@@ -493,19 +493,18 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
     return;
   }
 
-  viz::FrameSinkId frame_sink_id;
-  if (context_) {
-    frame_sink_id = context_->GetFrameSinkIdForCapture();
-  }
+  const WebContentsImpl::CaptureTarget capture_target =
+      context_ ? context_->GetCaptureTarget()
+               : WebContentsImpl::CaptureTarget{};
 
   // TODO(crbug.com/1264849): Clear |crop_id_| when share-this-tab-instead
   // is clicked.
-  if (frame_sink_id != target_frame_sink_id_) {
-    target_frame_sink_id_ = frame_sink_id;
+  if (capture_target.sink_id != target_frame_sink_id_) {
+    target_frame_sink_id_ = capture_target.sink_id;
     absl::optional<viz::VideoCaptureTarget> target;
-    if (frame_sink_id.is_valid()) {
-      target =
-          viz::VideoCaptureTarget(frame_sink_id, DeriveSubTarget(crop_id_));
+    if (capture_target.sink_id.is_valid()) {
+      target = viz::VideoCaptureTarget(capture_target.sink_id,
+                                       DeriveSubTarget(crop_id_));
     }
 
     // The target may change to an invalid one, but we don't consider it
@@ -519,7 +518,7 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
   // Note: MouseCursorOverlayController runs on the UI thread. SetTargetView()
   // must be called synchronously since the NativeView pointer is not valid
   // across task switches, cf. https://crbug.com/818679
-  SetTargetView(web_contents()->GetNativeView());
+  SetTargetView(capture_target.view);
 }
 
 void WebContentsFrameTracker::SetTargetView(gfx::NativeView view) {
