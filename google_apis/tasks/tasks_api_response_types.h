@@ -115,6 +115,9 @@ class Task {
   // class.
   static void RegisterJSONConverter(base::JSONValueConverter<Task>* converter);
 
+  // Creates a `Task` from parsed JSON.
+  static std::unique_ptr<Task> CreateFrom(const base::Value& value);
+
   const std::string& id() const { return id_; }
   const std::string& title() const { return title_; }
   TaskStatus status() const { return status_; }

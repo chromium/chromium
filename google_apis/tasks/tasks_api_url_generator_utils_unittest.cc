@@ -54,4 +54,15 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsPatchTaskUrl) {
             "lists/task-list-id/tasks/task-id");
 }
 
+TEST(TasksApiUrlGeneratorUtilsTest, ReturnsInsertTaskUrl) {
+  EXPECT_EQ(GetInsertTaskUrl("task-list-id", /*previous_task_id=*/""),
+            "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks");
+}
+
+TEST(TasksApiUrlGeneratorUtilsTest, ReturnsInsertTaskUrlWithOptionalArgs) {
+  EXPECT_EQ(GetInsertTaskUrl("task-list-id", "previous-task-id"),
+            "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
+            "?previous=previous-task-id");
+}
+
 }  // namespace google_apis::tasks

@@ -218,4 +218,86 @@ void PatchTaskRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
   std::move(callback_).Run(error);
 }
 
+// ----- InsertTaskRequest -----
+
+InsertTaskRequest::InsertTaskRequest(RequestSender* sender,
+                                     const std::string& task_list_id,
+                                     const std::string& previous_task_id,
+                                     const TaskRequestPayload& payload,
+                                     Callback callback)
+    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      task_list_id_(task_list_id),
+      previous_task_id_(previous_task_id),
+      payload_(payload),
+      callback_(std::move(callback)) {
+  CHECK(!task_list_id_.empty());
+  CHECK(callback_);
+}
+
+InsertTaskRequest::~InsertTaskRequest() = default;
+
+GURL InsertTaskRequest::GetURL() const {
+  return GetInsertTaskUrl(task_list_id_, previous_task_id_);
+}
+
+ApiErrorCode InsertTaskRequest::MapReasonToError(ApiErrorCode code,
+                                                 const std::string& reason) {
+  return code;
+}
+
+bool InsertTaskRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
+  return error == HTTP_SUCCESS || error == HTTP_CREATED;
+}
+
+HttpRequestMethod InsertTaskRequest::GetRequestType() const {
+  return HttpRequestMethod::kPost;
+}
+
+bool InsertTaskRequest::GetContentData(std::string* upload_content_type,
+                                       std::string* upload_content) {
+  *upload_content_type = kContentTypeJson;
+  *upload_content = payload_.ToJson();
+  return true;
+}
+
+void InsertTaskRequest::ProcessURLFetchResults(
+    const network::mojom::URLResponseHead* response_head,
+    base::FilePath response_file,
+    std::string response_body) {
+  ApiErrorCode error = GetErrorCode();
+  switch (error) {
+    case HTTP_SUCCESS:
+    case HTTP_CREATED:
+      blocking_task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&InsertTaskRequest::Parse, std::move(response_body)),
+          base::BindOnce(&InsertTaskRequest::OnDataParsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    default:
+      RunCallbackOnPrematureFailure(error);
+      OnProcessURLFetchResultsComplete();
+      break;
+  }
+}
+
+void InsertTaskRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
+  std::move(callback_).Run(base::unexpected(error));
+}
+
+// static
+std::unique_ptr<Task> InsertTaskRequest::Parse(std::string json) {
+  std::unique_ptr<base::Value> value = ParseJson(json);
+  return value ? Task::CreateFrom(*value) : nullptr;
+}
+
+void InsertTaskRequest::OnDataParsed(std::unique_ptr<Task> task) {
+  if (!task) {
+    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(task));
+  }
+  OnProcessURLFetchResultsComplete();
+}
+
 }  // namespace google_apis::tasks

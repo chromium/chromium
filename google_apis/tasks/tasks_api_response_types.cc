@@ -21,6 +21,7 @@ namespace {
 
 using ::base::JSONValueConverter;
 
+constexpr char kTaskKind[] = "tasks#task";
 constexpr char kTaskListsKind[] = "tasks#taskLists";
 constexpr char kTasksKind[] = "tasks#tasks";
 
@@ -124,6 +125,18 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
                                                &Task::links_);
   converter->RegisterStringField(kApiResponseNotesKey, &Task::notes_);
+}
+
+// static
+std::unique_ptr<Task> Task::CreateFrom(const base::Value& value) {
+  auto task = std::make_unique<Task>();
+  JSONValueConverter<Task> converter;
+  if (!IsResourceKindExpected(value, kTaskKind) ||
+      !converter.Convert(value, task.get())) {
+    DVLOG(1) << "Unable to construct a `Task` from parsed json.";
+    return nullptr;
+  }
+  return task;
 }
 
 // ----- Tasks -----

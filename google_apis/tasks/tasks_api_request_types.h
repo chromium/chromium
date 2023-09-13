@@ -17,6 +17,9 @@ struct TaskRequestPayload {
   // Converts the struct to JSON format.
   std::string ToJson() const;
 
+  // Title of the task.
+  std::string title;
+
   // Status of the task.
   TaskStatus status = TaskStatus::kUnknown;
 };

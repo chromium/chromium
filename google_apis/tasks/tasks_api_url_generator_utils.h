@@ -42,6 +42,12 @@ GURL GetListTasksUrl(const std::string& task_list_id,
 GURL GetPatchTaskUrl(const std::string& task_list_id,
                      const std::string& task_id);
 
+// Returns a URL to create a new task on the specified task list.
+// `task_list_id`     - task list identifier.
+// `previous_task_id` - previous sibling task identifier.
+GURL GetInsertTaskUrl(const std::string& task_list_id,
+                      const std::string& previous_task_id);
+
 }  // namespace google_apis::tasks
 
 #endif  // GOOGLE_APIS_TASKS_TASKS_API_URL_GENERATOR_UTILS_H_

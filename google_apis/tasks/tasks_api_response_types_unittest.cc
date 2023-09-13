@@ -179,4 +179,42 @@ TEST(TasksApiResponseTypesTest, FailsToCreateTasksFromInvalidResponse) {
   ASSERT_FALSE(tasks);
 }
 
+TEST(TasksApiResponseTypesTest, CreatesTaskFromResponse) {
+  const auto raw_task = JSONReader::Read(R"(
+      {
+        "kind": "tasks#task",
+        "id": "asd",
+        "title": "Parent task",
+        "position": "00000000000000000001",
+        "status": "needsAction",
+        "due": "2023-04-19T00:00:00.000Z",
+        "notes": "Lorem ipsum dolor sit amet"
+      })");
+  ASSERT_TRUE(raw_task);
+
+  const auto task = Task::CreateFrom(*raw_task);
+  ASSERT_TRUE(task);
+
+  EXPECT_EQ(task->id(), "asd");
+  EXPECT_EQ(task->title(), "Parent task");
+  EXPECT_EQ(task->status(), TaskStatus::kNeedsAction);
+  EXPECT_TRUE(task->parent_id().empty());
+  EXPECT_EQ(task->position(), "00000000000000000001");
+  EXPECT_EQ(util::FormatTimeAsString(task->due().value()),
+            "2023-04-19T00:00:00.000Z");
+  EXPECT_EQ(task->notes(), "Lorem ipsum dolor sit amet");
+}
+
+TEST(TasksApiResponseTypesTest, FailsToCreateTaskFromInvalidResponse) {
+  const auto raw_task = JSONReader::Read(R"(
+      {
+        "kind": "invalid_kind",
+        "id": true
+      })");
+  ASSERT_TRUE(raw_task);
+
+  const auto task = Task::CreateFrom(*raw_task);
+  ASSERT_FALSE(task);
+}
+
 }  // namespace google_apis::tasks

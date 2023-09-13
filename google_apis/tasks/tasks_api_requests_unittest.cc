@@ -224,4 +224,45 @@ TEST_F(TasksApiRequestsTest, PatchTaskRequestHandlesError) {
   EXPECT_EQ(future.Get(), HTTP_NOT_FOUND);
 }
 
+TEST_F(TasksApiRequestsTest, InsertTaskRequest) {
+  set_test_file_path("tasks/task.json");
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Task>, ApiErrorCode>>
+      future;
+  auto request = std::make_unique<InsertTaskRequest>(
+      request_sender(), kTaskListId, /*previous_task_id=*/"",
+      TaskRequestPayload{.title = "New task",
+                         .status = TaskStatus::kNeedsAction},
+      future.GetCallback());
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(last_request().method, net::test_server::METHOD_POST);
+  EXPECT_EQ(last_request().GetURL(),
+            GetInsertTaskUrl(kTaskListId, /*previous_task_id=*/""));
+  EXPECT_EQ(last_request().headers.at("Content-Type"),
+            "application/json; charset=utf-8");
+  EXPECT_EQ(last_request().content,
+            "{\"status\":\"needsAction\",\"title\":\"New task\"}");
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get().value()->id(), "qwe");
+}
+
+TEST_F(TasksApiRequestsTest, InsertTaskRequestHandlesError) {
+  set_test_file_path("tasks/invalid_file_to_simulate_404_error.json");
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Task>, ApiErrorCode>>
+      future;
+  auto request = std::make_unique<InsertTaskRequest>(
+      request_sender(), kTaskListId, /*previous_task_id=*/"",
+      TaskRequestPayload{.title = "New task",
+                         .status = TaskStatus::kNeedsAction},
+      future.GetCallback());
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(HTTP_NOT_FOUND));
+}
+
 }  // namespace google_apis::tasks

@@ -15,12 +15,20 @@ namespace google_apis::tasks {
 namespace {
 
 constexpr char kApiRequestBodyTaskStatusKey[] = "status";
+constexpr char kApiRequestBodyTaskTitleKey[] = "title";
 
 }  // namespace
 
 std::string TaskRequestPayload::ToJson() const {
   base::Value::Dict root;
-  root.Set(kApiRequestBodyTaskStatusKey, TaskStatusToString(status));
+
+  if (!title.empty()) {
+    root.Set(kApiRequestBodyTaskTitleKey, title);
+  }
+
+  if (status != TaskStatus::kUnknown) {
+    root.Set(kApiRequestBodyTaskStatusKey, TaskStatusToString(status));
+  }
 
   const auto json = base::WriteJson(root);
   CHECK(json);

@@ -20,6 +20,7 @@ namespace {
 constexpr char kFieldsParameterName[] = "fields";
 constexpr char kMaxResultsParameterName[] = "maxResults";
 constexpr char kPageTokenParameterName[] = "pageToken";
+constexpr char kPreviousTaskParameterName[] = "previous";
 constexpr char kShowCompletedParameterName[] = "showCompleted";
 
 constexpr char kTaskListsListUrl[] = "tasks/v1/users/@me/lists";
@@ -85,6 +86,18 @@ GURL GetPatchTaskUrl(const std::string& task_list_id,
   CHECK(!task_id.empty());
   return GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
       kTaskUrlTemplate, {task_list_id, task_id}, nullptr));
+}
+
+GURL GetInsertTaskUrl(const std::string& task_list_id,
+                      const std::string& previous_task_id) {
+  CHECK(!task_list_id.empty());
+  GURL url = GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
+      kTasksListUrlTemplate, {task_list_id}, nullptr));
+  if (!previous_task_id.empty()) {
+    url = net::AppendOrReplaceQueryParameter(url, kPreviousTaskParameterName,
+                                             previous_task_id);
+  }
+  return url;
 }
 
 }  // namespace google_apis::tasks
