@@ -19,29 +19,52 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 namespace {
 
-constexpr int kPaddingAroundCursor = 8;
+constexpr int kCursorVerticalPadding = 8;
+
+// Height threshold of the mako UI which determines its screen position. Tall UI
+// is centered on the display screen containing the caret, while short UI is
+// anchored at the caret.
+constexpr int kMakoHeightThreshold = 400;
 
 class MakoDialogView : public WebUIBubbleDialogView {
  public:
   MakoDialogView(std::unique_ptr<BubbleContentsWrapper> contents_wrapper,
-                 const gfx::Rect& anchor_rect,
-                 views::BubbleBorder::Arrow arrow)
-      : WebUIBubbleDialogView(nullptr,
-                              contents_wrapper.get(),
-                              anchor_rect,
-                              arrow),
-        contents_wrapper_(std::move(contents_wrapper)) {
+                 const gfx::Rect& caret_bounds)
+      : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
+        contents_wrapper_(std::move(contents_wrapper)),
+        caret_bounds_(caret_bounds) {
     set_has_parent(false);
     set_corner_radius(20);
     set_adjust_if_offscreen(true);
   }
 
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override {
+    if (new_size.height() > kMakoHeightThreshold) {
+      // Place tall UI at the center of the screen.
+      SetArrowWithoutResizing(views::BubbleBorder::FLOAT);
+      SetAnchorRect(display::Screen::GetScreen()
+                        ->GetDisplayMatching(caret_bounds_)
+                        .work_area());
+    } else {
+      // Anchor short UI at the caret.
+      SetArrowWithoutResizing(views::BubbleBorder::TOP_LEFT);
+      gfx::Rect anchor_rect = caret_bounds_;
+      anchor_rect.Outset(gfx::Outsets::VH(kCursorVerticalPadding, 0));
+      SetAnchorRect(anchor_rect);
+    }
+    WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
+  }
+
  private:
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
+  gfx::Rect caret_bounds_;
 };
 
 }  // namespace
@@ -116,9 +139,6 @@ void MakoUntrustedUI::Show(Profile* profile) {
     return;
   }
 
-  gfx::Rect anchor_rect = input_client->GetCaretBounds();
-  anchor_rect.Outset(kPaddingAroundCursor);
-
   // TODO(b/289969807): 3961 is emoji picker identifier for task manager - we
   // should have a better one for mako
   auto contents_wrapper =
@@ -126,10 +146,10 @@ void MakoUntrustedUI::Show(Profile* profile) {
           GURL(kChromeUIOrcaURL), profile, 3961);
   contents_wrapper->ReloadWebContents();
 
-  auto* widget = views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<MakoDialogView>(std::move(contents_wrapper), anchor_rect,
-                                       views::BubbleBorder::TOP_LEFT));
-  widget->Show();
+  views::BubbleDialogDelegateView::CreateBubble(
+      std::make_unique<MakoDialogView>(std::move(contents_wrapper),
+                                       input_client->GetCaretBounds()))
+      ->Show();
 }
 
 }  // namespace ash
