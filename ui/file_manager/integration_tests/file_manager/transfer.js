@@ -1181,8 +1181,8 @@ testcase.transferDismissedErrorIsRemembered = async () => {
       'forceErrorsOnFileOperations', appId, [true]));
 
   // Select Downloads.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectInDirectoryTree', appId, [DOWNLOADS_QUERY]));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Downloads');
 
   // Paste the file to begin a copy operation.
   chrome.test.assertTrue(

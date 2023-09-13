@@ -144,8 +144,8 @@ testcase.driveOpenSidebarOffline = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
   // Click the icon of the Offline volume.
-  chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
-      'selectVolume', appId, ['drive_offline']));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('drive_offline');
 
   // Check: the file list should display the offline file set.
   await remoteCall.waitForFiles(
@@ -167,8 +167,8 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
 
   // Click the icon of the Shared With Me volume.
   // Use the icon for a click target.
-  chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
-      'selectVolume', appId, ['drive_shared_with_me']));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('drive_shared_with_me');
 
   // Wait until the breadcrumb path is updated.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
@@ -1629,8 +1629,8 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
 
   // Click the Shared with me volume, it has no children so navigating using the
   // directory tree doesn't work.
-  chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
-      'selectVolume', appId, ['drive_shared_with_me']));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('drive_shared_with_me');
 
   // Wait until the breadcrumb path is updated.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');

@@ -314,6 +314,22 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Returns the labels for all visible tree items.
+   *
+   * @return {!Promise<!Array<string>>}
+   */
+  async getVisibleItemLabels() {
+    const rootItems = await this.remoteCall_.callRemoteTestUtil(
+        'queryAllElements', this.appId_,
+        [`${this.selectors_.root} > ${this.selectors_.item}`]);
+    const expandedChildItems = await this.remoteCall_.callRemoteTestUtil(
+        'queryAllElements', this.appId_,
+        [this.selectors_.childItems(this.selectors_.expandedItems())]);
+    return [...rootItems, ...expandedChildItems].map(
+        item => this.getItemLabel(item));
+  }
+
+  /**
    * Wait for the tree item by its type.
    *
    * @param {string} type Type of the tree item.
@@ -370,6 +386,9 @@ export class DirectoryTreePageObject {
    * @return {!Promise<void>}
    */
   async selectItemByType(type) {
+    if (this.selectors_.isInsideDrive(type)) {
+      await this.expandTreeItemByLabel('Google Drive');
+    }
     await this.selectItem_(
         this.selectors_.itemByType(type, /* isPlaceholder= */ false));
   }
@@ -485,6 +504,15 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
+   * The tree item selector.
+   *
+   * @return {string}
+   */
+  get item() {
+    return this.useNewTree ? 'xf-tree-item' : '.tree-item';
+  }
+
+  /**
    * Get tree item by the label of the item.
    *
    * @param {string} label
@@ -511,14 +539,24 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
-   * Get all the child items of the specific item.
+   * Get all expanded tree items.
    *
-   * @param {string} itemSelector
    * @return {string}
    */
-  childItems(itemSelector) {
-    return `${itemSelector} > ${
-        this.useNewTree ? 'xf-tree-item' : '.tree-children > .tree-item'}`;
+  expandedItems() {
+    return `${this.root} ${this.attachModifier(this.item, {expanded: true})}`;
+  }
+
+  /**
+   * Get all the child items of the specific item.
+   *
+   * @param {string} parentSelector
+   * @return {string}
+   */
+  childItems(parentSelector) {
+    return this.useNewTree ?
+        `${parentSelector} > ${this.item}` :
+        `${parentSelector} > .tree-children > ${this.item}`;
   }
 
   /**
@@ -543,8 +581,8 @@ class DirectoryTreeSelectors_ {
    */
   childItemsWithNestedChildren(itemSelector) {
     const nestedItemSelector = this.useNewTree ?
-        'xf-tree-item:has(xf-tree-item)' :
-        '.tree-children > .tree-item > .tree-row';
+        `${this.item}:has(${this.item})` :
+        `.tree-children > ${this.item} > .tree-row`;
     return this.attachModifier(
         `${itemSelector} > ${nestedItemSelector}`, {hasChildren: true});
   }
@@ -557,9 +595,9 @@ class DirectoryTreeSelectors_ {
    */
   itemItselfByType(type, isPlaceholder) {
     if (this.useNewTree) {
-      return isPlaceholder ? `xf-tree-item[data-navigation-key^="${
+      return isPlaceholder ? `${this.item}[data-navigation-key^="${
                                  FAKE_ENTRY_PATH_PREFIX}"][icon="${type}"]` :
-                             `xf-tree-item[data-navigation-key^="${
+                             `${this.item}[data-navigation-key^="${
                                  REAL_ENTRY_PATH_PREFIX}"][icon="${type}"]`;
     }
     return isPlaceholder ? `[root-type-icon="${type}"]` :
@@ -572,10 +610,19 @@ class DirectoryTreeSelectors_ {
    * @return {string}
    */
   itemItselfByLabel(label) {
-    return this.useNewTree ? `xf-tree-item[label="${label}"]` :
-                             `.tree-item[entry-label="${label}"]`;
+    return this.useNewTree ? `${this.item}[label="${label}"]` :
+                             `${this.item}[entry-label="${label}"]`;
   }
 
+  /**
+   *
+   * @param {string} type The volume type of the tree item.
+   * @return {boolean}
+   */
+  isInsideDrive(type) {
+    return type == 'drive_recent' || type == 'drive_shared_with_me' ||
+        type == 'drive_offline' || type == 'shared_drive' || type == 'computer';
+  }
 
   /**
    * Return the recipient element of the keyboard event.

@@ -152,8 +152,8 @@ export async function pollForChosenEntry(caller) {
  *
  * @param {chrome.fileSystem.AcceptsOption} dialogParams Dialog parameters to be
  *     passed to openEntryChoosingWindow() function.
- * @param {string} volumeName Volume name passed to the selectVolume remote
- *     function.
+ * @param {string} volumeType Volume icon type passed to the directory page
+ *     object's selectItemByType function.
  * @param {!Array<!TestEntryInfo>} expectedSet Expected set of the entries.
  * @param {function(string):Promise} closeDialog Function to close the
  *     dialog.
@@ -164,7 +164,7 @@ export async function pollForChosenEntry(caller) {
  *     dialog.
  */
 export async function openAndWaitForClosingDialog(
-    dialogParams, volumeName, expectedSet, closeDialog, useBrowserOpen = false,
+    dialogParams, volumeType, expectedSet, closeDialog, useBrowserOpen = false,
     debug = false) {
   const caller = getCaller();
   let resultPromise;
@@ -178,9 +178,8 @@ export async function openAndWaitForClosingDialog(
   const appId = await remoteCall.waitForWindow(debug);
   await remoteCall.waitForElement(appId, '#file-list');
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectVolume', appId, [volumeName]),
-      'selectVolume failed');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType(volumeType);
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(expectedSet));
   await closeDialog(appId);

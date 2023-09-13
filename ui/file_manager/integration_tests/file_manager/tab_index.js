@@ -206,8 +206,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
  *
  * @param {!Object} dialogParams Dialog parameters to be passed to
  *     chrome.fileSystem.chooseEntry.
- * @param {string} volumeName Volume name passed to the selectVolume remote
- *     function.
+ * @param {string} volumeType Volume icon type passed to the
+ *     openAndWaitForClosingDialog function.
  * @param {!Array<TestEntryInfo>} expectedSet Expected set of the entries.
  * @param {?function(string):(!Promise|Object)} initialize Initialization before
  *     test runs. The window ID is passed as an argument. If null, do nothing as
@@ -220,7 +220,7 @@ testcase.tabindexFocusDirectorySelected = async () => {
  *     expected tab-indexes.
  */
 async function tabindexFocus(
-    dialogParams, volumeName, expectedSet, initialize, initialElements,
+    dialogParams, volumeType, expectedSet, initialize, initialElements,
     getExpectedTabOrder) {
   await Promise.all([
     addEntries(['local'], BASIC_LOCAL_ENTRY_SET),
@@ -258,7 +258,7 @@ async function tabindexFocus(
   };
 
   await openAndWaitForClosingDialog(
-      dialogParams, volumeName, expectedSet, selectAndCheckAndClose);
+      dialogParams, volumeType, expectedSet, selectAndCheckAndClose);
 }
 
 /**

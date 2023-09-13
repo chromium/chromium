@@ -15,10 +15,8 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
  */
 async function selectMyFiles(appId) {
   // Select My Files folder.
-  const myFilesQuery = '#directory-tree [entry-label="My files"]';
-  const isDriveQuery = false;
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectInDirectoryTree', appId, [myFilesQuery, isDriveQuery]));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('My files');
 
   // Wait for file list to display Downloads and Crostini.
   const downloadsRow = ['Downloads', '--', 'Folder'];
@@ -67,7 +65,8 @@ testcase.showMyFiles = async () => {
   chrome.test.assertEq(expectedElementLabels, visibleElements);
 
   // Select Downloads folder.
-  await remoteCall.callRemoteTestUtil('selectVolume', appId, ['downloads']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Downloads');
 
   // Check that My Files is displayed on breadcrumbs.
   const expectedBreadcrumbs = '/My files/Downloads';
@@ -96,8 +95,8 @@ testcase.directoryTreeRefresh = async () => {
   await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
 
   // Select Downloads folder.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectVolume', appId, ['downloads']));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Downloads');
 };
 
 /**
@@ -123,9 +122,8 @@ testcase.myFilesDisplaysAndOpensEntries = async () => {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Get the selected navigation tree item.
-  chrome.test.assertEq(
-      'Downloads',
-      await remoteCall.callRemoteTestUtil('getSelectedTreeItem', appId, []));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('Downloads');
 };
 
 /**

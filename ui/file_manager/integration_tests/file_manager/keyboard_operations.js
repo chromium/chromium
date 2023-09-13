@@ -35,8 +35,9 @@ export async function waitAndAcceptDialog(appId) {
  * @param {string} appId The Files app windowId.
  * @return {!Promise<!Array<string>>} List of visible item names.
  */
-function getVisibleDirectoryTreeItemNames(appId) {
-  return remoteCall.callRemoteTestUtil('getTreeItems', appId, []);
+async function getVisibleDirectoryTreeItemNames(appId) {
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  return directoryTree.getVisibleItemLabels();
 }
 
 /**
