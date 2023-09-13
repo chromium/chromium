@@ -37,6 +37,8 @@ std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
       return "Policy Fetching";
     case PolicyLogger::Log::Source::kAuthentication:
       return "Authentication";
+    case PolicyLogger::Log::Source::kRemoteCommands:
+      return "Remote Commands";
     default:
       NOTREACHED();
   }
