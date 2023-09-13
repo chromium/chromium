@@ -354,6 +354,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsNetworkError) {
       "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1 "
       "HTTP status = 404 Not Found.",
       error_msg_.value());
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre(
                   "Sent URL: "
@@ -382,6 +386,9 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNetworkError) {
       "HTTP status = 404 Not Found.",
       error_msg_.value());
 
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre(
                   "Sent URL: "
@@ -679,6 +686,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre(
                   "Sent URL: https://url.test/"
@@ -743,6 +754,10 @@ TEST_F(TrustedSignalsTest, ScoringSignalsForOneRenderUrl) {
                                   /*render_url=*/GURL("https://foo.test/"),
                                   /*ad_component_render_urls=*/{}));
   EXPECT_FALSE(error_msg_.has_value());
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre(
                   "Sent URL: https://url.test/"

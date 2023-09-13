@@ -170,6 +170,10 @@ TEST_F(WorkletLoaderTest, Success) {
         EXPECT_FALSE(result.success());
       },
       v8_helper_, std::move(result_)));
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre("Sent URL: "
                                    "https://foo.test/",

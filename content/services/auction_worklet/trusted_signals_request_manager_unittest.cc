@@ -261,6 +261,10 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsError) {
       "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1 "
       "HTTP status = 404 Not Found.",
       error_msg_);
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre(
                   "Sent URL: "
@@ -285,6 +289,9 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsError) {
       "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F "
       "HTTP status = 404 Not Found.",
       error_msg_);
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre(
                   "Sent URL: https://url.test/"
@@ -332,6 +339,9 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
   EXPECT_FALSE(signals2);
   EXPECT_EQ(kExpectedError, error_msg2);
 
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(
       auction_network_events_handler_.GetObservedRequests(),
       testing::ElementsAre(
@@ -381,6 +391,9 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequestError) {
   EXPECT_FALSE(signals2);
   EXPECT_EQ(kExpectedError, error_msg2);
 
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(
       auction_network_events_handler_.GetObservedRequests(),
       testing::ElementsAre(
@@ -421,6 +434,10 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(
       auction_network_events_handler_.GetObservedRequests(),
       testing::ElementsAre("Sent URL: https://url.test/?hostname=publisher"

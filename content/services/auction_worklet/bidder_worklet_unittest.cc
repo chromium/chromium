@@ -1011,6 +1011,9 @@ TEST_F(BidderWorkletTest, NetworkError) {
   EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
             WaitForDisconnect());
 
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(
       auction_network_events_handler_.GetObservedRequests(),
       testing::ElementsAre(
@@ -1039,6 +1042,9 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
           /*ad_component_descriptors=*/absl::nullopt,
           /*modeling_signals=*/absl::nullopt, base::TimeDelta()));
 
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
   EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
               testing::ElementsAre("Sent URL: https://url.test/",
                                    "Received URL: https://url.test/",
