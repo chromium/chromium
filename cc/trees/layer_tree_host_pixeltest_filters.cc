@@ -700,12 +700,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterRotated) {
 }
 
 // TODO(crbug.com/1416306): currently do not pass on iOS.
-// TODO(crbug.com/1482558): flaky on Mac.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_ImageRenderSurfaceScaled DISABLED_ImageRenderSurfaceScaled
 #else
 #define MAYBE_ImageRenderSurfaceScaled ImageRenderSurfaceScaled
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_IOS)
 TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
   // A filter will cause a render surface to be used.  Here we force the
   // render surface on, and scale the result to make sure that we rasterize at
@@ -745,6 +744,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
     percentage_pixels_error = 0.686f;
     average_error_allowed_in_bad_pixels = 16.f;
     error_allowed = 17;
+  }
+  if (use_skia_graphite()) {
+    // Skia-Graphite has some minor differences in the AA'd pixels on the
+    // different trybots. See crbug.com/1482558.
+    percentage_pixels_error = 0.02f;
+    average_error_allowed_in_bad_pixels = 2.f;
+    error_allowed = 2;
   }
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       FuzzyPixelComparator()
