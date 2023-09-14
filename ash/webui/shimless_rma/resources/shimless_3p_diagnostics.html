@@ -1,1 +1,17 @@
 <style include="cr-shared-style shimless-rma-shared"></style>
+
+<cr-dialog id="shimless3pDiagErrorDialog"
+    on-cancel="onErrorDialogCancelOrBackButtonClicked_">
+  <div slot="title" id="shimless3pDiagErrorDialogTitle">
+    [[errorTitle_]]
+  </div>
+  <div slot="body" id="shimless3pDiagErrorDialogBody">
+    [[errorMessage_]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="shimless3pDiagErrorDialogButton" class="action-button"
+        on-click="onErrorDialogCancelOrBackButtonClicked_">
+      [[i18n('backButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

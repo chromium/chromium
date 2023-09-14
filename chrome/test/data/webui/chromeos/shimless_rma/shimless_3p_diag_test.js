@@ -7,7 +7,8 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {Shimless3pDiagnostics} from 'chrome://shimless-rma/shimless_3p_diagnostics.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {Show3pDiagnosticsAppResult} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {eventToPromise} from '../test_util.js';
@@ -32,9 +33,20 @@ suite('shimless3pDiagTest', function() {
    * */
   let hasDisabledAllButtons = false;
 
+  /**
+   * The current disabled state of buttons.
+   * @type {boolean}
+   * */
+  let isAllButtonsDisabled = false;
+
   /**@type function() */
   const disableAllButtonsListener = () => {
     hasDisabledAllButtons = true;
+    isAllButtonsDisabled = true;
+  };
+  /**@type function() */
+  const enableAllButtonsListener = () => {
+    isAllButtonsDisabled = false;
   };
 
   setup(() => {
@@ -42,13 +54,19 @@ suite('shimless3pDiagTest', function() {
     service = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(service);
     window.addEventListener('disable-all-buttons', disableAllButtonsListener);
+    window.addEventListener('enable-all-buttons', enableAllButtonsListener);
     hasDisabledAllButtons = false;
+    isAllButtonsDisabled = false;
 
     loadTimeData.overrideValues({'3pDiagnosticsEnabled': true});
     service.setGet3pDiagnosticsProviderResult('Google');
+    service.setInstallable3pDiagnosticsAppPath(null);
+    service.setShow3pDiagnosticsAppResult(
+        Show3pDiagnosticsAppResult.kAppNotInstalled);
   });
 
   teardown(() => {
+    window.removeEventListener('enable-all-buttons', enableAllButtonsListener);
     window.removeEventListener(
         'disable-all-buttons', disableAllButtonsListener);
     component.remove();
@@ -75,6 +93,24 @@ suite('shimless3pDiagTest', function() {
     return flushTasks();
   };
 
+  /**@type function(string): boolean */
+  const isDialogOpen = (selector) => {
+    assertTrue(!!component);
+
+    const dialog = component.shadowRoot.querySelector(selector);
+    assertTrue(!!dialog);
+    return dialog.open;
+  };
+
+  /**@type function(string): !Promise */
+  const clickButton = (selector) => {
+    assertTrue(!!component);
+
+    const button = component.shadowRoot.querySelector(selector);
+    button.click();
+    return flushTasks();
+  };
+
   /**@type function(string, boolean, boolean): !Promise */
   const pressKey = (key, altKey, shiftKey) => {
     const eventPromise = eventToPromise('keydown', component);
@@ -88,6 +124,32 @@ suite('shimless3pDiagTest', function() {
           shiftKey,
         },
         ));
+    return eventPromise;
+  };
+
+  /**@type function(string): !Promise */
+  const pressEnterOnDialog = (selector) => {
+    const dialog = component.shadowRoot.querySelector(selector);
+    assertTrue(!!dialog);
+    const eventPromise = eventToPromise('keypress', dialog);
+    dialog.dispatchEvent(new KeyboardEvent(
+        'keypress',
+        {
+          bubbles: true,
+          composed: true,
+          key: 'Enter',
+        },
+        ));
+    return eventPromise;
+  };
+
+  /**@type function(string): !Promise */
+  const cancelDialog = (selector) => {
+    const dialog = component.shadowRoot.querySelector(selector);
+    assertTrue(!!dialog);
+    const eventPromise = eventToPromise('cancel', component);
+    dialog.getNative().dispatchEvent(
+        new CustomEvent('cancel', {cancelable: true}));
     return eventPromise;
   };
 
@@ -134,6 +196,79 @@ suite('shimless3pDiagTest', function() {
     await flushTasks();
     assertFalse(hasDisabledAllButtons);
   });
+
+  // Verify the flow that users trigger 3p diag when there is no installed app.
+  test('AppNotInstall', async () => {
+    service.setShow3pDiagnosticsAppResult(
+        Show3pDiagnosticsAppResult.kAppNotInstalled);
+    await initialize();
+    assertTrue(!!component);
+
+    component.launch3pDiagnostics();
+
+    await flushTasks();
+    assertTrue(isDialogOpen('#shimless3pDiagErrorDialog'));
+    assertEquals(
+        'Google diagnostics app is not installed',
+        component.shadowRoot.querySelector('#shimless3pDiagErrorDialogTitle')
+            .textContent.trim());
+    assertEquals(
+        'Check with the device manufacturer',
+        component.shadowRoot.querySelector('#shimless3pDiagErrorDialogBody')
+            .textContent.trim());
+
+    await clickButton('#shimless3pDiagErrorDialogButton');
+    assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
+    assertFalse(isAllButtonsDisabled);
+  });
+
+  // Verify the flow that users trigger 3p diag, there is an installed app, but
+  // we fail to load the app.
+  test('AppFailedToLoad', async () => {
+    service.setShow3pDiagnosticsAppResult(
+        Show3pDiagnosticsAppResult.kFailedToLoad);
+    await initialize();
+    assertTrue(!!component);
+
+    component.launch3pDiagnostics();
+
+    await flushTasks();
+    assertTrue(isDialogOpen('#shimless3pDiagErrorDialog'));
+    assertEquals(
+        'Couldn\'t load Google diagnostics app',
+        component.shadowRoot.querySelector('#shimless3pDiagErrorDialogTitle')
+            .textContent.trim());
+    assertEquals(
+        'Try installing the app again',
+        component.shadowRoot.querySelector('#shimless3pDiagErrorDialogBody')
+            .textContent.trim());
+
+    await clickButton('#shimless3pDiagErrorDialogButton');
+    assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
+    assertFalse(isAllButtonsDisabled);
+  });
+
+  // Test error dialog can be controlled by Enter and Escape (cancel event).
+  for (const [name, actionOnDialog] of [
+           ['Enter', pressEnterOnDialog],
+           ['Cancel', cancelDialog],
+  ]) {
+    test(`ErrorDialogClosedBy${name}`, async () => {
+      service.setShow3pDiagnosticsAppResult(
+          Show3pDiagnosticsAppResult.kAppNotInstalled);
+      await initialize();
+      assertTrue(!!component);
+
+      component.launch3pDiagnostics();
+      await flushTasks();
+      assertTrue(isDialogOpen('#shimless3pDiagErrorDialog'));
+
+      await actionOnDialog('#shimless3pDiagErrorDialog');
+      await flushTasks();
+      assertFalse(isDialogOpen('#shimless3pDiagErrorDialog'));
+      assertFalse(isAllButtonsDisabled);
+    });
+  }
 
   // Test wrong shortcut don't trigger 3p diag.
   for (const {name, key, altKey, shiftKey} of
@@ -189,12 +324,15 @@ suite('shimless3pDiagTest', function() {
             },
   ]) {
     test(`Launch3pDiagByShortcut${name}`, async () => {
+      service.setShow3pDiagnosticsAppResult(Show3pDiagnosticsAppResult.kOk);
       await initialize();
       assertTrue(!!component);
 
       await pressKey(key, altKey, shiftKey);
+      await flushTasks();
       assertTrue(hasDisabledAllButtons);
-      // TODO(chungsheng): Verify other things after implemented them.
+      assertTrue(service.wasShow3pDiagnosticsAppCalled());
+      assertFalse(isAllButtonsDisabled);
     });
   }
 });
