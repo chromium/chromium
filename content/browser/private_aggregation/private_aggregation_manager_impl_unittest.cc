@@ -571,37 +571,52 @@ TEST_F(PrivateAggregationManagerImplTest,
   const url::Origin example_main_frame_origin =
       url::Origin::Create(GURL(kExampleMainFrameUrl));
 
-  EXPECT_CALL(*host_, BindNewReceiver(
-                          example_origin, example_main_frame_origin,
-                          PrivateAggregationBudgetKey::Api::kProtectedAudience,
-                          testing::Eq(absl::nullopt), _))
+  EXPECT_CALL(*host_,
+              BindNewReceiver(
+                  example_origin, example_main_frame_origin,
+                  PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                  testing::Eq(absl::nullopt), testing::Eq(absl::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
-      /*context_id=*/absl::nullopt,
+      /*context_id=*/absl::nullopt, /*timeout=*/absl::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_,
               BindNewReceiver(example_origin, example_main_frame_origin,
                               PrivateAggregationBudgetKey::Api::kSharedStorage,
+                              testing::Eq(absl::nullopt),
                               testing::Eq(absl::nullopt), _))
       .WillOnce(Return(false));
   EXPECT_FALSE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
-      /*context_id=*/absl::nullopt,
+      /*context_id=*/absl::nullopt, /*timeout=*/absl::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
                           PrivateAggregationBudgetKey::Api::kProtectedAudience,
-                          testing::Eq("example_context_id"), _))
+                          testing::Eq("example_context_id"),
+                          testing::Eq(absl::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
-      "example_context_id",
+      "example_context_id", /*timeout=*/absl::nullopt,
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+
+  EXPECT_CALL(*host_,
+              BindNewReceiver(example_origin, example_main_frame_origin,
+                              PrivateAggregationBudgetKey::Api::kSharedStorage,
+                              testing::Eq("example_context_id"),
+                              testing::Eq(base::Seconds(5)), _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, example_main_frame_origin,
+      PrivateAggregationBudgetKey::Api::kSharedStorage, "example_context_id",
+      /*timeout=*/base::Seconds(5),
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 }
 

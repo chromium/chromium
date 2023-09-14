@@ -828,6 +828,20 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivateAggregation.Host.TimeoutResult"
+    enum="PrivacySandboxPrivateAggregationHostTimeoutResult"
+    expires_after="2024-03-05">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Some PrivateAggregation operations have an associated timeout after which a
+    report will be sent unconditionally. This metric records, for every mojo
+    pipe which specifies a timeout, the outcome of the timeout. Recorded at the
+    timeout or disconnection time whichever occurs first, or when it's canceled
+    due to error, or on browser shutdown if it's still scheduled with pipe open.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
     expires_after="M122">
   <owner>linnan@chromium.org</owner>

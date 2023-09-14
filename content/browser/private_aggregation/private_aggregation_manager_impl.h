@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -23,7 +24,6 @@
 
 namespace base {
 class FilePath;
-class Time;
 }
 
 namespace url {
@@ -59,6 +59,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       absl::optional<std::string> context_id,
+      absl::optional<base::TimeDelta> timeout,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,

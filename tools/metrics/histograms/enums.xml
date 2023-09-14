@@ -89504,6 +89504,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="5" label="Negative value"/>
 </enum>
 
+<enum name="PrivacySandboxPrivateAggregationHostTimeoutResult">
+  <int value="0" label="Occurred before remote disconnection"/>
+  <int value="1" label="Occurred after remote disconnection"/>
+  <int value="2" label="Canceled due to error"/>
+  <int value="3" label="Still scheduled on shutdown"/>
+</enum>
+
 <enum name="PrivacySandboxReferrer">
   <int value="0" label="Privacy Settings"/>
   <int value="1" label="Cookie Settings Snackbar"/>

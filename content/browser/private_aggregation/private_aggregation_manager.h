@@ -8,16 +8,13 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
-
-namespace base {
-class Time;
-}
 
 namespace url {
 class Origin;
@@ -40,12 +37,15 @@ class CONTENT_EXPORT PrivateAggregationManager {
   // is not potentially trustworthy or if `context_id` is too long. The return
   // value indicates whether the receiver was accepted. If `context_id` is set,
   // and no `ContributeToHistogram()` calls are made by disconnection, a null
-  // report will still be sent.
+  // report will still be sent. If `timeout` is set, the report will be sent as
+  // if the pipe closed after the timeout, regardless of when the disconnection
+  // actually happens. `timeout` must be positive if set.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       absl::optional<std::string> context_id,
+      absl::optional<base::TimeDelta> timeout,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) = 0;
 

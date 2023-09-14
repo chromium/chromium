@@ -57,6 +57,12 @@ void RecordPipeResultHistogram(PrivateAggregationHost::PipeResult result) {
       "PrivacySandbox.PrivateAggregation.Host.PipeResult", result);
 }
 
+void RecordTimeoutResultHistogram(
+    PrivateAggregationHost::TimeoutResult result) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.PrivateAggregation.Host.TimeoutResult", result);
+}
+
 }  // namespace
 
 struct PrivateAggregationHost::ReceiverContext {
@@ -76,6 +82,13 @@ struct PrivateAggregationHost::ReceiverContext {
   // The debug mode details to use if a non-null report is sent. Cannot be null.
   blink::mojom::DebugModeDetailsPtr report_debug_details =
       blink::mojom::DebugModeDetails::New();
+
+  // True if a timeout is specified by the client.
+  bool timeout_enabled = false;
+
+  // If a timeout is specified by the client, this timer will be used to
+  // schedule the timeout task.
+  base::OneShotTimer timeout_timer;
 };
 
 PrivateAggregationHost::PrivateAggregationHost(
@@ -96,6 +109,11 @@ PrivateAggregationHost::PrivateAggregationHost(
 }
 
 PrivateAggregationHost::~PrivateAggregationHost() {
+  CHECK_GE(pipes_with_timeout_count_, 0);
+  for (int i = 0; i < pipes_with_timeout_count_; ++i) {
+    RecordTimeoutResultHistogram(TimeoutResult::kStillScheduledOnShutdown);
+  }
+
   if (pipe_duration_timers_.empty()) {
     return;
   }
@@ -111,8 +129,12 @@ bool PrivateAggregationHost::BindNewReceiver(
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
     absl::optional<std::string> context_id,
+    absl::optional<base::TimeDelta> timeout,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
+  // Timeout can only possibly be set when `context_id` is provided.
+  CHECK(!timeout || context_id);
+
   // If rejected, let the pending receiver be destroyed as it goes out of scope
   // so none of its requests are processed.
   if (!network::IsOriginPotentiallyTrustworthy(worklet_origin)) {
@@ -123,12 +145,31 @@ bool PrivateAggregationHost::BindNewReceiver(
     return false;
   }
 
-  mojo::ReceiverId id = receiver_set_.Add(
-      this, std::move(pending_receiver),
-      ReceiverContext{.worklet_origin = std::move(worklet_origin),
-                      .top_frame_origin = std::move(top_frame_origin),
-                      .api_for_budgeting = api_for_budgeting,
-                      .context_id = std::move(context_id)});
+  auto receiver_context = base::WrapUnique(
+      new ReceiverContext{.worklet_origin = std::move(worklet_origin),
+                          .top_frame_origin = std::move(top_frame_origin),
+                          .api_for_budgeting = api_for_budgeting,
+                          .context_id = std::move(context_id)});
+
+  ReceiverContext* receiver_context_raw_ptr = receiver_context.get();
+
+  mojo::ReceiverId id = receiver_set_.Add(this, std::move(pending_receiver),
+                                          std::move(receiver_context));
+
+  if (timeout) {
+    CHECK(timeout->is_positive());
+
+    pipes_with_timeout_count_++;
+    receiver_context_raw_ptr->timeout_enabled = true;
+
+    // Passing `base::Unretained(this)` and `receiver_context_raw_ptr` is safe
+    // here: `this` owns the the receiver context, and the receiver context owns
+    // the timer.
+    receiver_context_raw_ptr->timeout_timer.Start(
+        FROM_HERE, *timeout,
+        base::BindOnce(&PrivateAggregationHost::OnTimeoutBeforeDisconnect,
+                       base::Unretained(this), id, receiver_context_raw_ptr));
+  }
 
   auto emplace_result = pipe_duration_timers_.emplace(id, base::ElapsedTimer());
   CHECK(emplace_result.second);  // The ID should not already be present.
@@ -156,11 +197,11 @@ void PrivateAggregationHost::ContributeToHistogram(
     std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
         contribution_ptrs) {
   const url::Origin& reporting_origin =
-      receiver_set_.current_context().worklet_origin;
+      receiver_set_.current_context()->worklet_origin;
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
-          &*browser_context_, receiver_set_.current_context().top_frame_origin,
+          &*browser_context_, receiver_set_.current_context()->top_frame_origin,
           reporting_origin)) {
     CloseCurrentPipe(PipeResult::kApiDisabledInSettings);
     return;
@@ -187,19 +228,19 @@ void PrivateAggregationHost::ContributeToHistogram(
 
   bool too_many_contributions =
       contribution_ptrs.size() +
-          receiver_set_.current_context().contributions.size() >
+          receiver_set_.current_context()->contributions.size() >
       kMaxNumberOfContributions;
   if (too_many_contributions) {
-    receiver_set_.current_context().too_many_contributions = true;
+    receiver_set_.current_context()->too_many_contributions = true;
     const int num_to_copy =
         kMaxNumberOfContributions -
-        receiver_set_.current_context().contributions.size();
+        receiver_set_.current_context()->contributions.size();
     CHECK_GE(num_to_copy, 0);
     contribution_ptrs.resize(num_to_copy);
   }
   base::ranges::transform(
       contribution_ptrs,
-      std::back_inserter(receiver_set_.current_context().contributions),
+      std::back_inserter(receiver_set_.current_context()->contributions),
       [](const blink::mojom::AggregatableReportHistogramContributionPtr&
              contribution_ptr) { return std::move(*contribution_ptr); });
 }
@@ -258,86 +299,137 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
 
 void PrivateAggregationHost::EnableDebugMode(
     blink::mojom::DebugKeyPtr debug_key) {
-  if (receiver_set_.current_context().report_debug_details->is_enabled) {
+  if (receiver_set_.current_context()->report_debug_details->is_enabled) {
     mojo::ReportBadMessage("EnableDebugMode() called multiple times");
     CloseCurrentPipe(PipeResult::kEnableDebugModeCalledMultipleTimes);
     return;
   }
 
-  receiver_set_.current_context().report_debug_details->is_enabled = true;
-  receiver_set_.current_context().report_debug_details->debug_key =
+  receiver_set_.current_context()->report_debug_details->is_enabled = true;
+  receiver_set_.current_context()->report_debug_details->debug_key =
       std::move(debug_key);
 }
 
 void PrivateAggregationHost::CloseCurrentPipe(PipeResult pipe_result) {
+  // We should only reach here after an error.
+  CHECK_NE(pipe_result, PipeResult::kReportSuccess);
+  CHECK_NE(pipe_result,
+           PipeResult::kReportSuccessButTruncatedDueToTooManyContributions);
+  CHECK_NE(pipe_result, PipeResult::kNoReportButNoError);
+
   RecordPipeResultHistogram(pipe_result);
+
+  if (receiver_set_.current_context()->timeout_enabled) {
+    CHECK(receiver_set_.current_context()->timeout_timer.IsRunning());
+    pipes_with_timeout_count_--;
+    RecordTimeoutResultHistogram(TimeoutResult::kCanceledDueToError);
+  }
 
   mojo::ReceiverId current_receiver = receiver_set_.current_receiver();
   receiver_set_.Remove(current_receiver);
   pipe_duration_timers_.erase(current_receiver);
 }
 
+void PrivateAggregationHost::OnTimeoutBeforeDisconnect(
+    mojo::ReceiverId id,
+    ReceiverContext* receiver_context) {
+  SendReportOnTimeoutOrDisconnect(*receiver_context,
+                                  /*remaining_timeout=*/base::TimeDelta());
+
+  pipes_with_timeout_count_--;
+  RecordTimeoutResultHistogram(
+      TimeoutResult::kOccurredBeforeRemoteDisconnection);
+
+  receiver_set_.Remove(id);
+  pipe_duration_timers_.erase(id);
+}
+
 void PrivateAggregationHost::OnReceiverDisconnected() {
   pipe_duration_timers_.erase(receiver_set_.current_receiver());
 
-  ReceiverContext& current_context = receiver_set_.current_context();
-  const url::Origin& reporting_origin = current_context.worklet_origin;
+  ReceiverContext& current_context = *receiver_set_.current_context();
+  if (!current_context.timeout_enabled) {
+    SendReportOnTimeoutOrDisconnect(current_context,
+                                    /*remaining_timeout=*/base::TimeDelta());
+    return;
+  }
+
+  // The timeout hasn't been reached.
+  CHECK(current_context.timeout_timer.IsRunning());
+  pipes_with_timeout_count_--;
+
+  RecordTimeoutResultHistogram(
+      TimeoutResult::kOccurredAfterRemoteDisconnection);
+
+  base::TimeDelta remaining_timeout =
+      current_context.timeout_timer.desired_run_time() - base::TimeTicks::Now();
+
+  SendReportOnTimeoutOrDisconnect(current_context, remaining_timeout);
+}
+
+void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
+    ReceiverContext& receiver_context,
+    base::TimeDelta remaining_timeout) {
+  const url::Origin& reporting_origin = receiver_context.worklet_origin;
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
 
   if (!GetContentClient()->browser()->IsPrivateAggregationAllowed(
-          &*browser_context_, current_context.top_frame_origin,
+          &*browser_context_, receiver_context.top_frame_origin,
           reporting_origin)) {
     // No need to remove the pipe from `receiver_set_` as it's already
-    // disconnected.
+    // disconnected or will get disconnected synchronously.
     RecordPipeResultHistogram(PipeResult::kApiDisabledInSettings);
     return;
   }
 
-  if (current_context.report_debug_details->is_enabled &&
-      !IsDebugModeAllowed(current_context.top_frame_origin, reporting_origin)) {
-    current_context.report_debug_details =
+  if (receiver_context.report_debug_details->is_enabled &&
+      !IsDebugModeAllowed(receiver_context.top_frame_origin,
+                          reporting_origin)) {
+    receiver_context.report_debug_details =
         blink::mojom::DebugModeDetails::New();
   }
 
-  if (current_context.contributions.empty()) {
-    if (!current_context.context_id.has_value()) {
+  if (receiver_context.contributions.empty()) {
+    if (!receiver_context.context_id.has_value()) {
       RecordPipeResultHistogram(PipeResult::kNoReportButNoError);
       return;
     }
 
     // Null reports never have debug mode enabled.
     // TODO(crbug.com/1466668): Consider permitting this.
-    current_context.report_debug_details =
+    receiver_context.report_debug_details =
         blink::mojom::DebugModeDetails::New();
 
-    current_context.contributions.emplace_back(
+    receiver_context.contributions.emplace_back(
         /*bucket=*/0, /*value=*/0);
   }
 
   base::Time now = base::Time::Now();
 
+  // If the timeout hasn't been reached, use a modified report issued time.
+  base::Time report_issued_time = now + remaining_timeout;
+
   // TODO(alexmt): Move report generation to the manager.
   AggregatableReportRequest report_request = GenerateReportRequest(
-      std::move(current_context.contributions),
+      std::move(receiver_context.contributions),
       // TODO(alexmt): Consider allowing this to be set.
       blink::mojom::AggregationServiceMode::kDefault,
-      std::move(current_context.report_debug_details),
+      std::move(receiver_context.report_debug_details),
       /*scheduled_report_time=*/
-      should_not_delay_reports_ ? now
-                                : GetScheduledReportTime(
-                                      /*report_issued_time=*/now),
+      should_not_delay_reports_ ? report_issued_time
+                                : GetScheduledReportTime(report_issued_time),
       /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
-      current_context.api_for_budgeting, current_context.context_id);
+      receiver_context.api_for_budgeting, receiver_context.context_id);
 
   RecordPipeResultHistogram(
-      current_context.too_many_contributions
+      receiver_context.too_many_contributions
           ? PipeResult::kReportSuccessButTruncatedDueToTooManyContributions
           : PipeResult::kReportSuccess);
 
   absl::optional<PrivateAggregationBudgetKey> budget_key =
       PrivateAggregationBudgetKey::Create(
           /*origin=*/reporting_origin, /*api_invocation_time=*/now,
-          /*api=*/current_context.api_for_budgeting);
+          /*api=*/receiver_context.api_for_budgeting);
 
   // The origin should be potentially trustworthy.
   DCHECK(budget_key.has_value());

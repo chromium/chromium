@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -43,6 +44,7 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
     absl::optional<std::string> context_id,
+    absl::optional<base::TimeDelta> timeout,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);

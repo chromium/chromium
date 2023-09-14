@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -992,9 +993,17 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
 
   mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
       pending_pa_host_remote;
+
+  absl::optional<base::TimeDelta> timeout =
+      (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) &&
+       context_id)
+          ? absl::optional<base::TimeDelta>(base::Seconds(5))
+          : absl::nullopt;
+
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
       PrivateAggregationBudgetKey::Api::kSharedStorage, context_id,
+      std::move(timeout),
       pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

@@ -362,7 +362,8 @@ void SplitContributionsIntoBatchesThenSendToHost(
         /*worklet_origin=*/reporting_origin,
         /*top_frame_origin=*/main_frame_origin,
         PrivateAggregationBudgetKey::Api::kProtectedAudience,
-        /*context_id=*/absl::nullopt, remote_host.BindNewPipeAndPassReceiver());
+        /*context_id=*/absl::nullopt,
+        /*timeout=*/absl::nullopt, remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID
     // is set), so this should always succeed.

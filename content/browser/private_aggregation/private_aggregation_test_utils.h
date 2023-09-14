@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
@@ -23,10 +24,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
-
-namespace base {
-class Time;
-}
 
 namespace url {
 class Origin;
@@ -82,6 +79,7 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
                url::Origin,
                PrivateAggregationBudgetKey::Api,
                absl::optional<std::string>,
+               absl::optional<base::TimeDelta>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -108,6 +106,7 @@ class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
                url::Origin,
                PrivateAggregationBudgetKey::Api,
                absl::optional<std::string>,
+               absl::optional<base::TimeDelta>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
