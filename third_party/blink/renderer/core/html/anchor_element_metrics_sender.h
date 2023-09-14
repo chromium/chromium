@@ -65,13 +65,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   void DidFinishLifecycleUpdate(
       const LocalFrameView& local_frame_view) override;
 
-  // Returns the anchor element metrics sender of the root document of
-  // |Document|. Constructs new one if it does not exist.
-  static AnchorElementMetricsSender* From(Document&);
-
-  // Returns true if |document| should have associated
-  // AnchorElementMetricsSender.
-  static bool HasAnchorElementMetricsSender(Document& document);
+  // Returns the AnchorElementMetricsSender of the given root `document`.
+  // Constructs and returns a new one if it does not exist, or returns nullptr
+  // if the given `document` may not have a AnchorElementMetricsSender.
+  static AnchorElementMetricsSender* From(Document& document);
 
   // Report the link click to the browser process, so long as the anchor
   // is an HTTP(S) link.
@@ -108,6 +105,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   static constexpr auto kUpdateMetricsTimeGap = base::Milliseconds(200);
 
  private:
+  // Returns true if `document` should have an associated
+  // AnchorElementMetricsSender.
+  static bool HasAnchorElementMetricsSender(Document& document);
+
   // Associates |metrics_host_| with the IPC interface if not already, so it can
   // be used to send messages. Returns true if associated, false otherwise.
   bool AssociateInterface();

@@ -565,9 +565,8 @@ void HTMLAnchorElement::HandleClick(Event& event) {
   }
 
   Document& top_document = GetDocument().TopDocument();
-  if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document)) {
-    AnchorElementMetricsSender::From(top_document)
-        ->MaybeReportClickedMetricsOnClick(*this);
+  if (auto* sender = AnchorElementMetricsSender::From(top_document)) {
+    sender->MaybeReportClickedMetricsOnClick(*this);
   }
 
   StringBuilder url;
@@ -706,8 +705,8 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
   LogAddElementIfIsolatedWorldAndInDocument("a", html_names::kHrefAttr);
 
   Document& top_document = GetDocument().TopDocument();
-  if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document)) {
-    AnchorElementMetricsSender::From(top_document)->AddAnchorElement(*this);
+  if (auto* sender = AnchorElementMetricsSender::From(top_document)) {
+    sender->AddAnchorElement(*this);
   }
 
   if (isConnected() && IsLink() &&

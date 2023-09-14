@@ -260,9 +260,8 @@ void AnchorElementInteractionTracker::OnPointerEvent(
   }
 
   Document& top_document = GetDocument()->TopDocument();
-  if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document)) {
-    AnchorElementMetricsSender::From(top_document)
-        ->MaybeReportAnchorElementPointerEvent(*anchor, pointer_event);
+  if (auto* sender = AnchorElementMetricsSender::From(top_document)) {
+    sender->MaybeReportAnchorElementPointerEvent(*anchor, pointer_event);
   }
 
   // interaction_host_ might become unbound: Android's low memory detector
@@ -327,12 +326,11 @@ void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
           mouse_motion_estimator_->GetMouseTangentialAcceleration());
 
       Document& top_document = GetDocument()->TopDocument();
-      if (hover_event_candidate.value.is_mouse &&
-          AnchorElementMetricsSender::HasAnchorElementMetricsSender(
-              top_document)) {
-        AnchorElementMetricsSender::From(top_document)
-            ->MaybeReportAnchorElementPointerDataOnHoverTimerFired(
-                hover_event_candidate.value.anchor_id, pointer_data->Clone());
+      if (hover_event_candidate.value.is_mouse) {
+        if (auto* sender = AnchorElementMetricsSender::From(top_document)) {
+          sender->MaybeReportAnchorElementPointerDataOnHoverTimerFired(
+              hover_event_candidate.value.anchor_id, pointer_data->Clone());
+        }
       }
 
       interaction_host_->OnPointerHover(
