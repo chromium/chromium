@@ -862,7 +862,6 @@ public class MainActivity
         prepareActionButton(builder);
         boolean isPCCT = mCctType.equals("Partial CCT");
         prepareAesthetics(builder, isPCCT);
-        CustomTabsIntent customTabsIntent = builder.build();
 
         // @CloseButtonPosition
         int closeButtonPosition = mCloseButtonPositionToggle.getCheckedButtonId() == R.id.end_button
@@ -879,8 +878,12 @@ public class MainActivity
             decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
         }
 
+        CustomTabsIntent customTabsIntent;
+
         if (isPCCT) {
             editor.putString(SHARED_PREF_CCT, "Partial CCT");
+
+            customTabsIntent = builder.build();
             int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
             customTabsIntent.intent.putExtra(EXTRA_TOOLBAR_CORNER_RADIUS_DP, toolbarCornerRadiusDp);
@@ -927,9 +930,9 @@ public class MainActivity
                 Intent broadcastIntent = new Intent(this, BottomBarManager.SwipeUpReceiver.class);
                 PendingIntent pi = PendingIntent.getBroadcast(
                         this, 0, broadcastIntent, PendingIntent.FLAG_MUTABLE);
-                customTabsIntent.intent.putExtra(
-                        CustomTabsIntent.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_GESTURE, pi);
+                builder.setSecondaryToolbarSwipeUpGesture(pi);
             }
+            customTabsIntent = builder.build();
             // NOTE: opening in incognito may be restricted. This assumes it is not.
             customTabsIntent.intent.putExtra(
                     "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",

@@ -28,6 +28,7 @@ public class BottomBarManager extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Toast.makeText(context, "Swiped up!", Toast.LENGTH_SHORT).show();
+            assert intent.getData() == null : "Swipe-up gesture should come without data URI";
         }
     }
 
