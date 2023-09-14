@@ -119,6 +119,12 @@ if (chrome.readingMode) {
     assert(readAnythingApp);
     readAnythingApp.restoreSettingsFromPrefs();
   };
+
+  chrome.readingMode.updateFonts = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp);
+    readAnythingApp.updateFonts();
+  };
 }
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
@@ -761,6 +767,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
     if (!chrome.readingMode.isWebUIToolbarVisible) {
       document.body.style.background = skColorToRgba(backgroundColor);
+    }
+  }
+
+  updateFonts() {
+    // Also update the font on the toolbar itself with the validated font name.
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const toolbar = shadowRoot.getElementById('toolbar');
+    if (toolbar instanceof ReadAnythingToolbar) {
+      toolbar.updateFonts();
     }
   }
 }

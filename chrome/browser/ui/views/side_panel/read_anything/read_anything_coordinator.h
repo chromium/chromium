@@ -44,6 +44,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
    public:
     virtual void Activate(bool active) {}
     virtual void OnCoordinatorDestroyed() = 0;
+    virtual void SetDefaultLanguageCode(const std::string& code) {}
   };
 
   explicit ReadAnythingCoordinator(Browser* browser);
@@ -89,6 +90,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   // Attempts to show in product help for reading mode.
   void MaybeShowReadingModeSidePanelIPH();
 
+  std::string default_language_code_;
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
 

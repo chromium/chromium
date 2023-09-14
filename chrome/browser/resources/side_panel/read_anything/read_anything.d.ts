@@ -57,6 +57,9 @@ declare namespace chrome {
     // determine which empty state to display.
     let isSelectable: boolean;
 
+    // Fonts supported by the browser's preferred language.
+    let supportedFonts: string[];
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
     // in this node, only returns children which are partially or entirely
@@ -169,6 +172,9 @@ declare namespace chrome {
         backgroundColor: number, lineSpacing: number,
         letterSpacing: number): void;
 
+    // Sets the default language. Used by tests only.
+    function setLanguageForTesting(code: string): void;
+
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.
     ////////////////////////////////////////////////////////////////
@@ -200,5 +206,9 @@ declare namespace chrome {
     // cropped to the nearest word boundary that doesn't exceed the maximum
     // text length.
     function getNextSentence(value: string, maxTextLength: number): number;
+
+    // Signal that the supported fonts should be updated i.e. that the brower's
+    // preferred language has changed.
+    function updateFonts(): void;
   }
 }

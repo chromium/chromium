@@ -92,6 +92,7 @@ class ReadAnythingUntrustedPageHandler
   // ReadAnythingCoordinator::Observer:
   void Activate(bool active) override;
   void OnCoordinatorDestroyed() override;
+  void SetDefaultLanguageCode(const std::string& code) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

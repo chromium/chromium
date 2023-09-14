@@ -222,6 +222,11 @@ void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
                              background_skcolor, line_spacing, letter_spacing));
 }
 
+void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
+    const std::string& code) {
+  page_->SetDefaultLanguageCode(code);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingCoordinator::Observer:
 ///////////////////////////////////////////////////////////////////////////////

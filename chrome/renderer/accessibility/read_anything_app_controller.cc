@@ -670,10 +670,14 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnSelectionChange)
       .SetMethod("onCollapseSelection",
                  &ReadAnythingAppController::OnCollapseSelection)
+      .SetProperty("supportedFonts",
+                   &ReadAnythingAppController::GetSupportedFonts)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
       .SetMethod("setThemeForTesting",
                  &ReadAnythingAppController::SetThemeForTesting)
+      .SetMethod("setLanguageForTesting",
+                 &ReadAnythingAppController::SetLanguageForTesting)
       .SetMethod("getNextSentence",
                  &ReadAnythingAppController::GetNextSentence);
 }
@@ -887,6 +891,10 @@ bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
 
 bool ReadAnythingAppController::IsReadAloudEnabled() const {
   return features::IsReadAnythingReadAloudEnabled();
+}
+
+std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() const {
+  return model_.GetSupportedFonts();
 }
 
 void ReadAnythingAppController::OnConnected() {
@@ -1121,6 +1129,20 @@ void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
   OnThemeChanged(ReadAnythingTheme::New(font_name, font_size, foreground_color,
                                         background_color, line_spacing_enum,
                                         letter_spacing_enum));
+}
+
+void ReadAnythingAppController::SetLanguageForTesting(
+    const std::string& language_code) {
+  SetDefaultLanguageCode(language_code);
+}
+
+void ReadAnythingAppController::SetDefaultLanguageCode(
+    const std::string& code) {
+  model_.set_default_language_code(code);
+
+  // Signal to the WebUI that the supported fonts may have changed.
+  std::string script = "chrome.readingMode.updateFonts();";
+  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
 void ReadAnythingAppController::SetContentForTesting(

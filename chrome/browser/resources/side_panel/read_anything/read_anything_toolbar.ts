@@ -14,7 +14,7 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert_ts.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ReadAnythingElement} from './app.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
@@ -27,6 +27,7 @@ export interface ReadAnythingToolbar {
     letterSpacingMenu: CrActionMenuElement,
     fontMenu: CrActionMenuElement,
     fontSizeMenu: CrActionMenuElement,
+    fontTemplate: DomRepeat,
   };
 }
 
@@ -177,17 +178,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     super.connectedCallback();
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
-    // TODO(b/1465029): Use the brower's preferred language to hide unsupported
-    // fonts.
-    this.fontOptions_.push(
-        'Poppins',
-        'Sans-serif',
-        'Serif',
-        'Comic Neue',
-        'Lexend Deca',
-        'EB Garamond',
-        'STIX Two Text',
-    );
+    this.updateFonts();
   }
 
   restoreSettingsFromPrefs(colorSuffix: string|undefined) {
@@ -224,6 +215,16 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   private getIndexOfSetting_(menuArray: MenuStateItem[], dataToFind: any):
       number {
     return menuArray.findIndex((item) => (item.data === dataToFind));
+  }
+
+  updateFonts() {
+    const fonts = chrome.readingMode.supportedFonts;
+    this.fontOptions_ = [];
+    fonts.forEach(element => {
+      this.fontOptions_.push(element);
+    });
+
+    this.$.fontTemplate.render();
   }
 
   updateUiForPlaying() {

@@ -160,7 +160,7 @@
     </template>
   </cr-action-menu>
   <cr-action-menu id="fontMenu">
-  <template is="dom-repeat" items="[[fontOptions_]]">
+  <template id="fontTemplate" is="dom-repeat" items="[[fontOptions_]]">
     <button class="dropdown-item" on-click="onFontClick_">
       <iron-icon class="button-image check-mark"
           icon="read-anything:check-mark"></iron-icon>

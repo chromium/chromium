@@ -60,6 +60,30 @@ const double kReadAnythingMinimumFontScale = 0.5;
 const double kReadAnythingMaximumFontScale = 4.5;
 const double kReadAnythingFontScaleIncrement = 0.25;
 
+const char* kLanguagesSupportedByPoppins[] = {
+    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "mr", "ms",
+    "nl", "pl", "pt", "ro", "sk", "sl", "sv", "sw", "tr"};
+
+const char* kLanguagesSupportedByComicNeue[] = {
+    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil", "fr", "hr",
+    "hu", "id", "it", "ms", "nl", "pl", "pt", "sk", "sl", "sv", "sw"};
+
+const char* kLanguagesSupportedByLexendDeca[] = {
+    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl",
+    "pt", "ro", "sk", "sl", "sv", "sw", "tr", "vi"};
+
+const char* kLanguagesSupportedByEbGaramond[] = {
+    "af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
+    "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"};
+
+const char* kLanguagesSupportedByStixTwoText[] = {
+    "af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
+    "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"};
+
 // Enum for logging when a text style setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

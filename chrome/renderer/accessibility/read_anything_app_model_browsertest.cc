@@ -188,6 +188,15 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void ResetTextSize() { model_->ResetTextSize(); }
 
+  std::string DefaultLanguageCode() { return model_->default_language_code(); }
+  void SetLanguageCode(std::string code) {
+    model_->set_default_language_code(code);
+  }
+
+  std::vector<std::string> GetSupportedFonts() {
+    return model_->GetSupportedFonts();
+  }
+
   ui::AXTreeID tree_id_;
 
  private:
@@ -1005,4 +1014,70 @@ TEST_F(ReadAnythingAppModelTest, ResetTextSize_ReturnsTextSizeToDefault) {
 
   ResetTextSize();
   ASSERT_EQ(FontSize(), kReadAnythingDefaultFontScale);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SupportedFonts_SetDefaultLanguageCode_ReturnsCorrectCode) {
+  ASSERT_EQ(DefaultLanguageCode(), "en-US");
+
+  SetLanguageCode("es");
+  ASSERT_EQ(DefaultLanguageCode(), "es");
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SupportedFonts_InvalidLanguageCode_ReturnsDefaultFonts) {
+  SetLanguageCode("qr");
+  std::vector<std::string> expectedFonts = {"Sans-serif", "Serif"};
+  std::vector<std::string> fonts = GetSupportedFonts();
+
+  EXPECT_EQ(fonts.size(), expectedFonts.size());
+  for (size_t i = 0; i < fonts.size(); i++) {
+    ASSERT_EQ(fonts[i], expectedFonts[i]);
+  }
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SupportedFonts_BeforeLanguageSet_ReturnsDefaultFonts) {
+  std::vector<std::string> expectedFonts = {"Sans-serif", "Serif"};
+  std::vector<std::string> fonts = GetSupportedFonts();
+
+  EXPECT_EQ(fonts.size(), expectedFonts.size());
+  for (size_t i = 0; i < fonts.size(); i++) {
+    ASSERT_EQ(fonts[i], expectedFonts[i]);
+  }
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SupportedFonts_SetDefaultLanguageCode_ReturnsExpectedDefaultFonts) {
+  // English
+  SetLanguageCode("en");
+  std::vector<std::string> expectedFonts = {
+      "Poppins",     "Sans-serif",  "Serif",        "Comic Neue",
+      "Lexend Deca", "EB Garamond", "STIX Two Text"};
+  std::vector<std::string> fonts = GetSupportedFonts();
+
+  EXPECT_EQ(fonts.size(), expectedFonts.size());
+  for (size_t i = 0; i < fonts.size(); i++) {
+    ASSERT_EQ(fonts[i], expectedFonts[i]);
+  }
+
+  // Bulgarian
+  SetLanguageCode("bg");
+  expectedFonts = {"Sans-serif", "Serif", "EB Garamond", "STIX Two Text"};
+  fonts = GetSupportedFonts();
+
+  EXPECT_EQ(fonts.size(), expectedFonts.size());
+  for (size_t i = 0; i < fonts.size(); i++) {
+    ASSERT_EQ(fonts[i], expectedFonts[i]);
+  }
+
+  // Hindi
+  SetLanguageCode("hi");
+  expectedFonts = {"Poppins", "Sans-serif", "Serif"};
+  fonts = GetSupportedFonts();
+
+  EXPECT_EQ(fonts.size(), expectedFonts.size());
+  for (size_t i = 0; i < fonts.size(); i++) {
+    ASSERT_EQ(fonts[i], expectedFonts[i]);
+  }
 }

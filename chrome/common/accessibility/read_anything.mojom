@@ -149,6 +149,9 @@ interface UntrustedPage {
   // Send an updated theme to the WebUI.
   OnThemeChanged(ReadAnythingTheme new_theme);
 
+  // Send an updated default language code to the WebUI.
+  SetDefaultLanguageCode(string code);
+
   // Send the theme values stored in prefs to the WebUI.
   OnSettingsRestoredFromPrefs(read_anything.mojom.LineSpacing line_spacing,
                            read_anything.mojom.LetterSpacing letter_spacing,

@@ -98,6 +98,7 @@ class ReadAnythingAppController
       const std::string& font,
       double font_size,
       read_anything::mojom::Colors color) override;
+  void SetDefaultLanguageCode(const std::string& code) override;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady() override;
 #endif
@@ -162,6 +163,7 @@ class ReadAnythingAppController
   void OnFontChange(const std::string& font);
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
+  std::vector<std::string> GetSupportedFonts() const;
 
   void Distill();
   void Draw();
@@ -183,9 +185,10 @@ class ReadAnythingAppController
   // text length.
   int GetNextSentence(const std::u16string& text, int maxTextLength);
 
-  // SetContentForTesting and SetThemeForTesting are used by
-  // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController
-  // even though ReadAnythingAppControllerBrowserTest is friended.
+  // SetContentForTesting, SetThemeForTesting, and SetLanguageForTesting are
+  // used by ReadAnythingAppTest and thus need to be kept in
+  // ReadAnythingAppController even though ReadAnythingAppControllerBrowserTest
+  // is friended.
   // Snapshot_lite is a data structure which resembles an
   // AXTreeUpdate. E.g.:
   //   const axTree = {
@@ -211,6 +214,7 @@ class ReadAnythingAppController
                           SkColor background_color,
                           int line_spacing,
                           int letter_spacing);
+  void SetLanguageForTesting(const std::string& language_code);
 
   content::RenderFrame* render_frame_;
   std::unique_ptr<AXTreeDistiller> distiller_;

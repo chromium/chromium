@@ -99,6 +99,10 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
       /* colors = */ prefs_colors,
       /* line spacing = */ prefs_line_spacing,
       /* letter spacing = */ prefs_letter_spacing);
+  default_language_code_ = prefs_lang;
+  for (Observer& obs : observers_) {
+    obs.SetDefaultLanguageCode(prefs_lang);
+  }
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
@@ -146,6 +150,11 @@ ReadAnythingModel* ReadAnythingCoordinator::GetModel() {
 void ReadAnythingCoordinator::AddObserver(
     ReadAnythingCoordinator::Observer* observer) {
   observers_.AddObserver(observer);
+
+  // InitModelWithUserPrefs where default_language_code_ is set may be called
+  // before all observerers have been added, so ensure that observers are
+  // updated with the correct language code as they're added.
+  observer->SetDefaultLanguageCode(default_language_code_);
 }
 void ReadAnythingCoordinator::RemoveObserver(
     ReadAnythingCoordinator::Observer* observer) {

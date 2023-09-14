@@ -738,3 +738,30 @@ void ReadAnythingAppModel::DecreaseTextSize() {
 void ReadAnythingAppModel::ResetTextSize() {
   font_size_ = kReadAnythingDefaultFontScale;
 }
+
+std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
+  std::vector<std::string> font_choices_;
+
+  if (base::Contains(kLanguagesSupportedByPoppins, default_language_code())) {
+    font_choices_.push_back("Poppins");
+  }
+  font_choices_.push_back("Sans-serif");
+  font_choices_.push_back("Serif");
+  if (base::Contains(kLanguagesSupportedByComicNeue, default_language_code())) {
+    font_choices_.push_back("Comic Neue");
+  }
+  if (base::Contains(kLanguagesSupportedByLexendDeca,
+                     default_language_code())) {
+    font_choices_.push_back("Lexend Deca");
+  }
+  if (base::Contains(kLanguagesSupportedByEbGaramond,
+                     default_language_code())) {
+    font_choices_.push_back("EB Garamond");
+  }
+  if (base::Contains(kLanguagesSupportedByStixTwoText,
+                     default_language_code())) {
+    font_choices_.push_back("STIX Two Text");
+  }
+
+  return font_choices_;
+}

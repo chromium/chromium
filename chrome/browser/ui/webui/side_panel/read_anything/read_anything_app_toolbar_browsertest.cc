@@ -72,6 +72,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, Checkmarks_Visible) {
   ASSERT_TRUE(RunTest("checkmark_visible_on_selected.js"));
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, SupportedFonts_Correct) {
+  ASSERT_TRUE(RunTest("supported_fonts.js"));
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
                        FontSizeCallback_ChangesFontSize) {
   ASSERT_TRUE(RunTest("font_size_callback_changes_font_size.js"));
