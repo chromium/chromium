@@ -266,9 +266,6 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // Computes and caches a position data object as needed.
   void EnsurePositionData() const;
 
-  // Discards cached position data, freeing up memory.
-  void DiscardPositionData() const;
-
   const ShapeResultCharacterData& CharacterData(unsigned offset) const;
   ShapeResultCharacterData& CharacterData(unsigned offset);
 
