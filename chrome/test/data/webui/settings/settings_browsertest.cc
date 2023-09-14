@@ -660,20 +660,24 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{features::kPrivacyGuide3};
 };
 
-// TODO(crbug.com/1482266): flaky on Linux debug builds.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_PrivacyGuidePage DISABLED_PrivacyGuidePage
-#else
-#define MAYBE_PrivacyGuidePage PrivacyGuidePage
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_PrivacyGuidePage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuidePage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SettingsFlowLength) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('SettingsFlowLength')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePagePG3Off) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuidePagePG3Off')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SettingsFlowLengthPG3Off) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('SettingsFlowLengthPG3Off')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigations) {
