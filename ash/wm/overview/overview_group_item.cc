@@ -275,10 +275,6 @@ void OverviewGroupItem::CreateItemWidget() {
   overview_group_container_view_ = item_widget_->SetContentsView(
       std::make_unique<OverviewGroupContainerView>(this));
   item_widget_->Show();
-  item_widget_->SetOpacity(
-      overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
-          ? 1.f
-          : 0.f);
   item_widget_->GetLayer()->SetMasksToBounds(false);
 }
 

@@ -4,14 +4,36 @@
 
 #include "ash/wm/overview/overview_group_container_view.h"
 
-#include "ash/wm/overview/overview_group_item.h"
+#include "ash/style/style_util.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
+namespace {
+
+constexpr int kFocusRingRoundedCornerRadius = 20;
+
+}  // namespace
+
 OverviewGroupContainerView::OverviewGroupContainerView(
-    OverviewGroupItem* overview_group_item)
-    : overview_group_item_(overview_group_item) {}
+    OverviewGroupItem* overview_group_item) {
+  SetFocusBehavior(FocusBehavior::NEVER);
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(kFocusRingHaloInset), kFocusRingRoundedCornerRadius);
+
+  views::FocusRing* focus_ring = StyleUtil::SetUpFocusRingForView(this);
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<OverviewGroupContainerView>(view);
+        CHECK(v);
+        return v->is_focused_;
+      }));
+}
+
 OverviewGroupContainerView::~OverviewGroupContainerView() = default;
 
 views::View* OverviewGroupContainerView::GetView() {
@@ -29,13 +51,22 @@ bool OverviewGroupContainerView::MaybeActivateFocusedViewOnOverviewExit(
   return true;
 }
 
-gfx::Point OverviewGroupContainerView::GetMagnifierFocusPointInScreen() {
-  return overview_group_item_->GetMagnifierFocusPointInScreen();
+void OverviewGroupContainerView::OnFocusableViewFocused() {
+  UpdateFocusState(/*focus=*/true);
 }
 
-void OverviewGroupContainerView::OnFocusableViewFocused() {}
+void OverviewGroupContainerView::OnFocusableViewBlurred() {
+  UpdateFocusState(/*focus=*/false);
+}
 
-void OverviewGroupContainerView::OnFocusableViewBlurred() {}
+void OverviewGroupContainerView::UpdateFocusState(bool focus) {
+  if (is_focused_ == focus) {
+    return;
+  }
+
+  is_focused_ = focus;
+  views::FocusRing::Get(this)->SchedulePaint();
+}
 
 BEGIN_METADATA(OverviewGroupContainerView, views::View)
 END_METADATA
