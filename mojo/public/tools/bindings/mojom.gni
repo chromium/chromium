@@ -803,8 +803,12 @@ template("mojom") {
           "--add-module-metadata",
           "webui_module_path=${invoker.webui_module_path}",
         ]
-        if (defined(invoker.generate_legacy_js_bindings)) {
-          args += [ "legacy_js_only=${invoker.generate_legacy_js_bindings}" ]
+        if (!defined(invoker.use_typescript_sources) ||
+            !invoker.use_typescript_sources) {
+          args += [
+            "--add-module-metadata",
+            "generate_webui_js=True",
+          ]
         }
       }
     }
