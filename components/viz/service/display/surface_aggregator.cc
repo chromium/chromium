@@ -1454,17 +1454,23 @@ void SurfaceAggregator::CopyQuadsToPass(
                         &damage_rect_in_quad_space_valid,
                         new_mask_filter_info_ext);
     } else {
-      if (quad->shared_quad_state != last_copied_source_shared_quad_state) {
+      // Here we output the optional quad's |per_quad_damage| to the
+      // |surface_damage_rect_list_|. Any non per quad damage associated with
+      // this |source_pass| will have been added to the
+      // |surface_damage_rect_list_| before this phase.
+      bool needs_sqs =
+          quad->shared_quad_state != last_copied_source_shared_quad_state;
+      bool has_per_quad_damage =
+          source_pass.has_per_quad_damage &&
+          GetOptionalDamageRectFromQuad(quad).has_value() &&
+          resolved_pass.aggregation().will_draw;
+
+      if (needs_sqs || has_per_quad_damage) {
         SharedQuadState* dest_shared_quad_state = CopySharedQuadState(
             quad->shared_quad_state, client_namespace_id, target_transform,
             clip_rect, new_mask_filter_info_ext, dest_pass);
-        // Here we output the optional quad's |per_quad_damage| to the
-        // |surface_damage_rect_list_|. Any non per quad damage associated with
-        // this |source_pass| will have been added to the
-        // |surface_damage_rect_list_| before this phase.
-        if (source_pass.has_per_quad_damage &&
-            GetOptionalDamageRectFromQuad(quad).has_value() &&
-            resolved_pass.aggregation().will_draw) {
+
+        if (has_per_quad_damage) {
           auto damage_rect_in_target_space =
               GetOptionalDamageRectFromQuad(quad);
           dest_shared_quad_state->overlay_damage_index =
