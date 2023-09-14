@@ -767,6 +767,9 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_SEARCH_WITH_VOICE_TITLE" desc="Siri Shortcut for search with voice title [iOS only]">
         Search With Voice in Chrome
       </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_WITH_VOICE_DESCRIPTION" desc="Siri Shortcut description for searching with voice [iOS only]">
+        Search With Voice in Chrome.
+      </message>
       <message name="IDS_IOS_INTENTS_OPEN_LATEST_TAB_TITLE" desc="Siri Shortcut for open latest tab title [iOS only]">
         Open My Latest Tab in Chrome
       </message>

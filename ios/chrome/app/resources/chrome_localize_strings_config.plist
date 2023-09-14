@@ -367,6 +367,12 @@
         </dict>
         <dict>
           <key>output</key>
+          <string>ylmClv</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_SEARCH_WITH_VOICE_DESCRIPTION</string>
+        </dict>
+        <dict>
+          <key>output</key>
           <string>hB4zxD</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_OPEN_TAB_GRID_TITLE</string>
