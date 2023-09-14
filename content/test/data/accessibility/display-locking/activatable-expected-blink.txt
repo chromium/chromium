@@ -12,5 +12,5 @@ rootWebArea
 ++++++++++++staticText offscreen name='nested locked element!'
 ++++++++++staticText offscreen name='<newline>    '
 ++++++++++genericContainer offscreen
-++++++++++++staticText offscreen name='nested non activatable locked element'
+++++++++++++staticText ignored invisible offscreen name='nested non activatable locked element'
 ++++++++++staticText offscreen name='<newline>  '

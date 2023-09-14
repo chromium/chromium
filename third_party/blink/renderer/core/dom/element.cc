@@ -3194,6 +3194,10 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
+  GetDocument()
+      .GetStyleEngine()
+      .SetStyleMaybeAffectedByLayoutForAccessibility();
+
   // Store the child_change so that we can continue interleaved style layout
   // from where we left off.
   EnsureElementRareData().EnsureContainerQueryData().SkipStyleRecalc(
