@@ -2697,6 +2697,11 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-transforms/backface-visibility-hidden-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-transforms/backface-visibility-hidden-005.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-003.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-004.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/motion/offset-path-ray-022.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-collapse-discard-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-collapse-preserve-breaks-001.xht [ Failure ]
@@ -4219,9 +4224,6 @@ crbug.com/995663 [ Linux ] http/tests/media/autoplay/document-user-activation-cr
 crbug.com/1047208 http/tests/serviceworker/update-served-from-cache.html [ Failure Pass ]
 crbug.com/1047293 [ Mac ] editing/pasteboard/pasteboard_with_unfocused_selection.html [ Failure Pass ]
 
-crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-004.tentative.html [ Failure ]
-crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-005.tentative.html [ Failure ]
-crbug.com/1008483 external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html [ Failure ]
 crbug.com/1405829 [ Mac11-arm64 ] external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Failure Timeout ]
 crbug.com/1405829 [ Mac12-arm64 ] external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Failure Timeout ]
 crbug.com/1405829 [ Mac13-arm64 ] external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Failure Timeout ]
