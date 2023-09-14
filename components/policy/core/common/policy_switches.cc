@@ -20,6 +20,10 @@ const char kEncryptedReportingUrl[] = "encrypted-reporting-url";
 // Set policy value by command line.
 const char kChromePolicy[] = "policy";
 
+// Specifies the URL at which to communicate with File Storage Server
+// (go/crosman-file-storage-server) to upload log and support packet files.
+const char kFileStorageServerUploadUrl[] = "file-storage-server-upload-url";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Disables the verification of policy signing keys. It just works on Chrome OS
 // test images and crashes otherwise.

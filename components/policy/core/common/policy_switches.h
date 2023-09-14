@@ -18,6 +18,7 @@ extern const char kRealtimeReportingUrl[];
 extern const char kEncryptedReportingUrl[];
 extern const char kChromePolicy[];
 extern const char kSecureConnectApiUrl[];
+extern const char kFileStorageServerUploadUrl[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDisablePolicyKeyVerification[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

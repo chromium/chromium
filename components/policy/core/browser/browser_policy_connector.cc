@@ -9,12 +9,14 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -41,6 +43,10 @@ const char kDefaultEncryptedReportingServerUrl[] =
 // The URL for the realtime reporting server.
 const char kDefaultRealtimeReportingServerUrl[] =
     "https://chromereporting-pa.googleapis.com/v1/events";
+
+// The URL suffix for the File Storage Server endpoint in DMServer. File Storage
+// Server receives the requests on this URL.
+const char kFileStorageServerUploadUrlSuffixForDMServer[] = "/upload";
 
 }  // namespace
 
@@ -105,9 +111,18 @@ std::string BrowserPolicyConnector::GetEncryptedReportingUrl() const {
                         kDefaultEncryptedReportingServerUrl);
 }
 
+std::string BrowserPolicyConnector::GetFileStorageServerUploadUrl() const {
+  return GetUrlOverride(
+      switches::kFileStorageServerUploadUrl,
+      // The default URL for File Storage Server upload endpoint is
+      // extension of the DMServer URL.
+      base::StrCat({GetDeviceManagementUrl(),
+                    kFileStorageServerUploadUrlSuffixForDMServer}));
+}
+
 std::string BrowserPolicyConnector::GetUrlOverride(
     const char* flag,
-    const char* default_value) const {
+    std::string_view default_value) const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(flag)) {
     if (IsCommandLineSwitchSupported())
@@ -115,7 +130,7 @@ std::string BrowserPolicyConnector::GetUrlOverride(
     else
       LOG(WARNING) << flag << " not supported on this channel";
   }
-  return default_value;
+  return std::string(default_value);
 }
 
 // static

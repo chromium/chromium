@@ -817,10 +817,8 @@ void FileUploadDelegate::InitializeOnce() {
     return;  // Already initialized.
   }
 
-  static constexpr char kLogUploadUrlTail[] = "/upload";
-  upload_url_ = GURL(
-      g_browser_process->browser_policy_connector()->GetDeviceManagementUrl() +
-      kLogUploadUrlTail);
+  upload_url_ = GURL(g_browser_process->browser_policy_connector()
+                         ->GetFileStorageServerUploadUrl());
   CHECK(upload_url_.is_valid());
 
   account_id_ = DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId();
