@@ -50,6 +50,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -254,7 +255,12 @@ public class MainSettingsFragmentTest {
 
         // Assert for advanced section
         assertSettingsExists("privacy", PrivacySettings.class);
-        assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
+        if (BuildInfo.getInstance().isAutomotive) {
+            Assert.assertNull("Safety check should not be shown on automotive",
+                    mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
+        } else {
+            assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
+        }
         assertSettingsExists("accessibility", AccessibilitySettings.class);
         assertSettingsExists("content_settings", SiteSettings.class);
         assertSettingsExists("languages", LanguageSettings.class);

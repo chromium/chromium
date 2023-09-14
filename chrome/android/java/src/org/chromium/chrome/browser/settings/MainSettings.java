@@ -16,6 +16,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
@@ -207,6 +208,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
             if (uiState.canShowUi) return;
             getPreferenceScreen().removePreference(findPreference(PREF_TOOLBAR_SHORTCUT));
         });
+
+        if (BuildInfo.getInstance().isAutomotive) {
+            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
+        }
     }
 
     /**

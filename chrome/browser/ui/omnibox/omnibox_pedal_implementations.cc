@@ -28,6 +28,10 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 // =============================================================================
 
 class OmniboxPedalClearBrowsingData : public OmniboxPedal {
@@ -2012,7 +2016,9 @@ GetPedalImplementations(bool incognito, bool guest, bool testing) {
   add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalUpdateCreditCard());
   add(new OmniboxPedalLaunchIncognito());
-  add(new OmniboxPedalRunChromeSafetyCheck());
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    add(new OmniboxPedalRunChromeSafetyCheck());
+  }
   add(new OmniboxPedalPlayChromeDinoGame());
   add(new OmniboxPedalManageSiteSettings());
   add(new OmniboxPedalManageChromeSettings());
