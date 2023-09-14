@@ -1765,12 +1765,8 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrants(
 
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
-    std::vector<std::unique_ptr<Object>> extended_or_dormant_objects =
-        ObjectPermissionContextBase::GetGrantedObjects(origin);
-    for (auto& object : extended_or_dormant_objects) {
-      RevokeObjectPermission(origin, GetKeyForObject(object->value));
-      grant_revoked = true;
-    }
+    grant_revoked =
+        ObjectPermissionContextBase::RevokeObjectPermissions(origin);
     // TODO(https://crbug.com/1011533): Clear Extended Permission state.
   }
 
