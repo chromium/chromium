@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/oom.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -52,6 +53,46 @@
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 
 namespace blink {
+
+namespace {
+void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
+  using base::debug::AllocateCrashKeyString;
+  using base::debug::CrashKeySize;
+  using base::debug::SetCrashKeyString;
+
+  switch (id) {
+    case v8::CrashKeyId::kIsolateAddress:
+      static auto* const isolate_address =
+          AllocateCrashKeyString("v8_isolate_address", CrashKeySize::Size32);
+      SetCrashKeyString(isolate_address, value);
+      break;
+    case v8::CrashKeyId::kReadonlySpaceFirstPageAddress:
+      static auto* const ro_space_firstpage_address = AllocateCrashKeyString(
+          "v8_ro_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(ro_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kMapSpaceFirstPageAddress:
+      static auto* const map_space_firstpage_address = AllocateCrashKeyString(
+          "v8_map_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(map_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kCodeSpaceFirstPageAddress:
+      static auto* const code_space_firstpage_address = AllocateCrashKeyString(
+          "v8_code_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(code_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kDumpType:
+      static auto* const dump_type =
+          AllocateCrashKeyString("dump-type", CrashKeySize::Size32);
+      SetCrashKeyString(dump_type, value);
+      break;
+    default:
+      // Doing nothing for new keys is a valid option. Having this case allows
+      // to introduce new CrashKeyId's without triggering a build break.
+      break;
+  }
+}
+}  // namespace
 
 // Function defined in third_party/blink/public/web/blink.h.
 v8::Isolate* MainThreadIsolate() {
@@ -106,8 +147,10 @@ V8PerIsolateData::V8PerIsolateData(
     GetIsolate()->Enter();
     GetIsolate()->AddBeforeCallEnteredCallback(&BeforeCallEnteredCallback);
   }
-  if (IsMainThread())
+  if (IsMainThread()) {
     g_main_thread_per_isolate_data = this;
+    GetIsolate()->SetAddCrashKeyCallback(AddCrashKey);
+  }
 }
 
 V8PerIsolateData::~V8PerIsolateData() = default;
