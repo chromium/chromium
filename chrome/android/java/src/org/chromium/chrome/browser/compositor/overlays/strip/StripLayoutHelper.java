@@ -1051,9 +1051,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             placeholderTab.setId(id);
             placeholderTab.setIsPlaceholder(false);
             placeholderTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
-        }
 
-        mRenderHost.requestRender();
+            if (placeholderTab.isVisible()) {
+                mRenderHost.requestRender();
+            }
+        }
     }
 
     /**
