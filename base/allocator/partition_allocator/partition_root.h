@@ -478,17 +478,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                 type_name);
   }
 
-  // Same as |Alloc()|, but allows specifying |slot_span_alignment|. It
-  // has to be a multiple of partition page size, greater than 0 and no greater
-  // than kMaxSupportedAlignment. If it equals exactly 1 partition page, no
-  // special action is taken as PartitionAlloc naturally guarantees this
-  // alignment, otherwise a sub-optimal allocation strategy is used to
-  // guarantee the higher-order alignment.
+  // AllocInternal exposed for testing.
   template <unsigned int flags>
-  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternal(
+  PA_NOINLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternalForTesting(
       size_t requested_size,
       size_t slot_span_alignment,
-      const char* type_name);
+      const char* type_name) {
+    return AllocInternal<flags>(requested_size, slot_span_alignment, type_name);
+  }
 
   template <unsigned int flags = 0>
   PA_NOINLINE PA_MALLOC_ALIGNED void* Realloc(void* ptr,
@@ -883,6 +880,18 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     PA_DCHECK(ret == bucket->is_direct_mapped());
     return ret;
   }
+
+  // Same as |Alloc()|, but allows specifying |slot_span_alignment|. It
+  // has to be a multiple of partition page size, greater than 0 and no greater
+  // than kMaxSupportedAlignment. If it equals exactly 1 partition page, no
+  // special action is taken as PartitionAlloc naturally guarantees this
+  // alignment, otherwise a sub-optimal allocation strategy is used to
+  // guarantee the higher-order alignment.
+  template <unsigned int flags>
+  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternal(
+      size_t requested_size,
+      size_t slot_span_alignment,
+      const char* type_name);
 
   // Same as |AllocInternal()|, but don't handle allocation hooks.
   template <unsigned int flags = 0>

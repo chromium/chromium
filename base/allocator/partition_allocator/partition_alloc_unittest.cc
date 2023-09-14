@@ -1797,7 +1797,8 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAligned) {
     // 64-bit systems), even if the alignment padding is taken out.
     size_t size = 10 * kSuperPageSize + SystemPageSize() - 42;
     ASSERT_GT(size, kMaxBucketed);
-    void* ptr = allocator.root()->AllocInternal<0>(size, alignment, type_name);
+    void* ptr = allocator.root()->AllocInternalForTesting<0>(size, alignment,
+                                                             type_name);
     uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
     size_t actual_capacity =
         allocator.root()->AllocationCapacityFromSlotStart(slot_start);
@@ -1844,8 +1845,8 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // boundary.
   size_t size = 2 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
   ASSERT_GT(size, kMaxBucketed);
-  void* ptr = allocator.root()->AllocInternal<0>(size, kMaxSupportedAlignment,
-                                                 type_name);
+  void* ptr = allocator.root()->AllocInternalForTesting<0>(
+      size, kMaxSupportedAlignment, type_name);
   // Reallocating with the same size will actually relocate, because without a
   // need for alignment we can downsize the reservation significantly.
   void* ptr2 = allocator.root()->Realloc(ptr, size, type_name);
@@ -1857,8 +1858,8 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
   // shrinking.
   size = 10 * kSuperPageSize - kMaxSupportedAlignment + SystemPageSize();
   ASSERT_GT(size, kMaxBucketed);
-  ptr = allocator.root()->AllocInternal<0>(size, kMaxSupportedAlignment,
-                                           type_name);
+  ptr = allocator.root()->AllocInternalForTesting<0>(
+      size, kMaxSupportedAlignment, type_name);
   ptr2 = allocator.root()->Realloc(ptr, size, type_name);
   EXPECT_EQ(ptr, ptr2);
   allocator.root()->Free(ptr2);
@@ -4064,8 +4065,8 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
       // For direct map, we commit only as many pages as needed.
       size_t aligned_size = partition_alloc::internal::base::bits::AlignUp(
           huge_size, SystemPageSize());
-      ptr = root.AllocInternal<0>(huge_size - ExtraAllocSize(allocator),
-                                  alignment, type_name);
+      ptr = root.AllocInternalForTesting<0>(
+          huge_size - ExtraAllocSize(allocator), alignment, type_name);
       expected_committed_size += aligned_size;
       expected_max_committed_size =
           std::max(expected_max_committed_size, expected_committed_size);
