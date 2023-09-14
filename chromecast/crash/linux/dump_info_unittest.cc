@@ -31,7 +31,7 @@ TEST(DumpInfoTest, BadTimeStringIsNotValid) {
   std::unique_ptr<DumpInfo> info(
       CreateDumpInfo("{"
                      "\"name\": \"name\","
-                     "\"dump_time\" : \"Mar 23 2014 01:23:45\","
+                     "\"dump_time\" : \"What up\","
                      "\"dump\": \"dump_string\","
                      "\"uptime\": \"123456789\","
                      "\"logfile\": \"logfile.log\""

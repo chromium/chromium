@@ -603,6 +603,12 @@ TEST_F(TimeTest, ParseTimeTest10) {
   EXPECT_EQ(parsed_time, comparison_time_local_);
 }
 
+TEST_F(TimeTest, ParseTimeTest11) {
+  Time parsed_time;
+  EXPECT_TRUE(Time::FromString("2007-10-15 12:45:00", &parsed_time));
+  EXPECT_EQ(parsed_time, comparison_time_local_);
+}
+
 // Test some of edge cases around epoch, etc.
 TEST_F(TimeTest, ParseTimeTestEpoch0) {
   Time parsed_time;

@@ -1,6 +1,7 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chromecast/crash/linux/dump_info.h"
 
 #include <errno.h>
@@ -9,14 +10,12 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 
 namespace chromecast {
 
 namespace {
-
-// "%Y-%m-%d %H:%M:%S";
-const char kDumpTimeFormat[] = "%04d-%02d-%02d %02d:%02d:%02d";
 
 const int kNumRequiredParams = 4;
 
@@ -76,6 +75,8 @@ DumpInfo::~DumpInfo() {}
 base::Value DumpInfo::GetAsValue() const {
   base::Value::Dict result;
 
+  // "%Y-%m-%d %H:%M:%S";
+  static constexpr char kDumpTimeFormat[] = "%04d-%02d-%02d %02d:%02d:%02d";
   base::Time::Exploded ex;
   dump_time_.LocalExplode(&ex);
   std::string dump_time =
@@ -187,14 +188,12 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
 }
 
 bool DumpInfo::SetDumpTimeFromString(const std::string& timestr) {
-  base::Time::Exploded ex = {0};
-  if (sscanf(timestr.c_str(), kDumpTimeFormat, &ex.year, &ex.month,
-             &ex.day_of_month, &ex.hour, &ex.minute, &ex.second) < 6) {
-    LOG(INFO) << "Failed to convert dump time invalid";
-    return false;
+  if (base::Time::FromString(timestr.c_str(), &dump_time_)) {
+    return true;
   }
 
-  return base::Time::FromLocalExploded(ex, &dump_time_);
+  LOG(INFO) << "Failed to convert dump time invalid";
+  return false;
 }
 
 }  // namespace chromecast
