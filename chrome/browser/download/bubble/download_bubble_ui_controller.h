@@ -75,6 +75,9 @@ class DownloadBubbleUIController {
   virtual std::vector<DownloadUIModel::DownloadUIModelPtr> GetPartialView();
 
   // Process button press on the bubble.
+  // TODO(chlily): `is_main_view` should be named `is_primary_view`. It
+  // distinguishes the primary page from the (security) subpage, not the main vs
+  // partial flavors of the primary view.
   void ProcessDownloadButtonPress(base::WeakPtr<DownloadUIModel> model,
                                   DownloadCommands::Command command,
                                   bool is_main_view);

@@ -19,11 +19,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/events/test/test_event.h"
+#include "ui/events/types/event_type.h"
+#include "ui/views/input_event_activation_protector.h"
+#include "ui/views/test/mock_input_event_activation_protector.h"
 
 namespace {
 
+using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 
 constexpr int kTimeSinceDownloadCompletedUpdateSeconds = 60;
@@ -46,6 +51,8 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
 
     content::DownloadItemUtils::AttachInfoForTesting(
         &download_item_, browser()->profile(), nullptr);
+    ON_CALL(download_item_, GetURL())
+        .WillByDefault(ReturnRef(GURL::EmptyGURL()));
 
     DownloadToolbarButtonView* button =
         browser_view()->toolbar()->download_button();
@@ -58,6 +65,13 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
             std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
         row_list_view_.get(), button->bubble_controller()->GetWeakPtr(),
         button->GetWeakPtr(), browser()->AsWeakPtr(), bubble_width);
+
+    auto input_protector =
+        std::make_unique<NiceMock<views::MockInputEventActivationProtector>>();
+    input_protector_ = input_protector.get();
+    ON_CALL(*input_protector_, IsPossiblyUnintendedInteraction(_))
+        .WillByDefault(Return(false));
+    row_view_->SetInputProtectorForTesting(std::move(input_protector));
   }
 
   void FastForward(base::TimeDelta time) {
@@ -67,11 +81,12 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
   DownloadBubbleRowView* row_view() { return row_view_.get(); }
   download::MockDownloadItem* download_item() { return &download_item_; }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<download::MockDownloadItem> download_item_;
   std::unique_ptr<DownloadBubbleRowListView> row_list_view_;
   std::unique_ptr<DownloadBubbleRowView> row_view_;
+  raw_ptr<NiceMock<views::MockInputEventActivationProtector>> input_protector_;
 };
 
 TEST_F(DownloadBubbleRowViewTest, CopyAcceleratorCopiesFile) {
@@ -156,6 +171,35 @@ TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
                   .IsCommandEnabled(DownloadCommands::SHOW_IN_FOLDER));
   EXPECT_TRUE(row_view()->IsQuickActionButtonVisibleForTesting(
       DownloadCommands::SHOW_IN_FOLDER));
+}
+
+// Test that the input protector can deny button clicks.
+TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
+  EXPECT_CALL(*input_protector_, IsPossiblyUnintendedInteraction(_))
+      .WillRepeatedly(Return(true));
+
+  // Test main button
+  EXPECT_CALL(*download_item(), OpenDownload()).Times(0);
+  row_view()->SimulateMainButtonClickForTesting(ui::test::TestEvent());
+
+  // Test quick action button.
+  ON_CALL(*download_item(), GetState())
+      .WillByDefault(Return(download::DownloadItem::COMPLETE));
+  ON_CALL(*download_item(), CanOpenDownload()).WillByDefault(Return(true));
+  download_item()->NotifyObserversDownloadUpdated();
+  row_view()->SetUIInfoForTesting(
+      DownloadUIModel::BubbleUIInfo().AddQuickAction(
+          DownloadCommands::OPEN_WHEN_COMPLETE, u"label",
+          &vector_icons::kFolderIcon));
+  ASSERT_TRUE(row_view()->IsQuickActionButtonVisibleForTesting(
+      DownloadCommands::OPEN_WHEN_COMPLETE));
+
+  EXPECT_CALL(*download_item(), OpenDownload()).Times(0);
+  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
+                       base::TimeTicks::Now(), 0, 0);
+  row_view()
+      ->GetQuickActionButtonForTesting(DownloadCommands::OPEN_WHEN_COMPLETE)
+      ->OnMousePressed(event);
 }
 
 }  // namespace
