@@ -2339,6 +2339,8 @@ source_set("ash") {
     "policy/core/device_policy_remover.h",
     "policy/core/dm_token_storage.cc",
     "policy/core/dm_token_storage.h",
+    "policy/core/file_util.cc",
+    "policy/core/file_util.h",
     "policy/core/policy_oauth2_token_fetcher.cc",
     "policy/core/policy_oauth2_token_fetcher.h",
     "policy/core/policy_pref_names.cc",

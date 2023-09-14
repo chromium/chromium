@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
+#include "chrome/browser/ash/policy/core/file_util.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -62,12 +63,6 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
   return client;
 }
 
-// Get the subdirectory of the force-installed extension cache and the component
-// policy cache used for |account_id|.
-std::string GetCacheSubdirectoryForAccountID(const std::string& account_id) {
-  return base::HexEncode(account_id.c_str(), account_id.size());
-}
-
 base::Value::Dict GetPrefsFromPolicy(const policy::PolicyMap& policy_map) {
   extensions::ExtensionInstallForceListPolicyHandler policy_handler;
   return policy_handler.GetPolicyDict(policy_map);
@@ -105,7 +100,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
   external_cache_ = std::make_unique<chromeos::DeviceLocalAccountExternalCache>(
       user_id_,
       base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
-          .Append(GetCacheSubdirectoryForAccountID(account.account_id)));
+          .Append(GetUniqueSubDirectoryForAccountID(account.account_id)));
   store_->AddObserver(this);
 
   // Unblock the |schema_registry_| so that the |component_policy_service_|
@@ -137,13 +132,15 @@ void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
     ash::DeviceSettingsService* device_settings_service,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  if (core_.client())
+  if (core_.client()) {
     return;
+  }
 
   std::unique_ptr<CloudPolicyClient> client(CreateClient(
       device_settings_service, device_management_service, url_loader_factory));
-  if (!client)
+  if (!client) {
     return;
+  }
 
   CreateComponentCloudPolicyService(client.get());
   core_.Connect(std::move(client));
@@ -159,16 +156,18 @@ void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
   if (core_.refresh_scheduler()) {
     const base::Value* policy_value = store_->policy_map().GetValue(
         key::kPolicyRefreshRate, base::Value::Type::INTEGER);
-    if (policy_value)
+    if (policy_value) {
       core_.refresh_scheduler()->SetDesiredRefreshDelay(policy_value->GetInt());
+    }
   }
 }
 
 std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
   const base::Value* display_name_value = store_->policy_map().GetValue(
       key::kUserDisplayName, base::Value::Type::STRING);
-  if (display_name_value)
+  if (display_name_value) {
     return display_name_value->GetString();
+  }
   return std::string();
 }
 
@@ -200,8 +199,9 @@ void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
 void DeviceLocalAccountPolicyBroker::StartCache(
     const scoped_refptr<base::SequencedTaskRunner>& cache_task_runner) {
   external_cache_->StartCache(cache_task_runner);
-  if (store_->is_initialized())
+  if (store_->is_initialized()) {
     UpdateExtensionListFromStore();
+  }
 }
 
 void DeviceLocalAccountPolicyBroker::StopCache(base::OnceClosure callback) {
