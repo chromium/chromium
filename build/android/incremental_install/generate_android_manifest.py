@@ -19,12 +19,15 @@ from util import build_utils
 from util import manifest_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
-_INCREMENTAL_APP_NAME = 'org.chromium.incrementalinstall.BootstrapApplication'
-_META_DATA_APP_NAME = 'incremental-install-real-app'
 _DEFAULT_APPLICATION_CLASS = 'android.app.Application'
+_INCREMENTAL_APP_NAME = 'org.chromium.incrementalinstall.BootstrapApplication'
+_INCREMENTAL_APP_COMPONENT_FACTORY = (
+    'org.chromium.incrementalinstall.BootstrapAppComponentFactory')
+_META_DATA_APP_NAME = 'incremental-install-application'
+_META_DATA_APP_COMPONENT_FACTORY = 'incremental-install-app-component-factory'
 _META_DATA_INSTRUMENTATION_NAMES = [
-    'incremental-install-real-instrumentation-0',
-    'incremental-install-real-instrumentation-1',
+    'incremental-install-instrumentation-0',
+    'incremental-install-instrumentation-1',
 ]
 _INCREMENTAL_INSTRUMENTATION_CLASSES = [
     'android.app.Instrumentation',
@@ -70,6 +73,12 @@ def _ProcessManifest(path, disable_isolated_processes):
   app_node.set(_AddNamespace('name'), _INCREMENTAL_APP_NAME)
   # pylint: enable=no-member
   _CreateMetaData(app_node, _META_DATA_APP_NAME, real_app_class)
+
+  real_acf = app_node.get(_AddNamespace('appComponentFactory'))
+  if real_acf:
+    app_node.set(_AddNamespace('appComponentFactory'),
+                 _INCREMENTAL_APP_COMPONENT_FACTORY)
+    _CreateMetaData(app_node, _META_DATA_APP_COMPONENT_FACTORY, real_acf)
 
   # Seems to be a bug in ElementTree, as doc.find() doesn't work here.
   instrumentation_nodes = doc.findall('instrumentation')
