@@ -41,6 +41,13 @@ void MdTextButtonWithDownArrow::OnThemeChanged() {
   SetDropArrowImage();
 }
 
+void MdTextButtonWithDownArrow::StateChanged(ButtonState old_state) {
+  MdTextButton::StateChanged(old_state);
+
+  // A state change may require the arrow's color to be updated.
+  SetDropArrowImage();
+}
+
 void MdTextButtonWithDownArrow::SetDropArrowImage() {
   auto drop_arrow_image = ui::ImageModel::FromVectorIcon(
       kMenuDropArrowIcon,

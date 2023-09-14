@@ -28,6 +28,7 @@ class MdTextButtonWithDownArrow : public MdTextButton {
  protected:
   // views::MdTextButton:
   void OnThemeChanged() override;
+  void StateChanged(ButtonState old_state) override;
 
  private:
   void SetDropArrowImage();
