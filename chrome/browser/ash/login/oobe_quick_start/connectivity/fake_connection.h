@@ -44,7 +44,7 @@ class FakeConnection : public Connection {
   // Connection:
   void InitiateHandshake(const std::string& authentication_token,
                          HandshakeSuccessCallback callback) override;
-  void RequestWifiCredentials(int32_t session_id,
+  void RequestWifiCredentials(int64_t session_id,
                               RequestWifiCredentialsCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
   void RequestAccountTransferAssertion(

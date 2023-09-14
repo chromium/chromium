@@ -175,7 +175,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
 
   // Create session ID by generating UUID and then hashing.
   const base::Uuid random_uuid = base::Uuid::GenerateRandomV4();
-  session_id_ = static_cast<int32_t>(
+  session_id_ = static_cast<int64_t>(
       base::PersistentHash(random_uuid.AsLowercaseString()));
 
   status_.step = Step::CONNECTED;

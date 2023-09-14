@@ -112,9 +112,9 @@ class Connection
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
 
   // TargetDeviceConnectionBroker::AuthenticatedConnection:
-  void RequestWifiCredentials(int32_t session_id,
+  void RequestWifiCredentials(int64_t session_id,
                               RequestWifiCredentialsCallback callback) override;
-  void NotifySourceOfUpdate(int32_t session_id,
+  void NotifySourceOfUpdate(int64_t session_id,
                             NotifySourceOfUpdateCallback callback) override;
   void RequestAccountTransferAssertion(
       const Base64UrlString& challenge,

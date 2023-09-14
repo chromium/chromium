@@ -47,7 +47,7 @@ void FakeConnection::InitiateHandshake(const std::string& authentication_token,
 }
 
 void FakeConnection::RequestWifiCredentials(
-    int32_t session_id,
+    int64_t session_id,
     RequestWifiCredentialsCallback callback) {
   wifi_credentials_callback_ = std::move(callback);
 }

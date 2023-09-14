@@ -103,7 +103,7 @@ void Connection::Close(
 }
 
 void Connection::RequestWifiCredentials(
-    int32_t session_id,
+    int64_t session_id,
     RequestWifiCredentialsCallback callback) {
   // Build the Wifi Credential Request payload
   SessionContext::SharedSecret secondary_shared_secret =
@@ -121,7 +121,7 @@ void Connection::RequestWifiCredentials(
                              std::move(on_response_received));
 }
 
-void Connection::NotifySourceOfUpdate(int32_t session_id,
+void Connection::NotifySourceOfUpdate(int64_t session_id,
                                       NotifySourceOfUpdateCallback callback) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kQuickStartTestForcedUpdateSwitch)) {

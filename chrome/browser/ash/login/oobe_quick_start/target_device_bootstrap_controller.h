@@ -189,7 +189,7 @@ class TargetDeviceBootstrapController
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
       authenticated_connection_;
 
-  int32_t session_id_;
+  int64_t session_id_;
 
   // Challenge bytes to be sent to the Android device for the FIDO assertion.
   Base64UrlString challenge_bytes_;

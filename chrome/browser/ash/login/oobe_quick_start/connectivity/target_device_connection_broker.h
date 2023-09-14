@@ -73,14 +73,14 @@ class TargetDeviceConnectionBroker {
     // used to identify this QuickStart session and is distinct from the
     // RandomSessionId.
     virtual void RequestWifiCredentials(
-        int32_t session_id,
+        int64_t session_id,
         RequestWifiCredentialsCallback callback) = 0;
 
     // Notify Android device that the Chromebook will download an update and
     // reboot. The session_id should be the same as the one sent in
     // RequestWifiCredentials().
     virtual void NotifySourceOfUpdate(
-        int32_t session_id,
+        int64_t session_id,
         NotifySourceOfUpdateCallback callback) = 0;
 
     // Begin the account transfer process and retrieve
