@@ -189,6 +189,50 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnection(
   EXPECT_TRUE(connection_tracker->origins().empty());
 }
 
+void DeviceConnectionTrackerTestBase::TestWhitelistedOrigin(
+    const std::pair<url::Origin, std::string> whitelisted_origin,
+    const std::pair<url::Origin, std::string> non_whitelisted_origin) {
+  auto t0 = TimeTicks::Now();
+  MockDeviceSystemTrayIcon* mock_device_system_tray_icon =
+      GetMockDeviceSystemTrayIcon();
+  auto* connection_tracker = GetDeviceConnectionTracker(profile(), true);
+
+  EXPECT_CALL(*mock_device_system_tray_icon, StageProfile(profile())).Times(0);
+  connection_tracker->IncrementConnectionCount(whitelisted_origin.first);
+  EXPECT_EQ(connection_tracker->total_connection_count(), 0);
+  testing::Mock::VerifyAndClearExpectations(&connection_tracker);
+
+  EXPECT_CALL(*mock_device_system_tray_icon, StageProfile(profile()));
+  connection_tracker->IncrementConnectionCount(non_whitelisted_origin.first);
+  EXPECT_EQ(connection_tracker->total_connection_count(), 1);
+  EXPECT_THAT(connection_tracker->origins(),
+              UnorderedElementsAre(
+                  Pair(non_whitelisted_origin.first,
+                       OriginState(1, t0, non_whitelisted_origin.second))));
+  testing::Mock::VerifyAndClearExpectations(&connection_tracker);
+
+  EXPECT_CALL(*mock_device_system_tray_icon,
+              UnstageProfile(profile(), /*immediate=*/true))
+      .Times(0);
+  connection_tracker->DecrementConnectionCount(whitelisted_origin.first);
+  EXPECT_EQ(connection_tracker->total_connection_count(), 1);
+  EXPECT_THAT(connection_tracker->origins(),
+              UnorderedElementsAre(
+                  Pair(non_whitelisted_origin.first,
+                       OriginState(1, t0, non_whitelisted_origin.second))));
+
+  EXPECT_CALL(*mock_device_system_tray_icon,
+              NotifyConnectionCountUpdated(profile()));
+
+  connection_tracker->DecrementConnectionCount(non_whitelisted_origin.first);
+  EXPECT_CALL(*mock_device_system_tray_icon,
+              UnstageProfile(profile(), /*immediate=*/true));
+
+  task_environment()->FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(connection_tracker->total_connection_count(), 0);
+  EXPECT_TRUE(connection_tracker->origins().empty());
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 scoped_refptr<const extensions::Extension>
 DeviceConnectionTrackerTestBase::CreateExtensionWithName(
@@ -205,6 +249,26 @@ DeviceConnectionTrackerTestBase::CreateExtensionWithName(
           .MergeManifest(std::move(manifest))
           .Build();
   CHECK(extension);
+  return extension;
+}
+
+scoped_refptr<const extensions::Extension>
+DeviceConnectionTrackerTestBase::CreateExtensionWithNameAndId(
+    const std::string& extension_name,
+    const std::string& extension_id) {
+  auto manifest = base::Value::Dict()
+                      .Set("name", extension_name)
+                      .Set("description", "For testing.")
+                      .Set("version", "0.1")
+                      .Set("manifest_version", 2)
+                      .Set("web_accessible_resources",
+                           base::Value::List().Append("index.html"));
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder(/*name=*/extension_name)
+          .SetID(extension_id)
+          .MergeManifest(std::move(manifest))
+          .Build();
+  DCHECK(extension);
   return extension;
 }
 
@@ -233,6 +297,19 @@ void DeviceConnectionTrackerTestBase::TestDeviceConnectionExtensionOrigins(
   TestDeviceConnection(has_system_tray_icon,
                        {{extension1->origin(), extension1->name()},
                         {extension2->origin(), extension2->name()}});
+}
+
+void DeviceConnectionTrackerTestBase::TestSingleProfileWhitelistedExtension(
+    std::string whitelisted_extension_name,
+    std::string whitelisted_extension_id) {
+  auto whitelisted_extension = CreateExtensionWithNameAndId(
+      whitelisted_extension_name, whitelisted_extension_id);
+  auto extension2 = CreateExtensionWithName("Test Extension 2");
+  AddExtensionToProfile(profile(), whitelisted_extension.get());
+  AddExtensionToProfile(profile(), extension2.get());
+  TestWhitelistedOrigin(
+      {whitelisted_extension->origin(), whitelisted_extension->name()},
+      {extension2->origin(), extension2->name()});
 }
 
 void DeviceConnectionTrackerTestBase::TestProfileDestroyedExtensionOrigin() {

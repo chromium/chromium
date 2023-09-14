@@ -66,6 +66,9 @@ class DeviceConnectionTracker : public KeyedService {
   // active connection(s).
   base::flat_map<url::Origin, OriginState> origins_;
 
+  // Connection from whitelisted origins will not be tracked.
+  std::vector<url::Origin> whitelisted_origins_;
+
  private:
   virtual DeviceSystemTrayIcon* GetSystemTrayIcon() = 0;
 

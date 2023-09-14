@@ -49,9 +49,19 @@ class DeviceConnectionTrackerTestBase : public BrowserWithTestWindowTest {
       const std::vector<std::pair<url::Origin, std::string>>&
           origin_name_pairs);
 
+  // Test the scenario when the origin is whitelisted.
+  void TestWhitelistedOrigin(
+      const std::pair<url::Origin, std::string> whitelisted_origin,
+      const std::pair<url::Origin, std::string> origin2);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   scoped_refptr<const extensions::Extension> CreateExtensionWithName(
       const std::string& extension_name);
+
+  // Create a extension with |extension_name| and |extension_id|.
+  scoped_refptr<const extensions::Extension> CreateExtensionWithNameAndId(
+      const std::string& extension_name,
+      const std::string& extension_id);
 
   void AddExtensionToProfile(Profile* profile,
                              const extensions::Extension* extension);
@@ -59,6 +69,12 @@ class DeviceConnectionTrackerTestBase : public BrowserWithTestWindowTest {
   void TestDeviceConnectionExtensionOrigins(bool has_system_tray_icon);
 
   void TestProfileDestroyedExtensionOrigin();
+
+  // Run TestWhitelistedOrigin with a whitelisted origin and a non-whitelisted
+  // origin.
+  void TestSingleProfileWhitelistedExtension(
+      std::string whitelisted_extension_name,
+      std::string whitelisted_extension_id);
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
