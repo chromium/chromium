@@ -22,7 +22,7 @@ export interface SharePasswordFamilyPickerDialogElement {
     action: HTMLButtonElement,
     cancel: HTMLElement,
     avatar: HTMLImageElement,
-    manageLink: HTMLAnchorElement,
+    viewFamily: HTMLAnchorElement,
     footerDescription: HTMLElement,
   };
 }

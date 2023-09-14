@@ -58,10 +58,10 @@ suite('SharePasswordFamilyPickerDialogTest', function() {
     assertTrue(dialog.$.action.disabled);
 
     assertEquals(syncProxy.accountInfo.avatarImage, dialog.$.avatar.src);
-    assertEquals(dialog.$.manageLink.href, dialog.i18n('familyGroupSiteURL'));
+    assertEquals(dialog.$.viewFamily.href, dialog.i18n('familyGroupViewURL'));
     assertVisibleTextContent(
         dialog.$.footerDescription,
-        dialog.i18n('sharePasswordManageFamily') + ' • ' +
+        dialog.i18n('sharePasswordViewFamily') + ' • ' +
             syncProxy.accountInfo.email);
   });
 

@@ -163,7 +163,10 @@ extern const char kExtensionControlledSettingLearnMoreURL[];
 extern const char kExtensionInvalidRequestURL[];
 
 // Link for creating family group with Google Families.
-extern const char kFamilyGroupSiteURL[];
+extern const char kFamilyGroupCreateURL[];
+
+// Link for viewing family group with Google Families.
+extern const char kFamilyGroupViewURL[];
 
 // "Learn more" URL for first party sets.
 extern const char kFirstPartySetsLearnMoreURL[];

@@ -325,8 +325,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_FOOTER_WEBSITE},
     {"sharePasswordConfirmationFooterAndroidApp",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_CONFIRMATION_FOOTER_ANDROID_APP},
-    {"sharePasswordManageFamily",
-     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MANAGE_FAMILY},
+    {"sharePasswordViewFamily",
+     IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_VIEW_FAMILY},
     {"sharePasswordMemeberUnavailable",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MEMBER_UNAVAILABLE},
     {"sharePasswordNotAvailable",
@@ -397,9 +397,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "sharePasswordNoMembersDescription",
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_MEMBERS_DESCRIPTION,
-          base::ASCIIToUTF16(chrome::kFamilyGroupSiteURL)));
+          base::ASCIIToUTF16(chrome::kFamilyGroupCreateURL)));
 
-  source->AddString("familyGroupSiteURL", chrome::kFamilyGroupSiteURL);
+  source->AddString("familyGroupViewURL", chrome::kFamilyGroupViewURL);
 
   source->AddString(
       "checkupUrl",

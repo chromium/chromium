@@ -154,7 +154,11 @@ const char kExtensionControlledSettingLearnMoreURL[] =
 
 const char kExtensionInvalidRequestURL[] = "chrome-extension://invalid/";
 
-const char kFamilyGroupSiteURL[] = "https://families.google.com/families/";
+const char kFamilyGroupCreateURL[] =
+    "https://myaccount.google.com/family/create?utm_source=cpwd";
+
+const char kFamilyGroupViewURL[] =
+    "https://myaccount.google.com/family/details?utm_source=cpwd";
 
 const char kFirstPartySetsLearnMoreURL[] =
     "https://developer.chrome.com/docs/privacy-sandbox/first-party-sets/";
