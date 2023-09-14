@@ -4,7 +4,10 @@
 
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 
+#include "base/hash/hash.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -123,13 +126,15 @@ AutofillProfile ConstructCompleteProfile() {
 }
 
 // Helper function to set ContactInfoSpecifics::String- and IntegerToken
-// together with their verification status.
+// together with their verification status and value_hash.
 template <typename TokenType, typename Value>
 void SetToken(TokenType* token,
               const Value& value,
               ContactInfoSpecifics::VerificationStatus status) {
   token->set_value(value);
-  token->mutable_metadata()->set_status(status);
+  ContactInfoSpecifics::TokenMetadata* metadata = token->mutable_metadata();
+  metadata->set_status(status);
+  metadata->set_value_hash(base::PersistentHash(base::ToString(value)));
 }
 
 // Returns ContactInfoSpecifics with all fields set. Contains identical data to
@@ -382,6 +387,38 @@ TEST_F(ContactInfoSyncUtilTest,
   ContactInfoSpecifics specifics;
   specifics.set_guid(kInvalidGuid);
   EXPECT_EQ(CreateAutofillProfileFromContactInfoSpecifics(specifics), nullptr);
+}
+
+// Tests that if a token's `value` changes by external means, its observations
+// are reset.
+TEST_F(ContactInfoSyncUtilTest, ObservationResetting) {
+  // Create a profile and collect an observation for NAME_FIRST.
+  AutofillProfile profile = test::GetFullProfile();
+  profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FIRST,
+                      ProfileTokenQuality::ObservationType::kAccepted);
+
+  // Simulate sending the `profile` to Sync and modifying its NAME_FIRST by an
+  // external integrator. Since metadata is opaque to external integrators, the
+  // metadata's `value_hash` is not updated.
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateContactInfoEntityDataFromAutofillProfile(
+          profile, /*base_contact_info_specifics=*/{});
+  ASSERT_NE(entity_data, nullptr);
+  ContactInfoSpecifics* specifics =
+      entity_data->specifics.mutable_contact_info();
+  specifics->mutable_name_first()->set_value("different " +
+                                             specifics->name_first().value());
+
+  // Simulate syncing the `specifics` back to Autofill. Expect that the
+  // NAME_FIRST observations are cleared.
+  std::unique_ptr<AutofillProfile> updated_profile =
+      CreateAutofillProfileFromContactInfoSpecifics(*specifics);
+  ASSERT_NE(updated_profile, nullptr);
+  EXPECT_TRUE(updated_profile->token_quality()
+                  .GetObservationTypesForFieldType(NAME_FIRST)
+                  .empty());
 }
 
 }  // namespace autofill

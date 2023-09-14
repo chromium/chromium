@@ -371,6 +371,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::Observation& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::TokenMetadata& proto) {
   VISIT_ENUM(status);
   VISIT_REP(observations);
+  VISIT(value_hash);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics::StringToken& proto) {

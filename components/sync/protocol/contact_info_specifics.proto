@@ -55,6 +55,10 @@ message ContactInfoSpecifics {
   message TokenMetadata {
     optional VerificationStatus status = 1;
     repeated Observation observations = 2;
+    // Stores a hash of the token value that this metadata is associated with.
+    // This is used by Autofill to detect changes of the token value by external
+    // integrators.
+    optional uint32 value_hash = 3;
   }
 
   // A token with a string interpretation of the value.

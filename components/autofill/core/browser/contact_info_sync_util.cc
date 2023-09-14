@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 
+#include "base/hash/hash.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -86,9 +87,20 @@ class EntryTokenDeleter {
   bool DeleteMetadata(ContactInfoSpecifics::TokenMetadata* metadata) {
     metadata->clear_status();
     metadata->clear_observations();
+    metadata->clear_value_hash();
     return metadata->ByteSize() == 0;
   }
 };
+
+// Returns a hash of the `profile`'s value for the given `type`. This hash is
+// not persisted on the Autofill side, but used to detect changes by external
+// integrators when the data gets synced back.
+// Since the uploaded data contains the raw value too, this is not a privacy
+// concern.
+uint32_t GetProfileValueHash(const AutofillProfile& profile,
+                             ServerFieldType type) {
+  return base::PersistentHash(base::UTF16ToUTF8(profile.GetRawInfo(type)));
+}
 
 }  // namespace
 
@@ -131,6 +143,7 @@ class ContactInfoEntryDataSetter {
         proto_observation->set_form_hash(observation.form_hash.value());
       }
     }
+    metadata->set_value_hash(GetProfileValueHash(*profile_, type));
   }
 
   const raw_ref<const AutofillProfile> profile_;
@@ -149,7 +162,7 @@ class ContactInfoProfileSetter {
     profile_->SetRawInfoWithVerificationStatus(
         type, base::UTF8ToUTF16(token.value()),
         ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
-    SetObservations(token.metadata().observations(), type);
+    SetObservations(token.metadata(), type);
   }
 
   void Set(const ContactInfoSpecifics::IntegerToken& token,
@@ -157,26 +170,35 @@ class ContactInfoProfileSetter {
     profile_->SetRawInfoAsIntWithVerificationStatus(
         type, token.value(),
         ConvertSpecificsToProfileVerificationStatus(token.metadata().status()));
-    SetObservations(token.metadata().observations(), type);
+    SetObservations(token.metadata(), type);
   }
 
  private:
-  void SetObservations(
-      const google::protobuf::RepeatedPtrField<
-          ContactInfoSpecifics::Observation>& proto_observations,
-      ServerFieldType type) const {
-    if (proto_observations.empty() ||
+  void SetObservations(const ContactInfoSpecifics::TokenMetadata& metadata,
+                       ServerFieldType type) const {
+    if (metadata.observations().empty() ||
         !base::FeatureList::IsEnabled(
             features::kAutofillTrackProfileTokenQuality)) {
       return;
     }
-    auto& observations = profile_->token_quality().observations_[type];
-    CHECK(observations.empty());
-    for (const sync_pb::ContactInfoSpecifics::Observation& proto_observation :
-         proto_observations) {
-      observations.emplace_back(proto_observation.type(),
-                                ProfileTokenQuality::FormSignatureHash(
-                                    proto_observation.form_hash()));
+    // If the value of the `type` was changed by an external integrator, the
+    // associated observations are no longer valid. In this case, they are left
+    // empty and effectively dropped.
+    // There is no need to re-upload to sync without the observations, since
+    // all Chrome clients drop them by themselves. If new observations get
+    // collected by another Chrome client, these get synced and other clients
+    // overwrite their local state unconditionally.
+    // Not syncing back has the additional advantage that it makes deprecating
+    // these fields (should this ever happen) easier.
+    if (GetProfileValueHash(*profile_, type) == metadata.value_hash()) {
+      auto& observations = profile_->token_quality().observations_[type];
+      CHECK(observations.empty());
+      for (const sync_pb::ContactInfoSpecifics::Observation& proto_observation :
+           metadata.observations()) {
+        observations.emplace_back(proto_observation.type(),
+                                  ProfileTokenQuality::FormSignatureHash(
+                                      proto_observation.form_hash()));
+      }
     }
   }
 
