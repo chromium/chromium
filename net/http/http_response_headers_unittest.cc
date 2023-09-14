@@ -18,6 +18,7 @@
 #include "net/base/cronet_buildflags.h"
 #include "net/base/tracing.h"
 #include "net/http/http_byte_range.h"
+#include "net/http/http_response_headers_test_util.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -101,39 +102,7 @@ class CommonHttpResponseHeadersTest
       public ::testing::WithParamInterface<TestData> {
 };
 
-// Returns a simple text serialization of the given
-// |HttpResponseHeaders|. This is used by tests to verify that an
-// |HttpResponseHeaders| matches an expectation string.
-//
-//  * One line per header, written as:
-//        HEADER_NAME: HEADER_VALUE\n
-//  * The original case of header names is preserved.
-//  * Whitespace around head names/values is stripped.
-//  * Repeated headers are not aggregated.
-//  * Headers are listed in their original order.
-std::string ToSimpleString(const scoped_refptr<HttpResponseHeaders>& parsed) {
-  std::string result = parsed->GetStatusLine() + "\n";
-
-  size_t iter = 0;
-  std::string name;
-  std::string value;
-  while (parsed->EnumerateHeaderLines(&iter, &name, &value)) {
-    std::string new_line = name + ": " + value + "\n";
-
-    // Verify that |name| and |value| do not contain ':' or '\n' (if they did
-    // it would make this serialized format ambiguous).
-    if (base::ranges::count(new_line, '\n') != 1 ||
-        base::ranges::count(new_line, ':') != 1) {
-      ADD_FAILURE() << "Unexpected characters in the header name or value: "
-                    << new_line;
-      return result;
-    }
-
-    result += new_line;
-  }
-
-  return result;
-}
+constexpr auto ToSimpleString = test::HttpResponseHeadersToSimpleString;
 
 TEST_P(CommonHttpResponseHeadersTest, TestCommon) {
   const TestData test = GetParam();
