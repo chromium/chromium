@@ -17447,6 +17447,27 @@
             ]
         }
     ],
+    "V8ConsumeCompileHints1": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ConsumeCompileHints"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ConsumeCompileHints"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8FlushBaselineCode": [
         {
             "platforms": [
