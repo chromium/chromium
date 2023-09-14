@@ -5,8 +5,11 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,6 +22,14 @@
 
 class TabOrganizationTest : public testing::Test {
  public:
+  struct StoredOnResponseCallback {
+    bool was_called = false;
+
+    void OnResponse(const TabOrganizationResponse* response) {
+      was_called = true;
+    }
+  };
+
   TabOrganizationTest()
       : profile_(new TestingProfile),
         delegate_(new TestTabStripModelDelegate),
@@ -153,4 +164,57 @@ TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
                                TabOrganization::UserChoice::ACCEPTED);
 
   EXPECT_DEATH(organization.Reject(), "");
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationRequestOnStartRequest) {
+  bool start_called = false;
+  TabOrganizationRequest request(
+      base::BindLambdaForTesting(
+          [&](const TabOrganizationRequest* request) { start_called = true; }),
+      base::DoNothing());
+  EXPECT_EQ(request.state(), TabOrganizationRequest::State::NOT_STARTED);
+
+  request.StartRequest();
+  EXPECT_EQ(request.state(), TabOrganizationRequest::State::STARTED);
+  EXPECT_TRUE(start_called);
+}
+
+TEST_F(TabOrganizationTest,
+       TabOrganizationRequestCHECKOnStartingFromStartedState) {
+  TabOrganizationRequest request;
+  request.StartRequest();
+  EXPECT_DEATH(request.StartRequest(), "");
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationRequestOnCompleteRequest) {
+  TabOrganizationRequest request;
+
+  StoredOnResponseCallback stored_callback;
+  request.SetResponseCallback(
+      base::BindOnce(&StoredOnResponseCallback::OnResponse,
+                     base::Unretained(&stored_callback)));
+  request.StartRequest();
+  request.CompleteRequestForTesting({});
+  EXPECT_EQ(request.state(), TabOrganizationRequest::State::COMPLETED);
+  EXPECT_TRUE(stored_callback.was_called);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationRequestOnFailRequest) {
+  TabOrganizationRequest request;
+  request.StartRequest();
+  request.FailRequest();
+  EXPECT_EQ(request.state(), TabOrganizationRequest::State::FAILED);
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationRequestOnCancelRequest) {
+  bool cancel_called = false;
+  TabOrganizationRequest request(
+      base::DoNothing(),
+      base::BindLambdaForTesting([&](const TabOrganizationRequest* request) {
+        cancel_called = true;
+      }));
+  request.StartRequest();
+  request.CancelRequest();
+  EXPECT_EQ(request.state(), TabOrganizationRequest::State::CANCELED);
+  EXPECT_TRUE(cancel_called);
 }
