@@ -2473,8 +2473,6 @@ static_library("ui") {
       "ash/fwupd_download_client_impl.h",
       "ash/game_dashboard/chrome_game_dashboard_delegate.cc",
       "ash/game_dashboard/chrome_game_dashboard_delegate.h",
-      "ash/glanceables/chrome_glanceables_delegate.cc",
-      "ash/glanceables/chrome_glanceables_delegate.h",
       "ash/glanceables/glanceables_classroom_client_impl.cc",
       "ash/glanceables/glanceables_classroom_client_impl.h",
       "ash/glanceables/glanceables_classroom_course_work_item.cc",

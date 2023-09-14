@@ -8,7 +8,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_view.h"
-#include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -32,10 +31,6 @@ class GlanceablesTest : public AshTestBase {
     DCHECK(controller_);
   }
 
-  TestGlanceablesDelegate* GetTestDelegate() {
-    return static_cast<TestGlanceablesDelegate*>(controller_->delegate_.get());
-  }
-
   views::Widget* GetWidget() { return controller_->widget_.get(); }
 
   GlanceablesView* GetGlanceablesView() { return controller_->view_; }
@@ -47,8 +42,6 @@ class GlanceablesTest : public AshTestBase {
 };
 
 TEST_F(GlanceablesTest, CreateAndDestroyUi) {
-  ASSERT_EQ(0, GetTestDelegate()->on_glanceables_closed_count());
-
   controller_->CreateUi();
 
   // A fullscreen widget was created.
@@ -70,9 +63,6 @@ TEST_F(GlanceablesTest, CreateAndDestroyUi) {
   // Widget and glanceables view are destroyed.
   EXPECT_FALSE(GetWidget());
   EXPECT_FALSE(GetGlanceablesView());
-
-  // Delegate was notified that glanceables were closed.
-  EXPECT_EQ(1, GetTestDelegate()->on_glanceables_closed_count());
 }
 
 TEST_F(GlanceablesTest, HidesInTabletMode) {

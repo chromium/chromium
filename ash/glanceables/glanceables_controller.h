@@ -18,7 +18,6 @@ class Widget;
 
 namespace ash {
 
-class GlanceablesDelegate;
 class GlanceablesView;
 
 // Controls the "welcome back" glanceables screen shown on login.
@@ -29,9 +28,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
   GlanceablesController(const GlanceablesController&) = delete;
   GlanceablesController& operator=(const GlanceablesController&) = delete;
   ~GlanceablesController() override;
-
-  // Initializes the controller and sets the delegate.
-  void Init(std::unique_ptr<GlanceablesDelegate> delegate);
 
   // Creates the UI and starts fetching data.
   void ShowOnLogin();
@@ -61,7 +57,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
   // this.
   void ApplyBackdrop() const;
 
-  std::unique_ptr<GlanceablesDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<GlanceablesView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
 };

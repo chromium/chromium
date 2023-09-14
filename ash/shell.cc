@@ -76,7 +76,6 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/glanceables_delegate.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/hud_display/hud_display.h"
@@ -1670,8 +1669,6 @@ void Shell::Init(
 
   if (features::AreGlanceablesEnabled()) {
     glanceables_controller_ = std::make_unique<GlanceablesController>();
-    glanceables_controller_->Init(shell_delegate_->CreateGlanceablesDelegate(
-        glanceables_controller_.get()));
   }
 
   if (features::AreGlanceablesV2Enabled() ||

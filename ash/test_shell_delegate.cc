@@ -11,7 +11,6 @@
 #include "ash/accessibility/default_accessibility_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
-#include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
@@ -43,12 +42,6 @@ TestShellDelegate::CreateGameDashboardDelegate() const {
 std::unique_ptr<AcceleratorPrefsDelegate>
 TestShellDelegate::CreateAcceleratorPrefsDelegate() const {
   return std::make_unique<TestAcceleratorPrefsDelegate>();
-}
-
-std::unique_ptr<GlanceablesDelegate>
-TestShellDelegate::CreateGlanceablesDelegate(
-    GlanceablesController* controller) const {
-  return std::make_unique<TestGlanceablesDelegate>();
 }
 
 AccessibilityDelegate* TestShellDelegate::CreateAccessibilityDelegate() {

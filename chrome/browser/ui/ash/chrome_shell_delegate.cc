@@ -44,7 +44,6 @@
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
-#include "chrome/browser/ui/ash/glanceables/chrome_glanceables_delegate.h"
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session_util.h"
@@ -145,12 +144,6 @@ ChromeShellDelegate::CreateGameDashboardDelegate() const {
 std::unique_ptr<ash::AcceleratorPrefsDelegate>
 ChromeShellDelegate::CreateAcceleratorPrefsDelegate() const {
   return std::make_unique<ChromeAcceleratorPrefsDelegate>();
-}
-
-std::unique_ptr<ash::GlanceablesDelegate>
-ChromeShellDelegate::CreateGlanceablesDelegate(
-    ash::GlanceablesController* controller) const {
-  return std::make_unique<ChromeGlanceablesDelegate>(controller);
 }
 
 ash::AccessibilityDelegate* ChromeShellDelegate::CreateAccessibilityDelegate() {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/glanceables/glanceables_delegate.h"
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -42,17 +41,12 @@ bool IsWindowOnAnyDesk(aura::Window* window) {
 GlanceablesController::GlanceablesController() {
   Shell::Get()->activation_client()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  ShowOnLogin();
 }
 
 GlanceablesController::~GlanceablesController() {
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
-}
-
-void GlanceablesController::Init(
-    std::unique_ptr<GlanceablesDelegate> delegate) {
-  DCHECK(delegate);
-  delegate_ = std::move(delegate);
 }
 
 void GlanceablesController::ShowOnLogin() {
@@ -96,7 +90,6 @@ void GlanceablesController::CreateUi() {
 void GlanceablesController::DestroyUi() {
   widget_.reset();
   view_ = nullptr;
-  delegate_->OnGlanceablesClosed();
 }
 
 void GlanceablesController::OnWindowActivated(
