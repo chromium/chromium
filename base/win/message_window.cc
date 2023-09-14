@@ -6,10 +6,15 @@
 
 #include <windows.h>
 
+#include <map>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/win/current_module.h"
 #include "base/win/resource_exhaustion.h"
@@ -19,6 +24,45 @@
 #undef FindWindow
 
 const wchar_t kMessageWindowClassName[] = L"Chrome_MessageWindow";
+
+namespace {
+
+class MessageWindowMap {
+ public:
+  static MessageWindowMap& GetInstance() {
+    static base::NoDestructor<MessageWindowMap> message_window_map;
+    return *message_window_map;
+  }
+
+  MessageWindowMap(const MessageWindowMap&) = delete;
+  MessageWindowMap& operator=(const MessageWindowMap&) = delete;
+
+  // Each key should only be inserted once.
+  void Insert(HWND hwnd, base::win::MessageWindow& message_window) {
+    CHECK(map_.emplace(hwnd, message_window).second);
+  }
+
+  // Erase should only be called on an existing key.
+  void Erase(HWND hwnd) {
+    // Check that exactly one element is erased from the map.
+    CHECK_EQ(map_.erase(hwnd), 1u);
+  }
+
+  // Will return nullptr if `hwnd` is not in the map.
+  base::win::MessageWindow* Get(HWND hwnd) const {
+    if (auto search = map_.find(hwnd); search != map_.end()) {
+      return &(search->second.get());
+    }
+    return nullptr;
+  }
+
+ private:
+  friend class base::NoDestructor<MessageWindowMap>;
+  MessageWindowMap() = default;
+  std::map<HWND, const raw_ref<base::win::MessageWindow>> map_;
+};
+
+}  // namespace
 
 namespace base {
 namespace win {
@@ -129,8 +173,8 @@ LRESULT CALLBACK MessageWindow::WindowProc(HWND hwnd,
                                            UINT message,
                                            WPARAM wparam,
                                            LPARAM lparam) {
-  MessageWindow* self =
-      reinterpret_cast<MessageWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+  auto& message_window_map = MessageWindowMap::GetInstance();
+  MessageWindow* self = message_window_map.Get(hwnd);
 
   switch (message) {
     // Set up the self before handling WM_CREATE.
@@ -142,20 +186,15 @@ LRESULT CALLBACK MessageWindow::WindowProc(HWND hwnd,
       // hasn't returned from CreateWindow() yet.
       self->window_ = hwnd;
 
-      // Store pointer to the self to the window's user data.
-      SetLastError(ERROR_SUCCESS);
-      LONG_PTR result = SetWindowLongPtr(hwnd, GWLP_USERDATA,
-                                         reinterpret_cast<LONG_PTR>(self));
-      CHECK(result != 0 || GetLastError() == ERROR_SUCCESS);
+      // Store pointer to self to local map.
+      message_window_map.Insert(hwnd, *self);
       break;
     }
 
-    // Clear the pointer to stop calling the self once WM_DESTROY is
+    // Clear the map key to stop calling the self once WM_DESTROY is
     // received.
     case WM_DESTROY: {
-      SetLastError(ERROR_SUCCESS);
-      LONG_PTR result = SetWindowLongPtr(hwnd, GWLP_USERDATA, NULL);
-      CHECK(result != 0 || GetLastError() == ERROR_SUCCESS);
+      message_window_map.Erase(hwnd);
       break;
     }
   }
