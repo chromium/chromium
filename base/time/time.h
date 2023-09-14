@@ -752,7 +752,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // month is set to 31 on a 28-30 day month. Returns Time(0) on overflow.
   // FromLocalExploded respects the current time zone but does not attempt to
   // use the calendar or day-of-week encoding from the current locale - see the
-  // comments on base::Time::Exploded for more information.
+  // comments on Exploded for more information.
   [[nodiscard]] static bool FromUTCExploded(const Exploded& exploded,
                                             Time* time) {
     return FromExploded(false, exploded, time);
@@ -795,7 +795,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // of the year 30828. Some platforms might convert over a wider input range.
   // LocalExplode respects the current time zone but does not attempt to use the
   // calendar or day-of-week encoding from the current locale - see the comments
-  // on base::Time::Exploded for more information.
+  // on Exploded for more information.
   void UTCExplode(Exploded* exploded) const { Explode(false, exploded); }
   void LocalExplode(Exploded* exploded) const { Explode(true, exploded); }
 
@@ -812,7 +812,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // DEPRECATED - Do not use in new code. When deserializing from `base::Value`,
   // prefer the helpers from //base/json/values_util.h instead.
   // Otherwise, use `Time::FromDeltaSinceWindowsEpoch()` for `Time` and
-  // `TimeDelta::FromMicroseconds()` for `TimeDelta`. http://crbug.com/634507
+  // `Microseconds()` for `TimeDelta`. http://crbug.com/634507
   static constexpr Time FromInternalValue(int64_t us) { return Time(us); }
 
  private:
