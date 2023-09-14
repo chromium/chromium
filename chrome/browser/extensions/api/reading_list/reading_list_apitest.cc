@@ -19,8 +19,16 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest, TestReadingListWorks) {
   ASSERT_TRUE(RunExtensionTest("reading_list")) << message_;
 }
 
+// TODO(crbug.com/1482646): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestReadingListEventsAcrossProfiles \
+  DISABLED_TestReadingListEventsAcrossProfiles
+#else
+#define MAYBE_TestReadingListEventsAcrossProfiles \
+  TestReadingListEventsAcrossProfiles
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ReadingListApiTest,
-                       TestReadingListEventsAcrossProfiles) {
+                       MAYBE_TestReadingListEventsAcrossProfiles) {
   // The EventRouter is shared between on- and off-the-record profiles, so
   // this observer will catch events for each.
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
