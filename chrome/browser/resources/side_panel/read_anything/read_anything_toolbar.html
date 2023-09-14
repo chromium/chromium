@@ -52,6 +52,16 @@
       iron-icon="read-anything-20:play"
       on-click="onPlayPauseClick_">
     </cr-icon-button>
+    <!--TODO(crbug.com/1474951): Make the granularity container styled so it
+     matches the mocks. -->
+    <span id="granularity-container" hidden="[[isPaused_]]">
+      <cr-icon-button id="previousGranularity"
+        iron-icon="read-anything:previous">
+      </cr-icon-button>
+      <cr-icon-button id="nextGranularity"
+        iron-icon="read-anything:next">
+      </cr-icon-button>
+    </span>
     <cr-icon-button
       id="rate"
       iron-icon="voice-rate:1"

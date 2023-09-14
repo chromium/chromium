@@ -171,7 +171,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   private isHighlightOn_: boolean = true;
 
   // If Read Aloud is in the paused state.
-  isPaused = true;
+  private isPaused_: boolean = true;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -232,7 +232,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const button = shadowRoot.getElementById('play-pause');
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:pause');
-    this.isPaused = false;
+    this.isPaused_ = false;
   }
 
   updateUiForPausing() {
@@ -241,7 +241,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const button = shadowRoot.getElementById('play-pause');
     assert(button);
     button.setAttribute('iron-icon', 'read-anything-20:play');
-    this.isPaused = true;
+    this.isPaused_ = true;
   }
 
   private closeMenus_() {
@@ -412,7 +412,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private onPlayPauseClick_() {
-    if (this.isPaused) {
+    if (this.isPaused_) {
       this.updateUiForPlaying();
       if (this.contentPage) {
         this.contentPage.playSpeech();

@@ -78,3 +78,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
                        ReadAloud_HighlightWhileReading) {
   ASSERT_TRUE(RunTest("read_aloud_highlight_while_reading.js"));
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       ReadAloud_GranularityVisibleWhenPlaying) {
+  ASSERT_TRUE(RunTest("granularity_visible_when_playing.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       ReadAloud_GranularityHiddenWhenPaused) {
+  ASSERT_TRUE(RunTest("granularity_hidden_when_paused.js"));
+}
