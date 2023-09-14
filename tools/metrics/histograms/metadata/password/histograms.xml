@@ -2843,19 +2843,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordStoreInitResult2"
-    enum="BooleanSuccess" expires_after="M120">
-  <owner>vasilii@chromium.org</owner>
-  <owner>src/components/password_manager/OWNERS</owner>
-  <summary>
-    Success rate of initialization of password store. Recorded for every user
-    once on the Chrome profile startup. Only recorded for &quot;regular&quot;
-    profiles, i.e. those in which Password Manager might actually work. This
-    excludes incognito profiles, guest profiles, system profiles (used for the
-    profile picker), lockscreen profiles, etc.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordStoreProxyBackend.{Function}.Fallback"
     enum="Boolean" expires_after="2024-02-20">
   <owner>ioanap@chromium.org</owner>
