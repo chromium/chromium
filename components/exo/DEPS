@@ -23,6 +23,7 @@ include_rules = [
   "+third_party/khronos",
   "+third_party/skia",
   "+ui",
+  "+chromeos/constants"
 ]
 
 specific_include_rules = {

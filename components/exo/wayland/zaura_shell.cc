@@ -53,6 +53,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -817,6 +818,11 @@ void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
   shell_surface_->SetOrientationLock(OrientationLock(lock_type));
 }
 
+void AuraToplevel::SetWindowRoundedCornerRadius(
+    const gfx::RoundedCornersF& radii) {
+  shell_surface_->SetWindowCornerRadii(radii);
+}
+
 void AuraToplevel::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
   shell_surface_->set_client_submits_surfaces_in_pixel_coordinates(enable);
 }
@@ -1395,6 +1401,17 @@ void aura_toplevel_set_orientation_lock(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetOrientationLock(orientation_lock);
 }
 
+void aura_toplevel_set_window_corner_radii(wl_client* client,
+                                           wl_resource* resource,
+                                           uint32_t upper_left_radius,
+                                           uint32_t upper_right_radius,
+                                           uint32_t lower_right_radius,
+                                           uint32_t lower_left_radius) {
+  GetUserDataAs<AuraToplevel>(resource)->SetWindowRoundedCornerRadius(
+      gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius));
+}
+
 void aura_toplevel_set_client_supports_window_bounds(wl_client* client,
                                                      wl_resource* resource) {
   GetUserDataAs<AuraToplevel>(resource)->SetClientUsesScreenCoordinates();
@@ -1643,7 +1660,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_can_fullscreen,
     aura_toplevel_unset_can_fullscreen,
     aura_toplevel_set_float_to_location,
-};
+    aura_toplevel_set_window_corner_radii};
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
                                                         wl_resource* resource) {

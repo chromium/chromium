@@ -15,6 +15,7 @@
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -79,6 +80,7 @@ class AuraSurface : public SurfaceObserver,
   void Pin(bool trusted);
   void Unpin();
   void SetOrientationLock(uint32_t orientation_lock);
+  void SetWindowRoundedCornerRadius(const gfx::RoundedCornersF& radii);
   void ShowTooltip(const char* text,
                    const gfx::Point& position,
                    uint32_t trigger,
@@ -139,6 +141,7 @@ class AuraToplevel {
   virtual ~AuraToplevel();
 
   void SetOrientationLock(uint32_t lock_type);
+  void SetWindowRoundedCornerRadius(const gfx::RoundedCornersF& radii);
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
   void SetClientUsesScreenCoordinates();
   void SetWindowBounds(int32_t x, int32_t y, int32_t width, int32_t height);

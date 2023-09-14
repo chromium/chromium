@@ -4,6 +4,8 @@
 
 #include "components/exo/shell_surface_base.h"
 
+#include <stdint.h>
+
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
@@ -18,14 +20,15 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -55,6 +58,10 @@
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -139,11 +146,33 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       return;
     }
 
-    // TODO(zoraiznaeem): Get frame radius from client.
-    header_view_->SetHeaderCornerRadius(
-        chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+    if (!chromeos::features::IsRoundedWindowsEnabled()) {
+      header_view_->SetHeaderCornerRadius(
+          chromeos::GetFrameCornerRadius(frame()->GetNativeWindow()));
+      return;
+    }
 
-    // TODO(crbug/1415486): Apply rounded corners to exo’s root surface.
+    absl::optional<gfx::RoundedCornersF> window_radii =
+        shell_surface_->window_corners_radii();
+
+    if (!window_radii) {
+      return;
+    }
+
+    // TODO(crbug.com/1415486): Support variable radius corner for header_view.
+    DCHECK_EQ(window_radii->upper_left(), window_radii->upper_right());
+    header_view_->SetHeaderCornerRadius(window_radii->upper_left());
+
+    const gfx::RoundedCornersF root_surface_radii = {
+        0, 0, window_radii->lower_right(), window_radii->lower_left()};
+
+    Surface* root_surface = shell_surface_->root_surface();
+    DCHECK(root_surface);
+
+    shell_surface_->ApplyRoundedCornersToSurfaceTree(
+        gfx::RectF(root_surface->surface_hierarchy_content_bounds()),
+        root_surface_radii);
+    // TODO(crbug/1415486): Apply rounded corners to ghost surface if present.
   }
 
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -448,6 +477,12 @@ void ShellSurfaceBase::SetSystemModal(bool system_modal) {
 void ShellSurfaceBase::SetTopInset(int height) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetTopInset", "height", height);
   pending_top_inset_height_ = height;
+}
+
+void ShellSurfaceBase::SetWindowCornerRadii(const gfx::RoundedCornersF& radii) {
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowCornerRadii", "radii",
+               radii.ToString());
+  pending_window_corners_radii_dp_ = radii;
 }
 
 void ShellSurfaceBase::SetBoundsForShadows(
@@ -1876,6 +1911,21 @@ void ShellSurfaceBase::UpdateFrameType() {
   // OnSetFrame() by default.
 }
 
+void ShellSurfaceBase::UpdateWindowRoundedCorners() {
+  // If non_client_view is not avaliable, it means that widget_ is neither a
+  // normal window or a bubble. Therefore it should not have any decorations
+  // including a rounded window.
+  if (!widget_ || !widget_->non_client_view()) {
+    DCHECK(widget_ && !pending_window_corners_radii_dp_);
+    // It is possible to get here before the widget has actually been created.
+    // The state will be set once the widget gets created.
+    return;
+  }
+
+  window_corners_radii_dp_ = pending_window_corners_radii_dp_;
+  widget_->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
+}
+
 gfx::Rect ShellSurfaceBase::GetVisibleBounds() const {
   // Use |geometry_| if set, otherwise use the visual bounds of the surface.
   if (geometry_.IsEmpty()) {
@@ -2071,6 +2121,7 @@ void ShellSurfaceBase::CommitWidget() {
 
   UpdateHostWindowOrigin();
   UpdateShape();
+  UpdateWindowRoundedCorners();
 
   // Don't show yet if the shell surface doesn't have content or is minimized
   // while waiting for content.

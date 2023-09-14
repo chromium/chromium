@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_SHELL_SURFACE_BASE_H_
 #define COMPONENTS_EXO_SHELL_SURFACE_BASE_H_
 
+#include <stdint.h>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -23,11 +24,11 @@
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
-#include "ui/display/display_observer.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -152,6 +153,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // widget is created.
   void SetPersistable(bool persistable);
 
+  // Sets the window corner radii.
+  void SetWindowCornerRadii(const gfx::RoundedCornersF& radii);
+
   // Set normal shadow bounds, |shadow_bounds_|, to |bounds| to be used and
   // applied via `UpdateShadow()`. Set and update resize shadow bounds with
   // |widget_|'s origin and |bounds| via `UpdateResizeShadowBoundsOfWindow()`.
@@ -194,7 +198,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // An overlay creation parameters. The view is owned by the
   // overlay.
   struct OverlayParams {
-    OverlayParams(std::unique_ptr<views::View> overlay);
+    explicit OverlayParams(std::unique_ptr<views::View> overlay);
     ~OverlayParams();
 
     bool translucent = false;
@@ -351,6 +355,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   const absl::optional<cc::Region>& shape_dp() const { return shape_dp_; }
 
+  // Window corners radii in dps.
+  const absl::optional<gfx::RoundedCornersF>& window_corners_radii() const {
+    return window_corners_radii_dp_;
+  }
+
  protected:
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
@@ -390,6 +399,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void UpdateCornerRadius();
 
   virtual void UpdateFrameType();
+
+  void UpdateWindowRoundedCorners();
 
   // Applies |system_modal_| to |widget_|.
   void UpdateSystemModal();
@@ -448,6 +459,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   absl::optional<gfx::Rect> initial_bounds_;
   absl::optional<cc::Region> shape_dp_;
   absl::optional<cc::Region> pending_shape_dp_;
+
+  // Radii of window corners in dips.
+  absl::optional<gfx::RoundedCornersF> window_corners_radii_dp_;
+  absl::optional<gfx::RoundedCornersF> pending_window_corners_radii_dp_;
 
   int64_t display_id_ = display::kInvalidDisplayId;
   int64_t pending_display_id_ = display::kInvalidDisplayId;

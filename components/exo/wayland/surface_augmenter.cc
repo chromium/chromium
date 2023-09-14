@@ -75,7 +75,7 @@ class AugmentedSurface : public SurfaceObserver {
         gfx::RRectF(gfx::RectF(x, y, width, height),
                     gfx::RoundedCornersF(top_left, top_right, bottom_right,
                                          bottom_left)),
-        is_root_coordinates);
+        is_root_coordinates, /*commit_override=*/false);
   }
 
   void SetDestination(float width, float height) {

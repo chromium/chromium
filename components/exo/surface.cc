@@ -7,19 +7,16 @@
 #include <utility>
 
 #include "ash/display/output_protection_delegate.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "components/exo/buffer.h"
@@ -29,6 +26,7 @@
 #include "components/exo/surface_observer.h"
 #include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -37,7 +35,6 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "media/media_buildflags.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
@@ -53,7 +50,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -600,7 +596,8 @@ void Surface::OnSubSurfaceCommit() {
 }
 
 void Surface::SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds,
-                                bool is_root_coordinates) {
+                                bool is_root_coordinates,
+                                bool commit_override) {
   TRACE_EVENT1("exo", "Surface::SetRoundedCorner", "corners",
                rounded_corners_bounds.ToString());
 
@@ -610,6 +607,13 @@ void Surface::SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds,
     has_pending_contents_ = true;
     pending_state_.rounded_corners_bounds = rounded_corners_bounds;
     pending_state_.rounded_corners_is_root_coordinates = is_root_coordinates;
+  }
+
+  if (commit_override &&
+      (rounded_corners_bounds != state_.rounded_corners_bounds ||
+       is_root_coordinates != state_.rounded_corners_is_root_coordinates)) {
+    state_.rounded_corners_bounds = rounded_corners_bounds;
+    state_.rounded_corners_is_root_coordinates = is_root_coordinates;
   }
 }
 
@@ -1590,7 +1594,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
   gfx::MaskFilterInfo msk;
   if (!state_.rounded_corners_bounds.IsEmpty()) {
-    DCHECK(sub_surfaces_.empty());
     // `state_.rounded_corners_bounds` should be on local surface coordinates
     // but the deprecated implementation still uses root surface coordinates.
     // If so, we skip translating into the root surface coordinates to keep the
@@ -1603,6 +1606,11 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     // Set the mask.
     msk = gfx::MaskFilterInfo(state_.rounded_corners_bounds +
                               rounded_corners_rect_offset);
+
+    if (device_scale_factor.has_value()) {
+      msk.ApplyTransform(
+          gfx::Transform::MakeScale(device_scale_factor.has_value()));
+    }
   }
 
   // Compute the total transformation from post-transform buffer coordinates to

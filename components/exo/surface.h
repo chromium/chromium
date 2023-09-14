@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_SURFACE_H_
 
 #include <list>
-#include <set>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -21,12 +20,12 @@
 #include "components/exo/surface_delegate.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
-#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
@@ -188,10 +187,17 @@ class Surface final : public ui::PropertyHandler {
   void PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling);
   void OnSubSurfaceCommit();
 
+  using SubSurfaceEntry = std::pair<Surface*, gfx::PointF>;
+  using SubSurfaceEntryList = std::list<SubSurfaceEntry>;
+  SubSurfaceEntryList& sub_surfaces() { return sub_surfaces_; }
+
   // `is_root_coordinates` specifies whether `rounded_corners_bounds` is on its
   // root surface coordinates or on the local surface coordinates.
+  // If `commit` is true, rounded corner bounds are add to committed state,
+  // overriding the previously committed value.
   void SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds,
-                         bool is_root_coordinates);
+                         bool is_root_coordinates,
+                         bool commit_override);
   void SetOverlayPriorityHint(OverlayPriority hint);
 
   // Sets the surface's clip rectangle.
@@ -686,8 +692,6 @@ class Surface final : public ui::PropertyHandler {
   // The stack of sub-surfaces to take effect when Commit() is called.
   // Bottom-most sub-surface at the front of the list and top-most sub-surface
   // at the back.
-  using SubSurfaceEntry = std::pair<Surface*, gfx::PointF>;
-  using SubSurfaceEntryList = std::list<SubSurfaceEntry>;
   SubSurfaceEntryList pending_sub_surfaces_;
   SubSurfaceEntryList sub_surfaces_;
 
