@@ -1,94 +1,69 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <script src="../../resources/js-test.js"></script>
-</head>
+<title>SVGSVGElement getIntersectionList() and getEnclosureList() behavior</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg id="svg" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <g id="container" transform="translate(50, 50)">
+    <g id="subcontainer"></g>
+  </g>
+</svg>
+<script>
+  const svg = document.getElementById('svg');
+  const container = document.getElementById('container');
+  const subcontainer = document.getElementById('subcontainer');
 
-<body onload="run_test()">
-  <svg id="svg" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
-    <g id="container" transform="translate(50, 50)">
-      <g id="subcontainer">
-      </g>
-    </g>
-  </svg>
-  <p id="description"></p>
-  <div id="console"></div>
+  for (var i = 0; i < 10; i++) {
+    for (var j = 0; j < 10; j++) {
+      var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      r.setAttribute('x', i * 10 + 1);
+      r.setAttribute('y', j * 10 + 1);
+      r.setAttribute('width', 8);
+      r.setAttribute('height', 8);
+      r.setAttribute('fill', 'green');
+      if (j < 5)
+        container.appendChild(r);
+      else
+        subcontainer.appendChild(r);
+    }
+  }
 
-  <script>
-    jsTestIsAsync = true;
-    var svg = document.getElementById('svg');
-    var container = document.getElementById('container');
-    var subcontainer = document.getElementById('subcontainer');
+  function check_enclosure_and_intersection(ref_id, enclosure1, intersection1, enclosure2, intersection2) {
+    const reference_element = ref_id ? document.getElementById(ref_id) : null;
+    const rect = svg.createSVGRect();
 
-    for (var i = 0; i < 10; i++) {
-      for (var j = 0; j < 10; j++) {
-        var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        r.setAttribute('x', i * 10 + 1);
-        r.setAttribute('y', j * 10 + 1);
-        r.setAttribute('width', 8);
-        r.setAttribute('height', 8);
-        r.setAttribute('fill', 'green');
-        if (j < 5)
-            container.appendChild(r);
-        else
-            subcontainer.appendChild(r);
-      }
+    rect.x = rect.y = 50;
+    rect.width = rect.height = 100;
+    assert_equals(svg.getEnclosureList(rect, reference_element).length, enclosure1);
+    assert_equals(svg.getIntersectionList(rect, reference_element).length, intersection1);
+
+    rect.x = rect.y = 55;
+    rect.width = rect.height = 90;
+    assert_equals(svg.getEnclosureList(rect, reference_element).length, enclosure2);
+    assert_equals(svg.getIntersectionList(rect, reference_element).length, intersection2);
+  }
+
+  const test = async_test();
+  window.onload = test.step_func_done(() => {
+    check_enclosure_and_intersection(null, 100, 100, 64, 100);
+    check_enclosure_and_intersection('container', 100, 100, 64, 100);
+    check_enclosure_and_intersection('subcontainer', 50, 50, 32, 50);
+
+    // Zooming should not affect the results.
+    if (window.testRunner) {
+      testRunner.zoomPageIn();
+      testRunner.zoomPageIn();
+      testRunner.zoomPageIn();
     }
 
-    var rect = svg.createSVGRect();
-    var reference_element;
+    check_enclosure_and_intersection(null, 100, 100, 64, 100);
+    check_enclosure_and_intersection('container', 100, 100, 64, 100);
+    check_enclosure_and_intersection('subcontainer', 50, 50, 32, 50);
 
-    function check_enclosure_and_intersection(ref_id, e1, i1, e2, i2) {
-      reference_element = ref_id ? document.getElementById(ref_id) : null;
+    // But a viewbox transform should.
+    svg.setAttribute('viewBox', '0 0 150 150');
 
-      debug('');
-      rect.x = rect.y = 50;
-      rect.width = rect.height = 100;
-      debug('rect: [' + rect.x + ' ' + rect.y + ' '
-        + (rect.x + rect.width) + ' ' + (rect.y + rect.height) + ']');
-      debug('referenceElement: ' + ref_id);
-      shouldBe('svg.getEnclosureList(rect, reference_element).length', e1 + '');
-      shouldBe('svg.getIntersectionList(rect, reference_element).length',i1 + '');
-
-      debug('');
-      rect.x = rect.y = 55;
-      rect.width = rect.height = 90;
-      debug('rect: [' + rect.x + ' ' + rect.y + ' '
-        + (rect.x + rect.width) + ' ' + (rect.y + rect.height) + ']');
-      debug('referenceElement: ' + ref_id);
-      shouldBe('svg.getEnclosureList(rect, reference_element).length', e2 + '');
-      shouldBe('svg.getIntersectionList(rect, reference_element).length', i2 + '');
-    }
-
-    function run_test() {
-      description("Verify SVGSVGElement's getIntersectionList() " + 
-      "and getEnclosureList() behavior.");
-
-      check_enclosure_and_intersection(null, 100, 100, 64, 100);
-      check_enclosure_and_intersection('container', 100, 100, 64, 100);
-      check_enclosure_and_intersection('subcontainer', 50, 50, 32, 50);
-
-      debug('');
-      debug('Zooming should not affect the results.');
-      if (window.testRunner) {
-        testRunner.zoomPageIn();
-        testRunner.zoomPageIn();
-        testRunner.zoomPageIn();
-      }
-      check_enclosure_and_intersection(null, 100, 100, 64, 100);
-      check_enclosure_and_intersection('container', 100, 100, 64, 100);
-      check_enclosure_and_intersection('subcontainer', 50, 50, 32, 50);
-
-      debug('');
-      debug('But a viewbox transform should.');
-      svg.setAttribute('viewBox', '0 0 150 150');
-      check_enclosure_and_intersection(null, 36, 49, 25, 36);
-      check_enclosure_and_intersection('container', 36, 49, 25, 36);
-      check_enclosure_and_intersection('subcontainer', 6, 14, 0, 6);
-
-      debug('');
-      finishJSTest();
-    }
-  </script>
-</body>
-</html>
+    check_enclosure_and_intersection(null, 36, 49, 25, 36);
+    check_enclosure_and_intersection('container', 36, 49, 25, 36);
+    check_enclosure_and_intersection('subcontainer', 6, 14, 0, 6);
+  });
+</script>

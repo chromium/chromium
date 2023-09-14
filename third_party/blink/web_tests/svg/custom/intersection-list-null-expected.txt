@@ -1,2 +1,0 @@
-CONSOLE ERROR: Uncaught TypeError: Failed to execute 'checkIntersection' on 'SVGSVGElement': parameter 1 is not of type 'SVGElement'.
-PASS
