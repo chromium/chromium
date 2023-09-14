@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/memory/raw_ptr.h"
@@ -57,9 +56,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
  private:
   friend class GlanceablesTest;
 
-  // Triggers a fetch of data from the server.
-  void FetchData();
-
   // Adds blur to `widget_` and semiopaque black background to `view_`.
   // TODO(crbug.com/1354343): investigate if there's a more efficient way to do
   // this.
@@ -68,7 +64,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
   std::unique_ptr<GlanceablesDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<GlanceablesView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
-  std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
 };
 
 }  // namespace ash

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/glanceables/glanceables_weather_view.h"
 #include "ash/glanceables/glanceables_welcome_label.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/box_layout.h"
@@ -21,9 +20,6 @@ GlanceablesView::GlanceablesView() {
       views::BoxLayout::Orientation::kVertical));
 
   welcome_label_ = AddChildView(std::make_unique<GlanceablesWelcomeLabel>());
-
-  weather_view_ = AddChildView(std::make_unique<GlanceablesWeatherView>());
-  weather_view_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 0, 0));
 }
 
 GlanceablesView::~GlanceablesView() = default;

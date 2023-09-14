@@ -3,19 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "ash/ambient/ambient_controller.h"
-#include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_view.h"
-#include "ash/glanceables/glanceables_weather_view.h"
 #include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
-#include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -23,19 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_unittest_util.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 
 namespace ash {
-namespace {
-
-AmbientWeatherModel* GetWeatherModel() {
-  return Shell::Get()->ambient_controller()->GetAmbientWeatherModel();
-}
-
-}  // namespace
 
 // Unified test suite for the glanceables controller, views, etc.
 class GlanceablesTest : public AshTestBase {
@@ -48,13 +31,6 @@ class GlanceablesTest : public AshTestBase {
     AshTestBase::SetUp();
     controller_ = Shell::Get()->glanceables_controller();
     DCHECK(controller_);
-
-    // Fake out the ambient backend controller so weather fetches won't crash.
-    auto* ambient_controller = Shell::Get()->ambient_controller();
-    // The controller must be null before a new instance can be created.
-    ambient_controller->set_backend_controller_for_testing(nullptr);
-    ambient_controller->set_backend_controller_for_testing(
-        std::make_unique<FakeAmbientBackendControllerImpl>());
   }
 
   TestGlanceablesDelegate* GetTestDelegate() {
@@ -67,14 +43,6 @@ class GlanceablesTest : public AshTestBase {
 
   GlanceablesWelcomeLabel* GetWelcomeLabel() {
     return controller_->view_->welcome_label_;
-  }
-
-  views::ImageView* GetWeatherIcon() {
-    return controller_->view_->weather_view_->icon_;
-  }
-
-  views::Label* GetWeatherTemperature() {
-    return controller_->view_->weather_view_->temperature_;
   }
 
  protected:
@@ -126,29 +94,6 @@ TEST_F(GlanceablesTest, GlanceablesViewCreatesChildViews) {
   GlanceablesView* view = GetGlanceablesView();
   ASSERT_TRUE(view);
   EXPECT_TRUE(GetWelcomeLabel());
-  EXPECT_TRUE(GetWeatherIcon());
-  EXPECT_TRUE(GetWeatherTemperature());
-}
-
-TEST_F(GlanceablesTest, WeatherViewShowsWeather) {
-  controller_->CreateUi();
-
-  // Icon starts blank.
-  views::ImageView* icon = GetWeatherIcon();
-  EXPECT_TRUE(icon->GetImage().isNull());
-
-  // Trigger a weather update. Use an image the same size as the icon view's
-  // image so the image won't be resized and we can compare backing objects.
-  gfx::Rect image_bounds = icon->GetImageBounds();
-  gfx::ImageSkia weather_image =
-      gfx::test::CreateImageSkia(image_bounds.width(), image_bounds.height());
-  GetWeatherModel()->UpdateWeatherInfo(weather_image, 72.0f,
-                                       /*show_celsius=*/false);
-
-  // The view reflects the new weather.
-  EXPECT_EQ(weather_image.GetBackingObject(),
-            icon->GetImage().GetBackingObject());
-  EXPECT_EQ(u"72° F", GetWeatherTemperature()->GetText());
 }
 
 TEST_F(GlanceablesTest, DismissesOnlyOnAppWindowOpen) {

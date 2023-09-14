@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/ambient/ambient_controller.h"
 #include "ash/glanceables/glanceables_delegate.h"
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -16,7 +15,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
@@ -64,7 +62,6 @@ void GlanceablesController::ShowOnLogin() {
   }
 
   CreateUi();
-  FetchData();
 }
 
 bool GlanceablesController::IsShowing() const {
@@ -100,7 +97,6 @@ void GlanceablesController::DestroyUi() {
   widget_.reset();
   view_ = nullptr;
   delegate_->OnGlanceablesClosed();
-  weather_refresher_.reset();
 }
 
 void GlanceablesController::OnWindowActivated(
@@ -122,14 +118,6 @@ void GlanceablesController::OnTabletModeStarted() {
 
   // TODO(crbug.com/1360528): Implement tablet mode support.
   DestroyUi();
-}
-
-void GlanceablesController::FetchData() {
-  // GlanceablesWeatherView observes the weather model for updates.
-  weather_refresher_ = Shell::Get()
-                           ->ambient_controller()
-                           ->ambient_weather_controller()
-                           ->CreateScopedRefresher();
 }
 
 void GlanceablesController::ApplyBackdrop() const {
