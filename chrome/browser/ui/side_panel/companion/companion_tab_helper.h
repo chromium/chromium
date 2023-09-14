@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_metrics.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -27,7 +28,8 @@ class CompanionPageHandler;
 // values such as a text query. This class also owns the
 // CompanionSidePanelController.
 class CompanionTabHelper
-    : public content::WebContentsUserData<CompanionTabHelper> {
+    : public content::WebContentsUserData<CompanionTabHelper>,
+      public content::WebContentsObserver {
  public:
   class Delegate {
    public:
@@ -47,6 +49,10 @@ class CompanionTabHelper
     virtual void OnCompanionSidePanelClosed() = 0;
     // Retrieves the web contents for testing purposes.
     virtual content::WebContents* GetCompanionWebContentsForTesting() = 0;
+    // Returns true if Companion is currently open and showing to the user.
+    virtual bool IsCompanionShowing() = 0;
+    // Set Companion as the active side panel entry in the given web contents.
+    virtual void SetCompanionAsActiveEntry(content::WebContents* contents) = 0;
     // Add a callback to be called when Companion is fully loaded in the side
     // panel, i.e. the spinner of the tab would stop spinning, Javascript is
     // loaded and the onload event was dispatched.
@@ -59,6 +65,16 @@ class CompanionTabHelper
   CompanionTabHelper(const CompanionTabHelper&) = delete;
   CompanionTabHelper& operator=(const CompanionTabHelper&) = delete;
   ~CompanionTabHelper() override;
+
+  // content::WebContentsObserver overrides.
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
 
   // Add a callback to be called when Companion is fully loaded in the side
   // panel, i.e. the spinner of the tab would stop spinning, Javascript is

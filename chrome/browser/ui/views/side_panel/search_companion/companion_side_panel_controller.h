@@ -50,6 +50,8 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
       SidePanelOpenTrigger side_panel_open_trigger) override;
   void UpdateNewTabButton(GURL url_to_open) override;
   void OnCompanionSidePanelClosed() override;
+  bool IsCompanionShowing() override;
+  void SetCompanionAsActiveEntry(content::WebContents* contents) override;
   content::WebContents* GetCompanionWebContentsForTesting() override;
 
   // SidePanelEntryObserver:
