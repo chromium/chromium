@@ -261,7 +261,7 @@ void FindBadRawPtrPatterns(Options options,
   StackAllocatedPredicate stack_allocated_predicate;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &exclude_fields, &exclude_lines, options.check_raw_ptr_to_stack_allocated,
-      &stack_allocated_predicate, options.raw_ptr_fix_crbug_1449812};
+      &stack_allocated_predicate};
 
   BadCastMatcher bad_cast_matcher(compiler, exclude_separate_repositories,
                                   check_bad_raw_ptr_cast_exclude_funcs);

@@ -97,7 +97,7 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg == "check-raw-ref-fields") {
       options_.check_raw_ref_fields = true;
     } else if (arg == "raw-ptr-fix-crbug-1449812") {
-      options_.raw_ptr_fix_crbug_1449812 = true;
+      // TODO(mikt): Now enabled by default. Remove this path.
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

@@ -21,7 +21,6 @@ struct Options {
   bool check_stack_allocated = false;
   bool check_raw_ref_fields = false;
   bool check_raw_ptr_to_stack_allocated = false;
-  bool raw_ptr_fix_crbug_1449812 = false;
   std::string exclude_fields_file;
   std::vector<std::string> raw_ptr_paths_to_exclude_lines;
   std::vector<std::string> check_bad_raw_ptr_cast_exclude_funcs;
