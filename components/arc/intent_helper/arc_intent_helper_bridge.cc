@@ -149,8 +149,9 @@ ArcIntentHelperBridge::~ArcIntentHelperBridge() {
 }
 
 void ArcIntentHelperBridge::Shutdown() {
-  for (auto& observer : observer_list_)
-    observer.OnArcIntentHelperBridgeShutdown();
+  for (auto& observer : observer_list_) {
+    observer.OnArcIntentHelperBridgeShutdown(this);
+  }
 }
 
 void ArcIntentHelperBridge::OnIconInvalidated(const std::string& package_name) {

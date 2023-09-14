@@ -12,6 +12,8 @@
 
 namespace arc {
 
+class ArcIntentHelperBridge;
+
 class ArcIntentHelperObserver {
  public:
   virtual ~ArcIntentHelperObserver() = default;
@@ -35,7 +37,7 @@ class ArcIntentHelperObserver {
   virtual void OnIconInvalidated(const std::string& package_name) {}
 
   // Called when ArcIntentHelperBridge is shut down.
-  virtual void OnArcIntentHelperBridgeShutdown() {}
+  virtual void OnArcIntentHelperBridgeShutdown(ArcIntentHelperBridge* bridge) {}
 };
 
 }  // namespace arc

@@ -108,10 +108,8 @@ void ArcAsh::AddObserver(mojo::PendingRemote<mojom::ArcObserver> observer) {
   observers_.Add(std::move(remote));
 }
 
-void ArcAsh::OnArcIntentHelperBridgeShutdown() {
-  // This method should not be called if profie_ is not set.
-  DCHECK(profile_);
-
+void ArcAsh::OnArcIntentHelperBridgeShutdown(
+    arc::ArcIntentHelperBridge* bridge) {
   // Remove observers here instead of ~ArcAsh() since ArcIntentHelperBridge
   // is shut down before ~ArcAsh() is called.
   // Both of them are destroyed in
@@ -119,9 +117,9 @@ void ArcAsh::OnArcIntentHelperBridgeShutdown() {
   // ArcIntentHelperBridge is shut down and destroyed in
   // ChromeBrowserMainPartsLinux::PostMainMessageLoopRun() while ArcAsh is
   // destroyed in crosapi_manager_.reset() which runs later.
-  auto* bridge = arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
-  if (bridge)
+  if (bridge) {
     bridge->RemoveObserver(this);
+  }
 }
 
 void ArcAsh::RequestActivityIcons(

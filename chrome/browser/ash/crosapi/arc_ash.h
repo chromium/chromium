@@ -20,6 +20,10 @@
 
 class Profile;
 
+namespace arc {
+class ArcIntentHelperBridge;
+}  // namespace arc
+
 namespace crosapi {
 
 // This class is the ash-chrome implementation of Arc interface. This claas must
@@ -59,7 +63,8 @@ class ArcAsh : public mojom::Arc,
 
   // arc::ArcIntentHelperObserver:
   void OnIconInvalidated(const std::string& package_name) override;
-  void OnArcIntentHelperBridgeShutdown() override;
+  void OnArcIntentHelperBridgeShutdown(
+      arc::ArcIntentHelperBridge* bridge) override;
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
