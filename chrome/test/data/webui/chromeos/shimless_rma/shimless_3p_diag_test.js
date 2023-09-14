@@ -32,6 +32,7 @@ suite('shimless3pDiagTest', function() {
    * */
   let hasDisabledAllButtons = false;
 
+  /**@type function() */
   const disableAllButtonsListener = () => {
     hasDisabledAllButtons = true;
   };
@@ -57,9 +58,7 @@ suite('shimless3pDiagTest', function() {
     service.reset();
   });
 
-  /**
-   * @return {!Promise}
-   */
+  /**@type function(): !Promise */
   const initialize = () => {
     assertFalse(!!component);
 
@@ -74,6 +73,22 @@ suite('shimless3pDiagTest', function() {
     assertTrue(!!component);
 
     return flushTasks();
+  };
+
+  /**@type function(string, boolean, boolean): !Promise */
+  const pressKey = (key, altKey, shiftKey) => {
+    const eventPromise = eventToPromise('keydown', component);
+    component.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {
+          bubbles: true,
+          composed: true,
+          key,
+          altKey,
+          shiftKey,
+        },
+        ));
+    return eventPromise;
   };
 
   // Test initialization of 3p diag.
@@ -121,87 +136,63 @@ suite('shimless3pDiagTest', function() {
   });
 
   // Test wrong shortcut don't trigger 3p diag.
-  const wrong_keyboard_shortcuts = [
-    {
-      name: 'NoAltKey',
-      key: 'D',
-      altKey: false,
-      shiftKey: true,
-    },
-    {
-      name: 'NoShiftKey',
-      key: 'D',
-      altKey: true,
-      shiftKey: false,
-    },
-    // No 'D' key
-    {
-      name: 'NotDKey',
-      key: 'X',
-      altKey: true,
-      shiftKey: true,
-    },
-    // No 'D' key, 'L' is for logging dialog.
-    {
-      name: 'LKey',
-      key: 'L',
-      altKey: true,
-      shiftKey: true,
-    },
-  ];
-  for (const {name, key, altKey, shiftKey} of wrong_keyboard_shortcuts) {
-    test(`WrongShortcutDontTrigger3pDiag${name}`, async () => {
+  for (const {name, key, altKey, shiftKey} of
+           [{
+             name: 'NoAltKey',
+             key: 'D',
+             altKey: false,
+             shiftKey: true,
+           },
+            {
+              name: 'NoShiftKey',
+              key: 'D',
+              altKey: true,
+              shiftKey: false,
+            },
+            // No 'D' key
+            {
+              name: 'NotDKey',
+              key: 'X',
+              altKey: true,
+              shiftKey: true,
+            },
+            // No 'D' key, 'L' is for logging dialog.
+            {
+              name: 'LKey',
+              key: 'L',
+              altKey: true,
+              shiftKey: true,
+            },
+  ]) {
+    test(`WrongShortcutDoesntTrigger3pDiag${name}`, async () => {
       await initialize();
       assertTrue(!!component);
 
-      const keydownEventPromise = eventToPromise('keydown', component);
-      component.dispatchEvent(new KeyboardEvent(
-          'keydown',
-          {
-            bubbles: true,
-            composed: true,
-            key,
-            altKey,
-            shiftKey,
-          },
-          ));
-      await keydownEventPromise;
+      await pressKey(key, altKey, shiftKey);
       assertFalse(hasDisabledAllButtons);
     });
   }
 
   // Verify 3p diag flow by trigger keyboard shortcut.
-  const correct_keyboard_shortcuts = [
-    {
-      name: 'UppercaseD',
-      key: 'D',
-      altKey: true,
-      shiftKey: true,
-    },
-    {
-      name: 'LowercaseD',
-      key: 'd',
-      altKey: true,
-      shiftKey: true,
-    },
-  ];
-  for (const {name, key, altKey, shiftKey} of correct_keyboard_shortcuts) {
+  for (const {name, key, altKey, shiftKey} of
+           [{
+             name: 'UppercaseD',
+             key: 'D',
+             altKey: true,
+             shiftKey: true,
+           },
+            {
+              name: 'LowercaseD',
+              key: 'd',
+              altKey: true,
+              shiftKey: true,
+            },
+  ]) {
     test(`Launch3pDiagByShortcut${name}`, async () => {
       await initialize();
       assertTrue(!!component);
 
-      const keydownEventPromise = eventToPromise('keydown', component);
-      component.dispatchEvent(new KeyboardEvent(
-          'keydown',
-          {
-            bubbles: true,
-            composed: true,
-            key,
-            altKey,
-            shiftKey,
-          },
-          ));
-      await keydownEventPromise;
+      await pressKey(key, altKey, shiftKey);
       assertTrue(hasDisabledAllButtons);
       // TODO(chungsheng): Verify other things after implemented them.
     });
