@@ -138,7 +138,7 @@ public class VideoCaptureCamera
     private class CrErrorCallback implements android.hardware.Camera.ErrorCallback {
         @Override
         public void onError(int error, android.hardware.Camera camera) {
-            VideoCaptureJni.get().onError(mNativeVideoCaptureDeviceAndroid, VideoCaptureCamera.this,
+            VideoCaptureCamera.this.onError(VideoCaptureCamera.this,
                     AndroidVideoCaptureError.ANDROID_API_1_CAMERA_ERROR_CALLBACK_RECEIVED,
                     "Error id: " + error);
 
@@ -166,8 +166,7 @@ public class VideoCaptureCamera
             }
             synchronized (mPhotoTakenCallbackLock) {
                 if (mPhotoTakenCallbackId != 0) {
-                    VideoCaptureJni.get().onPhotoTaken(mNativeVideoCaptureDeviceAndroid,
-                            VideoCaptureCamera.this, mPhotoTakenCallbackId, data);
+                    onPhotoTaken(VideoCaptureCamera.this, mPhotoTakenCallbackId, data);
                 }
                 mPhotoTakenCallbackId = 0;
             }
@@ -469,8 +468,7 @@ public class VideoCaptureCamera
 
         mPreviewBufferLock.lock();
         try {
-            VideoCaptureJni.get().onStarted(
-                    mNativeVideoCaptureDeviceAndroid, VideoCaptureCamera.this);
+            onStarted(VideoCaptureCamera.this);
             mIsRunning = true;
         } finally {
             mPreviewBufferLock.unlock();
@@ -505,8 +503,7 @@ public class VideoCaptureCamera
         final android.hardware.Camera.Parameters parameters = getCameraParameters(mCamera);
         if (parameters == null) {
             mCamera = null;
-            VideoCaptureJni.get().onGetPhotoCapabilitiesReply(
-                    mNativeVideoCaptureDeviceAndroid, VideoCaptureCamera.this, callbackId, null);
+            onGetPhotoCapabilitiesReply(VideoCaptureCamera.this, callbackId, null);
             return;
         }
         PhotoCapabilities.Builder builder = new PhotoCapabilities.Builder();
@@ -679,8 +676,7 @@ public class VideoCaptureCamera
             builder.setFillLightModeArray(integerArrayListToArray(modes));
         }
 
-        VideoCaptureJni.get().onGetPhotoCapabilitiesReply(mNativeVideoCaptureDeviceAndroid,
-                VideoCaptureCamera.this, callbackId, builder.build());
+        onGetPhotoCapabilitiesReply(VideoCaptureCamera.this, callbackId, builder.build());
     }
 
     @Override
@@ -889,7 +885,7 @@ public class VideoCaptureCamera
     }
 
     @Override
-    public void deallocate() {
+    public void deallocateInternal() {
         if (mCamera == null) return;
 
         stopCaptureAndBlockUntilStopped();
@@ -917,11 +913,10 @@ public class VideoCaptureCamera
                 return;
             }
             if (data != null && data.length == mExpectedFrameSize) {
-                VideoCaptureJni.get().onFrameAvailable(mNativeVideoCaptureDeviceAndroid,
+                onFrameAvailable(
                         VideoCaptureCamera.this, data, mExpectedFrameSize, getCameraRotation());
             } else {
-                VideoCaptureJni.get().onFrameDropped(mNativeVideoCaptureDeviceAndroid,
-                        VideoCaptureCamera.this,
+                onFrameDropped(VideoCaptureCamera.this,
                         AndroidVideoCaptureFrameDropReason.ANDROID_API_1_UNEXPECTED_DATA_LENGTH);
             }
         } finally {
