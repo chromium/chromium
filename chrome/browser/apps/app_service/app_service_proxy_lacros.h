@@ -192,6 +192,12 @@ class AppServiceProxyLacros : public KeyedService,
   // Stops the current running app for the given |app_id|.
   void StopApp(const std::string& app_id);
 
+  // Requests the size of an app with |app_id|. Publishers are expected to
+  // calculate and update the size of the app and publish this to App Service.
+  // This allows app sizes to be requested on-demand and ensure up-to-date
+  // values.
+  void UpdateAppSize(const std::string& app_id);
+
   // Executes a shortcut menu |command_id| and |shortcut_id| for a menu item
   // previously built with GetMenuModel(). |app_id| is the menu app.
   // |display_id| is the id of the display from which the app is launched.

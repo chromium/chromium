@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -430,6 +431,15 @@ void AppServiceProxyBase::GetMenuModel(
   } else {
     std::move(callback).Run(MenuItems());
   }
+}
+
+void AppServiceProxyBase::UpdateAppSize(const std::string& app_id) {
+  auto app_type = app_registry_cache_.GetAppType(app_id);
+  auto* publisher = GetPublisher(app_type);
+  if (publisher) {
+    publisher->UpdateAppSize(app_id);
+  }
+  return;
 }
 
 void AppServiceProxyBase::ExecuteContextMenuCommand(

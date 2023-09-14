@@ -229,6 +229,8 @@ export class FakePageHandler implements PageHandlerInterface {
 
   openNativeSettings(_appId: string): void {}
 
+  updateAppSize(_appId: string): void {}
+
   setWindowMode(_appId: string, _windowMode: WindowMode): void {
     assertNotReached();
   }

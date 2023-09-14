@@ -14,8 +14,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './app_details_item.html.js';
 import {AppManagementBrowserProxy} from './browser_proxy.js';
+import {AppManagementStoreMixin} from './store_mixin.js';
 
-const AppManagementAppDetailsItemBase = I18nMixin(PolymerElement);
+const AppManagementAppDetailsItemBase =
+    AppManagementStoreMixin(I18nMixin(PolymerElement));
 
 export class AppManagementAppDetailsItem extends
     AppManagementAppDetailsItemBase {
@@ -38,14 +40,33 @@ export class AppManagementAppDetailsItem extends
         computed: 'isHidden_()',
         reflectToAttribute: true,
       },
+
+      appId_: {
+        type: String,
+        observer: 'appIdChanged_',
+      },
     };
   }
 
   app: App;
+  private appId_: string;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.watch('appId_', state => state.selectedAppId);
+    this.updateFromStore();
+  }
+
   override hidden: boolean;
 
   private isHidden_(): boolean {
     return !loadTimeData.getBoolean('appManagementAppDetailsEnabled');
+  }
+
+  private appIdChanged_(appId: string): void {
+    if (appId && this.app) {
+      AppManagementBrowserProxy.getInstance().handler.updateAppSize(appId);
+    }
   }
 
   /**

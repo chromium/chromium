@@ -93,6 +93,8 @@ export class FakePageHandler implements PageHandlerInterface {
 
   uninstall(_appId: string) {}
 
+  updateAppSize(_appId: string) {}
+
   openNativeSettings(_appId: string) {}
 
   setWindowMode(_appId: string, windowMode: WindowMode) {

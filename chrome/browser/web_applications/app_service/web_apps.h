@@ -120,6 +120,8 @@ class WebApps : public apps::AppPublisher,
       base::OnceCallback<void(apps::MenuItems)> callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  void UpdateAppSize(const std::string& app_id) override;
+
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;
 

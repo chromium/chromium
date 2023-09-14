@@ -80,6 +80,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void GetOverlappingPreferredApps(
       const std::string& app_id,
       GetOverlappingPreferredAppsCallback callback) override;
+  void UpdateAppSize(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::WindowMode window_mode) override;
   void SetRunOnOsLoginMode(

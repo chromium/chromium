@@ -292,6 +292,10 @@ void AppServiceProxyLacros::StopApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
+void AppServiceProxyLacros::UpdateAppSize(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 void AppServiceProxyLacros::ExecuteContextMenuCommand(
     const std::string& app_id,
     int command_id,

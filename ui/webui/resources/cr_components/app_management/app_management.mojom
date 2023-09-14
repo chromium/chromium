@@ -208,6 +208,9 @@ interface PageHandler {
   // 2. The app opens in a separate window.
   // 3. The app is not a shortcut app.
   GetOverlappingPreferredApps(string app_id) => (array<string> app_ids);
+  // Called when an app's settings is viewed, to start the calculation of
+  // the app's size to be displayed.
+  UpdateAppSize(string app_id);
   // Used to set the Window Mode from the frontend inside
   // app_management_page_handler.
   SetWindowMode(string app_id, WindowMode window_mode);

@@ -183,6 +183,12 @@ class AppPublisher {
                             int64_t display_id,
                             base::OnceCallback<void(MenuItems)> callback);
 
+  // Requests the size of an app with |app_id|. Publishers are expected to
+  // calculate and update the size of the app and publish this to App Service.
+  // This allows app sizes to be requested on-demand and ensure up-to-date
+  // values.
+  virtual void UpdateAppSize(const std::string& app_id);
+
   // Executes the menu item command for an app with |app_id|.
   virtual void ExecuteContextMenuCommand(const std::string& app_id,
                                          int command_id,

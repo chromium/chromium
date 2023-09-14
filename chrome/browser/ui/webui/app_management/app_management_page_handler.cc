@@ -448,6 +448,11 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+void AppManagementPageHandler::UpdateAppSize(const std::string& app_id) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->UpdateAppSize(app_id);
+}
+
 void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
                                              apps::WindowMode window_mode) {
   // On ChromeOS, apps should always open in a new window,

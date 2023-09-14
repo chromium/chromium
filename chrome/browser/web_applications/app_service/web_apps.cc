@@ -226,6 +226,17 @@ void WebApps::GetMenuModel(const std::string& app_id,
 }
 #endif
 
+void WebApps::UpdateAppSize(const std::string& app_id) {
+  const auto* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  provider_->scheduler().ComputeAppSize(
+      app_id, base::BindOnce(&WebApps::OnGetAppSize,
+                             weak_ptr_factory_.GetWeakPtr(), app_id));
+}
+
 void WebApps::SetWindowMode(const std::string& app_id,
                             apps::WindowMode window_mode) {
   publisher_helper().SetWindowMode(app_id, window_mode);
@@ -304,12 +315,7 @@ void WebApps::InitWebApps() {
   RegisterPublisher(app_type());
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
-  for (const auto& app : apps) {
-    provider_->scheduler().ComputeAppSize(
-        app->app_id,
-        base::BindOnce(&WebApps::OnGetAppSize, weak_ptr_factory_.GetWeakPtr(),
-                       app->app_id));
-  }
+
   apps::AppPublisher::Publish(std::move(apps), app_type(),
                               /*should_notify_initialized=*/true);
 }

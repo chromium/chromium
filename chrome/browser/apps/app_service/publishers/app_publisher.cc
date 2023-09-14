@@ -122,6 +122,8 @@ void AppPublisher::GetMenuModel(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
+void AppPublisher::UpdateAppSize(const std::string& app_id) {}
+
 void AppPublisher::ExecuteContextMenuCommand(const std::string& app_id,
                                              int command_id,
                                              const std::string& shortcut_id,
