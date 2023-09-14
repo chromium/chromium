@@ -85,9 +85,9 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(GURL("https://www.google.com/maps"));
-    browser_context_ = std::make_unique<TestBrowserContext>();
-    browser_context_->SetPermissionControllerDelegate(
-        std::make_unique<TestPermissionManager>());
+    static_cast<TestBrowserContext*>(GetBrowserContext())
+        ->SetPermissionControllerDelegate(
+            std::make_unique<TestPermissionManager>());
 
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(kMockLatitude,
@@ -99,7 +99,6 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
   void TearDown() override {
     context_.reset();
     geolocation_overrider_.reset();
-    browser_context_.reset();
     RenderViewHostImplTestHarness::TearDown();
   }
 
@@ -124,11 +123,6 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
         kEmbeddedUrl, embedded_rfh);
     navigation_simulator->Commit();
     embedded_rfh = navigation_simulator->GetFinalRenderFrameHost();
-
-    embedded_rfh->GetProcess()
-        ->GetBrowserContext()
-        ->SetPermissionControllerForTesting(
-            std::make_unique<PermissionControllerImpl>(browser_context_.get()));
     service_ =
         std::make_unique<GeolocationServiceImpl>(context_.get(), embedded_rfh);
     service_->Bind(service_remote_.BindNewPipeAndPassReceiver());
@@ -140,13 +134,11 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
 
   TestPermissionManager* permission_manager() {
     return static_cast<TestPermissionManager*>(
-        browser_context_->GetPermissionControllerDelegate());
+        GetBrowserContext()->GetPermissionControllerDelegate());
   }
 
  private:
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
-
-  std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<GeolocationServiceImpl> service_;
   mojo::Remote<blink::mojom::GeolocationService> service_remote_;
   mojo::Remote<device::mojom::GeolocationContext> context_;

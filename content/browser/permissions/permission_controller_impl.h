@@ -197,7 +197,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   SubscriptionsMap subscriptions_;
   SubscriptionId::Generator subscription_id_generator_;
 
-  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 };
 
 }  // namespace content
