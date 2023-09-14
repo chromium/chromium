@@ -208,6 +208,33 @@ enum class OptimizationGuideAccessTokenResult {
   kMaxValue = kPersistentError,
 };
 
+// Status of a request to fetch from the optimization guide service.
+// This enum must remain synchronized with the enum
+// |OptimizationGuideFetcherRequestStatus| in
+// tools/metrics/histograms/enums.xml.
+enum class FetcherRequestStatus {
+  // No fetch status known. Used in testing.
+  kUnknown,
+  // Fetch request was sent and a response received.
+  kSuccess,
+  // Fetch request was sent but no response received.
+  kResponseError,
+  // DEPRECATED: Fetch request not sent because of offline network status.
+  kDeprecatedNetworkOffline,
+  // Fetch request not sent because fetcher was busy with another request.
+  kFetcherBusy,
+  // Hints fetch request not sent because the host and URL lists were empty.
+  kNoHostsOrURLsToFetchHints,
+  // Hints fetch request not sent because no supported optimization types were
+  // provided.
+  kNoSupportedOptimizationTypesToFetchHints,
+  // Fetch request was canceled before completion.
+  kRequestCanceled,
+
+  // Insert new values before this line.
+  kMaxValue = kRequestCanceled
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

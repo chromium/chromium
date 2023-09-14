@@ -79909,6 +79909,29 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="ErrorCancelled"/>
 </enum>
 
+<enum name="OptimizationGuideFetcherRequestStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">Request sent and received response.</int>
+  <int value="2" label="Response Error">
+    Request sent but response not received.
+  </int>
+  <int value="3" label="DEPRECATED - Network Offline">
+    Request not sent because network offline. Deprecated as of 1/2022.
+  </int>
+  <int value="4" label="Fetcher Busy">
+    Request not sent because fetcher busy with another request.
+  </int>
+  <int value="5" label="No Hosts or URLs to Fetch hints">
+    Hints request not sent because no hosts or URLs left after filtering.
+  </int>
+  <int value="6" label="No Supported Optimization Types to Fetch hints">
+    Hints request not sent because there were no supported optimizations types.
+  </int>
+  <int value="7" label="Fetch was canceled">
+    Fetch request was canceled before completion.
+  </int>
+</enum>
+
 <enum name="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult">
   <int value="0" label="Success"/>
   <int value="1" label="LoadMetadataFailed"/>
@@ -79924,26 +79947,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Initializing"/>
   <int value="2" label="Available"/>
   <int value="3" label="Failed"/>
-</enum>
-
-<enum name="OptimizationGuideHintsFetcherRequestStatus">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success">Request sent and received response.</int>
-  <int value="2" label="Response Error">
-    Request sent but response not received.
-  </int>
-  <int value="3" label="DEPRECATED - Network Offline">
-    Request not sent because network offline. Deprecated as of 1/2022.
-  </int>
-  <int value="4" label="Fetcher Busy">
-    Request not sent because fetcher busy with another request.
-  </int>
-  <int value="5" label="No Hosts or URLs to Fetch">
-    Request not sent because no hosts or URLs left after filtering.
-  </int>
-  <int value="6" label="No Supported Optimization Types to Fetch">
-    Request not sent because there were no supported optimizations types.
-  </int>
 </enum>
 
 <enum name="OptimizationGuideModelDeliveryEvent">

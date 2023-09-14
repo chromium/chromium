@@ -768,9 +768,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // We expect that one request was canceled.
   histogram_tester->ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled."
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "PageNavigation",
-      1, 1);
+      optimization_guide::FetcherRequestStatus::kRequestCanceled, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
@@ -932,8 +932,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     run_loop->Run();
 
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
-        optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+        "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+        "Bookmarks",
+        optimization_guide::FetcherRequestStatus::kSuccess, 1);
   }
 
   {
@@ -963,8 +964,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
     // Second time should refetch since on-demand always fetches.
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
-        optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+        "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+        "Bookmarks",
+        optimization_guide::FetcherRequestStatus::kSuccess, 1);
   }
 }
 
@@ -1368,14 +1370,16 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 3, 1);
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 7, 1);
-  EXPECT_GE(
-      optimization_guide::RetryForHistogramUntilCountReached(
-          histogram_tester,
-          "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP",
-          1),
-      1);
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+                "BatchUpdateGoogleSRP",
+                1),
+            1);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "BatchUpdateGoogleSRP",
+      1);
 }
 
 class HintsFetcherSearchPagePrerenderingBrowserTest
@@ -1524,9 +1528,13 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation", 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "PageNavigation",
+      1);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "BatchUpdateGoogleSRP",
+      0);
 
   // Now go to a regular URL.
   ResetCountHintsRequestsReceived();
@@ -1540,16 +1548,22 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
   optimization_guide::RetryForHistogramUntilCountReached(
       histogram_tester, optimization_guide::kLoadedHintLocalHistogramString, 1);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation", 2);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "PageNavigation",
+      2);
   EXPECT_EQ(1u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 2);
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 2);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation", 2);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "PageNavigation",
+      2);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "BatchUpdateGoogleSRP",
+      0);
 }
 
 // Tests that OptimizationGuideWebContentsObserver limits the results for SRP.
@@ -1633,19 +1647,21 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageLimitedURLsBrowserTest,
       ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
   WaitUntilHintsFetcherRequestReceived();
 
-  EXPECT_GE(
-      optimization_guide::RetryForHistogramUntilCountReached(
-          histogram_tester,
-          "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP",
-          1),
-      1);
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+                "BatchUpdateGoogleSRP",
+                1),
+            1);
   EXPECT_EQ(1u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
+      "BatchUpdateGoogleSRP",
+      1);
 }
 
 class PersonalizedHintsFetcherBrowserTest : public HintsFetcherBrowserTest {
@@ -1747,8 +1763,8 @@ IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, NoUserSignIn) {
       optimization_guide::proto::OptimizationType::NOSCRIPT,
       optimization_guide::proto::CONTEXT_BOOKMARKS);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
-      optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.Bookmarks",
+      optimization_guide::FetcherRequestStatus::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, UserSignedIn) {
@@ -1762,8 +1778,8 @@ IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, UserSignedIn) {
       optimization_guide::proto::OptimizationType::NOSCRIPT,
       optimization_guide::proto::CONTEXT_BOOKMARKS);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
-      optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.Bookmarks",
+      optimization_guide::FetcherRequestStatus::kSuccess, 1);
 
   // Only the enabled RequestContext will have access token enabled.
   SetExpectedBearerAccessToken(std::string());
@@ -1771,6 +1787,6 @@ IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, UserSignedIn) {
       optimization_guide::proto::OptimizationType::NOSCRIPT,
       optimization_guide::proto::CONTEXT_JOURNEYS);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.RequestStatus.Journeys",
-      optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.Journeys",
+      optimization_guide::FetcherRequestStatus::kSuccess, 1);
 }

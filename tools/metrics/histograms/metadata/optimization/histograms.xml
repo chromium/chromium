@@ -279,6 +279,11 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled.{RequestContext}"
     units="counts" expires_after="2024-03-10">
+  <obsolete>
+    Recorded as RequestCanceled in
+    OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.* as of
+    2023-09-14.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -357,6 +362,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.{RequestContext}"
+    enum="OptimizationGuideFetcherRequestStatus" expires_after="2024-03-10">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The status of making a request using {RequestContext} of the
+    OptmizationGuide HintsFetcher. This includes whether a network request was
+    actually sent or not.
+  </summary>
+  <token key="RequestContext" variants="RequestContext"/>
+</histogram>
+
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.Status"
     enum="HttpResponseCode" expires_after="2024-02-11">
   <owner>mcrouse@chromium.org</owner>
@@ -378,8 +396,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.RequestStatus.{RequestContext}"
-    enum="OptimizationGuideHintsFetcherRequestStatus"
-    expires_after="2024-03-10">
+    enum="OptimizationGuideFetcherRequestStatus" expires_after="2024-03-10">
+  <obsolete>
+    Renamed to OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus.* as
+    of 2023-09-14.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
