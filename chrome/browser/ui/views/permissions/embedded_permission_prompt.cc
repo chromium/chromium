@@ -43,7 +43,9 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
   // subclass into |prompt_view_| and `Show()` it.
 }
 
-EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() = default;
+EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
+  prompt_view_->GetWidget()->Close();
+}
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior
 EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
