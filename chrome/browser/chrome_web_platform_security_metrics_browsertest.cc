@@ -2308,7 +2308,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        DanglingMarkupInTargetWithNewLineOrGreaterThan) {
-  GURL url = https_server().GetURL("a.test", "/english_page.html");
+  GURL url = https_server().GetURL("a.test", "/empty.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   EXPECT_TRUE(content::ExecJs(web_contents(), R"(
     let link = document.createElement("a");

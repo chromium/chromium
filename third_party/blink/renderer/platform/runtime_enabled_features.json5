@@ -3098,7 +3098,8 @@
     },
     {
       name: "RemoveDanglingMarkupInTarget",
-      status: "stable",
+      status: "experimental",
+      base_feature: "none",
     },
     {
       name: "RemoveDataUrlInSvgUse",
