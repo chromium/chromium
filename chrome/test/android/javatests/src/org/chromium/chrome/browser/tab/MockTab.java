@@ -24,6 +24,7 @@ public class MockTab extends TabImpl {
     private boolean mIsCustomTab;
 
     private Long mTimestampMillis;
+    private Integer mParentId;
 
     /**
      * Create a new Tab for testing and initializes Tab UserData objects.
@@ -141,5 +142,17 @@ public class MockTab extends TabImpl {
 
     public void setTimestampMillis(long timestampMillis) {
         mTimestampMillis = timestampMillis;
+    }
+
+    @Override
+    public int getParentId() {
+        if (mParentId == null) {
+            return super.getParentId();
+        }
+        return mParentId;
+    }
+
+    public void setParentId(int parentId) {
+        mParentId = parentId;
     }
 }

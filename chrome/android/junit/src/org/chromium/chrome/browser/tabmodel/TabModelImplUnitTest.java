@@ -115,8 +115,8 @@ public class TabModelImplUnitTest {
         MockTab tab = new MockTab(mNextTabId++, model.isIncognito());
         CriticalPersistedTabData data = new CriticalPersistedTabData(tab);
         tab.setTimestampMillis(activeTimestampMillis);
-        data.setParentId(parentId);
         tab = (MockTab) MockTab.initializeWithCriticalPersistedTabData(tab, data);
+        tab.setParentId(parentId);
         tab.setIsInitialized(true);
         model.addTab(tab, -1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         return tab;

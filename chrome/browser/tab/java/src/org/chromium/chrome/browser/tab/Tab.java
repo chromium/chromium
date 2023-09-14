@@ -296,4 +296,9 @@ public interface Tab extends TabLifecycle {
      *         shown.
      */
     long getTimestampMillis();
+
+    /**
+     * @return parent identifier for the {@link Tab}
+     */
+    int getParentId();
 }

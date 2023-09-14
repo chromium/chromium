@@ -179,7 +179,7 @@ public class TabModelUtils {
     public static List<Tab> getChildTabs(TabList model, int tabId) {
         ArrayList<Tab> childTabs = new ArrayList<Tab>();
         for (int i = 0; i < model.getCount(); i++) {
-            if (CriticalPersistedTabData.from(model.getTabAt(i)).getParentId() == tabId) {
+            if (model.getTabAt(i).getParentId() == tabId) {
                 childTabs.add(model.getTabAt(i));
             }
         }

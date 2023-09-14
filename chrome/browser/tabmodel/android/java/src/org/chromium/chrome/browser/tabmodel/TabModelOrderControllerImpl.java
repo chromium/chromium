@@ -8,7 +8,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 
 /**
  * Implementation of the TabModelOrderController based off of tab_strip_model_order_controller.cc
@@ -67,8 +66,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                 // If the tab was opened in the foreground, insert it adjacent to its parent tab if
                 // that exists and that tab is not the current selected tab, else insert the tab
                 // adjacent to the current tab that opened that link.
-                Tab parentTab = TabModelUtils.getTabById(
-                        currentModel, CriticalPersistedTabData.from(newTab).getParentId());
+                Tab parentTab = TabModelUtils.getTabById(currentModel, newTab.getParentId());
                 if (parentTab != null && currentTab != parentTab) {
                     int parentTabIndex =
                             TabModelUtils.getTabIndexById(currentModel, parentTab.getId());
@@ -106,7 +104,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         int count = currentModel.getCount();
         for (int i = count - 1; i >= startIndex; i--) {
             Tab tab = currentModel.getTabAt(i);
-            if (CriticalPersistedTabData.from(tab).getParentId() == openerId
+            if (tab.getParentId() == openerId
                     && TabAttributes.from(tab).get(TabAttributeKeys.GROUPED_WITH_PARENT, true)) {
                 return i;
             }

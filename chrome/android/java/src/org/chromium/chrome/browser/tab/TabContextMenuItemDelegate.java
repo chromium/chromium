@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -196,8 +195,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         Activity activity = TabUtils.getActivity(mTab);
-        tabDelegate.createTabInOtherWindow(loadUrlParams, activity,
-                CriticalPersistedTabData.from(mTab).getParentId(),
+        tabDelegate.createTabInOtherWindow(loadUrlParams, activity, mTab.getParentId(),
                 MultiWindowUtils.getAdjacentWindowActivity(activity));
     }
 

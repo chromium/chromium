@@ -211,6 +211,7 @@ public class TabImpl implements Tab {
     private int mThemeColor;
     private boolean mIsWebContentObscured;
     private long mTimestampMillis;
+    private int mParentId = INVALID_TAB_ID;
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -487,7 +488,7 @@ public class TabImpl implements Tab {
         // When parent is null, no action is taken since it is the same as the default setting (no
         // parent).
         if (parent != null) {
-            CriticalPersistedTabData.from(this).setParentId(parent.getId());
+            mParentId = parent.getId();
 
             // Update the DelegateFactory if it is not already set, since it is associated with the
             // parent tab.
@@ -891,7 +892,7 @@ public class TabImpl implements Tab {
                     ? true
                     : initializeRenderer;
             if (parent != null) {
-                CriticalPersistedTabData.from(this).setParentId(parent.getId());
+                mParentId = parent.getId();
                 mSourceTabId = parent.isIncognito() == mIncognito ? parent.getId() : INVALID_TAB_ID;
             }
 
@@ -1652,6 +1653,14 @@ public class TabImpl implements Tab {
         for (TabObserver tabObserver : mObservers) {
             tabObserver.onTimestampChanged(this, timestampMillis);
         }
+    }
+
+    /**
+     * @return parent identifier for the {@link Tab}
+     */
+    @Override
+    public int getParentId() {
+        return mParentId;
     }
 
     /**

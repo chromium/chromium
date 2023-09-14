@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -197,11 +196,9 @@ public class ChromeTabbedActivityTest {
             int parentId = tabModel.getTabAt(0).getId();
             Criteria.checkThat(
                     tabModel.getTabAt(1).getUrl().getSpec(), Matchers.endsWith("second"));
-            Criteria.checkThat(CriticalPersistedTabData.from(tabModel.getTabAt(1)).getParentId(),
-                    Matchers.is(parentId));
+            Criteria.checkThat(tabModel.getTabAt(1).getParentId(), Matchers.is(parentId));
             Criteria.checkThat(tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("third"));
-            Criteria.checkThat(CriticalPersistedTabData.from(tabModel.getTabAt(2)).getParentId(),
-                    Matchers.is(parentId));
+            Criteria.checkThat(tabModel.getTabAt(2).getParentId(), Matchers.is(parentId));
         });
 
         viewIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);

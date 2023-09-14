@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -230,8 +229,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
                     new TabModelSelectorObserver() {
                         @Override
                         public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                            if (CriticalPersistedTabData.from(tab).getParentId()
-                                    != activityTab.getId()) {
+                            if (tab.getParentId() != activityTab.getId()) {
                                 return;
                             }
                             newTab.set(tab);

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class TasksUma {
             }
             uniqueUrlCounterMap.put(url, urlDuplicatedCount + 1);
 
-            int parentIdOfCurrentTab = CriticalPersistedTabData.from(currentTab).getParentId();
+            int parentIdOfCurrentTab = currentTab.getParentId();
             if (!tabsRelationList.containsKey(parentIdOfCurrentTab)) {
                 tabsRelationList.put(parentIdOfCurrentTab, new ArrayList<>());
             }

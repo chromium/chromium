@@ -102,7 +102,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * URL of the page currently loading. Used as a fall-back in case tab restore fails.
      */
     private GURL mUrl;
-    private int mParentId;
     private int mRootId;
 
     private long mLastNavigationCommittedTimestampMillis = INVALID_TIMESTAMP;
@@ -141,7 +140,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
     /**
      * @param tab {@link Tab} {@link CriticalPersistedTabData} is being stored for
-     * @param parentId parent identiifer for the {@link Tab}
      * @param rootId root identifier for the {@link Tab}
      * @param timestampMillis creation timestamp for the {@link Tab}
      * @param contentStateVersion content state version for the {@link Tab}
@@ -151,14 +149,13 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @param userAgent user agent for the {@link Tab}
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    CriticalPersistedTabData(Tab tab, String url, String title, int parentId, int rootId,
+    CriticalPersistedTabData(Tab tab, String url, String title, int rootId,
             WebContentsState webContentsState, int contentStateVersion, String openerAppId,
             int themeColor, @Nullable @TabLaunchType Integer launchTypeAtCreation,
             @TabUserAgent int userAgent, long lastNavigationCommittedTimestampMillis) {
         this(tab);
         mUrl = url == null || url.isEmpty() ? GURL.emptyGURL() : new GURL(url);
         mTitle = title;
-        mParentId = parentId;
         mRootId = rootId;
         mWebContentsState = webContentsState;
         mContentStateVersion = contentStateVersion;
@@ -193,11 +190,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public CriticalPersistedTabData(Tab tab, SerializedCriticalPersistedTabData serialized) {
-        this(tab, serialized.getUrl(), serialized.getTitle(), serialized.getParentId(),
-                serialized.getRootId(), serialized.getWebContentsState(),
-                serialized.getWebContentsStateVersion(), serialized.getOpenerAppId(),
-                serialized.getThemeColor(), serialized.getLaunchType(), serialized.getUserAgent(),
-                serialized.getLastNavigationCommittedTimestampMillis());
+        this(tab, serialized.getUrl(), serialized.getTitle(), serialized.getRootId(),
+                serialized.getWebContentsState(), serialized.getWebContentsStateVersion(),
+                serialized.getOpenerAppId(), serialized.getThemeColor(), serialized.getLaunchType(),
+                serialized.getUserAgent(), serialized.getLastNavigationCommittedTimestampMillis());
     }
 
     /**
@@ -271,8 +267,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
     public static CriticalPersistedTabData build(Tab tab) {
         // CriticalPersistedTabData is initialized with default values
         CriticalPersistedTabData criticalPersistedTabData =
-                new CriticalPersistedTabData(tab, "", "", Tab.INVALID_TAB_ID, tab.getId(), null, -1,
-                        "", UNSPECIFIED_THEME_COLOR, null, TabUserAgent.DEFAULT, INVALID_TIMESTAMP);
+                new CriticalPersistedTabData(tab, "", "", tab.getId(), null, -1, "",
+                        UNSPECIFIED_THEME_COLOR, null, TabUserAgent.DEFAULT, INVALID_TIMESTAMP);
         criticalPersistedTabData.save();
         return criticalPersistedTabData;
     }
@@ -287,7 +283,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             CriticalPersistedTabDataFlatBuffer deserialized =
                     CriticalPersistedTabDataFlatBuffer.getRootAsCriticalPersistedTabDataFlatBuffer(
                             bytes);
-            mParentId = deserialized.parentId();
             mRootId = deserialized.rootId();
             mLastNavigationCommittedTimestampMillis =
                     deserialized.lastNavigationCommittedTimestampMillis();
@@ -507,7 +502,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         return new Serializer<ByteBuffer>() {
             private ByteBuffer mByteBufferSnapshot;
             private String mOpenerAppIdSnapshot;
-            private int mParentIdSnapshot;
             private int mRootIdSnapshot;
             private int mWebContentsStateVersionSnapshot;
             private int mThemeColorSnapshot;
@@ -536,13 +530,14 @@ public class CriticalPersistedTabData extends PersistedTabData {
                             fbb.createString(mOpenerAppIdSnapshot == null ? NULL_OPENER_APP_ID
                                                                           : mOpenerAppIdSnapshot);
                     CriticalPersistedTabDataFlatBuffer.startCriticalPersistedTabDataFlatBuffer(fbb);
-                    CriticalPersistedTabDataFlatBuffer.addParentId(fbb, mParentIdSnapshot);
-                    CriticalPersistedTabDataFlatBuffer.addRootId(fbb, mRootIdSnapshot);
-                    // Placeholder while CriticalPersistedTabData is deprecated.
+                    // Use Placeholder values while CriticalPersistedTabData is being deprecated.
+                    // e.g. INVALID_TAB_ID and INVALID_TIMESTAMP.
                     // This code path is currently unused as the experiment is turned off,
                     // so there are no negative consequences to setting timestampMillis to a
                     // placeholder value.
-                    CriticalPersistedTabDataFlatBuffer.addTimestampMillis(fbb, Tab.INVALID_TAB_ID);
+                    CriticalPersistedTabDataFlatBuffer.addParentId(fbb, Tab.INVALID_TAB_ID);
+                    CriticalPersistedTabDataFlatBuffer.addRootId(fbb, mRootIdSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addTimestampMillis(fbb, INVALID_TIMESTAMP);
                     CriticalPersistedTabDataFlatBuffer.addWebContentsStateBytes(fbb, wcs);
                     CriticalPersistedTabDataFlatBuffer.addContentStateVersion(
                             fbb, mWebContentsStateVersionSnapshot);
@@ -574,7 +569,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
                     mByteBufferSnapshot =
                             webContentsState == null ? null : webContentsState.buffer();
                     mOpenerAppIdSnapshot = mOpenerAppId;
-                    mParentIdSnapshot = mParentId;
                     mRootIdSnapshot = mRootId;
                     mWebContentsStateVersionSnapshot = mContentStateVersion;
                     mThemeColorSnapshot = mThemeColor;
@@ -703,23 +697,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         save();
     }
 
-    /**
-     * @return parent identifier for the {@link Tab}
-     */
-    public int getParentId() {
-        return mParentId;
-    }
-
-    /**
-     * Set parent identifier for the {@link Tab}
-     */
-    public void setParentId(int parentId) {
-        if (mParentId == parentId) {
-            return;
-        }
-        mParentId = parentId;
-        save();
-    }
 
     /**
      * @return timestamp in milliseconds when the tab was last interacted.

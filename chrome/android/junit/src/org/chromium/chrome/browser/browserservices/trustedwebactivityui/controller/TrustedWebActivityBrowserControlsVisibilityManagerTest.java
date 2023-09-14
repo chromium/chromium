@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -67,11 +65,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         MockitoAnnotations.initMocks(this);
         SecurityStateModelJni.TEST_HOOKS.setInstanceForTesting(mSecurityStateMocks);
         when(mTabProvider.getTab()).thenReturn(mTab);
-        CriticalPersistedTabData criticalPersistedTabData = CriticalPersistedTabData.build(mTab);
-        criticalPersistedTabData.setParentId(Tab.INVALID_TAB_ID);
-        UserDataHost userDataHost = new UserDataHost();
-        userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
-        when(mTab.getUserDataHost()).thenReturn(userDataHost);
+        doReturn(Tab.INVALID_TAB_ID).when(mTab).getParentId();
         setTabSecurityLevel(ConnectionSecurityLevel.NONE);
     }
 

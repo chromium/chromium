@@ -129,7 +129,7 @@ public class TabGroupModelFilterUnitTest {
         when(tab.getUserDataHost()).thenReturn(userDataHost);
         doReturn(tabId).when(tab).getId();
         CriticalPersistedTabData.from(tab).setRootId(rootId);
-        CriticalPersistedTabData.from(tab).setParentId(parentTabId);
+        doReturn(parentTabId).when(tab).getParentId();
         return tab;
     }
 

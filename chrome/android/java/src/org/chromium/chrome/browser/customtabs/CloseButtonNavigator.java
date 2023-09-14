@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabContro
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.WebContents;
@@ -75,8 +74,8 @@ public class CloseButtonNavigator {
     public void navigateOnClose() {
         // If the tab is a child tab and |mButtonClosesChildTab| == true, close the child tab.
         Tab currentTab = mTabProvider.getTab();
-        boolean isFromChildTab = (currentTab != null
-                && CriticalPersistedTabData.from(currentTab).getParentId() != Tab.INVALID_TAB_ID);
+        boolean isFromChildTab =
+                (currentTab != null && currentTab.getParentId() != Tab.INVALID_TAB_ID);
         if (isFromChildTab && mButtonClosesChildTab) {
             mTabController.closeTab();
             return;

@@ -618,8 +618,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                         // TODO(https://crbug.com/1194287): Investigates a better solution
                         // without adding the TabLaunchType.FROM_START_SURFACE.
                         || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE))) {
-            Tab parentTab = TabModelUtils.getTabById(
-                    getTabModel(), CriticalPersistedTabData.from(tab).getParentId());
+            Tab parentTab = TabModelUtils.getTabById(getTabModel(), tab.getParentId());
             if (parentTab != null) {
                 return getRootId(parentTab);
             }

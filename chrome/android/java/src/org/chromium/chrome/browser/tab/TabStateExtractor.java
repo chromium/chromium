@@ -31,7 +31,7 @@ public class TabStateExtractor {
         TabState tabState = new TabState();
         tabState.contentsState = getWebContentsState(tab);
         tabState.openerAppId = TabAssociatedApp.getAppId(tab);
-        tabState.parentId = CriticalPersistedTabData.from(tab).getParentId();
+        tabState.parentId = tab.getParentId();
         tabState.timestampMillis = tab.getTimestampMillis();
         tabState.tabLaunchTypeAtCreation =
                 CriticalPersistedTabData.from(tab).getTabLaunchTypeAtCreation();

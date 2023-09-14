@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -383,8 +382,7 @@ public class TabModelImpl extends TabModelJniBridge {
         if (tabCloseType != TabCloseType.ALL && !useCurrentTab) {
             nearbyTab = findNearbyNotClosingTab(closingTabIndex);
         }
-        Tab parentTab =
-                findTabInAllTabModels(CriticalPersistedTabData.from(tabToClose).getParentId());
+        Tab parentTab = findTabInAllTabModels(tabToClose.getParentId());
         Tab nextMostRecentTab = null;
         if (uponExit) {
             nextMostRecentTab = TabModelUtils.getMostRecentTab(this, id);
