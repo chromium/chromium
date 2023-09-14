@@ -1154,10 +1154,8 @@ absl::optional<int> ChromeAuthenticatorRequestDelegate::DaysSinceDate(
     return absl::nullopt;
   }
 
-  base::Time::Exploded exploded = {0};
-  exploded.year = year;
-  exploded.month = month;
-  exploded.day_of_month = day_of_month;
+  const base::Time::Exploded exploded = {
+      .year = year, .month = month, .day_of_month = day_of_month};
 
   base::Time t;
   if (!base::Time::FromUTCExploded(exploded, &t) || now < t) {

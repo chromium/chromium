@@ -23,11 +23,10 @@ constexpr const wchar_t* kMonths[] = {L"Jan", L"Feb", L"Mar", L"Apr",
 
 // Returns the number of weeks since 2/3/2003.
 int GetCurrentRlzWeek(const base::Time& current_time) {
-  const base::Time::Exploded february_third_2003_exploded = {2003, 2, 1, 3,
-                                                             0,    0, 0, 0};
+  static constexpr base::Time::Exploded kFeb32003 = {
+      .year = 2003, .month = 2, .day_of_week = 1, .day_of_month = 3};
   base::Time f;
-  bool conversion_success =
-      base::Time::FromUTCExploded(february_third_2003_exploded, &f);
+  bool conversion_success = base::Time::FromUTCExploded(kFeb32003, &f);
   DCHECK(conversion_success);
   base::TimeDelta delta = current_time - f;
   return delta.InDays() / 7;

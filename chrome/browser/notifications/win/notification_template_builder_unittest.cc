@@ -36,15 +36,14 @@ const char16_t kNotificationMessage[] = u"My Message";
 const char kNotificationOrigin[] = "https://example.com";
 
 base::Time FixedTime() {
+  static constexpr base::Time::Exploded kTime = {.year = 1998,
+                                                 .month = 9,
+                                                 .day_of_month = 4,
+                                                 .hour = 1,
+                                                 .minute = 2,
+                                                 .second = 3};
   base::Time time;
-  base::Time::Exploded exploded = {0};
-  exploded.year = 1998;
-  exploded.month = 9;
-  exploded.day_of_month = 4;
-  exploded.hour = 1;
-  exploded.minute = 2;
-  exploded.second = 3;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kTime, &time));
   return time;
 }
 

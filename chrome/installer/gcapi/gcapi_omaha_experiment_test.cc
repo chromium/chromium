@@ -197,7 +197,8 @@ TEST_P(GCAPIOmahaExperimentTest,
 
 TEST_P(GCAPIOmahaExperimentTest, BuildExperimentDateString) {
   // Sat, 1 Jan 2000 00:00:00 UTC
-  base::Time::Exploded kTestTimeExploded = {2000, 1, 6, 1, 0, 0, 0, 0};
+  static constexpr base::Time::Exploded kTestTimeExploded = {
+      .year = 2000, .month = 1, .day_of_week = 6, .day_of_month = 1};
   base::Time kTestTime;
   EXPECT_TRUE(base::Time::FromUTCExploded(kTestTimeExploded, &kTestTime));
   EXPECT_EQ(L"Sat, 01 Jan 2001 00:00:00 GMT",

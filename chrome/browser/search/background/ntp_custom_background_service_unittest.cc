@@ -121,19 +121,10 @@ base::Value::Dict GetBackgroundInfoAsDict(const GURL& background_url,
 }
 
 base::Time GetReferenceTime() {
-  base::Time::Exploded exploded_reference_time;
-  exploded_reference_time.year = 2019;
-  exploded_reference_time.month = 1;
-  exploded_reference_time.day_of_month = 1;
-  exploded_reference_time.day_of_week = 1;
-  exploded_reference_time.hour = 0;
-  exploded_reference_time.minute = 0;
-  exploded_reference_time.second = 0;
-  exploded_reference_time.millisecond = 0;
-
+  static constexpr base::Time::Exploded kReferenceTime = {
+      .year = 2019, .month = 1, .day_of_week = 1, .day_of_month = 1};
   base::Time out_time;
-  EXPECT_TRUE(
-      base::Time::FromLocalExploded(exploded_reference_time, &out_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kReferenceTime, &out_time));
   return out_time;
 }
 

@@ -26,26 +26,18 @@ constexpr char kEmailId[] = "test@example.com";
 constexpr char kGaiaId[] = "12345";
 constexpr char kKioskEmailId[] = "test-kiosk@example.com";
 constexpr char kKioskGaiaId[] = "6789";
-const base::Time::Exploded kRebootTime2022Feb2At1520 = {
-    2022,  // year
-    2,     // month
-    4,     // day_of_week
-    2,     // day_of_month
-    15,    // hour
-    20,    // minute
-    0,     // second
-    0      // millisecond
-};
-const base::Time::Exploded kRebootTime2023May15At1115 = {
-    2023,  // year
-    5,     // month
-    4,     // day_of_week
-    15,    // day_of_month
-    11,    // hour
-    15,    // minute
-    0,     // second
-    0      // millisecond
-};
+constexpr base::Time::Exploded kRebootTime2022Feb2At1520 = {.year = 2022,
+                                                            .month = 2,
+                                                            .day_of_week = 4,
+                                                            .day_of_month = 2,
+                                                            .hour = 15,
+                                                            .minute = 20};
+constexpr base::Time::Exploded kRebootTime2023May15At1115 = {.year = 2023,
+                                                             .month = 5,
+                                                             .day_of_week = 4,
+                                                             .day_of_month = 15,
+                                                             .hour = 11,
+                                                             .minute = 15};
 
 class ClickCounter {
  public:

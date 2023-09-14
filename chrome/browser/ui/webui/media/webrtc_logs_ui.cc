@@ -290,10 +290,11 @@ base::Value::List WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
       double seconds_since_epoch;
       if (base::StringToDouble(upload->local_id, &seconds_since_epoch)) {
         base::Time capture_time = base::Time::FromDoubleT(seconds_since_epoch);
-        const base::Time::Exploded lower_limit = {2012, 1, 0, 1, 0, 0, 0, 0};
+        static constexpr base::Time::Exploded kLowerLimit = {
+            .year = 2012, .month = 1, .day_of_month = 1};
         base::Time out_time;
         bool conversion_success =
-            base::Time::FromUTCExploded(lower_limit, &out_time);
+            base::Time::FromUTCExploded(kLowerLimit, &out_time);
         DCHECK(conversion_success);
         if (capture_time > out_time && capture_time < base::Time::Now()) {
           value_w = base::TimeFormatFriendlyDateAndTime(capture_time);

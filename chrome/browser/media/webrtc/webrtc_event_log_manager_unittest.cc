@@ -1957,18 +1957,15 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogFilenameMatchesExpectedFormat) {
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
-  const base::Time::Exploded frozen_time_exploded{
-      2017,  // Four digit year "2007"
-      9,     // 1-based month (values 1 = January, etc.)
-      3,     // 0-based day of week (0 = Sunday, etc.)
-      6,     // 1-based day of month (1-31)
-      10,    // Hour within the current day (0-23)
-      43,    // Minute within the current hour (0-59)
-      29,    // Second within the current minute.
-      0      // Milliseconds within the current second (0-999)
-  };
-  ASSERT_TRUE(frozen_time_exploded.HasValidValues());
-  FreezeClockAt(frozen_time_exploded);
+  static constexpr base::Time::Exploded kFrozenTime = {.year = 2017,
+                                                       .month = 9,
+                                                       .day_of_week = 3,
+                                                       .day_of_month = 6,
+                                                       .hour = 10,
+                                                       .minute = 43,
+                                                       .second = 29};
+  ASSERT_TRUE(kFrozenTime.HasValidValues());
+  FreezeClockAt(kFrozenTime);
 
   const StringType user_defined = FILE_PATH_LITERAL("user_defined");
   const base::FilePath local_logs_base_path =
@@ -2004,18 +2001,15 @@ TEST_F(WebRtcEventLogManagerTest,
       .WillOnce(Invoke(SaveFilePathTo(&file_path_1)))
       .WillOnce(Invoke(SaveFilePathTo(&file_path_2)));
 
-  const base::Time::Exploded frozen_time_exploded{
-      2017,  // Four digit year "2007"
-      9,     // 1-based month (values 1 = January, etc.)
-      3,     // 0-based day of week (0 = Sunday, etc.)
-      6,     // 1-based day of month (1-31)
-      10,    // Hour within the current day (0-23)
-      43,    // Minute within the current hour (0-59)
-      29,    // Second within the current minute.
-      0      // Milliseconds within the current second (0-999)
-  };
-  ASSERT_TRUE(frozen_time_exploded.HasValidValues());
-  FreezeClockAt(frozen_time_exploded);
+  static constexpr base::Time::Exploded kFrozenTime = {.year = 2017,
+                                                       .month = 9,
+                                                       .day_of_week = 3,
+                                                       .day_of_month = 6,
+                                                       .hour = 10,
+                                                       .minute = 43,
+                                                       .second = 29};
+  ASSERT_TRUE(kFrozenTime.HasValidValues());
+  FreezeClockAt(kFrozenTime);
 
   const StringType user_defined_portion = FILE_PATH_LITERAL("user_defined");
   const base::FilePath local_logs_base_path =
