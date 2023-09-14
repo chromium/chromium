@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import os
+import shutil
+from pkg_resources import packaging
 from typing import Optional
 
 import logging
@@ -66,7 +68,8 @@ def pytest_addoption(parser):
                    help='The board name of the CrOS VM.')
 
 
-def _version_to_download(chrome_version, platform, channel):
+def _version_to_download(
+  chrome_version, platform, channel) -> packaging.version.Version:
   # Use the explicitly passed in version, if any.
   if chrome_version:
     logging.info(
@@ -78,8 +81,23 @@ def _version_to_download(chrome_version, platform, channel):
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
-def chromedriver_path(pytestconfig) -> str:
-  """Returns a path to the chromedriver."""
+def chromedriver_path(pytestconfig) -> Optional[str]:
+  """Finds the path to the chromedriver.
+
+  The fixture downloads the chromedriver from GCS bucket from a given
+  channel or version for the host platform. It will reuse the existing
+  one if the path is given from the command line.
+
+  This fixture also attempts to download Chrome binaries if needed for
+  certain platforms so the chromedriver can launch Chrome as well.
+
+  Note. Chrome and chromedriver can be two separate fixtures but they
+  are combines for now.
+
+  Returns:
+    The path to the chromedriver if the platform is supported.
+    None if the platform is not supported.
+  """
   if cd_path := pytestconfig.getoption('chromedriver'):
     cd_path = os.path.abspath(cd_path)
     assert os.path.isfile(cd_path), (
@@ -90,31 +108,48 @@ def chromedriver_path(pytestconfig) -> str:
   channel = pytestconfig.getoption('channel')
   chrome_version = pytestconfig.getoption('chrome_version')
 
-  version = _version_to_download(chrome_version, platform, channel)
+  version = str(_version_to_download(chrome_version, platform, channel))
 
   # https://developer.chrome.com/docs/versionhistory/reference/#platform-identifiers
-  downloaded_dir = None
+  chrome_dir = None
   if platform == "linux":
-    downloaded_dir = test_utils.download_chrome_linux(str(version))
+    chrome_dir = test_utils.download_chrome_linux(version=version)
   elif platform == "mac":
-    downloaded_dir = test_utils.download_chrome_mac(str(version))
+    chrome_dir = test_utils.download_chrome_mac(version=version)
   elif platform == "win":
-    downloaded_dir = test_utils.download_chrome_win(version=str(version))
+    chrome_dir = test_utils.download_chrome_win(version=version)
   elif platform in ('android', 'webview'):
     # For Android/Webview, we will use install_webview or install_chrome to
     # download and install APKs, however, we will still need the chromedriver
     # binaries for the hosts. Currently we will only run on Linux, so fetching
     # the chromedriver for Linux only.
-    downloaded_dir = test_utils.download_chromedriver_linux_host(
-      channel=channel, version=str(version))
+    pass
   elif platform in ('lacros', 'cros'):
     # CrOS and LaCrOS running inside a VM, the chromedriver will run on the
     # Linux host. The browser is started inside VM through dbus message, and
     # the debugging port is forwarded. see drivers/chromeos.py.
-    downloaded_dir = test_utils.download_chromedriver_linux_host(
-      channel=channel, version=str(version))
+    pass
+  else:
+    # the platform is not supported.
+    return None
 
-  return str(os.path.join(downloaded_dir, 'chromedriver'))
+  hosted_platform = test_utils.get_hosted_platform()
+  chromedriver_path = test_utils.download_chromedriver(
+    hosted_platform,
+    # We use the latest chromedriver whenever possible. The drivers for Windows
+    # are not backward compatible so we use the same version as Chrome.
+    version if hosted_platform == 'win' else None,
+  )
+
+  # If we also download Chrome binary, move the chromedriver to the Chrome
+  # folder so the chromedriver can find it in the same folder
+  if chrome_dir:
+    chromedriver_in_chrome = os.path.join(chrome_dir,
+                                          os.path.basename(chromedriver_path))
+    shutil.move(chromedriver_path, chromedriver_in_chrome)
+    chromedriver_path = chromedriver_in_chrome
+
+  return chromedriver_path
 
 
 @pytest.fixture(scope='session')

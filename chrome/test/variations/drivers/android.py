@@ -31,7 +31,6 @@ class AndroidDriverFactory(DriverFactory):
   channel: str = attr.attrib()
   avd_config: Optional[str] = attr.attrib()
   enabled_emulator_window: bool = attr.attrib()
-  chromedriver_path: str = attr.attrib()
   ports: List[int] = attr.attrib()
 
   def __attrs_post_init__(self):
@@ -47,6 +46,12 @@ class AndroidDriverFactory(DriverFactory):
     self._package_name = android.install_chrome(self.channel, self.device)
     self.device.ClearApplicationState(self.package_name)
     logging.info('Installed Chrome (%s)', self.package_name)
+
+  #override
+  @property
+  def supports_startup_timeout(self) -> bool:
+    # Android doesn't support browser startup timeout.
+    return False
 
   @property
   def device_temp_dir(self) -> device_temp_file.NamedDeviceTemporaryDirectory:
@@ -81,7 +86,7 @@ class AndroidDriverFactory(DriverFactory):
     seed_file: Optional[str] = None,
     options: Optional[webdriver.ChromeOptions] = None
     ) -> webdriver.Remote:
-    options = options or webdriver.ChromeOptions()
+    options = options or self.default_options
     options.enable_mobile(
       android_package=self.package_name,
       android_activity=self.activity_name,
@@ -95,13 +100,13 @@ class AndroidDriverFactory(DriverFactory):
       logging.info('Installed seed at (%s)', installed_seed_path)
       options.add_argument(
         f'variations-test-seed-path={installed_seed_path}')
-      options.add_argument('--disable-field-trial-config')
       options.add_argument(f'--fake-variations-channel={self.channel}')
 
     driver = None
     try:
       yield (driver := webdriver.Chrome(
-        service=service.Service(self.chromedriver_path),
+        service=service.Service(self.chromedriver_path,
+                                service_args=['--disable-build-check']),
         options=options))
     finally:
       if driver:

@@ -58,13 +58,9 @@ def test_load_crash_seed(driver_factory: drivers.DriverFactory,
     WebDriverWait(driver, 5).until(
       EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
-  # Expecting Chrome to crash, setting a shorter startup timeout.
-  # The default is 60 seconds, changing to 5 seconds.
-  options = ChromeOptions()
-  options.set_capability('browserStartupTimeout', 5000)
   # Launch again with bad seed, expecting a crash.
   with pytest.raises(WebDriverException):
     with driver_factory.create_driver(
-      seed_file=seed_locator.get_seed(fixtures.SeedName.CRASH),
-      options = options) as driver:
+      seed_file=seed_locator.get_seed(fixtures.SeedName.CRASH)
+      ) as driver:
       driver.get(url)

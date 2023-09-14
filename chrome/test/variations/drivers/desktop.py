@@ -21,7 +21,6 @@ class DesktopDriverFactory(DriverFactory):
   """Driver factory for desktop platforms."""
   channel: Optional[str] = attr.attrib()
   crash_dump_dir: Optional[str] = attr.attrib()
-  chromedriver_path: str = attr.attrib()
 
 
   @contextmanager
@@ -32,8 +31,7 @@ class DesktopDriverFactory(DriverFactory):
     ) -> webdriver.Remote:
     os.environ['BREAKPAD_DUMP_LOCATION'] = self.crash_dump_dir
 
-    options = options or ChromeOptions()
-    options.add_argument('disable-field-trial-config')
+    options = options or self.default_options
 
     if seed_file:
       assert os.path.exists(seed_file)
@@ -46,8 +44,9 @@ class DesktopDriverFactory(DriverFactory):
     try:
       logging.info('Launching Chrome w/ caps: %s',
                    options.to_capabilities())
-      driver = webdriver.Chrome(service=Service(self.chromedriver_path),
-                                options=options)
+      service = Service(self.chromedriver_path,
+                        service_args=['--disable-build-check'])
+      driver = webdriver.Chrome(service=service, options=options)
       yield driver
     except WebDriverException as e:
       # Report this to be part of test result.

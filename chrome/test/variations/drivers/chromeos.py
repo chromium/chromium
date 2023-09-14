@@ -97,7 +97,6 @@ class CrOSDriverFactory(DriverFactory):
   channel: str = attr.attrib()
   board: str = attr.attrib()
   server_port: int = attr.attrib()
-  chromedriver_path: str = attr.attrib()
 
   def __attrs_post_init__(self):
     # We use this to check whether we have started the VM before we attempt to
@@ -143,6 +142,12 @@ class CrOSDriverFactory(DriverFactory):
     remote_device.run(
       ['chmod', 'a+rw', remote_seed_path], remote_sudo=True, print_cmd=True)
     return remote_seed_path
+
+  #override
+  @property
+  def supports_startup_timeout(self) -> bool:
+    # ChromeOS is a remote driver that doesn't support browser startup timeout.
+    return False
 
   @functools.cached_property
   def device(self) -> device.Device:
@@ -194,12 +199,13 @@ class CrOSDriverFactory(DriverFactory):
     browser = _launch_browser(browser_args)
     debugging_port, _ = browser._browser_backend._FindDevToolsPortAndTarget()
 
-    options = options or webdriver.ChromeOptions()
+    options = options or self.default_options
     options.debugger_address=f'localhost:{debugging_port}'
 
     with self.tunnel_context(debugging_port, self.server_port):
       driver = webdriver.Chrome(
-        service=service.Service(self.chromedriver_path),
+        service=service.Service(self.chromedriver_path,
+                                service_args=['--disable-build-check']),
         options=options)
       try:
         yield driver
