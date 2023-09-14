@@ -675,6 +675,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePagePG3Off) {
           "runMochaSuite('PrivacyGuidePagePG3Off')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, 3PCDDisablesCookiesCard) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('3PCDDisablesCookiesCard')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SettingsFlowLengthPG3Off) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('SettingsFlowLengthPG3Off')");

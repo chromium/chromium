@@ -665,6 +665,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       // Prefs are not available yet. Show the card until they become available.
       return true;
     }
+    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+      return false;
+    }
     const currentCookieSetting =
         this.getPref('generated.cookie_primary_setting').value;
     return currentCookieSetting === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
