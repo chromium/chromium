@@ -260,8 +260,7 @@ class TestBrowserWindow : public BrowserWindow {
           user_education::FeaturePromoSpecification::NoSubstitution()) override;
   bool CloseFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoCloseReason close_reason =
-          user_education::FeaturePromoCloseReason::kFeatureEngaged) override;
+      user_education::FeaturePromoCloseReason close_reason) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;

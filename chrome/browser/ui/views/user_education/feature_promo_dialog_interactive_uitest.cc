@@ -133,7 +133,8 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     // uses a mock, cancel that and just show it directly.
     const auto status = promo_controller->GetPromoStatus(*feature_);
     if (status == user_education::FeaturePromoStatus::kQueuedForStartup)
-      promo_controller->EndPromo(*feature_);
+      promo_controller->EndPromo(
+          *feature_, user_education::FeaturePromoCloseReason::kAbortPromo);
 
     // Set up mock tracker to allow the IPH, then attempt to show it.
     EXPECT_CALL(*mock_tracker, ShouldTriggerHelpUI(Ref(*feature_)))

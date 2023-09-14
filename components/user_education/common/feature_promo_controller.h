@@ -169,8 +169,7 @@ class FeaturePromoController {
   // Has no effect for promos closed with CloseBubbleAndContinuePromo(); discard
   // or release the FeaturePromoHandle to end those promos.
   virtual bool EndPromo(const base::Feature& iph_feature,
-                        FeaturePromoCloseReason close_reason =
-                            FeaturePromoCloseReason::kFeatureEngaged) = 0;
+                        FeaturePromoCloseReason close_reason) = 0;
 
   // Closes the promo for `iph_feature` - which must be showing - but continues
   // the promo via the return value. Dispose or release the resulting handle to
@@ -262,8 +261,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoSpecification::FormatParameters title_params =
           FeaturePromoSpecification::NoSubstitution()) override;
   bool EndPromo(const base::Feature& iph_feature,
-                FeaturePromoCloseReason close_reason =
-                    FeaturePromoCloseReason::kFeatureEngaged) override;
+                FeaturePromoCloseReason close_reason) override;
   FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;

@@ -428,7 +428,8 @@ TEST_F(BrowserFeaturePromoControllerTest, CancelPromoBeforeStartup) {
   EXPECT_TRUE(controller_->MaybeShowStartupPromo(kTestIPHFeature));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
-  controller_->EndPromo(kTestIPHFeature);
+  controller_->EndPromo(kTestIPHFeature,
+                        user_education::FeaturePromoCloseReason::kAbortPromo);
   EXPECT_EQ(FeaturePromoStatus::kNotRunning,
             controller_->GetPromoStatus(kTestIPHFeature));
 
@@ -637,8 +638,11 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsWhenRequested) {
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
 
-  EXPECT_CALL_IN_SCOPE(close_callback, Run(),
-                       EXPECT_TRUE(controller_->EndPromo(kTestIPHFeature)));
+  EXPECT_CALL_IN_SCOPE(
+      close_callback, Run(),
+      EXPECT_TRUE(controller_->EndPromo(
+          kTestIPHFeature,
+          user_education::FeaturePromoCloseReason::kAbortPromo)));
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
 
@@ -648,7 +652,8 @@ TEST_F(BrowserFeaturePromoControllerTest, PromoEndsWhenRequested) {
 
 TEST_F(BrowserFeaturePromoControllerTest,
        CloseBubbleDoesNothingIfPromoNotShowing) {
-  EXPECT_FALSE(controller_->EndPromo(kTestIPHFeature));
+  EXPECT_FALSE(controller_->EndPromo(
+      kTestIPHFeature, user_education::FeaturePromoCloseReason::kAbortPromo));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,
@@ -657,7 +662,9 @@ TEST_F(BrowserFeaturePromoControllerTest,
       .WillOnce(Return(true));
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
 
-  EXPECT_FALSE(controller_->EndPromo(kTutorialIPHFeature));
+  EXPECT_FALSE(controller_->EndPromo(
+      kTutorialIPHFeature,
+      user_education::FeaturePromoCloseReason::kAbortPromo));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
 }
@@ -842,7 +849,8 @@ TEST_F(BrowserFeaturePromoControllerTest,
   EXPECT_TRUE(
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 
-  controller_->EndPromo(kTestIPHFeature);
+  controller_->EndPromo(kTestIPHFeature,
+                        user_education::FeaturePromoCloseReason::kAbortPromo);
   EXPECT_FALSE(
       GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 }
