@@ -20,3 +20,4 @@ Local Modifications:
 - Utilizing features available via protobuf lite
 - Using static variables over ABSL_FLAG
 - Replace FALLTHROUGH macro with C++17 attribute [[fallthrough]]
+- Fix missing absl includes

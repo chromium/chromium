@@ -22,6 +22,8 @@
 #include "maldoca/pdf_parser/pdfium_processor.h"
 #endif
 
+#include "absl/status/statusor.h"
+#include "absl/strings/string_view.h"
 #include "maldoca/service/common/processing_component.h"
 
 namespace maldoca {
