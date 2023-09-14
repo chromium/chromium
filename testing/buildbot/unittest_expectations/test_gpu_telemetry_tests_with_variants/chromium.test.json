@@ -17,7 +17,6 @@
           "--version",
           "1"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -30,6 +29,7 @@
           },
           "idempotent": false
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "variant_id": "a_variant"
       },
@@ -47,7 +47,6 @@
           "--version",
           "2"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -60,6 +59,7 @@
           },
           "idempotent": false
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "variant_id": "b_variant"
       }

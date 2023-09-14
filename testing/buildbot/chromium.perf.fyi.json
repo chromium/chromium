@@ -21,7 +21,6 @@
           "--test-shard-map-filename=android-pixel2-perf-aab-fyi_map.json",
           "--ignore-benchmark-exit-code"
         ],
-        "isolate_name": "performance_test_suite_android_clank_monochrome_bundle",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -47,6 +46,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
+        "test": "performance_test_suite_android_clank_monochrome_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -72,7 +72,6 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics"
         ],
-        "isolate_name": "performance_test_suite_android_clank_monochrome",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -98,6 +97,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "performance_test_suite_android_clank_monochrome",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -136,7 +136,6 @@
           "--ignore-benchmark-exit-code",
           "--remote=variable_chromeos_device_hostname"
         ],
-        "isolate_name": "performance_test_suite",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -161,6 +160,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "performance_test_suite",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -196,7 +196,6 @@
           "--os-check=check",
           "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/nelson-release/smart_display_m3_eng_paused"
         ],
-        "isolate_name": "performance_web_engine_test_suite",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -228,6 +227,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "performance_web_engine_test_suite",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -255,7 +255,6 @@
           "--os-check=check",
           "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
         ],
-        "isolate_name": "performance_web_engine_test_suite",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -287,6 +286,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "performance_web_engine_test_suite",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -310,7 +310,6 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics"
         ],
-        "isolate_name": "performance_test_suite",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -335,6 +334,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
+        "test": "performance_test_suite",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -358,7 +358,6 @@
           "--output-format=histograms",
           "--experimental-tbmv3-metrics"
         ],
-        "isolate_name": "performance_test_suite",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -383,6 +382,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 1
         },
+        "test": "performance_test_suite",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",

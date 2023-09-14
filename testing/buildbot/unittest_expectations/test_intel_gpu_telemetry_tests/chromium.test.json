@@ -17,7 +17,6 @@
           "--gpu-device-id",
           "5912"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -30,6 +29,7 @@
           },
           "idempotent": false
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]

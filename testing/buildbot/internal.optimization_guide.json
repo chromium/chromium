@@ -17,7 +17,6 @@
           "--browser=debug",
           "--xvfb"
         ],
-        "isolate_name": "browser_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -54,7 +53,6 @@
           "--isolated-script-test-launcher-retry-limit=5",
           "--browser=debug_x64"
         ],
-        "isolate_name": "browser_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -229,7 +227,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -245,6 +242,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_BASE"
       },
@@ -255,7 +253,6 @@
           "--binary",
           "chrome"
         ],
-        "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -271,6 +268,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
       }
@@ -341,7 +339,6 @@
           "--binary",
           "Chromium.app/Contents/MacOS/Chromium"
         ],
-        "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -358,6 +355,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
       }
@@ -419,7 +417,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -435,11 +432,11 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_BASE"
       },
       {
-        "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -455,6 +452,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
       }
@@ -516,7 +514,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -532,11 +529,11 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_BASE"
       },
       {
-        "isolate_name": "model_validation_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -552,6 +549,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
       }

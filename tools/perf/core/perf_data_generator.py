@@ -1861,7 +1861,7 @@ def generate_performance_test(tester_config, test, builder_name):
 
   result = {
       'args': test_args,
-      'isolate_name': isolate_name,
+      'test': isolate_name,
       'name': test_name,
       'override_compile_targets': [isolate_name]
   }

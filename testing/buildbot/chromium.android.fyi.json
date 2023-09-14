@@ -7778,7 +7778,6 @@
           "--test-list",
           "../../third_party/blink/web_tests/TestLists/Default.txt"
         ],
-        "isolate_name": "chrome_public_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -7814,6 +7813,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
+        "test": "chrome_public_wpt",
         "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
       },
       {
@@ -7822,7 +7822,6 @@
           "--test-list",
           "../../third_party/blink/web_tests/TestLists/Default.txt"
         ],
-        "isolate_name": "system_webview_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -7858,6 +7857,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
+        "test": "system_webview_wpt",
         "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
       }
     ]
@@ -7870,7 +7870,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--use-upstream-wpt"
         ],
-        "isolate_name": "chrome_public_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -7908,6 +7907,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 36
         },
+        "test": "chrome_public_wpt",
         "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
       }
     ]
@@ -8910,7 +8910,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--use-upstream-wpt"
         ],
-        "isolate_name": "system_webview_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -8948,6 +8947,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 25
         },
+        "test": "system_webview_wpt",
         "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
       }
     ]

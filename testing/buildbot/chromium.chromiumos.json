@@ -959,7 +959,6 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "isolate_name": "telemetry_perf_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -990,6 +989,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
@@ -1001,7 +1001,6 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "isolate_name": "telemetry_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1032,6 +1031,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 24
         },
+        "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
@@ -1049,7 +1049,6 @@
           "--remote-ssh-port=9222",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1081,6 +1080,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]

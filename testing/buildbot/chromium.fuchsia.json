@@ -939,7 +939,6 @@
           "bin/run_angle_unittests",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
-        "isolate_name": "angle_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -952,6 +951,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       },
       {
@@ -959,7 +959,6 @@
           "--sizes-path",
           "tools/fuchsia/size_tests/fyi_sizes_smoketest.json"
         ],
-        "isolate_name": "fuchsia_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -972,6 +971,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "fuchsia_sizes",
         "test_id_prefix": "ninja://tools/fuchsia/size_tests:fuchsia_sizes/"
       }
     ]
@@ -1914,7 +1914,6 @@
           "bin/run_angle_unittests",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
-        "isolate_name": "angle_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1927,6 +1926,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       },
       {
@@ -1934,7 +1934,6 @@
           "--sizes-path",
           "tools/fuchsia/size_tests/fyi_sizes_smoketest.json"
         ],
-        "isolate_name": "fuchsia_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1947,6 +1946,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "fuchsia_sizes",
         "test_id_prefix": "ninja://tools/fuchsia/size_tests:fuchsia_sizes/"
       }
     ]
@@ -3061,7 +3061,6 @@
           "bin/run_angle_unittests",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
-        "isolate_name": "angle_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3074,6 +3073,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       },
       {
@@ -3083,7 +3083,6 @@
           "--platform=fuchsia",
           "--jobs=1"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3104,6 +3103,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -3113,7 +3113,6 @@
           "--platform=fuchsia",
           "--jobs=1"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3134,6 +3133,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
@@ -3147,7 +3147,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--jobs=1"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3166,6 +3165,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
@@ -3182,7 +3182,6 @@
           "${buildername}",
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3206,6 +3205,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
@@ -3218,7 +3218,6 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3237,6 +3236,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
@@ -3249,7 +3249,6 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3268,6 +3267,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]
@@ -4319,7 +4319,6 @@
           "bin/run_angle_unittests",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
-        "isolate_name": "angle_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4331,6 +4330,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       },
       {
@@ -4340,7 +4340,6 @@
           "--platform=fuchsia",
           "--jobs=1"
         ],
-        "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -4360,6 +4359,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -4369,7 +4369,6 @@
           "--platform=fuchsia",
           "--jobs=1"
         ],
-        "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -4389,6 +4388,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
@@ -4402,7 +4402,6 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--jobs=1"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4420,6 +4419,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
@@ -4436,7 +4436,6 @@
           "${buildername}",
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4459,6 +4458,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
@@ -4471,7 +4471,6 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4489,6 +4488,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
@@ -4501,7 +4501,6 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4519,6 +4518,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]

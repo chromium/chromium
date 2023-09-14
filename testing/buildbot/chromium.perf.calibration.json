@@ -11,7 +11,6 @@
           "--test-shard-map-filename=android-pixel2-perf-calibration_map.json",
           "--ignore-benchmark-exit-code"
         ],
-        "isolate_name": "performance_test_suite_android_clank_monochrome_64_32_bundle",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -37,6 +36,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 42
         },
+        "test": "performance_test_suite_android_clank_monochrome_64_32_bundle",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
@@ -60,7 +60,6 @@
           "--ignore-benchmark-exit-code",
           "--assert-gpu-compositing"
         ],
-        "isolate_name": "performance_test_suite",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -85,6 +84,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 28
         },
+        "test": "performance_test_suite",
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",

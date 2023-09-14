@@ -1364,7 +1364,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "blink_python_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1380,10 +1379,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_python_tests",
         "test_id_prefix": "ninja://:blink_python_tests/"
       },
       {
-        "isolate_name": "blink_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1400,6 +1399,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_pytype",
         "test_id_prefix": "ninja://third_party/blink/tools:blink_pytype/"
       },
       {
@@ -1407,7 +1407,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1429,6 +1428,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -1436,7 +1436,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1458,13 +1457,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
         "args": [
           "--test-type=integration"
         ],
-        "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1480,10 +1479,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
       },
       {
-        "isolate_name": "chromedriver_replay_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1496,10 +1495,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_replay_unittests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_replay_unittests/"
       },
       {
-        "isolate_name": "content_shell_crash_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1516,10 +1515,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_shell_crash_test",
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
-        "isolate_name": "flatbuffers_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1536,10 +1535,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
       },
       {
-        "isolate_name": "fuchsia_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1556,10 +1555,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "fuchsia_pytype",
         "test_id_prefix": "ninja://testing:fuchsia_pytype/"
       },
       {
-        "isolate_name": "gold_common_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1576,10 +1575,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gold_common_pytype",
         "test_id_prefix": "ninja://build:gold_common_pytype/"
       },
       {
-        "isolate_name": "gpu_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1596,10 +1595,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gpu_pytype",
         "test_id_prefix": "ninja://content/test:gpu_pytype/"
       },
       {
-        "isolate_name": "grit_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1615,6 +1614,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "grit_python_unittests",
         "test_id_prefix": "ninja://tools/grit:grit_python_unittests/"
       },
       {
@@ -1624,7 +1624,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1645,6 +1644,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -1654,7 +1654,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1676,10 +1675,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
-        "isolate_name": "mojo_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1695,6 +1694,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "mojo_python_unittests",
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
@@ -1703,7 +1703,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1725,6 +1724,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -1733,7 +1733,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1755,10 +1754,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
-        "isolate_name": "telemetry_gpu_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1775,13 +1774,13 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
       },
       {
         "args": [
           "--extra-browser-args=--enable-crashpad"
         ],
-        "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1799,6 +1798,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
@@ -1806,7 +1806,6 @@
           "--jobs=1",
           "--extra-browser-args=--disable-gpu"
         ],
-        "isolate_name": "telemetry_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1824,10 +1823,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
-        "isolate_name": "testing_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1844,13 +1843,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "testing_pytype",
         "test_id_prefix": "ninja://testing:testing_pytype/"
       },
       {
         "args": [
           "--gtest-benchmark-name=views_perftests"
         ],
-        "isolate_name": "views_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1866,6 +1865,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "views_perftests",
         "test_id_prefix": "ninja://ui/views:views_perftests/"
       },
       {
@@ -1875,7 +1875,6 @@
           "--flag-specific=skia-vulkan-swiftshader",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1896,13 +1895,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
         "args": [
           "--test-type=wdspec"
         ],
-        "isolate_name": "chrome_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -1923,6 +1922,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "chrome_wpt_tests",
         "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ],
@@ -3294,7 +3294,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "blink_python_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3309,10 +3308,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_python_tests",
         "test_id_prefix": "ninja://:blink_python_tests/"
       },
       {
-        "isolate_name": "blink_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3328,6 +3327,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_pytype",
         "test_id_prefix": "ninja://third_party/blink/tools:blink_pytype/"
       },
       {
@@ -3338,7 +3338,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter",
           "--flag-specific=chrome-for-testing"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3359,13 +3358,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
         "args": [
           "--test-type=integration"
         ],
-        "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3380,10 +3379,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
       },
       {
-        "isolate_name": "chromedriver_replay_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3395,10 +3394,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_replay_unittests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_replay_unittests/"
       },
       {
-        "isolate_name": "content_shell_crash_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3414,10 +3413,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_shell_crash_test",
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
-        "isolate_name": "flatbuffers_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3433,10 +3432,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
       },
       {
-        "isolate_name": "fuchsia_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3452,10 +3451,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "fuchsia_pytype",
         "test_id_prefix": "ninja://testing:fuchsia_pytype/"
       },
       {
-        "isolate_name": "gold_common_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3471,10 +3470,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gold_common_pytype",
         "test_id_prefix": "ninja://build:gold_common_pytype/"
       },
       {
-        "isolate_name": "gpu_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3490,10 +3489,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gpu_pytype",
         "test_id_prefix": "ninja://content/test:gpu_pytype/"
       },
       {
-        "isolate_name": "grit_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3508,6 +3507,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "grit_python_unittests",
         "test_id_prefix": "ninja://tools/grit:grit_python_unittests/"
       },
       {
@@ -3517,7 +3517,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3537,6 +3536,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -3546,7 +3546,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3567,10 +3566,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
-        "isolate_name": "mojo_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3585,6 +3584,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "mojo_python_unittests",
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
@@ -3595,7 +3595,6 @@
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
           "--flag-specific=chrome-for-testing"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3616,6 +3615,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -3624,7 +3624,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3645,10 +3644,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
-        "isolate_name": "telemetry_gpu_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3664,6 +3663,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
       },
       {
@@ -3672,7 +3672,6 @@
           "--xvfb",
           "--jobs=1"
         ],
-        "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3689,6 +3688,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
@@ -3696,7 +3696,6 @@
           "--jobs=1",
           "--extra-browser-args=--disable-gpu"
         ],
-        "isolate_name": "telemetry_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3713,10 +3712,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
-        "isolate_name": "testing_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3732,13 +3731,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "testing_pytype",
         "test_id_prefix": "ninja://testing:testing_pytype/"
       },
       {
         "args": [
           "--gtest-benchmark-name=views_perftests"
         ],
-        "isolate_name": "views_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3753,6 +3752,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "views_perftests",
         "test_id_prefix": "ninja://ui/views:views_perftests/"
       },
       {
@@ -3762,7 +3762,6 @@
           "--flag-specific=skia-vulkan-swiftshader",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -3782,6 +3781,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       }
     ],
@@ -5110,7 +5110,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "blink_python_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5126,6 +5125,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_python_tests",
         "test_id_prefix": "ninja://:blink_python_tests/"
       },
       {
@@ -5134,7 +5134,6 @@
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5156,13 +5155,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
         "args": [
           "--test-type=integration"
         ],
-        "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5178,10 +5177,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
       },
       {
-        "isolate_name": "chromedriver_replay_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5194,13 +5193,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_replay_unittests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_replay_unittests/"
       },
       {
         "args": [
           "--gtest-benchmark-name=components_perftests"
         ],
-        "isolate_name": "components_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5216,10 +5215,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_perftests",
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
-        "isolate_name": "content_shell_crash_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5236,10 +5235,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_shell_crash_test",
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
-        "isolate_name": "flatbuffers_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5256,10 +5255,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
       },
       {
-        "isolate_name": "grit_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5275,10 +5274,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "grit_python_unittests",
         "test_id_prefix": "ninja://tools/grit:grit_python_unittests/"
       },
       {
-        "isolate_name": "mojo_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5294,10 +5293,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "mojo_python_unittests",
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
-        "isolate_name": "telemetry_gpu_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5314,6 +5313,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
       },
       {
@@ -5321,7 +5321,6 @@
           "--extra-browser-args=--enable-crashpad"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5339,6 +5338,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
@@ -5346,7 +5346,6 @@
           "--jobs=1",
           "--extra-browser-args=--disable-gpu"
         ],
-        "isolate_name": "telemetry_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5364,13 +5363,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
         "args": [
           "--gtest-benchmark-name=views_perftests"
         ],
-        "isolate_name": "views_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5386,6 +5385,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "views_perftests",
         "test_id_prefix": "ninja://ui/views:views_perftests/"
       }
     ],
@@ -7087,7 +7087,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "blink_python_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7103,6 +7102,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_python_tests",
         "test_id_prefix": "ninja://:blink_python_tests/"
       },
       {
@@ -7113,7 +7113,6 @@
           "Release_x64",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7135,13 +7134,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
         "args": [
           "--test-type=integration"
         ],
-        "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": false,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7157,10 +7156,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
       },
       {
-        "isolate_name": "chromedriver_replay_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7173,13 +7172,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_replay_unittests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_replay_unittests/"
       },
       {
         "args": [
           "--gtest-benchmark-name=components_perftests"
         ],
-        "isolate_name": "components_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7195,10 +7194,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_perftests",
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
-        "isolate_name": "content_shell_crash_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7215,10 +7214,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_shell_crash_test",
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
-        "isolate_name": "flatbuffers_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7235,10 +7234,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
       },
       {
-        "isolate_name": "grit_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7254,10 +7253,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "grit_python_unittests",
         "test_id_prefix": "ninja://tools/grit:grit_python_unittests/"
       },
       {
-        "isolate_name": "mini_installer_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7271,10 +7270,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "mini_installer_tests",
         "test_id_prefix": "ninja://chrome/test/mini_installer:mini_installer_tests/"
       },
       {
-        "isolate_name": "mojo_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7290,11 +7289,11 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "mojo_python_unittests",
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
         "experiment_percentage": 0,
-        "isolate_name": "polymer_tools_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7307,6 +7306,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "polymer_tools_python_unittests",
         "test_id_prefix": "ninja://tools/polymer:polymer_tools_python_unittests/"
       },
       {
@@ -7316,7 +7316,6 @@
           "--passthrough",
           "--retry-limit=2"
         ],
-        "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7332,10 +7331,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
-        "isolate_name": "telemetry_gpu_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7352,13 +7351,13 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
       },
       {
         "args": [
           "--gtest-benchmark-name=views_perftests"
         ],
-        "isolate_name": "views_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7374,6 +7373,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "views_perftests",
         "test_id_prefix": "ninja://ui/views:views_perftests/"
       }
     ],

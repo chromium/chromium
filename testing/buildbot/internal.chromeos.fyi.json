@@ -981,7 +981,6 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "isolate_name": "telemetry_perf_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1013,6 +1012,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
@@ -1024,7 +1024,6 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "isolate_name": "telemetry_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1056,6 +1055,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 24
         },
+        "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       }
     ]
@@ -1069,7 +1069,6 @@
           "--magic-vm-cache=magic_cros_vm_cache",
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "variations_desktop_smoke_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1104,6 +1103,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "variations_desktop_smoke_tests",
         "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
       }
     ]

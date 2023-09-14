@@ -185,7 +185,7 @@ If a bot in [waterfalls.pyl](./waterfalls.pyl) refers to the test suite
 
 The test's name is usually both the build target as well as how the test appears
 in the steps that the bot runs. However, this can be overridden using dictionary
-arguments like `test` and `isolate_name`; see below.
+arguments like `test`; see below.
 
 The dictionary following the test's name can contain multiple entries that
 affect how the test runs. Generally speaking, these are copied verbatim into the
@@ -223,16 +223,11 @@ generated JSON file. Commonly used arguments include:
   (This feature was added mainly to match the original handwritten JSON files,
   and further use is discouraged. Ideally it should be removed.)
 
-Arguments specific to GTest-based tests:
+Arguments specific to GTest-based and isolated script tests:
 
 * `test`: the target to build and run, if different from the test's name. This
   allows the same test to be run multiple times on the same bot with different
   command line arguments or Swarming dimensions, for example.
-
-Arguments specific to isolated script tests:
-
-* `isolate_name`: the target to build and run, if different than the test's
-  name.
 
 There are other arguments specific to other test types (script tests, JUnit
 tests); consult the generator script and test_suites.pyl for more details and

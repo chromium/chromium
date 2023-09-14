@@ -159,7 +159,7 @@ def ValidateTestingBuilder(builder_name, builder_data):
     _ValidateSwarmingDimension(
         builder_name,
         swarming_dimensions=test_config['swarming'].get('dimension_sets', {}))
-    if test_config['isolate_name'] in _PERFORMANCE_TEST_SUITES:
+    if test_config['test'] in _PERFORMANCE_TEST_SUITES:
       _ValidateShardingData(builder_name, test_config)
       _ValidateBrowserType(builder_name, test_config)
 

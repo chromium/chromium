@@ -10677,7 +10677,6 @@
           "48000",
           "--enable-sanitizer"
         ],
-        "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -10697,6 +10696,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -10709,7 +10709,6 @@
           "48000",
           "--enable-sanitizer"
         ],
-        "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -10729,6 +10728,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
@@ -10748,7 +10748,6 @@
           "48000",
           "--enable-leak-detection"
         ],
-        "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -10768,6 +10767,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -10780,7 +10780,6 @@
           "48000",
           "--enable-leak-detection"
         ],
-        "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -10800,6 +10799,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
@@ -10816,7 +10816,6 @@
           "66000",
           "--enable-sanitizer"
         ],
-        "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -10839,6 +10838,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -10851,7 +10851,6 @@
           "66000",
           "--enable-sanitizer"
         ],
-        "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -10874,6 +10873,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]
@@ -13294,7 +13294,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "absl_hardening_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13327,6 +13326,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -13342,7 +13342,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "absl_hardening_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13375,6 +13374,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -13390,7 +13390,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13423,6 +13422,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -13438,7 +13438,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13471,6 +13470,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -13486,7 +13486,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_crypto_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13519,6 +13518,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -13534,7 +13534,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_crypto_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13567,6 +13566,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -13582,7 +13582,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_ssl_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13615,6 +13614,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -13630,7 +13630,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_ssl_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13663,6 +13662,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -13678,7 +13678,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13711,6 +13710,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -13726,7 +13726,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13759,6 +13758,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -13774,7 +13774,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crashpad_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13807,6 +13806,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crashpad_tests",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -13822,7 +13822,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crashpad_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13855,6 +13854,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crashpad_tests",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -13870,7 +13870,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crypto_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13903,6 +13902,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -13918,7 +13918,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crypto_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13951,6 +13950,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -13966,7 +13966,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13999,6 +13998,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14014,7 +14014,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14047,6 +14046,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14062,7 +14062,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "google_apis_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14095,6 +14094,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14110,7 +14110,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "google_apis_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14143,6 +14142,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14158,7 +14158,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14191,6 +14190,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14206,7 +14206,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14239,6 +14238,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14254,7 +14254,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_components_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14287,6 +14286,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14302,7 +14302,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_components_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14335,6 +14334,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14350,7 +14350,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_net_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14384,6 +14383,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14399,7 +14399,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_net_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14433,6 +14432,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14448,7 +14448,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14481,6 +14480,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14496,7 +14496,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14529,6 +14528,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14544,7 +14544,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_testing_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14577,6 +14576,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14592,7 +14592,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_testing_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14625,6 +14624,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14640,7 +14640,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14673,6 +14672,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14688,7 +14688,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14721,6 +14720,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14736,7 +14736,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14769,6 +14768,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14784,7 +14784,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14817,6 +14816,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14832,7 +14832,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14865,6 +14864,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14880,7 +14880,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14913,6 +14912,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -14928,7 +14928,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -14961,6 +14960,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -14976,7 +14976,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15009,6 +15008,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -15024,7 +15024,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "net_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15057,6 +15056,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -15072,7 +15072,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "net_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15105,6 +15104,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -15120,7 +15120,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15153,6 +15152,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -15168,7 +15168,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "services_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15201,6 +15200,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -15216,7 +15216,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15249,6 +15248,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -15264,7 +15264,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15297,6 +15296,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -15312,7 +15312,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "sql_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15345,6 +15344,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -15360,7 +15360,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "sql_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15393,6 +15392,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -15408,7 +15408,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15441,6 +15440,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -15456,7 +15456,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15489,6 +15488,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone X 15.5"
       },
@@ -15504,7 +15504,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "url_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15537,6 +15536,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPad Air 2 15.5"
       },
@@ -15552,7 +15552,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "url_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -15585,6 +15584,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone X 15.5"
       }

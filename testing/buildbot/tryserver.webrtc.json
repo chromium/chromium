@@ -63,7 +63,6 @@
           "external/wpt/webrtc-svc",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "merge": {
           "args": [
             "--verbose"
@@ -82,6 +81,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       }
     ]

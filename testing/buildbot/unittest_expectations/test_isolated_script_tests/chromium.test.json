@@ -4,7 +4,6 @@
   "Fake Tester": {
     "isolated_scripts": [
       {
-        "isolate_name": "foo_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13,7 +12,8 @@
           "dimensions": {
             "os": "Linux"
           }
-        }
+        },
+        "test": "foo_test"
       }
     ]
   }

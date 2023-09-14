@@ -503,7 +503,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "build_rust_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -631,7 +630,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "build_rust_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -766,7 +764,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "build_rust_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -902,7 +899,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "build_rust_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1038,7 +1034,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "build_rust_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

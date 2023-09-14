@@ -10381,7 +10381,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
-        "isolate_name": "private_code_failure_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10413,6 +10412,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "private_code_failure_test",
         "test_id_prefix": "ninja://build/private_code_test:private_code_failure_test/"
       }
     ]
@@ -21085,7 +21085,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -21102,6 +21101,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       }
     ]
@@ -21112,7 +21112,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -21129,10 +21128,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       },
       {
-        "isolate_name": "resource_sizes_cronet_sample_apk",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -21148,6 +21147,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "resource_sizes_cronet_sample_apk",
         "test_id_prefix": "ninja://components/cronet/android:resource_sizes_cronet_sample_apk/"
       }
     ]
@@ -21166,7 +21166,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -21183,6 +21182,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       }
     ]
@@ -21201,7 +21201,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -21218,10 +21217,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       },
       {
-        "isolate_name": "resource_sizes_cronet_sample_apk",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -21237,6 +21236,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "resource_sizes_cronet_sample_apk",
         "test_id_prefix": "ninja://components/cronet/android:resource_sizes_cronet_sample_apk/"
       }
     ]
@@ -21603,7 +21603,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -21620,6 +21619,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       }
     ]
@@ -22418,7 +22418,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -22435,10 +22434,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       },
       {
-        "isolate_name": "resource_sizes_cronet_sample_apk",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -22454,6 +22453,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "resource_sizes_cronet_sample_apk",
         "test_id_prefix": "ninja://components/cronet/android:resource_sizes_cronet_sample_apk/"
       }
     ]
@@ -22472,7 +22472,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -22489,6 +22488,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       }
     ]
@@ -25241,7 +25241,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "cronet_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -25258,10 +25257,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cronet_sizes",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sizes/"
       },
       {
-        "isolate_name": "resource_sizes_cronet_sample_apk",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -25277,6 +25276,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "resource_sizes_cronet_sample_apk",
         "test_id_prefix": "ninja://components/cronet/android:resource_sizes_cronet_sample_apk/"
       }
     ]
@@ -29274,7 +29274,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "android_webview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29293,6 +29292,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "android_webview_junit_tests",
         "test_id_prefix": "ninja://android_webview/test:android_webview_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29300,7 +29300,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29319,6 +29318,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_junit_tests",
         "test_id_prefix": "ninja://base:base_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29326,7 +29326,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "build_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29345,6 +29344,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "build_junit_tests",
         "test_id_prefix": "ninja://build/android:build_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29352,7 +29352,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "chrome_java_test_pagecontroller_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29371,6 +29370,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_java_test_pagecontroller_junit_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29378,7 +29378,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "chrome_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29397,6 +29396,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_junit_tests",
         "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29404,7 +29404,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "components_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29423,6 +29422,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_junit_tests",
         "test_id_prefix": "ninja://components:components_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29432,7 +29432,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
-        "isolate_name": "components_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -29467,13 +29466,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_perftests",
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "content_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29492,6 +29491,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_junit_tests",
         "test_id_prefix": "ninja://content/public/android:content_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29499,7 +29499,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "device_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29518,6 +29517,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "device_junit_tests",
         "test_id_prefix": "ninja://device:device_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29525,7 +29525,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "junit_unit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29544,6 +29543,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "junit_unit_tests",
         "test_id_prefix": "ninja://testing/android/junit:junit_unit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29551,7 +29551,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "keyboard_accessory_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29570,6 +29569,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "keyboard_accessory_junit_tests",
         "test_id_prefix": "ninja://chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29577,7 +29577,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "media_base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29596,6 +29595,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "media_base_junit_tests",
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29603,7 +29603,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "module_installer_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29622,6 +29621,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "module_installer_junit_tests",
         "test_id_prefix": "ninja://components/module_installer/android:module_installer_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29630,7 +29630,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
-        "isolate_name": "monochrome_public_apk_checker",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29664,13 +29663,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "monochrome_public_apk_checker",
         "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "net_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29689,6 +29688,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_junit_tests",
         "test_id_prefix": "ninja://net/android:net_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29696,7 +29696,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "paint_preview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29715,6 +29714,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "paint_preview_junit_tests",
         "test_id_prefix": "ninja://components/paint_preview/player/android:paint_preview_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29722,7 +29722,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "password_check_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29741,6 +29740,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "password_check_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_check/android:password_check_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29748,7 +29748,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "password_manager_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29767,6 +29766,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "password_manager_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_manager/android:password_manager_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29774,7 +29774,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "services_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29793,6 +29792,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_junit_tests",
         "test_id_prefix": "ninja://services:services_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29807,7 +29807,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29839,6 +29838,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_perf_unittests_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
@@ -29852,7 +29852,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_monochrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29884,6 +29883,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_perf_unittests_android_monochrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_monochrome/"
       },
       {
@@ -29894,7 +29894,6 @@
           "--browser=android-chromium"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29928,13 +29927,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "touch_to_fill_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29953,6 +29952,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "touch_to_fill_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29960,7 +29960,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "ui_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29979,6 +29978,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_junit_tests",
         "test_id_prefix": "ninja://ui/android:ui_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -29986,7 +29986,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_client_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -30005,6 +30004,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_client_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/libs/client:webapk_client_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -30012,7 +30012,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_shell_apk_h2o_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -30031,6 +30030,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_shell_apk_h2o_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_h2o_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -30038,7 +30038,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_shell_apk_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -30057,6 +30056,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_shell_apk_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests/",
         "use_isolated_scripts_api": true
       }
@@ -34066,7 +34066,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "android_webview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34085,6 +34084,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "android_webview_junit_tests",
         "test_id_prefix": "ninja://android_webview/test:android_webview_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34092,7 +34092,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34111,6 +34110,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_junit_tests",
         "test_id_prefix": "ninja://base:base_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34118,7 +34118,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "build_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34137,6 +34136,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "build_junit_tests",
         "test_id_prefix": "ninja://build/android:build_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34144,7 +34144,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "chrome_java_test_pagecontroller_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34163,6 +34162,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_java_test_pagecontroller_junit_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34170,7 +34170,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "chrome_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34189,6 +34188,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_junit_tests",
         "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34196,7 +34196,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "components_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34215,6 +34214,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_junit_tests",
         "test_id_prefix": "ninja://components:components_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34224,7 +34224,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
-        "isolate_name": "components_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -34259,13 +34258,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_perftests",
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "content_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34284,6 +34283,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_junit_tests",
         "test_id_prefix": "ninja://content/public/android:content_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34291,7 +34291,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "device_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34310,6 +34309,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "device_junit_tests",
         "test_id_prefix": "ninja://device:device_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34317,7 +34317,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "junit_unit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34336,6 +34335,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "junit_unit_tests",
         "test_id_prefix": "ninja://testing/android/junit:junit_unit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34343,7 +34343,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "keyboard_accessory_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34362,6 +34361,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "keyboard_accessory_junit_tests",
         "test_id_prefix": "ninja://chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34369,7 +34369,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "media_base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34388,6 +34387,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "media_base_junit_tests",
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34395,7 +34395,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "module_installer_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34414,6 +34413,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "module_installer_junit_tests",
         "test_id_prefix": "ninja://components/module_installer/android:module_installer_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34422,7 +34422,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
-        "isolate_name": "monochrome_public_apk_checker",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34456,13 +34455,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "monochrome_public_apk_checker",
         "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "net_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34481,6 +34480,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_junit_tests",
         "test_id_prefix": "ninja://net/android:net_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34488,7 +34488,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "paint_preview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34507,6 +34506,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "paint_preview_junit_tests",
         "test_id_prefix": "ninja://components/paint_preview/player/android:paint_preview_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34514,7 +34514,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "password_check_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34533,6 +34532,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "password_check_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_check/android:password_check_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34540,7 +34540,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "password_manager_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34559,6 +34558,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "password_manager_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_manager/android:password_manager_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34566,7 +34566,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "services_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34585,6 +34584,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_junit_tests",
         "test_id_prefix": "ninja://services:services_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34599,7 +34599,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34631,6 +34630,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_perf_unittests_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
@@ -34644,7 +34644,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_monochrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34676,6 +34675,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_perf_unittests_android_monochrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_monochrome/"
       },
       {
@@ -34686,7 +34686,6 @@
           "--browser=android-chromium"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34720,13 +34719,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "touch_to_fill_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34745,6 +34744,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "touch_to_fill_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34752,7 +34752,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "ui_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34771,6 +34770,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_junit_tests",
         "test_id_prefix": "ninja://ui/android:ui_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34778,7 +34778,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_client_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34797,6 +34796,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_client_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/libs/client:webapk_client_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34804,7 +34804,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_shell_apk_h2o_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34823,6 +34822,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_shell_apk_h2o_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_h2o_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -34830,7 +34830,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_shell_apk_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -34849,6 +34848,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_shell_apk_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests/",
         "use_isolated_scripts_api": true
       }

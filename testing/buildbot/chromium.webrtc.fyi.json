@@ -644,7 +644,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -677,6 +676,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -692,7 +692,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -725,6 +724,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -740,7 +740,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -773,6 +772,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -788,7 +788,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -821,6 +820,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 17.0"
       }

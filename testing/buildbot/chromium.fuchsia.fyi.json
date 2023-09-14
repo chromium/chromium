@@ -924,7 +924,6 @@
           "bin/run_angle_unittests",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
-        "isolate_name": "angle_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -937,6 +936,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       }
     ]
@@ -1973,7 +1973,6 @@
           "--logs-dir=${ISOLATED_OUTDIR}/logs",
           "--gtest_filter=-ConstructCompilerTest.DefaultParameters"
         ],
-        "isolate_name": "angle_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1985,6 +1984,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       }
     ]
@@ -3008,7 +3008,6 @@
           "bin/run_angle_unittests",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
-        "isolate_name": "angle_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3020,6 +3019,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       }
     ]

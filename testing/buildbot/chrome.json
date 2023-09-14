@@ -1088,7 +1088,6 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "isolate_name": "telemetry_perf_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1120,6 +1119,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
@@ -1131,7 +1131,6 @@
           "--typ-max-failures=3",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "isolate_name": "telemetry_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1163,6 +1162,7 @@
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 24
         },
+        "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       }
     ]
@@ -1515,7 +1515,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1532,6 +1531,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ],
@@ -1681,7 +1681,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1698,6 +1697,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ],
@@ -1778,7 +1778,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1795,6 +1794,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ],
@@ -1842,7 +1842,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_private_code_test",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1854,10 +1853,10 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_private_code_test",
         "test_id_prefix": "ninja://chrome:chrome_private_code_test/"
       },
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -1873,13 +1872,13 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
         "args": [
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "variations_smoke_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1900,6 +1899,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "variations_smoke_tests",
         "test_id_prefix": "ninja://chrome/test:variations_smoke_tests/"
       }
     ]
@@ -3464,7 +3464,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -3481,6 +3480,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ]
@@ -3492,7 +3492,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -3509,13 +3508,13 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
         "args": [
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "variations_smoke_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3537,6 +3536,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "variations_smoke_tests",
         "test_id_prefix": "ninja://chrome/test:variations_smoke_tests/"
       }
     ]
@@ -3571,7 +3571,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -3587,6 +3586,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
@@ -3594,7 +3594,6 @@
           "--git-revision=${got_revision}"
         ],
         "experiment_percentage": 100,
-        "isolate_name": "variations_smoke_tests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3615,6 +3614,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "variations_smoke_tests",
         "test_id_prefix": "ninja://chrome/test:variations_smoke_tests/"
       }
     ]
@@ -3626,7 +3626,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -3642,6 +3641,7 @@
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       }
     ]

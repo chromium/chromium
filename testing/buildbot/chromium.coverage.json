@@ -7224,7 +7224,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "android_webview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7243,6 +7242,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "android_webview_junit_tests",
         "test_id_prefix": "ninja://android_webview/test:android_webview_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7250,7 +7250,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7269,6 +7268,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_junit_tests",
         "test_id_prefix": "ninja://base:base_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7276,7 +7276,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "build_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7295,6 +7294,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "build_junit_tests",
         "test_id_prefix": "ninja://build/android:build_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7302,7 +7302,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "chrome_java_test_pagecontroller_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7321,6 +7320,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_java_test_pagecontroller_junit_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7328,7 +7328,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "chrome_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7347,6 +7346,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chrome_junit_tests",
         "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7354,7 +7354,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "components_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7373,6 +7372,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_junit_tests",
         "test_id_prefix": "ninja://components:components_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7382,7 +7382,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
-        "isolate_name": "components_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7417,13 +7416,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_perftests",
         "test_id_prefix": "ninja://components:components_perftests/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "content_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7442,6 +7441,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_junit_tests",
         "test_id_prefix": "ninja://content/public/android:content_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7449,7 +7449,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "device_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7468,6 +7467,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "device_junit_tests",
         "test_id_prefix": "ninja://device:device_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7475,7 +7475,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "junit_unit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7494,6 +7493,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "junit_unit_tests",
         "test_id_prefix": "ninja://testing/android/junit:junit_unit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7501,7 +7501,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "keyboard_accessory_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7520,6 +7519,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "keyboard_accessory_junit_tests",
         "test_id_prefix": "ninja://chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7527,7 +7527,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "media_base_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7546,6 +7545,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "media_base_junit_tests",
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7553,7 +7553,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "module_installer_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7572,6 +7571,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "module_installer_junit_tests",
         "test_id_prefix": "ninja://components/module_installer/android:module_installer_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7580,7 +7580,6 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
-        "isolate_name": "monochrome_public_apk_checker",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7614,13 +7613,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "monochrome_public_apk_checker",
         "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "net_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7639,6 +7638,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_junit_tests",
         "test_id_prefix": "ninja://net/android:net_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7646,7 +7646,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "paint_preview_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7665,6 +7664,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "paint_preview_junit_tests",
         "test_id_prefix": "ninja://components/paint_preview/player/android:paint_preview_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7672,7 +7672,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "password_check_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7691,6 +7690,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "password_check_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_check/android:password_check_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7698,7 +7698,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "password_manager_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7717,6 +7716,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "password_manager_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/password_manager/android:password_manager_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7724,7 +7724,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "services_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7743,6 +7742,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_junit_tests",
         "test_id_prefix": "ninja://services:services_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7757,7 +7757,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7789,6 +7788,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_perf_unittests_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
@@ -7802,7 +7802,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_monochrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7834,6 +7833,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_perf_unittests_android_monochrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_monochrome/"
       },
       {
@@ -7844,7 +7844,6 @@
           "--browser=android-chromium"
         ],
         "ci_only": true,
-        "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7878,13 +7877,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests_android_chrome",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests_android_chrome/"
       },
       {
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "touch_to_fill_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7903,6 +7902,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "touch_to_fill_junit_tests",
         "test_id_prefix": "ninja://chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7910,7 +7910,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "ui_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7929,6 +7928,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_junit_tests",
         "test_id_prefix": "ninja://ui/android:ui_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7936,7 +7936,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_client_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7955,6 +7954,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_client_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/libs/client:webapk_client_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7962,7 +7962,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_shell_apk_h2o_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7981,6 +7980,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_shell_apk_h2o_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_h2o_junit_tests/",
         "use_isolated_scripts_api": true
       },
@@ -7988,7 +7988,6 @@
         "args": [
           "--use-persistent-shell"
         ],
-        "isolate_name": "webapk_shell_apk_junit_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8007,6 +8006,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webapk_shell_apk_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests/",
         "use_isolated_scripts_api": true
       }
@@ -9283,7 +9283,6 @@
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
           "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
-        "isolate_name": "angle_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9295,6 +9294,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/"
       }
     ]
@@ -9314,7 +9314,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "absl_hardening_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9348,6 +9347,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -9364,7 +9364,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "absl_hardening_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9398,6 +9397,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -9414,7 +9414,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "absl_hardening_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9448,6 +9447,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -9464,7 +9464,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "absl_hardening_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9498,6 +9497,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -9514,7 +9514,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9548,6 +9547,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -9564,7 +9564,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9598,6 +9597,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -9614,7 +9614,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9648,6 +9647,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -9664,7 +9664,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9698,6 +9697,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -9714,7 +9714,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9748,6 +9747,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -9764,7 +9764,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9798,6 +9797,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -9814,7 +9814,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9848,6 +9847,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -9864,7 +9864,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9898,6 +9897,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -9914,7 +9914,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9948,6 +9947,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -9964,7 +9964,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9998,6 +9997,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -10014,7 +10014,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10048,6 +10047,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -10064,7 +10064,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_crypto_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10098,6 +10097,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -10114,7 +10114,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_crypto_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10148,6 +10147,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -10164,7 +10164,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_crypto_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10198,6 +10197,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -10214,7 +10214,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_crypto_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10248,6 +10247,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -10264,7 +10264,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_ssl_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10298,6 +10297,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -10314,7 +10314,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_ssl_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10348,6 +10347,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -10364,7 +10364,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_ssl_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10398,6 +10397,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -10414,7 +10414,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "boringssl_ssl_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10448,6 +10447,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -10464,7 +10464,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10498,6 +10497,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -10514,7 +10514,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10548,6 +10547,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -10564,7 +10564,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10598,6 +10597,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -10614,7 +10614,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10648,6 +10647,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -10664,7 +10664,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10698,6 +10697,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -10714,7 +10714,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10748,6 +10747,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -10764,7 +10764,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10798,6 +10797,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -10814,7 +10814,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10848,6 +10847,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -10864,7 +10864,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10898,6 +10897,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -10914,7 +10914,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10948,6 +10947,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -10964,7 +10964,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10998,6 +10997,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -11014,7 +11014,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crashpad_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11048,6 +11047,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crashpad_tests",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -11064,7 +11064,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crashpad_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11098,6 +11097,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crashpad_tests",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -11114,7 +11114,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crashpad_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11148,6 +11147,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crashpad_tests",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -11164,7 +11164,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crashpad_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11198,6 +11197,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crashpad_tests",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -11214,7 +11214,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crypto_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11248,6 +11247,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -11264,7 +11264,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crypto_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11298,6 +11297,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -11314,7 +11314,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crypto_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11348,6 +11347,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -11364,7 +11364,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "crypto_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11398,6 +11397,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -11414,7 +11414,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11448,6 +11447,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -11464,7 +11464,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11498,6 +11497,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -11514,7 +11514,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11548,6 +11547,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -11564,7 +11564,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11598,6 +11597,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -11614,7 +11614,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11648,6 +11647,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -11664,7 +11664,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11698,6 +11697,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -11714,7 +11714,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11748,6 +11747,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -11764,7 +11764,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11798,6 +11797,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -11814,7 +11814,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11848,6 +11847,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -11864,7 +11864,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11898,6 +11897,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -11914,7 +11914,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "gfx_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11948,6 +11947,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -11964,7 +11964,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "google_apis_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11998,6 +11997,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -12014,7 +12014,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "google_apis_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12048,6 +12047,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -12064,7 +12064,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "google_apis_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12098,6 +12097,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -12114,7 +12114,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "google_apis_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12148,6 +12147,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -12165,7 +12165,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12199,6 +12198,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -12216,7 +12216,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12250,6 +12249,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -12267,7 +12267,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12301,6 +12300,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -12318,7 +12318,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12352,6 +12351,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -12369,7 +12369,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12403,6 +12402,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -12420,7 +12420,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12454,6 +12453,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -12471,7 +12471,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12505,6 +12504,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -12522,7 +12522,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12556,6 +12555,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -12575,7 +12575,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12610,6 +12609,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -12629,7 +12629,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12664,6 +12663,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -12683,7 +12683,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12718,6 +12717,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -12737,7 +12737,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12772,6 +12771,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -12791,7 +12791,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12826,6 +12825,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -12845,7 +12845,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12880,6 +12879,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -12899,7 +12899,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12934,6 +12933,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -12953,7 +12953,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12988,6 +12987,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -13007,7 +13007,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13042,6 +13041,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -13061,7 +13061,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13096,6 +13095,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -13115,7 +13115,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13150,6 +13149,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -13169,7 +13169,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13204,6 +13203,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -13223,7 +13223,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13258,6 +13257,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -13277,7 +13277,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13312,6 +13311,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -13331,7 +13331,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13366,6 +13365,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -13385,7 +13385,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13420,6 +13419,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
+        "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -13437,7 +13437,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13472,6 +13471,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -13489,7 +13489,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13524,6 +13523,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -13541,7 +13541,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13576,6 +13575,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -13593,7 +13593,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13628,6 +13627,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -13645,7 +13645,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13680,6 +13679,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -13697,7 +13697,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13732,6 +13731,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -13749,7 +13749,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13784,6 +13783,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -13801,7 +13801,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13836,6 +13835,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
+        "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -13853,7 +13853,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13887,6 +13886,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -13904,7 +13904,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13938,6 +13937,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -13955,7 +13955,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13989,6 +13988,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -14006,7 +14006,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14040,6 +14039,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -14057,7 +14057,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14091,6 +14090,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -14108,7 +14108,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14142,6 +14141,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -14159,7 +14159,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14193,6 +14192,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -14210,7 +14210,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14244,6 +14243,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -14263,7 +14263,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14298,6 +14297,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -14317,7 +14317,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14352,6 +14351,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -14371,7 +14371,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14406,6 +14405,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -14425,7 +14425,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14460,6 +14459,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -14479,7 +14479,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14514,6 +14513,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -14533,7 +14533,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14568,6 +14567,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -14587,7 +14587,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14622,6 +14621,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -14641,7 +14641,6 @@
           "2",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14676,6 +14675,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -14692,7 +14692,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14726,6 +14725,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -14742,7 +14742,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14776,6 +14775,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -14792,7 +14792,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14826,6 +14825,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -14842,7 +14842,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14876,6 +14875,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -14892,7 +14892,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14926,6 +14925,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -14942,7 +14942,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14976,6 +14975,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -14992,7 +14992,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15026,6 +15025,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -15042,7 +15042,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15076,6 +15075,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -15092,7 +15092,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15126,6 +15125,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -15142,7 +15142,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15176,6 +15175,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -15192,7 +15192,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_chrome_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15226,6 +15225,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -15243,7 +15243,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15278,6 +15277,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -15295,7 +15295,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15330,6 +15329,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -15347,7 +15347,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15382,6 +15381,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -15399,7 +15399,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15434,6 +15433,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -15451,7 +15451,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15486,6 +15485,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -15503,7 +15503,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15538,6 +15537,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -15555,7 +15555,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15590,6 +15589,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -15607,7 +15607,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15642,6 +15641,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -15658,7 +15658,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15692,6 +15691,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -15708,7 +15708,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15742,6 +15741,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -15758,7 +15758,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15792,6 +15791,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -15808,7 +15808,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_components_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15842,6 +15841,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -15858,7 +15858,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15893,6 +15892,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -15909,7 +15909,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15944,6 +15943,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -15960,7 +15960,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15995,6 +15994,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -16011,7 +16011,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16046,6 +16045,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -16062,7 +16062,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16096,6 +16095,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -16112,7 +16112,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16146,6 +16145,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -16162,7 +16162,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16196,6 +16195,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -16212,7 +16212,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_remoting_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16246,6 +16245,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -16263,7 +16263,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16297,6 +16296,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -16314,7 +16314,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16348,6 +16347,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -16365,7 +16365,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16399,6 +16398,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -16416,7 +16416,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16450,6 +16449,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -16467,7 +16467,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16501,6 +16500,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -16518,7 +16518,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16552,6 +16551,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -16569,7 +16569,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16603,6 +16602,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -16620,7 +16620,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_showcase_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16654,6 +16653,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_showcase_eg2tests_module",
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -16670,7 +16670,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_testing_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16704,6 +16703,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -16720,7 +16720,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_testing_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16754,6 +16753,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -16770,7 +16770,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_testing_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16804,6 +16803,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -16820,7 +16820,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_testing_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16854,6 +16853,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -16870,7 +16870,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16904,6 +16903,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -16920,7 +16920,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16954,6 +16953,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -16970,7 +16970,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17004,6 +17003,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -17020,7 +17020,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17054,6 +17053,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -17070,7 +17070,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17104,6 +17103,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -17120,7 +17120,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17154,6 +17153,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -17170,7 +17170,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17204,6 +17203,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -17220,7 +17220,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17254,6 +17253,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -17270,7 +17270,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17304,6 +17303,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -17320,7 +17320,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17354,6 +17353,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -17370,7 +17370,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17404,6 +17403,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -17421,7 +17421,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17455,6 +17454,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -17472,7 +17472,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17506,6 +17505,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -17523,7 +17523,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17557,6 +17556,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -17574,7 +17574,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17608,6 +17607,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -17625,7 +17625,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17659,6 +17658,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -17676,7 +17676,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17710,6 +17709,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -17727,7 +17727,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17761,6 +17760,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -17778,7 +17778,6 @@
           "--xctest",
           "--xcode-parallelization"
         ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17812,6 +17811,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -17828,7 +17828,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17862,6 +17861,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -17878,7 +17878,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17912,6 +17911,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -17928,7 +17928,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -17962,6 +17961,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -17978,7 +17978,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18012,6 +18011,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -18028,7 +18028,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18062,6 +18061,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -18078,7 +18078,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18112,6 +18111,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -18128,7 +18128,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18162,6 +18161,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -18178,7 +18178,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18212,6 +18211,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -18228,7 +18228,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18262,6 +18261,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -18278,7 +18278,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18312,6 +18311,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -18328,7 +18328,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18362,6 +18361,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -18378,7 +18378,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18412,6 +18411,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -18428,7 +18428,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18462,6 +18461,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -18478,7 +18478,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18512,6 +18511,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -18528,7 +18528,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18562,6 +18561,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -18578,7 +18578,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18612,6 +18611,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -18628,7 +18628,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18662,6 +18661,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -18678,7 +18678,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18712,6 +18711,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -18728,7 +18728,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18762,6 +18761,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -18778,7 +18778,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18812,6 +18811,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -18828,7 +18828,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18862,6 +18861,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -18878,7 +18878,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_inttests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18912,6 +18911,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -18928,7 +18928,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -18962,6 +18961,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -18978,7 +18978,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19012,6 +19011,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -19028,7 +19028,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19062,6 +19061,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -19078,7 +19078,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19112,6 +19111,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -19128,7 +19128,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19162,6 +19161,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -19178,7 +19178,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19212,6 +19211,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -19228,7 +19228,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19262,6 +19261,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -19278,7 +19278,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19312,6 +19311,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -19328,7 +19328,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19362,6 +19361,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -19378,7 +19378,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19412,6 +19411,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -19428,7 +19428,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ios_web_view_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19462,6 +19461,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -19478,7 +19478,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19512,6 +19511,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -19528,7 +19528,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19562,6 +19561,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -19578,7 +19578,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19612,6 +19611,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -19628,7 +19628,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "net_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19662,6 +19661,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -19678,7 +19678,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "services_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19712,6 +19711,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -19728,7 +19728,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "services_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19762,6 +19761,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -19778,7 +19778,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "services_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19812,6 +19811,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -19828,7 +19828,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "services_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19862,6 +19861,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -19878,7 +19878,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19912,6 +19911,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -19928,7 +19928,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19962,6 +19961,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -19978,7 +19978,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20012,6 +20011,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -20028,7 +20028,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20062,6 +20061,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -20078,7 +20078,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20112,6 +20111,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -20128,7 +20128,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20162,6 +20161,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -20178,7 +20178,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20212,6 +20211,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -20228,7 +20228,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20262,6 +20261,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -20278,7 +20278,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20312,6 +20311,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -20328,7 +20328,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20362,6 +20361,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -20378,7 +20378,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "skia_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20412,6 +20411,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -20428,7 +20428,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "sql_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20462,6 +20461,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -20478,7 +20478,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "sql_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20512,6 +20511,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -20528,7 +20528,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "sql_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20562,6 +20561,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -20578,7 +20578,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "sql_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20612,6 +20611,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       },
@@ -20628,7 +20628,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20662,6 +20661,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPad Air (5th generation) 16.4"
       },
@@ -20678,7 +20678,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20712,6 +20711,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPad Air (5th generation) 17.0"
       },
@@ -20728,7 +20728,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20762,6 +20761,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (5th generation) 15.5"
       },
@@ -20778,7 +20778,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20812,6 +20811,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 16.4"
       },
@@ -20828,7 +20828,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20862,6 +20861,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.0"
       },
@@ -20878,7 +20878,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20912,6 +20911,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone 13 15.5"
       },
@@ -20928,7 +20928,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20962,6 +20961,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -20978,7 +20978,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21012,6 +21011,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -21028,7 +21028,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21062,6 +21061,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone SE (3rd generation) 15.5"
       },
@@ -21078,7 +21078,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21112,6 +21111,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone SE (3rd generation) 16.4"
       },
@@ -21128,7 +21128,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "ui_base_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21162,6 +21161,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone SE (3rd generation) 17.0"
       },
@@ -21178,7 +21178,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "url_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21212,6 +21211,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone 14 16.4"
       },
@@ -21228,7 +21228,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "url_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21262,6 +21261,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
@@ -21278,7 +21278,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "url_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21312,6 +21311,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone 14 Plus 16.4"
       },
@@ -21328,7 +21328,6 @@
           "15a5229m",
           "--xctest"
         ],
-        "isolate_name": "url_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -21362,6 +21361,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone 14 Plus 17.0"
       }
@@ -24143,7 +24143,6 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "blink_python_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24158,6 +24157,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_python_tests",
         "test_id_prefix": "ninja://:blink_python_tests/"
       },
       {
@@ -24167,7 +24167,6 @@
           "--additional-driver-flag=--no-sandbox",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24188,6 +24187,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -24197,7 +24197,6 @@
           "--additional-driver-flag=--no-sandbox",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24218,13 +24217,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
         "args": [
           "--test-type=integration"
         ],
-        "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24239,10 +24238,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
       },
       {
-        "isolate_name": "chromedriver_replay_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24254,10 +24253,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "chromedriver_replay_unittests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_replay_unittests/"
       },
       {
-        "isolate_name": "content_shell_crash_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24273,10 +24272,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "content_shell_crash_test",
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
       },
       {
-        "isolate_name": "flatbuffers_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24292,10 +24291,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
       },
       {
-        "isolate_name": "fuchsia_pytype",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24311,10 +24310,10 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "fuchsia_pytype",
         "test_id_prefix": "ninja://testing:fuchsia_pytype/"
       },
       {
-        "isolate_name": "grit_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24329,6 +24328,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "grit_python_unittests",
         "test_id_prefix": "ninja://tools/grit:grit_python_unittests/"
       },
       {
@@ -24338,7 +24338,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24358,6 +24357,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -24367,7 +24367,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24388,10 +24387,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
-        "isolate_name": "mojo_python_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24406,6 +24405,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "mojo_python_unittests",
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
@@ -24416,7 +24416,6 @@
           "--additional-driver-flag=--no-sandbox",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24437,6 +24436,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
@@ -24445,7 +24445,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24466,10 +24465,10 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
+        "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
       },
       {
-        "isolate_name": "telemetry_gpu_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24485,6 +24484,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "telemetry_gpu_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_unittests/"
       },
       {
@@ -24492,7 +24492,6 @@
           "--extra-browser-args=--enable-crashpad",
           "--xvfb"
         ],
-        "isolate_name": "telemetry_perf_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24509,6 +24508,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
+        "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
       {
@@ -24516,7 +24516,6 @@
           "--jobs=1",
           "--extra-browser-args=--disable-gpu"
         ],
-        "isolate_name": "telemetry_unittests",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24533,13 +24532,13 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
+        "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
         "args": [
           "--gtest-benchmark-name=views_perftests"
         ],
-        "isolate_name": "views_perftests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24554,6 +24553,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "views_perftests",
         "test_id_prefix": "ninja://ui/views:views_perftests/"
       },
       {
@@ -24563,7 +24563,6 @@
           "--flag-specific=skia-vulkan-swiftshader",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
-        "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24583,13 +24582,13 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "blink_web_tests",
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
         "args": [
           "--test-type=wdspec"
         ],
-        "isolate_name": "chrome_wpt_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24609,6 +24608,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
+        "test": "chrome_wpt_tests",
         "test_id_prefix": "ninja://:chrome_wpt_tests/"
       },
       {
@@ -24618,7 +24618,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "isolate_name": "webgpu_blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -24638,6 +24637,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webgpu_blink_web_tests",
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
@@ -24652,7 +24652,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -24673,6 +24672,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 14
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ],
@@ -29116,7 +29116,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64"
         ],
-        "isolate_name": "webgpu_blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -29136,6 +29135,7 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "webgpu_blink_web_tests",
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
       },
       {
@@ -29150,7 +29150,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -29171,6 +29170,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 14
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]

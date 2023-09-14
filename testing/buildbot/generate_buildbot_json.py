@@ -78,9 +78,6 @@ class SkylabGPUTelemetryTestGenerator(GPUTelemetryTestGenerator):
     isolated_scripts = super(SkylabGPUTelemetryTestGenerator,
                              self).generate(*args, **kwargs)
     for test in isolated_scripts:
-      if 'isolate_name' in test:
-        test['test'] = test['isolate_name']
-        del test['isolate_name']
       # chromium_GPU is the Autotest wrapper created for browser GPU tests
       # run in Skylab.
       test['autotest_name'] = 'chromium_Graphics'
@@ -792,7 +789,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result = copy.deepcopy(test_config)
     # Use test_name here instead of test['name'] because test['name'] will be
     # modified with the variant identifier in a matrix compound suite
-    result['isolate_name'] = result.get('isolate_name', test_name)
+    result.setdefault('test', test_name)
     self.initialize_swarming_dictionary_for_test(result, tester_config)
     self.initialize_args_for_test(result, tester_config)
     if self.is_android(tester_config) and tester_config.get(
@@ -899,12 +896,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                                                 test_config)
     if not result:
       return None
-    result['isolate_name'] = test_config.get(
-        'isolate_name',
-        self.get_default_isolate_name(tester_config, is_android_webview))
+    result['test'] = test_config.get('test') or self.get_default_isolate_name(
+        tester_config, is_android_webview)
 
     # Populate test_id_prefix.
-    gn_entry = self.gn_isolate_map[result['isolate_name']]
+    gn_entry = self.gn_isolate_map[result['test']]
     result['test_id_prefix'] = 'ninja:%s/' % gn_entry['label']
 
     args = result.get('args', [])
@@ -1061,10 +1057,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       for key, test in suite.items():
         assert isinstance(test, dict)
 
-        # This assumes the recipe logic which prefers 'test' to 'isolate_name'
-        # https://source.chromium.org/chromium/chromium/tools/build/+/main:scripts/slave/recipe_modules/chromium_tests/generators.py;l=89;drc=14c062ba0eb418d3c4623dde41a753241b9df06b
-        # TODO(crbug.com/1035124): clean this up.
-        isolate_name = test.get('test') or test.get('isolate_name') or key
+        isolate_name = test.get('test') or key
         gn_entry = self.gn_isolate_map.get(isolate_name)
         if gn_entry:
           label = gn_entry['label']
@@ -1232,6 +1225,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def resolve_configuration_files(self):
     self.resolve_test_names()
+    self.resolve_isolate_names()
     self.resolve_dimension_sets()
     self.resolve_test_id_prefixes()
     self.resolve_composition_test_suites()
@@ -1250,6 +1244,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # When a test is expanded with variants, this will be overwritten, but
         # this ensures every test definition has the name field set
         test['name'] = test_name
+
+  def resolve_isolate_names(self):
+    for suite_name, suite in self.test_suites.get('basic_suites').items():
+      for test_name, test in suite.items():
+        if 'isolate_name' in test:
+          raise BBGenErr(
+              f'The isolate_name field is set in test {test_name} in basic '
+              f'suite {suite_name}, the test field should be used instead')
 
   def resolve_dimension_sets(self):
 
@@ -2018,14 +2020,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     for builder_group, builders in outputs.items():
       for builder, step_types in builders.items():
-        for step_data in step_types.get('gtest_tests', []):
-          step_name = step_data['name']
-          self._check_swarming_config(builder_group, builder, step_name,
-                                      step_data)
-        for step_data in step_types.get('isolated_scripts', []):
-          step_name = step_data['name']
-          self._check_swarming_config(builder_group, builder, step_name,
-                                      step_data)
+        for test_type in ('gtest_tests', 'isolated_scripts'):
+          for step_data in step_types.get(test_type, []):
+            step_name = step_data['name']
+            self._check_swarming_config(builder_group, builder, step_name,
+                                        step_data)
 
   def _check_swarming_config(self, filename, builder, step_name, step_data):
     # TODO(crbug.com/1203436): Ensure all swarming tests specify cpu, not

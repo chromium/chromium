@@ -159,7 +159,7 @@
         ],
       },
       'variations_smoke_tests': {
-        'isolate_name': 'variations_desktop_smoke_tests',
+        'test': 'variations_desktop_smoke_tests',
         'args': [
           '--target-platform=android',
         ],
@@ -415,7 +415,7 @@
     },
     'chrome_android_finch_smoke_tests': {
       'variations_android_smoke_tests': {
-        'isolate_name': 'variations_desktop_smoke_tests',
+        'test': 'variations_desktop_smoke_tests',
         'mixins': [
           'has_native_resultdb_integration'
         ],
@@ -424,7 +424,7 @@
         ],
       },
       'variations_webview_smoke_tests': {
-        'isolate_name': 'variations_desktop_smoke_tests',
+        'test': 'variations_desktop_smoke_tests',
         'args': [
           '--target-platform=webview',
         ],
@@ -435,7 +435,7 @@
     },
     'chrome_finch_smoke_tests': {
       'variations_desktop_smoke_tests': {
-        'isolate_name': 'variations_desktop_smoke_tests',
+        'test': 'variations_desktop_smoke_tests',
         'lacros_args': [
           '--target-platform=lacros',
         ],
@@ -458,7 +458,7 @@
         ],
       },
       'variations_smoke_tests': {
-        'isolate_name': 'variations_smoke_tests',
+        'test': 'variations_smoke_tests',
         'mixins': [
           'skia_gold_test',
         ],
@@ -1504,7 +1504,7 @@
           # retry 3 times, so we explicitly specify it.
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -1532,7 +1532,7 @@
           # retry 3 times, so we explicitly specify it.
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_wpt_tests',
+        'test': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -1558,7 +1558,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -1581,7 +1581,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_wpt_tests',
+        'test': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -1930,7 +1930,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -1953,7 +1953,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_wpt_tests',
+        'test': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -2057,7 +2057,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -2082,7 +2082,7 @@
           '--num-retries=3',
           'http/tests/devtools',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -2105,7 +2105,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_wpt_tests',
+        'test': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -2131,7 +2131,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -2154,7 +2154,7 @@
         'args': [
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_wpt_tests',
+        'test': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -2481,7 +2481,7 @@
           '--use-angle=gl-null',
           '--fast-run',
         ],
-        'isolate_name': 'command_buffer_perftests',
+        'test': 'command_buffer_perftests',
         'merge': {
           'script': '//tools/perf/process_perf_results.py',
           'args': [
@@ -2739,7 +2739,7 @@
 
     'gpu_dawn_webgpu_blink_web_tests': {
       'webgpu_blink_web_tests': {
-        'isolate_name': 'webgpu_blink_web_tests',
+        'test': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu',
         ],
@@ -2749,7 +2749,7 @@
         ],
       },
       'webgpu_blink_web_tests_with_backend_validation': {
-        'isolate_name': 'webgpu_blink_web_tests',
+        'test': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu-with-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
@@ -2764,7 +2764,7 @@
 
     'gpu_dawn_webgpu_blink_web_tests_force_swiftshader': {
       'webgpu_swiftshader_blink_web_tests': {
-        'isolate_name': 'webgpu_blink_web_tests',
+        'test': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu-swiftshader',
         ],
@@ -2774,7 +2774,7 @@
         ],
       },
       'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
-        'isolate_name': 'webgpu_blink_web_tests',
+        'test': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu-swiftshader-with-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
@@ -4370,7 +4370,7 @@
           '--browser=release',
           '--xvfb'
         ],
-        'isolate_name': 'performance_test_suite',
+        'test': 'performance_test_suite',
         'override_compile_targets': [
           'performance_test_suite',
         ],
@@ -4567,7 +4567,7 @@
           # retry 3 times, so we explicitly specify it.
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -4596,7 +4596,7 @@
           # retry 3 times, so we explicitly specify it.
           '--num-retries=3',
         ],
-        'isolate_name': 'blink_wpt_tests',
+        'test': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -4616,7 +4616,7 @@
         'args': [
           '--test-type=wdspec',
         ],
-        'isolate_name': 'chrome_wpt_tests',
+        'test': 'chrome_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -4652,7 +4652,6 @@
           '--test-launcher-timeout=100000',
           '--isolated-script-test-launcher-retry-limit=5',
         ],
-        'isolate_name': 'browser_tests',
         'override_compile_targets': [
           'browser_tests',
         ],
@@ -4708,7 +4707,6 @@
 
     'model_validation_tests': {
       'model_validation_tests': {
-        'isolate_name': 'model_validation_tests',
         'resultdb': {
           'enable': True,
           'result_format': 'single'
@@ -5312,7 +5310,7 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'isolate_name': 'telemetry_perf_unittests_android_chrome',
+        'test': 'telemetry_perf_unittests_android_chrome',
         'resultdb': {
           'enable': True,
         },
@@ -5325,7 +5323,7 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'isolate_name': 'telemetry_perf_unittests_android_monochrome',
+        'test': 'telemetry_perf_unittests_android_monochrome',
         'resultdb': {
           'enable': True,
         },
@@ -5341,7 +5339,7 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'isolate_name': 'telemetry_perf_unittests',
+        'test': 'telemetry_perf_unittests',
         'resultdb': {
           'enable': True,
         },
@@ -5366,7 +5364,7 @@
 
     'telemetry_perf_unittests_isolated_scripts_android': {
       'telemetry_perf_unittests': {
-        'isolate_name': 'telemetry_perf_unittests_android_chrome',
+        'test': 'telemetry_perf_unittests_android_chrome',
         'args': [
           # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
           '--extra-browser-args=--enable-crashpad',
@@ -5463,7 +5461,7 @@
 
     'variations_smoke_tests': {
       'variations_smoke_tests': {
-        'isolate_name': 'variations_smoke_tests',
+        'test': 'variations_smoke_tests',
         'mixins': [
           'skia_gold_test',
         ],
@@ -5509,7 +5507,7 @@
           '--skipped=always',
           '--flag-specific=skia-vulkan-swiftshader',
         ],
-        'isolate_name': 'blink_web_tests',
+        'test': 'blink_web_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -5634,7 +5632,7 @@
           'external/wpt/webrtc-stats',
           'external/wpt/webrtc-svc',
         ],
-        'isolate_name': 'blink_wpt_tests',
+        'test': 'blink_wpt_tests',
         'merge': {
           'args': [
             '--verbose',
@@ -5839,7 +5837,7 @@
           '--output-format=histograms',
           '--browser=release_x64',
         ],
-        'isolate_name': 'vr_perf_tests',
+        'test': 'vr_perf_tests',
         'merge': {
           'script': '//tools/perf/process_perf_results.py',
         },
@@ -5859,7 +5857,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'chrome_ios_wpt',
+        'test': 'chrome_ios_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5878,7 +5876,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'chrome_wpt_tests',
+        'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5921,7 +5919,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'content_shell_wpt',
+        'test': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5940,7 +5938,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'content_shell_wpt',
+        'test': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5961,7 +5959,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'content_shell_wpt',
+        'test': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 3,
@@ -5981,7 +5979,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'chrome_wpt_tests',
+        'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 1,
@@ -6005,7 +6003,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'chrome_wpt_tests',
+        'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 1,
@@ -6027,7 +6025,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'content_shell_wpt',
+        'test': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 10,
