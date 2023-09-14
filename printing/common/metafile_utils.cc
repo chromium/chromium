@@ -64,16 +64,15 @@ SkString GetHeadingStructureType(int heading_level) {
 SkPDF::DateTime TimeToSkTime(base::Time time) {
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
-  SkPDF::DateTime skdate;
-  skdate.fTimeZoneMinutes = 0;
-  skdate.fYear = exploded.year;
-  skdate.fMonth = exploded.month;
-  skdate.fDayOfWeek = exploded.day_of_week;
-  skdate.fDay = exploded.day_of_month;
-  skdate.fHour = exploded.hour;
-  skdate.fMinute = exploded.minute;
-  skdate.fSecond = exploded.second;
-  return skdate;
+  return SkPDF::DateTime{
+      .fTimeZoneMinutes = 0,
+      .fYear = static_cast<uint16_t>(exploded.year),
+      .fMonth = static_cast<uint8_t>(exploded.month),
+      .fDayOfWeek = static_cast<uint8_t>(exploded.day_of_week),
+      .fDay = static_cast<uint8_t>(exploded.day_of_month),
+      .fHour = static_cast<uint8_t>(exploded.hour),
+      .fMinute = static_cast<uint8_t>(exploded.minute),
+      .fSecond = static_cast<uint8_t>(exploded.second)};
 }
 
 sk_sp<SkPicture> GetEmptyPicture() {
