@@ -105,13 +105,22 @@ void CalculatorProvider::AddMatchToCache(AutocompleteMatch match) {
   match.RecordAdditionalInfo("original relevance", match.relevance);
   match.RecordAdditionalInfo("input", input_);
 
+  // As the user types out an input, e.g. '1+22+33', replace the intermediate
+  // matches to avoid showing all of: '1+2=3', '1+22=23', '1+22+3=26', &
+  // '1+22+33=56'.
   if (!cache_.empty() && grew_input_) {
-    // As the user types out an input, e.g. '1+22+33', replace the intermediate
-    // matches to avoid showing all of: '1+2=3', '1+22=23', '1+22+3=26', &
-    // '1+22+33=56'.
     cache_.pop_back();
-  } else if (cache_.size() >
-             omnibox_feature_configs::CalcProvider::Get().max_matches) {
+  }
+
+  // Remove duplicates to avoid a repeated match reducing cache capacity.
+  auto duplicate = base::ranges::find_if(
+      cache_, [&](const auto& cached) { return cached == match.contents; },
+      &AutocompleteMatch::contents);
+  if (duplicate != cache_.end())
+    cache_.erase(duplicate);
+
+  if (cache_.size() >
+      omnibox_feature_configs::CalcProvider::Get().max_matches) {
     cache_.erase(cache_.begin());
   }
 
