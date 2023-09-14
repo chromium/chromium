@@ -139,21 +139,34 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
     config_parse_errors.Append(parse_error);
   }
 
-  base::Value::List& configs_enabled =
-      *preinstalled_web_app_configs.EnsureList("ConfigsEnabled");
-  for (const web_app::ExternalInstallOptions& enabled_config :
-       debug_info->enabled_configs) {
-    configs_enabled.Append(enabled_config.AsDebugValue());
+  base::Value::List& uninstall_configs =
+      *preinstalled_web_app_configs.EnsureList("UninstallConfigs");
+  for (const std::pair<web_app::ExternalInstallOptions, std::string>&
+           uninstall_config : debug_info->uninstall_configs) {
+    base::Value::Dict entry;
+    entry.Set("!Reason", uninstall_config.second);
+    entry.Set("Config", uninstall_config.first.AsDebugValue());
+    uninstall_configs.Append(std::move(entry));
   }
 
-  base::Value::List& configs_disabled =
-      *preinstalled_web_app_configs.EnsureList("ConfigsDisabled");
+  base::Value::List& install_configs =
+      *preinstalled_web_app_configs.EnsureList("InstallConfigs");
   for (const std::pair<web_app::ExternalInstallOptions, std::string>&
-           disabled_config : debug_info->disabled_configs) {
+           install_config : debug_info->install_configs) {
     base::Value::Dict entry;
-    entry.Set("!Reason", disabled_config.second);
-    entry.Set("Config", disabled_config.first.AsDebugValue());
-    configs_disabled.Append(std::move(entry));
+    entry.Set("!Reason", install_config.second);
+    entry.Set("Config", install_config.first.AsDebugValue());
+    install_configs.Append(std::move(entry));
+  }
+
+  base::Value::List& ignore_configs =
+      *preinstalled_web_app_configs.EnsureList("IgnoreConfigs");
+  for (const std::pair<web_app::ExternalInstallOptions, std::string>&
+           ignore_config : debug_info->ignore_configs) {
+    base::Value::Dict entry;
+    entry.Set("!Reason", ignore_config.second);
+    entry.Set("Config", ignore_config.first.AsDebugValue());
+    ignore_configs.Append(std::move(entry));
   }
 
   base::Value::List& install_results =

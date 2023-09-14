@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -196,18 +197,15 @@ class PreinstalledWebAppManagerBrowserTestBase
     return embedded_test_server()->GetURL("/web_apps/basic.html");
   }
 
-  const WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
+  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
+
+  WebAppIconManager& icon_manager() { return provider().icon_manager(); }
+
+  PreinstalledWebAppManager& manager() {
+    return provider().preinstalled_web_app_manager();
   }
 
-  WebAppIconManager& icon_manager() {
-    return WebAppProvider::GetForTest(browser()->profile())->icon_manager();
-  }
-
-  const PreinstalledWebAppManager& manager() {
-    return WebAppProvider::GetForTest(profile())
-        ->preinstalled_web_app_manager();
-  }
+  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
   void SyncEmptyConfigs() {
     base::Value::List app_configs;
@@ -712,16 +710,13 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   }
 }
 
-// Preinstalled apps which are user uninstalled are not included
-// in the config passed to the ExternallyManagedAppInstallManager.
+// Preinstalled apps which are user uninstalled become ignored configs.
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        DisableForPreinstalledAppsInConfig) {
   base::AutoReset<bool> bypass_offline_manifest_requirement =
       PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
-  base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
-
-  const auto manifest = base::ReplaceStringPlaceholders(
+  const std::string config = base::ReplaceStringPlaceholders(
       R"({
         "app_url": "$1",
         "launch_container": "window",
@@ -729,33 +724,54 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       })",
       {GetAppUrl().spec()}, nullptr);
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
-  UserUninstalledPreinstalledWebAppPrefs prefs(profile()->GetPrefs());
-  prefs.Add(app_id, {GetAppUrl()});
 
-  // Verify prefs have the proper data.
-  EXPECT_EQ(1, prefs.Size());
-  EXPECT_EQ(app_id, prefs.LookUpAppIdByInstallUrl(GetAppUrl()));
+  // Preinstall web app.
+  {
+    base::HistogramTester tester;
+    EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), config),
+              webapps::InstallResultCode::kSuccessNewInstall);
+    EXPECT_TRUE(registrar().IsInstalled(app_id));
+    tester.ExpectUniqueSample("WebApp.Preinstalled.DisabledReason",
+                              /*kNotDisabled*/ 0, 1);
+  }
 
-  const auto& disabled_configs = manager().debug_info()->disabled_configs;
-  constexpr char kErrorMessage[] =
-      " is not being installed because it was previously uninstalled "
-      "by user.";
+  // Mark web app as user uninstalled without uninstalling it.
+  // This is an erroneous state that users have gotten into in the past via
+  // database migration bugs, see crbug.com/1393284 and crbug.com/1363004 for
+  // past incidents.
+  {
+    UserUninstalledPreinstalledWebAppPrefs prefs(profile()->GetPrefs());
+    prefs.Add(app_id, {GetAppUrl()});
+    ASSERT_EQ(app_id, prefs.LookUpAppIdByInstallUrl(GetAppUrl()));
+  }
 
-  // On sync across configs, app is not installed, and the disabled configs are
-  // filled with the proper logic.
-  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 1u);
-  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+  // Check web app does not get uninstalled by PWAM sync.
+  {
+    base::HistogramTester tester;
+    EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), config),
+              webapps::InstallResultCode::kSuccessAlreadyInstalled);
+    EXPECT_TRUE(registrar().IsInstalled(app_id));
+    tester.ExpectUniqueSample("WebApp.Preinstalled.DisabledReason",
+                              /*kIgnorePreviouslyUninstalledByUser*/ 17, 1);
+  }
 
-  // Verify that only the kPreinstalledAppUninstalledByUserNoOverride enum is
-  // filled, which is sample 15. Check enum DisabledReason in
-  // preinstalled_web_app_manager.cc for more information.
-  tester.ExpectBucketCount("WebApp.Preinstalled.DisabledReason",
-                           /*kPreinstalledAppUninstalledByUserNoOverride=*/15,
-                           /*expected_count=*/1);
-  tester.ExpectTotalCount("WebApp.Preinstalled.DisabledReason",
-                          /*expected_count=*/1);
+  // Actually uninstall web app.
+  {
+    base::test::TestFuture<webapps::UninstallResultCode> future;
+    provider().scheduler().UninstallWebApp(
+        app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+    ASSERT_EQ(future.Get(), webapps::UninstallResultCode::kSuccess);
+    ASSERT_FALSE(registrar().IsInstalled(app_id));
+  }
+
+  // Check web app does not get installed by PWAM sync.
+  {
+    base::HistogramTester tester;
+    EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), config), absl::nullopt);
+    EXPECT_FALSE(registrar().IsInstalled(app_id));
+    tester.ExpectUniqueSample("WebApp.Preinstalled.DisabledReason",
+                              /*kIgnorePreviouslyUninstalledByUser*/ 17, 1);
+  }
 }
 
 // Preinstalled apps which are user uninstalled are included
@@ -778,6 +794,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       })",
       {GetAppUrl().spec()}, nullptr);
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  ASSERT_FALSE(registrar().IsInstalled(app_id));
   UserUninstalledPreinstalledWebAppPrefs prefs(profile()->GetPrefs());
   prefs.Add(app_id, {GetAppUrl()});
 
@@ -787,11 +804,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   // On sync across configs, app is installed because
   // |override_previous_user_uninstall| is true.
-  const auto& disabled_configs = manager().debug_info()->disabled_configs;
+  const auto& ignore_configs = manager().debug_info()->ignore_configs;
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 0u);
+  EXPECT_EQ(ignore_configs.size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
@@ -1160,15 +1177,15 @@ IN_PROC_BROWSER_TEST_F(
       })",
       {GetAppUrl().spec()}, nullptr);
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
-  const auto& disabled_configs = manager().debug_info()->disabled_configs;
+  const auto& ignore_configs = manager().debug_info()->ignore_configs;
   constexpr char kErrorMessage[] =
-      " disabled because the device does not have a built-in touchscreen with "
+      " ignore because the device does not have a built-in touchscreen with "
       "stylus support.";
 
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest), absl::nullopt);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_EQ(disabled_configs.size(), 1u);
-  EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+  EXPECT_EQ(ignore_configs.size(), 1u);
+  EXPECT_EQ(ignore_configs.back().second, GetAppUrl().spec() + kErrorMessage);
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -86946,22 +86946,23 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 
 <enum name="PreinstalledAppDisabledReason">
   <int value="0" label="kNotDisabled"/>
-  <int value="1" label="kPreinstalledAppsDisabled"/>
-  <int value="2" label="kUserTypeNotAllowed"/>
-  <int value="3" label="kGatedFeatureNotEnabled"/>
-  <int value="4" label="kGatedFeatureNotEnabledAndAppNotInstalled"/>
-  <int value="5" label="kArcAvailable"/>
-  <int value="6" label="kTabletFormFactor"/>
-  <int value="7" label="kNotNewUserAndNotPreviouslyInstalled"/>
-  <int value="8" label="kNotPreviouslyPreinstalled"/>
-  <int value="9" label="kReplacingAppBlockedByPolicy"/>
-  <int value="10" label="kReplacingAppForceInstalled"/>
-  <int value="11" label="kReplacingAppStillInstalled"/>
-  <int value="12" label="kDefaultAppAndAppsToReplaceUninstalled"/>
-  <int value="13" label="kReplacingAppUninstalledByUser"/>
-  <int value="14" label="kStylusRequired"/>
-  <int value="15" label="kPreinstalledAppUninstalledByUserNoOverride"/>
-  <int value="16" label="kStylusRequiredNoDeviceData"/>
+  <int value="1" label="kUninstallPreinstalledAppsNotEnabled"/>
+  <int value="2" label="kUninstallUserTypeNotAllowed"/>
+  <int value="3" label="kUninstallGatedFeatureNotEnabled"/>
+  <int value="4" label="kIgnoreGatedFeatureNotEnabled"/>
+  <int value="5" label="kIgnoreArcAvailable"/>
+  <int value="6" label="kIgnoreTabletFormFactor"/>
+  <int value="7" label="kIgnoreNotNewUser"/>
+  <int value="8" label="kIgnoreNotPreviouslyPreinstalled"/>
+  <int value="9" label="kUninstallReplacingAppBlockedByPolicy"/>
+  <int value="10" label="kUninstallReplacingAppForceInstalled"/>
+  <int value="11" label="kInstallReplacingAppStillInstalled"/>
+  <int value="12" label="kUninstallDefaultAppAndAppsToReplaceUninstalled"/>
+  <int value="13" label="kIgnoreReplacingAppUninstalledByUser"/>
+  <int value="14" label="kIgnoreStylusRequired"/>
+  <int value="15" label="kInstallOverridePreviousUserUninstall"/>
+  <int value="16" label="kIgnoreStylusRequiredNoDeviceData"/>
+  <int value="17" label="kIgnorePreviouslyUninstalledByUser"/>
 </enum>
 
 <enum name="PreloadBookmarkMetricsEvent">

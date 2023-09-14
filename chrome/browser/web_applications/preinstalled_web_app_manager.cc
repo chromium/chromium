@@ -103,23 +103,24 @@ const char kHistogramMigrationDisabledReason[] =
 // These values are reported to UMA, do not modify them.
 enum class DisabledReason {
   kNotDisabled = 0,
-  kPreinstalledAppsNotEnabled = 1,
-  kUserTypeNotAllowed = 2,
-  kGatedFeatureNotEnabled = 3,
-  kGatedFeatureNotEnabledAndAppNotInstalled = 4,
-  kArcAvailable = 5,
-  kTabletFormFactor = 6,
-  kNotNewUserAndNotPreviouslyInstalled = 7,
-  kNotPreviouslyPreinstalled = 8,
-  kReplacingAppBlockedByPolicy = 9,
-  kReplacingAppForceInstalled = 10,
-  kReplacingAppStillInstalled = 11,
-  kDefaultAppAndAppsToReplaceUninstalled = 12,
-  kReplacingAppUninstalledByUser = 13,
-  kStylusRequired = 14,
-  kPreinstalledAppUninstalledByUserNoOverride = 15,
-  kStylusRequiredNoDeviceData = 16,
-  kMaxValue = kStylusRequiredNoDeviceData
+  kUninstallPreinstalledAppsNotEnabled = 1,
+  kUninstallUserTypeNotAllowed = 2,
+  kUninstallGatedFeatureNotEnabled = 3,
+  kIgnoreGatedFeatureNotEnabled = 4,
+  kIgnoreArcAvailable = 5,
+  kIgnoreTabletFormFactor = 6,
+  kIgnoreNotNewUser = 7,
+  kIgnoreNotPreviouslyPreinstalled = 8,
+  kUninstallReplacingAppBlockedByPolicy = 9,
+  kUninstallReplacingAppForceInstalled = 10,
+  kInstallReplacingAppStillInstalled = 11,
+  kUninstallDefaultAppAndAppsToReplaceUninstalled = 12,
+  kIgnoreReplacingAppUninstalledByUser = 13,
+  kIgnoreStylusRequired = 14,
+  kInstallOverridePreviousUserUninstall = 15,
+  kIgnoreStylusRequiredNoDeviceData = 16,
+  kIgnorePreviouslyUninstalledByUser = 17,
+  kMaxValue = kIgnorePreviouslyUninstalledByUser
 };
 
 struct LoadedConfig {
@@ -230,184 +231,96 @@ ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
   return result;
 }
 
-struct InstallDecision {
+struct SynchronizeDecision {
   enum {
-    kInstall,
+    // Ensures the web app preinstall gets removed.
     kUninstall,
+
+    // Ensures the web app gets preinstalled.
+    kInstall,
+
+    // Leaves the web app preinstall state alone.
+    // Prefer kIgnore over kUninstall in most cases of disabling a config as
+    // uninstalling can have permanent consequences for users when bugs are hit.
+    // See crbug.com/1393284 and crbug.com/1363004 for past incidents.
+    kIgnore,
   } type;
-  // TODO(crbug.com/1409355): Rename DisabledReason to InstallDecisionReason
+  // TODO(crbug.com/1409355): Rename DisabledReason to SynchronizeDecisionReason
   // since it applies to every install decision.
   DisabledReason reason;
-  absl::optional<std::string> log;
+  std::string log;
 };
 
-InstallDecision GetInstallDecision(const ExternalInstallOptions& options,
-                                   Profile* profile,
-                                   WebAppRegistrar* registrar,
-                                   bool preinstalled_apps_enabled_in_prefs,
-                                   bool is_new_user,
-                                   const std::string& user_type,
-                                   size_t& corrupt_user_uninstall_prefs_count) {
+SynchronizeDecision GetSynchronizeDecision(
+    const ExternalInstallOptions& options,
+    Profile* profile,
+    WebAppRegistrar* registrar,
+    bool preinstalled_apps_enabled_in_prefs,
+    bool is_new_user,
+    const std::string& user_type,
+    size_t& corrupt_user_uninstall_prefs_count) {
   DCHECK(registrar);
 
-  // In certain crash-related scenarios the web app DB loads incorrectly and
-  // all preinstalled web apps get added to
-  // UserUninstalledPreinstalledWebAppPrefs (https://crbug.com/1359205).
-  // Ignore this pref if the app is still installed by kDefault to avoid
-  // erroneously uninstalling it in SynchronizeInstalledApps() with the false
-  // impression that the user has already uninstalled it.
-  bool in_user_uninstalled_prefs =
-      UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
-          .LookUpAppIdByInstallUrl(options.install_url)
-          .has_value();
-  bool ignore_user_uninstalled_prefs = [&]() {
-    // TODO(crbug.com/1363027): Use LookUpAppByInstallSourceInstallUrl() instead
-    // of LookupExternalAppId() throughout this file.
-    absl::optional<AppId> app_id =
-        registrar->LookupExternalAppId(options.install_url);
-    return app_id.has_value() &&
-           registrar->IsInstalledByDefaultManagement(app_id.value());
-  }();
-  if (in_user_uninstalled_prefs && ignore_user_uninstalled_prefs) {
-    ++corrupt_user_uninstall_prefs_count;
-  }
-  bool was_previously_uninstalled_by_user =
-      in_user_uninstalled_prefs && !ignore_user_uninstalled_prefs;
+  // This function encodes the exceptions to the standard preinstalled web app
+  // configs; situations in which the preinstall should be removed, added or be
+  // left untouched.
+  //
+  // The priority of these decisions is ordered:
+  // kUninstall > kInstall > kIgnore > kInstall (default).
+
+  /////////////////////////
+  // kUninstall conditions.
+  /////////////////////////
 
   if (!preinstalled_apps_enabled_in_prefs) {
     return {
-        .type = InstallDecision::kUninstall,
-        .reason = DisabledReason::kPreinstalledAppsNotEnabled,
+        .type = SynchronizeDecision::kUninstall,
+        .reason = DisabledReason::kUninstallPreinstalledAppsNotEnabled,
         .log = base::StrCat({options.install_url.spec(),
-                             " disabled by preinstalled_apps pref setting."})};
+                             " uninstall by preinstalled_apps pref setting."})};
   }
 
   // Remove if not applicable to current user type.
   DCHECK_GT(options.user_type_allowlist.size(), 0u);
   if (!base::Contains(options.user_type_allowlist, user_type)) {
-    return {.type = InstallDecision::kUninstall,
-            .reason = DisabledReason::kUserTypeNotAllowed,
+    return {.type = SynchronizeDecision::kUninstall,
+            .reason = DisabledReason::kUninstallUserTypeNotAllowed,
             .log = base::StrCat({options.install_url.spec(),
-                                 " disabled for user type: ", user_type})};
+                                 " uninstall for user type: ", user_type})};
   }
 
   // Remove if gated on a disabled feature.
   if (options.gate_on_feature && !IsPreinstalledAppInstallFeatureEnabled(
                                      *options.gate_on_feature, *profile)) {
-    return {.type = InstallDecision::kUninstall,
-            .reason = DisabledReason::kGatedFeatureNotEnabled,
+    return {.type = SynchronizeDecision::kUninstall,
+            .reason = DisabledReason::kUninstallGatedFeatureNotEnabled,
             .log = base::StrCat({options.install_url.spec(),
-                                 " disabled because feature is disabled: ",
+                                 " uninstall because feature is disabled: ",
                                  *options.gate_on_feature})};
-  }
-
-  // Remove if gated on a disabled feature, and the app hasn't been preinstalled
-  // before.
-  if (options.gate_on_feature_or_installed &&
-      !IsPreinstalledAppInstallFeatureEnabled(
-          *options.gate_on_feature_or_installed, *profile)) {
-    // Check if the app is currently installed as a preinstalled app or whether
-    // it was previously preinstalled, but no longer installed.
-    absl::optional<AppId> app_id_from_registry =
-        registrar->LookupExternalAppId(options.install_url);
-    if (!app_id_from_registry.has_value() &&
-        !was_previously_uninstalled_by_user) {
-      return {
-          .type = InstallDecision::kUninstall,
-          .reason = DisabledReason::kGatedFeatureNotEnabledAndAppNotInstalled,
-          .log = base::StrCat(
-              {options.install_url.spec(), " disabled because the feature ",
-               *options.gate_on_feature_or_installed,
-               " is disabled and the app is not already installed"})};
-    }
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Remove if ARC is supported and app should be disabled.
-  if (options.disable_if_arc_supported && IsArcAvailable()) {
-    return {.type = InstallDecision::kUninstall,
-            .reason = DisabledReason::kArcAvailable,
-            .log = base::StrCat({options.install_url.spec(),
-                                 " disabled because ARC is available."})};
-  }
-
-  // Remove if device is tablet and app should be disabled.
-  if (options.disable_if_tablet_form_factor && IsTabletFormFactor()) {
-    return {.type = InstallDecision::kUninstall,
-            .reason = DisabledReason::kTabletFormFactor,
-            .log = base::StrCat({options.install_url.spec(),
-                                 " disabled because device is tablet."})};
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Remove if only for new users, user isn't new and app was not
-  // installed previously.
-  if (options.only_for_new_users && !is_new_user) {
-    bool was_previously_installed =
-        was_previously_uninstalled_by_user ||
-        registrar->LookupExternalAppId(options.install_url).has_value();
-    if (!was_previously_installed) {
-      return {
-          .type = InstallDecision::kUninstall,
-          .reason = DisabledReason::kNotNewUserAndNotPreviouslyInstalled,
-          .log = base::StrCat(
-              {options.install_url.spec(),
-               " disabled because user was not new when config was added."})};
-    }
-  }
-
-  // Remove if was not previously preinstalled.
-  if (options.only_if_previously_preinstalled) {
-    absl::optional<AppId> app_id =
-        registrar->LookupExternalAppId(options.install_url);
-
-    bool was_previously_preinstalled = false;
-    if (app_id.has_value()) {
-      const WebApp* web_app = registrar->GetAppById(app_id.value());
-      if (web_app && web_app->IsPreinstalledApp()) {
-        was_previously_preinstalled = true;
-      }
-    }
-
-    if (!was_previously_preinstalled) {
-      return {.type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kNotPreviouslyPreinstalled,
-              .log = base::StrCat(
-                  {options.install_url.spec(),
-                   " disabled because was not previously preinstalled."})};
-    }
   }
 
   // Remove if any apps to replace are blocked or force installed by admin
   // policy.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExtensionBlockedByPolicy(profile, app_id)) {
-      return {.type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kReplacingAppBlockedByPolicy,
+      return {.type = SynchronizeDecision::kUninstall,
+              .reason = DisabledReason::kUninstallReplacingAppBlockedByPolicy,
               .log = base::StrCat({options.install_url.spec(),
-                                   " disabled due to admin policy blocking "
+                                   " uninstall due to admin policy blocking "
                                    "replacement Extension."})};
     }
     std::u16string reason;
     if (extensions::IsExtensionForceInstalled(profile, app_id, &reason)) {
-      return {.type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kReplacingAppForceInstalled,
-              .log = base::StrCat(
-                  {options.install_url.spec(),
-                   " disabled due to admin policy force installing replacement "
-                   "Extension: ",
-                   base::UTF16ToUTF8(reason)})};
+      return {
+          .type = SynchronizeDecision::kUninstall,
+          .reason = DisabledReason::kUninstallReplacingAppForceInstalled,
+          .log = base::StrCat(
+              {options.install_url.spec(),
+               " uninstall due to admin policy force installing replacement "
+               "Extension: ",
+               base::UTF16ToUTF8(reason)})};
     }
   }
-
-  // Keep if any apps to replace are installed.
-  for (const AppId& app_id : options.uninstall_and_replace) {
-    if (extensions::IsExtensionInstalled(profile, app_id)) {
-      return {.type = InstallDecision::kInstall,
-              .reason = DisabledReason::kReplacingAppStillInstalled};
-    }
-  }
-
 #if !BUILDFLAG(IS_CHROMEOS)
   // Remove if it's a default app and the apps to replace are not installed and
   // default extension apps are not performing new installation.
@@ -420,40 +333,127 @@ InstallDecision GetInstallDecision(const ExternalInstallOptions& options,
       if (!WasMigrationRun(profile, *options.gate_on_feature)) {
         if (extensions::IsPreinstalledAppId(app_id)) {
           MarkPreinstalledAppAsUninstalled(profile, app_id);
-          return {
-              .type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kDefaultAppAndAppsToReplaceUninstalled,
-              .log = base::StrCat(
-                  {options.install_url.spec(),
-                   "disabled because its default app and apps to replace ",
-                   "were uninstalled."})};
+          return {.type = SynchronizeDecision::kUninstall,
+                  .reason = DisabledReason::
+                      kUninstallDefaultAppAndAppsToReplaceUninstalled,
+                  .log = base::StrCat(
+                      {options.install_url.spec(),
+                       "uninstall because its default app and apps to replace ",
+                       "were uninstalled."})};
         }
       } else {
         // Not first time migration, can't determine if the app to replace is
         // uninstalled by user as the migration is already run, use the pref
         // saved in first migration.
         if (WasPreinstalledAppUninstalled(profile, app_id)) {
-          return {
-              .type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kDefaultAppAndAppsToReplaceUninstalled,
-              .log = base::StrCat(
-                  {options.install_url.spec(),
-                   "disabled because its default app and apps to replace "
-                   "were uninstalled."})};
+          return {.type = SynchronizeDecision::kUninstall,
+                  .reason = DisabledReason::
+                      kUninstallDefaultAppAndAppsToReplaceUninstalled,
+                  .log = base::StrCat(
+                      {options.install_url.spec(),
+                       "uninstall because its default app and apps to replace "
+                       "were uninstalled."})};
         }
       }
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // Remove if any apps to replace were previously uninstalled.
+  ///////////////////////
+  // kInstall conditions.
+  ///////////////////////
+
+  bool was_previously_uninstalled_by_user =
+      UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+          .LookUpAppIdByInstallUrl(options.install_url)
+          .has_value();
+  if (options.override_previous_user_uninstall &&
+      was_previously_uninstalled_by_user) {
+    return {
+        .type = SynchronizeDecision::kInstall,
+        .reason = DisabledReason::kInstallOverridePreviousUserUninstall,
+        .log = base::StrCat({options.install_url.spec(),
+                             " install overrides previous user uninstall."})};
+  }
+
+  // Ensure install if any apps to replace are installed as installation
+  // includes uninstall_and_replace-ing the specified apps.
+  for (const AppId& app_id : options.uninstall_and_replace) {
+    if (extensions::IsExtensionInstalled(profile, app_id)) {
+      return {
+          .type = SynchronizeDecision::kInstall,
+          .reason = DisabledReason::kInstallReplacingAppStillInstalled,
+          .log = base::StrCat({options.install_url.spec(),
+                               " install to replace existing Chrome app."})};
+    }
+  }
+
+  //////////////////////
+  // kIgnore conditions.
+  //////////////////////
+
+  if (was_previously_uninstalled_by_user) {
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnorePreviouslyUninstalledByUser,
+            .log = base::StrCat(
+                {options.install_url.spec(),
+                 " ignore because previously uninstalled by user"})};
+  }
+
+  // This option means to ignore if the feature flag is not enabled and leave
+  // any existing installations alone.
+  if (options.gate_on_feature_or_installed &&
+      !IsPreinstalledAppInstallFeatureEnabled(
+          *options.gate_on_feature_or_installed, *profile)) {
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnoreGatedFeatureNotEnabled,
+            .log = base::StrCat(
+                {options.install_url.spec(), " ignore because the feature ",
+                 *options.gate_on_feature_or_installed, " is disabled"})};
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (options.disable_if_arc_supported && IsArcAvailable()) {
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnoreArcAvailable,
+            .log = base::StrCat({options.install_url.spec(),
+                                 " ignore because ARC is available."})};
+  }
+
+  if (options.disable_if_tablet_form_factor && IsTabletFormFactor()) {
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnoreTabletFormFactor,
+            .log = base::StrCat({options.install_url.spec(),
+                                 " ignore because device is tablet."})};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (options.only_for_new_users && !is_new_user) {
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnoreNotNewUser,
+            .log = base::StrCat({options.install_url.spec(),
+                                 " ignore because user is not new."})};
+  }
+
+  // This option means to ignore installations of the config, it came from a
+  // time before SynchronizeDecision::kIgnore was added and so is worded
+  // differently.
+  if (options.only_if_previously_preinstalled) {
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnoreNotPreviouslyPreinstalled,
+            .log = base::StrCat(
+                {options.install_url.spec(),
+                 " ignore by config (only_if_previously_preinstalled)."})};
+  }
+
+  // Ignore if any apps to replace were previously uninstalled.
   for (const AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExternalExtensionUninstalled(profile, app_id)) {
-      return {.type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kReplacingAppUninstalledByUser,
+      return {.type = SynchronizeDecision::kIgnore,
+              .reason = DisabledReason::kIgnoreReplacingAppUninstalledByUser,
               .log = base::StrCat(
                   {options.install_url.spec(),
-                   " disabled because apps to replace were uninstalled."})};
+                   " ignore because apps to replace were uninstalled."})};
     }
   }
 
@@ -462,40 +462,32 @@ InstallDecision GetInstallDecision(const ExternalInstallOptions& options,
     absl::optional<bool> has_stylus = HasStylusEnabledTouchscreen();
 
     if (!has_stylus.has_value()) {
-      return {.type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kStylusRequiredNoDeviceData,
+      return {.type = SynchronizeDecision::kIgnore,
+              .reason = DisabledReason::kIgnoreStylusRequiredNoDeviceData,
               .log = base::StrCat(
                   {options.install_url.spec(),
-                   " disabled because touchscreen device information is "
+                   " ignore because touchscreen device information is "
                    "unavailable"})};
     }
 
     if (!has_stylus.value()) {
-      return {.type = InstallDecision::kUninstall,
-              .reason = DisabledReason::kStylusRequired,
+      return {.type = SynchronizeDecision::kIgnore,
+              .reason = DisabledReason::kIgnoreStylusRequired,
               .log = base::StrCat(
                   {options.install_url.spec(),
-                   " disabled because the device does not have a built-in "
+                   " ignore because the device does not have a built-in "
                    "touchscreen with stylus support."})};
     }
   }
 
-  // Remove from install configs of preinstalled_apps
-  // if it was uninstalled by user and if |override_previous_user_uninstall| is
-  // false.
-  if (was_previously_uninstalled_by_user &&
-      !options.override_previous_user_uninstall) {
-    return {
-        .type = InstallDecision::kUninstall,
-        .reason = DisabledReason::kPreinstalledAppUninstalledByUserNoOverride,
-        .log = base::StrCat(
-            {options.install_url.spec(),
-             " is not being installed because it was previously uninstalled "
-             "by user."})};
-  }
+  ////////////////////
+  // Default scenario.
+  ////////////////////
 
-  return {.type = InstallDecision::kInstall,
-          .reason = DisabledReason::kNotDisabled};
+  return {
+      .type = SynchronizeDecision::kInstall,
+      .reason = DisabledReason::kNotDisabled,
+      .log = base::StrCat({options.install_url.spec(), " regular install"})};
 }
 
 bool IsReinstallPastMilestoneNeededSinceLastSync(
@@ -870,7 +862,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   size_t corrupt_user_uninstall_prefs_count = 0;
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
-        InstallDecision install_decision = GetInstallDecision(
+        SynchronizeDecision install_decision = GetSynchronizeDecision(
             options, profile_, &provider_->registrar_unsafe(),
             preinstalled_apps_enabled_in_prefs, is_new_user, user_type,
             corrupt_user_uninstall_prefs_count);
@@ -878,19 +870,38 @@ void PreinstalledWebAppManager::PostProcessConfigs(
                                       install_decision.reason);
 
         switch (install_decision.type) {
-          case InstallDecision::kInstall:
-            if (debug_info_) {
-              debug_info_->enabled_configs.push_back(options);
-            }
-            return false;
-          case InstallDecision::kUninstall:
-            VLOG(1) << install_decision.log.value();
+          case SynchronizeDecision::kUninstall:
+            VLOG(1) << install_decision.log;
             ++disabled_count;
             if (debug_info_) {
-              debug_info_->disabled_configs.emplace_back(
-                  options, std::move(install_decision.log.value()));
+              debug_info_->uninstall_configs.emplace_back(
+                  options, std::move(install_decision.log));
             }
             return true;
+
+          case SynchronizeDecision::kInstall:
+            if (debug_info_) {
+              debug_info_->install_configs.emplace_back(
+                  options, std::move(install_decision.log));
+            }
+            return false;
+
+          case SynchronizeDecision::kIgnore:
+            if (debug_info_) {
+              debug_info_->ignore_configs.emplace_back(
+                  options, std::move(install_decision.log));
+            }
+            // These configs get passed to SynchronizeInstalledApps() which has
+            // no concept of kIgnore, only ensuring installation or
+            // uninstallation based on presence/absence of the config. In order
+            // for the config to be ignored (as in no installation or
+            // uninstallation taking place) the config presence needs to match
+            // whether the install_source + install_url is already present in
+            // the installed web apps.
+            return !provider_->registrar_unsafe()
+                        .LookUpAppByInstallSourceInstallUrl(
+                            WebAppManagement::Type::kDefault,
+                            options.install_url);
         }
       });
 
