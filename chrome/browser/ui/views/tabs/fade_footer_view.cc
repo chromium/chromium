@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/ui_base_features.h"
@@ -226,3 +227,6 @@ void FooterView::UpdateVisibility() {
 gfx::Size FooterView::GetMinimumSize() const {
   return gfx::Size();
 }
+
+BEGIN_METADATA(FooterView, views::View)
+END_METADATA

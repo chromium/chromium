@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_OVERFLOW_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_OVERFLOW_BUTTON_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button.h"
 
 class SavedTabGroupOverflowButton : public views::MenuButton {
  public:
+  METADATA_HEADER(SavedTabGroupOverflowButton);
   explicit SavedTabGroupOverflowButton(PressedCallback callback);
   ~SavedTabGroupOverflowButton() override;
 

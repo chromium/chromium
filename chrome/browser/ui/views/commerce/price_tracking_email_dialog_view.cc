@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -186,6 +187,9 @@ void PriceTrackingEmailDialogView::OnClosed() {
         feature_engagement::kIPHPriceTrackingEmailConsentFeature);
   }
 }
+
+BEGIN_METADATA(PriceTrackingEmailDialogView, LocationBarBubbleDelegateView)
+END_METADATA
 
 // PriceTrackingEmailDialogCoordinator
 PriceTrackingEmailDialogCoordinator::PriceTrackingEmailDialogCoordinator(

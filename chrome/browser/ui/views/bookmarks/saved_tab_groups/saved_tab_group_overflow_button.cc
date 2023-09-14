@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -71,3 +72,6 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
                 ui::ImageModel::FromVectorIcon(icon, overflow_color));
   return;
 }
+
+BEGIN_METADATA(SavedTabGroupOverflowButton, views::MenuButton)
+END_METADATA

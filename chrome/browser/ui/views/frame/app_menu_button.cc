@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/view_class_properties.h"
 
@@ -71,3 +72,6 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
 }
 
 void AppMenuButton::HandleMenuClosed() {}
+
+BEGIN_METADATA(AppMenuButton, ToolbarButton)
+END_METADATA

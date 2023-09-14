@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
@@ -288,3 +289,6 @@ void PriceTrackingView::OnPriceTrackingStateUpdated(bool success) {
         IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_DESCRIPTION));
   }
 }
+
+BEGIN_METADATA(PriceTrackingView, views::FlexLayoutView)
+END_METADATA

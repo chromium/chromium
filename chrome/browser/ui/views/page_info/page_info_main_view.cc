@@ -36,6 +36,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
@@ -633,3 +634,6 @@ PageInfoMainView::CreateAdPersonalizationSection() {
 
   return ads_personalization_section;
 }
+
+BEGIN_METADATA(PageInfoMainView, views::View)
+END_METADATA

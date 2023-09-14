@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class AppMenu;
 class AppMenuButtonObserver;
@@ -25,6 +26,7 @@ class MenuButtonController;
 // displays the app menu.
 class AppMenuButton : public ToolbarButton {
  public:
+  METADATA_HEADER(AppMenuButton);
   explicit AppMenuButton(PressedCallback callback);
 
   AppMenuButton(const AppMenuButton&) = delete;

@@ -8,6 +8,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 #include "url/origin.h"
@@ -43,6 +44,7 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kSiteRowMenuItemClicked);
 // cookies content setting for the site or delete the site data.
 class SiteDataRowView : public views::View {
  public:
+  METADATA_HEADER(SiteDataRowView);
   SiteDataRowView(
       Profile* profile,
       const url::Origin& origin,

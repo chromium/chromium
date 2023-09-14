@@ -16,6 +16,7 @@
 #include "components/page_info/page_info_ui.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -42,6 +43,7 @@ class PageInfoMainView : public views::View,
                          public PermissionToggleRowViewObserver,
                          public ChosenObjectViewObserver {
  public:
+  METADATA_HEADER(PageInfoMainView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainLayoutElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionsElementId);

@@ -5580,6 +5580,7 @@ static_library("ui") {
       "views/tabs/tab.h",
       "views/tabs/tab_close_button.cc",
       "views/tabs/tab_close_button.h",
+      "views/tabs/tab_container.cc",
       "views/tabs/tab_container.h",
       "views/tabs/tab_container_controller.h",
       "views/tabs/tab_container_impl.cc",

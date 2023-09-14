@@ -1617,6 +1617,6 @@ bool TabContainerImpl::IsValidModelIndex(int model_index) const {
   return controller_->IsValidModelIndex(model_index);
 }
 
-BEGIN_METADATA(TabContainerImpl, views::View)
+BEGIN_METADATA(TabContainerImpl, TabContainer)
 ADD_READONLY_PROPERTY_METADATA(int, AvailableWidthForTabContainer)
 END_METADATA

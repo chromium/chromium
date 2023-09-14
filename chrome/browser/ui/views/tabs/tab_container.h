@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -31,6 +32,7 @@ class TabStrip;
 // away after that project is completed.
 class TabContainer : public views::View, public BrowserRootView::DropTarget {
  public:
+  METADATA_HEADER(TabContainer);
   // This callback is used when calculating animation targets that may increase
   // the width of the tabstrip.
   virtual void SetAvailableWidthCallback(

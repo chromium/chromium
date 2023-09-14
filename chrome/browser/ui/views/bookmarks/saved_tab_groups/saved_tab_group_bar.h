@@ -12,6 +12,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "content/public/browser/page.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
@@ -35,6 +36,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
                          public SavedTabGroupModelObserver,
                          public views::WidgetObserver {
  public:
+  METADATA_HEADER(SavedTabGroupBar);
   SavedTabGroupBar(Browser* browser, bool animations_enabled);
   SavedTabGroupBar(Browser* browser,
                    SavedTabGroupModel* saved_tab_group_model,

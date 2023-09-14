@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -23,6 +24,7 @@ class StyledLabel;
 
 class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
  public:
+  METADATA_HEADER(PriceTrackingBubbleDialogView);
   using OnTrackPriceCallback = base::OnceCallback<void(bool)>;
 
   enum Type {

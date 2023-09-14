@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/tabs/fade_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -82,6 +83,7 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
 
 class FooterView : public views::View {
  public:
+  METADATA_HEADER(FooterView);
   using AlertFadeView =
       FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>;
   using PerformanceFadeView = FadeView<FadePerformanceFooterRow,

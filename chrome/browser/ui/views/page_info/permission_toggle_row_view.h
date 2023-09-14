@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ChromePageInfoUiDelegate;
@@ -30,6 +31,7 @@ class PageInfoBubbleViewTestApi;
 // button that opens a subpage with more controls.
 class PermissionToggleRowView : public views::View {
  public:
+  METADATA_HEADER(PermissionToggleRowView);
   PermissionToggleRowView(ChromePageInfoUiDelegate* delegate,
                           PageInfoNavigationHandler* navigation_handler,
                           const PageInfo::PermissionInfo& permission,

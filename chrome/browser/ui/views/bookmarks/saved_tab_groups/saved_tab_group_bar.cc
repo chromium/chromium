@@ -74,6 +74,7 @@ SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
 // destroyed and recreated.
 class SavedTabGroupBar::OverflowMenu : public views::View {
  public:
+  METADATA_HEADER(OverflowMenu);
   explicit OverflowMenu(SavedTabGroupBar& parent_bar)
       : parent_bar_(parent_bar) {}
 
@@ -177,6 +178,9 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
   // The SavedTabGroupBar that this menu is associated with.
   raw_ref<SavedTabGroupBar> parent_bar_;
 };
+
+BEGIN_METADATA(SavedTabGroupBar, OverflowMenu, views::View)
+END_METADATA
 
 // TODO(crbug/1372008): Prevent `SavedTabGroupBar` from instantiating if the
 // corresponding feature flag is disabled.
@@ -842,3 +846,6 @@ SavedTabGroupBar::CalculateDropIndicatorIndexInCombinedSpace() const {
   // Otherwise we can show an indicator at the actual drop index.
   return insertion_index;
 }
+
+BEGIN_METADATA(SavedTabGroupBar, views::AccessiblePaneView)
+END_METADATA
