@@ -2,23 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs, Router, routes, routesMojom, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
+
+import {CrDrawerElement, CrSettingsPrefs, OsSettingsMenuElement, OsSettingsUiElement, Router, routes, routesMojom, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('<os-settings-ui> menu', () => {
-  let ui;
-  let fakeNearbySettings;
+  let ui: OsSettingsUiElement;
+  let fakeNearbySettings: FakeNearbyShareSettings;
 
   suiteSetup(() => {
     fakeNearbySettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeNearbySettings);
   });
 
-  async function createElement() {
+  async function createElement(): Promise<OsSettingsUiElement> {
     const element = document.createElement('os-settings-ui');
     document.body.appendChild(element);
     await CrSettingsPrefs.initialized;
@@ -34,11 +36,12 @@ suite('<os-settings-ui> menu', () => {
   test('Drawer can open and close', async () => {
     ui = await createElement();
 
-    const drawer = ui.shadowRoot.querySelector('#drawer');
+    const drawer = ui.shadowRoot!.querySelector<CrDrawerElement>('#drawer');
+    assertTrue(!!drawer);
     assertFalse(drawer.open);
 
-    let menu = ui.shadowRoot.querySelector('#drawer os-settings-menu');
-    assertEquals(null, menu);
+    let menu = ui.shadowRoot!.querySelector('#drawer os-settings-menu');
+    assertNull(menu);
 
     drawer.openDrawer();
     flush();
@@ -46,29 +49,30 @@ suite('<os-settings-ui> menu', () => {
 
     // Validate that dialog is open and menu is shown so it will animate.
     assertTrue(drawer.open);
-    menu = ui.shadowRoot.querySelector('#drawer os-settings-menu');
+    menu = ui.shadowRoot!.querySelector('#drawer os-settings-menu');
     assertTrue(!!menu);
 
     drawer.cancel();
     // Drawer is closed, but menu is still stamped so its contents remain
     // visible as the drawer slides out.
-    menu = ui.shadowRoot.querySelector('#drawer os-settings-menu');
+    menu = ui.shadowRoot!.querySelector('#drawer os-settings-menu');
     assertTrue(!!menu);
   });
 
   test('Drawer closes when exiting narrow mode', async () => {
     ui = await createElement();
-    const drawer = ui.shadowRoot.querySelector('#drawer');
+    const drawer = ui.shadowRoot!.querySelector<CrDrawerElement>('#drawer');
+    assertTrue(!!drawer);
 
     // Mimic narrow mode and open the drawer.
-    ui.isNarrow = true;
+    ui.set('isNarrow', true);
     drawer.openDrawer();
     flush();
     await eventToPromise('cr-drawer-opened', drawer);
     assertTrue(drawer.open);
 
     // Mimic exiting narrow mode and confirm the drawer is closed
-    ui.isNarrow = false;
+    ui.set('isNarrow', false);
     flush();
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
@@ -76,40 +80,49 @@ suite('<os-settings-ui> menu', () => {
 
   test('Navigating via menu clears current search URL param', async () => {
     ui = await createElement();
-    const settingsMenu = ui.shadowRoot.querySelector('os-settings-menu');
+    const settingsMenu = ui.shadowRoot!.querySelector('os-settings-menu');
+    assertTrue(!!settingsMenu);
 
     // As of iron-selector 2.x, need to force iron-selector to update before
     // clicking items on it, or wait for 'iron-items-changed'
-    const ironSelector = settingsMenu.shadowRoot.querySelector('iron-selector');
+    const ironSelector =
+        settingsMenu.shadowRoot!.querySelector('iron-selector');
+    assertTrue(!!ironSelector);
     ironSelector.forceSynchronousItemUpdate();
 
     const urlParams = new URLSearchParams('search=foo');
     const router = Router.getInstance();
     router.navigateTo(routes.BASIC, urlParams);
     assertEquals(urlParams.toString(), router.getQueryParameters().toString());
-    settingsMenu.shadowRoot
-        .querySelector(
-            `a.item[href="/${routesMojom.PERSONALIZATION_SECTION_PATH}"]`)
-        .click();
+    const link = settingsMenu.shadowRoot!.querySelector<HTMLAnchorElement>(
+        `a.item[href="/${routesMojom.PERSONALIZATION_SECTION_PATH}"]`);
+    assertTrue(!!link);
+    link.click();
     assertEquals('', router.getQueryParameters().toString());
   });
 
   test('Advanced section in menu and main page behavior', async () => {
     ui = await createElement();
-    ui.shadowRoot.querySelector('#drawerTemplate').if = true;
+    const drawerTemplate =
+        ui.shadowRoot!.querySelector<DomIf>('#drawerTemplate');
+    assertTrue(!!drawerTemplate);
+    drawerTemplate.if = true;
     flush();
 
-    const main = ui.shadowRoot.querySelector('os-settings-main');
+    const main = ui.shadowRoot!.querySelector('os-settings-main');
     assertTrue(!!main);
     const mainPageContainer =
-        main.shadowRoot.querySelector('main-page-container');
+        main.shadowRoot!.querySelector('main-page-container');
     assertTrue(!!mainPageContainer);
     const mainPageAdvancedToggle =
-        mainPageContainer.shadowRoot.querySelector('#advancedToggle');
+        mainPageContainer.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#advancedToggle');
     assertTrue(!!mainPageAdvancedToggle);
-    const floatingMenu = ui.shadowRoot.querySelector('#left os-settings-menu');
+    const floatingMenu = ui.shadowRoot!.querySelector<OsSettingsMenuElement>(
+        '#left os-settings-menu');
     assertTrue(!!floatingMenu);
-    const drawerMenu = ui.shadowRoot.querySelector('#drawer os-settings-menu');
+    const drawerMenu = ui.shadowRoot!.querySelector<OsSettingsMenuElement>(
+        '#drawer os-settings-menu');
     assertTrue(!!drawerMenu);
 
     // Advanced section should not be expanded
@@ -127,7 +140,8 @@ suite('<os-settings-ui> menu', () => {
 
     // Collapse 'Advanced' in the menu.
     const advancedButton =
-        drawerMenu.shadowRoot.querySelector('#advancedButton');
+        drawerMenu.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#advancedButton');
     assertTrue(!!advancedButton);
     advancedButton.click();
     flush();
@@ -142,7 +156,7 @@ suite('<os-settings-ui> menu', () => {
     flush();
 
     // Collapse 'Advanced' in the main area.
-    main.advancedToggleExpanded = false;
+    main.set('advancedToggleExpanded', false);
     flush();
 
     // Collapsing it in the main area should not collapse it in the menu.
@@ -160,8 +174,8 @@ suite('<os-settings-ui> menu', () => {
 
     test('Menu is hidden', async () => {
       ui = await createElement();
-      const menu = ui.shadowRoot.querySelector('os-settings-menu');
-      assertEquals(null, menu);
+      const menu = ui.shadowRoot!.querySelector('os-settings-menu');
+      assertNull(menu);
     });
   });
 });
