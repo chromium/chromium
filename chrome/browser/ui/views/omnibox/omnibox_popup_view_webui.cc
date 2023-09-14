@@ -65,7 +65,9 @@ void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
-  handler()->UpdateSelection(new_selection);
+  if (RealboxHandler* handler = presenter_->GetHandler()) {
+    handler->UpdateSelection(new_selection);
+  }
 }
 
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
@@ -106,6 +108,3 @@ std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
   return u"";
 }
 
-RealboxHandler* OmniboxPopupViewWebUI::handler() const {
-  return presenter_->GetHandler();
-}

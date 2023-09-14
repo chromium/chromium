@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_WEBUI_TEST_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_WEBUI_TEST_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
@@ -24,6 +25,12 @@
 // Base class for omnibox browser and ui tests.
 class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
  public:
+  OmniboxPopupViewWebUITest();
+  ~OmniboxPopupViewWebUITest() override;
+  OmniboxPopupViewWebUITest(const OmniboxPopupViewWebUITest&) = delete;
+  OmniboxPopupViewWebUITest& operator=(const OmniboxPopupViewWebUITest&) =
+      delete;
+
   // Helper to wait for theme changes. The wait is triggered when an instance of
   // this class goes out of scope.
   class ThemeChangeWaiter {
@@ -37,12 +44,6 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
    private:
     test::ThemeServiceChangedWaiter waiter_;
   };
-
-  OmniboxPopupViewWebUITest() = default;
-
-  OmniboxPopupViewWebUITest(const OmniboxPopupViewWebUITest&) = delete;
-  OmniboxPopupViewWebUITest& operator=(const OmniboxPopupViewWebUITest&) =
-      delete;
 
   void CreatePopupForTestQuery();
 
@@ -87,11 +88,17 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
 
   void SetUp() override;
 
-  void WaitForHandler() { popup_view()->presenter_->WaitForHandler(); }
+  // Wait until WebUI page is loaded and handler is ready.
+  void WaitForHandler();
 
  private:
+  // Block until handler is ready.
+  void WaitInternal(OmniboxPopupPresenter* presenter,
+                    base::RepeatingClosure* closure);
+
   OmniboxTriggeredFeatureService triggered_feature_service_;
   base::test::ScopedFeatureList feature_list_;
+  base::WeakPtrFactory<OmniboxPopupViewWebUITest> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_WEBUI_TEST_H_

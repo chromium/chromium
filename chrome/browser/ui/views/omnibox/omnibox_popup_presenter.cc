@@ -6,10 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/run_loop.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -25,7 +21,7 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
     : views::WebView(location_bar_view->profile()),
       location_bar_view_(location_bar_view),
       widget_(nullptr),
-      waited_for_handler_(false) {
+      requested_handler_(false) {
   set_owned_by_client();
 
   // Prepare for instantiation of a `RealboxHandler` that will connect with
@@ -79,13 +75,17 @@ bool OmniboxPopupPresenter::IsShown() const {
 }
 
 RealboxHandler* OmniboxPopupPresenter::GetHandler() {
-  if (!waited_for_handler_) {
-    waited_for_handler_ = true;
-    WaitForHandler();
+  bool ready = IsHandlerReady();
+  if (!requested_handler_) {
+    // Only log on first access.
+    requested_handler_ = true;
+    base::UmaHistogramBoolean("Omnibox.WebUI.HandlerReadyOnFirstAccess", ready);
+  }
+  if (!ready) {
+    return nullptr;
   }
   OmniboxPopupUI* omnibox_popup_ui = static_cast<OmniboxPopupUI*>(
       GetWebContents()->GetWebUI()->GetController());
-  CHECK(IsHandlerReady());
   return omnibox_popup_ui->handler();
 }
 
@@ -121,29 +121,6 @@ void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
   if (widget == widget_) {
     widget_ = nullptr;
   }
-}
-
-void OmniboxPopupPresenter::WaitForHandler() {
-  bool ready = IsHandlerReady();
-  base::UmaHistogramBoolean("Omnibox.WebUI.HandlerReady", ready);
-  if (!ready) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Omnibox.WebUI.HandlerWait");
-    base::RunLoop loop;
-    auto quit = loop.QuitClosure();
-    auto runner = base::ThreadPool::CreateTaskRunner(base::TaskTraits());
-    runner->PostTask(FROM_HERE,
-                     base::BindOnce(&OmniboxPopupPresenter::WaitInternal,
-                                    weak_ptr_factory_.GetWeakPtr(), &quit));
-    loop.Run();
-    CHECK(IsHandlerReady());
-  }
-}
-
-void OmniboxPopupPresenter::WaitInternal(base::RepeatingClosure* closure) {
-  while (!IsHandlerReady()) {
-    base::PlatformThread::Sleep(base::Milliseconds(1));
-  }
-  closure->Run();
 }
 
 bool OmniboxPopupPresenter::IsHandlerReady() {

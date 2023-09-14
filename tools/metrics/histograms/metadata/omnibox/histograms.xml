@@ -2576,30 +2576,22 @@ chromium-metrics-reviews@google.com.
     long the popup existed before first use. Since the webui begins the
     asynchronous process of initialization and remote binding immediately on
     construction, this metric can be seen as a time budget for handler
-    preparation. See also Omnibox.WebUI.HandlerReady.
+    preparation. See also Omnibox.WebUI.HandlerReadyOnFirstAccess.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.WebUI.HandlerReady" enum="Boolean"
+<histogram name="Omnibox.WebUI.HandlerReadyOnFirstAccess" enum="Boolean"
     expires_after="2024-08-01">
   <owner>orinj@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
-    Records the ready state of the webui handler when first waiting for it to
-    initialize. This is expected to be true in nearly all cases, but when this
-    is false, Omnibox.WebUI.HandlerWait will be recorded to measure wait
-    duration. See also Omnibox.WebUI.FirstUpdate.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.WebUI.HandlerWait" units="ms"
-    expires_after="2024-08-01">
-  <owner>orinj@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    Records the number of milliseconds spent waiting for the webui handler to
-    fully initialize. This wait duration is recorded only when
-    Omnibox.WebUI.HandlerReady records false.
+    Records the ready state of the webui handler when first accessed. When this
+    is true, the page loaded and the handler was ready on time. When this is
+    false, it indicates that OmniboxPopupPresenter::GetHandler returned nullptr
+    at least once because the page wasn't loaded before the first attempt to
+    communicate via the handler. Recorded once per omnibox popup presenter
+    instantiation, when the webui omnibox popup page handler is first used; so,
+    at most once per browser window.
   </summary>
 </histogram>
 
