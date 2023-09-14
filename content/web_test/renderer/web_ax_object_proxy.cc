@@ -551,13 +551,13 @@ int WebAXObjectProxy::Height() {
   return BoundsForObject(accessibility_object_).height();
 }
 
-v8::Local<v8::Value> WebAXObjectProxy::InPageLinkTarget() {
+v8::Local<v8::Value> WebAXObjectProxy::InPageLinkTarget(v8::Isolate* isolate) {
   if (IsDetached())
     return v8::Local<v8::Object>();
   UpdateLayout();
   blink::WebAXObject target = accessibility_object_.InPageLinkTarget();
   if (target.IsNull())
-    return v8::Null(blink::MainThreadIsolate());
+    return v8::Null(isolate);
   return factory_->GetOrCreate(target);
 }
 
@@ -627,7 +627,8 @@ bool WebAXObjectProxy::SelectionIsBackward() {
   return is_selection_backward;
 }
 
-v8::Local<v8::Value> WebAXObjectProxy::SelectionAnchorObject() {
+v8::Local<v8::Value> WebAXObjectProxy::SelectionAnchorObject(
+    v8::Isolate* isolate) {
   if (IsDetached())
     return v8::Local<v8::Object>();
 
@@ -644,7 +645,7 @@ v8::Local<v8::Value> WebAXObjectProxy::SelectionAnchorObject() {
                                   anchor_offset, anchor_affinity, focus_object,
                                   focus_offset, focus_affinity);
   if (anchor_object.IsNull())
-    return v8::Null(blink::MainThreadIsolate());
+    return v8::Null(isolate);
 
   return factory_->GetOrCreate(anchor_object);
 }
@@ -685,7 +686,8 @@ std::string WebAXObjectProxy::SelectionAnchorAffinity() {
                                                                : "downstream";
 }
 
-v8::Local<v8::Value> WebAXObjectProxy::SelectionFocusObject() {
+v8::Local<v8::Value> WebAXObjectProxy::SelectionFocusObject(
+    v8::Isolate* isolate) {
   if (IsDetached())
     return v8::Local<v8::Object>();
 
@@ -702,7 +704,7 @@ v8::Local<v8::Value> WebAXObjectProxy::SelectionFocusObject() {
                                   anchor_offset, anchor_affinity, focus_object,
                                   focus_offset, focus_affinity);
   if (focus_object.IsNull())
-    return v8::Null(blink::MainThreadIsolate());
+    return v8::Null(isolate);
 
   return factory_->GetOrCreate(focus_object);
 }
@@ -1338,7 +1340,8 @@ void WebAXObjectProxy::SetSelectedTextRange(int selection_start, int length) {
                                      selection_start + length);
 }
 
-bool WebAXObjectProxy::SetSelection(v8::Local<v8::Value> anchor_object,
+bool WebAXObjectProxy::SetSelection(v8::Isolate* isolate,
+                                    v8::Local<v8::Value> anchor_object,
                                     int anchor_offset,
                                     v8::Local<v8::Value> focus_object,
                                     int focus_offset) {
@@ -1349,15 +1352,13 @@ bool WebAXObjectProxy::SetSelection(v8::Local<v8::Value> anchor_object,
   }
 
   WebAXObjectProxy* web_ax_anchor = nullptr;
-  if (!gin::ConvertFromV8(blink::MainThreadIsolate(), anchor_object,
-                          &web_ax_anchor)) {
+  if (!gin::ConvertFromV8(isolate, anchor_object, &web_ax_anchor)) {
     return false;
   }
   DCHECK(web_ax_anchor);
 
   WebAXObjectProxy* web_ax_focus = nullptr;
-  if (!gin::ConvertFromV8(blink::MainThreadIsolate(), focus_object,
-                          &web_ax_focus)) {
+  if (!gin::ConvertFromV8(isolate, focus_object, &web_ax_focus)) {
     return false;
   }
   DCHECK(web_ax_focus);
@@ -1431,16 +1432,18 @@ bool WebAXObjectProxy::SetValue(const std::string& value) {
   return accessibility_object_.PerformAction(action_data);
 }
 
-bool WebAXObjectProxy::IsEqual(v8::Local<v8::Object> proxy) {
+bool WebAXObjectProxy::IsEqual(v8::Isolate* isolate,
+                               v8::Local<v8::Object> proxy) {
   WebAXObjectProxy* unwrapped_proxy = nullptr;
-  if (!gin::ConvertFromV8(blink::MainThreadIsolate(), proxy, &unwrapped_proxy))
+  if (!gin::ConvertFromV8(isolate, proxy, &unwrapped_proxy)) {
     return false;
+  }
   return unwrapped_proxy->IsEqualToObject(accessibility_object_);
 }
 
 void WebAXObjectProxy::SetNotificationListener(
+    v8::Isolate* isolate,
     v8::Local<v8::Function> callback) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
   notification_callback_.Reset(isolate, callback);
 }
 
@@ -1782,22 +1785,22 @@ bool RootWebAXObjectProxy::IsRoot() const {
   return true;
 }
 
-WebAXObjectProxyList::WebAXObjectProxyList(blink::WebAXContext& ax_context)
-    : ax_context_(&ax_context) {}
+WebAXObjectProxyList::WebAXObjectProxyList(v8::Isolate* isolate,
+                                           blink::WebAXContext& ax_context)
+    : isolate_(isolate), ax_context_(&ax_context) {}
 
 WebAXObjectProxyList::~WebAXObjectProxyList() {
   Clear();
 }
 
 void WebAXObjectProxyList::Clear() {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::HandleScope handle_scope(isolate);
+  v8::HandleScope handle_scope(isolate_);
 
   for (auto& persistent : elements_) {
-    auto local = v8::Local<v8::Object>::New(isolate, persistent);
+    auto local = v8::Local<v8::Object>::New(isolate_, persistent);
 
     WebAXObjectProxy* proxy = nullptr;
-    bool ok = gin::ConvertFromV8(isolate, local, &proxy);
+    bool ok = gin::ConvertFromV8(isolate_, local, &proxy);
     DCHECK(ok);
 
     // Because the v8::Persistent in this container uses
@@ -1816,14 +1819,12 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
   if (object.IsNull())
     return v8::Local<v8::Object>();
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
-
   // Return existing object if there is a match.
   for (const auto& persistent : elements_) {
-    auto local = v8::Local<v8::Object>::New(isolate, persistent);
+    auto local = v8::Local<v8::Object>::New(isolate_, persistent);
 
     WebAXObjectProxy* proxy = nullptr;
-    bool ok = gin::ConvertFromV8(isolate, local, &proxy);
+    bool ok = gin::ConvertFromV8(isolate_, local, &proxy);
     DCHECK(ok);
 
     if (proxy->IsEqualToObject(object))
@@ -1832,14 +1833,14 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
 
   // Create a new object.
   v8::Local<v8::Value> value_handle =
-      gin::CreateHandle(isolate, new WebAXObjectProxy(object, this)).ToV8();
+      gin::CreateHandle(isolate_, new WebAXObjectProxy(object, this)).ToV8();
   v8::Local<v8::Object> handle;
   if (value_handle.IsEmpty() ||
-      !value_handle->ToObject(isolate->GetCurrentContext()).ToLocal(&handle)) {
+      !value_handle->ToObject(isolate_->GetCurrentContext()).ToLocal(&handle)) {
     return {};
   }
 
-  elements_.emplace_back(isolate, handle);
+  elements_.emplace_back(isolate_, handle);
   return handle;
 }
 

@@ -79,7 +79,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   int Y();
   int Width();
   int Height();
-  v8::Local<v8::Value> InPageLinkTarget();
+  v8::Local<v8::Value> InPageLinkTarget(v8::Isolate* isolate);
   int IntValue();
   int MinValue();
   int MaxValue();
@@ -90,10 +90,10 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   // The following selection functions return global information about the
   // current selection and can be called on any object in the tree.
   bool SelectionIsBackward();
-  v8::Local<v8::Value> SelectionAnchorObject();
+  v8::Local<v8::Value> SelectionAnchorObject(v8::Isolate* isolate);
   int SelectionAnchorOffset();
   std::string SelectionAnchorAffinity();
-  v8::Local<v8::Value> SelectionFocusObject();
+  v8::Local<v8::Value> SelectionFocusObject(v8::Isolate* isolate);
   int SelectionFocusOffset();
   std::string SelectionFocusAffinity();
 
@@ -189,7 +189,8 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   std::string ColumnIndexRange();
   v8::Local<v8::Object> CellForColumnAndRow(int column, int row);
   void SetSelectedTextRange(int selection_start, int length);
-  bool SetSelection(v8::Local<v8::Value> anchor_object,
+  bool SetSelection(v8::Isolate* isolate,
+                    v8::Local<v8::Value> anchor_object,
                     int anchor_offset,
                     v8::Local<v8::Value> focus_object,
                     int focus_offset);
@@ -204,8 +205,9 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   void ShowMenu();
   void Press();
   bool SetValue(const std::string& value);
-  bool IsEqual(v8::Local<v8::Object> proxy);
-  void SetNotificationListener(v8::Local<v8::Function> callback);
+  bool IsEqual(v8::Isolate* isolate, v8::Local<v8::Object> proxy);
+  void SetNotificationListener(v8::Isolate* isolate,
+                               v8::Local<v8::Function> callback);
   void UnsetNotificationListener();
   void TakeFocus();
   void ScrollToMakeVisible();
@@ -259,7 +261,7 @@ class RootWebAXObjectProxy : public WebAXObjectProxy {
 
 class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
  public:
-  explicit WebAXObjectProxyList(blink::WebAXContext&);
+  explicit WebAXObjectProxyList(v8::Isolate* isolate, blink::WebAXContext&);
   ~WebAXObjectProxyList() override;
 
   void Clear();
@@ -267,6 +269,7 @@ class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
   blink::WebAXContext* GetAXContext() override;
 
  private:
+  v8::Isolate* isolate_;
   std::vector<v8::Global<v8::Object>> elements_;
   blink::WebAXContext* const ax_context_;
 };
