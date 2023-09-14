@@ -905,6 +905,43 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_FALSE(
       autofill_client_.get_save_credit_card_options().from_dynamic_change_form);
 }
+
+// Tests that when triggering AttemptToOfferCvcUploadSave function, SaveCard
+// dialog will be triggered with `kCvcSaveOnly` option.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcUploadSave_ShouldShowSaveCardWithCvcSaveOnly) {
+  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(
+      /*from_dynamic_change_form=*/true, /*has_non_focusable_field=*/true,
+      credit_card);
+
+  EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
+  EXPECT_EQ(AutofillClient::CardSaveType::kCvcSaveOnly,
+            autofill_client_.get_save_credit_card_options().card_save_type);
+  EXPECT_TRUE(
+      autofill_client_.get_save_credit_card_options().has_non_focusable_field);
+  EXPECT_TRUE(
+      autofill_client_.get_save_credit_card_options().from_dynamic_change_form);
+}
+
+// Tests that when triggering AttemptToOfferCvcUploadSave function,
+// `from_dynamic_change_form` and `has_non_focusable_field` should match what we
+// passed in AttemptToOfferCvcUploadSave function.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcUploadSave_NonFocusableAndDynamicChangeIsFalse) {
+  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(
+      /*from_dynamic_change_form=*/false, /*has_non_focusable_field=*/false,
+      credit_card);
+
+  EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
+  EXPECT_EQ(AutofillClient::CardSaveType::kCvcSaveOnly,
+            autofill_client_.get_save_credit_card_options().card_save_type);
+  EXPECT_FALSE(
+      autofill_client_.get_save_credit_card_options().has_non_focusable_field);
+  EXPECT_FALSE(
+      autofill_client_.get_save_credit_card_options().from_dynamic_change_form);
+}
 #endif
 
 // Tests that |from_dynamic_change_form| is correctly sent to AutofillClient

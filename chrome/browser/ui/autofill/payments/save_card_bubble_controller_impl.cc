@@ -116,6 +116,8 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     const LegalMessageLines& legal_message_lines,
     AutofillClient::SaveCreditCardOptions options,
     AutofillClient::UploadSaveCardPromptCallback save_card_prompt_callback) {
+  // TODO(crbug.com/1479239): Remove it when kCvcSaveOnly is implemented.
+  CHECK(options.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly);
   // Don't show the bubble if it's already visible.
   if (bubble_view())
     return;

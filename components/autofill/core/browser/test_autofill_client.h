@@ -369,6 +369,7 @@ class TestAutofillClientTemplate : public T {
       const LegalMessageLines& legal_message_lines,
       AutofillClient::SaveCreditCardOptions options,
       AutofillClient::UploadSaveCardPromptCallback callback) override {
+    confirm_save_credit_card_to_cloud_called_ = true;
     offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
     save_credit_card_options_ = options;
     std::move(callback).Run(
@@ -597,6 +598,10 @@ class TestAutofillClientTemplate : public T {
     return confirm_save_credit_card_locally_called_;
   }
 
+  bool ConfirmSaveCardToCloudWasCalled() {
+    return confirm_save_credit_card_to_cloud_called_;
+  }
+
   bool ConfirmSaveIbanLocallyWasCalled() {
     return confirm_save_iban_locally_called_;
   }
@@ -731,6 +736,8 @@ class TestAutofillClientTemplate : public T {
   bool should_save_autofill_profiles_ = true;
 
   bool confirm_save_credit_card_locally_called_ = false;
+
+  bool confirm_save_credit_card_to_cloud_called_ = false;
 
   bool confirm_save_iban_locally_called_ = false;
 
