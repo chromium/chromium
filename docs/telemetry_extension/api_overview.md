@@ -8,6 +8,10 @@ and **events**.
 
 # Diagnostics
 
+The diagnostics namespace got a rework since the M119 release and added a new
+extension-event based interface in M119. The interface is described in
+[V2 Diagnostics API](#v2-diagnostics-api).
+
 ## Types
 
 ### Enum RoutineType
@@ -207,6 +211,137 @@ and **events**.
 | runSignalStrengthRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runSmartctlCheckRoutine | (params: RunSmartctlCheckRequest?) => Promise<RunRoutineResponse\> | `os.diagnostics` | initial release: M102, new parameter added: M110. The parameter is only available if "smartctl_check_with_percentage_used" is returned from `GetAvailableRoutines` |
 | runUfsLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M117 |
+
+# V2 Diagnostics API
+
+## Types
+
+### Enum RoutineWaitingReason
+| Property Name |
+------------ |
+| waiting_to_be_scheduled |
+| waiting_user_input |
+
+### Enum ExceptionReason
+| Property Name |
+------------ |
+| unknown |
+| unexpected |
+| unsupported |
+| app_ui_closed |
+
+### Enum MemtesterTestItemEnum
+| Property Name |
+------------ |
+| unknown |
+| stuck_address |
+| compare_and |
+| compare_div |
+| compare_mul |
+| compare_or |
+| compare_sub |
+| compare_xor |
+| sequential_increment |
+| bit_flip |
+| bit_spread |
+| block_sequential |
+| checkerboard |
+| random_value |
+| solid_bits |
+| walking_ones |
+| walking_zeroes |
+| eight_bit_writes |
+| sixteen_bit_writes |
+
+### Enum RoutineSupportStatus
+| Property Name |
+------------ |
+| supported |
+| unsupported |
+
+### RoutineInitializedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+
+### RoutineRunningInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| percentage | number | Current percentage of the routine status (0-100) |
+
+### RoutineWaitingInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| percentage | number | Current percentage of the routine status (0-100) |
+| reason | RoutineWaitingReason | Reason why the routine waits |
+| message | string | Additional information, may be used to pass instruction or explanation |
+
+### ExceptionInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| reason | ExceptionReason | Reason why the routine threw an exception |
+| debugMessage | string | A human readable message for debugging. Don't rely on the content because it could change anytime |
+
+### MemtesterResult
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| passed_items | Array<MemtesterTestItemEnum\> | Passed test items |
+| failed_items | Array<MemtesterTestItemEnum\> | Failed test items |
+
+### MemoryRoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+| bytesTested | number | Number of bytes tested in the memory routine |
+| result | MemtesterResult | Contains the memtester test results |
+
+### RunMemoryRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| maxTestingMemKib | number | An optional field to indicate how much memory should be tested. If the value is null, memory test will run with as much memory as possible |
+
+### CreateMemoryRoutineResponse
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the memory routine that was just created  |
+
+### RoutineSupportStatusInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| status | RoutineSupportStatus | Whether a routine with the provided arguments is supported or unsupported |
+
+### StartRoutineRequest
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be created |
+
+### CancelRoutineRequest
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that shall be cancelled |
+
+## Functions
+
+| Function Name | Definition | Permission needed to access | Released in Chrome version |
+------------ | ------------- | ------------- | ------------- |
+| startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
+| cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
+| createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateMemoryRoutineResponse\> | `os.diagnostics` | M119 |
+| isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
+
+## Events
+
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Emitted on |
+------------ | ------------- | ------------- | ------------- | ------------- |
+| onRoutineInitialized | function(RoutineInitializedInfo) | `os.diagnostics` | M119 | Informs the extension that a routine was initialized |
+| onRoutineRunning | function(RoutineRunningInfo) | `os.diagnostics` | M119 | Informs the extension that a routine started running. This can happen in two situations: 1. `startRoutine` was called and the routine successfully started execution. 2. The routine exited the "waiting" state and returned to running |
+| onRoutineWaiting | function(RoutineWaitingInfo) | `os.diagnostics` | M119 | Informs the extension that a routine stopped execution and waits for an event, e.g. user interaction. `RoutineWaitingInfo` contains information about what the routine is waiting for |
+| onRoutineException | function(ExceptionInfo) | `os.diagnostics` | M119 | Informs the extension that an exception occurred. The error passed in `ExceptionInfo` is non-recoverable |
+| onMemoryRoutineFinished | function(MemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | Informs the extension that a memory routine finished |
 
 # Events
 
