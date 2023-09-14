@@ -24,6 +24,7 @@ import {buttonsAreEqual} from './input_device_settings_utils.js';
 
 const NO_REMAPPING_OPTION_LABEL = 'none';
 const KEY_COMBINATION_OPTION_LABEL = 'key combination';
+const OPEN_DIALOG_OPTION_LABEL = 'open key combination dialog';
 
 /**
  * Bit mask of modifiers.
@@ -158,6 +159,12 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         readOnly: true,
       },
 
+      openDialogOptionValue_: {
+        type: String,
+        value: OPEN_DIALOG_OPTION_LABEL,
+        readOnly: true,
+      },
+
       /**
        * Name of the remapping.
        */
@@ -186,9 +193,11 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private fakePref_: chrome.settingsPrivate.PrefObject;
   private noRemappingOptionValue_: string;
   private keyCombinationOptionValue_: string;
+  private openDialogOptionValue_: string;
   private keyCombinationLabel_: string;
   private buttonRemappingName_: string;
   private isInitialized_: boolean;
+  private prevChoice_: string;
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
 
@@ -256,6 +265,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       microTask.run(() => {
         dropdown.value =
             option === undefined ? NO_REMAPPING_OPTION_LABEL : originalAction;
+        this.prevChoice_ = dropdown.value;
       });
     } else if (keyEvent) {
       this.set('fakePref_.value', KEY_COMBINATION_OPTION_LABEL);
@@ -264,11 +274,13 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
       microTask.run(() => {
         dropdown.value = KEY_COMBINATION_OPTION_LABEL;
+        this.prevChoice_ = dropdown.value;
       });
     } else {
       this.set('fakePref_.value', NO_REMAPPING_OPTION_LABEL);
       microTask.run(() => {
         dropdown.value = NO_REMAPPING_OPTION_LABEL;
+        this.prevChoice_ = dropdown.value;
       });
     }
   }
@@ -333,16 +345,18 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
 
   private onSelectChange_(): void {
     const select = this.$.remappingActionDropdown;
-    if (select.value === KEY_COMBINATION_OPTION_LABEL) {
-      // TODO(yyhyyh@): This event should be fired whenever users select the
-      // 'key combination' option, even if no 'change' happens.
+    if (select.value === OPEN_DIALOG_OPTION_LABEL) {
       this.dispatchEvent(new CustomEvent('show-key-combination-dialog', {
         bubbles: true,
         composed: true,
         detail: {buttonIndex: this.remappingIndex},
       }));
+      microTask.run(() => {
+        select.value = this.prevChoice_;
+      });
     } else if (select!.value !== this.fakePref_.value) {
       this.set('fakePref_.value', select!.value);
+      this.prevChoice_ = select.value;
     }
   }
 

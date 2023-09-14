@@ -216,10 +216,22 @@ suite('<customize-button-row>', () => {
         customizeButtonRow.shadowRoot!.querySelector(
             '#remappingActionDropdown');
     assertTrue(!!select);
-    select.value = 'key combination';
+    select.value = 'open key combination dialog';
     select.dispatchEvent(new Event('change'));
 
     await flushTasks();
     assertEquals(showKeyCombinationDialogEventCount, 1);
+    // Verify that the selected value will change back to
+    // the previous selection.
+    assertEquals(select.value, '2');
+
+    // Verify that when clicking the open key combination value again,
+    // the open dialog event will fire again.
+    select.value = 'open key combination dialog';
+    select.dispatchEvent(new Event('change'));
+
+    await flushTasks();
+    assertEquals(showKeyCombinationDialogEventCount, 2);
+    assertEquals(select.value, '2');
   });
 });

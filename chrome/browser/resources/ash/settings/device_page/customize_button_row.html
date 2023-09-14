@@ -43,6 +43,10 @@
   #buttonLabelContainer {
     padding-inline-end: 6px;
   }
+
+  #keyCombination {
+    display: none;
+  }
 </style>
 <div id="container" class="settings-box">
   <div id="buttonLabelContainer">
@@ -69,6 +73,9 @@
       </template>
       <option id="keyCombination" value="[[keyCombinationOptionValue_]]">
         [[keyCombinationLabel_]]
+      </option>
+      <option id="openDialogOption" value="[[openDialogOptionValue_]]">
+        $i18n{keyCombinationOptionLabel}
       </option>
     </select>
   </div>
