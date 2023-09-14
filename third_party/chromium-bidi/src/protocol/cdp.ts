@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 import type Protocol from 'devtools-protocol';
 
@@ -36,11 +35,6 @@ export type CommandResponse = {
 };
 export type ResultData = SendCommandResult | GetSessionResult;
 
-export type Event = {
-  type: 'event';
-} & EventData;
-export type EventData = EventDataFor<keyof ProtocolMapping.Events>;
-
 export type SendCommandCommand = {
   method: 'cdp.sendCommand';
   params: SendCommandParameters;
@@ -59,6 +53,7 @@ export type SendCommandResult = {
   result: ProtocolMapping.Commands[keyof ProtocolMapping.Commands]['returnType'];
   session?: Protocol.Target.SessionID;
 };
+
 export type GetSessionCommand = {
   method: 'cdp.getSession';
   params: GetSessionParameters;
@@ -71,6 +66,11 @@ export type GetSessionParameters = {
 export type GetSessionResult = {
   session?: Protocol.Target.SessionID;
 };
+
+export type Event = {
+  type: 'event';
+} & EventData;
+export type EventData = EventDataFor<keyof ProtocolMapping.Events>;
 
 export type EventDataFor<EventName extends keyof ProtocolMapping.Events> = {
   method: `cdp.${EventName}`;
