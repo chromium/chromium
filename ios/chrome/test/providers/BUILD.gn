@@ -33,6 +33,7 @@ group("providers") {
     "//ios/chrome/test/providers/text_classifier",
     "//ios/chrome/test/providers/text_zoom",
     "//ios/chrome/test/providers/ui_utils",
+    "//ios/chrome/test/providers/unit_conversion",
     "//ios/chrome/test/providers/url_rewriters",
     "//ios/chrome/test/providers/user_feedback",
     "//ios/chrome/test/providers/voice_search",

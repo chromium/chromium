@@ -35,6 +35,7 @@ group("provider_api") {
     "//ios/public/provider/chrome/browser/text_classifier:text_classifier_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
     "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",

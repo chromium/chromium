@@ -1,0 +1,11 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chromium_unit_conversion") {
+  sources = [ "chromium_unit_conversion.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+  ]
+}

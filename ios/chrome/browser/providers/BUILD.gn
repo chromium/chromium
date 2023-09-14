@@ -37,6 +37,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/text_classifier:chromium_text_classifier",
     "//ios/chrome/browser/providers/text_zoom:chromium_text_zoom",
     "//ios/chrome/browser/providers/ui_utils:chromium_ui_utils",
+    "//ios/chrome/browser/providers/unit_conversion:chromium_unit_conversion",
     "//ios/chrome/browser/providers/url_rewriters:chromium_url_rewriters",
     "//ios/chrome/browser/providers/user_feedback:chromium_user_feedback",
     "//ios/chrome/browser/providers/voice_search:chromium_voice_search",
