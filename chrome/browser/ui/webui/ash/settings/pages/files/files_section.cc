@@ -30,6 +30,7 @@ using ::chromeos::settings::mojom::kGoogleDriveSubpagePath;
 using ::chromeos::settings::mojom::kNetworkFileSharesSubpagePath;
 using ::chromeos::settings::mojom::kOfficeFilesSubpagePath;
 using ::chromeos::settings::mojom::kOneDriveSubpagePath;
+using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -37,14 +38,16 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetFilesSearchConcepts() {
+const std::vector<SearchConcept>& GetDefaultSearchConcepts(
+    mojom::Section section,
+    const char* section_path) {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_FILES,
-       mojom::kFilesSectionPath,
+       section_path,
        mojom::SearchResultIcon::kFolder,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
-       {.section = mojom::Section::kFiles}},
+       {.section = section}},
       {IDS_OS_SETTINGS_TAG_FILES_NETWORK_FILE_SHARES,
        mojom::kNetworkFileSharesSubpagePath,
        mojom::SearchResultIcon::kFolder,
@@ -121,7 +124,8 @@ FilesSection::FilesSection(Profile* profile,
                            SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(GetFilesSearchConcepts());
+  updater.AddSearchTags(
+      GetDefaultSearchConcepts(GetSection(), GetSectionPath()));
   if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     updater.AddSearchTags(GetFilesOfficeSearchConcepts());
   }
@@ -304,7 +308,9 @@ int FilesSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section FilesSection::GetSection() const {
-  return mojom::Section::kFiles;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kSystemPreferences
+             : mojom::Section::kFiles;
 }
 
 mojom::SearchResultIcon FilesSection::GetSectionIcon() const {
@@ -312,11 +318,13 @@ mojom::SearchResultIcon FilesSection::GetSectionIcon() const {
 }
 
 const char* FilesSection::GetSectionPath() const {
-  return mojom::kFilesSectionPath;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kSystemPreferencesSectionPath
+             : mojom::kFilesSectionPath;
 }
 
 bool FilesSection::LogMetric(mojom::Setting setting, base::Value& value) const {
-  // Unimplemented.
+  // No metrics are logged.
   return false;
 }
 

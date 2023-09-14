@@ -88,9 +88,6 @@ OsSettingsSections::OsSettingsSections(
       mojom::Section::kPrivacyAndSecurity,
       std::make_unique<PrivacySection>(profile, search_tag_registry, prefs));
 
-  AddSection(mojom::Section::kFiles,
-             std::make_unique<FilesSection>(profile, search_tag_registry));
-
   AddSection(mojom::Section::kPrinting,
              std::make_unique<PrintingSection>(profile, search_tag_registry,
                                                printers_manager));
@@ -118,6 +115,9 @@ OsSettingsSections::OsSettingsSections(
   } else {
     AddSection(mojom::Section::kDateAndTime,
                std::make_unique<DateTimeSection>(profile, search_tag_registry));
+
+    AddSection(mojom::Section::kFiles,
+               std::make_unique<FilesSection>(profile, search_tag_registry));
 
     AddSection(mojom::Section::kLanguagesAndInput,
                std::make_unique<LanguagesSection>(profile, search_tag_registry,
