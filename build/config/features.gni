@@ -28,7 +28,8 @@ declare_args() {
   #
   # TODO(crbug.com/1314528): Remove chromecast-related conditions and force
   # builds to explicitly specify this.
-  proprietary_codecs = is_chrome_branded || is_castos || is_cast_android
+  proprietary_codecs = is_chrome_branded || is_castos || is_cast_android ||
+                       is_chrome_for_testing_branded
 
   # libudev usage. This currently only affects the content layer.
   use_udev = (is_linux && !is_castos) || is_chromeos
