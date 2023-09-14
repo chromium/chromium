@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
@@ -46,10 +47,12 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
                     TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM, false);
 
-    private static boolean sTabSelectionEditorLongPressEntryEnabled;
-
     public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
             new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);
+
+    // Cached and fixed values.
+    private static boolean sTabSelectionEditorLongPressEntryEnabled;
+    private static Boolean sIsTabToGtsAnimationEnabled;
 
     /**
      * Set whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
@@ -103,10 +106,18 @@ public class TabUiFeatureUtilities {
      * @return Whether the Tab-to-Grid (and Grid-to-Tab) transition animation is enabled.
      */
     public static boolean isTabToGtsAnimationEnabled(Context context) {
-        Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
-        return ChromeFeatureList.sTabToGTSAnimation.isEnabled()
-                && SysUtils.amountOfPhysicalMemoryKB() / 1024 >= ZOOMING_MIN_MEMORY.getValue()
-                && !shouldUseListMode(context);
+        if (sIsTabToGtsAnimationEnabled == null || BuildConfig.IS_FOR_TEST) {
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+                sIsTabToGtsAnimationEnabled = false;
+            } else {
+                Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
+                sIsTabToGtsAnimationEnabled = ChromeFeatureList.sTabToGTSAnimation.isEnabled()
+                        && SysUtils.amountOfPhysicalMemoryKB() / 1024
+                                >= ZOOMING_MIN_MEMORY.getValue()
+                        && !shouldUseListMode(context);
+            }
+        }
+        return sIsTabToGtsAnimationEnabled.booleanValue();
     }
 
     /**

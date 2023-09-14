@@ -116,9 +116,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private TabSwitcher.TabListDelegate mCarouselOrSingleTabListDelegate;
     private boolean mIsInitialized;
 
-    // Only access this value via isTabGtsAnimationEnabled. Caches the value to avoid repeated
-    // calculations during animations.
-    private Boolean mCachedIsTabGtsAnimationEnabled;
     private float mBackgroundAlpha;
     private int mTabListTopOffset;
 
@@ -191,7 +188,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 // causing janky frames. When animation is off or not used, the thumbnail is already
                 // updated when showing the GTS. Tab-to-GTS animation is not invoked for tablet tab
                 // switcher polish.
-                if (isTabGtsAnimationEnabled(false)) {
+                if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())) {
                     // Delay thumbnail taking a bit more to make it less likely to happen before the
                     // thumbnail taking triggered by ThumbnailFetcher. See crbug.com/996385 for
                     // details.
@@ -249,7 +246,8 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 // If not doing GTS-to-Tab transition animation or start surface homepage is hiding
                 // (instead of grid tab switcher), we show the fade-out instead, which was already
                 // done.
-                if (!isTabGtsAnimationEnabled(false) || isHidingStartSurfaceHomepage()) {
+                if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())
+                        || isHidingStartSurfaceHomepage()) {
                     postHiding();
                     return;
                 }
@@ -495,7 +493,8 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             translateDown();
         } else {
-            mStartSurface.hideTabSwitcherView(!isTabGtsAnimationEnabled(true));
+            mStartSurface.hideTabSwitcherView(
+                    !TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext()));
         }
     }
 
@@ -590,7 +589,8 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         // Skip shrinking animation when there is no tab in current tab model. If it's showing
         // start surface, we don't show the shrink tab animation.
         boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
-        boolean showShrinkingAnimation = animate && isTabGtsAnimationEnabled(true)
+        boolean showShrinkingAnimation = animate
+                && TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())
                 && !isCurrentTabModelEmpty && !isShowingStartSurfaceHomepage;
 
         boolean skipSlowZooming = TabUiFeatureUtilities.SKIP_SLOW_ZOOMING.getValue();
@@ -960,7 +960,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         // The content viewport is intentionally sent as both params below.
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 tabContentManager, resourceManager, browserControls,
-                isTabGtsAnimationEnabled(false) ? currentTabListDelegate.getResourceId() : 0,
+                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())
+                        ? currentTabListDelegate.getResourceId()
+                        : 0,
                 mBackgroundAlpha, mTabListTopOffset);
 
         updatePerfCounters();
@@ -1005,21 +1007,5 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
             mHideTabCallback.cancel();
             mHideTabCallback = null;
         }
-    }
-
-    /**
-     * Shrink/Expand animation is disabled for Tablet TabSwitcher launch polish.
-     * @return Whether shrink/expand animation is enabled.
-     */
-    private boolean isTabGtsAnimationEnabled(boolean updateCachedValue) {
-        if (updateCachedValue || mCachedIsTabGtsAnimationEnabled == null) {
-            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-                mCachedIsTabGtsAnimationEnabled = false;
-            } else {
-                mCachedIsTabGtsAnimationEnabled =
-                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext());
-            }
-        }
-        return mCachedIsTabGtsAnimationEnabled;
     }
 }
