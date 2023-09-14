@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -30,7 +31,9 @@
 
 namespace autofill {
 
-Address::Address() : structured_address_(std::make_unique<AddressNode>()){};
+Address::Address()
+    : structured_address_(
+          i18n_model_definition::CreateAddressComponentModel()){};
 
 Address::Address(const Address& address) {
   *this = address;

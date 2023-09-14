@@ -126,8 +126,6 @@ static_library("browser") {
     "data_model/address.h",
     "data_model/autofill_data_model.cc",
     "data_model/autofill_data_model.h",
-    "data_model/autofill_i18n_address_component.cc",
-    "data_model/autofill_i18n_address_component.h",
     "data_model/autofill_i18n_api.cc",
     "data_model/autofill_i18n_api.h",
     "data_model/autofill_i18n_formatting_expressions.h",

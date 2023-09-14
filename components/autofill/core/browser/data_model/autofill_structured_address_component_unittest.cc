@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -1759,7 +1759,9 @@ TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
 
 TEST(AutofillStructuredAddressAddressComponent,
      IsValueCompatibleWithAncestorsCompatible) {
-  AddressNode address;
+  std::unique_ptr<AddressComponent> address =
+      i18n_model_definition::CreateAddressComponentModel();
+
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
        .value = "Flat 42, Floor 7, Tagore Road Hostel, 13, Hitech City Rd",
@@ -1785,9 +1787,9 @@ TEST(AutofillStructuredAddressAddressComponent,
        .value = "Flat 42",
        .status = VerificationStatus::kObserved}};
 
-  SetTestValues(&address, test_values);
-  address.CompleteFullTree();
-  VerifyTestValues(&address, expectation);
+  SetTestValues(address.get(), test_values);
+  address->CompleteFullTree();
+  VerifyTestValues(address.get(), expectation);
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {

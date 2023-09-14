@@ -92,6 +92,18 @@ AddressComponent::AddressComponent(ServerFieldType storage_type,
   }
 }
 
+AddressComponent::AddressComponent(
+    ServerFieldType storage_type,
+    std::vector<std::unique_ptr<AddressComponent>> children,
+    unsigned int merge_mode)
+    : AddressComponent(storage_type, nullptr, merge_mode) {
+  children_ = std::move(children);
+  for (const auto& child : children_) {
+    child->SetParent(this);
+    RegisterChildNode(child.get());
+  }
+}
+
 AddressComponent::~AddressComponent() = default;
 
 ServerFieldType AddressComponent::GetStorageType() const {

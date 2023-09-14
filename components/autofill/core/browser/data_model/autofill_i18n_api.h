@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_
 
-#include "components/autofill/core/browser/data_model/autofill_i18n_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 namespace autofill::i18n_model_definition {
 
@@ -16,7 +16,7 @@ namespace autofill::i18n_model_definition {
 // node (if exist). If no country is provided, returns the legacy address
 // hierarchy.
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
-    std::string_view country_code);
+    std::string_view country_code = "");
 
 // Returns the formatting expression corresponding to the provided parameters.
 // If the expression can't be found or the country is empty, it attempts to look

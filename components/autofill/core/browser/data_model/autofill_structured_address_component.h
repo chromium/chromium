@@ -143,6 +143,10 @@ class AddressComponent {
                    AddressComponent* parent,
                    unsigned int merge_mode);
 
+  AddressComponent(ServerFieldType storage_type,
+                   std::vector<std::unique_ptr<AddressComponent>> children,
+                   unsigned int merge_mode);
+
   // Disallows copies and direct assignments since they are not needed in the
   // current Autofill design.
   AddressComponent(const AddressComponent& other) = delete;
@@ -491,7 +495,6 @@ class AddressComponent {
   // themselves as child nodes.
   void RegisterChildNode(AddressComponent* child);
 
- private:
   // Returns the node in the tree that supports `field_type`. This node, if it
   // exists, is unique by definition. Returns nullptr if no such node exists.
   AddressComponent* GetNodeForType(ServerFieldType field_type);
@@ -499,6 +502,7 @@ class AddressComponent {
   // const version of GetNodeForType.
   const AddressComponent* GetNodeForType(ServerFieldType field_type) const;
 
+ private:
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
 
@@ -561,6 +565,9 @@ class AddressComponent {
 
   // The storable Autofill type of the component.
   const ServerFieldType storage_type_;
+
+  // A vector of children of the component.
+  std::vector<std::unique_ptr<AddressComponent>> children_;
 
   // A vector of pointers to the subcomponents.
   std::vector<AddressComponent*> subcomponents_;
