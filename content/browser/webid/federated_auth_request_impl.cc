@@ -1844,29 +1844,31 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
     IdpNetworkRequestManager::TokenResult result) {
   CHECK(result.token.empty() || !result.error);
 
-  if (IsFedCmErrorEnabled() &&
-      status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
-    ShowErrorDialog(idp->config_url, result.error);
-    return;
-  }
+  auto complete_request_callback =
+      IsFedCmErrorEnabled() &&
+              status.parse_status !=
+                  IdpNetworkRequestManager::ParseStatus::kSuccess
+          ? base::BindOnce(&FederatedAuthRequestImpl::ShowErrorDialog,
+                           weak_ptr_factory_.GetWeakPtr(), idp->config_url,
+                           result.error)
+          : base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(idp),
+                           status, result.token);
 
   // When fetching id tokens we show a "Verify" sheet to users in case fetching
-  // takes a long time due to latency etc.. In case that the fetching process is
+  // takes a long time due to latency etc. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
   // |token_request_delay_| seconds for better UX.
   token_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time = token_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ ||
       fetch_time >= token_request_delay_) {
-    CompleteTokenRequest(std::move(idp), status, result.token);
+    std::move(complete_request_callback).Run();
     return;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(idp), status,
-                     result.token),
+      FROM_HERE, std::move(complete_request_callback),
       token_request_delay_ - fetch_time);
 }
 
