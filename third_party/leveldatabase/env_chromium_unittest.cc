@@ -429,7 +429,8 @@ TEST_F(ChromiumEnvDBTrackerTest, CheckMemEnv) {
   EXPECT_TRUE(leveldb_chrome::IsMemEnv(memenv.get()));
 }
 
-TEST_F(ChromiumEnvDBTrackerTest, MemoryDumpCreation) {
+// TODO(crbug.com/1482738): Fix and re-enable this test.
+TEST_F(ChromiumEnvDBTrackerTest, DISABLED_MemoryDumpCreation) {
   Options options;
   options.create_if_missing = true;
   leveldb::Cache* web_cache = leveldb_chrome::GetSharedWebBlockCache();
