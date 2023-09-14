@@ -3148,7 +3148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.CheckMembershipCases"
-    enum="DeviceActiveCheckMembershipResponseCases" expires_after="2024-02-11">
+    enum="DeviceActiveCheckMembershipResponseCases" expires_after="2024-01-01">
   <owner>qianwan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3158,7 +3158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.Duration.{DeviceActiveClientState}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3170,7 +3170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.IsPsmOprfResponseBodySet"
-    enum="BooleanSuccess" expires_after="2024-02-04">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3181,7 +3181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.IsPsmOprfResponseParsedCorrectly"
-    enum="BooleanSuccess" expires_after="2024-02-04">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3192,7 +3192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.IsPsmQueryResponseBodySet"
-    enum="BooleanSuccess" expires_after="2023-10-01">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3203,7 +3203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.IsPsmQueryResponseParsedCorrectly"
-    enum="BooleanSuccess" expires_after="2023-10-01">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3214,7 +3214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.PreservedFileState"
-    enum="DeviceActiveClientPreservedFileState" expires_after="2024-01-14">
+    enum="DeviceActiveClientPreservedFileState" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3225,7 +3225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.PsmOprfResponseNetErrorCode"
-    enum="NetErrorCodes" expires_after="2024-02-04">
+    enum="NetErrorCodes" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3237,7 +3237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.PsmQueryResponseNetErrorCode"
-    enum="NetErrorCodes" expires_after="2024-02-04">
+    enum="NetErrorCodes" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3249,7 +3249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.QueryMembershipResult"
-    enum="BooleanSuccess" expires_after="2024-01-14">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3259,7 +3259,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.DeviceActiveClient.Recorded{DeviceActivityClientTransitionMethod}Minute"
-    units="int" expires_after="2023-09-01">
+    units="int" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3273,7 +3273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.Response.{DeviceActiveClientState}"
-    enum="DeviceActiveClientPsmResponse" expires_after="2023-09-01">
+    enum="DeviceActiveClientPsmResponse" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3286,7 +3286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.SavePreservedFileSuccess"
-    enum="BooleanSuccess" expires_after="2024-03-10">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3296,7 +3296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.StateCount"
-    enum="DeviceActiveClientState" expires_after="2024-03-10">
+    enum="DeviceActiveClientState" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3307,7 +3307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveController.IsTestImageDevice"
-    enum="BooleanSuccess" expires_after="2024-01-14">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3318,14 +3318,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActiveController.PsmDeviceActiveSecretIsSet"
-    enum="BooleanSuccess" expires_after="2023-09-01">
+    enum="BooleanSuccess" expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>Whether the PSM derived active secret is set (non empty).</summary>
 </histogram>
 
 <histogram name="Ash.DeviceActivity.MethodCalled" enum="DeviceActivityMethod"
-    expires_after="2024-01-14">
+    expires_after="2024-01-01">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
