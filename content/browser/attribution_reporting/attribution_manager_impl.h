@@ -238,6 +238,13 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                         const OsRegistration&,
                         bool success);
 
+  // Per the spec, source's and trigger's filtering keys prefixed with "_"
+  // should only be used for specified features, e.g., lookback window. Before
+  // enforcing this, we measure the use of reserved keys for non specified
+  // features. TODO(https://crbug.com/1481746): Clear when enforcing this.
+  void RecordReservedKeysUsage(const SourceOrTrigger& event,
+                               GlobalRenderFrameHostId) const;
+
   const raw_ref<StoragePartitionImpl> storage_partition_;
 
   // Holds pending sources and triggers in the order they were received by the

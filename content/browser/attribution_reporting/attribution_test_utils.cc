@@ -401,6 +401,18 @@ TriggerBuilder& TriggerBuilder::SetVerifications(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetFilterPair(
+    attribution_reporting::FilterPair filter_pair) {
+  filter_pair_ = std::move(filter_pair);
+  return *this;
+}
+
+TriggerBuilder& TriggerBuilder::SetAggregatableDedupKeyFilterPair(
+    attribution_reporting::FilterPair filter_pair) {
+  aggregatable_dedup_key_filter_pair_ = std::move(filter_pair);
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
   std::vector<attribution_reporting::EventTriggerData> event_triggers;
@@ -413,9 +425,10 @@ AttributionTrigger TriggerBuilder::Build(
   return AttributionTrigger(
       reporting_origin_,
       attribution_reporting::TriggerRegistration(
-          FilterPair(), debug_key_,
+          filter_pair_, debug_key_,
           {attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/aggregatable_dedup_key_, FilterPair())},
+              /*dedup_key=*/aggregatable_dedup_key_,
+              aggregatable_dedup_key_filter_pair_)},
           std::move(event_triggers), aggregatable_trigger_data_,
           aggregatable_values_, debug_reporting_,
           aggregation_coordinator_origin_, source_registration_time_config_),

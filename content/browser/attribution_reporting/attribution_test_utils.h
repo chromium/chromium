@@ -221,6 +221,9 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregatableDedupKey(
       absl::optional<uint64_t> aggregatable_dedup_key);
 
+  TriggerBuilder& SetAggregatableDedupKeyFilterPair(
+      attribution_reporting::FilterPair filter_pair);
+
   TriggerBuilder& SetIsWithinFencedFrame(bool is_within_fenced_frame);
 
   TriggerBuilder& SetDebugReporting(bool debug_reporting);
@@ -234,12 +237,15 @@ class TriggerBuilder {
   TriggerBuilder& SetVerifications(
       std::vector<network::TriggerVerification> verifications);
 
+  TriggerBuilder& SetFilterPair(attribution_reporting::FilterPair filter_pair);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
   uint64_t trigger_data_ = 111;
   attribution_reporting::SuitableOrigin destination_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
+  attribution_reporting::FilterPair filter_pair_;
   int64_t priority_ = 0;
   absl::optional<uint64_t> dedup_key_;
   absl::optional<uint64_t> debug_key_;
@@ -247,6 +253,7 @@ class TriggerBuilder {
       aggregatable_trigger_data_;
   attribution_reporting::AggregatableValues aggregatable_values_;
   absl::optional<uint64_t> aggregatable_dedup_key_;
+  attribution_reporting::FilterPair aggregatable_dedup_key_filter_pair_;
   bool is_within_fenced_frame_ = false;
   bool debug_reporting_ = false;
   absl::optional<attribution_reporting::SuitableOrigin>

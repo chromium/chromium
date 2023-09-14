@@ -4305,6 +4305,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.{RegistrationType}.UsesReservedKeys"
+    enum="Boolean" expires_after="M121">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Per the spec, {RegistrationType} filtering keys prefixed with &quot;_&quot;
+    should only be used for specified features, e.g., lookback window.
+
+    Before enforcing this, we use this metric to measure the number of
+    {RegistrationType}s that would be affected by the change. Recorded for
+    {RegistrationType} registrations which can otherwise be parsed successfully.
+  </summary>
+  <token key="RegistrationType">
+    <variant name="Source" summary="source"/>
+    <variant name="Trigger" summary="trigger"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.{ReportType}.NetworkConnectionTypeOnFailure"
     enum="NetworkConnectionType" expires_after="2024-03-10">
   <owner>linnan@chromium.org</owner>

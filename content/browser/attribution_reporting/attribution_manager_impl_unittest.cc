@@ -31,6 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -84,6 +85,11 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::FilterConfig;
+using ::attribution_reporting::FilterData;
+using ::attribution_reporting::FilterPair;
+using ::attribution_reporting::FiltersDisjunction;
+using ::attribution_reporting::FilterValues;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::OsRegistrationResult;
 
@@ -1426,6 +1432,30 @@ TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
                                 StorableSource::Result::kSuccess, 1);
 }
 
+TEST_F(AttributionManagerImplTest, HandleSource_RecordsUseOfReservedKeys) {
+  const struct {
+    FilterData filter_data;
+    bool expected;
+  } kTestCases[] = {
+      {
+          .filter_data = *FilterData::Create(FilterValues({{"_a", {"b"}}})),
+          .expected = true,
+      },
+      {
+          .filter_data = *FilterData::Create(FilterValues({{"a", {"b"}}})),
+          .expected = false,
+      }};
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    attribution_manager_->HandleSource(
+        SourceBuilder().SetFilterData(std::move(test_case.filter_data)).Build(),
+        kFrameId);
+    task_environment_.RunUntilIdle();
+    histograms.ExpectUniqueSample("Conversions.Source.UsesReservedKeys",
+                                  test_case.expected, 1);
+  }
+}
+
 TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
@@ -1561,6 +1591,76 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
   // we've already reached the maximum number of event-level reports per source.
   attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
   EXPECT_THAT(StoredReports(), IsEmpty());
+}
+
+TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsUseOfReservedKeys) {
+  const struct {
+    FilterPair filter_pair;
+    FilterPair dedup_key_filter_pair;
+    bool expected;
+  } kTestCases[] = {
+      {
+          .filter_pair = FilterPair(
+              /*positive=*/
+              FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"_a", {"b"}}}))}),
+              /*negative*/ {}),
+          .dedup_key_filter_pair = FilterPair(),
+          .expected = true,
+      },
+      {
+          .filter_pair = FilterPair(
+              /*positive=*/{},
+              /*negative*/ FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"_a", {"b"}}}))})),
+          .dedup_key_filter_pair = FilterPair(),
+          .expected = true,
+      },
+      {
+          .filter_pair = FilterPair(),
+          .dedup_key_filter_pair = FilterPair(
+              /*positive=*/FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"_a", {"b"}}}))}),
+              /*negative*/ {}),
+          .expected = true,
+      },
+      {
+          .filter_pair = FilterPair(),
+          .dedup_key_filter_pair = FilterPair(
+              /*positive=*/{},
+              /*negative*/ FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"_a", {"b"}}}))})),
+          .expected = true,
+      },
+      {
+          .filter_pair = FilterPair(
+              /*positive=*/
+              FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"a", {"b"}}}))}),
+              /*negative*/ FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"c", {"d"}}}))})),
+          .dedup_key_filter_pair = FilterPair(
+              /*positive=*/
+              FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"a", {"b"}}}))}),
+              /*negative*/ FiltersDisjunction(
+                  {*FilterConfig::Create(FilterValues({{"c", {"d"}}}))})),
+          .expected = false,
+      }};
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+
+    attribution_manager_->HandleTrigger(
+        TriggerBuilder()
+            .SetFilterPair(std::move(test_case.filter_pair))
+            .SetAggregatableDedupKeyFilterPair(
+                std::move(test_case.dedup_key_filter_pair))
+            .Build(),
+        kFrameId);
+    task_environment_.RunUntilIdle();
+    histograms.ExpectUniqueSample("Conversions.Trigger.UsesReservedKeys",
+                                  test_case.expected, 1);
+  }
 }
 
 TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
