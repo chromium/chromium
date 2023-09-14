@@ -59,11 +59,6 @@ void InputDeviceSettingsPolicyHandler::Initialize(PrefService* local_state,
         base::BindRepeating(
             &InputDeviceSettingsPolicyHandler::OnMousePoliciesChanged,
             base::Unretained(this)));
-    pref_change_registrar_local_state_.Add(
-        prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
-        base::BindRepeating(
-            &InputDeviceSettingsPolicyHandler::OnKeyboardPoliciesChanged,
-            base::Unretained(this)));
   }
   if (pref_service) {
     pref_change_registrar_.Init(pref_service);
@@ -88,11 +83,6 @@ void InputDeviceSettingsPolicyHandler::RefreshKeyboardPolicies(bool notify) {
     keyboard_policies_.top_row_are_fkeys_policy = GetBooleanPreferencePolicy(
         pref_change_registrar_.prefs(), prefs::kSendFunctionKeys);
   }
-
-  keyboard_policies_.enable_meta_fkey_rewrites_policy =
-      GetBooleanPreferencePolicy(
-          pref_change_registrar_local_state_.prefs(),
-          prefs::kDeviceSwitchFunctionKeysBehaviorEnabled);
 
   if (notify) {
     keyboard_policy_callback_.Run();

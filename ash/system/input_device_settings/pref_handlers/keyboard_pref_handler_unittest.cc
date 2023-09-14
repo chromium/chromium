@@ -709,9 +709,6 @@ TEST_F(KeyboardPrefHandlerTest,
   mojom::KeyboardPolicies policies;
   policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
       mojom::PolicyStatus::kManaged, !kDefaultTopRowAreFKeys);
-  policies.enable_meta_fkey_rewrites_policy =
-      mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kManaged,
-                                            kDefaultSuppressMetaFKeyRewrites);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
@@ -720,17 +717,11 @@ TEST_F(KeyboardPrefHandlerTest,
                                             &keyboard);
 
   EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
-  // For a non-external keyboard, the value of the EnabledMetaFkeyRewrites
-  // policy doesn't affect the value of the setting.
-  EXPECT_EQ(kDefaultSuppressMetaFKeyRewrites,
-            keyboard.settings->suppress_meta_fkey_rewrites);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
   EXPECT_FALSE(settings_dict->contains(prefs::kKeyboardSettingTopRowAreFKeys));
-  EXPECT_FALSE(
-      settings_dict->contains(prefs::kKeyboardSettingSuppressMetaFKeyRewrites));
 }
 
 TEST_F(KeyboardPrefHandlerTest,
@@ -738,9 +729,6 @@ TEST_F(KeyboardPrefHandlerTest,
   mojom::KeyboardPolicies policies;
   policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
       mojom::PolicyStatus::kRecommended, !kDefaultTopRowAreFKeys);
-  policies.enable_meta_fkey_rewrites_policy =
-      mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kRecommended,
-                                            !kDefaultSuppressMetaFKeyRewrites);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
@@ -749,13 +737,7 @@ TEST_F(KeyboardPrefHandlerTest,
                                             &keyboard);
 
   EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
-  // For a non-external keyboard, the value of the EnabledMetaFkeyRewrites
-  // policy doesn't affect the value of the setting.
-  EXPECT_EQ(kDefaultSuppressMetaFKeyRewrites,
-            keyboard.settings->suppress_meta_fkey_rewrites);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
-  keyboard.settings->suppress_meta_fkey_rewrites =
-      kDefaultSuppressMetaFKeyRewrites;
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
@@ -767,9 +749,6 @@ TEST_F(KeyboardPrefHandlerTest,
   mojom::KeyboardPolicies policies;
   policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
       mojom::PolicyStatus::kRecommended, !kDefaultTopRowAreFKeys);
-  policies.enable_meta_fkey_rewrites_policy =
-      mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kRecommended,
-                                            kDefaultSuppressMetaFKeyRewrites);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
@@ -781,11 +760,7 @@ TEST_F(KeyboardPrefHandlerTest,
   pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
                                             &keyboard);
   EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
-  EXPECT_EQ(!kDefaultSuppressMetaFKeyRewrites,
-            keyboard.settings->suppress_meta_fkey_rewrites);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
-  keyboard.settings->suppress_meta_fkey_rewrites =
-      kDefaultSuppressMetaFKeyRewrites;
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
@@ -797,9 +772,6 @@ TEST_F(KeyboardPrefHandlerTest,
   mojom::KeyboardPolicies policies;
   policies.top_row_are_fkeys_policy = mojom::InputDeviceSettingsPolicy::New(
       mojom::PolicyStatus::kManaged, !kDefaultTopRowAreFKeys);
-  policies.enable_meta_fkey_rewrites_policy =
-      mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kManaged,
-                                            kDefaultSuppressMetaFKeyRewrites);
 
   mojom::Keyboard keyboard;
   keyboard.device_key = kKeyboardKey1;
@@ -809,18 +781,12 @@ TEST_F(KeyboardPrefHandlerTest,
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   keyboard.settings->top_row_are_fkeys = !kDefaultTopRowAreFKeys;
-  keyboard.settings->suppress_meta_fkey_rewrites =
-      !kDefaultSuppressMetaFKeyRewrites;
   CallUpdateKeyboardSettings(kKeyboardKey1, *keyboard.settings);
 
   pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
                                             &keyboard);
   EXPECT_EQ(!kDefaultTopRowAreFKeys, keyboard.settings->top_row_are_fkeys);
-  EXPECT_EQ(!kDefaultSuppressMetaFKeyRewrites,
-            keyboard.settings->suppress_meta_fkey_rewrites);
   keyboard.settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
-  keyboard.settings->suppress_meta_fkey_rewrites =
-      kDefaultSuppressMetaFKeyRewrites;
   EXPECT_EQ(kKeyboardSettingsDefault, *keyboard.settings);
 
   const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
@@ -828,28 +794,6 @@ TEST_F(KeyboardPrefHandlerTest,
   EXPECT_EQ(
       !kDefaultTopRowAreFKeys,
       settings_dict->FindBool(prefs::kKeyboardSettingTopRowAreFKeys).value());
-}
-
-TEST_F(KeyboardPrefHandlerTest,
-       ExternalKeyboard_SuppressMetaFkeyRewritesPolicy) {
-  mojom::KeyboardPolicies policies;
-  policies.enable_meta_fkey_rewrites_policy =
-      mojom::InputDeviceSettingsPolicy::New(mojom::PolicyStatus::kManaged,
-                                            kDefaultSuppressMetaFKeyRewrites);
-
-  mojom::Keyboard keyboard;
-  keyboard.device_key = kKeyboardKey1;
-  keyboard.is_external = true;
-
-  pref_handler_->InitializeKeyboardSettings(pref_service_.get(), policies,
-                                            &keyboard);
-
-  EXPECT_EQ(!kDefaultSuppressMetaFKeyRewrites,
-            keyboard.settings->suppress_meta_fkey_rewrites);
-
-  const auto* settings_dict = GetSettingsDictForDeviceKey(kKeyboardKey1);
-  EXPECT_FALSE(
-      settings_dict->contains(prefs::kKeyboardSettingSuppressMetaFKeyRewrites));
 }
 
 TEST_F(KeyboardPrefHandlerTest, SixPackKeyRemappingsFlagDisabled) {

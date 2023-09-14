@@ -679,19 +679,4 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceAuthenticationURLAllowlist) {
                                base::Value(std::move(allowlist_items)));
 }
 
-TEST_F(DevicePolicyDecoderTest, DeviceSwitchFunctionKeysBehaviorEnabled) {
-  em::ChromeDeviceSettingsProto device_policy;
-
-  DecodeUnsetDevicePolicyTestHelper(
-      device_policy, key::kDeviceSwitchFunctionKeysBehaviorEnabled);
-
-  base::Value device_switch_function_keys_behavior_enabled(true);
-  device_policy.mutable_device_switch_function_keys_behavior_enabled()
-      ->set_enabled(device_switch_function_keys_behavior_enabled.GetBool());
-
-  DecodeDevicePolicyTestHelper(
-      device_policy, key::kDeviceSwitchFunctionKeysBehaviorEnabled,
-      std::move(device_switch_function_keys_behavior_enabled));
-}
-
 }  // namespace policy
