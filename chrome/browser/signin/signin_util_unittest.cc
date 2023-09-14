@@ -170,8 +170,9 @@ TEST_F(SigninUtilTest, IsProfileSeparationEnforcedByPolicies) {
   }
 }
 
-TEST_F(SigninUtilTest,
-       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile) {
+TEST_F(
+    SigninUtilTest,
+    ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfileLegacy) {
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   for (const auto& local_policy : all_policies) {
     if (local_policy.empty()) {
@@ -311,4 +312,61 @@ TEST_F(SigninUtilTest,
         << policy;
   }
 }
+
+TEST_F(SigninUtilTest, IsProfileSeparationEnforced) {
+  EXPECT_FALSE(signin_util::IsProfileSeparationEnforcedByPolicies(
+      policy::ProfileSeparationPolicies(
+          policy::ProfileSeparationSettings::SUGGESTED, absl::nullopt)));
+
+  EXPECT_TRUE(signin_util::IsProfileSeparationEnforcedByPolicies(
+      policy::ProfileSeparationPolicies(
+          policy::ProfileSeparationSettings::ENFORCED, absl::nullopt)));
+
+  EXPECT_FALSE(signin_util::IsProfileSeparationEnforcedByPolicies(
+      policy::ProfileSeparationPolicies(
+          policy::ProfileSeparationSettings::DISABLED, absl::nullopt)));
+}
+
+TEST_F(SigninUtilTest,
+       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile) {
+  for (const auto& local_policy : all_policies) {
+    if (local_policy.empty()) {
+      profile()->GetPrefs()->ClearPref(
+          prefs::kManagedAccountsSigninRestriction);
+    } else {
+      profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                       local_policy);
+    }
+
+    EXPECT_EQ(
+        signin_util::
+            ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+                profile(), policy::ProfileSeparationPolicies(
+                               policy::ProfileSeparationSettings::ENFORCED,
+                               policy::ProfileSeparationDataMigrationSettings::
+                                   USER_OPT_IN)),
+        KeepBrowsingDataExpected(local_policy, std::string()))
+        << local_policy;
+
+    EXPECT_EQ(
+        signin_util::
+            ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+                profile(), policy::ProfileSeparationPolicies(
+                               policy::ProfileSeparationSettings::ENFORCED,
+                               policy::ProfileSeparationDataMigrationSettings::
+                                   USER_OPT_OUT)),
+        KeepBrowsingDataExpected(local_policy, std::string()))
+        << local_policy;
+
+    EXPECT_FALSE(
+        signin_util::
+            ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+                profile(), policy::ProfileSeparationPolicies(
+                               policy::ProfileSeparationSettings::ENFORCED,
+                               policy::ProfileSeparationDataMigrationSettings::
+                                   ALWAYS_SEPARATE)))
+        << local_policy;
+  }
+}
+
 #endif

@@ -186,6 +186,12 @@ bool IsProfileSeparationEnforcedByProfile(
 bool IsProfileSeparationEnforcedByPolicies(
     const policy::ProfileSeparationPolicies&
         intercepted_account_separation_policies) {
+  if (intercepted_account_separation_policies.profile_separation_settings()
+          .value_or(policy::ProfileSeparationSettings::SUGGESTED) ==
+      policy::ProfileSeparationSettings::ENFORCED) {
+    return true;
+  }
+
   std::string legacy_policy_for_intercepted_profile =
       intercepted_account_separation_policies
           .managed_accounts_signin_restrictions()
@@ -214,10 +220,15 @@ bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
       legacy_policy_for_current_profile == "none" ||
       base::EndsWith(legacy_policy_for_current_profile, "keep_existing_data");
   bool allowed_by_intercepted_account =
-      legacy_policy_for_intercepted_profile.empty() ||
-      legacy_policy_for_intercepted_profile == "none" ||
-      base::EndsWith(legacy_policy_for_intercepted_profile,
-                     "keep_existing_data");
+      intercepted_account_separation_policies
+              .profile_separation_data_migration_settings()
+              .value_or(policy::ProfileSeparationDataMigrationSettings::
+                            USER_OPT_IN) !=
+          policy::ProfileSeparationDataMigrationSettings::ALWAYS_SEPARATE &&
+      (legacy_policy_for_intercepted_profile.empty() ||
+       legacy_policy_for_intercepted_profile == "none" ||
+       base::EndsWith(legacy_policy_for_intercepted_profile,
+                      "keep_existing_data"));
   return allowed_by_existing_profile && allowed_by_intercepted_account;
 }
 

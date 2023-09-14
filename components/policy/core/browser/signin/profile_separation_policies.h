@@ -12,6 +12,18 @@
 
 namespace policy {
 
+enum ProfileSeparationSettings : uint16_t {
+  SUGGESTED = 0,
+  ENFORCED = 1,
+  DISABLED = 2
+};
+
+enum ProfileSeparationDataMigrationSettings : uint16_t {
+  USER_OPT_IN = 1,
+  USER_OPT_OUT = 2,
+  ALWAYS_SEPARATE = 3
+};
+
 class POLICY_EXPORT ProfileSeparationPolicies {
  public:
   ProfileSeparationPolicies();
