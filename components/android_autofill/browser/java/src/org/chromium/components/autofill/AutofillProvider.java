@@ -224,8 +224,7 @@ public class AutofillProvider {
         transformFormFieldToContainViewCoordinates(formData);
         mRequest = new AutofillRequest(
                 formData, new FocusField((short) focus, absBound), hasServerPrediction);
-        int virtualId = mRequest.getVirtualId((short) focus);
-        notifyVirtualViewEntered(mContainerView, virtualId, absBound);
+        notifyVirtualViewEntered(mContainerView, focus, absBound);
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
         if (hasServerPrediction) {
             mAutofillUMA.onServerTypeAvailable(formData, /*afterSessionStarted=*/false);
@@ -259,11 +258,10 @@ public class AutofillProvider {
             // change, before the API is available, we still need to call
             // notifyVirtualViewEntered() to tell current coordinates because
             // the position could be changed.
-            int virtualId = mRequest.getVirtualId(sIndex);
             Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
             if (!focusField.absBound.equals(absBound)) {
-                notifyVirtualViewExited(mContainerView, virtualId);
-                notifyVirtualViewEntered(mContainerView, virtualId, absBound);
+                notifyVirtualViewExited(mContainerView, index);
+                notifyVirtualViewEntered(mContainerView, index, absBound);
                 // Update focus field position.
                 mRequest.setFocusField(new FocusField(focusField.fieldIndex, absBound));
             }
@@ -297,11 +295,10 @@ public class AutofillProvider {
         FocusField focusField = mRequest.getFocusField();
         if (focusField == null || sIndex != focusField.fieldIndex) return;
 
-        int virtualId = mRequest.getVirtualId(sIndex);
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
         // Notify the new position to the Android framework. Note that we do not call
         // notifyVirtualViewExited() here intentionally to avoid flickering.
-        notifyVirtualViewEntered(mContainerView, virtualId, absBound);
+        notifyVirtualViewEntered(mContainerView, index, absBound);
 
         // Update focus field position.
         mRequest.setFocusField(new FocusField(focusField.fieldIndex, absBound));
@@ -312,8 +309,9 @@ public class AutofillProvider {
         AutofillProviderJni.get().init(this, webContents);
     }
 
-    private boolean isDatalistField(int childId) {
-        FormFieldData field = mRequest.getField((short) childId);
+    private boolean isDatalistField(int index) {
+        assert index <= Short.MAX_VALUE;
+        FormFieldData field = mRequest.getField((short) index);
         return field.mControlType == FormFieldData.ControlType.DATALIST;
     }
 
@@ -334,16 +332,17 @@ public class AutofillProvider {
                 mContainerView, mRequest.getVirtualId((short) index), autofillValue);
     }
 
-    private void notifyVirtualViewEntered(View parent, int childId, Rect absBounds) {
+    private void notifyVirtualViewEntered(View parent, int index, Rect absBounds) {
         // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
-        if (isDatalistField(childId)) return;
-        mAutofillManager.notifyVirtualViewEntered(parent, childId, absBounds);
+        if (isDatalistField(index)) return;
+        mAutofillManager.notifyVirtualViewEntered(
+                parent, mRequest.getVirtualId((short) index), absBounds);
     }
 
-    private void notifyVirtualViewExited(View parent, int childId) {
+    private void notifyVirtualViewExited(View parent, int index) {
         // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
-        if (isDatalistField(childId)) return;
-        mAutofillManager.notifyVirtualViewExited(parent, childId);
+        if (isDatalistField(index)) return;
+        mAutofillManager.notifyVirtualViewExited(parent, mRequest.getVirtualId((short) index));
     }
 
     /**
@@ -394,7 +393,7 @@ public class AutofillProvider {
         if (mRequest == null) return;
         FocusField focusField = mRequest.getFocusField();
         if (focusField == null) return;
-        notifyVirtualViewExited(mContainerView, mRequest.getVirtualId(focusField.fieldIndex));
+        notifyVirtualViewExited(mContainerView, focusField.fieldIndex);
         mRequest.setFocusField(null);
     }
 
@@ -412,11 +411,10 @@ public class AutofillProvider {
 
             // Notify focus changed.
             if (prev != null) {
-                notifyVirtualViewExited(mContainerView, mRequest.getVirtualId(prev.fieldIndex));
+                notifyVirtualViewExited(mContainerView, prev.fieldIndex);
             }
 
-            notifyVirtualViewEntered(
-                    mContainerView, mRequest.getVirtualId((short) focusField), absBound);
+            notifyVirtualViewEntered(mContainerView, focusField, absBound);
 
             if (!causedByValueChange) {
                 // The focus field value might not sync with platform's
@@ -428,7 +426,7 @@ public class AutofillProvider {
         } else {
             if (prev == null) return;
             // Notify focus changed.
-            notifyVirtualViewExited(mContainerView, mRequest.getVirtualId(prev.fieldIndex));
+            notifyVirtualViewExited(mContainerView, prev.fieldIndex);
             mRequest.setFocusField(null);
         }
     }
