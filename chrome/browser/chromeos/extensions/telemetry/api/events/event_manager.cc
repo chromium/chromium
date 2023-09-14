@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 
-#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -56,19 +55,44 @@ EventManager::~EventManager() = default;
 EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     extensions::ExtensionId extension_id,
     crosapi::TelemetryEventCategoryEnum category) {
-  // This is a noop in case there is already an existing observation.
-  if (event_router_.IsExtensionObservingForCategory(extension_id, category)) {
-    // Early return in case the category is already observed by the extension.
-    return kSuccess;
-  }
-
-  if (app_ui_observers_.find(extension_id) == app_ui_observers_.end()) {
-    auto observer = CreateAppUiObserver(extension_id);
+  if (kCategoriesWithFocusRestriction.contains(category)) {
+    // Always check if there is a focused UI for focus-restricted events.
+    auto observer =
+        CreateAppUiObserver(extension_id, /*focused_ui_required=*/true);
     if (!observer) {
-      return kAppUiClosed;
+      return kAppUiNotFocused;
     }
 
-    app_ui_observers_.emplace(extension_id, std::move(observer));
+    if (auto it = app_ui_observers_.find(extension_id);
+        it == app_ui_observers_.end() ||
+        it->second->web_contents() != observer->web_contents()) {
+      app_ui_observers_.insert_or_assign(extension_id, std::move(observer));
+    }
+
+    // The existing observation may be restricted if the previous App UI was
+    // unfocused.
+    event_router_.UnrestrictReceiversOfExtension(extension_id);
+
+    if (event_router_.IsExtensionObservingForCategory(extension_id, category)) {
+      // Same extension and category can only have one observer.
+      return kSuccess;
+    }
+  } else {
+    // Existing observation can be reused for regular (non-focus-restricted)
+    // events.
+    if (event_router_.IsExtensionObservingForCategory(extension_id, category)) {
+      // Early return in case the category is already observed by the extension.
+      return kSuccess;
+    }
+
+    if (app_ui_observers_.find(extension_id) == app_ui_observers_.end()) {
+      auto observer =
+          CreateAppUiObserver(extension_id, /*focused_ui_required=*/false);
+      if (!observer) {
+        return kAppUiClosed;
+      }
+      app_ui_observers_.emplace(extension_id, std::move(observer));
+    }
   }
 
   GetRemoteService()->AddEventObserver(
@@ -100,8 +124,17 @@ mojo::Remote<crosapi::TelemetryEventService>& EventManager::GetRemoteService() {
 }
 
 void EventManager::OnAppUiClosed(extensions::ExtensionId extension_id) {
+  // As only the focused UI is tracked, all focus-restricted events' connections
+  // should be cut when `OnAppUiClosed` is called.
+  for (const auto category : kCategoriesWithFocusRestriction) {
+    if (event_router_.IsExtensionObservingForCategory(extension_id, category)) {
+      event_router_.ResetReceiversOfExtensionByCategory(extension_id, category);
+    }
+  }
+
   // Try to find another open UI.
-  auto observer = CreateAppUiObserver(extension_id);
+  auto observer =
+      CreateAppUiObserver(extension_id, /*focused_ui_required=*/false);
   if (observer) {
     app_ui_observers_.insert_or_assign(extension_id, std::move(observer));
     return;
@@ -111,8 +144,18 @@ void EventManager::OnAppUiClosed(extensions::ExtensionId extension_id) {
   event_router_.ResetReceiversForExtension(extension_id);
 }
 
+void EventManager::OnAppUiFocusChanged(extensions::ExtensionId extension_id,
+                                       bool is_focused) {
+  if (is_focused) {
+    event_router_.UnrestrictReceiversOfExtension(extension_id);
+  } else {
+    event_router_.RestrictReceiversOfExtension(extension_id);
+  }
+}
+
 std::unique_ptr<AppUiObserver> EventManager::CreateAppUiObserver(
-    extensions::ExtensionId extension_id) {
+    extensions::ExtensionId extension_id,
+    bool focused_ui_required) {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context_)
           ->GetExtensionById(extension_id,
@@ -122,8 +165,8 @@ std::unique_ptr<AppUiObserver> EventManager::CreateAppUiObserver(
     // won't be any related app UI.
     return nullptr;
   }
-  content::WebContents* contents =
-      FindTelemetryExtensionOpenAndSecureAppUi(browser_context_, extension);
+  content::WebContents* contents = FindTelemetryExtensionOpenAndSecureAppUi(
+      browser_context_, extension, focused_ui_required);
   if (!contents) {
     return nullptr;
   }
@@ -133,7 +176,9 @@ std::unique_ptr<AppUiObserver> EventManager::CreateAppUiObserver(
       extensions::ExternallyConnectableInfo::Get(extension)->matches.Clone(),
       // Unretained is safe here because `this` will own the observer.
       base::BindOnce(&EventManager::OnAppUiClosed, base::Unretained(this),
-                     extension_id));
+                     extension_id),
+      base::BindRepeating(&EventManager::OnAppUiFocusChanged,
+                          base::Unretained(this), extension_id));
 }
 
 }  // namespace chromeos
