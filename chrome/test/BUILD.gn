@@ -2274,6 +2274,7 @@ if (!is_android) {
       "../browser/performance_manager/user_tuning/resource_usage_tab_helper_browsertest.cc",
       "../browser/performance_timeline_browsertest.cc",
       "../browser/permissions/permission_delegation_browsertest.cc",
+      "../browser/permissions/permission_element_browsertest.cc",
       "../browser/permissions/permission_manager_browsertest.cc",
       "../browser/permissions/permission_request_manager_browsertest.cc",
       "../browser/picture_in_picture/auto_picture_in_picture_tab_helper_browsertest.cc",

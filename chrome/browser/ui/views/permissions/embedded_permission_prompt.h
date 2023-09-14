@@ -48,9 +48,6 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop {
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
-
- private:
-  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_

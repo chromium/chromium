@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<script>
+  function waitForDismissedEvent(id) {
+    (async () => {
+      await new Promise(resolve => {
+        document.getElementById(id).ondismissed = function (event) {
+          resolve();
+        };
+      });
+    })();
+    return true;
+  }
+
+  function waitForResolvedEvent(id) {
+    (async () => {
+      await new Promise(resolve => {
+        document.getElementById(id).onresolved = function (event) {
+          resolve();
+        };
+      });
+    })();
+    return true;
+  }
+</script>
+<body>
+  <permission id="geolocation" type="geolocation">geolocation</permission>
+  <permission id="microphone" type="microphone">microphone</permission>
+  <permission id="camera" type="camera">camera</permission>
+  <permission id="invalid" type="invalid microphone">invalid</permission>
+  <permission id="camera-microphone" type="camera microphone">group</permission>
+</body>
+</html>
