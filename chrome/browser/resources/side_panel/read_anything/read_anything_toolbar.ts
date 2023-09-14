@@ -168,6 +168,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   };
 
   private isReadAloudEnabled_: boolean;
+  private isHighlightOn_: boolean = true;
 
   // If Read Aloud is in the paused state.
   isPaused = true;
@@ -285,6 +286,22 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
     });
+  }
+
+  private onHighlightClick_() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const button = shadowRoot.getElementById('highlight');
+    assert(button);
+    if (this.isHighlightOn_) {
+      this.isHighlightOn_ = false;
+      button.setAttribute('iron-icon', 'read-anything:highlight-off');
+      button.setAttribute('title', loadTimeData.getString('turnHighlightOn'));
+    } else {
+      this.isHighlightOn_ = true;
+      button.setAttribute('iron-icon', 'read-anything:highlight-on');
+      button.setAttribute('title', loadTimeData.getString('turnHighlightOff'));
+    }
   }
 
   private onLetterSpacingClick_(event: DomRepeatEvent<MenuStateItem>) {

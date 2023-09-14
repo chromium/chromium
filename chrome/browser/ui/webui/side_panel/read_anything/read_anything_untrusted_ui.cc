@@ -64,6 +64,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"yellowColorTitle", IDS_READING_MODE_YELLOW_COLOR_LABEL},
       {"blueColorTitle", IDS_READING_MODE_BLUE_COLOR_LABEL},
       {"back", IDS_READING_MODE_BACK},
+      {"turnHighlightOff", IDS_READING_MODE_TURN_HIGHLIGHT_OFF},
+      {"turnHighlightOn", IDS_READING_MODE_TURN_HIGHLIGHT_ON},
       {"lineSpacingStandardTitle", IDS_READING_MODE_SPACING_COMBOBOX_STANDARD},
       {"lineSpacingLooseTitle", IDS_READING_MODE_SPACING_COMBOBOX_LOOSE},
       {"lineSpacingVeryLooseTitle",

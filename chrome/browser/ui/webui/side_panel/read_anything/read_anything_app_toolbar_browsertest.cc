@@ -111,6 +111,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
   ASSERT_TRUE(RunTest("toolbar_visible_with_flag.js"));
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
+                       HighlightCallback_TogglesHighlight) {
+  ASSERT_TRUE(RunTest("highlight_callback_toggles_highlight.js"));
+}
+
 // TODO(crbug.com/1474951): Remove this test once Read Aloud flag is removed.
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, ReadAloud_Hidden) {
   ASSERT_TRUE(RunTest("toolbar_without_flag_hides_read_aloud.js"));
