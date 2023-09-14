@@ -4,12 +4,12 @@
 
 package org.chromium.incrementalinstall;
 
-import android.app.AppComponentFactory;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -32,13 +32,11 @@ import java.util.Map;
 public final class BootstrapApplication extends Application {
     private static final String TAG = "incrementalinstall";
     private static final String MANAGED_DIR_PREFIX = "/data/local/tmp/incremental-app-";
-    private static final String REAL_APP_META_DATA_NAME = "incremental-install-application";
+    private static final String REAL_APP_META_DATA_NAME = "incremental-install-real-app";
     private static final String REAL_INSTRUMENTATION_META_DATA_NAME0 =
-            "incremental-install-instrumentation-0";
+            "incremental-install-real-instrumentation-0";
     private static final String REAL_INSTRUMENTATION_META_DATA_NAME1 =
-            "incremental-install-instrumentation-1";
-    private static final String REAL_APP_COMPONENT_FACTORY =
-            "incremental-install-app-component-factory";
+            "incremental-install-real-instrumentation-1";
 
     private ClassLoaderPatcher mClassLoaderPatcher;
     private Application mRealApplication;
@@ -52,8 +50,6 @@ public final class BootstrapApplication extends Application {
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
         try {
-            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(
-                    context.getPackageName(), PackageManager.GET_META_DATA);
             mActivityThread = Reflect.invokeMethod(Class.forName("android.app.ActivityThread"),
                     "currentActivityThread");
             mClassLoaderPatcher = new ClassLoaderPatcher(context);
@@ -118,12 +114,6 @@ public final class BootstrapApplication extends Application {
                 }
             }
 
-            String realAppComponentFactory = appInfo.metaData.getString(REAL_APP_COMPONENT_FACTORY);
-            if (realAppComponentFactory != null) {
-                BootstrapAppComponentFactory.sDelegate = (AppComponentFactory) Reflect.newInstance(
-                        Class.forName(realAppComponentFactory));
-            }
-
             // mInstrumentationAppDir is one of a set of fields that is initialized only when
             // instrumentation is active.
             if (Reflect.getField(mActivityThread, "mInstrumentationAppDir") != null) {
@@ -132,7 +122,7 @@ public final class BootstrapApplication extends Application {
                     metaDataName = REAL_INSTRUMENTATION_META_DATA_NAME1;
                 }
                 mRealInstrumentation =
-                        initInstrumentation(appInfo.metaData.getString(metaDataName));
+                        initInstrumentation(getClassNameFromMetadata(metaDataName, instContext));
             } else {
                 Log.i(TAG, "No instrumentation active.");
             }
@@ -147,7 +137,7 @@ public final class BootstrapApplication extends Application {
             // attachBaseContext() is called from ActivityThread#handleBindApplication() and
             // Application#mApplication is changed right after we return. Thus, we cannot swap
             // the Application instances until onCreate() is called.
-            String realApplicationName = appInfo.metaData.getString(REAL_APP_META_DATA_NAME);
+            String realApplicationName = getClassNameFromMetadata(REAL_APP_META_DATA_NAME, context);
             Log.i(TAG, "Instantiating " + realApplicationName);
             Instrumentation anyInstrumentation =
                     mRealInstrumentation != null ? mRealInstrumentation : mOrigInstrumentation;
@@ -163,6 +153,22 @@ public final class BootstrapApplication extends Application {
         } catch (Exception e) {
             throw new RuntimeException("Incremental install failed.", e);
         }
+    }
+
+    /**
+     * Returns the fully-qualified class name for the given key, stored in a
+     * &lt;meta&gt; witin the manifest.
+     */
+    private static String getClassNameFromMetadata(String key, Context context)
+            throws NameNotFoundException {
+        String pkgName = context.getPackageName();
+        ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(pkgName,
+                PackageManager.GET_META_DATA);
+        String value = appInfo.metaData.getString(key);
+        if (value != null && !value.contains(".")) {
+            value = pkgName + "." + value;
+        }
+        return value;
     }
 
     /**
