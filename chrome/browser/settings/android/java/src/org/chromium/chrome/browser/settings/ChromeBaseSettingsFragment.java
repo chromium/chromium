@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
@@ -23,21 +24,25 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
 
     /** @return The profile associated with the current Settings screen. */
     public Profile getProfile() {
+        assert mProfile != null : "Attempting to use the profile before initialization.";
         return mProfile;
     }
 
     @Override
-    public void setProfile(Profile profile) {
+    public void setProfile(@NonNull Profile profile) {
         mProfile = profile;
     }
 
     /** @return The launcher for help and feedback actions. */
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
+        assert mHelpAndFeedbackLauncher
+                != null : "Attempting to use the HelpAndFeedbackLauncher before initialization.";
         return mHelpAndFeedbackLauncher;
     }
 
     @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+    public void setHelpAndFeedbackLauncher(
+            @NonNull HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 }
