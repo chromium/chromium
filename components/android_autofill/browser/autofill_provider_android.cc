@@ -32,14 +32,13 @@ using mojom::SubmissionSource;
 using FieldInfo = AutofillProviderAndroidBridge::FieldInfo;
 
 // static
-AutofillProviderAndroid* AutofillProviderAndroid::Create(
+void AutofillProviderAndroid::CreateForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(!FromWebContents(web_contents));
-  // This object is owned by WebContents - it passed ownership of itself to
-  // the WebContents in its (parent class) constructor.
-  // TODO(crbug.com/1478934): Simplify this - the parent class should just be an
-  // interface.
-  return new AutofillProviderAndroid(web_contents);
+  if (!FromWebContents(web_contents)) {
+    web_contents->SetUserData(
+        UserDataKey(),
+        base::WrapUnique(new AutofillProviderAndroid(web_contents)));
+  }
 }
 
 AutofillProviderAndroid* AutofillProviderAndroid::FromWebContents(

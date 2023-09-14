@@ -26,7 +26,6 @@ void AutofillProvider::set_is_download_manager_disabled_for_testing() {
 
 AutofillProvider::AutofillProvider(content::WebContents* web_contents)
     : content::WebContentsUserData<AutofillProvider>(*web_contents) {
-  web_contents->SetUserData(UserDataKey(), base::WrapUnique(this));
 }
 
 AutofillProvider::~AutofillProvider() = default;

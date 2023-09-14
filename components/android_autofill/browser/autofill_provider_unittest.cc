@@ -47,6 +47,14 @@ class FakeAutofillProvider : public TestAutofillProvider {
  public:
   using TestAutofillProvider::TestAutofillProvider;
 
+  static void CreateForWebContents(content::WebContents* web_contents) {
+    if (!FromWebContents(web_contents)) {
+      web_contents->SetUserData(
+          UserDataKey(),
+          base::WrapUnique(new FakeAutofillProvider(web_contents)));
+    }
+  }
+
   bool HasServerPrediction(FormGlobalId form_id) const {
     return manager_->has_server_prediction(form_id);
   }
@@ -72,7 +80,7 @@ class AutofillProviderTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    CreateAutofillProvider();
+    FakeAutofillProvider::CreateForWebContents(web_contents());
     NavigateAndCommit(GURL("about:blank"));
   }
 
@@ -86,13 +94,6 @@ class AutofillProviderTest : public content::RenderViewHostTestHarness {
   }
 
  private:
-  // The AutofillProvider is owned by the `web_contents()`. It registers itself
-  // as WebContentsUserData.
-  void CreateAutofillProvider() {
-    ASSERT_FALSE(FakeAutofillProvider::FromWebContents(web_contents()));
-    new FakeAutofillProvider(web_contents());
-    ASSERT_TRUE(FakeAutofillProvider::FromWebContents(web_contents()));
-  }
 
   test::AutofillUnitTestEnvironment autofill_environment_;
   TestAutofillClientInjector<TestContentAutofillClient>

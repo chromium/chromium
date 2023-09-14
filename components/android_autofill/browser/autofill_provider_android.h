@@ -26,8 +26,7 @@ class AutofillProviderAndroid : public AutofillProvider,
                                 public AutofillProviderAndroidBridge::Delegate,
                                 public content::WebContentsObserver {
  public:
-  static AutofillProviderAndroid* Create(
-      content::WebContents* web_contents);
+  static void CreateForWebContents(content::WebContents* web_contents);
 
   static AutofillProviderAndroid* FromWebContents(
       content::WebContents* web_contents);

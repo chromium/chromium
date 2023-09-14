@@ -13,10 +13,8 @@ namespace autofill {
 
 class TestAutofillProvider : public AutofillProvider {
  public:
-  // Create a instance owned by |web_contents|.
   explicit TestAutofillProvider(content::WebContents* web_contents)
       : AutofillProvider(web_contents) {}
-
   ~TestAutofillProvider() override = default;
 
   // AutofillProvider:

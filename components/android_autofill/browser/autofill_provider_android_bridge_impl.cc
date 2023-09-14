@@ -32,12 +32,9 @@ void JNI_AutofillProvider_Init(JNIEnv* env,
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
-  auto* provider = AutofillProvider::FromWebContents(web_contents);
-  if (!provider) {
-    provider = AutofillProviderAndroid::Create(web_contents);
-  }
-  static_cast<AutofillProviderAndroid*>(provider)->AttachToJavaAutofillProvider(
-      env, jcaller);
+  AutofillProviderAndroid::CreateForWebContents(web_contents);
+  AutofillProviderAndroid::FromWebContents(web_contents)
+      ->AttachToJavaAutofillProvider(env, jcaller);
 }
 
 AutofillProviderAndroidBridgeImpl::AutofillProviderAndroidBridgeImpl(
