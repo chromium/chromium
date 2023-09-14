@@ -38,6 +38,10 @@ constexpr int kDirection[kActionMoveKeysSize][kAxisSize] = {{0, -1},
 // the edit mode.
 constexpr int kOffsetToTouchPoint = -1;  // 2 - 3(kDotOutsideStrokeThickness)
 
+// The space between EditingList and main window when EditingList is outside of
+// the game window.
+static constexpr int kEditingListSpaceBetweenMainWindow = 5;
+
 // Display mode for display overlay.
 enum class DisplayMode {
   kNone,

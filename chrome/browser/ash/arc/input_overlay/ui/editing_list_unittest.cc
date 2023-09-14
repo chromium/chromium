@@ -146,14 +146,21 @@ TEST_F(EditingListTest, TestReposition) {
   auto initial_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
   auto game_window_bounds = widget_->GetNativeWindow()->bounds();
   // It should be magnetic to the left side the sibling game window initially.
-  EXPECT_EQ(gfx::Point(game_window_bounds.x(), initial_list_bounds.y()),
-            initial_list_bounds.top_right());
+  EXPECT_EQ(
+      gfx::Point(game_window_bounds.x() - kEditingListSpaceBetweenMainWindow,
+                 initial_list_bounds.y()),
+      initial_list_bounds.top_right());
   // Drag move `editing_list_widget` to the right. EditingList should be
   // magnetic to the right side of the sibling game window outside. No change on
   // y-axis.
-  MouseDragEditingListBy(game_window_bounds.width(), 60);
+  MouseDragEditingListBy(game_window_bounds.width() / 2 +
+                             initial_list_bounds.width() / 2 +
+                             kEditingListSpaceBetweenMainWindow,
+                         60);
   auto final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
-  EXPECT_EQ(gfx::Point(game_window_bounds.right(), initial_list_bounds.y()),
+  EXPECT_EQ(gfx::Point(
+                game_window_bounds.right() + kEditingListSpaceBetweenMainWindow,
+                initial_list_bounds.y()),
             final_list_bounds.origin());
 
   // 2. Move game window position so there is no enough space on right outside.
@@ -161,14 +168,21 @@ TEST_F(EditingListTest, TestReposition) {
   widget_->GetNativeWindow()->SetBounds(gfx::Rect(600, 350, 300, 200));
   initial_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
   game_window_bounds = widget_->GetNativeWindow()->bounds();
-  EXPECT_EQ(gfx::Point(game_window_bounds.x(), initial_list_bounds.y()),
-            initial_list_bounds.top_right());
+  EXPECT_EQ(
+      gfx::Point(game_window_bounds.x() - kEditingListSpaceBetweenMainWindow,
+                 initial_list_bounds.y()),
+      initial_list_bounds.top_right());
   // Drag move `editing_list_widget` to the right. EditingList should be still
   // magnetic to the left side of the sibling game window outside.
-  MouseDragEditingListBy(game_window_bounds.width(), 60);
+  MouseDragEditingListBy(game_window_bounds.width() / 2 +
+                             initial_list_bounds.width() / 2 +
+                             kEditingListSpaceBetweenMainWindow,
+                         60);
   final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
-  EXPECT_EQ(gfx::Point(game_window_bounds.x(), initial_list_bounds.y()),
-            final_list_bounds.top_right());
+  EXPECT_EQ(
+      gfx::Point(game_window_bounds.x() - kEditingListSpaceBetweenMainWindow,
+                 initial_list_bounds.y()),
+      final_list_bounds.top_right());
 
   // 3. Set game window bounds so there is no enough space on both left and
   // right outside. `editing_list_widget` is magnetic to the left side and
@@ -183,14 +197,20 @@ TEST_F(EditingListTest, TestReposition) {
   EXPECT_EQ(content_bounds_origin, initial_list_bounds.origin());
   // Drag move `editing_list_widget` to the right. EditingList should be
   // magnetic to the right side of the sibling game window outside.
-  TouchDragEditingListBy(game_window_bounds.width(), 30);
+  TouchDragEditingListBy(game_window_bounds.width() / 2 +
+                             initial_list_bounds.width() / 2 +
+                             kEditingListSpaceBetweenMainWindow,
+                         30);
   final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
   auto content_bounds_top_right = content_bounds.top_right();
   content_bounds_top_right.Offset(-24, 24);
   EXPECT_EQ(content_bounds_top_right, final_list_bounds.top_right());
   // Drag move `editing_list_widget` to the left. EditingList should be
   // magnetic to the left side of the sibling game window outside.
-  TouchDragEditingListBy(-game_window_bounds.width(), 40);
+  TouchDragEditingListBy(
+      -(game_window_bounds.width() / 2 + initial_list_bounds.width() / 2 +
+        kEditingListSpaceBetweenMainWindow),
+      40);
   final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
   EXPECT_EQ(content_bounds_origin, final_list_bounds.origin());
 }

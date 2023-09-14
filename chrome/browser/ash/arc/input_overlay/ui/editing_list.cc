@@ -36,7 +36,7 @@ namespace {
 constexpr int kMainContainerWidth = 296;
 
 // Default offset when the attached widget inside of the game window.
-constexpr int kWidgetOffset = 24;
+constexpr int kWidgetOffsetInside = 24;
 
 }  // namespace
 
@@ -265,9 +265,11 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
 
   // Check if there is space on left and right side outside of the sibling game
   // window.
-  bool has_space_on_left = anchor_bounds.x() - width >= 0;
+  bool has_space_on_left =
+      anchor_bounds.x() - width - kEditingListSpaceBetweenMainWindow >= 0;
   bool has_space_on_right =
-      anchor_bounds.right() + width < root_window_bounds.width();
+      anchor_bounds.right() + width + kEditingListSpaceBetweenMainWindow <
+      root_window_bounds.width();
 
   // Check if the attached widget should be inside or outside of the attached
   // sibling game window.
@@ -290,16 +292,18 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
   gfx::Point window_origin = anchor_bounds.origin();
   if (on_left_side) {
     window_origin.SetPoint(
-        should_be_outside ? anchor_bounds.x() - width
-                          : anchor_bounds.x() + kWidgetOffset,
+        should_be_outside
+            ? anchor_bounds.x() - width - kEditingListSpaceBetweenMainWindow
+            : anchor_bounds.x() + kWidgetOffsetInside,
         should_be_outside ? window_origin.y()
-                          : window_origin.y() + kWidgetOffset);
+                          : window_origin.y() + kWidgetOffsetInside);
   } else {
     window_origin.SetPoint(
-        should_be_outside ? anchor_bounds.right()
-                          : anchor_bounds.right() - width - kWidgetOffset,
+        should_be_outside
+            ? anchor_bounds.right() + kEditingListSpaceBetweenMainWindow
+            : anchor_bounds.right() - width - kWidgetOffsetInside,
         should_be_outside ? window_origin.y()
-                          : window_origin.y() + kWidgetOffset);
+                          : window_origin.y() + kWidgetOffsetInside);
   }
 
   return window_origin;
