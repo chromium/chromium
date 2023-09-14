@@ -490,4 +490,87 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
             GURL(kDefaultIconUrl));
 }
 
+TEST_F(AddToHomescreenDataFetcherTest,
+       UniversalInstallManifestNoNameNoShortName) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kUniversalInstallManifest);
+  // Test that when the manifest does not provide either Manifest::short_name
+  // nor Manifest::name but web page metadata provides a application-name.
+  blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
+  manifest->name = absl::nullopt;
+  manifest->short_name = absl::nullopt;
+  SetManifest(std::move(manifest));
+  mojom::WebPageMetadataPtr metadata = BuildDefaultMetadata();
+  SetWebPageMetadata(std::move(metadata));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+             blink::mojom::DisplayMode::kStandalone, true,
+             InstallableStatusCode::NO_ERROR_DETECTED);
+
+  EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
+  EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);
+  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
+  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
+            GURL(kDefaultIconUrl));
+}
+
+TEST_F(AddToHomescreenDataFetcherTest, UniversalInstallNoManifestIcons) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kUniversalInstallManifest, features::kUniversalInstallIcon},
+      {});
+  // Test that when the manifest does not provide any icon, we fallback to use
+  // favicon.
+  blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
+  manifest->icons.clear();
+  SetManifest(std::move(manifest));
+
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"http://www.google.com/favicon.ico"},
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
+
+  // Fake that |InstallableIconFetcher| fetched the icon correctly.
+  SetPrimaryIcon(GURL(kDefaultIconUrl));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kDefaultManifestShortName,
+             kDefaultManifestName, blink::mojom::DisplayMode::kStandalone, true,
+             InstallableStatusCode::NO_ERROR_DETECTED);
+
+  EXPECT_EQ(fetcher->shortcut_info().name, kDefaultManifestName);
+  EXPECT_EQ(fetcher->shortcut_info().short_name, kDefaultManifestShortName);
+  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
+  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
+            GURL(kDefaultIconUrl));
+}
+
+TEST_F(AddToHomescreenDataFetcherTest, UniversalManifestDisplay) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kUniversalInstallManifest);
+  // Test that when the manifest does not provide display mode, we fallback to
+  // install with DisplayMode::kMinimalUi.
+  blink::mojom::ManifestPtr manifest = BuildDefaultManifest();
+  manifest->display = blink::mojom::DisplayMode::kUndefined;
+  SetManifest(std::move(manifest));
+  mojom::WebPageMetadataPtr metadata = BuildDefaultMetadata();
+  SetWebPageMetadata(std::move(metadata));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kDefaultManifestShortName,
+             kDefaultManifestName, blink::mojom::DisplayMode::kMinimalUi, true,
+             InstallableStatusCode::NO_ERROR_DETECTED);
+
+  EXPECT_EQ(fetcher->shortcut_info().name, kDefaultManifestName);
+  EXPECT_EQ(fetcher->shortcut_info().short_name, kDefaultManifestShortName);
+  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
+  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
+            GURL(kDefaultIconUrl));
+}
+
 }  // namespace webapps

@@ -73,7 +73,12 @@ InstallableParams ParamsToFetchPrimaryIcon() {
 InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
-  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
+  if (base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
+    params.installable_criteria =
+        InstallableCriteria::kImplicitManifestFieldsHTML;
+  } else {
+    params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
+  }
   return params;
 }
 
