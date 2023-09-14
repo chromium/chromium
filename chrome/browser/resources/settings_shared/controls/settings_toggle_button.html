@@ -34,11 +34,9 @@
     min-height: var(--cr-section-min-height);
   }
 
-<if expr="chromeos_ash">
   #icon {
     margin-inline-end: var(--cr-icon-button-margin-end);
   }
-</if>
 
   #labelWrapper {
     padding: var(--cr-section-vertical-padding) 0;
@@ -60,14 +58,12 @@
   }
 </style>
 <div id="outerRow" noSubLabel$="[[!subLabel]]">
-  <if expr="chromeos_ash">
-    <template is="dom-if" if="[[icon]]">
-      <span id="icon" aria-hidden="true">
-        <iron-icon slot="icon" icon="[[icon]]">
-        </iron-icon>
-      </span>
-    </template>
-  </if>
+  <template is="dom-if" if="[[icon]]">
+    <span id="icon" aria-hidden="true">
+      <iron-icon slot="icon" icon="[[icon]]">
+      </iron-icon>
+    </span>
+  </template>
   <div class="flex" id="labelWrapper" hidden$="[[!label]]">
     <div class="label" aria-hidden="[[!ariaShowLabel]]">[[label]]</div>
     <div class="cr-secondary-text label" id="sub-label">

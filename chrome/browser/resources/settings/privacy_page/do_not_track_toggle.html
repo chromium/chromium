@@ -1,4 +1,8 @@
-    <style include="settings-shared"></style>
+    <style include="settings-shared">
+      .toggle {
+        padding: 0;
+      }
+    </style>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
       <settings-toggle-button id="toggle" class="hr" label="$i18n{doNotTrack}"
         pref="{{prefs.enable_do_not_track}}"
@@ -13,6 +17,7 @@
         on-settings-boolean-control-change="onToggleChange_"
         sub-label="$i18n{trackingProtectionDoNotTrackToggleSubLabel}"
         disabled="[[disabled]]"
+        icon="settings:visibility-off"
         no-set-pref>
       </settings-toggle-button>
     </template>

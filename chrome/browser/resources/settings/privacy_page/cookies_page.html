@@ -13,6 +13,15 @@
         margin-top: 16px;
       }
 
+      #standard,
+      #custom {
+        margin-bottom: var(--cr-section-vertical-padding);
+      }
+
+      #blockThirdPartyToggle {
+        padding: 0;
+      }
+
       .radio-group-sub-heading {
         padding-bottom: 10px;
       }
@@ -25,10 +34,6 @@
 
       .bullet-row > div {
         padding: 0 var(--cr-section-padding);
-      }
-
-      .bullet-row > iron-icon {
-        padding-left: 8px;
       }
 
       .bullet-line {
@@ -128,7 +133,8 @@
                 learn-more-url="
                     $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
                 disabled="[[!isTrackingProtectionCustom_(
-                  prefs.tracking_protection.tracking_protection_level.value)]]">
+                  prefs.tracking_protection.tracking_protection_level.value)]]"
+                icon="settings:visibility-off">
               </settings-toggle-button>
               <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}"
                 disabled="[[!isTrackingProtectionCustom_(
