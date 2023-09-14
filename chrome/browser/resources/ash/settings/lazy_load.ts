@@ -258,6 +258,7 @@ export {SettingsCupsSavedPrintersElement} from './os_printing_page/cups_saved_pr
 export {SettingsCupsAddPrinterDialogElement} from './os_printing_page/cups_settings_add_printer_dialog.js';
 export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
+export {PrintingSettingsCardElement} from './os_printing_page/printing_settings_card.js';
 export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';

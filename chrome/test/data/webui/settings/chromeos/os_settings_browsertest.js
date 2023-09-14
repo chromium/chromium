@@ -772,6 +772,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  [
+   'OsPrintingPagePrintingSettingsCard',
+   'os_printing_page/printing_settings_card_test.js'
+ ],
+ [
    'OsPrintingPageCupsPrintServer', 'os_printing_page/cups_print_server_test.js'
  ],
  [
