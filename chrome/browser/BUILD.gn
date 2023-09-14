@@ -1801,6 +1801,8 @@ static_library("browser") {
     "tpcd/experiment/eligibility_service.h",
     "tpcd/experiment/eligibility_service_factory.cc",
     "tpcd/experiment/eligibility_service_factory.h",
+    "tpcd/experiment/experiment_manager.cc",
+    "tpcd/experiment/experiment_manager.h",
     "tpcd/experiment/tpcd_experiment_features.cc",
     "tpcd/experiment/tpcd_experiment_features.h",
     "tpcd/experiment/tpcd_utils.h",
