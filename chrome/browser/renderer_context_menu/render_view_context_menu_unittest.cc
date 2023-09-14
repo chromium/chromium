@@ -22,8 +22,13 @@
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -540,7 +545,9 @@ TEST_F(RenderViewContextMenuDeveloperItemsTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
+class RenderViewContextMenuPrefsTest
+    : public ChromeRenderViewHostTestHarness,
+      public predictors::PreconnectManager::Observer {
  public:
   RenderViewContextMenuPrefsTest() = default;
 
@@ -578,6 +585,24 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
                                 -> std::unique_ptr<KeyedService> {
           return std::make_unique<syncer::TestSyncService>();
         }));
+    last_preresolved_url_ = GURL();
+  }
+
+  // Begins listening for loading preconnections.
+  void BeginPreresolveListening() {
+    auto* loading_predictor =
+        predictors::LoadingPredictorFactory::GetForProfile(
+            GetBrowser()->profile());
+    ASSERT_TRUE(loading_predictor);
+    loading_predictor->preconnect_manager()->SetObserverForTesting(this);
+    last_preresolved_url_ = GURL();
+  }
+
+  void OnPreresolveFinished(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      bool success) override {
+    last_preresolved_url_ = url;
   }
 
   void TearDown() override {
@@ -652,11 +677,14 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
     return browser_.get();
   }
 
+  const GURL& last_preresolved_url() const { return last_preresolved_url_; }
+
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   std::unique_ptr<Browser> browser_;
+  GURL last_preresolved_url_;
 };
 
 // Verifies when Incognito Mode is not available (disabled by policy),
@@ -1644,6 +1672,118 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+
+// Verify that the adding the companion image search option to the menu
+// issues a preconnection request to lens.google.com.
+TEST_F(RenderViewContextMenuPrefsTest,
+       CompanionImageSearchIssuesGoogleLensPreconnect) {
+  BeginPreresolveListening();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{companion::features::internal::kSidePanelCompanion,
+        {{"open-companion-for-image-search", "true"}}}},
+      {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
+}
+
+// Verify that the adding the companion region search option to the menu
+// issues a preconnection request to lens.google.com.
+TEST_F(RenderViewContextMenuPrefsTest,
+       CompanionRegionSearchIssuesGoogleLensPreconnect) {
+  BeginPreresolveListening();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{companion::features::internal::kSidePanelCompanion,
+        {{"open-companion-for-image-search", "true"}}}},
+      {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
+}
+
+// Verify that the adding the Lens image search option to the menu
+// issues a preconnection request to lens.google.com.
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensImageSearchIssuesGoogleLensPreconnect) {
+  BeginPreresolveListening();
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
+}
+
+// Verify that the adding the Lens region search option to the menu
+// issues a preconnection request to lens.google.com.
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensRegionSearchIssuesGoogleLensPreconnect) {
+  BeginPreresolveListening();
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
 // Verify that the new badge is added to region search context menu items if

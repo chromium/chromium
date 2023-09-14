@@ -78,6 +78,12 @@ constexpr base::FeatureParam<bool>
         &kLensStandalone, "dismiss-loading-state-on-navigation-entry-committed",
         true};
 
+constexpr base::FeatureParam<bool> kShouldIssuePreconnectForLens{
+    &kLensStandalone, "lens-issue-preconnect", true};
+
+constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
+    &kLensStandalone, "lens-preconnect-key", "https://google.com"};
+
 constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
     &kLensStandalone, "dismiss-loading-state-on-did-finish-load", false};
 
@@ -235,6 +241,14 @@ std::string GetLensPingURL() {
 
 bool GetLensPingIsSequential() {
   return kPingLensSequentially.Get();
+}
+
+bool GetShouldIssuePreconnectForLens() {
+  return kShouldIssuePreconnectForLens.Get();
+}
+
+std::string GetPreconnectKeyForLens() {
+  return kPreconnectKeyForLens.Get();
 }
 
 }  // namespace features

@@ -43,6 +43,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -51,9 +52,15 @@
 #include "chrome/browser/feed/web_feed_ui_util.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -181,6 +188,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -1000,6 +1008,30 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
       CreateDataEndpoint(/*notify_if_restricted=*/true));
   scw.SetDataSourceURL(main_frame_url_, current_url_);
   scw.WriteText(FormatURLForClipboard(url));
+}
+
+void RenderViewContextMenu::IssuePreconnectionToUrl(
+    const std::string& anonymization_key_url,
+    const std::string& preconnect_url) {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  if (prefetch::IsSomePreloadingEnabled(*profile->GetPrefs()) !=
+      content::PreloadingEligibility::kEligible) {
+    return;
+  }
+
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(profile);
+  if (!loading_predictor) {
+    return;
+  }
+
+  GURL anonymization_key_gurl(anonymization_key_url);
+  net::SchemefulSite anonymization_key_schemeful_site(anonymization_key_gurl);
+  auto network_anonymziation_key = net::NetworkAnonymizationKey::CreateSameSite(
+      anonymization_key_schemeful_site);
+  loading_predictor->PreconnectURLIfAllowed(GURL(preconnect_url),
+                                            /*allow_credentials=*/true,
+                                            network_anonymziation_key);
 }
 
 bool RenderViewContextMenu::IsInProgressiveWebApp() const {
@@ -1875,6 +1907,18 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
   }
 
+  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser()) &&
+        companion::GetShouldIssuePreconnectForCompanion()) {
+      IssuePreconnectionToUrl(companion::GetPreconnectKeyForCompanion(),
+                              companion::GetImageUploadURLForCompanion());
+    } else if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
+               lens::features::GetShouldIssuePreconnectForLens()) {
+      IssuePreconnectionToUrl(lens::features::GetPreconnectKeyForLens(),
+                              lens::features::GetHomepageURLForLens());
+    }
+  }
+
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
       base::FeatureList::IsEnabled(lens::features::kEnableImageTranslate) &&
       provider && !provider->image_translate_url().empty() &&
@@ -2472,6 +2516,19 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser()) ||
         companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
       menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+    }
+
+    if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+      if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser()) &&
+          companion::GetShouldIssuePreconnectForCompanion()) {
+        IssuePreconnectionToUrl(companion::GetPreconnectKeyForCompanion(),
+                                companion::GetImageUploadURLForCompanion());
+      } else if (base::FeatureList::IsEnabled(
+                     lens::features::kLensStandalone) &&
+                 lens::features::GetShouldIssuePreconnectForLens()) {
+        IssuePreconnectionToUrl(lens::features::GetPreconnectKeyForLens(),
+                                lens::features::GetHomepageURLForLens());
+      }
     }
   }
 }
