@@ -598,6 +598,12 @@ export class AutomationPredicate {
       return false;
     }
 
+    // AXTreeSourceAndroid computes names for clickables.
+    // Ignore nodes for which this computation is not done
+    if (node.clickable && !node.name && !node.value && !node.description) {
+      return true;
+    }
+
     // Ignore some roles.
     return AutomationPredicate.leaf(node) && (AutomationPredicate.roles([
              Role.CLIENT,
