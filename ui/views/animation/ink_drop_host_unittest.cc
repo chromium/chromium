@@ -76,8 +76,7 @@ class InkDropHostTest : public testing::Test {
   // Provides internal access to |host_view_| test target.
   InkDropHostTestApi test_api_;
 
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 
   void MouseEventTriggersInkDropHelper(InkDropMode ink_drop_mode);
 };

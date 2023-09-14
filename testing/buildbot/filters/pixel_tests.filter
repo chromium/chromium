@@ -43,6 +43,7 @@ HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
 InfoBarUiTest.*
 InlineLoginHelperBrowserTest.InvokeUi_*
+IntentChipButtonBrowserUiTest.*
 IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*
 InteractionTestUtilBrowserTest.CompareScreenshot_*

@@ -30,10 +30,8 @@ class IntentPickerTabHelperTest : public ChromeRenderViewHostTestHarness {
   IntentPickerTabHelper* helper() { return helper_; }
 
   std::vector<apps::IntentPickerAppInfo> CreateTestAppList() {
-    std::vector<apps::IntentPickerAppInfo> apps;
-    apps.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id",
-                      "Test app");
-    return apps;
+    return {
+        {apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id", "Test app"}};
   }
 
  private:
@@ -132,10 +130,9 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
 
   // Create app list with both a web and an ARC app, and show the intent picker
   // icon.
-  apps_list.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(),
-                         "app_id", "Test app");
-  apps_list.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
-                         "app_id", "Test app");
+  apps_list = {
+      {apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id", "Test app"},
+      {apps::PickerEntryType::kArc, ui::ImageModel(), "app_id", "Test app"}};
   helper()->ShowIconForApps(apps_list);
 
   // All of the histograms should be incremented.
@@ -154,8 +151,8 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
   helper()->ShowIconForApps(apps_list);
 
   // Create app list with only a web app and show the intent picker icon.
-  apps_list.emplace_back(apps::PickerEntryType::kWeb, ui::ImageModel(),
-                         "app_id", "Test app");
+  apps_list = {
+      {apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id", "Test app"}};
   helper()->ShowIconForApps(apps_list);
 
   // Only the web app and general histograms should be incremented.
@@ -174,8 +171,8 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
   helper()->ShowIconForApps(apps_list);
 
   // Create app list with only an ARC app and show the intent picker icon.
-  apps_list.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
-                         "app_id", "Test app");
+  apps_list = {
+      {apps::PickerEntryType::kArc, ui::ImageModel(), "app_id", "Test app"}};
   helper()->ShowIconForApps(apps_list);
 
   // Only the ARC app and general histograms should be incremented.
@@ -195,9 +192,8 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
 
   // Create app list with non-ARC and non-web types and show the intent picker
   // icon.
-  apps_list.clear();
-  apps_list.emplace_back(apps::PickerEntryType::kMacOs, ui::ImageModel(),
-                         "app_id", "Test app");
+  apps_list = {
+      {apps::PickerEntryType::kMacOs, ui::ImageModel(), "app_id", "Test app"}};
   helper()->ShowIconForApps(apps_list);
 
   // Only the general histogram should be incremented.

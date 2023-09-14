@@ -32,11 +32,6 @@ namespace views {
 
 namespace {
 
-// This should probably be a definition on AnimationTestApi.
-using RenderModeLock = std::invoke_result<
-    decltype(&gfx::AnimationTestApi::SetRichAnimationRenderMode),
-    gfx::Animation::RichAnimationRenderMode>::type;
-
 constexpr gfx::Size kChildViewSize{10, 10};
 
 // Returns a size which is the intersection of |size| and the constraints
@@ -264,7 +259,7 @@ class AnimatingLayoutManagerTest : public testing::Test {
       nullptr;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
-  RenderModeLock render_mode_lock_;
+  gfx::AnimationTestApi::RenderModeResetter render_mode_lock_;
 };
 
 const FlexSpecification AnimatingLayoutManagerTest::kDropOut =
@@ -5194,7 +5189,7 @@ class AnimatingLayoutManagerSequenceTest : public ViewsTestBase {
   std::unique_ptr<View> parent_view_ptr_;
   std::unique_ptr<View> layout_view_ptr_;
   WidgetAutoclosePtr widget_;
-  RenderModeLock render_mode_lock_;
+  gfx::AnimationTestApi::RenderModeResetter render_mode_lock_;
 };
 
 TEST_F(AnimatingLayoutManagerSequenceTest,

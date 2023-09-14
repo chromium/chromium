@@ -4,20 +4,27 @@
 
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 
+#include <utility>
+
 namespace apps {
 
 IntentPickerAppInfo::IntentPickerAppInfo(PickerEntryType type,
-                                         const ui::ImageModel& icon_model,
-                                         const std::string& launch_name,
-                                         const std::string& display_name)
-    : type(type),
-      icon_model(icon_model),
-      launch_name(launch_name),
-      display_name(display_name) {}
+                                         ui::ImageModel icon_model,
+                                         std::string launch_name,
+                                         std::string display_name)
+    : type(std::move(type)),
+      icon_model(std::move(icon_model)),
+      launch_name(std::move(launch_name)),
+      display_name(std::move(display_name)) {}
 
-IntentPickerAppInfo::IntentPickerAppInfo(IntentPickerAppInfo&& other) = default;
+IntentPickerAppInfo::IntentPickerAppInfo(const IntentPickerAppInfo&) = default;
+
+IntentPickerAppInfo::IntentPickerAppInfo(IntentPickerAppInfo&&) = default;
 
 IntentPickerAppInfo& IntentPickerAppInfo::operator=(
-    IntentPickerAppInfo&& other) = default;
+    const IntentPickerAppInfo&) = default;
+
+IntentPickerAppInfo& IntentPickerAppInfo::operator=(IntentPickerAppInfo&&) =
+    default;
 
 }  // namespace apps

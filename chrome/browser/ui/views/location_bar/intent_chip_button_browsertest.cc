@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <utility>
+
 #include "base/cfi_buildflags.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -17,9 +20,11 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -30,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
@@ -422,3 +428,56 @@ IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+class IntentChipButtonBrowserUiTest : public UiBrowserTest {
+ public:
+  IntentChipButtonBrowserUiTest();
+
+  // UiBrowserTest:
+  void ShowUi(const std::string& name) override;
+  bool VerifyUi() override;
+  void WaitForUserDismissal() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IntentChipButtonBrowserUiTest::IntentChipButtonBrowserUiTest() {
+  scoped_feature_list_.InitAndEnableFeature(
+      apps::features::kLinkCapturingUiUpdate);
+}
+
+void IntentChipButtonBrowserUiTest::ShowUi(const std::string& name) {
+  auto* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* const tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
+  base::RunLoop run_loop;
+  tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
+  tab_helper->ShowIconForApps(
+      {{apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id", "Test app"}});
+  run_loop.Run();
+}
+
+bool IntentChipButtonBrowserUiTest::VerifyUi() {
+  auto* const location_bar =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  const auto* const intent_chip = location_bar->intent_chip();
+  if (!intent_chip || !intent_chip->GetVisible() ||
+      intent_chip->is_fully_collapsed()) {
+    return false;
+  }
+
+  const auto* const test_info =
+      testing::UnitTest::GetInstance()->current_test_info();
+  return VerifyPixelUi(location_bar, test_info->test_case_name(),
+                       test_info->name()) != ui::test::ActionResult::kFailed;
+}
+
+void IntentChipButtonBrowserUiTest::WaitForUserDismissal() {
+  // Consider closing the browser to be dismissal.
+  ui_test_utils::WaitForBrowserToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserUiTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}

@@ -81,8 +81,8 @@ class InkDropImplTest : public testing::Test {
   // Allows privileged access to the the |ink_drop_highlight_|.
   std::unique_ptr<test::InkDropImplTestApi> test_api_;
 
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 

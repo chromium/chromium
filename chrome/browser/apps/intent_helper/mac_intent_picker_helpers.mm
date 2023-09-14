@@ -47,10 +47,10 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
   }
   app_icon.size = NSMakeSize(16, 16);
 
-  return IntentPickerAppInfo(PickerEntryType::kMacOs,
+  return IntentPickerAppInfo{PickerEntryType::kMacOs,
                              ui::ImageModel::FromImage(gfx::Image(app_icon)),
                              base::SysNSStringToUTF8([app_url path]),
-                             base::SysNSStringToUTF8(app_name));
+                             base::SysNSStringToUTF8(app_name)};
 }
 
 }  // namespace

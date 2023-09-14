@@ -98,18 +98,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                       ui::PAGE_TRANSITION_TYPED, false));
     CommitPendingLoad(&web_contents->GetController());
 
-    std::vector<AppInfo> app_info;
-
-    // AppInfo is move only. Manually create a new app_info array to pass into
-    // the bubble constructor.
-    for (const auto& app : app_info_) {
-      app_info.emplace_back(app.type, app.icon_model, app.launch_name,
-                            app.display_name);
-    }
-
     auto* widget = IntentPickerBubbleView::ShowBubble(
         anchor_view_, /*highlighted_button=*/nullptr, bubble_type, web_contents,
-        std::move(app_info), show_stay_in_chrome,
+        app_info_, show_stay_in_chrome,
         /*show_remember_selection=*/true, initiating_origin,
         base::BindOnce(&IntentPickerBubbleViewTest::OnBubbleClosed,
                        base::Unretained(this)));

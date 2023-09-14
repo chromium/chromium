@@ -225,8 +225,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
  private:
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

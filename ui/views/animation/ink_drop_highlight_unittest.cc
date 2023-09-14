@@ -55,8 +55,7 @@ class InkDropHighlightTest : public testing::Test {
   // Observer of the test target.
   TestInkDropHighlightObserver observer_;
 
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
 InkDropHighlightTest::InkDropHighlightTest()

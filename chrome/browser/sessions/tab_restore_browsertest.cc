@@ -291,8 +291,7 @@ class TabRestoreTest : public InProcessBrowserTest {
   raw_ptr<const BrowserList> active_browser_list_;
 
  private:
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
 // Close the end tab in the current window, then restore it. The tab should be

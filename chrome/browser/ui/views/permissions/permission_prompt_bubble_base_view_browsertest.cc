@@ -51,6 +51,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -244,11 +245,9 @@ class PermissionPromptBubbleBaseViewBrowserTest
   }
 
   // Disable chip animations so permission chips and prompts appear immediately.
-  const std::unique_ptr<
-      base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      disable_rich_animations_ =
-          gfx::AnimationTestApi::SetRichAnimationRenderMode(
-              gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;

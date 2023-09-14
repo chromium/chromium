@@ -18,10 +18,13 @@ namespace gfx {
 // Class to provide access to Animation internals for testing.
 class AnimationTestApi {
  public:
+  using RenderModeResetter =
+      std::unique_ptr<base::AutoReset<Animation::RichAnimationRenderMode>>;
+
   // Sets the rich animation rendering mode, if it is currently set to PLATFORM.
   // Allows rich animations to be force enabled/disabled during tests.
-  static std::unique_ptr<base::AutoReset<Animation::RichAnimationRenderMode>>
-  SetRichAnimationRenderMode(Animation::RichAnimationRenderMode mode);
+  [[nodiscard]] static RenderModeResetter SetRichAnimationRenderMode(
+      Animation::RichAnimationRenderMode mode);
 
   explicit AnimationTestApi(Animation* animation);
 

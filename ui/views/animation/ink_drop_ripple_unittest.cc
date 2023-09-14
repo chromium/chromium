@@ -56,8 +56,7 @@ class InkDropRippleTest
 
   std::unique_ptr<InkDropRippleTestApi> test_api_;
 
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
 InkDropRippleTest::InkDropRippleTest()

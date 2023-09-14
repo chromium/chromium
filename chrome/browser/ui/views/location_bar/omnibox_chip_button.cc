@@ -65,9 +65,7 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
     label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   }
   SetCornerRadius(GetCornerRadius());
-  constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
-  animation_->SetSlideDuration(kAnimationDuration);
 
   UpdateIconAndColors();
 }
@@ -81,20 +79,20 @@ void OmniboxChipButton::VisibilityChanged(views::View* starting_from,
   }
 }
 
-void OmniboxChipButton::AnimateCollapse(base::TimeDelta kAnimationDuration) {
+void OmniboxChipButton::AnimateCollapse(base::TimeDelta duration) {
   base_width_ = 0;
-  animation_->SetSlideDuration(kAnimationDuration);
+  animation_->SetSlideDuration(duration);
   ForceAnimateCollapse();
 }
 
-void OmniboxChipButton::AnimateExpand(base::TimeDelta kAnimationDuration) {
+void OmniboxChipButton::AnimateExpand(base::TimeDelta duration) {
   base_width_ = 0;
-  animation_->SetSlideDuration(kAnimationDuration);
+  animation_->SetSlideDuration(duration);
   ForceAnimateExpand();
 }
 
-void OmniboxChipButton::AnimateToFit(base::TimeDelta kAnimationDuration) {
-  animation_->SetSlideDuration(kAnimationDuration);
+void OmniboxChipButton::AnimateToFit(base::TimeDelta duration) {
+  animation_->SetSlideDuration(duration);
   base_width_ = label()->width();
 
   if (label()->GetPreferredSize().width() < width()) {

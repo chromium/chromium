@@ -460,8 +460,7 @@ class CompositeLayoutTest : public testing::Test {
   std::unique_ptr<gfx::AnimationContainerTestApi> extensions_test_api_;
   std::unique_ptr<gfx::AnimationContainerTestApi> avatar_test_api_;
   std::unique_ptr<SimulatedToolbar> toolbar_;
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_lock_;
+  gfx::AnimationTestApi::RenderModeResetter animation_lock_;
 };
 
 // ------------

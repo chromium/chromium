@@ -69,15 +69,14 @@ enum class PickerEntryType {
 // Represents the data required to display an app in a picker to the user.
 struct IntentPickerAppInfo {
   IntentPickerAppInfo(PickerEntryType type,
-                      const ui::ImageModel& icon_model,
-                      const std::string& launch_name,
-                      const std::string& display_name);
+                      ui::ImageModel icon_model,
+                      std::string launch_name,
+                      std::string display_name);
 
-  IntentPickerAppInfo(IntentPickerAppInfo&& other);
-
-  IntentPickerAppInfo(const IntentPickerAppInfo&) = delete;
-  IntentPickerAppInfo& operator=(const IntentPickerAppInfo&) = delete;
-  IntentPickerAppInfo& operator=(IntentPickerAppInfo&& other);
+  IntentPickerAppInfo(const IntentPickerAppInfo&);
+  IntentPickerAppInfo(IntentPickerAppInfo&&);
+  IntentPickerAppInfo& operator=(const IntentPickerAppInfo&);
+  IntentPickerAppInfo& operator=(IntentPickerAppInfo&&);
 
   // The type of app that this object represents.
   PickerEntryType type;

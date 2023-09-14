@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
-#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
@@ -391,11 +388,9 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
   // Disable the permission chip animation. This happens automatically in pixel
   // test mode, but without doing this explicitly, the test will fail when run
   // interactively.
-  const std::unique_ptr<
-      base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      disable_rich_animations_ =
-          gfx::AnimationTestApi::SetRichAnimationRenderMode(
-              gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,

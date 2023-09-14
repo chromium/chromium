@@ -51,10 +51,23 @@ void IntentChipButton::Update() {
 
   if (is_visible) {
     bool expanded = GetChipExpanded();
-    ResetAnimation(expanded);
     SetTheme(expanded ? OmniboxChipTheme::kLowVisibility
                       : OmniboxChipTheme::kIconStyle);
-    UpdateIconAndColors();
+    // TODO(pkasting): This should animate in the way other OmniboxChipButtons
+    // are instructed to do (e.g. with non-zero duration when first expanding),
+    // but simply passing a non-zero duration here would animate even when
+    // that's undesirable (e.g. when switching tabs). In the meantime, we can't
+    // simply use ResetAnimation() here because that won't trigger
+    // end-of-animation updates like PreferredSizeChanged(). This should be
+    // refactored to use common logic with other chips. Note that if this begins
+    // to animate in some cases, the browsertests will likely need updates to
+    // disable those animations.
+    static constexpr auto kAnimationDuration = base::TimeDelta();
+    if (expanded) {
+      AnimateExpand(kAnimationDuration);
+    } else {
+      AnimateCollapse(kAnimationDuration);
+    }
   }
   if (browser_->window() && was_visible && !is_visible) {
     IntentPickerBubbleView::CloseCurrentBubble();
