@@ -160,6 +160,9 @@ class ChromeFileSystemAccessPermissionContext
         features::kFileSystemAccessPersistentPermissions));
     OnDontAllowRestorePrompt(origin);
   }
+  void OnIgnoreRestorePromptForTesting(const url::Origin& origin) {
+    OnIgnoreRestorePrompt(origin);
+  }
   bool RevokeActiveGrantsForTesting(
       const url::Origin& origin,
       base::FilePath file_path = base::FilePath()) {
@@ -305,6 +308,9 @@ class ChromeFileSystemAccessPermissionContext
 
   // Called when the restore prompt is dismissed or denied.
   void OnDontAllowRestorePrompt(const url::Origin& origin);
+
+  // Records restore prompt ignore with `PermissionDecisionAutoblocker`.
+  void OnIgnoreRestorePrompt(const url::Origin& origin);
 
   // Updates the `grant_status` and / or the persisted grants for a given
   // origin, in the case that either the restore prompt is denied, dismissed,

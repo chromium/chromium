@@ -1942,6 +1942,15 @@ void ChromeFileSystemAccessPermissionContext::OnDontAllowRestorePrompt(
   OnRestorePermissionNotAllowed(origin);
 }
 
+void ChromeFileSystemAccessPermissionContext::OnIgnoreRestorePrompt(
+    const url::Origin& origin) {
+  PermissionDecisionAutoBlockerFactory::GetForProfile(
+      Profile::FromBrowserContext(profile()))
+      ->RecordIgnoreAndEmbargo(
+          origin.GetURL(), ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, false);
+  OnRestorePermissionNotAllowed(origin);
+}
+
 void ChromeFileSystemAccessPermissionContext::OnRestorePermissionNotAllowed(
     const url::Origin& origin) {
   auto origin_it = active_permissions_map_.find(origin);

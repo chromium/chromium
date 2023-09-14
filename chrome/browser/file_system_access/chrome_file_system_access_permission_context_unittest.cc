@@ -1403,6 +1403,57 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(1UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
 }
 
+TEST_F(ChromeFileSystemAccessPermissionContextTest, OnIgnoreRestorePrompt) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  grant.reset();
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // Trigger the restore prompt.
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kLoadFromStorage);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+
+  // Persisted grants are cleared by ignoring the restore prompt.
+  // The origin is not embargoed on first ignore.
+  permission_context()->OnIgnoreRestorePromptForTesting(kTestOrigin);
+  EXPECT_EQ(0UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
+
+  auto origin_is_embargoed =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(profile()))
+          ->IsEmbargoed(kTestOrigin.GetURL(),
+                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_FALSE(origin_is_embargoed);
+
+  // The origin is placed under embargo after being ignored
+  // `kDefaultIgnoresBeforeBlock` times.
+  permission_context()->OnIgnoreRestorePromptForTesting(kTestOrigin);
+  permission_context()->OnIgnoreRestorePromptForTesting(kTestOrigin);
+  // The origin is not embargoed after being ignored 3 times, when the
+  // limit set by `kDefaultIgnoresBeforeBlock` is 4.
+  auto origin_is_embargoed_updated =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(profile()))
+          ->IsEmbargoed(kTestOrigin.GetURL(),
+                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_FALSE(origin_is_embargoed_updated);
+
+  // The origin is embargoed, after reaching the ignore limit set by
+  // `kDefaultIgnoresBeforeBlock`.
+  permission_context()->OnIgnoreRestorePromptForTesting(kTestOrigin);
+  auto origin_is_embargoed_after_ignore_limit =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(profile()))
+          ->IsEmbargoed(kTestOrigin.GetURL(),
+                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_TRUE(origin_is_embargoed_after_ignore_limit);
+}
+
 TEST_F(
     ChromeFileSystemAccessPermissionContextNoPersistenceTest,
     GetWritePermissionGrant_GrantIsRevokedWhenNoLongerUsed_GlobalGuardBlockedAfterNewGrant_NoPersistentPermissions) {
