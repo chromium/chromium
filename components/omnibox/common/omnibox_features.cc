@@ -74,14 +74,6 @@ BASE_FEATURE(kPreferNonShortcutMatchesWhenDeduping,
              "OmniboxPreferNonShortcutMatchesWhenDeduping",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Determines which are culled when both tail and history cluster suggestions
-// are available. See `MaybeCullTailSuggestions()`.
-// TODO(manukh): Enabled by default 6/1/23 m116. Clean up feature code 8/15 when
-//   m116 reaches stable.
-BASE_FEATURE(kPreferTailOverHistoryClusterSuggestions,
-             "OmniboxPreferTailOverHistoryClusterSuggestions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When disabled, when providers update their matches, the new set of matches
 // are sorted and culled, then merged with the old matches, then sorted and
 // culled again. When enabled, the first sort and cull is skipped.
