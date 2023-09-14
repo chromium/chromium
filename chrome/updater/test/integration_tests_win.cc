@@ -51,6 +51,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
+#include "base/win/window_enumerator.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/server/win/com_classes.h"
@@ -472,61 +473,6 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
   return is_legacy_install ? launch_legacy_offline_install()
                            : launch_offline_install();
 }
-
-// Enumerates immediate child windows of `parent`, and calls `filter_.Run` for
-// each window:
-// * If `filter_.Run` returns `false`, continues enumerating.
-// * If `filter_.Run` returns `true`, stops enumerating.
-class WindowEnumerator {
- public:
-  WindowEnumerator(HWND parent, base::RepeatingCallback<bool(HWND hwnd)> filter)
-      : parent_(parent), filter_(filter) {}
-
-  WindowEnumerator(const WindowEnumerator&) = delete;
-  WindowEnumerator& operator=(const WindowEnumerator&) = delete;
-
-  void Run() const {
-    ::EnumChildWindows(parent_, &OnWindowProc, reinterpret_cast<LPARAM>(this));
-  }
-
-  static std::wstring GetWindowClass(HWND hwnd) {
-    constexpr int kMaxWindowClassNameLength = 256;
-    wchar_t buffer[kMaxWindowClassNameLength + 1] = {0};
-    int name_len = ::GetClassName(hwnd, buffer, std::size(buffer));
-    if (name_len <= 0 || name_len > kMaxWindowClassNameLength) {
-      return std::wstring();
-    }
-
-    return std::wstring(&buffer[0], name_len);
-  }
-
-  static bool IsSystemDialog(HWND hwnd) {
-    constexpr wchar_t kSystemDialogClass[] = L"#32770";
-    return GetWindowClass(hwnd) == kSystemDialogClass;
-  }
-
-  static std::wstring GetWindowText(HWND hwnd) {
-    const int num_chars = ::GetWindowTextLength(hwnd);
-    if (!num_chars) {
-      return std::wstring();
-    }
-    std::vector<wchar_t> text(num_chars + 1);
-    if (!::GetWindowText(hwnd, &text.front(), text.size())) {
-      return std::wstring();
-    }
-    return std::wstring(text.begin(), text.end());
-  }
-
- private:
-  bool OnWindow(HWND hwnd) const { return !filter_.Run(hwnd); }
-
-  static BOOL CALLBACK OnWindowProc(HWND hwnd, LPARAM lparam) {
-    return reinterpret_cast<WindowEnumerator*>(lparam)->OnWindow(hwnd);
-  }
-
-  const HWND parent_;
-  base::RepeatingCallback<bool(HWND hwnd)> filter_;
-};
 
 DISPID GetDispId(Microsoft::WRL::ComPtr<IDispatch> dispatch,
                  std::wstring name) {
@@ -1821,19 +1767,21 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
       [&]() {
         if (!found) {
           // Enumerate the top-level dialogs to find the setup dialog.
-          WindowEnumerator(
+          base::win::WindowEnumerator(
               ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
-                if (!WindowEnumerator::IsSystemDialog(hwnd) ||
-                    !base::Contains(WindowEnumerator::GetWindowText(hwnd),
-                                    window_title)) {
+                if (!base::win::WindowEnumerator::IsSystemDialog(hwnd) ||
+                    !base::Contains(
+                        base::win::WindowEnumerator::GetWindowText(hwnd),
+                        window_title)) {
                   return false;
                 }
                 // Enumerate the child windows to search for
                 // `child_window_text_to_find`. If found, close the dialog.
-                WindowEnumerator(
+                base::win::WindowEnumerator(
                     hwnd, base::BindLambdaForTesting([&](HWND hwnd) {
-                      if (!base::Contains(WindowEnumerator::GetWindowText(hwnd),
-                                          child_window_text_to_find)) {
+                      if (!base::Contains(
+                              base::win::WindowEnumerator::GetWindowText(hwnd),
+                              child_window_text_to_find)) {
                         return false;
                       }
                       found = true;
