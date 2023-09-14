@@ -13,14 +13,14 @@
 #import "components/favicon/core/fallback_url_util.h"
 #import "components/ntp_tiles/ntp_tile.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
-#import "ios/chrome/browser/widget_kit/features.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "net/base/mac/url_conversions.h"
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-#import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
+#import "ios/chrome/browser/widget_kit/model/model_swift.h"
 #endif
 
 namespace content_suggestions_tile_saver {

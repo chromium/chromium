@@ -43,7 +43,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/metrics.h"
-#import "ios/chrome/browser/widget_kit/features.h"
+#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
 #import "ios/chrome/common/credential_provider/constants.h"
@@ -54,7 +54,7 @@
 #import "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_WIDGET_KIT_EXTENSION)
-#import "ios/chrome/browser/widget_kit/widget_metrics_util.h"  // nogncheck
+#import "ios/chrome/browser/widget_kit/model/widget_metrics_util.h"  // nogncheck
 #endif
 
 @class AppState;

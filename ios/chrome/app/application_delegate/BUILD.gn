@@ -229,7 +229,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list:agents",
     "//ios/chrome/browser/web_state_list:session_metrics",
-    "//ios/chrome/browser/widget_kit:features",
+    "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",
     "//ios/chrome/common/credential_provider",
@@ -244,7 +244,7 @@ source_set("application_delegate_internal") {
   ]
 
   if (ios_enable_widget_kit_extension) {
-    deps += [ "//ios/chrome/browser/widget_kit" ]
+    deps += [ "//ios/chrome/browser/widget_kit/model" ]
   }
 
   frameworks = [

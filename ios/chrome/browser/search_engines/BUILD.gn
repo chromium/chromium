@@ -69,12 +69,12 @@ source_set("extension_search_engine_data_updater") {
     ":search_engines_util",
     "//base",
     "//components/search_engines",
-    "//ios/chrome/browser/widget_kit:features",
+    "//ios/chrome/browser/widget_kit/model:features",
     "//ios/chrome/common/app_group",
   ]
 
   if (ios_enable_widget_kit_extension) {
-    deps += [ "//ios/chrome/browser/widget_kit" ]
+    deps += [ "//ios/chrome/browser/widget_kit/model" ]
   }
 }
 

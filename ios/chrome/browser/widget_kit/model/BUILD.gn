@@ -13,20 +13,20 @@ buildflag_header("features") {
 }
 
 if (ios_enable_widget_kit_extension) {
-  source_set("widget_kit") {
+  source_set("model") {
     sources = [
       "widget_metrics_util.h",
       "widget_metrics_util.mm",
     ]
 
     deps = [
-      ":widget_kit_swift",
+      ":model_swift",
       "//base",
     ]
     frameworks = [ "Foundation.framework" ]
   }
 
-  swift_source_set("widget_kit_swift") {
+  swift_source_set("model_swift") {
     sources = [
       "user_defaults_widget_store.swift",
       "widget_metrics_logger.swift",
@@ -43,7 +43,7 @@ if (ios_enable_widget_kit_extension) {
     testonly = true
     sources = []
     deps = [
-      ":widget_kit",
+      ":model",
       "//base/test:test_support",
       "//ios/web/public/test",
       "//testing/gtest",

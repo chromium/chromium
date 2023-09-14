@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/widget_kit/widget_metrics_util.h"
+#import "ios/chrome/browser/widget_kit/model/widget_metrics_util.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
+#import "ios/chrome/browser/widget_kit/model/model_swift.h"
 
 using base::UmaHistogramEnumeration;
 

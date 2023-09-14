@@ -448,7 +448,7 @@ test("ios_chrome_unittests") {
   ]
 
   if (ios_enable_widget_kit_extension) {
-    deps += [ "//ios/chrome/browser/widget_kit:unit_tests" ]
+    deps += [ "//ios/chrome/browser/widget_kit/model:unit_tests" ]
   }
 
   if (ios_enable_credential_provider_extension) {
