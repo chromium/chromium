@@ -20,7 +20,7 @@
  *
  */
 
-#include "third_party/blink/renderer/core/layout/layout_text_control.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -36,8 +36,9 @@ namespace layout_text_control {
 void StyleDidChange(HTMLElement* inner_editor,
                     const ComputedStyle* old_style,
                     const ComputedStyle& new_style) {
-  if (!inner_editor)
+  if (!inner_editor) {
     return;
+  }
   LayoutBlock* inner_editor_layout_object =
       To<LayoutBlock>(inner_editor->GetLayoutObject());
   if (inner_editor_layout_object) {
@@ -76,8 +77,9 @@ void HitInnerEditorElement(const LayoutBox& box,
                            HitTestResult& result,
                            const HitTestLocation& hit_test_location,
                            const PhysicalOffset& accumulated_offset) {
-  if (!inner_editor.GetLayoutObject())
+  if (!inner_editor.GetLayoutObject()) {
     return;
+  }
 
   PhysicalOffset local_point =
       hit_test_location.Point() - accumulated_offset -
@@ -131,28 +133,32 @@ static const char* const kFontFamiliesWithInvalidCharWidth[] = {
 bool HasValidAvgCharWidth(const Font& font) {
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
-  if (!font_data)
+  if (!font_data) {
     return false;
+  }
   // Some fonts match avgCharWidth to CJK full-width characters.
   // Heuristic check to avoid such fonts.
   const FontMetrics& metrics = font_data->GetFontMetrics();
   if (metrics.HasZeroWidth() &&
-      font_data->AvgCharWidth() > metrics.ZeroWidth() * 1.7)
+      font_data->AvgCharWidth() > metrics.ZeroWidth() * 1.7) {
     return false;
+  }
 
   static HashSet<AtomicString>* font_families_with_invalid_char_width_map =
       nullptr;
 
   const AtomicString& family = font.GetFontDescription().Family().FamilyName();
-  if (family.empty())
+  if (family.empty()) {
     return false;
+  }
 
   if (!font_families_with_invalid_char_width_map) {
     font_families_with_invalid_char_width_map = new HashSet<AtomicString>;
 
-    for (size_t i = 0; i < std::size(kFontFamiliesWithInvalidCharWidth); ++i)
+    for (size_t i = 0; i < std::size(kFontFamiliesWithInvalidCharWidth); ++i) {
       font_families_with_invalid_char_width_map->insert(
           AtomicString(kFontFamiliesWithInvalidCharWidth[i]));
+    }
   }
 
   return !font_families_with_invalid_char_width_map->Contains(family);

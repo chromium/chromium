@@ -8,9 +8,9 @@ namespace blink {
 
 namespace {
 
-class LayoutNGTextControlSingleLineTest : public RenderingTest {};
+class LayoutTextControlSingleLineTest : public RenderingTest {};
 
-TEST_F(LayoutNGTextControlSingleLineTest, VisualOverflowCleared) {
+TEST_F(LayoutTextControlSingleLineTest, VisualOverflowCleared) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #input {

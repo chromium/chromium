@@ -117,7 +117,7 @@ bool InsertCommands::ExecuteInsertHTML(LocalFrame& frame,
                         WebFeature::kInsertHTMLCommandOnInput);
       // We'd like to turn off HTML insertion against <input> in order to avoid
       // creating an anonymous block as a child of
-      // LayoutNGTextControlInnerEditor. See crbug.com/1174952
+      // LayoutTextControlInnerEditor. See crbug.com/1174952
       //
       // |textContent()| contains the contents of <style> and <script>.
       // It's not a reasonable behavior, but we think no one cares about

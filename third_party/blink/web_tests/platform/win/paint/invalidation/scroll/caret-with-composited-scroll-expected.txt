@@ -33,7 +33,7 @@
       "transform": 3
     },
     {
-      "name": "LayoutNGTextControlSingleLine INPUT id='text'",
+      "name": "LayoutTextControlSingleLine INPUT id='text'",
       "position": [0, 999],
       "bounds": [205, 23],
       "invalidations": [

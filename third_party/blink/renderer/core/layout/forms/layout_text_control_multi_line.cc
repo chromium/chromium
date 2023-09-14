@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_multi_line.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_text_control_multi_line.h"
 
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 
 namespace blink {
 
-LayoutNGTextControlMultiLine::LayoutNGTextControlMultiLine(Element* element)
+LayoutTextControlMultiLine::LayoutTextControlMultiLine(Element* element)
     : LayoutNGBlockFlow(element) {}
 
-HTMLElement* LayoutNGTextControlMultiLine::InnerEditorElement() const {
+HTMLElement* LayoutTextControlMultiLine::InnerEditorElement() const {
   return To<TextControlElement>(GetNode())->InnerEditorElement();
 }
 
-bool LayoutNGTextControlMultiLine::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectNGTextControlMultiLine ||
+bool LayoutTextControlMultiLine::IsOfType(LayoutObjectType type) const {
+  return type == kLayoutObjectTextControlMultiLine ||
          LayoutNGBlockFlow::IsOfType(type);
 }
 
-void LayoutNGTextControlMultiLine::StyleDidChange(
+void LayoutTextControlMultiLine::StyleDidChange(
     StyleDifference style_diff,
     const ComputedStyle* old_style) {
   LayoutNGBlockFlow::StyleDidChange(style_diff, old_style);
@@ -29,7 +29,7 @@ void LayoutNGTextControlMultiLine::StyleDidChange(
                                       StyleRef());
 }
 
-bool LayoutNGTextControlMultiLine::NodeAtPoint(
+bool LayoutTextControlMultiLine::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
@@ -38,8 +38,9 @@ bool LayoutNGTextControlMultiLine::NodeAtPoint(
       result, hit_test_location, accumulated_offset, phase);
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
-  if (stop_node && stop_node->NodeForHitTest() == result.InnerNode())
+  if (stop_node && stop_node->NodeForHitTest() == result.InnerNode()) {
     return stop_hit_testing;
+  }
 
   HTMLElement* inner_editor = InnerEditorElement();
   if (result.InnerNode() == GetNode() || result.InnerNode() == inner_editor) {

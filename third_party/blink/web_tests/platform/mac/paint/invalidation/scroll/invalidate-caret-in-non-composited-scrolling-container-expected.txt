@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGTextControlSingleLine INPUT id='root'",
+      "name": "LayoutTextControlSingleLine INPUT id='root'",
       "position": [-1, -1],
       "bounds": [50, 23],
       "contentsOpaqueForText": true,
@@ -25,7 +25,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGTextControlSingleLine INPUT id='root'",
+      "name": "LayoutTextControlSingleLine INPUT id='root'",
       "position": [-1, -1],
       "bounds": [50, 23],
       "invalidations": [

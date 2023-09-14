@@ -1037,16 +1037,16 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsTextArea() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGTextControlMultiLine);
+    return IsOfType(kLayoutObjectTextControlMultiLine);
   }
   bool IsTextControl() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGTextControlMultiLine) ||
-           IsOfType(kLayoutObjectNGTextControlSingleLine);
+    return IsOfType(kLayoutObjectTextControlMultiLine) ||
+           IsOfType(kLayoutObjectTextControlSingleLine);
   }
   bool IsTextField() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGTextControlSingleLine);
+    return IsOfType(kLayoutObjectTextControlSingleLine);
   }
   bool IsVideo() const {
     NOT_DESTROYED();
@@ -3534,8 +3534,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGListItem,
     kLayoutObjectNGOutsideListMarker,
     kLayoutObjectNGTextCombine,
-    kLayoutObjectNGTextControlMultiLine,
-    kLayoutObjectNGTextControlSingleLine,
     kLayoutObjectNGView,
     kLayoutObjectProgress,
     kLayoutObjectQuote,
@@ -3550,6 +3548,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectTableCol,
     kLayoutObjectTableRow,
     kLayoutObjectTableSection,
+    kLayoutObjectTextControlMultiLine,
+    kLayoutObjectTextControlSingleLine,
     kLayoutObjectVideo,
     kLayoutObjectView,
     kLayoutObjectWidget,

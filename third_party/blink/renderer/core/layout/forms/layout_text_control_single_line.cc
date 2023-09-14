@@ -2,40 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_text_control_single_line.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_text_control_single_line.h"
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 
 namespace blink {
 
-LayoutNGTextControlSingleLine::LayoutNGTextControlSingleLine(Element* element)
+LayoutTextControlSingleLine::LayoutTextControlSingleLine(Element* element)
     : LayoutNGBlockFlow(element) {}
 
-HTMLElement* LayoutNGTextControlSingleLine::InnerEditorElement() const {
+HTMLElement* LayoutTextControlSingleLine::InnerEditorElement() const {
   return To<TextControlElement>(GetNode())->InnerEditorElement();
 }
 
-Element* LayoutNGTextControlSingleLine::ContainerElement() const {
+Element* LayoutTextControlSingleLine::ContainerElement() const {
   NOT_DESTROYED();
   return To<Element>(GetNode())->UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdTextFieldContainer);
 }
 
-Element* LayoutNGTextControlSingleLine::EditingViewPortElement() const {
+Element* LayoutTextControlSingleLine::EditingViewPortElement() const {
   NOT_DESTROYED();
   return To<Element>(GetNode())->UserAgentShadowRoot()->getElementById(
       shadow_element_names::kIdEditingViewPort);
 }
 
-bool LayoutNGTextControlSingleLine::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectNGTextControlSingleLine ||
+bool LayoutTextControlSingleLine::IsOfType(LayoutObjectType type) const {
+  return type == kLayoutObjectTextControlSingleLine ||
          LayoutNGBlockFlow::IsOfType(type);
 }
 
-void LayoutNGTextControlSingleLine::StyleDidChange(
+void LayoutTextControlSingleLine::StyleDidChange(
     StyleDifference style_diff,
     const ComputedStyle* old_style) {
   LayoutNGBlockFlow::StyleDidChange(style_diff, old_style);
@@ -43,7 +43,7 @@ void LayoutNGTextControlSingleLine::StyleDidChange(
                                       StyleRef());
 }
 
-bool LayoutNGTextControlSingleLine::NodeAtPoint(
+bool LayoutTextControlSingleLine::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
@@ -73,7 +73,7 @@ bool LayoutNGTextControlSingleLine::NodeAtPoint(
   return stop_hit_testing;
 }
 
-bool LayoutNGTextControlSingleLine::RespectsCSSOverflow() const {
+bool LayoutTextControlSingleLine::RespectsCSSOverflow() const {
   NOT_DESTROYED();
   // Do not show scrollbars even if overflow:scroll is specified.
   return false;

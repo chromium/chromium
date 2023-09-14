@@ -2,26 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_TEXT_CONTROL_MULTI_LINE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_TEXT_CONTROL_MULTI_LINE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_
 
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
-// LayoutNGTextControlMultiLine is a LayoutObject for <textarea>.
-class LayoutNGTextControlMultiLine final : public LayoutNGBlockFlow {
+// LayoutTextControlSingleLine is a LayoutObject for textfield <input>.
+class LayoutTextControlSingleLine final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGTextControlMultiLine(Element* element);
+  explicit LayoutTextControlSingleLine(Element* element);
 
  private:
   HTMLElement* InnerEditorElement() const;
+  Element* ContainerElement() const;
+  Element* EditingViewPortElement() const;
 
   bool IsOfType(LayoutObjectType) const override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGTextControlMultiLine";
+    return "LayoutTextControlSingleLine";
   }
 
   bool CreatesNewFormattingContext() const override {
@@ -35,8 +37,10 @@ class LayoutNGTextControlMultiLine final : public LayoutNGBlockFlow {
                    const HitTestLocation& hit_test_location,
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase phase) override;
+
+  bool RespectsCSSOverflow() const override;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_TEXT_CONTROL_MULTI_LINE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_

@@ -17,7 +17,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "name": "LayoutTextControlMultiLine TEXTAREA id='editor'",
       "position": [-1, -1],
       "bounds": [183, 40],
       "invalidations": [

@@ -14,7 +14,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGTextControlSingleLine INPUT id='target'",
+      "name": "LayoutTextControlSingleLine INPUT id='target'",
       "position": [378, 7],
       "bounds": [30, 24]
     }
