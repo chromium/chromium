@@ -1402,7 +1402,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2148892889047469596">Transmitir pestaña</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2150139952286079145">Buscar destinos</translation>
-<translation id="2150661552845026580">¿Quieres instalar "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="2150661552845026580">¿Quieres agregar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Se ingresó un índice de pestaña no válido.</translation>
 <translation id="2152281589789213846">Agrega impresoras a tu perfil</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
@@ -1993,7 +1993,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
 <translation id="2629437048544561682">Borrar lienzo</translation>
 <translation id="2631498379019108537">Mostrar opciones de entrada en la biblioteca</translation>
-<translation id="2633212996805280240">¿Quieres eliminar "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="2633212996805280240">¿Quieres quitar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> no pudo completar la instalación, pero se continuará ejecutando desde la imagen de disco.</translation>
 <translation id="2633764681656412085">FIDO</translation>
 <translation id="2634199532920451708">Historial de impresiones</translation>
