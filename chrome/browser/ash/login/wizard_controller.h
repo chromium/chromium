@@ -70,6 +70,7 @@
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/touchpad_scroll_screen.h"
+#include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
@@ -399,6 +400,7 @@ class WizardController : public OobeUI::Observer {
   void OnPackagedLicenseScreenExit(PackagedLicenseScreen::Result result);
   void OnFamilyLinkNoticeScreenExit(FamilyLinkNoticeScreen::Result result);
   void OnUserCreationScreenExit(UserCreationScreen::Result result);
+  void OnTpmErrorScreenExit(TpmErrorScreen::Result result);
   void OnGaiaScreenExit(GaiaScreen::Result result);
   void OnSamlConfirmPasswordScreenExit(
       SamlConfirmPasswordScreen::Result result);
