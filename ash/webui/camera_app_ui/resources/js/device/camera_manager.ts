@@ -493,12 +493,12 @@ export class CameraManager implements EventListener {
     }
   }
 
-  stopCapture(): void {
-    this.scheduler.stopCapture();
+  async stopCapture(): Promise<void> {
+    await this.scheduler.stopCapture();
   }
 
-  takeVideoSnapshot(): void {
-    this.scheduler.takeVideoSnapshot();
+  async takeVideoSnapshot(): Promise<void> {
+    await this.scheduler.takeVideoSnapshot();
   }
 
   toggleVideoRecordingPause(): void {

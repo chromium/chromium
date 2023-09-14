@@ -366,14 +366,14 @@ class Capturer {
     return this.modes.current.startCapture();
   }
 
-  stop() {
+  async stop() {
     assert(this.modes.current !== null);
-    this.modes.current.stopCapture();
+    await this.modes.current.stopCapture();
   }
 
-  takeVideoSnapshot() {
+  async takeVideoSnapshot() {
     if (this.modes.current instanceof Video) {
-      this.modes.current.takeSnapshot();
+      await this.modes.current.takeSnapshot();
     }
   }
 
@@ -455,17 +455,15 @@ export class OperationScheduler {
     if (this.ongoingOperationType !== null) {
       const event = new CancelableEvent<boolean>();
       this.pendingReconfigureWaiters.push(event);
-      this.stopCapture();
+      await this.stopCapture();
       return event.wait();
     }
-    const onReconfigured = new CancelableEvent<boolean>();
-    this.startReconfigure(onReconfigured);
-    return onReconfigured.wait();
+    return this.startReconfigure();
   }
 
-  takeVideoSnapshot(): void {
+  async takeVideoSnapshot(): Promise<void> {
     if (this.ongoingOperationType === OperationType.CAPTURE) {
-      this.capturer.takeVideoSnapshot();
+      await this.capturer.takeVideoSnapshot();
     }
   }
 
@@ -500,10 +498,9 @@ export class OperationScheduler {
       this.pendingUpdateInfo = null;
     }
     if (this.pendingReconfigureWaiters.length !== 0) {
-      const onReconfigured = new CancelableEvent<boolean>();
-      this.startReconfigure(onReconfigured);
+      const succeed = this.startReconfigure();
       for (const waiter of this.pendingReconfigureWaiters) {
-        waiter.signalAs(onReconfigured.wait());
+        waiter.signalAs(succeed);
       }
       this.pendingReconfigureWaiters = [];
     }
@@ -533,28 +530,30 @@ export class OperationScheduler {
         // The error is handled in toggleVideoRecordingPause().
       }
     }
-    this.capturer.stop();
+    await this.capturer.stop();
   }
 
-  private async startReconfigure(onReconfigured: CancelableEvent<boolean>):
-      Promise<void> {
+  private startReconfigure(): Promise<boolean> {
     assert(this.ongoingOperationType === null);
     this.ongoingOperationType = OperationType.RECONFIGURE;
 
     const cameraInfo = assertInstanceof(this.cameraInfo, CameraInfo);
-    try {
-      const succeed = await this.reconfigurer.start(cameraInfo);
-      // Sends the result to inform the caller first and then handles the
-      // waiters to keep the order correct.
-      onReconfigured.signal(succeed);
-      if (!succeed) {
+    const startPromise = this.reconfigurer.start(cameraInfo);
+    // This is for processing after the current reconfigure is done.
+    void (async () => {
+      try {
+        const succeed = await startPromise;
+        if (!succeed) {
+          this.clearPendingReconfigureWaiters();
+        }
+      } catch (e) {
         this.clearPendingReconfigureWaiters();
+      } finally {
+        this.finishOperation();
       }
-    } catch (e) {
-      onReconfigured.signalError(assertInstanceof(e, Error));
-      this.clearPendingReconfigureWaiters();
-    } finally {
-      this.finishOperation();
-    }
+    })();
+    // Only returns the "start" part, so the returned promise is resolved
+    // before all the waiters are resolved to keep the order correct.
+    return startPromise;
   }
 }

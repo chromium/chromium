@@ -202,8 +202,8 @@ export class Camera extends View implements CameraViewUI {
     state.addObserver(state.State.TAKING, checkVideoShutter);
 
     const videoSnapshotButton = dom.get('#video-snapshot', HTMLButtonElement);
-    videoSnapshotButton.addEventListener('click', () => {
-      this.cameraManager.takeVideoSnapshot();
+    videoSnapshotButton.addEventListener('click', async () => {
+      await this.cameraManager.takeVideoSnapshot();
     });
     function checkVideoSnapshotButton() {
       const disabled = state.get(state.State.SNAPSHOTTING);
@@ -513,7 +513,7 @@ export class Camera extends View implements CameraViewUI {
    */
   private async endTake(): Promise<void> {
     timertick.cancel();
-    this.cameraManager.stopCapture();
+    await this.cameraManager.stopCapture();
     await this.take;
   }
 
