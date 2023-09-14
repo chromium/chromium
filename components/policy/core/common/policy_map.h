@@ -279,10 +279,7 @@ class POLICY_EXPORT PolicyMap {
   // overridden by those in |other| if they have a higher priority, as defined
   // by EntryHasHigherPriority(). If a policy is contained in both maps with the
   // same priority, the current value in |this| is preserved.
-  // If |merge_precedence_metapolicies| is true, only the precedence
-  // metapolicies are merged. Otherwise they are skipped.
-  void MergeFrom(const PolicyMap& other,
-                 bool merge_precedence_metapolicies = false);
+  void MergeFrom(const PolicyMap& other);
 
   // Merge the policy values that are coming from different sources.
   void MergeValues(const std::vector<PolicyMerger*>& mergers);
