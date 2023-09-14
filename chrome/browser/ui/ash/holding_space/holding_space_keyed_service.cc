@@ -148,8 +148,9 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
     items.push_back(HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kPinnedFile,
         HoldingSpaceFile(holding_space_util::ResolveFileSystemType(
-            profile_, file_system_url.ToGURL())),
-        file_system_url.path(), file_system_url.ToGURL(),
+                             profile_, file_system_url.ToGURL()),
+                         file_system_url.ToGURL()),
+        file_system_url.path(),
         base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 
     // When pinning an item which already exists in holding space, the pin
@@ -221,7 +222,7 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   std::vector<GURL> pinned_files;
   for (const auto& item : holding_space_model_.items()) {
     if (item->type() == HoldingSpaceItem::Type::kPinnedFile)
-      pinned_files.push_back(item->file_system_url());
+      pinned_files.push_back(item->file().file_system_url);
   }
   return pinned_files;
 }
@@ -490,8 +491,9 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceKeyedService::CreateItemOfType(
   return HoldingSpaceItem::CreateFileBackedItem(
       type,
       HoldingSpaceFile(
-          holding_space_util::ResolveFileSystemType(profile_, file_system_url)),
-      file_path, file_system_url, progress,
+          holding_space_util::ResolveFileSystemType(profile_, file_system_url),
+          file_system_url),
+      file_path, progress,
       base::BindOnce(
           &holding_space_util::ResolveImageWithPlaceholderImageSkiaResolver,
           &thumbnail_loader_, placeholder_image_skia_resolver));

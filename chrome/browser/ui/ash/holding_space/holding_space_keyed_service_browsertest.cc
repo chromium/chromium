@@ -242,8 +242,9 @@ const HoldingSpaceItem* AddHoldingSpaceItem(
 
   std::unique_ptr<HoldingSpaceItem> item =
       HoldingSpaceItem::CreateFileBackedItem(
-          HoldingSpaceItem::Type::kDownload, HoldingSpaceFile(file_system_type),
-          item_path, file_system_url, progress,
+          HoldingSpaceItem::Type::kDownload,
+          HoldingSpaceFile(file_system_type, file_system_url), item_path,
+          progress,
           base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                          const base::FilePath& file_path) {
             return std::make_unique<HoldingSpaceImage>(

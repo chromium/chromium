@@ -106,10 +106,11 @@ std::unique_ptr<HoldingSpaceItem> CreateHoldingSpaceItem(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return HoldingSpaceItem::CreateFileBackedItem(
-      type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      file_path,
-      GURL(base::StrCat({"file-system:", file_path.BaseName().value()})),
-      base::BindOnce(&CreateHoldingSpaceImage));
+      type,
+      HoldingSpaceFile(
+          HoldingSpaceFile::FileSystemType::kTest,
+          GURL(base::StrCat({"file-system:", file_path.BaseName().value()}))),
+      file_path, base::BindOnce(&CreateHoldingSpaceImage));
 }
 
 std::vector<std::unique_ptr<HoldingSpaceItem>> CreateHoldingSpaceItems(

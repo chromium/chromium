@@ -246,8 +246,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
     // Create a holding space item backed by a non-existing file.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kDownload,
-        HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-        base::FilePath("foo.pdf"), GURL("filesystem:fake"),
+        HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                         GURL("filesystem:fake")),
+        base::FilePath("foo.pdf"),
         base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::OpenItems()` to fail when the backing file
@@ -308,9 +309,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, ShowItemInFolder) {
     // Create a holding space item backed by a non-existing file.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kDownload,
-        HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-        base::FilePath("foo"), GURL("filesystem:fake"),
-        base::BindOnce(&CreateTestHoldingSpaceImage));
+        HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                         GURL("filesystem:fake")),
+        base::FilePath("foo"), base::BindOnce(&CreateTestHoldingSpaceImage));
 
     // We expect `HoldingSpaceClient::ShowItemInFolder()` to fail when the
     // backing file for `holding_space_item` does not exist.

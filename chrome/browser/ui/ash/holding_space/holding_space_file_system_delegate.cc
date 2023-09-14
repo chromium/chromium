@@ -531,8 +531,8 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
         holding_space_util::ResolveFileSystemType(profile(), file_system_url);
 
     // Update.
-    model()->UpdateItem(id)->SetBackingFile(HoldingSpaceFile(file_system_type),
-                                            file_path, file_system_url);
+    model()->UpdateItem(id)->SetBackingFile(
+        HoldingSpaceFile(file_system_type, file_system_url), file_path);
   }
 
   // If a backing file update occurred, it's possible that there are no longer
@@ -620,7 +620,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
         holding_space_util::ResolveFileSystemType(profile(), file_system_url);
 
     model()->InitializeOrRemoveItem(
-        item->id(), HoldingSpaceFile(file_system_type), file_system_url);
+        item->id(), HoldingSpaceFile(file_system_type, file_system_url));
   }
 }
 

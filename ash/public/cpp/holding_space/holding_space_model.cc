@@ -39,9 +39,8 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   }
 
   // Update backing file.
-  if (file_ && file_path_ && file_system_url_) {
-    if (item_->SetBackingFile(file_.value(), file_path_.value(),
-                              file_system_url_.value())) {
+  if (file_ && file_path_) {
+    if (item_->SetBackingFile(file_.value(), file_path_.value())) {
       updated_fields |= HoldingSpaceModelObserver::UpdatedField::kBackingFile;
     }
   }
@@ -106,11 +105,9 @@ HoldingSpaceModel::ScopedItemUpdate::SetAccessibleName(
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
     const HoldingSpaceFile& file,
-    const base::FilePath& file_path,
-    const GURL& file_system_url) {
+    const base::FilePath& file_path) {
   file_ = file;
   file_path_ = file_path;
-  file_system_url_ = file_system_url;
   return *this;
 }
 
@@ -242,9 +239,8 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceModel::TakeItem(
 }
 
 void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
-                                               const HoldingSpaceFile& file,
-                                               const GURL& file_system_url) {
-  if (file_system_url.is_empty()) {
+                                               const HoldingSpaceFile& file) {
+  if (file.file_system_url.is_empty()) {
     RemoveItem(id);
     return;
   }
@@ -255,7 +251,7 @@ void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
   HoldingSpaceItem* item = item_it->get();
   DCHECK(!item->IsInitialized());
 
-  item->Initialize(file, file_system_url);
+  item->Initialize(file);
   ++initialized_item_counts_by_type_[item->type()];
 
   for (auto& observer : observers_)

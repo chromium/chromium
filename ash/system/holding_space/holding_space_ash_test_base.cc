@@ -34,10 +34,11 @@ HoldingSpaceItem* HoldingSpaceAshTestBase::AddItem(
     const base::FilePath& file_path) {
   std::unique_ptr<HoldingSpaceItem> item =
       HoldingSpaceItem::CreateFileBackedItem(
-          type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-          file_path,
-          GURL(base::StrCat({"filesystem:", file_path.BaseName().value()})),
-          base::BindOnce(&CreateStubHoldingSpaceImage));
+          type,
+          HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                           GURL(base::StrCat(
+                               {"filesystem:", file_path.BaseName().value()}))),
+          file_path, base::BindOnce(&CreateStubHoldingSpaceImage));
   auto* item_ptr = item.get();
   DCHECK(model());
   model()->AddItem(std::move(item));
@@ -53,9 +54,10 @@ HoldingSpaceItem* HoldingSpaceAshTestBase::AddPartiallyInitializedItem(
   // backing file.
   std::unique_ptr<HoldingSpaceItem> item =
       HoldingSpaceItem::CreateFileBackedItem(
-          type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest), path,
-          GURL("filesystem:ignored"),
-          base::BindOnce(&CreateStubHoldingSpaceImage));
+          type,
+          HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                           GURL("filesystem:ignored")),
+          path, base::BindOnce(&CreateStubHoldingSpaceImage));
   const base::Value::Dict serialized_holding_space_item = item->Serialize();
   std::unique_ptr<HoldingSpaceItem> deserialized_item =
       HoldingSpaceItem::Deserialize(

@@ -21,7 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "url/gurl.h"
 
 namespace cros_styles {
 enum class ColorName;
@@ -106,24 +105,22 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   using ImageResolver = base::OnceCallback<
       std::unique_ptr<HoldingSpaceImage>(Type, const base::FilePath&)>;
 
-  // TODO(http://b/288471183): Remove file path and file system URL.
-  // Creates a HoldingSpaceItem that's backed by a file system URL.
-  // NOTE: `file_system_url` is expected to be non-empty.
+  // TODO(http://b/288471183): Remove file path.
+  // Creates a HoldingSpaceItem that's backed by a `file`.
+  // NOTE: `file` system URL is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
       const HoldingSpaceFile& file,
       const base::FilePath& file_path,
-      const GURL& file_system_url,
       ImageResolver image_resolver);
 
-  // TODO(http://b/288471183): Remove file path and file system URL.
-  // Creates a HoldingSpaceItem that's backed by a file system URL.
-  // NOTE: `file_system_url` is expected to be non-empty.
+  // TODO(http://b/288471183): Remove file path.
+  // Creates a HoldingSpaceItem that's backed by a `file`.
+  // NOTE: `file` system URL is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
       const HoldingSpaceFile& file,
       const base::FilePath& file_path,
-      const GURL& file_system_url,
       const HoldingSpaceProgress& progress,
       ImageResolver image_resolver);
 
@@ -168,17 +165,15 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // been called. Non-initialized items should not be shown in holding space UI.
   bool IsInitialized() const;
 
-  // TODO(http://b/288471183): Remove file system URL.
   // Used to fully initialize partially initialized items created by
   // `Deserialize()`.
-  void Initialize(const HoldingSpaceFile& file, const GURL& file_system_url);
+  void Initialize(const HoldingSpaceFile& file);
 
-  // TODO(http://b/288471183): Remove file path and file system URL.
-  // Sets the `file` backing the item to `file_path` and `file_system_url`,
-  // returning `true` if a change occurred or `false` to indicate no-op.
+  // TODO(http://b/288471183): Remove file path.
+  // Sets the `file` backing the item to `file_path`, returning `true` if a
+  // change occurred or `false` to indicate no-op.
   bool SetBackingFile(const HoldingSpaceFile& file,
-                      const base::FilePath& file_path,
-                      const GURL& file_system_url);
+                      const base::FilePath& file_path);
 
   // Returns `text_`, falling back to the lossy display name of the item's
   // backing file if absent.
@@ -242,8 +237,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const base::FilePath& file_path() const { return file_path_; }
 
-  const GURL& file_system_url() const { return file_system_url_; }
-
   const HoldingSpaceProgress& progress() const { return progress_; }
 
   const std::vector<InProgressCommand>& in_progress_commands() const {
@@ -253,13 +246,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
  private:
-  // TODO(http://b/288471183): Remove file path and file system URL.
+  // TODO(http://b/288471183): Remove file path.
   // Constructor for file backed items.
   HoldingSpaceItem(Type type,
                    const std::string& id,
                    const HoldingSpaceFile& file,
                    const base::FilePath& file_path,
-                   const GURL& file_system_url,
                    std::unique_ptr<HoldingSpaceImage> image,
                    const HoldingSpaceProgress& progress);
 
@@ -274,10 +266,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // TODO(http://b/288471183): Move to `HoldingSpaceFile`.
   // The file path by which the item is backed.
   base::FilePath file_path_;
-
-  // TODO(http://b/288471183): Move to `HoldingSpaceFile`.
-  // The file system URL of the file that backs the item.
-  GURL file_system_url_;
 
   // If set, the text that should be shown for the item.
   absl::optional<std::u16string> text_;

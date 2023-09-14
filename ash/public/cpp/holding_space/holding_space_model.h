@@ -20,7 +20,6 @@
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
-#include "url/gurl.h"
 
 namespace base {
 class FilePath;
@@ -59,11 +58,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetAccessibleName(
         const absl::optional<std::u16string>& accessible_name);
 
-    // TODO(http://b/288471183): Remove file path and file system URL.
+    // TODO(http://b/288471183): Remove file path.
     // Sets the backing file for the item and returns a reference to `this`.
     ScopedItemUpdate& SetBackingFile(const HoldingSpaceFile& file,
-                                     const base::FilePath& file_path,
-                                     const GURL& file_system_url);
+                                     const base::FilePath& file_path);
 
     // Sets the commands for an in-progress item which are shown in the item's
     // context menu and possibly, in the case of cancel/pause/resume, as
@@ -104,7 +102,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     absl::optional<absl::optional<std::u16string>> accessible_name_;
     absl::optional<HoldingSpaceFile> file_;
     absl::optional<base::FilePath> file_path_;
-    absl::optional<GURL> file_system_url_;
     absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
         in_progress_commands_;
     absl::optional<HoldingSpaceProgress> progress_;
@@ -135,13 +132,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // item. If the specified item does not exist in the model, returns `nullptr`.
   std::unique_ptr<HoldingSpaceItem> TakeItem(const std::string& id);
 
-  // TODO(http://b/288471183): Remove file system URL.
   // Fully initializes a partially initialized holding space item using the
-  // provided `file` and `file_system_url`. The item will be removed if
-  // `file_system_url` is empty.
+  // provided `file`. The item will be removed if `file` system URL is empty.
   void InitializeOrRemoveItem(const std::string& id,
-                              const HoldingSpaceFile& file,
-                              const GURL& file_system_url);
+                              const HoldingSpaceFile& file);
 
   // Returns an object which, upon its destruction, performs an atomic update to
   // the holding space item associated with the specified `id`.

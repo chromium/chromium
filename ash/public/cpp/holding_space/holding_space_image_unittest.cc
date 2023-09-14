@@ -175,8 +175,9 @@ std::unique_ptr<HoldingSpaceItem> CreateTestItem(
   const GURL file_system_url("filesystem:file_system_url");
   return HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kPinnedFile,
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest), file_path,
-      file_system_url,
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       file_system_url),
+      file_path,
       base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                      const base::FilePath& file_path) {
         return std::make_unique<HoldingSpaceImage>(
@@ -659,8 +660,9 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChange) {
   // requested.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
 
   // Create test image client to issue an image request.
   TestImageClient image_client(&holding_space_item->image());
@@ -714,8 +716,9 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChangeFor2xBitmap) {
   // the new file path.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
   gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
@@ -750,8 +753,9 @@ TEST_F(HoldingSpaceImageTest, RetryFailedImageRequestsOnFilePathChange) {
   // Update the backing file path, and simulate image load failure.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   image_generator.FailRequest(0);
 
@@ -793,8 +797,9 @@ TEST_F(HoldingSpaceImageTest,
   // retried.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
 
   // Verify that image load is retried using the new file path.
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -819,8 +824,9 @@ TEST_F(HoldingSpaceImageTest, DontRetryImageRequestsFailedAfterPathChange) {
   // image representation.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
 
   // Create test image client, and simulate image load failure.
   TestImageClient image_client(&holding_space_item->image());
@@ -861,8 +867,9 @@ TEST_F(HoldingSpaceImageTest, DontRetryImageLoadOnBackingFileChange) {
   // again.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
 
   image = holding_space_item->image().GetImageSkia();
   EXPECT_EQ(kImageSize, image.size());
@@ -892,8 +899,9 @@ TEST_F(HoldingSpaceImageTest,
   // again.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
 
   // Finish initial load request.
@@ -935,8 +943,9 @@ TEST_F(HoldingSpaceImageTest, ItemPathMovedAndModifiedDuringInitialLoad) {
   // Update the backing file path, and then invalidate the image.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->SetBackingFile(
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem:updated_file_system_url")),
+      kUpdatedTestFile);
   holding_space_item->InvalidateImage();
   ASSERT_TRUE(
       holding_space_item->image_for_testing().FireInvalidateTimerForTesting());

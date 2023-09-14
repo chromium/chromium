@@ -286,7 +286,7 @@ void HoldingSpaceClientImpl::PinItems(
     if (!item->progress().IsComplete()) {
       continue;
     }
-    const GURL& crack_url = item->file_system_url();
+    const GURL& crack_url = item->file().file_system_url;
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)
             ->CrackURLInFirstPartyContext(crack_url);
@@ -338,7 +338,7 @@ void HoldingSpaceClientImpl::UnpinItems(
     if (!item->progress().IsComplete()) {
       continue;
     }
-    const GURL& crack_url = item->file_system_url();
+    const GURL& crack_url = item->file().file_system_url;
     const storage::FileSystemURL& file_system_url =
         file_manager::util::GetFileManagerFileSystemContext(profile_)
             ->CrackURLInFirstPartyContext(crack_url);

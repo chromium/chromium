@@ -74,8 +74,7 @@ HoldingSpaceItem::~HoldingSpaceItem() {
 
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_ == rhs.file_ &&
-         file_path_ == rhs.file_path_ &&
-         file_system_url_ == rhs.file_system_url_ && text_ == rhs.text_ &&
+         file_path_ == rhs.file_path_ && text_ == rhs.text_ &&
          secondary_text_ == rhs.secondary_text_ &&
          secondary_text_color_id_ == rhs.secondary_text_color_id_ &&
          *image_ == *rhs.image_ && progress_ == rhs.progress_ &&
@@ -87,10 +86,8 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const HoldingSpaceFile& file,
     const base::FilePath& file_path,
-    const GURL& file_system_url,
     ImageResolver image_resolver) {
-  return CreateFileBackedItem(type, file, file_path, file_system_url,
-                              HoldingSpaceProgress(),
+  return CreateFileBackedItem(type, file, file_path, HoldingSpaceProgress(),
                               std::move(image_resolver));
 }
 
@@ -99,16 +96,14 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     Type type,
     const HoldingSpaceFile& file,
     const base::FilePath& file_path,
-    const GURL& file_system_url,
     const HoldingSpaceProgress& progress,
     ImageResolver image_resolver) {
-  DCHECK(!file_system_url.is_empty());
+  DCHECK(!file.file_system_url.is_empty());
 
   // Note: std::make_unique does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, /*id=*/base::UnguessableToken::Create().ToString(), file, file_path,
-      file_system_url, std::move(image_resolver).Run(type, file_path),
-      progress));
+      std::move(image_resolver).Run(type, file_path), progress));
 }
 
 // static
@@ -234,9 +229,10 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   // NOTE: `std::make_unique` does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, DeserializeId(dict),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kUnknown), file_path,
-      /*file_system_url=*/GURL(),
-      std::move(image_resolver).Run(type, file_path), HoldingSpaceProgress()));
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kUnknown,
+                       /*file_system_url=*/GURL()),
+      file_path, std::move(image_resolver).Run(type, file_path),
+      HoldingSpaceProgress()));
 }
 
 // static
@@ -297,28 +293,23 @@ base::CallbackListSubscription HoldingSpaceItem::AddDeletionCallback(
 }
 
 bool HoldingSpaceItem::IsInitialized() const {
-  return !file_system_url_.is_empty();
+  return !file_.file_system_url.is_empty();
 }
 
-void HoldingSpaceItem::Initialize(const HoldingSpaceFile& file,
-                                  const GURL& file_system_url) {
+void HoldingSpaceItem::Initialize(const HoldingSpaceFile& file) {
   DCHECK(!IsInitialized());
-  DCHECK(!file_system_url.is_empty());
+  DCHECK(!file.file_system_url.is_empty());
   file_ = file;
-  file_system_url_ = file_system_url;
 }
 
 bool HoldingSpaceItem::SetBackingFile(const HoldingSpaceFile& file,
-                                      const base::FilePath& file_path,
-                                      const GURL& file_system_url) {
-  if (file_ == file && file_path_ == file_path &&
-      file_system_url_ == file_system_url) {
+                                      const base::FilePath& file_path) {
+  if (file_ == file && file_path_ == file_path) {
     return false;
   }
 
   file_ = file;
   file_path_ = file_path;
-  file_system_url_ = file_system_url;
   image_->UpdateBackingFilePath(file_path);
 
   return true;
@@ -414,14 +405,12 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const HoldingSpaceFile& file,
                                    const base::FilePath& file_path,
-                                   const GURL& file_system_url,
                                    std::unique_ptr<HoldingSpaceImage> image,
                                    const HoldingSpaceProgress& progress)
     : type_(type),
       id_(id),
       file_(file),
       file_path_(file_path),
-      file_system_url_(file_system_url),
       image_(std::move(image)),
       progress_(progress) {}
 

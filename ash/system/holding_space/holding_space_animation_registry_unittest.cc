@@ -57,8 +57,10 @@ class HoldingSpaceAnimationRegistryTest : public AshTestBase {
         base::StrCat({"filesystem:", path.BaseName().value()}));
     std::unique_ptr<HoldingSpaceItem> item =
         HoldingSpaceItem::CreateFileBackedItem(
-            type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-            path, file_system_url, progress,
+            type,
+            HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                             file_system_url),
+            path, progress,
             base::BindOnce(
                 [](HoldingSpaceItem::Type type, const base::FilePath& path) {
                   return std::make_unique<HoldingSpaceImage>(

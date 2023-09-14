@@ -56,8 +56,10 @@ std::unique_ptr<HoldingSpaceImage> CreateFakeHoldingSpaceImage(
 
 std::unique_ptr<HoldingSpaceItem> CreateItem(HoldingSpaceItem::Type type) {
   return HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
+      /*type=*/type,
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem::file_system_url")),
+      base::FilePath("file_path"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 }
 
@@ -198,8 +200,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_AccessibleName) {
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetHoldingSpaceItemType(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem::file_system_url")),
+      base::FilePath("file_path"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -276,8 +279,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetHoldingSpaceItemType(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem::file_system_url")),
+      base::FilePath("file_path"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -301,13 +305,14 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       HoldingSpaceFile::FileSystemType::kTest);
   model()
       .UpdateItem(item_ptr->id())
-      ->SetBackingFile(HoldingSpaceFile(updated_file_system_type),
-                       updated_file_path, updated_file_system_url);
+      ->SetBackingFile(
+          HoldingSpaceFile(updated_file_system_type, updated_file_system_url),
+          updated_file_path);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kBackingFile);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
-  EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
+  EXPECT_EQ(item_ptr->file().file_system_url, updated_file_system_url);
 
   // Update in-progress commands.
   std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
@@ -365,8 +370,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   model()
       .UpdateItem(item_ptr->id())
       ->SetAccessibleName(u"updated_accessible_name")
-      .SetBackingFile(HoldingSpaceFile(updated_file_system_type),
-                      updated_file_path, updated_file_system_url)
+      .SetBackingFile(
+          HoldingSpaceFile(updated_file_system_type, updated_file_system_url),
+          updated_file_path)
       .SetInProgressCommands(in_progress_commands)
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
@@ -382,7 +388,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->GetAccessibleName(), u"updated_accessible_name");
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
-  EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
+  EXPECT_EQ(item_ptr->file().file_system_url, updated_file_system_url);
   EXPECT_EQ(item_ptr->in_progress_commands(), in_progress_commands);
   EXPECT_EQ(item_ptr->progress().GetValue(), 0.75f);
   EXPECT_EQ(item_ptr->GetText(), u"updated_text");
@@ -401,9 +407,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetHoldingSpaceItemType(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
-      HoldingSpaceProgress(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem::file_system_url")),
+      base::FilePath("file_path"), HoldingSpaceProgress(),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
 
@@ -420,8 +426,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   model()
       .UpdateItem(item_ptr->id())
       ->SetAccessibleName(absl::nullopt)
-      .SetBackingFile(item_ptr->file(), item_ptr->file_path(),
-                      item_ptr->file_system_url())
+      .SetBackingFile(item_ptr->file(), item_ptr->file_path())
       .SetInProgressCommands({})
       .SetText(absl::nullopt)
       .SetSecondaryText(absl::nullopt)
@@ -440,8 +445,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_InProgressCommands) {
   // Create an in-progress holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetHoldingSpaceItemType(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem::file_system_url")),
+      base::FilePath("file_path"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -517,8 +523,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetHoldingSpaceItemType(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
-      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+                       GURL("filesystem::file_system_url")),
+      base::FilePath("file_path"),
       HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
                            /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
