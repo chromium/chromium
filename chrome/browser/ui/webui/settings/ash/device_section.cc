@@ -861,12 +861,12 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
         IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH);
     html_source->AddLocalizedString(
         "fKeyShiftOptionSearch",
-        IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_LAUNCHER);
+        IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION_SEARCH);
     html_source->AddLocalizedString(
         "fKeyCtrlShiftOptionSearch",
-        IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_LAUNCHER);
+        IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION_SEARCH);
     html_source->AddLocalizedString(
-        "fKeyAltOptionSearch", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_LAUNCHER);
+        "fKeyAltOptionSearch", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION_SEARCH);
   }
 }
 
