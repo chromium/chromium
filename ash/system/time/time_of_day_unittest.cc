@@ -62,18 +62,14 @@ TEST(TimeOfDayTest, TestFromTime) {
   // "Now" today and "now" tomorrow should have the same minutes offset from
   // 00:00.
   // Assume that "now" is Tuesday May 23, 2017 at 10:30 AM.
-  base::Time::Exploded now;
-  now.year = 2017;
-  now.month = 5;        // May.
-  now.day_of_week = 2;  // Tuesday.
-  now.day_of_month = 23;
-  now.hour = 10;
-  now.minute = 30;
-  now.second = 0;
-  now.millisecond = 0;
-
+  static constexpr base::Time::Exploded kNow = {.year = 2017,
+                                                .month = 5,
+                                                .day_of_week = 2,
+                                                .day_of_month = 23,
+                                                .hour = 10,
+                                                .minute = 30};
   base::Time now_today = base::Time::Now();
-  ASSERT_TRUE(base::Time::FromLocalExploded(now, &now_today));
+  ASSERT_TRUE(base::Time::FromLocalExploded(kNow, &now_today));
   base::Time now_tomorrow = now_today + base::Days(1);
   EXPECT_EQ(TimeOfDay::FromTime(now_today), TimeOfDay::FromTime(now_tomorrow));
 }

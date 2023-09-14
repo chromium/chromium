@@ -80,10 +80,10 @@ void WallpaperControllerTestApi::ResetCalculatedColors() {
 
 void WallpaperControllerTestApi::SetDefaultWallpaper(
     const AccountId& account_id) {
-  base::Time::Exploded exploded{
+  static constexpr base::Time::Exploded kTime = {
       .year = 2023, .month = 2, .day_of_month = 13, .hour = 4};
   base::Time time;
-  CHECK(base::Time::FromUTCExploded(exploded, &time));
+  CHECK(base::Time::FromUTCExploded(kTime, &time));
   controller_->SetDefaultWallpaperInfo(account_id, time);
 }
 

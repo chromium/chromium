@@ -96,9 +96,12 @@ void TestWallpaperControllerClient::FetchGooglePhotosPhoto(
     return;
   }
   base::Time time;
-  base::Time::Exploded exploded_time{2011, 6, 3, 15, 12, 0, 0, 0};
-  if (!base::Time::FromUTCExploded(exploded_time, &time))
-    NOTREACHED();
+  static constexpr base::Time::Exploded kTime = {.year = 2011,
+                                                 .month = 6,
+                                                 .day_of_week = 3,
+                                                 .day_of_month = 15,
+                                                 .hour = 12};
+  CHECK(base::Time::FromUTCExploded(kTime, &time));
   if (fetch_google_photos_photo_fails_ || google_photo_has_been_deleted_) {
     std::move(callback).Run(nullptr,
                             /*success=*/google_photo_has_been_deleted_);

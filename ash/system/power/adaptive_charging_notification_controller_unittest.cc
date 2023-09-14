@@ -22,10 +22,13 @@ namespace ash {
 
 namespace {
 
-const base::Time::Exploded kTestDateTimeExploded = {
-    2022, 4,  5, 29,  // Fri, Apr 29, 2022
-    2,    42, 7, 0    // 2:42:07.000 in UTC = 12:42:07 in Australia AEST.
-};
+constexpr base::Time::Exploded kTestDateTimeExploded = {.year = 2022,
+                                                        .month = 4,
+                                                        .day_of_week = 5,
+                                                        .day_of_month = 29,
+                                                        .hour = 2,
+                                                        .minute = 42,
+                                                        .second = 7};
 
 // Enables or disables the user pref for the entire feature.
 void SetAdaptiveChargingPref(bool enabled) {
