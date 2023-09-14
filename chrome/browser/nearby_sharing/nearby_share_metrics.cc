@@ -286,6 +286,12 @@ std::string GetShareTargetTypeSubcategoryName(
   }
 }
 
+// Note: There are many screen states besides locked and logged in. These two
+// are the only states which Nearby Share is enabled for.
+std::string GetScreenLockedName(bool is_screen_locked) {
+  return is_screen_locked ? ".ScreenLocked" : ".LoggedIn";
+}
+
 std::string GetPayloadStatusSubcategoryName(
     nearby::connections::mojom::PayloadStatus status) {
   switch (status) {
@@ -652,7 +658,8 @@ void RecordNearbyShareTransferFinalStatusMetric(
     nearby_share::mojom::ShareTargetType type,
     TransferMetadata::Status status,
     bool is_known,
-    bool for_self_share) {
+    bool for_self_share,
+    bool is_screen_locked) {
   DCHECK(TransferMetadata::IsFinalStatus(status));
 
   // Emit success/failure to Standard Feature Usage Logging if there was a
@@ -717,6 +724,12 @@ void RecordNearbyShareTransferFinalStatusMetric(
       base::UmaHistogramBoolean(
           prefix + send_or_receive + share_target_type + contact_status,
           *success);
+      if (for_self_share && is_incoming && features::IsSelfShareEnabled()) {
+        base::UmaHistogramBoolean(prefix + ".Receive" + share_target_type +
+                                      ".SelfShare" +
+                                      GetScreenLockedName(is_screen_locked),
+                                  success.value());
+      }
     }
   }
 }

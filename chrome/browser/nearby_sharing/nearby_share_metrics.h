@@ -119,7 +119,8 @@ void RecordNearbyShareTransferFinalStatusMetric(
     nearby_share::mojom::ShareTargetType type,
     TransferMetadata::Status status,
     bool is_known,
-    bool for_self_share);
+    bool for_self_share,
+    bool is_screen_locked);
 
 void RecordNearbyShareDeviceNearbySharingNotificationFlowEvent(
     NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent

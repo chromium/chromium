@@ -1364,6 +1364,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Share.Transfer.Success.Receive.{ShareTargetType}.SelfShare.{DeviceState}"
+    enum="BooleanSuccess" expires_after="2024-09-12">
+  <owner>brandosocarras@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the success/failure of a received attachment from a device, logged
+    into the same GAIA account as the receiver, of type {ShareTargetType} while
+    the receiver is in {DeviceState} state. Emitted when a transfer completes
+    successfully or definitively fails, but not for indeterminate states like
+    cancellation.
+  </summary>
+  <token key="ShareTargetType">
+    <variant name="Laptop" summary="a laptop"/>
+    <variant name="Phone" summary="a phone"/>
+    <variant name="Tablet" summary="a tablet"/>
+    <variant name="UnknownDeviceType" summary="an unknown device type"/>
+  </token>
+  <token key="DeviceState">
+    <variant name="LoggedIn" summary="device is logged in"/>
+    <variant name="ScreenLocked" summary="screen is locked"/>
+  </token>
+</histogram>
+
+<histogram
     name="Nearby.Share.Transfer.Success.{Direction}.{ShareTargetType}.{ContactStatus}"
     enum="BooleanSuccess" expires_after="2024-07-10">
   <owner>crisrael@google.com</owner>
