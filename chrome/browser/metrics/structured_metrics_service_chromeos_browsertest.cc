@@ -127,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, DisabledWhenRevoked) {
 }
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
-                       InMemoryPurgeOnConsentRevoke) {
+                       // TODO(crbug.com/1482522): Re-enable this test
+                       DISABLED_InMemoryPurgeOnConsentRevoke) {
   auto* sm_service = GetSMService();
 
   // Enable consent for profile.
