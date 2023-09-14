@@ -10,6 +10,9 @@
 
 namespace supervised_user {
 
+// Experiment to enable kid-friendly content feed.
+BASE_DECLARE_FEATURE(kKidFriendlyContentFeed);
+
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
 extern const char kLocalWebApprovalsPreferredButtonLocal[];
 extern const char kLocalWebApprovalsPreferredButtonRemote[];
@@ -62,6 +65,10 @@ bool IsLocalExtensionApprovalsV2Enabled();
 // This method does not take into account whether the user is actually a child;
 // that must be handled by calling code.
 bool IsChildAccountSupervisionEnabled();
+
+// Returns whether the experiment to display a kid-friendly content stream on
+// the New Tab page has been enabled.
+bool IsKidFriendlyContentFeedAvailable();
 
 }  // namespace supervised_user
 

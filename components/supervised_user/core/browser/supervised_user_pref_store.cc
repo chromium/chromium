@@ -142,7 +142,8 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     prefs_->SetBoolean(prefs::kSigninAllowed, false);
 #endif  // !BUILDFLAG(IS_IOS)
 
-    prefs_->SetBoolean(feed::prefs::kEnableSnippets, false);
+    prefs_->SetBoolean(feed::prefs::kEnableSnippets,
+                       supervised_user::IsKidFriendlyContentFeedAvailable());
 
 #if BUILDFLAG(IS_ANDROID)
     syncer::SyncPrefs::SetTypeDisabledByCustodian(
