@@ -12436,6 +12436,69 @@
             ]
         }
     ],
+    "Prerender2NewTabPageTrigger": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "BothMouseDownAndMouseHover_0911",
+                    "params": {
+                        "prerender_new_tab_page_on_mouse_hover_trigger": "true",
+                        "prerender_new_tab_page_on_mouse_pressed_trigger": "true",
+                        "prerender_start_delay_on_mouse_hover_ms": "300"
+                    },
+                    "enable_features": [
+                        "NewTabPageTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "OnlyMouseHover300ms_0911",
+                    "params": {
+                        "prerender_new_tab_page_on_mouse_hover_trigger": "true",
+                        "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
+                        "prerender_start_delay_on_mouse_hover_ms": "300"
+                    },
+                    "enable_features": [
+                        "NewTabPageTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "OnlyMouseHover200ms_0911",
+                    "params": {
+                        "prerender_new_tab_page_on_mouse_hover_trigger": "true",
+                        "prerender_new_tab_page_on_mouse_pressed_trigger": "false",
+                        "prerender_start_delay_on_mouse_hover_ms": "200"
+                    },
+                    "enable_features": [
+                        "NewTabPageTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "OnlyMouseDown_0911",
+                    "params": {
+                        "prerender_new_tab_page_on_mouse_hover_trigger": "false",
+                        "prerender_new_tab_page_on_mouse_pressed_trigger": "true",
+                        "prerender_start_delay_on_mouse_hover_ms": "300"
+                    },
+                    "enable_features": [
+                        "NewTabPageTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "NewTabPageTriggerForPrerender2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
