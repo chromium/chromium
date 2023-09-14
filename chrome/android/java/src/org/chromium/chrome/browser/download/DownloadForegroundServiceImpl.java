@@ -86,18 +86,10 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
             // If there is no old notification or old notification id, just start foreground.
             startForegroundInternal(newNotificationId, newNotification);
         } else {
-            if (getCurrentSdk() >= 24) {
-                // If possible, detach notification so it doesn't get cancelled by accident.
-                stopForegroundInternal(killOldNotification ? ServiceCompat.STOP_FOREGROUND_REMOVE
-                                                           : ServiceCompat.STOP_FOREGROUND_DETACH);
-                startForegroundInternal(newNotificationId, newNotification);
-            } else {
-                // Otherwise start the foreground and relaunch the originally pinned notification.
-                startForegroundInternal(newNotificationId, newNotification);
-                if (!killOldNotification) {
-                    relaunchOldNotification(oldNotificationId, oldNotification);
-                }
-            }
+            // If possible, detach notification so it doesn't get cancelled by accident.
+            stopForegroundInternal(killOldNotification ? ServiceCompat.STOP_FOREGROUND_REMOVE
+                                                       : ServiceCompat.STOP_FOREGROUND_DETACH);
+            startForegroundInternal(newNotificationId, newNotification);
         }
 
         // Record when starting foreground and when updating pinned notification.
@@ -140,24 +132,9 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
             // Regardless of the SDK level, stop foreground and kill if so indicated.
             stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_REMOVE);
         } else {
-            if (getCurrentSdk() >= 24) {
-                // Android N+ has the option to detach notifications from the service, so detach or
-                // kill the notification as needed when stopping service.
-                stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_DETACH);
-            } else if (getCurrentSdk() >= 23) {
-                // Android M+ can't detach the notification but doesn't have other caveats. Kill the
-                // notification and relaunch if detach was desired.
-                stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_REMOVE);
-                relaunchOldNotification(pinnedNotificationId, pinnedNotification);
-            } else {
-                // In phones that are Lollipop and older (API < 23), the service gets killed with
-                // the task, which might result in the notification being unable to be relaunched
-                // where it needs to be. kill and relaunch the old notification before stopping the
-                // service.
-                relaunchOldNotification(
-                        getNewNotificationIdFor(pinnedNotificationId), pinnedNotification);
-                stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_REMOVE);
-            }
+            // Android N+ has the option to detach notifications from the service, so detach or
+            // kill the notification as needed when stopping service.
+            stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_DETACH);
         }
         getService().stopSelf();
     }
