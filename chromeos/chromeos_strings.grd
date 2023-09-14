@@ -4306,6 +4306,10 @@
           launch mail
         </message>
         <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_STAND_BY" desc="The text read aloud by the screen reader describing the keyboard icon 'lock'." translateable="false">
+          lock
+        </message>
+        <!-- TODO(b/286268215): Translate this string -->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU" desc="The text read aloud by the screen reader describing the keyboard icon 'context menu." translateable="false">
           menu
         </message>

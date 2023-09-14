@@ -79,6 +79,7 @@ export const keyToIconNameMap: {[key: string]: string|undefined} = {
   'PrintScreen': 'screenshot',
   'PrivacyScreenToggle': 'electronic-privacy-screen',
   'Settings': 'settings',
+  'Standby': 'lock',
   'ZoomToggle': 'fullscreen',
 };
 
