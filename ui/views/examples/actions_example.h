@@ -36,9 +36,9 @@ class VIEWS_EXAMPLES_EXPORT ActionsExample : public ExampleBase {
 
  private:
   void ActionSelected();
-  void AssignButtonPressed();
+  void AssignAction(actions::ActionItem* action);
   void ActionInvoked(actions::ActionItem* action);
-  void CreateButtonPressed();
+  void CreateControl(actions::ActionItem* action);
   void CreateActions(actions::ActionManager* manager);
   void CheckedChanged();
   void EnabledChanged();
@@ -48,6 +48,7 @@ class VIEWS_EXAMPLES_EXPORT ActionsExample : public ExampleBase {
   void VisibleChanged();
 
   std::vector<base::CallbackListSubscription> subscriptions_;
+  raw_ptr<actions::ActionItem> example_actions_ = nullptr;
   raw_ptr<View> action_panel_ = nullptr;
   raw_ptr<BoxLayoutView> control_panel_ = nullptr;
   raw_ptr<Combobox> available_controls_ = nullptr;

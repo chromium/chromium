@@ -11,7 +11,9 @@
 #define EXAMPLES_ACTION_IDS \
   E(kActionTest1, , kActionExamplesStart, ExamplesActionIds) \
   E(kActionTest2) \
-  E(kActionTest3)
+  E(kActionTest3) \
+  E(kActionAssignAction) \
+  E(kActionCreateControl)
 // clang-format on
 
 namespace views::examples {

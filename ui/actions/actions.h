@@ -113,6 +113,15 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     ActionItemBuilder&& AddChildren(Child&& child, Types&&... args) && {
       return std::move(this->AddChildrenImpl(&child, &args...));
     }
+    template <typename ActionPtr>
+    ActionItemBuilder& CopyAddressTo(ActionPtr* action_address) & {
+      *action_address = action_item_.get();
+      return *this;
+    }
+    template <typename ActionPtr>
+    ActionItemBuilder&& CopyAddressTo(ActionPtr* action_address) && {
+      return std::move(this->CopyAddressTo(action_address));
+    }
     ActionItemBuilder& SetActionId(absl::optional<ActionId> action_id) &;
     ActionItemBuilder&& SetActionId(absl::optional<ActionId> action_id) &&;
     ActionItemBuilder& SetAccelerator(ui::Accelerator accelerator) &;
@@ -245,6 +254,10 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
 
   ActionItem* AddAction(std::unique_ptr<ActionItem> action_item);
   std::unique_ptr<ActionItem> RemoveAction(ActionItem* action_item);
+  template <typename Action, typename... Types>
+  void AddActions(Action&& action, Types&&... args) & {
+    AddActionsImpl(&action, &args...);
+  }
 
   // Clears the actions stored in `root_action_parent_`.
   void ResetActions();
@@ -261,6 +274,13 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   ~ActionManager() override;
 
  private:
+  template <typename... Args>
+  void AddActionsImpl(Args*... args) {
+    std::vector<std::unique_ptr<ActionItem>*> actions = {args...};
+    for (auto* action : actions) {
+      AddAction(std::move(*action));
+    }
+  }
   ActionItem* FindActionImpl(ActionId action_id, const ActionList& list);
   void GetActionsImpl(ActionItem* item, ActionItemVector& items);
 

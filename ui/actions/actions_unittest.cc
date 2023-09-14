@@ -174,6 +174,9 @@ TEST_F(ActionItemTest, ActionBuilderTest) {
 
 TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
   const size_t expected_child_count = 2;
+  ActionItem* root_action = nullptr;
+  ActionItem* child_action1 = nullptr;
+  ActionItem* child_action2 = nullptr;
   int action_invoked_count = 0;
   int child1_action_invoked_count = 0;
   int child2_action_invoked_count = 0;
@@ -182,6 +185,7 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
       base::BindRepeating([](int* invoked_count, actions::ActionItem* action){
         ++*invoked_count;
       }, &action_invoked_count))
+      .CopyAddressTo(&root_action)
       .SetText(kActionText)
       .SetActionId(kActionTest1)
       .SetVisible(true)
@@ -192,6 +196,7 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
                                     actions::ActionItem* action) {
                 ++*invoked_count;
               }, &child1_action_invoked_count))
+              .CopyAddressTo(&child_action1)
               .SetActionId(kActionTest2)
               .SetText(kChild1Text),
           ActionItem::Builder(
@@ -199,24 +204,25 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
                                     actions::ActionItem* action) {
                 ++*invoked_count;
               }, &child2_action_invoked_count))
+              .CopyAddressTo(&child_action2)
               .SetActionId(kActionTest3)
               .SetChecked(true)
               .SetText(kChild2Text));
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
   manager.AddAction(std::move(builder).Build());
-  auto* root_action = manager.FindAction(kActionTest1);
+  ASSERT_TRUE(root_action);
+  ASSERT_TRUE(child_action1);
+  ASSERT_TRUE(child_action2);
+
   EXPECT_EQ(root_action->GetChildren().children().size(), expected_child_count);
-  // TODO(kylixrd): Once ActionManger::IndexActions() indexes the child actions,
-  // FindAction() can be used to locate a child action. Go right to it for now.
-  auto* child_action1 = root_action->GetChildren().children()[0].get();
+
   EXPECT_EQ(child_action1->GetText(), kChild1Text);
   auto child_action_id1 = child_action1->GetActionId();
   ASSERT_TRUE(child_action_id1);
   EXPECT_EQ(child_action_id1.value(), kActionTest2);
   EXPECT_FALSE(child_action1->GetChecked());
 
-  auto* child_action2 = root_action->GetChildren().children()[1].get();
   EXPECT_EQ(child_action2->GetText(), kChild2Text);
   auto child_action_id2 = child_action2->GetActionId();
   ASSERT_TRUE(child_action_id2);
@@ -247,8 +253,10 @@ TEST_F(ActionItemTest, TestGetChildren) {
 
 TEST_F(ActionItemTest, TestItemBatchUpdate) {
   bool action_item_changed = false;
+  ActionItem* root_action = nullptr;
   // clang-format off
   auto builder = ActionItem::Builder()
+      .CopyAddressTo(&root_action)
       .SetText(kActionText)
       .SetActionId(kActionTest1)
       .SetVisible(true)
@@ -264,7 +272,6 @@ TEST_F(ActionItemTest, TestItemBatchUpdate) {
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
   manager.AddAction(std::move(builder).Build());
-  auto* root_action = manager.FindAction(kActionTest1);
   auto changed_subscription =
       root_action->AddActionChangedCallback(base::BindRepeating(
           [](bool* action_item_changed) { *action_item_changed = true; },
@@ -280,6 +287,8 @@ TEST_F(ActionItemTest, TestItemBatchUpdate) {
 }
 
 TEST_F(ActionItemTest, TestGroupIdExclusion) {
+  ActionItem* action_test2 = nullptr;
+  ActionItem* action_test3 = nullptr;
   // clang-format off
   auto builder = ActionItem::Builder()
       .SetText(kActionText)
@@ -288,19 +297,20 @@ TEST_F(ActionItemTest, TestGroupIdExclusion) {
       .SetEnabled(false)
       .AddChildren(
           ActionItem::Builder()
+              .CopyAddressTo(&action_test2)
               .SetActionId(kActionTest2)
               .SetGroupId(10)
               .SetText(kChild1Text),
           ActionItem::Builder()
+              .CopyAddressTo(&action_test3)
               .SetActionId(kActionTest3)
               .SetGroupId(10)
               .SetChecked(true)
               .SetText(kChild2Text));
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
-  manager.AddAction(std::move(builder).Build());
-  auto* action_test2 = manager.FindAction(kActionTest2);
-  auto* action_test3 = manager.FindAction(kActionTest3);
+  manager.AddActions(std::move(builder).Build(),
+                     ActionItem::Builder().SetActionId(kActionTest4).Build());
   ASSERT_TRUE(action_test2);
   ASSERT_TRUE(action_test2);
   EXPECT_FALSE(action_test2->GetChecked());

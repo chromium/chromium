@@ -131,6 +131,7 @@ BEGIN_METADATA(ActionButton, MdTextButton)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(, ActionButton, MdTextButton)
+VIEW_BUILDER_PROPERTY(actions::ActionItem*, ActionItem)
 VIEW_BUILDER_PROPERTY(std::u16string, Name)
 END_VIEW_BUILDER
 
@@ -214,6 +215,7 @@ BEGIN_METADATA(ActionCheckbox, Checkbox)
 END_METADATA
 
 BEGIN_VIEW_BUILDER(, ActionCheckbox, Checkbox)
+VIEW_BUILDER_PROPERTY(actions::ActionItem*, ActionItem)
 VIEW_BUILDER_PROPERTY(std::u16string, Name)
 END_VIEW_BUILDER
 
@@ -297,7 +299,7 @@ View* ViewsComboboxModel::GetViewItemAt(size_t index) const {
 
 class ActionItemComboboxModel : public ui::ComboboxModel {
  public:
-  ActionItemComboboxModel();
+  explicit ActionItemComboboxModel(actions::ActionItem* action_scope);
   ActionItemComboboxModel(const ActionItemComboboxModel&) = delete;
   ActionItemComboboxModel& operator=(const ActionItemComboboxModel&) = delete;
   ~ActionItemComboboxModel() override = default;
@@ -312,8 +314,9 @@ class ActionItemComboboxModel : public ui::ComboboxModel {
   actions::ActionItemVector items_;
 };
 
-ActionItemComboboxModel::ActionItemComboboxModel() {
-  actions::ActionManager::Get().GetActions(items_);
+ActionItemComboboxModel::ActionItemComboboxModel(
+    actions::ActionItem* action_scope) {
+  actions::ActionManager::Get().GetActions(items_, action_scope);
 }
 
 size_t ActionItemComboboxModel::GetItemCount() const {
@@ -465,13 +468,12 @@ void ActionsExample::CreateExampleView(View* container) {
 
   auto add_combobox_and_button = [&add_combobox_row](
                                      std::unique_ptr<ui::ComboboxModel> model,
-                                     int label_text, int button_text,
-                                     Button::PressedCallback callback) {
+                                     int label_text,
+                                     actions::ActionId action_id) {
     auto pair = add_combobox_row(std::move(model), label_text);
     pair.first->AddChildView(
-        Builder<MdTextButton>()
-            .SetCallback(std::move(callback))
-            .SetText(l10n_util::GetStringUTF16(button_text))
+        Builder<ActionButton>()
+            .SetActionItem(actions::ActionManager::Get().FindAction(action_id))
             .Build());
     return pair.second;
   };
@@ -518,11 +520,9 @@ void ActionsExample::CreateExampleView(View* container) {
     return textfield;
   };
 
-  available_controls_ = add_combobox_and_button(
-      std::make_unique<ControlTypeComboboxModel>(), IDS_AVAILABLE_CONTROLS,
-      IDS_CREATE_CONTROL,
-      base::BindRepeating(&ActionsExample::CreateButtonPressed,
-                          base::Unretained(this)));
+  available_controls_ =
+      add_combobox_and_button(std::make_unique<ControlTypeComboboxModel>(),
+                              IDS_AVAILABLE_CONTROLS, kActionCreateControl);
 
   control_panel_->AddChildView(
       Builder<Separator>().SetProperty(kMarginsKey, kSeparatorPadding).Build());
@@ -533,10 +533,8 @@ void ActionsExample::CreateExampleView(View* container) {
                   .second;
 
   available_actions_ = add_combobox_and_button(
-      std::make_unique<ActionItemComboboxModel>(), IDS_AVAILABLE_ACTIONS,
-      IDS_ASSIGN_ACTION_TO_CONTROL,
-      base::BindRepeating(&ActionsExample::AssignButtonPressed,
-                          base::Unretained(this)));
+      std::make_unique<ActionItemComboboxModel>(example_actions_.get()),
+      IDS_AVAILABLE_ACTIONS, kActionAssignAction);
   subscriptions_.push_back(
       available_actions_->AddSelectedIndexChangedCallback(base::BindRepeating(
           &ActionsExample::ActionSelected, base::Unretained(this))));
@@ -572,24 +570,39 @@ void ActionsExample::CreateExampleView(View* container) {
 }
 
 void ActionsExample::CreateActions(actions::ActionManager* manager) {
-  manager->AddAction(actions::ActionItem::Builder(
-                         base::BindRepeating(&ActionsExample::ActionInvoked,
-                                             base::Unretained(this)))
-                         .SetText(u"Test Action 1")
-                         .SetActionId(kActionTest1)
-                         .Build());
-  manager->AddAction(actions::ActionItem::Builder(
-                         base::BindRepeating(&ActionsExample::ActionInvoked,
-                                             base::Unretained(this)))
-                         .SetText(u"Test Action 2")
-                         .SetActionId(kActionTest2)
-                         .Build());
-  manager->AddAction(actions::ActionItem::Builder(
-                         base::BindRepeating(&ActionsExample::ActionInvoked,
-                                             base::Unretained(this)))
-                         .SetText(u"Test Action 3")
-                         .SetActionId(kActionTest2)
-                         .Build());
+  manager->AddActions(
+      actions::ActionItem::Builder()
+          .CopyAddressTo(&example_actions_)
+          .AddChildren(actions::ActionItem::Builder(
+                           base::BindRepeating(&ActionsExample::ActionInvoked,
+                                               base::Unretained(this)))
+                           .SetText(u"Test Action 1")
+                           .SetActionId(kActionTest1),
+                       actions::ActionItem::Builder(
+                           base::BindRepeating(&ActionsExample::ActionInvoked,
+                                               base::Unretained(this)))
+                           .SetText(u"Test Action 2")
+                           .SetActionId(kActionTest2),
+                       actions::ActionItem::Builder(
+                           base::BindRepeating(&ActionsExample::ActionInvoked,
+                                               base::Unretained(this)))
+                           .SetText(u"Test Action 3")
+                           .SetActionId(kActionTest2))
+          .Build(),
+      actions::ActionItem::Builder()
+          .AddChildren(
+              actions::ActionItem::Builder(
+                  base::BindRepeating(&ActionsExample::AssignAction,
+                                      base::Unretained(this)))
+                  .SetActionId(kActionAssignAction)
+                  .SetText(
+                      l10n_util::GetStringUTF16(IDS_ASSIGN_ACTION_TO_CONTROL)),
+              actions::ActionItem::Builder(
+                  base::BindRepeating(&ActionsExample::CreateControl,
+                                      base::Unretained(this)))
+                  .SetActionId(kActionCreateControl)
+                  .SetText(l10n_util::GetStringUTF16(IDS_CREATE_CONTROL)))
+          .Build());
 }
 
 void ActionsExample::ActionInvoked(actions::ActionItem* action) {
@@ -624,7 +637,7 @@ void ActionsExample::ActionSelected() {
   action_tooltip_text_->SetText(action_item->GetTooltipText());
 }
 
-void ActionsExample::AssignButtonPressed() {
+void ActionsExample::AssignAction(actions::ActionItem* action) {
   auto index = controls_->GetSelectedIndex();
   if (!index || controls_->GetModel()->GetItemCount() == 0) {
     return;
@@ -641,7 +654,7 @@ void ActionsExample::AssignButtonPressed() {
   }
 }
 
-void ActionsExample::CreateButtonPressed() {
+void ActionsExample::CreateControl(actions::ActionItem* action) {
   static int control_num = 0;
   std::unique_ptr<View> new_view;
   const absl::optional<size_t> selected_index =
