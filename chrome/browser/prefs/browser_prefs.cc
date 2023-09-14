@@ -73,6 +73,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -1368,6 +1369,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   SSLConfigServiceManager::RegisterPrefs(registry);
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(registry);
   SystemNetworkContextManager::RegisterPrefs(registry);
+  tpcd::experiment::RegisterLocalStatePrefs(registry);
   tracing::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
@@ -1640,6 +1642,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
   syncer::SyncTransportDataPrefs::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
+  tpcd::experiment::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
   omnibox::RegisterProfilePrefs(registry);
   ZeroSuggestProvider::RegisterProfilePrefs(registry);

@@ -17,6 +17,14 @@ enum class ExperimentCohort {
   kMaxValue = kControlPrime,
 };
 
+enum class ExperimentState {
+  kUnknownEligiblity = 0,
+  kIneligible = 1,
+  kEligible = 2,
+  kOnboardedEligible = 3,
+  kMaxValue = kOnboardedEligible,
+};
+
 }  // namespace tpcd::experiment::utils
 
 #endif  // CHROME_BROWSER_TPCD_EXPERIMENT_TPCD_UTILS_H_

@@ -1809,6 +1809,8 @@ static_library("browser") {
     "tpcd/experiment/experiment_manager.h",
     "tpcd/experiment/tpcd_experiment_features.cc",
     "tpcd/experiment/tpcd_experiment_features.h",
+    "tpcd/experiment/tpcd_pref_names.cc",
+    "tpcd/experiment/tpcd_pref_names.h",
     "tpcd/experiment/tpcd_utils.h",
     "tpcd/heuristics/opener_heuristic_metrics.cc",
     "tpcd/heuristics/opener_heuristic_metrics.h",
