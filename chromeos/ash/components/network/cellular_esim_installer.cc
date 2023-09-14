@@ -85,6 +85,27 @@ bool IsManagedNetwork(const base::Value::Dict& new_shill_properties) {
                      ui_data->onc_source() == ::onc::ONC_SOURCE_USER_POLICY);
 }
 
+CellularNetworkMetricsLogger::ESimUserInstallMethod ComputeUserInstallMethod(
+    ProfileInstallMethod install_method) {
+  switch (install_method) {
+    case ProfileInstallMethod::kViaSmds:
+      return CellularNetworkMetricsLogger::ESimUserInstallMethod::kViaSmds;
+    case ProfileInstallMethod::kViaQrCodeAfterSmds:
+      return CellularNetworkMetricsLogger::ESimUserInstallMethod::
+          kViaQrCodeAfterSmds;
+    case ProfileInstallMethod::kViaQrCodeSkippedSmds:
+      return CellularNetworkMetricsLogger::ESimUserInstallMethod::
+          kViaQrCodeSkippedSmds;
+    case ProfileInstallMethod::kViaActivationCodeAfterSmds:
+      return CellularNetworkMetricsLogger::ESimUserInstallMethod::
+          kViaActivationCodeAfterSmds;
+    case ProfileInstallMethod::kViaActivationCodeSkippedSmds:
+      return CellularNetworkMetricsLogger::ESimUserInstallMethod::
+          kViaActivationCodeSkippedSmds;
+  }
+  NOTREACHED_NORETURN();
+}
+
 CellularNetworkMetricsLogger::ESimPolicyInstallMethod
 ComputePolicyInstallMethod(ProfileInstallMethod install_method) {
   switch (install_method) {
@@ -165,7 +186,10 @@ void CellularESimInstaller::RecordInstallESimProfileResult(
     CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
         ComputePolicyInstallMethod(install_method), result, is_initial_install,
         is_user_error);
+    return;
   }
+  CellularNetworkMetricsLogger::LogESimUserInstallResult(
+      ComputeUserInstallMethod(install_method), result, is_user_error);
 }
 
 CellularESimInstaller::CellularESimInstaller() = default;

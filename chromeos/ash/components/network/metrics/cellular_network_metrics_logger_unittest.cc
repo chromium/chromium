@@ -341,6 +341,107 @@ TEST_F(CellularNetworkMetricsLoggerTest, OnlyCellularNetworksStatusRecorded) {
   AssertHistogramsTotalCount(counts);
 }
 
+TEST_F(CellularNetworkMetricsLoggerTest, ESimUserInstall) {
+  using ESimInstallResult = CellularNetworkMetricsLogger::ESimInstallResult;
+  using ESimUserInstallMethod =
+      CellularNetworkMetricsLogger::ESimUserInstallMethod;
+
+  ash::cellular_metrics::ESimInstallHistogramState state;
+  state.Check(histogram_tester());
+
+  auto do_increment =
+      [](ash::cellular_metrics::ESimInstallHistogramState::HistogramState*
+             state,
+         ESimInstallResult result) {
+        if (result == ESimInstallResult::kSuccess) {
+          state->success_count++;
+        } else if (result == ESimInstallResult::kInhibitFailed) {
+          state->inhibit_failed_count++;
+        } else if (result == ESimInstallResult::kHermesFailed) {
+          state->hermes_failed_count++;
+        }
+      };
+
+  auto increment_user_errors_filtered = [&](ESimUserInstallMethod method,
+                                            ESimInstallResult result) {
+    do_increment(&state.user_install_user_errors_filtered_all, result);
+    if (method == ESimUserInstallMethod::kViaSmds) {
+      do_increment(&state.user_install_user_errors_filtered_via_smds, result);
+    } else if (method == ESimUserInstallMethod::kViaQrCodeAfterSmds) {
+      do_increment(
+          &state.user_install_user_errors_filtered_via_qr_code_after_smds,
+          result);
+    } else if (method == ESimUserInstallMethod::kViaQrCodeSkippedSmds) {
+      do_increment(
+          &state.user_install_user_errors_filtered_via_qr_code_skipped_smds,
+          result);
+    } else if (method == ESimUserInstallMethod::kViaActivationCodeAfterSmds) {
+      do_increment(
+          &state
+               .user_install_user_errors_filtered_via_activation_code_after_smds,
+          result);
+    } else if (method == ESimUserInstallMethod::kViaActivationCodeSkippedSmds) {
+      do_increment(
+          &state
+               .user_install_user_errors_filtered_via_activation_code_skipped_smds,
+          result);
+    }
+  };
+
+  auto increment_user_errors_included = [&](ESimUserInstallMethod method,
+                                            ESimInstallResult result) {
+    do_increment(&state.user_install_user_errors_included_all, result);
+    if (method == ESimUserInstallMethod::kViaSmds) {
+      do_increment(&state.user_install_user_errors_included_via_smds, result);
+    } else if (method == ESimUserInstallMethod::kViaQrCodeAfterSmds) {
+      do_increment(
+          &state.user_install_user_errors_included_via_qr_code_after_smds,
+          result);
+    } else if (method == ESimUserInstallMethod::kViaQrCodeSkippedSmds) {
+      do_increment(
+          &state.user_install_user_errors_included_via_qr_code_skipped_smds,
+          result);
+    } else if (method == ESimUserInstallMethod::kViaActivationCodeAfterSmds) {
+      do_increment(
+          &state
+               .user_install_user_errors_included_via_activation_code_after_smds,
+          result);
+    } else if (method == ESimUserInstallMethod::kViaActivationCodeSkippedSmds) {
+      do_increment(
+          &state
+               .user_install_user_errors_included_via_activation_code_skipped_smds,
+          result);
+    }
+  };
+
+  auto emit_and_check = [this, &increment_user_errors_filtered,
+                         &increment_user_errors_included,
+                         &state](ESimUserInstallMethod method,
+                                 ESimInstallResult result, bool is_user_error) {
+    CellularNetworkMetricsLogger::LogESimUserInstallResult(method, result,
+                                                           is_user_error);
+    if (!is_user_error) {
+      increment_user_errors_filtered(method, result);
+    }
+    increment_user_errors_included(method, result);
+    state.Check(histogram_tester());
+  };
+
+  for (auto method : {ESimUserInstallMethod::kViaSmds,
+                      ESimUserInstallMethod::kViaQrCodeAfterSmds,
+                      ESimUserInstallMethod::kViaQrCodeSkippedSmds,
+                      ESimUserInstallMethod::kViaActivationCodeAfterSmds,
+                      ESimUserInstallMethod::kViaActivationCodeSkippedSmds}) {
+    for (auto result :
+         {ESimInstallResult::kSuccess, ESimInstallResult::kInhibitFailed,
+          ESimInstallResult::kHermesFailed}) {
+      for (auto is_user_error : {true, false}) {
+        emit_and_check(method, result, is_user_error);
+      }
+    }
+  }
+}
+
 TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
   using ESimInstallResult = CellularNetworkMetricsLogger::ESimInstallResult;
   using ESimPolicyInstallMethod =
@@ -431,10 +532,10 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
   auto emit_and_check =
       [this, &increment_user_errors_filtered, &increment_user_errors_included,
        &state](ESimPolicyInstallMethod method, ESimInstallResult result,
-               bool is_initial, bool should_filter) {
+               bool is_initial, bool is_user_error) {
         CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
-            method, result, is_initial, should_filter);
-        if (!should_filter) {
+            method, result, is_initial, is_user_error);
+        if (!is_user_error) {
           increment_user_errors_filtered(method, result, is_initial);
         }
         increment_user_errors_included(method, result, is_initial);
@@ -447,8 +548,8 @@ TEST_F(CellularNetworkMetricsLoggerTest, ESimPolicyInstall) {
          {ESimInstallResult::kSuccess, ESimInstallResult::kInhibitFailed,
           ESimInstallResult::kHermesFailed}) {
       for (auto is_initial : {true, false}) {
-        for (auto should_filter : {true, false}) {
-          emit_and_check(method, result, is_initial, should_filter);
+        for (auto is_user_error : {true, false}) {
+          emit_and_check(method, result, is_initial, is_user_error);
         }
       }
     }

@@ -41,6 +41,22 @@ struct ESimInstallHistogramState {
   HistogramState policy_install_user_errors_included_smdp_retry;
   HistogramState policy_install_user_errors_included_smds_initial;
   HistogramState policy_install_user_errors_included_smds_retry;
+  HistogramState user_install_user_errors_filtered_all;
+  HistogramState
+      user_install_user_errors_filtered_via_activation_code_after_smds;
+  HistogramState
+      user_install_user_errors_filtered_via_activation_code_skipped_smds;
+  HistogramState user_install_user_errors_filtered_via_qr_code_after_smds;
+  HistogramState user_install_user_errors_filtered_via_qr_code_skipped_smds;
+  HistogramState user_install_user_errors_filtered_via_smds;
+  HistogramState user_install_user_errors_included_all;
+  HistogramState
+      user_install_user_errors_included_via_activation_code_after_smds;
+  HistogramState
+      user_install_user_errors_included_via_activation_code_skipped_smds;
+  HistogramState user_install_user_errors_included_via_qr_code_after_smds;
+  HistogramState user_install_user_errors_included_via_qr_code_skipped_smds;
+  HistogramState user_install_user_errors_included_via_smds;
 };
 
 }  // namespace cellular_metrics

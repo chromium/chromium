@@ -42,35 +42,74 @@ absl::optional<CellularNetworkMetricsLogger::ApnTypes> GetApnTypes(
   return CellularNetworkMetricsLogger::ApnTypes::kDefault;
 }
 
+const char* GetESimUserInstallationResultHistogram(
+    CellularNetworkMetricsLogger::ESimUserInstallMethod method,
+    bool user_errors_included) {
+  using ESimUserInstallMethod =
+      CellularNetworkMetricsLogger::ESimUserInstallMethod;
+  switch (method) {
+    case ESimUserInstallMethod::kViaSmds:
+      return user_errors_included
+                 ? CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsIncludedViaSmds
+                 : CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsFilteredViaSmds;
+    case ESimUserInstallMethod::kViaActivationCodeAfterSmds:
+      return user_errors_included
+                 ? CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsIncludedViaActivationCodeAfterSmds
+                 : CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsFilteredViaActivationCodeAfterSmds;
+    case ESimUserInstallMethod::kViaActivationCodeSkippedSmds:
+      return user_errors_included
+                 ? CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsIncludedViaActivationCodeSkippedSmds
+                 : CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsFilteredViaActivationCodeSkippedSmds;
+    case ESimUserInstallMethod::kViaQrCodeAfterSmds:
+      return user_errors_included
+                 ? CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsIncludedViaQrCodeAfterSmds
+                 : CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsFilteredViaQrCodeAfterSmds;
+    case ESimUserInstallMethod::kViaQrCodeSkippedSmds:
+      return user_errors_included
+                 ? CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsIncludedViaQrCodeSkippedSmds
+                 : CellularNetworkMetricsLogger::
+                       kESimUserInstallUserErrorsFilteredViaQrCodeSkippedSmds;
+  }
+}
+
 const char* GetESimPolicyInstallationResultHistogram(
     CellularNetworkMetricsLogger::ESimPolicyInstallMethod method,
     bool is_initial,
-    bool filtered_variant) {
+    bool user_errors_included) {
   using ESimPolicyInstallMethod =
       CellularNetworkMetricsLogger::ESimPolicyInstallMethod;
   switch (method) {
     case ESimPolicyInstallMethod::kViaSmdp:
       if (is_initial) {
-        return filtered_variant
+        return user_errors_included
                    ? CellularNetworkMetricsLogger::
                          kESimPolicyInstallUserErrorsIncludedViaSmdpInitial
                    : CellularNetworkMetricsLogger::
                          kESimPolicyInstallUserErrorsFilteredViaSmdpInitial;
       }
-      return filtered_variant
+      return user_errors_included
                  ? CellularNetworkMetricsLogger::
                        kESimPolicyInstallUserErrorsIncludedViaSmdpRetry
                  : CellularNetworkMetricsLogger::
                        kESimPolicyInstallUserErrorsFilteredViaSmdpRetry;
     case ESimPolicyInstallMethod::kViaSmds:
       if (is_initial) {
-        return filtered_variant
+        return user_errors_included
                    ? CellularNetworkMetricsLogger::
                          kESimPolicyInstallUserErrorsIncludedViaSmdsInitial
                    : CellularNetworkMetricsLogger::
                          kESimPolicyInstallUserErrorsFilteredViaSmdsInitial;
       }
-      return filtered_variant
+      return user_errors_included
                  ? CellularNetworkMetricsLogger::
                        kESimPolicyInstallUserErrorsIncludedViaSmdsRetry
                  : CellularNetworkMetricsLogger::
@@ -216,6 +255,25 @@ void CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
   base::UmaHistogramEnumeration(kESimPolicyInstallMethod, method);
 }
 
+// static
+void CellularNetworkMetricsLogger::LogESimUserInstallResult(
+    ESimUserInstallMethod method,
+    ESimInstallResult result,
+    bool is_user_error) {
+  if (!is_user_error) {
+    base::UmaHistogramEnumeration(kESimUserInstallUserErrorsFilteredAll,
+                                  result);
+    base::UmaHistogramEnumeration(GetESimUserInstallationResultHistogram(
+                                      method, /*user_errors_included=*/false),
+                                  result);
+  }
+  base::UmaHistogramEnumeration(kESimUserInstallUserErrorsIncludedAll, result);
+  base::UmaHistogramEnumeration(GetESimUserInstallationResultHistogram(
+                                    method, /*user_errors_included=*/true),
+                                result);
+}
+
+// static
 void CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
     ESimPolicyInstallMethod method,
     ESimInstallResult result,
@@ -226,14 +284,14 @@ void CellularNetworkMetricsLogger::LogESimPolicyInstallResult(
                                   result);
     base::UmaHistogramEnumeration(GetESimPolicyInstallationResultHistogram(
                                       method, /*is_initial=*/is_initial,
-                                      /*filtered_variant=*/false),
+                                      /*user_errors_included=*/false),
                                   result);
   }
   base::UmaHistogramEnumeration(kESimPolicyInstallUserErrorsIncludedAll,
                                 result);
   base::UmaHistogramEnumeration(
       GetESimPolicyInstallationResultHistogram(
-          method, /*is_initial=*/is_initial, /*filtered_variant=*/true),
+          method, /*is_initial=*/is_initial, /*user_errors_included=*/true),
       result);
   GetESimPolicyInstallationResultHistogram(method, is_initial, is_user_error);
 }

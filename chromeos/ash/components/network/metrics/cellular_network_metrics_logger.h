@@ -170,6 +170,44 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static constexpr char kESimPolicyInstallUserErrorsIncludedViaSmdsRetry[] =
       "Network.Ash.Cellular.ESim.PolicyInstall.UserErrorsIncluded."
       "ViaSmdsRetry";
+  static constexpr char kESimUserInstallUserErrorsFilteredAll[] =
+      "Network.Ash.Cellular.ESim.UserInstall.UserErrorsFiltered.All";
+  static constexpr char
+      kESimUserInstallUserErrorsFilteredViaActivationCodeAfterSmds[] =
+          "Network.Ash.Cellular.ESim.UserInstall.UserErrorsFiltered."
+          "ViaActivationCodeAfterSmds";
+  static constexpr char
+      kESimUserInstallUserErrorsFilteredViaActivationCodeSkippedSmds[] =
+          "Network.Ash.Cellular.ESim.UserInstall.UserErrorsFiltered."
+          "ViaActivationCodeSkippedSmds";
+  static constexpr char kESimUserInstallUserErrorsFilteredViaQrCodeAfterSmds[] =
+      "Network.Ash.Cellular.ESim.UserInstall.UserErrorsFiltered."
+      "ViaQrCodeAfterSmds";
+  static constexpr char
+      kESimUserInstallUserErrorsFilteredViaQrCodeSkippedSmds[] =
+          "Network.Ash.Cellular.ESim.UserInstall.UserErrorsFiltered."
+          "ViaQrCodeSkippedSmds";
+  static constexpr char kESimUserInstallUserErrorsFilteredViaSmds[] =
+      "Network.Ash.Cellular.ESim.UserInstall.UserErrorsFiltered.ViaSmds";
+  static constexpr char kESimUserInstallUserErrorsIncludedAll[] =
+      "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded.All";
+  static constexpr char
+      kESimUserInstallUserErrorsIncludedViaActivationCodeAfterSmds[] =
+          "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded."
+          "ViaActivationCodeAfterSmds";
+  static constexpr char
+      kESimUserInstallUserErrorsIncludedViaActivationCodeSkippedSmds[] =
+          "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded."
+          "ViaActivationCodeSkippedSmds";
+  static constexpr char kESimUserInstallUserErrorsIncludedViaQrCodeAfterSmds[] =
+      "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded."
+      "ViaQrCodeAfterSmds";
+  static constexpr char
+      kESimUserInstallUserErrorsIncludedViaQrCodeSkippedSmds[] =
+          "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded."
+          "ViaQrCodeSkippedSmds";
+  static constexpr char kESimUserInstallUserErrorsIncludedViaSmds[] =
+      "Network.Ash.Cellular.ESim.UserInstall.UserErrorsIncluded.ViaSmds";
 
   static constexpr char kUserAllowTextMessagesSuppressionTypeHistogram[] =
       "Network.Ash.Cellular.AllowTextMessages.User.SuppressionType";
@@ -205,10 +243,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
   static void LogSmdsScanProfileCount(size_t count);
   static void LogESimUserInstallMethod(ESimUserInstallMethod method);
   static void LogESimPolicyInstallMethod(ESimPolicyInstallMethod method);
+  // The |is_user_error| parameter is used to indicate that |result| was caused
+  // by something outside the control of ChromeOS, e.g. an invalid activation
+  // code, and is not actionable. We do not include this category of errors in
+  // the "filtered" version of our histograms so that we may have a better
+  // understanding of eSIM installations on ChromeOS with minimal noise.
+  static void LogESimUserInstallResult(ESimUserInstallMethod method,
+                                       ESimInstallResult result,
+                                       bool is_user_error);
   static void LogESimPolicyInstallResult(ESimPolicyInstallMethod method,
                                          ESimInstallResult result,
                                          bool is_initial,
-                                         bool should_filter);
+                                         bool is_user_error);
 
   // Returns the eSIM installation result for the provided Hermes response
   // status. When the status is unavailable, assume that we failed to inhibit

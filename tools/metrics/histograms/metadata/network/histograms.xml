@@ -323,8 +323,8 @@ chromium-metrics-reviews@google.com.
     once for each installation attempt of the eSIM profile corresponding to a
     policy-defined network. The &quot;included&quot; variant will always be
     emitted to; the &quot;filtered&quot; variant, however, will not be emitted
-    to when the result was due to an Hermes failure that is a result of
-    something outside the control of ChromeOS, e.g. an invalid activation code.
+    to when the result was due to an Hermes failure that was caused by something
+    outside the control of ChromeOS, e.g. an invalid activation code.
   </summary>
   <token key="UserErrorHandling">
     <variant name="UserErrorsFiltered"/>
@@ -360,6 +360,33 @@ chromium-metrics-reviews@google.com.
     profile. This is emitted once for each installation attempt of an eSIM
     profile using the consumer UI.
   </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Cellular.ESim.UserInstall.{UserErrorHandling}.{Method}"
+    enum="ESimInstallResult" expires_after="2023-12-31">
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the result of an attempt to install an eSIM profile. This is emitted
+    once for each installation attempt of an eSIM profile using the consumer UI.
+    The &quot;included&quot; variant will always be emitted to; the
+    &quot;filtered&quot; variant, however, will not be emitted to when the to
+    when the result was due to an Hermes failure that was caused by something
+    outside the control of ChromeOS, e.g. an invalid activation code.
+  </summary>
+  <token key="UserErrorHandling">
+    <variant name="UserErrorsFiltered"/>
+    <variant name="UserErrorsIncluded"/>
+  </token>
+  <token key="Method">
+    <variant name="All"/>
+    <variant name="ViaActivationCodeAfterSmds"/>
+    <variant name="ViaActivationCodeSkippedSmds"/>
+    <variant name="ViaQrCodeAfterSmds"/>
+    <variant name="ViaQrCodeSkippedSmds"/>
+    <variant name="ViaSmds"/>
+  </token>
 </histogram>
 
 <histogram name="Network.Ash.Cellular.SimLock.Policy.Notification.Event"

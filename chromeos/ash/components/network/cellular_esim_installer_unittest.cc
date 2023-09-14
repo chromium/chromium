@@ -359,6 +359,11 @@ TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
   CheckDetailedESimInstallHistograms(
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed);
 
+  state.user_install_user_errors_included_all.hermes_failed_count++;
+  state.user_install_user_errors_included_via_activation_code_after_smds
+      .hermes_failed_count++;
+  state.Check(histogram_tester());
+
   // Verify that install from policy are handled properly.
   result_tuple = InstallProfileFromActivationCode(
       /*activation_code=*/std::string(), /*confirmation_code=*/std::string(),
@@ -402,6 +407,14 @@ TEST_F(CellularESimInstallerTest, InstallProfileDBusError) {
   histogram_tester()->ExpectBucketCount(
       kInstallViaQrCodeHistogram, HermesResponseStatus::kErrorUnknownResponse,
       1);
+
+  state.user_install_user_errors_filtered_all.hermes_failed_count++;
+  state.user_install_user_errors_filtered_via_activation_code_after_smds
+      .hermes_failed_count++;
+  state.user_install_user_errors_included_all.hermes_failed_count++;
+  state.user_install_user_errors_included_via_activation_code_after_smds
+      .hermes_failed_count++;
+  state.Check(histogram_tester());
 }
 
 TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
@@ -423,6 +436,14 @@ TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
   CheckDetailedESimInstallHistograms(
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
+
+  state.user_install_user_errors_filtered_all.success_count++;
+  state.user_install_user_errors_filtered_via_activation_code_after_smds
+      .success_count++;
+  state.user_install_user_errors_included_all.success_count++;
+  state.user_install_user_errors_included_via_activation_code_after_smds
+      .success_count++;
+  state.Check(histogram_tester());
 
   // Verify that install from policy are handled property.
   result_tuple = InstallProfileFromActivationCode(
@@ -469,6 +490,14 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
   CheckDetailedESimInstallHistograms(
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
+
+  state.user_install_user_errors_filtered_all.success_count++;
+  state.user_install_user_errors_filtered_via_activation_code_after_smds
+      .success_count++;
+  state.user_install_user_errors_included_all.success_count++;
+  state.user_install_user_errors_included_via_activation_code_after_smds
+      .success_count++;
+  state.Check(histogram_tester());
 
   // Verify install from policy works properly.
   result_tuple = InstallProfileFromActivationCode(
@@ -522,6 +551,14 @@ TEST_F(CellularESimInstallerTest, InstallProfileViaQrCodeSuccess) {
       CellularESimInstaller::InstallESimProfileResult::kSuccess,
       /*is_managed=*/false, /*is_retry=*/false,
       /*is_install_via_qr_code=*/true);
+
+  state.user_install_user_errors_filtered_all.success_count++;
+  state.user_install_user_errors_filtered_via_qr_code_after_smds
+      .success_count++;
+  state.user_install_user_errors_included_all.success_count++;
+  state.user_install_user_errors_included_via_qr_code_after_smds
+      .success_count++;
+  state.Check(histogram_tester());
 }
 
 TEST_F(CellularESimInstallerTest, InstallProfileAutoConnect) {
@@ -550,6 +587,14 @@ TEST_F(CellularESimInstallerTest, InstallProfileAutoConnect) {
       CellularESimInstaller::InstallESimProfileResult::kSuccess,
       /*is_managed=*/false, /*is_retry=*/false,
       /*is_install_via_qr_code=*/true);
+
+  state.user_install_user_errors_filtered_all.success_count++;
+  state.user_install_user_errors_filtered_via_qr_code_skipped_smds
+      .success_count++;
+  state.user_install_user_errors_included_all.success_count++;
+  state.user_install_user_errors_included_via_qr_code_skipped_smds
+      .success_count++;
+  state.Check(histogram_tester());
 }
 
 TEST_F(CellularESimInstallerTest, InstallProfileAlreadyConnected) {
@@ -571,6 +616,14 @@ TEST_F(CellularESimInstallerTest, InstallProfileAlreadyConnected) {
       /*is_initial_install=*/true,
       /*install_method=*/ProfileInstallMethod::kViaActivationCodeSkippedSmds);
   CheckInstallSuccess(result_tuple);
+
+  state.user_install_user_errors_filtered_all.success_count++;
+  state.user_install_user_errors_filtered_via_activation_code_skipped_smds
+      .success_count++;
+  state.user_install_user_errors_included_all.success_count++;
+  state.user_install_user_errors_included_via_activation_code_skipped_smds
+      .success_count++;
+  state.Check(histogram_tester());
 }
 
 TEST_F(CellularESimInstallerTest, InstallProfileCreateShillConfigFailure) {
@@ -589,6 +642,14 @@ TEST_F(CellularESimInstallerTest, InstallProfileCreateShillConfigFailure) {
       /*new_shill_properties=*/base::Value::Dict(),
       /*wait_for_connect=*/false, /*fail_connect=*/false);
   CheckInstallSuccess(result_tuple);
+
+  state.user_install_user_errors_filtered_all.success_count++;
+  state.user_install_user_errors_filtered_via_activation_code_after_smds
+      .success_count++;
+  state.user_install_user_errors_included_all.success_count++;
+  state.user_install_user_errors_included_via_activation_code_after_smds
+      .success_count++;
+  state.Check(histogram_tester());
 }
 
 TEST_F(CellularESimInstallerTest, ConfigureESimService) {

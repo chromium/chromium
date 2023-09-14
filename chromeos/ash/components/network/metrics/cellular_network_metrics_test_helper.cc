@@ -57,6 +57,58 @@ void ESimInstallHistogramState::Check(
                  CellularNetworkMetricsLogger::
                      kESimPolicyInstallUserErrorsIncludedViaSmdsRetry,
                  policy_install_user_errors_included_smds_retry);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::kESimUserInstallUserErrorsFilteredAll,
+      user_install_user_errors_filtered_all);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::
+          kESimUserInstallUserErrorsFilteredViaActivationCodeAfterSmds,
+      user_install_user_errors_filtered_via_activation_code_after_smds);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::
+          kESimUserInstallUserErrorsFilteredViaActivationCodeSkippedSmds,
+      user_install_user_errors_filtered_via_activation_code_skipped_smds);
+  CheckHistogram(tester,
+                 CellularNetworkMetricsLogger::
+                     kESimUserInstallUserErrorsFilteredViaQrCodeAfterSmds,
+                 user_install_user_errors_filtered_via_qr_code_after_smds);
+  CheckHistogram(tester,
+                 CellularNetworkMetricsLogger::
+                     kESimUserInstallUserErrorsFilteredViaQrCodeSkippedSmds,
+                 user_install_user_errors_filtered_via_qr_code_skipped_smds);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::kESimUserInstallUserErrorsFilteredViaSmds,
+      user_install_user_errors_filtered_via_smds);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::kESimUserInstallUserErrorsIncludedAll,
+      user_install_user_errors_included_all);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::
+          kESimUserInstallUserErrorsIncludedViaActivationCodeAfterSmds,
+      user_install_user_errors_included_via_activation_code_after_smds);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::
+          kESimUserInstallUserErrorsIncludedViaActivationCodeSkippedSmds,
+      user_install_user_errors_included_via_activation_code_skipped_smds);
+  CheckHistogram(tester,
+                 CellularNetworkMetricsLogger::
+                     kESimUserInstallUserErrorsIncludedViaQrCodeAfterSmds,
+                 user_install_user_errors_included_via_qr_code_after_smds);
+  CheckHistogram(tester,
+                 CellularNetworkMetricsLogger::
+                     kESimUserInstallUserErrorsIncludedViaQrCodeSkippedSmds,
+                 user_install_user_errors_included_via_qr_code_skipped_smds);
+  CheckHistogram(
+      tester,
+      CellularNetworkMetricsLogger::kESimUserInstallUserErrorsIncludedViaSmds,
+      user_install_user_errors_included_via_smds);
 }
 
 void ESimInstallHistogramState::CheckHistogram(
