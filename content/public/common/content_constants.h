@@ -27,13 +27,17 @@ CONTENT_EXPORT extern const base::FilePath::CharType kPepperDataDirname[];
 // The MIME type used for the browser plugin.
 CONTENT_EXPORT extern const char kBrowserPluginMimeType[];
 
-// The maximum number of characters in the URL that we're willing to accept
-// in the browser process. It is set low enough to avoid damage to the browser
-// but high enough that a web site can abuse location.hash for a little storage.
-// We have different values for "max accepted" and "max displayed" because
-// a data: URI may be legitimately massive, but the full URI would kill all
-// known operating systems if you dropped it into a UI control.
-CONTENT_EXPORT extern const size_t kMaxURLChars;
+// The maximum number of characters in the URL that we're willing to accept or
+// display in the browser process. It is set low enough to avoid damage to the
+// browser but high enough that a web site can abuse location.hash for a little
+// storage.
+//
+// We have different values for "max accepted" and "max displayed" because a
+// data: URI may be legitimately massive, but the full URI would kill all known
+// operating systems if you dropped it into a UI control.
+//
+// "Max accepted" used to be kMaxURLChars here but is now declared elsewhere as
+// url::kMaxURLChars. "Max displayed" is still kMaxURLDisplayChars here.
 CONTENT_EXPORT extern const size_t kMaxURLDisplayChars;
 
 extern const char kStatsFilename[];
