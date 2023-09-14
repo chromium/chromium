@@ -3264,6 +3264,12 @@
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_TOGGLE_SUB_LABEL" translateable="false" desc="Sub-label for the 'do not track' toggle. Explains that sites may not respond to the 'do not track' request even when enabled.">
     Sites use their discretion when responding to this request
   </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_STANDARD_EXPAND_A11Y_LABEL" translateable="false" desc="This text is read by screenreaders and helps users find more info about the 'standard' tracking protection option.">
+    More about standard tracking protection
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_CUSTOM_EXPAND_A11Y_LABEL" translateable="false" desc="This text is read by screenreaders and helps users find more info about this 'custom' tracking protection option.">
+    More about custom tracking protection
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_APP_PROTOCOL_HANDLERS" desc="Label for the app protocol handlers (e.g. mailto) in site settings.">
     Apps
   </message>
