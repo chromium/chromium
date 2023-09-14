@@ -1751,27 +1751,30 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
 
   {
     base::HistogramTester histogram_tester;
-    // For Ethernet, not mentioning "Recommended" currently means that the IP
-    // address is editable by the user.
+    // Explicitly allow modifying the IP Address.
     std::string kDeviceONC1 = base::StringPrintf(R"(
-      {
-        "NetworkConfigurations": [
-          {
-            "GUID": "%s",
-            "Name": "EthernetName",
-            "Type": "Ethernet",
-            "Ethernet": {
-               "Authentication": "None"
-            }
-          }
-        ]
-      })",
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "%s",
+          "Name": "EthernetName",
+          "Type": "Ethernet",
+          "Ethernet": {
+             "Authentication": "None"
+          },
+          "StaticIPConfig": {
+             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix"]
+          },
+          "Recommended": ["IPAddressConfigType"]
+        }
+      ]
+    })",
                                                  kEthernetGuid);
     SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
-    // Expect "Enabled by feature, ONC NetworkConfiguration eligible".
+    // Expect "Disabled by feature, ONC NetworkConfiguration not eligible".
     histogram_tester.ExpectUniqueSample(
         kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kEnabledAndAffected*/ 1, /*count=*/1);
+        /*sample=kDisabledAndNotAffected*/ 2, /*count=*/1);
   }
 
   {
@@ -1844,7 +1847,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
     // Expect "Enabled by feature, ONC NetworkConfiguration not eligible".
     histogram_tester.ExpectUniqueSample(
         kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kEnabledAndNotAffected*/ 0, /*count=*/1);
+        /*sample=kDisabledAndNotAffected*/ 2, /*count=*/1);
   }
 
   // Verify that the Static IP is still active, and the custom name server has

@@ -5390,6 +5390,21 @@
             ]
         }
     ],
+    "DisablePolicyEthernetRecommendedWorkaround": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisablePolicyEthernetRecommendedWorkaround"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableSHA1ServerSignature": [
         {
             "platforms": [
