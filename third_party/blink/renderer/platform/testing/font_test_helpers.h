@@ -30,6 +30,8 @@ Font CreateTestFont(const AtomicString& family_name,
                     float size,
                     const FontDescription::VariantLigatures* = nullptr);
 
+Font CreateAhemFont(float size);
+
 #if BUILDFLAG(IS_WIN)
 class TestFontPrewarmer : public WebFontPrewarmer {
  public:

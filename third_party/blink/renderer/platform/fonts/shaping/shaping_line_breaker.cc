@@ -488,6 +488,18 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
       // Loop once more to compute last_safe for the new break opportunity.
     }
   }
+
+  if (!line_end_result) {
+    DCHECK_EQ(break_opportunity.offset, last_safe);
+    DCHECK_GT(last_safe, start);
+    if (UNLIKELY(result_->HasAutoSpacingBefore(last_safe))) {
+      last_safe = result_->CachedPreviousSafeToBreakOffset(last_safe - 1);
+      DCHECK_LT(last_safe, break_opportunity.offset);
+      line_end_result =
+          result_->UnapplyAutoSpacing(last_safe, break_opportunity.offset);
+    }
+  }
+
   // It is critical to move forward, or callers may end up in an infinite loop.
   CheckBreakOffset(break_opportunity.offset, start, range_end);
   DCHECK_GE(break_opportunity.offset, last_safe);

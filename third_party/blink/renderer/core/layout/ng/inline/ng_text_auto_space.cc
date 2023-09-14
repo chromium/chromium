@@ -53,16 +53,12 @@ class SpacingApplier {
                   const NGInlineItem* current_item) {
     DCHECK(current_item->TextShapeResult());
     const wtf_size_t* offset = offsets.begin();
-    bool has_adjacent_glyph = false;
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
       // There would be spacing added to the previous item due to its last glyph
       // is next to `current_item`'s first glyph, since the two glyphs meet the
       // condition of adding spacing.
       // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
-      // In this case, when applying text spacing to `current_item`, also tells
-      // it to set the first glyph unsafe to break before.
-      has_adjacent_glyph = true;
       offsets_with_spacing_.emplace_back(
           OffsetWithSpacing({.offset = *offset - 1, .spacing = spacing}));
       ++offset;
@@ -70,7 +66,6 @@ class SpacingApplier {
     // Apply all pending spaces to the previous item.
     ApplyIfNeeded();
     offsets_with_spacing_.Shrink(0);
-    has_spacing_added_to_adjacent_glyph_ = has_adjacent_glyph;
 
     // Update the previous item in prepare for the next iteration.
     last_item_ = current_item;
@@ -81,10 +76,8 @@ class SpacingApplier {
   }
 
   void ApplyIfNeeded() {
-    // Nothing to update.
-    if (offsets_with_spacing_.empty() &&
-        !has_spacing_added_to_adjacent_glyph_) {
-      return;
+    if (offsets_with_spacing_.empty()) {
+      return;  // Nothing to update.
     }
     DCHECK(last_item_);
 
@@ -96,14 +89,12 @@ class SpacingApplier {
     ShapeResult* shape_result =
         const_cast<ShapeResult*>(last_item_->TextShapeResult());
     DCHECK(shape_result);
-    shape_result->ApplyTextAutoSpacing(has_spacing_added_to_adjacent_glyph_,
-                                       offsets_with_spacing_);
+    shape_result->ApplyTextAutoSpacing(offsets_with_spacing_);
     NGInlineItem* item = const_cast<NGInlineItem*>(last_item_);
     item->SetUnsafeToReuseShapeResult();
   }
 
  private:
-  bool has_spacing_added_to_adjacent_glyph_ = false;
   const NGInlineItem* last_item_ = nullptr;
   // Stores the spacing (1/8 ic) and auto-space points's previous positions, for
   // the previous item.

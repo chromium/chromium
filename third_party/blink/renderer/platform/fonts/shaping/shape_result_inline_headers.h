@@ -512,6 +512,10 @@ struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
       CHECK(!IsEmpty());
       return (*this)[0];
     }
+    HarfBuzzRunGlyphData& back() {
+      CHECK(!IsEmpty());
+      return (*this)[size() - 1];
+    }
     const HarfBuzzRunGlyphData& back() const {
       CHECK(!IsEmpty());
       return (*this)[size() - 1];

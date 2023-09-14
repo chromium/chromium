@@ -152,6 +152,11 @@ Font CreateTestFont(const AtomicString& family_name,
   return Font(font_description, TestFontSelector::Create(font_path));
 }
 
+Font CreateAhemFont(float size) {
+  return CreateTestFont(AtomicString("Ahem"), PlatformTestDataPath("Ahem.woff"),
+                        size);
+}
+
 #if BUILDFLAG(IS_WIN)
 void TestFontPrewarmer::PrewarmFamily(const WebString& family_name) {
   family_names_.push_back(family_name);

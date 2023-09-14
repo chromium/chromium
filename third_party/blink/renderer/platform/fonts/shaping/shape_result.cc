@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -434,6 +435,21 @@ size_t ShapeResult::ByteSize() const {
     self_byte_size += runs_[i]->ByteSize();
   }
   return self_byte_size;
+}
+
+const ShapeResultCharacterData& ShapeResult::CharacterData(
+    unsigned offset) const {
+  DCHECK_GE(offset, StartIndex());
+  DCHECK_LT(offset, EndIndex());
+  DCHECK(character_position_);
+  return (*character_position_)[offset - StartIndex()];
+}
+
+ShapeResultCharacterData& ShapeResult::CharacterData(unsigned offset) {
+  DCHECK_GE(offset, StartIndex());
+  DCHECK_LT(offset, EndIndex());
+  DCHECK(character_position_);
+  return (*character_position_)[offset - StartIndex()];
 }
 
 bool ShapeResult::IsStartSafeToBreak() const {
@@ -955,39 +971,38 @@ scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
   return result;
 }
 
+bool ShapeResult::HasAutoSpacingBefore(unsigned offset) const {
+  if (character_position_ && offset > StartIndex() && offset <= EndIndex()) {
+    return CharacterData(offset - 1).has_auto_spacing_after;
+  }
+  return false;
+}
+
 void ShapeResult::ApplyTextAutoSpacing(
-    bool has_spacing_added_to_adjacent_glyph,
     const Vector<OffsetWithSpacing, 16>& offsets_with_spacing) {
-  DCHECK(offsets_with_spacing.size() || has_spacing_added_to_adjacent_glyph);
+  DCHECK(!offsets_with_spacing.empty());
+  EnsurePositionData();
+
   if (LIKELY(IsLtr())) {
-    ApplyTextAutoSpacingCore(has_spacing_added_to_adjacent_glyph,
-                             offsets_with_spacing.begin(),
+    ApplyTextAutoSpacingCore(offsets_with_spacing.begin(),
                              offsets_with_spacing.end());
   } else {
-    ApplyTextAutoSpacingCore(has_spacing_added_to_adjacent_glyph,
-                             offsets_with_spacing.rbegin(),
+    ApplyTextAutoSpacingCore(offsets_with_spacing.rbegin(),
                              offsets_with_spacing.rend());
   }
 }
 
 template <class Iterator>
 void ShapeResult::ApplyTextAutoSpacingCore(
-    bool has_spacing_added_to_adjacent_glyph,
     Iterator offset_begin,
     Iterator offset_end) {
-  DCHECK(offset_begin != offset_end || has_spacing_added_to_adjacent_glyph);
+  DCHECK(offset_begin != offset_end);
 
   float total_space = 0.0;
   Iterator current_offset = offset_begin;
   for (auto& run : runs_) {
-    if (!run || run->glyph_data_.size() == 0) {
+    if (UNLIKELY(!run)) {
       continue;
-    }
-    if (UNLIKELY(has_spacing_added_to_adjacent_glyph)) {
-      // A spacing is added to the previous glyph in the last run, so set the
-      // first glyph unsafe to break before.
-      run->glyph_data_[0].safe_to_break_before = false;
-      has_spacing_added_to_adjacent_glyph = false;
     }
 
     float total_space_for_run = 0;
@@ -1006,23 +1021,42 @@ void ShapeResult::ApplyTextAutoSpacingCore(
           current_offset->offset) {
         glyph_data.advance += current_offset->spacing;
         total_space_for_run += current_offset->spacing;
+
+        ShapeResultCharacterData& data = CharacterData(current_offset->offset);
+        DCHECK(!data.has_auto_spacing_after);
+        data.has_auto_spacing_after = true;
+
         current_offset++;
-        // If the LineBreaker breaks the content at this point, there is no
-        // adjacent character so it spacing should be removed.
-        // If the next character is in another item, the caller would be
-        // responsible for asking the next item to update this information.
-        if (LIKELY(i + 1 < run->glyph_data_.size())) {
-          run->glyph_data_[i + 1].safe_to_break_before = false;
-        } else {
-          // Tell the next run to set its first glyph to unsafe to break before.
-          has_spacing_added_to_adjacent_glyph = true;
-        }
       }
     }
     run->width_ += total_space_for_run;
     total_space += total_space_for_run;
   }
   width_ += total_space;
+}
+
+scoped_refptr<ShapeResult> ShapeResult::UnapplyAutoSpacing(
+    unsigned start_offset,
+    unsigned break_offset) const {
+  DCHECK_GE(start_offset, StartIndex());
+  DCHECK_GT(break_offset, start_offset);
+  DCHECK_LE(break_offset, EndIndex());
+  DCHECK(HasAutoSpacingBefore(break_offset));
+
+  // Create a `ShapeResult` for the character before `break_offset`.
+  scoped_refptr<ShapeResult> sub_range = SubRange(start_offset, break_offset);
+
+  // Remove the auto-spacing from the last glyph.
+  RunInfo& last_run = *sub_range->runs_.back();
+  DCHECK(last_run.HasOneRef());  // Ensure it's copied and thus safe to modify.
+  HarfBuzzRunGlyphData& last_glyph = last_run.glyph_data_.back();
+  DCHECK(PrimaryFont());
+  const float width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
+  DCHECK_GE(last_glyph.advance, width);
+  last_glyph.advance -= width;
+  last_run.width_ -= width;
+  sub_range->width_ -= width;
+  return sub_range;
 }
 
 namespace {

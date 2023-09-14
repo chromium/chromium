@@ -4,13 +4,32 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
+#include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 
 namespace blink {
 
 namespace {
 
-class TextAutoSpaceTest : public testing::Test {};
+using testing::ElementsAre;
+
+class TextAutoSpaceTest : public testing::Test {
+ public:
+  Vector<float> GetAdvances(const ShapeResult& shape_result) {
+    Vector<CharacterRange> ranges;
+    shape_result.IndividualCharacterRanges(&ranges);
+    Vector<float> advances;
+    for (const CharacterRange& range : ranges) {
+      advances.push_back(range.Width());
+    }
+    return advances;
+  }
+};
 
 TEST_F(TextAutoSpaceTest, Check8Bit) {
   for (UChar32 ch = 0; ch <= std::numeric_limits<uint8_t>::max(); ++ch) {
@@ -48,6 +67,32 @@ INSTANTIATE_TEST_SUITE_P(TextAutoSpaceTest,
 TEST_P(TextAutoSpaceTypeTest, Char) {
   const auto& data = GetParam();
   EXPECT_EQ(TextAutoSpace::GetType(data.ch), data.type);
+}
+
+TEST_F(TextAutoSpaceTest, Unapply) {
+  const float size = 40;
+  const Font font = test::CreateAhemFont(size);
+  HarfBuzzShaper shaper(u"01234");
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  EXPECT_THAT(GetAdvances(*result), ElementsAre(size, size, size, size, size));
+
+  // Apply auto-spacing.
+  const float spacing = TextAutoSpace::GetSpacingWidth(font);
+  result->ApplyTextAutoSpacing({{1, spacing}, {4, spacing}});
+  const float with_spacing = size + spacing;
+  EXPECT_THAT(GetAdvances(*result),
+              ElementsAre(size, with_spacing, size, size, with_spacing));
+
+  // Compute the line-end by unapplying the spacing.
+  for (unsigned end_offset : {2u, 5u}) {
+    scoped_refptr<ShapeResult> line_end =
+        result->UnapplyAutoSpacing(end_offset - 1, end_offset);
+    DCHECK_EQ(line_end->Width(), size);
+
+    // Check the original `result` is unchanged; i.e., still has auto-spacing.
+    EXPECT_THAT(GetAdvances(*result),
+                ElementsAre(size, with_spacing, size, size, with_spacing));
+  }
 }
 
 }  // namespace
