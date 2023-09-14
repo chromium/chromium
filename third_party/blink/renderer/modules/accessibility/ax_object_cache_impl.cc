@@ -2127,12 +2127,12 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     AXObjectCacheImpl::TreeUpdateReason update_reason,
     Node* node,
     ax::mojom::blink::Event event) {
-  DCHECK(node);
-  DCHECK(!has_been_disposed_);
-  DCHECK(!IsFrozen());
-  DCHECK(!processing_deferred_events_)
+  CHECK(node);
+  CHECK(!has_been_disposed_);
+  CHECK(!IsFrozen());
+  CHECK(!processing_deferred_events_)
       << "Call clean layout method directly while processing deferred events.";
-  DCHECK(!updating_tree_);
+  CHECK(!updating_tree_);
 
   Document& tree_update_document = node->GetDocument();
   if (!CanDeferTreeUpdate(&tree_update_document)) {
@@ -2164,18 +2164,18 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     ax::mojom::blink::Event event) {
   // Called for updates that do not have a DOM node, e.g. a children or text
   // changed event that occurs on an anonymous layout block flow.
-  DCHECK(obj);
-  DCHECK(!has_been_disposed_);
-  DCHECK(!IsFrozen());
-  DCHECK(!processing_deferred_events_)
+  CHECK(obj);
+  CHECK(!has_been_disposed_);
+  CHECK(!IsFrozen());
+  CHECK(!processing_deferred_events_)
       << "Call clean layout method directly while processing deferred events.";
-  DCHECK(!updating_tree_);
+  CHECK(!updating_tree_);
 
   if (obj->IsDetached()) {
     return;
   }
 
-  DCHECK(obj->AXObjectID());
+  CHECK(obj->AXObjectID());
 
   Document* tree_update_document = obj->GetDocument();
 
@@ -2730,7 +2730,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() const {
   CHECK(invalidated_ids_main_.empty());
   CHECK(invalidated_ids_popup_.empty());
 
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if DCHECK_IS_ON()
   for (const auto& entry : objects_) {
     const AXObject* object = entry.value;
     DCHECK(!object->IsDetached());
@@ -2757,6 +2757,18 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() const {
         << "No cached values should require an update at this point: "
         << "\n* Object: " << object->ToString(true) << "\n* Included parent: "
         << (included_parent ? included_parent->ToString(true) : "");
+  }
+#else
+  // TODO(crbug.com/1480627) Temporary: do not ship in stable builds.
+  for (const auto& entry : objects_) {
+    const AXObject* object = entry.value;
+    CHECK(!object->IsDetached());
+    CHECK(!object->IsMissingParent())
+        << "No object should be missing its parent: "
+        << "\n* Object: " << object->ToString(true, true)
+        << "\n* Computed parent: "
+        << (object->ComputeParent() ? object->ComputeParent()->ToString(true)
+                                    : "not found");
   }
 #endif
 }
@@ -4647,7 +4659,11 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     bool& had_end_of_test_event,
     bool& had_load_complete_messages,
     bool& need_to_send_location_changes) {
+  // TODO(accessibility) Remove this once non-postlifecycle serialization code
+  // is completely removed, as it is redundant with other calls.
+#if BUILDFLAG(IS_FUCHSIA)
   CheckTreeIsUpdated();
+#endif
 
   // Make a copy of the events, because it's possible that
   // actions inside this loop will cause more events to be

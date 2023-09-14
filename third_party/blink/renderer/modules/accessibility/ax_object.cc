@@ -900,11 +900,20 @@ bool AXObject::IsMissingParent() const {
     // the tree, and without a parent, for potential later reuse.
     // TODO(accessibility) This is ugly. Consider destroying validation message
     // objects between uses instead. See GetOrCreateValidationMessageObject().
-    return !IsRoot() && !IsValidationMessage();
+    bool is_missing = !IsRoot() && !IsValidationMessage();
+    CHECK(!is_missing || !AXObjectCache().IsFrozen())
+        << "Should not have missing parent in frozen tree: "
+        << ToString(true, true);
+    return is_missing;
   }
 
-  if (parent_->IsDetached())
+  if (parent_->IsDetached()) {
+    CHECK(!AXObjectCache().IsFrozen())
+        << "Should not have detached parent in frozen tree: "
+        << ToString(true, true);
+
     return true;
+  }
 
   return false;
 }
@@ -5805,6 +5814,11 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
 }
 
 void AXObject::DetachFromParent() {
+  if (IsDetached()) {
+    return;
+  }
+  CHECK(!AXObjectCache().IsFrozen())
+      << "Do not detach parent while tree is frozen: " << ToString(true, true);
   if (ShouldDestroyWhenDetachingFromParent()) {
     AXObjectCache().RemoveIncludedSubtree(this, /* remove_root */ true);
   }
@@ -5812,8 +5826,9 @@ void AXObject::DetachFromParent() {
 }
 
 void AXObject::ClearChildren() const {
-  DCHECK(!IsDetached());
-  DCHECK(!AXObjectCache().IsFrozen());
+  CHECK(!IsDetached());
+  CHECK(!AXObjectCache().IsFrozen())
+      << "Do not clear children while tree is frozen: " << ToString(true, true);
 
   // Detach all weak pointers from immediate children to their parents.
   // First check to make sure the child's parent wasn't already reassigned.
