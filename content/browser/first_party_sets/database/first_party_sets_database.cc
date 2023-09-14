@@ -751,9 +751,8 @@ void FirstPartySetsDatabase::DatabaseErrorCallback(int extended_error,
     return;
   }
 
-  // The default handling is to assert on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error))
-    DLOG(FATAL) << db_->GetErrorMessage();
+    DLOG(ERROR) << db_->GetErrorMessage();
 
   // Consider the database closed if we did not attempt to recover so we did not
   // produce further errors.
