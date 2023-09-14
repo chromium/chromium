@@ -2250,6 +2250,7 @@
 <translation id="5653432653077411130">Постачання й очищення води</translation>
 <translation id="5654927323611874862">Ідентифікатор завантаженого звіту про аварійне завершення роботи:</translation>
 <translation id="5659593005791499971">Ел. пошта</translation>
+<translation id="5660122698869360728">Нова розумна папка, у якій можна зберігати всі сторінки покупок, автоматично відстежувати ціни, отримувати статистику цін тощо.</translation>
 <translation id="5663955426505430495">Адміністратор пристрою встановив розширення для додаткових функцій. Розширення мають доступ до деяких ваших даних.</translation>
 <translation id="5666606186680807225">Пляжі й острови</translation>
 <translation id="5667827081946850877">Аудіокниги</translation>
@@ -3015,6 +3016,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Задній лоток</translation>
 <translation id="725866823122871198">Не вдається встановити конфіденційне з’єднання з <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на комп’ютері встановлено неправильні дату й час (<ph name="DATE_AND_TIME" />).</translation>
+<translation id="7260075294900977274">Нова розумна папка, у якій можна зберігати всі сторінки покупок, автоматично відстежувати ціни, отримувати статистику цін тощо</translation>
 <translation id="7265608370113700582">Адреса доступна лише на цьому пристрої</translation>
 <translation id="7275334191706090484">Закладки, якими керує адміністратор</translation>
 <translation id="7277998515889183784">Косметичні засоби</translation>
@@ -3317,6 +3319,7 @@
 <translation id="7822611063308883975">Портативні ігрові консолі</translation>
 <translation id="7825558994363763489">Мікрохвильові печі</translation>
 <translation id="782886543891417279">Можливо, щоб під’єднатися до цієї мережі Wi-Fi (<ph name="WIFI_NAME" />), потрібно відвідати її сторінку входу.</translation>
+<translation id="7831993212387676366">Що таке список покупок?</translation>
 <translation id="7840103971441592723">Запис екрана розпочато</translation>
 <translation id="784137052867620416">Статистика покупок</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>

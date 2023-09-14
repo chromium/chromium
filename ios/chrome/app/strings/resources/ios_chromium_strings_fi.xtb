@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Näytä Chromium-historia</translation>
 <translation id="2052320862053429062">Chromium vertaa salasanojasi säännöllisesti listoihin salasanoista, jotka on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="2054703085270098503">Pysy turvassa Chromiumin avulla</translation>
+<translation id="2098023844024447022">Avaa edellinen välilehti Chromiumissa.</translation>
 <translation id="2168108852149185974">Jokin laajennus kaataa Chromiumin. Poista seuraavat:</translation>
 <translation id="2178608107313874732">Chromium ei voi käyttää kameraa tällä hetkellä.</translation>
 <translation id="2195025571279539885">Haluatko Chromiumin ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
@@ -84,6 +85,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4555020257205549924">Kun tämä ominaisuus on käytössä, Chromium tarjoaa vierailla kielillä kirjoitettujen sivujen käännöksiä Google Kääntäjän kautta. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Avaa maksutapojen asetussivun Chromiumissa.</translation>
 <translation id="4585809515399340748">Voit nyt käyttää Chromiumia aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
+<translation id="459080529287102949">Visuaalinen haku Chromiumissa</translation>
 <translation id="4633738821577273991">Lisää Parannettu selaussuoja myös tälle Chromium-profiilille</translation>
 <translation id="4654936625574199632">Chromium lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ota käyttöön Chromium-lukija</translation>
@@ -152,6 +154,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7045244423563602563">Tee Chromiumista näköisesi</translation>
 <translation id="7055269218854630176">Organisaatiosi (<ph name="DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromiumin käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
 <translation id="7099326575020694068">Chromium ei voi käyttää kameraa jaetussa näkymässä.</translation>
+<translation id="7163483974919055112">Hae visuaalisesti Chromiumista.</translation>
 <translation id="7165402419892018581">Chromiumin valinta automaattiseen täyttöön</translation>
 <translation id="7175400662502680481">Salasanasi vaarantui tietosuojaloukkauksessa. Salasanojen ylläpito suosittelee, että vaihdat sen heti.</translation>
 <translation id="7192111075364461693">Chromiumin ilmoitukset ovat tällä hetkellä poissa päältä laiteasetuksissa.</translation>
@@ -191,6 +194,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8663480472502753423">Pidä Chromium ajan tasalla</translation>
 <translation id="8685813584220679697">Kirjaudu tälle sivustolle ja Chromiumiin.</translation>
 <translation id="8730503818204408000">Avaa asetuksen, jolla voi valita Chromiumin oletusselaimeksi.</translation>
+<translation id="8742300022028858275">Avaa edellinen välilehti Chromiumissa</translation>
 <translation id="8747378496147986285">Kun se on päällä:
 <ph name="BEGIN_INDENT" />  • Auta tekemään Chromiumista parempi muille, jotka käyttävät sitä samoin kuin sinä<ph name="END_INDENT" />
 

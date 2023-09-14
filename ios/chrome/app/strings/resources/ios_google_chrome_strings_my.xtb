@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1105362920864247682">Chrome ၌ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းရန်။</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> အတွက် သင့်စကားဝှက်ကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ သိမ်းပါမည်။</translation>
 <translation id="1180362651362502943">သင့် Google Account တွင် Chrome ဒေတာများ ဆက်သုံးပါ။</translation>
 <translation id="1282031177488366470">Chrome ၏ ဝန်ဆောင်မှုများနှင့် စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်လာအောင် ကူညီခြင်း</translation>
 <translation id="1333745675627230582">Chrome Dino ဂိမ်းကစားရန်</translation>
 <translation id="1352919863522755794">Google Password Manager က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="1407843355326180937">သင့်စက်အားလုံးတွင် လိပ်စာနှင့် အခြားအရာများ ရယူရန် ဤဝဘ်ဆိုက်နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
+<translation id="1436059927646026729">Chrome တွင် ‘ကျွန်ုပ်၏ နောက်ဆုံးတဘ်’ ကိုဖွင့်ရန်</translation>
 <translation id="1462727070346936664">Chrome ကို အကောင်းဆုံးသုံးနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="1479202195792305274">သင်၏ Google Account နှင့် လက်မှတ်ထိုးဝင်သည့်အခါ Chrome က သင့်စကားဝှက်များကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="1491435845014430217">“Chrome ကို ပိတ်သည့်အခါ ရုပ်ဖျက်တဘ်များကို လော့ခ်ချရန်” ဖွင့်ပါ။</translation>
@@ -24,6 +26,7 @@
 
   • သင့် Google Account သို့ မှတ်တမ်းများ စင့်ခ်လုပ်ပါက မက်ထရစ်များတွင် သင်ဝင်ကြည့်သော URL များအကြောင်း အချက်အလက်လည်း ပါဝင်နိုင်သည်။<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">အန္တရာယ်ရှိသော ဝဘ်ဆိုက်ရန်မှ ကာကွယ်ရန် သင့်တွင် Chrome ၏ အကောင်းဆုံး လုံခြုံရေးစနစ် ရှိသည်</translation>
+<translation id="1657395063736185342">Chrome တွင် ကြည့်ရှုစရာများရှာရန်</translation>
 <translation id="1675955119303651351">သင်၏ Chrome ဒေတာအချို့ကို သင့် Google Account တွင် မသိမ်းရသေးပါ။
         မထွက်မီ အချိန်အနည်းငယ် စောင့်ကြည့်ပါ။ ယခု ထွက်သွားပါက ဤဒေတာကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="1682483655351012182">သင်၏ Chrome ဒေတာ စင့်ခ်လုပ်ရန်</translation>
@@ -55,6 +58,7 @@
 <translation id="2736805085127235148">သင့်စက်ဆက်တင်များတွင် Chrome အကြောင်းကြားချက်များကို လောလောဆယ်ပိတ်ထားသည်။</translation>
 <translation id="2767464022270041271">သိမ်းထားသော စကားဝှက် မရှိပါ။ သင်စကားဝှက်များကို သိမ်းသည့်အခါ Google Password Manager က ၎င်းတို့ကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="2840432500933227975">iOS တွင် Chrome ဆက်တင်များကို ဖွင့်ပါ၊ ထို့နောက် “မူရင်း ဘရောင်ဇာအက်ပ်” ကို တို့ပြီး Chrome ကို ရွေးပါ။</translation>
+<translation id="2868822340714096138">Chrome ၌ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းရန်</translation>
 <translation id="2869959624320573933">Chrome တွင် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome က သင့်ဒေတာကို သီးသန့်ထားပေးပုံ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ကို ရွေးပါ</translation>
@@ -150,6 +154,7 @@
 <translation id="6916015246697034114">Chrome တွင် အသံဖြင့်ရှာရန်</translation>
 <translation id="6964931465519938134">မက်ဆေ့ဂျ်၊ မှတ်တမ်းဖိုင်နှင့် အခြားအက်ပ်များတွင် လင့်ခ်များကို အချိန်မရွေးတို့ပြီး Chrome ကို ယခုသုံးနိုင်ပါပြီ။</translation>
 <translation id="6975725306479268850">‘အော်တိုဖြည့်’ အတွက် Chrome ကိုရွေးပါ</translation>
+<translation id="7004159181872656283">Chrome တွင် ကြည့်ရှုစရာများရှာရန်။</translation>
 <translation id="7056826488869329999">Chrome တွင် လုံခြုံရေး စစ်ဆေးမှု ဖွင့်ပြီးလုပ်ဆောင်ရန်။</translation>
 <translation id="7059914902409643750">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="7124339256045485976">Chrome ကို အပ်ဒိတ်ဖြစ်နေစေသည်</translation>
@@ -176,6 +181,7 @@
 <translation id="7855730255114109580">Google Chrome ကို အပ်ဒိတ်လုပ်ထားပြီးပါပြီ</translation>
 <translation id="7897703007638178753">Chrome လတ်တလော တဘ်များ ဖွင့်ရန်</translation>
 <translation id="7925119591961387184">“Chrome” ကိုရွေးပါ။</translation>
+<translation id="7933491483529363150">Chrome တွင် ‘ကျွန်ုပ်၏ နောက်ဆုံးတဘ်’ ကိုဖွင့်ရန်။</translation>
 <translation id="8022947259858476807">လင့်ခ်များဖွင့်ရန်၊ ဝိဂျက်များမှ ရှာဖွေရန်နှင့် အခြားအက်ပ်များတွင် စကားဝှက်များ အလိုအလျောက်ဖြည့်ရန် မူရင်းသတ်မှတ်ချက်အဖြစ် Chrome ကို သုံးနိုင်သည်</translation>
 <translation id="804638182476029347">လျှော့ဈေးသတိပေးချက်များ ရယူရန်အတွက် Chrome အကြောင်းကြားချက်များ ခွင့်ပြုရန်</translation>
 <translation id="81358522153858150">သင့်စီမံခန့်ခွဲထားသည့်အကောင့်အတွက် Chrome က အသုံးပြုသူလိုက်နာရမည့် မူဝါဒများကို ပံ့ပိုးပေးသည်</translation>

@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">View Your Chromium History</translation>
 <translation id="2052320862053429062">Chromium periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="2054703085270098503">Stay safe with Chromium</translation>
+<translation id="2098023844024447022">Open my latest tab in Chromium.</translation>
 <translation id="2168108852149185974">Some add-ons cause Chromium to crash. Please uninstall:</translation>
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
 <translation id="2195025571279539885">Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
@@ -84,6 +85,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Opens The Payment Methods Setting Page in Chromium.</translation>
 <translation id="4585809515399340748">You can now use Chromium whenever you tap on links in messages, documents and other apps.</translation>
+<translation id="459080529287102949">Search visuals in Chromium</translation>
 <translation id="4633738821577273991">Get Enhanced Safe Browsing for this Chromium profile, too</translation>
 <translation id="4654936625574199632">To help improve the app, Chromium sends usage and crash data to Google. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Turn on Chromium scanner</translation>
@@ -152,6 +154,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7045244423563602563">Make Chromium your own</translation>
 <translation id="7055269218854630176">Your organisation, <ph name="DOMAIN" />, manages the account that you're signing in to and how Chromium can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="7099326575020694068">Chromium can't use your camera in Split View mode</translation>
+<translation id="7163483974919055112">Search visuals in Chromium.</translation>
 <translation id="7165402419892018581">Choose Chromium for auto-fill</translation>
 <translation id="7175400662502680481">Your password was exposed in a data breach. Password Manager recommends changing it now.</translation>
 <translation id="7192111075364461693">Chromium notifications are currently turned off in your device settings.</translation>
@@ -191,6 +194,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8663480472502753423">Keep Chromium up to date</translation>
 <translation id="8685813584220679697">Sign in to this site and Chromium.</translation>
 <translation id="8730503818204408000">Opens the Chromium Setting to set Chromium as Default Browser.</translation>
+<translation id="8742300022028858275">Open my latest tab in Chromium</translation>
 <translation id="8747378496147986285">When on:
 <ph name="BEGIN_INDENT" />  • Help make Chromium better for people who use it the way that you do.<ph name="END_INDENT" />
 

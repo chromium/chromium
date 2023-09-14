@@ -4184,6 +4184,7 @@
 <translation id="4322394346347055525">Закрыть другие вкладки</translation>
 <translation id="4324577459193912240">Файл скачан не полностью</translation>
 <translation id="4325237902968425115">Удаление приложения "<ph name="LINUX_APP_NAME" />"…</translation>
+<translation id="4325433082696797523">Хранилище и энергопотребление</translation>
 <translation id="4326146840124313313">Это самый высокий уровень защиты в Chrome, который позволяет обезопасить вас от угроз на сайтах, а также от вредоносных расширений и загрузок.</translation>
 <translation id="4326484226728068206">Товары в вашей корзине, к которым относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="4330191372652740264">Вода со льдом</translation>
@@ -9500,6 +9501,7 @@
 <translation id="8680251145628383637">Войдите в аккаунт, чтобы синхронизировать закладки, историю, пароли и другие настройки на всех устройствах. Одновременно будет выполнена авторизация в сервисах Google.</translation>
 <translation id="8681886425883659911">Объявления блокируются на сайтах, где есть навязчивая или вводящая в заблуждение реклама</translation>
 <translation id="8682730193597992579">Принтер <ph name="PRINTER_NAME" /> подключен и готов к работе.</translation>
+<translation id="8684471948980641888">Разрешить синхронизацию в сетях с тарификацией</translation>
 <translation id="8685540043423825702">Ваш профиль Chrome</translation>
 <translation id="8686142379631285985">Вы вошли как <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />.</translation>
 <translation id="8687103160920393343">Отменить скачивание файла "<ph name="FILE_NAME" />"</translation>

@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Chromium vēstures skatīšana</translation>
 <translation id="2052320862053429062">Pārlūkā Chromium tiek periodiski pārbaudītas jūsu paroles, salīdzinot tās ar tiešsaistē publicētiem sarakstiem. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="2054703085270098503">Parūpējieties par savu drošību, izmantojot pārlūku Chromium</translation>
+<translation id="2098023844024447022">Atvērt manu jaunāko cilni pārlūkā Chromium.</translation>
 <translation id="2168108852149185974">Daži papildinājumi var izraisīt pārlūka Chromium avarēšanu. Lūdzu, atinstalējiet šos papildinājumus:</translation>
 <translation id="2178608107313874732">Chromium pašlaik nevar izmantot jūsu kameru.</translation>
 <translation id="2195025571279539885">Vai vēlaties, lai Chromium nākamreiz piedāvātu šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
@@ -84,6 +85,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="4555020257205549924">Ja šī funkcija ir ieslēgta, Chromium piedāvā tulkot citās valodās rakstītas lapas, izmantojot Google tulkotāju. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Tiek atvērta maksājumu veidu iestatījumu lapa pārlūkā Chromium.</translation>
 <translation id="4585809515399340748">Tagad varat izmantot Chromium ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
+<translation id="459080529287102949">Sākt vizuālo meklēšanu pārlūkā Chromium</translation>
 <translation id="4633738821577273991">Iegūstiet šim Chromium profilam arī drošu pārlūkošanu ar papildu aizsardzību</translation>
 <translation id="4654936625574199632">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chromium. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ieslēgt Chromium skeneri</translation>
@@ -152,6 +154,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7045244423563602563">Pielāgojiet pārlūku Chromium savām vajadzībām</translation>
 <translation id="7055269218854630176">Jūsu organizācija <ph name="DOMAIN" /> pārvalda kontu, kurā pašlaik pierakstāties, un pārlūka Chromium lietošanas iespējas. Administrators var iestatīt vai ierobežot noteiktas funkcijas.</translation>
 <translation id="7099326575020694068">Chromium nevar izmantot kameru dalītā skata režīmā.</translation>
+<translation id="7163483974919055112">Sākt vizuālo meklēšanu pārlūkā Chromium.</translation>
 <translation id="7165402419892018581">Izvēlieties Chromium automātiskajai aizpildei</translation>
 <translation id="7175400662502680481">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ. Paroļu pārvaldnieks iesaka to nekavējoties nomainīt.</translation>
 <translation id="7192111075364461693">Chromium paziņojumi pašlaik ir izslēgti jūsu ierīces iestatījumos.</translation>
@@ -191,6 +194,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="8663480472502753423">Jaunākās Chromium iespējas</translation>
 <translation id="8685813584220679697">Pierakstieties šajā vietnē un pārlūkā Chromium.</translation>
 <translation id="8730503818204408000">Tiek atvērts Chromium iestatījums, lai iestatītu Chromium kā noklusējuma pārlūku.</translation>
+<translation id="8742300022028858275">Atvērt manu jaunāko cilni pārlūkā Chromium</translation>
 <translation id="8747378496147986285">Kad iestatījums ir ieslēgts:
 <ph name="BEGIN_INDENT" />  • Palīdziet uzlabot pārlūku Chromium visiem lietotājiem, kuri to izmanto līdzīgi jums.<ph name="END_INDENT" />
 

@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Lihat Histori Chromium Anda</translation>
 <translation id="2052320862053429062">Chromium memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah dipublikasikan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="2054703085270098503">Tetap Aman dengan Chromium</translation>
+<translation id="2098023844024447022">Buka Tab Terbaru Saya di Chromium.</translation>
 <translation id="2168108852149185974">Beberapa add-on menyebabkan Chromium mogok. Uninstal:</translation>
 <translation id="2178608107313874732">Chromium saat ini tidak dapat menggunakan kamera</translation>
 <translation id="2195025571279539885">Ingin Chromium menawarkan untuk menerjemahkan halaman berbahasa <ph name="LANGUAGE_NAME" /> dari situs ini saat Anda mengunjunginya lagi?</translation>
@@ -84,6 +85,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="4555020257205549924">Saat fitur ini diaktifkan, Chromium akan menawarkan untuk menerjemahkan halaman yang ditulis dalam bahasa lain menggunakan Google Terjemahan. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Membuka Halaman Setelan Metode Pembayaran di Chromium.</translation>
 <translation id="4585809515399340748">Anda sekarang dapat menggunakan Chromium kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
+<translation id="459080529287102949">Telusuri Visual di Chromium</translation>
 <translation id="4633738821577273991">Dapatkan juga Safe Browsing yang Disempurnakan untuk profil Chromium ini</translation>
 <translation id="4654936625574199632">Untuk membantu meningkatkan kualitas aplikasi, Chromium akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktifkan pemindai Chromium</translation>
@@ -152,6 +154,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="7045244423563602563">Sesuaikan Chromium dengan Selera Anda</translation>
 <translation id="7055269218854630176">Organisasi Anda, <ph name="DOMAIN" />, mengelola akun yang Anda gunakan untuk login dan cara Chromium dapat digunakan. Administrator Anda dapat menyiapkan atau membatasi fitur tertentu.</translation>
 <translation id="7099326575020694068">Chromium tidak dapat menggunakan kamera dalam mode Layar Terpisah</translation>
+<translation id="7163483974919055112">Menelusuri Visual di Chromium.</translation>
 <translation id="7165402419892018581">Pilih Chromium untuk Isi Otomatis</translation>
 <translation id="7175400662502680481">Sandi Anda terekspos dalam pelanggaran data. Pengelola Sandi merekomendasikan untuk mengubahnya sekarang.</translation>
 <translation id="7192111075364461693">Notifikasi Chromium saat ini dinonaktifkan di setelan perangkat.</translation>
@@ -191,6 +194,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8663480472502753423">Pastikan Chromium selalu terupdate</translation>
 <translation id="8685813584220679697">Login ke situs ini dan Chromium.</translation>
 <translation id="8730503818204408000">Membuka Setelan Chromium untuk menyetel Chromium sebagai Browser Default.</translation>
+<translation id="8742300022028858275">Buka Tab Terbaru Saya di Chromium</translation>
 <translation id="8747378496147986285">Jika aktif:
 <ph name="BEGIN_INDENT" />  • Membantu Chromium menjadi lebih baik bagi pengguna lain seperti Anda.<ph name="END_INDENT" />
 

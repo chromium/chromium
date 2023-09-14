@@ -971,6 +971,17 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="1829839214911753838">Wenn diese Richtlinie aktiviert ist, läuft der Host für Remote-Unterstützung in einem Prozess mit <ph name="UIACCESS_PERMISSION_NAME" />-Berechtigungen. So kann der Remote-Nutzer mit geöffneten Fenstern auf dem Desktop des lokalen Nutzers arbeiten.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, läuft der Host für Remote-Unterstützung nur im Nutzerbereich. Remote-Nutzer können nicht mit geöffneten Fenstern auf dem Desktop arbeiten.</translation>
+<translation id="183438382744421768">Mit dieser Richtlinie wird festgelegt, wie sich der Browser verhält, wenn sich Nutzer mit einem verwalteten Konto im Inhaltsbereich anmelden.
+
+Diese Richtlinie überschreibt „<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />“.
+
+Wenn diese Richtlinie auf „Vorgeschlagen“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto aufgefordert, ein verwaltetes Profil so zu verwenden, als wäre die Nutzung erzwungen. Wenn der Nutzer dies ablehnt, kann er in einer nicht verwalteten Umgebung weitersurfen.
+
+Wenn diese Richtlinie erzwungen wird, muss der Nutzer nach der Anmeldung mit einem verwalteten Konto ein verwaltetes Profil verwenden. Wenn der Nutzer dies ablehnt, wird er aus seinem Konto abgemeldet. Die Richtlinie „<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />“ hat keine Auswirkungen auf die Erzwingung dieser Richtlinie.
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, kann der Nutzer nach der Anmeldung mit einem verwalteten Konto über ein Infofeld aufgefordert werden, ein neues Profil zu erstellen. Das Infofeld lässt sich schließen und der Nutzer kann dann in einer nicht verwalteten Umgebung weiter im Internet surfen. Das Infofeld wird über die Richtlinie „<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />“ gesteuert.
+
+Diese Richtlinie hat keine Auswirkungen, wenn sie auf Geräteebene konfiguriert wird.</translation>
 <translation id="1837165432382702436">Seitenhöhe in Mikrometern</translation>
 <translation id="1838910874018595451">Voreingestellte Konfiguration für Kerberos-Tickets</translation>
 <translation id="1843102210803941014">Nur notwendige Cookies und Daten in der Suche aktivieren</translation>
@@ -1044,6 +1055,11 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Wenn die Richtlinie <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> deaktiviert ist, hat der Wert dieser Richtlinie keine Auswirkungen, da die gesamte <ph name="PRODUCT_NAME" />-Funktion deaktiviert ist.</translation>
 <translation id="1894790493260633497">Standardmäßig Druckmodus mit Hintergrundgrafiken aktivieren</translation>
+<translation id="1894798677636924604">Ist diese Richtlinie konfiguriert, müssen Nutzer nach der Anmeldung im Konto kein neues, separates Profil erstellen.
+
+Ist sie nicht konfiguriert, ist nach der Anmeldung im Konto über die aufgeführten Domains keine Erstellung eines neuen, separaten Profils erforderlich.
+
+Für diese Richtlinie kann ein leerer String festgelegt werden, sodass alle Nutzer nach der Anmeldung im Konto ein neues, separates Profil anlegen müssen.</translation>
 <translation id="1895052641245790471">Ist die Richtlinie „<ph name="RESTORE_ON_STARTUP_POLICY_NAME" />“ auf „RestoreOnStartupIsURLs“ gesetzt, wird durch das Festlegen von „<ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />“ auf eine Liste von URLs angegeben, welche URLs geöffnet werden.
 
 Ist die Richtlinie nicht konfiguriert, öffnet sich die „Neuer Tab“-Seite beim Start.
@@ -2362,6 +2378,19 @@ Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="305106159605171619">Verringerung des User-Agents ist deaktiviert und wurde nicht durch Feld- oder Ursprungstests aktiviert.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3053695107741362368">Mit dieser Richtlinie wird festgelegt, ob Nutzer vorhandene Browserdaten in ein verwaltetes Profil importieren dürfen, das nach der Anmeldung mit einem verwalteten Konto im Inhaltsbereich erstellt wurde.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf „UserOptInData“ gesetzt ist, kann der Nutzer auswählen, ob vorhandene Browserdaten in das verwaltete Profil übernommen werden sollen. Das entsprechende Kästchen im Dialogfeld zur Profilerstellung ist standardmäßig sichtbar und nicht markiert.
+
+Wenn diese Richtlinie auf „UserOptOutData“ gesetzt ist, kann der Nutzer auswählen, ob vorhandene Browserdaten in das verwaltete Profil übernommen werden sollen. Das entsprechende Kästchen im Dialogfeld zur Profilerstellung ist standardmäßig sichtbar und markiert. Diese Option ist nur auf verwalteten Geräten zulässig.
+
+Ist die Richtlinie auf „AlwaysSeparateData“ gesetzt, können Nutzer keine vorhandenen Browserdaten in das verwaltete Profil importieren. Das entsprechende Kästchen im Dialogfeld zur Profilerstellung ist dann nicht sichtbar.
+
+Wenn Nutzer vorhandene Browserdaten in das verwaltete Profil importieren, wird das aktuelle Profil zu einem verwalteten Profil. Es wird dann kein neues Profil erstellt.
+
+Wenn vorhandene Browserdaten nicht in das verwaltete Profil übernommen werden, wird ein neues Profil erstellt. Die vorhandenen Browserdaten verbleiben in einem nicht verwalteten Profil, auf das der Nutzer weiterhin über die Profilauswahl zugreifen kann.
+
+Damit diese Richtlinie wirksam wird, muss die Richtlinie „<ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME" />“ konfiguriert sein.</translation>
 <translation id="3063302084011279315">Screencast deaktivieren</translation>
 <translation id="3063307261083019730">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen nicht im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="3064530882228745118">CNAME-Suche bei der Kerberos-Authentifizierung verwenden</translation>

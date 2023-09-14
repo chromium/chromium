@@ -2249,6 +2249,7 @@
 <translation id="5653432653077411130">供水和處理</translation>
 <translation id="5654927323611874862">已上載的當機報告 ID：</translation>
 <translation id="5659593005791499971">電郵</translation>
+<translation id="5660122698869360728">全新的智能資料夾可集中儲存所有購物頁面，以及自動追蹤價格、取得價格分析資料等。</translation>
 <translation id="5663955426505430495">此裝置的管理員已安裝支援額外功能的擴充程式。擴充程式可存取您的部分資料。</translation>
 <translation id="5666606186680807225">海灘和海島</translation>
 <translation id="5667827081946850877">有聲書</translation>
@@ -3014,6 +3015,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="725866823122871198">您電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法建立私人連線至 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />。</translation>
+<translation id="7260075294900977274">全新的智能資料夾可集中儲存所有購物頁面，以及自動追蹤價格、取得價格分析資料等</translation>
 <translation id="7265608370113700582">地址只可以喺呢部裝置上面用</translation>
 <translation id="7275334191706090484">受管理書籤</translation>
 <translation id="7277998515889183784">化妝和美容用品</translation>
@@ -3316,6 +3318,7 @@
 <translation id="7822611063308883975">掌上遊戲機</translation>
 <translation id="7825558994363763489">微波爐</translation>
 <translation id="782886543891417279">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往其登入頁面。</translation>
+<translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7840103971441592723">已開始擷取螢幕截圖</translation>
 <translation id="784137052867620416">購物分析資料</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{無}=1{1 個應用程式 (<ph name="EXAMPLE_APP_1" />)}=2{2 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />)}other{# 個應用程式 (<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />)}}</translation>

@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Chrome Dino spielen</translation>
 <translation id="1352919863522755794">Der Google Passwortmanager konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="1407843355326180937">Melde dich bei dieser Website und in Chrome an, um deine Lesezeichen und mehr auf allen deinen Geräten abzurufen.</translation>
+<translation id="1436059927646026729">Aktuellen Tab in Chrome öffnen</translation>
 <translation id="1462727070346936664">Wenn du Chrome optimal nutzen möchtest, melde dich an.</translation>
 <translation id="1479202195792305274">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="1491435845014430217">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
@@ -24,6 +25,7 @@ Wichtige Hinweise:
 
   • Falls du die Synchronisierung deines Verlaufs in deinem Google-Konto aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du nutzt den umfangreichen Schutz von Chrome vor schädlichen Websites</translation>
+<translation id="1657395063736185342">Bilder in Chromium suchen</translation>
 <translation id="1675955119303651351">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert.
         Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
@@ -73,6 +75,7 @@ Wichtige Hinweise:
 <translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
 <translation id="3720541637541300822">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
 <translation id="3741995255368156336">Öffnet die Chrome-Leseliste.</translation>
+<translation id="3744018071945602754">Passwörter in Chrome verwalten</translation>
 <translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
 <translation id="3901001113120561395">Chrome optimal nutzen.</translation>
@@ -87,6 +90,7 @@ Wichtige Hinweise:
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> hat Chrome genutzt und Lesezeichen, Passwörter und andere Einstellungen auf diesem Gerät festgelegt.</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4251174643044751591">Dadurch wird die Seite mit den Einstellungen für Zahlungsmethoden in Chrome geöffnet.</translation>
+<translation id="4453284704333523777">Chrome-Einstellungen verwalten</translation>
 <translation id="4508370294876102450">Chrome über jede App öffnen</translation>
 <translation id="4523886039239821078">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstalliere:</translation>
 <translation id="4633328489441962921">Chrome kann nicht nach Aktualisierungen suchen</translation>
@@ -123,6 +127,7 @@ Wichtige Hinweise:
 <translation id="571296537125272375">Offline, Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5716154293141027663">Chrome immer öffnen, wenn du auf Links in anderen Apps tippst</translation>
 <translation id="5808435672482059465">Chrome-Verlauf ansehen</translation>
+<translation id="589695154992054845">Dadurch wird der Passwortmanager in Chrome geöffnet.</translation>
 <translation id="5998675059699164418">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest.</translation>
 <translation id="6054613632208573261">Standardmäßig Chrome verwenden</translation>
 <translation id="6063091872902370735">Anmeldung in Chrome zulassen</translation>
@@ -147,6 +152,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="6916015246697034114">Sprachsuche in Chrome</translation>
 <translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
+<translation id="7004159181872656283">Bilder in Chromium suchen.</translation>
 <translation id="7056826488869329999">Dadurch wird der Sicherheitscheck in Chrome geöffnet und ausgeführt.</translation>
 <translation id="7059914902409643750">Chrome personalisieren</translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
@@ -173,6 +179,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="7897703007638178753">Zuletzt geöffnete Chrome-Tabs ansehen</translation>
 <translation id="7925119591961387184">Wähle „Chrome“ aus.</translation>
+<translation id="7933491483529363150">Aktuellen Tab in Chrome öffnen.</translation>
 <translation id="8022947259858476807">Verwende Chrome als deinen Standardbrowser, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="804638182476029347">Chrome-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
 <translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
@@ -213,6 +220,7 @@ Wichtige Hinweise:
 <ph name="BEGIN_INDENT" />  • Daten zu deiner Chrome-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
   • Falls Chrome abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
   • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Dadurch werden die Einstellungen in Chrome geöffnet.</translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
 <translation id="9122931302567044771">Das bedeutet, dass Chrome immer die Desktopversion der Website anfordert.</translation>
 <translation id="9181628561061032322">Öffnet die zuletzt geöffneten Chrome-Tabs.</translation>

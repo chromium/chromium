@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Chrome Dinozor Oyununu Oyna</translation>
 <translation id="1352919863522755794">Google Şifre Yöneticisi, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="1407843355326180937">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için bu sitede ve Chrome'da oturum açın.</translation>
+<translation id="1436059927646026729">Chrome'daki en son sekmemi aç</translation>
 <translation id="1462727070346936664">Chrome'dan en iyi şekilde yararlanmak için oturum açın.</translation>
 <translation id="1479202195792305274">Chrome, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="1491435845014430217">"Chrome'u Kapattığınızda Gizli Sekmeleri Kilitleyin" seçeneğini etkinleştirin.</translation>
@@ -24,6 +25,7 @@ Dikkate alınması gereken noktalar:
 
   • Geçmişinizi Google Hesabınızla senkronize ederseniz ziyaret ettiğiniz URL'ler hakkındaki bilgiler de metriklerde yer alabilir.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Zararlı web sitelerine karşı Chrome'un en güçlü güvenlik avantajına sahipsiniz</translation>
+<translation id="1657395063736185342">Görselleri Chrome'da Ara</translation>
 <translation id="1675955119303651351">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
         Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="1682483655351012182">Chrome Verilerimi Senkronize Et</translation>
@@ -150,6 +152,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="6916015246697034114">Chrome'da Sesle Arama Yap</translation>
 <translation id="6964931465519938134">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
 <translation id="6975725306479268850">Otomatik doldurma için Chrome'u seçin</translation>
+<translation id="7004159181872656283">Görselleri Chrome'da arayın.</translation>
 <translation id="7056826488869329999">Chrome'da Güvenlik Kontrolü'nü açar ve yürütür.</translation>
 <translation id="7059914902409643750">Chrome'u Kendinize Uyarlayın</translation>
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
@@ -176,6 +179,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7855730255114109580">Google Chrome güncel durumda</translation>
 <translation id="7897703007638178753">Chrome'daki Son Sekmeleri Göster</translation>
 <translation id="7925119591961387184">"Chrome"u seçin.</translation>
+<translation id="7933491483529363150">Chrome'daki en son sekmemi aç.</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
 <translation id="804638182476029347">Fiyat düşüşü uyarıları almak için Chrome bildirimlerine izin verin</translation>
 <translation id="81358522153858150">Chrome artık yönetilen hesabınız için kullanıcı politikalarını destekliyor</translation>

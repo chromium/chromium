@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">‏مشاهده سابقه Chromium</translation>
 <translation id="2052320862053429062">‏Chromium به‌طور دوره‌ای گذرواژه‌هایتان را با فهرست‌هایی که به‌صورت آنلاین منتشر می‌شود مقایسه می‌کند. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
 <translation id="2054703085270098503">‏با Chromium ایمن بمانید</translation>
+<translation id="2098023844024447022">‏باز کردن آخرین برگه من در Chromium.</translation>
 <translation id="2168108852149185974">‏برخی از افزونه‌ها باعث خرابی Chromium می‌شود. لطفاً آن‌ها را حذف نصب کنید:</translation>
 <translation id="2178608107313874732">‏Chromium اکنون نمی‌تواند از دوربین استفاده کند</translation>
 <translation id="2195025571279539885">‏می‌خواهید دفعه دیگر Chromium پیشنهاد ترجمه صفحات <ph name="LANGUAGE_NAME" /> را از این سایت بدهد؟</translation>
@@ -84,6 +85,7 @@
 <translation id="4555020257205549924">‏وقتی این قابلیت روشن است، Chromium ترجمه صفحات نوشته‌شده به سایر زبان‌ها را با استفاده از ترجمه Google پیشنهاد می‌دهد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">‏صفحه تنظیم روش‌های پرداخت Chromium را باز می‌کند.</translation>
 <translation id="4585809515399340748">‏اکنون می‌توانید با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها، از Chromium استفاده کنید.</translation>
+<translation id="459080529287102949">‏جستجوی تصاویر در Chromium</translation>
 <translation id="4633738821577273991">‏برای این نمایه Chromium نیز «مرور ایمن پیشرفته» را دریافت کنید</translation>
 <translation id="4654936625574199632">‏برای کمک به بهبود برنامه، Chromium داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_LINK" />مدیریت<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏روشن کردن اسکنر Chromium</translation>
@@ -152,6 +154,7 @@
 <translation id="7045244423563602563">‏Chromium را برای خود اختصاصی کنید</translation>
 <translation id="7055269218854630176">‏سازمانتان (<ph name="DOMAIN" />) حسابی که با آن به سیستم وارد می‌شوید و نحوه استفاده از Chromium را مدیریت می‌کند. سرپرستتان می‌توانید برخی‌از ویژگی‌ها را راه‌اندازی یا محدود کند.</translation>
 <translation id="7099326575020694068">‏Chromium نمی‌تواند از دوربین درحالت «نمای تقسیم» استفاده کند</translation>
+<translation id="7163483974919055112">‏تصاویر در Chromium جستجو می‌شود.</translation>
 <translation id="7165402419892018581">‏انتخاب Chromium برای «تکمیل خودکار»</translation>
 <translation id="7175400662502680481">گذرواژه‌تان به‌دلیل سرقت اطلاعات شبکه لو رفته است. «مدیر گذرواژه» توصیه می‌کند آن را همین‌حالا تغییر دهید.</translation>
 <translation id="7192111075364461693">‏اعلان‌های Chromium درحال‌حاضر در تنظیمات دستگاهتان خاموش است.</translation>
@@ -191,6 +194,7 @@
 <translation id="8663480472502753423">‏به‌روز نگه داشتن Chromium</translation>
 <translation id="8685813584220679697">‏به سیستم این سایت و Chromium وارد شوید.</translation>
 <translation id="8730503818204408000">‏«تنظیمات Chromium» را برای تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض باز می‌کند.</translation>
+<translation id="8742300022028858275">‏باز کردن آخرین برگه من در Chromium</translation>
 <translation id="8747378496147986285">‏وقتی روشن است:
 <ph name="BEGIN_INDENT" />  • به بهتر شدن Chromium برای همه کسانی که به‌شیوه‌ای مشابه شما از آن استفاده می‌کنند کمک می‌کند.<ph name="END_INDENT" />
 

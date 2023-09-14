@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Gweld Eich Hanes Chromium</translation>
 <translation id="2052320862053429062">Mae Chromium o bryd i'w gilydd yn gwirio'ch cyfrineiriau yn erbyn rhestrau sydd wedi'u cyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
 <translation id="2054703085270098503">Cadwch yn ddiogel gyda Chromium</translation>
+<translation id="2098023844024447022">Agor Fy Nhab Diweddaraf yn Chromium.</translation>
 <translation id="2168108852149185974">Mae rhai ychwanegion yn achosi i Chromium dorri. Dadosodwch:</translation>
 <translation id="2178608107313874732">Ni all Chromium ddefnyddio'ch camera ar hyn o bryd</translation>
 <translation id="2195025571279539885">Ydych chi am i Chromium gynnig cyfieithu tudalennau <ph name="LANGUAGE_NAME" /> o'r wefan hon y tro nesaf?</translation>
@@ -84,6 +85,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Yn Agor Y Dudalen Gosodiad Dulliau Talu yn Chromium.</translation>
 <translation id="4585809515399340748">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
+<translation id="459080529287102949">Chwilio Delweddau yn Chromium</translation>
 <translation id="4633738821577273991">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chromium hwn hefyd</translation>
 <translation id="4654936625574199632">Er mwyn helpu i wella'r ap, mae Chrome yn anfon adroddiadau defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Troi sganydd Chromium ymlaen</translation>
@@ -152,6 +154,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7045244423563602563">Personoleiddiwch Chromium</translation>
 <translation id="7055269218854630176">Eich sefydliad, <ph name="DOMAIN" />, sy'n rheoli'r cyfrif rydych yn mewngofnodi iddo a sut y gellir defnyddio Chromium. Gall eich gweinyddwr osod neu gyfyngu ar rai nodweddion.</translation>
 <translation id="7099326575020694068">Ni all Chromium ddefnyddio'ch camera yn y modd Gwedd Hollt</translation>
+<translation id="7163483974919055112">Chwilio Delweddau yn Chromium.</translation>
 <translation id="7165402419892018581">Dewiswch Chromium ar gyfer Awtolenwi</translation>
 <translation id="7175400662502680481">Datgelwyd eich cyfrinair mewn achos o dor data. Mae Rheolwr Cyfrineiriau yn argymell ei newid ar unwaith.</translation>
 <translation id="7192111075364461693">Mae hysbysiadau Chromium wedi'u diffodd yng ngosodiadau eich dyfais ar hyn o bryd.</translation>
@@ -191,6 +194,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8663480472502753423">Cadwch Chromium yn gyfredol</translation>
 <translation id="8685813584220679697">Mewngofnodi i'r wefan hon a Chromium.</translation>
 <translation id="8730503818204408000">Yn agor y Gosodiad Chromium i osod Chromium fel y Porwr Diofyn.</translation>
+<translation id="8742300022028858275">Agor Fy Nhab Diweddaraf yn Chromium</translation>
 <translation id="8747378496147986285">Pan fydd ymlaen:
 <ph name="BEGIN_INDENT" />  • Helpwch i wneud Chromium yn well i bobl sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
 

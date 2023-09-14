@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1105362920864247682">ล้างข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="1143896152279775643">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="1180362651362502943">ใช้ข้อมูล Chrome ในบัญชี Google ต่อไป</translation>
 <translation id="1282031177488366470">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
 <translation id="1333745675627230582">เล่นเกมไดโนเสาร์ Chrome</translation>
 <translation id="1352919863522755794">เครื่องมือจัดการรหัสผ่านบน Google ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="1407843355326180937">ลงชื่อเข้าใช้เว็บไซต์นี้และ Chrome เพื่อรับบุ๊กมาร์กและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="1436059927646026729">เปิดแท็บล่าสุดของฉันใน Chrome</translation>
 <translation id="1462727070346936664">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="1479202195792305274">Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="1491435845014430217">เปิด "ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chrome"</translation>
@@ -24,6 +26,7 @@
 
   • หากคุณซิงค์ประวัติการเข้าชมกับบัญชี Google เมตริกอาจรวมข้อมูลเกี่ยวกับ URL ที่คุณเข้าชมด้วย<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">คุณได้รับการดูแลอย่างเข้มงวดที่สุดของ Chrome ให้ปลอดภัยจากเว็บไซต์ที่เป็นอันตราย</translation>
+<translation id="1657395063736185342">ค้นหาภาพใน Chrome</translation>
 <translation id="1675955119303651351">ยังไม่ได้บันทึกข้อมูล Chrome ของคุณบางอย่างในบัญชี Google
         โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="1682483655351012182">ซิงค์ข้อมูล Chrome</translation>
@@ -55,6 +58,7 @@
 <translation id="2736805085127235148">ตอนนี้การแจ้งเตือนของ Chrome ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>
 <translation id="2767464022270041271">ไม่มีรหัสผ่านที่บันทึกไว้ เครื่องมือจัดการรหัสผ่านบน Google จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
 <translation id="2840432500933227975">เปิดการตั้งค่า Chrome ใน iOS จากนั้นแตะ "แอปเบราว์เซอร์เริ่มต้น" แล้วเลือก Chrome</translation>
+<translation id="2868822340714096138">ล้างข้อมูลการท่องเว็บใน Chrome</translation>
 <translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="2876628302275096482">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chrome ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">เลือก <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -150,6 +154,7 @@
 <translation id="6916015246697034114">ค้นหาด้วยเสียงใน Chrome</translation>
 <translation id="6964931465519938134">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="6975725306479268850">เลือก Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
+<translation id="7004159181872656283">ค้นหาภาพใน Chrome</translation>
 <translation id="7056826488869329999">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chrome</translation>
 <translation id="7059914902409643750">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="7124339256045485976">อัปเดต Chrome อยู่เสมอ</translation>
@@ -176,6 +181,7 @@
 <translation id="7855730255114109580">Google Chrome อัปเดตแล้ว</translation>
 <translation id="7897703007638178753">ดูแท็บล่าสุดใน Chrome</translation>
 <translation id="7925119591961387184">เลือก "Chrome"</translation>
+<translation id="7933491483529363150">เปิดแท็บล่าสุดของฉันใน Chrome</translation>
 <translation id="8022947259858476807">ใช้ Chrome โดยค่าเริ่มต้นเพื่อเปิดลิงก์ ค้นหาจาก​​วิดเจ็ต และป้อนรหัสผ่านอัตโนมัติในแอปอื่นๆ</translation>
 <translation id="804638182476029347">อนุญาตให้การแจ้งเตือนของ Chrome รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="81358522153858150">ตอนนี้ Chrome รองรับนโยบายผู้ใช้สำหรับบัญชีที่จัดการแล้ว</translation>

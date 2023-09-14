@@ -2250,6 +2250,7 @@
 <translation id="5653432653077411130">Снабдување и третман на води</translation>
 <translation id="5654927323611874862">ID на прикачениот извештај за пад:</translation>
 <translation id="5659593005791499971">Е-пошта</translation>
+<translation id="5660122698869360728">Нова паметна папка што ви помага да ги зачувате сите ваши страници за купување на едно место и автоматски да ги следите цените, да добивате увиди во цените и друго.</translation>
 <translation id="5663955426505430495">Администраторот на уредов инсталирал екстензии за дополнителни функции. Екстензиите имаат пристап до некои од податоците.</translation>
 <translation id="5666606186680807225">Плажи и острови</translation>
 <translation id="5667827081946850877">Аудиокниги</translation>
@@ -3015,6 +3016,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Задна фиока</translation>
 <translation id="725866823122871198">Не може да се воспостави приватна врска до <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот компјутер (<ph name="DATE_AND_TIME" />) се погрешни.</translation>
+<translation id="7260075294900977274">Нова паметна папка што ви помага да ги зачувате сите ваши страници за купување на едно место и автоматски да ги следите цените, да добивате увиди во цените и друго</translation>
 <translation id="7265608370113700582">Адресата е достапна само на овој уред</translation>
 <translation id="7275334191706090484">Управувани обележувачи</translation>
 <translation id="7277998515889183784">Шминка и козметика</translation>
@@ -3317,6 +3319,7 @@
 <translation id="7822611063308883975">Преносливи конзоли за игри</translation>
 <translation id="7825558994363763489">Микробранови печки</translation>
 <translation id="782886543891417279">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата за најавување.</translation>
+<translation id="7831993212387676366">Што е тоа „Список за купување“?</translation>
 <translation id="7840103971441592723">Започна снимање на екранот</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

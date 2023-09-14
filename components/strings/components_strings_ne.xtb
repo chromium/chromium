@@ -2248,6 +2248,7 @@
 <translation id="5653432653077411130">पानी आपूर्ति तथा शुद्ध पार्ने काम</translation>
 <translation id="5654927323611874862">अपलोड गरिएको क्र्यास रिपोर्टको ID:</translation>
 <translation id="5659593005791499971">इमेल</translation>
+<translation id="5660122698869360728">तपाईंलाई किनमेलसम्बन्धी आफ्ना सबै पेजहरू एकै ठाउँमा सेभ गर्ने, मूल्यहरू स्वतः ट्र्याक गर्ने र मूल्यसम्बन्धी विश्लेषणात्मक जानकारी प्राप्त गर्नेलगायतका अन्य कुराहरू गर्न सघाउने एउटा नयाँ स्मार्ट फोल्डर।</translation>
 <translation id="5663955426505430495">यस डिभाइसका प्रशासकले अतिरिक्त कारबाहीका लागि विस्तारहरू स्थापना गरेका छन्। विस्तारहरूको तपाईंको केही डेटामाथि पहुँच छ।</translation>
 <translation id="5666606186680807225">समुद्री तट तथा टापुहरू</translation>
 <translation id="5667827081946850877">अडियोबुकहरू</translation>
@@ -3013,6 +3014,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">पछाडिको ट्रे</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एक निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको कम्प्युटरको मिति र समय (<ph name="DATE_AND_TIME" />) गलत छन्।</translation>
+<translation id="7260075294900977274">तपाईंलाई किनमेलसम्बन्धी आफ्ना सबै पेजहरू एकै ठाउँमा सेभ गर्ने, मूल्यहरू स्वतः ट्र्याक गर्ने र मूल्यसम्बन्धी विश्लेषणात्मक जानकारी प्राप्त गर्नेलगायतका अन्य कुराहरू गर्न सघाउने एउटा नयाँ स्मार्ट फोल्डर</translation>
 <translation id="7265608370113700582">यो ठेगाना यस डिभाइसमा मात्र उपलब्ध छ</translation>
 <translation id="7275334191706090484">व्यवस्थित पृष्ठमञ्जूषाहरू</translation>
 <translation id="7277998515889183784">मेकअप र सौन्दर्य प्रसाधन</translation>
@@ -3315,6 +3317,7 @@
 <translation id="7822611063308883975">हातमा लिएर खेलिने गेम कन्सोल</translation>
 <translation id="7825558994363763489">माइक्रोवेभ</translation>
 <translation id="782886543891417279">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi (<ph name="WIFI_NAME" />) लाई तपाईँले यसको लगइन पृष्ठको भ्रमण आवश्यकता पर्न सक्छ।</translation>
+<translation id="7831993212387676366">सपिङ लिस्ट भनेको के हो?</translation>
 <translation id="7840103971441592723">स्क्रिन क्याप्चर गर्ने कार्य सुरु भएको छ</translation>
 <translation id="784137052867620416">Shopping सम्बन्धी विश्लेषणात्मक डेटा</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कुनै पनि होइन}=1{१ एप (<ph name="EXAMPLE_APP_1" />)}=2{२ एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

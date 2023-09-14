@@ -235,7 +235,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1432581352905426595">Bestuur soekenjins</translation>
 <translation id="1433225466058025572">Probeer jou lêers weer skuif</translation>
 <translation id="1434317006812369578">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai, soos Google Veiligblaai. Veiligblaai <ph name="BEGIN_LINK" />het onlangs wanware op <ph name="SITE" /><ph name="END_LINK" />, gevind, wat ingebed is in die werf wat jy probeer besoek.</translation>
-<translation id="1435940442311036198">Gebruik ’n wagwoordsleutel op ’n ander toestel</translation>
+<translation id="1435940442311036198">Gebruik ’n toegangsleutel op ’n ander toestel</translation>
 <translation id="1436185428532214179">Kan vra om lêers of vouers op jou toestel te wysig</translation>
 <translation id="1442386063175183758">Uitvoublad regs</translation>
 <translation id="1442987760062738829">Pons</translation>
@@ -1370,7 +1370,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3827112369919217609">Absoluut</translation>
 <translation id="3827666161959873541">Gesinsflieks</translation>
 <translation id="3828924085048779000">Leë wagfrase word nie toegelaat nie.</translation>
-<translation id="3830470485672984938">Gebruik ’n ander wagwoordsleutel</translation>
+<translation id="3830470485672984938">Gebruik ’n ander toegangsleutel</translation>
 <translation id="3831065134033923230">Gaan jou gestoorde wagwoorde na</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> het uitbreidings vir bykomende funksies geïnstalleer. Uitbreidings het toegang tot sommige van jou data.</translation>
 <translation id="3832522519263485449">Veelvuldige pons links</translation>
@@ -1969,7 +1969,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5070838744279127212">Tiende rol</translation>
 <translation id="507130231501693183">Posbus 4</translation>
 <translation id="5074134429918579056">Broeke en kortbroeke</translation>
-<translation id="5077767274537436092">Gebruik ’n ander wagwoordsleutel</translation>
+<translation id="5077767274537436092">Gebruik ’n ander toegangsleutel</translation>
 <translation id="5078060223219502807">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy dit nou verander en jou gestoorde wagwoorde dan nagaan om jou rekeninge te beveilig.</translation>
 <translation id="5086225927071063542">Verspreide en wolkverwerking</translation>
 <translation id="5087286274860437796">Bediener se sertifikaat is nie op die oomblik geldig nie.</translation>
@@ -2213,7 +2213,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5578606540385219379">Diensverskaffers</translation>
 <translation id="557886905979275351">Skeermesse en skeertoestelle</translation>
 <translation id="5580958916614886209">Gaan jou vervalmaand na en probeer weer</translation>
-<translation id="558420943003240152">Bestuur wagwoorde en wagwoordsleutels …</translation>
+<translation id="558420943003240152">Bestuur wagwoorde en toegangsleutels …</translation>
 <translation id="5586446728396275693">Geen gestoorde adresse nie</translation>
 <translation id="5586831831248371458">Deursoek <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Platformgebruiker</translation>
@@ -2250,6 +2250,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5653432653077411130">Watervoorsiening en -behandeling</translation>
 <translation id="5654927323611874862">Het omvalverslag-ID opgelaai:</translation>
 <translation id="5659593005791499971">E-pos</translation>
+<translation id="5660122698869360728">’n Nuwe slim vouer wat jou help om al jou inkopiebladsye op een plek te stoor en outomaties pryse dop te hou, prysinsigte te kry, en nog meer.</translation>
 <translation id="5663955426505430495">Die administrateur van hierdie toestel het uitbreidings vir bykomende funksies geïnstalleer. Uitbreidings het toegang tot sommige van jou data.</translation>
 <translation id="5666606186680807225">Strande en eilande</translation>
 <translation id="5667827081946850877">Oudioboeke</translation>
@@ -2296,7 +2297,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5764920692828389743">Stuur na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Kies 'n adres om afleweringmetodes en -vereistes te sien</translation>
 <translation id="57689295674415555">Is virtuelekaartnommer nie ingevul nie?</translation>
-<translation id="5772086939108830423">Gebruik ’n wagwoordsleutel op ’n ander toestel</translation>
+<translation id="5772086939108830423">Gebruik ’n toegangsleutel op ’n ander toestel</translation>
 <translation id="5776313857861697733">Prioriteit</translation>
 <translation id="5776574724412881956">Is die virtuele kaart nie ingevul nie? Klik die virtuele kaart se besonderhede om dit na knipbord te kopieer. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperiment is geaktiveer</translation>
@@ -2985,7 +2986,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7201591969684833065">Jou administrateur kan sien:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om 'n nuwe Incognito-oortjie oop te maak om privaat te blaai</translation>
 <translation id="7203375778433816396">Stel Chrome as die stelsel se verstekblaaier</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Geen}=1{1 wagwoordsleutel}other{# wagwoordsleutels}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Geen}=1{1 toegangsleutel}other{# toegangsleutels}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> kom nie sekuriteitstandaarde na nie.</translation>
 <translation id="7210993021468939304">Linux-aktiwiteit binne die houer, en kan Linux-programme binne die houer installeer en laat loop</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor hierdie probleem.</translation>
@@ -3015,6 +3016,7 @@ Bykomende besonderhede:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Agterste laai</translation>
 <translation id="725866823122871198">'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kan nie gevestig word nie omdat jou rekenaar se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.</translation>
+<translation id="7260075294900977274">’n Nuwe slim vouer wat jou help om al jou inkopiebladsye op een plek te stoor en outomaties pryse dop te hou, prysinsigte te kry, en nog meer</translation>
 <translation id="7265608370113700582">Adres is net op hierdie toestel beskikbaar</translation>
 <translation id="7275334191706090484">Bestuurde boekmerke</translation>
 <translation id="7277998515889183784">Grimering en skoonheidsmiddels</translation>
@@ -3317,6 +3319,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7822611063308883975">Handspeletjiekonsoles</translation>
 <translation id="7825558994363763489">Mikrogolfoonde</translation>
 <translation id="782886543891417279">Die Wi-Fi wat jy gebruik (<ph name="WIFI_NAME" />), kan vereis dat jy sy aanmeldbladsy besoek.</translation>
+<translation id="7831993212387676366">Wat is die inkopielys?</translation>
 <translation id="7840103971441592723">Skermskoot het begin</translation>
 <translation id="784137052867620416">Shopping-insigte</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 program (<ph name="EXAMPLE_APP_1" />)}=2{2 programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# programme (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
@@ -3988,7 +3991,7 @@ Bykomende besonderhede:
 <translation id="961930410699694996">Ligging nie hierdie keer toegelaat nie</translation>
 <translation id="962484866189421427">Hierdie inhoud kan probeer om misleidende programme te installeer wat voorgee om iets anders te wees of wat data insamel wat gebruik kan word om jou na te spoor. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alle gebruikers</translation>
-<translation id="964050462028070434">Bestuur wagwoorde en wagwoordsleutels …</translation>
+<translation id="964050462028070434">Bestuur wagwoorde en toegangsleutels …</translation>
 <translation id="96680173638229310">Motors en voertuie</translation>
 <translation id="969892804517981540">Amptelike bou</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Geen}=1{1 item}other{# items}}</translation>

@@ -2249,6 +2249,7 @@
 <translation id="5653432653077411130">Водоснабжение и водное хозяйство</translation>
 <translation id="5654927323611874862">Идентификатор загруженного отчета о сбое:</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
+<translation id="5660122698869360728">Это новая умная папка, которая позволяет добавлять в закладки страницы с желаемыми покупками, автоматически отслеживать цены, получать полезную информацию и многое другое.</translation>
 <translation id="5663955426505430495">Администратор устройства установил расширения с дополнительными функциями для браузера. У расширений есть доступ к некоторым вашим данным.</translation>
 <translation id="5666606186680807225">Пляжи и острова</translation>
 <translation id="5667827081946850877">Аудиокниги</translation>
@@ -2997,6 +2998,7 @@
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
 <translation id="7226276626900992675">Вы разрешили этому сайту использовать сторонние файлы cookie. Это значит, что большинство функций сайта должно работать, но вы будете менее защищены.</translation>
 <translation id="7227293336683593977">История изменения цен</translation>
+<translation id="7227747683324411744">Если вы посетите этот сайт, злоумышленники могут обманом заставить вас установить вредоносное ПО, которое будет мешать вашей работе в браузере (например, менять стартовую страницу или показывать дополнительную рекламу на сайтах).</translation>
 <translation id="7233592378249864828">Распечатать лист для подтверждения</translation>
 <translation id="7234638337680728591">Цены на газ и топливо для транспортных средств</translation>
 <translation id="7236417832106250253">Выполнено <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3013,6 +3015,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Задний лоток</translation>
 <translation id="725866823122871198">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
+<translation id="7260075294900977274">Это новая умная папка, которая позволяет добавлять в закладки страницы с желаемыми покупками, автоматически отслеживать цены, получать полезную информацию и многое другое.</translation>
 <translation id="7265608370113700582">Адрес доступен только на этом устройстве</translation>
 <translation id="7275334191706090484">Управляемые закладки</translation>
 <translation id="7277998515889183784">Макияж и косметика</translation>
@@ -3196,6 +3199,7 @@
 <translation id="7599089013883397081">Превышено время ожидания</translation>
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">Обычно подключение к этому сайту защищено, но в этот раз Chrome не удалось установить безопасное соединение. Злоумышленник может попытаться перехватить или изменить ваше сетевое подключение. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Если вы посетите этот сайт, злоумышленники могут обманом заставить вас установить вредоносное ПО, которое похищает или удаляет личные данные, такие как пароль, фотографии, сообщения или номер кредитной карты.</translation>
 <translation id="7610193165460212391">Значение <ph name="VALUE" /> лежит за пределами разрешенного диапазона.</translation>
 <translation id="7613889955535752492">Срок действия: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы перейти к управлению паролями в настройках Chrome.</translation>
@@ -3314,6 +3318,7 @@
 <translation id="7822611063308883975">Портативные игровые консоли</translation>
 <translation id="7825558994363763489">Микроволновые печи</translation>
 <translation id="782886543891417279">Возможно, вам нужно перейти на страницу входа сети Wi-Fi (<ph name="WIFI_NAME" />).</translation>
+<translation id="7831993212387676366">Что такое список покупок</translation>
 <translation id="7840103971441592723">Запись экрана начата</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
@@ -3595,6 +3600,7 @@
 Подробнее:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Дано разовое разрешение на доступ к микрофону</translation>
+<translation id="8422228580902424274">Если вы посетите этот сайт, злоумышленники могут обманом заставить вас установить ПО или раскрыть личные данные, такие как пароль, номер телефона или кредитной карты.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 мм</translation>
 <translation id="8428213095426709021">Настройки</translation>

@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Pregled povijesti na Chromiumu</translation>
 <translation id="2052320862053429062">Chromium povremeno uspoređuje vaše zaporke s javno objavljenim popisima. Tom su prilikom vaše zaporke i korisnička imena šifrirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>
 <translation id="2054703085270098503">Ostanite sigurni uz Chromium</translation>
+<translation id="2098023844024447022">Otvori moju najnoviju karticu u Chromiumu.</translation>
 <translation id="2168108852149185974">Neki programski dodaci uzrokuju rušenje Chromiuma. Deinstalirajte:</translation>
 <translation id="2178608107313874732">Chromium trenutačno ne može upotrebljavati vaš fotoaparat</translation>
 <translation id="2195025571279539885">Želite li da Chromium sljedeći put ponudi prijevod stranica s te web-lokacije za <ph name="LANGUAGE_NAME" />?</translation>
@@ -60,6 +61,7 @@
 <translation id="3344973607274501920">Chromium nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="3472200483164753384">Nije podržano u Chromium Canaryju</translation>
 <translation id="3478750326643748149">Sakrij "Iskoristite sve prednosti Chromiuma"</translation>
+<translation id="3554027294407525061">Brisanje podataka o pregledavanju u Chromiumu.</translation>
 <translation id="3567399274263440288">Da biste iskoristili sve prednosti koje vam pruža Chromium, prijavite se u Chromium Google računom.</translation>
 <translation id="3639997914391704523">Chromium može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> upotrebljavao je Chromium i ostavio oznake, zaporke i druge postavke na ovom uređaju.</translation>
@@ -84,6 +86,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="4555020257205549924">Kada je ta značajka uključena, Chromium će ponuditi prijevod stranica napisanih na drugim jezicima pomoću Google prevoditelja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Otvara stranicu postavki načina plaćanja u Chromiumu.</translation>
 <translation id="4585809515399340748">Sad možete koristiti Chromium svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="459080529287102949">Pretraživanje slika u Chromiumu</translation>
 <translation id="4633738821577273991">Nabavite poboljšano sigurno pregledavanje i za ovaj profil u Chromiumu</translation>
 <translation id="4654936625574199632">Radi poboljšanja aplikacije Chromium šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Uključite Chromiumov skener</translation>
@@ -95,6 +98,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="4999538639245140991">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromiuma izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
 <translation id="5042011327527167688">Dodirnite "Prikaži putem Google karata u Chromiumu".</translation>
 <translation id="5048795749726991615">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrijebite Chromium za Automatsko popunjavanje</translation>
+<translation id="5076601183701536878">Brisanje podataka o pregledavanju u Chromiumu</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chromium upotrebljava.</translation>
 <translation id="5171868502429358653">Prijava na Chromium</translation>
 <translation id="5213683223491576284">Otvara Upravitelj zaporki u Chromiumu.</translation>
@@ -152,6 +156,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="7045244423563602563">Prilagodite Chromium sebi</translation>
 <translation id="7055269218854630176">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji se prijavljujete i načinom na koji se Chromium može upotrebljavati. Vaš administrator može postaviti ili ograničiti određene značajke.</translation>
 <translation id="7099326575020694068">Chromium ne može upotrebljavati vaš fotoaparat u načinu podijeljenog prikaza</translation>
+<translation id="7163483974919055112">Pretraživanje slika u Chromiumu.</translation>
 <translation id="7165402419892018581">Odabir Chromiuma za automatsko popunjavanje</translation>
 <translation id="7175400662502680481">Vaša je zaporka ugrožena zbog povrede podataka. Upravitelj zaporki preporučuje da je odmah promijenite.</translation>
 <translation id="7192111075364461693">Obavijesti Chromiuma trenutačno su isključene u postavkama uređaja.</translation>
@@ -191,6 +196,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="8663480472502753423">Ažuriranje Chromiuma</translation>
 <translation id="8685813584220679697">Prijavite se na ovu web-lokaciju i Chromium.</translation>
 <translation id="8730503818204408000">Otvara postavku Chromiuma da bi se Chromium postavio kao zadani preglednik.</translation>
+<translation id="8742300022028858275">Otvaranje moje najnovije kartice u Chromiumu</translation>
 <translation id="8747378496147986285">Kada je uključeno:
 <ph name="BEGIN_INDENT" />  • Pomozite poboljšati Chromium za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
 

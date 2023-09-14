@@ -2250,6 +2250,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5653432653077411130">Furnizimi dhe trajtimi i ujit</translation>
 <translation id="5654927323611874862">U ngarkua ID-ja e raporteve të ndërprerjeve aksidentale:</translation>
 <translation id="5659593005791499971">Mail-i</translation>
+<translation id="5660122698869360728">Një dosje e re inteligjente që të ndihmon të ruash të gjitha faqet e blerjeve në një vend, si dhe të monitorosh automatikisht çmimet, të marrësh statistika mbi to etj.</translation>
 <translation id="5663955426505430495">Administratori i kësaj pajisjeje ka instaluar shtesa për funksionet shtesë. Shtesat kanë qasje te disa prej të dhënave të tua.</translation>
 <translation id="5666606186680807225">Plazhet dhe ishujt</translation>
 <translation id="5667827081946850877">Libra me audio</translation>
@@ -3014,6 +3015,7 @@ Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Tabakaja e pasme</translation>
 <translation id="725866823122871198">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sepse data dhe ora (<ph name="DATE_AND_TIME" />) e kompjuterit tënd nuk janë të sakta.</translation>
+<translation id="7260075294900977274">Një dosje e re inteligjente që të ndihmon të ruash të gjitha faqet e blerjeve në një vend, si dhe të monitorosh automatikisht çmimet, të marrësh statistika mbi to etj.</translation>
 <translation id="7265608370113700582">Adresa ofrohet vetëm në këtë pajisje</translation>
 <translation id="7275334191706090484">Faqeshënuesit e menaxhuar</translation>
 <translation id="7277998515889183784">Grimi dhe kozmetika</translation>
@@ -3316,6 +3318,7 @@ Detaje shtesë:
 <translation id="7822611063308883975">Konsola lojërash portative</translation>
 <translation id="7825558994363763489">Furra me mikrovalë</translation>
 <translation id="782886543891417279">Lidhja Wi-Fi që po përdor (<ph name="WIFI_NAME" />) mund të kërkojë që të vizitosh faqen e saj të lidhjes.</translation>
+<translation id="7831993212387676366">Çfarë është "Lista e blerjeve"?</translation>
 <translation id="7840103971441592723">Regjistrimi i ekranit ka filluar</translation>
 <translation id="784137052867620416">Statistikat për blerjet</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Asnjë}=1{1 aplikacion (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

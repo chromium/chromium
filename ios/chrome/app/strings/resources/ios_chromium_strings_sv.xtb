@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Visa Chromium-historiken</translation>
 <translation id="2052320862053429062">Chromium kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="2054703085270098503">Surfa säkert med Chromium</translation>
+<translation id="2098023844024447022">Öppna Min senaste flik i Chromium.</translation>
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
 <translation id="2195025571279539885">Vill du att Chromium ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
@@ -84,6 +85,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Öppnar inställningssidan för betalningsmetoder i Chromium.</translation>
 <translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="459080529287102949">Sök efter bilder i Chromium</translation>
 <translation id="4633738821577273991">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="4654936625574199632">Chromium skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
@@ -152,6 +154,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="7055269218854630176">Din organisation, <ph name="DOMAIN" />, hanterar kontot du loggar in på och hur Chromium kan användas. Administratören kan konfigurera eller begränsa vissa funktioner.</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>
+<translation id="7163483974919055112">Sök efter bilder i Chromium.</translation>
 <translation id="7165402419892018581">Välj Chromium för autofyll</translation>
 <translation id="7175400662502680481">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Lösenordshantering att byta lösenord nu.</translation>
 <translation id="7192111075364461693">Chromium-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
@@ -191,6 +194,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8663480472502753423">Håll Chromium uppdaterad</translation>
 <translation id="8685813584220679697">Logga in på den här webbplatsen och i Chromium.</translation>
 <translation id="8730503818204408000">Öppnar Chromium-inställningen för att ställa in Chromium som standardwebbläsare.</translation>
+<translation id="8742300022028858275">Öppna Min senaste flik i Chromium</translation>
 <translation id="8747378496147986285">När detta är aktiverat:
 <ph name="BEGIN_INDENT" />  • Du hjälper oss att göra Chromium bättre för den som använder programmet på samma sätt som du.<ph name="END_INDENT" />
 

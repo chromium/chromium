@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1105362920864247682">Обришите податке прегледања у Chrome-у.</translation>
 <translation id="1143896152279775643">Лозика се чува у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Наставите да користите Chrome податке на Google налогу.</translation>
 <translation id="1282031177488366470">Помозите нам да побољшамо Chrome-ове функције и учинак</translation>
 <translation id="1333745675627230582">Играјте игру Chrome диносаурус</translation>
 <translation id="1352919863522755794">Google менаџер лозинки није успео да вам провери лозинке. Проверите интернет везу.</translation>
 <translation id="1407843355326180937">Пријавите се на овај сајт и у Chrome да би вам обележивачи и други садржај били доступни на свим уређајима.</translation>
+<translation id="1436059927646026729">Отвори моју најновију картицу у Chrome-у</translation>
 <translation id="1462727070346936664">Пријавите се да бисте искористили Chrome на најбољи начин.</translation>
 <translation id="1479202195792305274">Chrome може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="1491435845014430217">Укључите Закључај картице без архивирања после затварања Chrome-а.</translation>
@@ -24,6 +26,7 @@
 
   • Ако синхронизујете историју са Google налогом, показатељи могу да обухватају информације о URL-овима које посећујете.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Имате најјачу Chrome заштиту од штетних веб-сајтова</translation>
+<translation id="1657395063736185342">Претражите визуелни материјал у Chrome-у</translation>
 <translation id="1675955119303651351">Неки Chrome подаци још нису сачувани на Google налогу.
         Сачекајте неколико минута пре него што се одјавите. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
 <translation id="1682483655351012182">Синхронизујте Chrome податке</translation>
@@ -55,6 +58,7 @@
 <translation id="2736805085127235148">Chrome обавештења су тренутно искључена у подешавањима уређаја.</translation>
 <translation id="2767464022270041271">Нема сачуваних лозинки. Google менаџер лозинки може да вам проверава лозинке када их сачувате.</translation>
 <translation id="2840432500933227975">Отворите подешавања Chrome-а у iOS-у, па додирните Подразумевана апликација прегледача и изаберите Chrome.</translation>
+<translation id="2868822340714096138">Обришите податке прегледања у Chrome-у</translation>
 <translation id="2869959624320573933">Пријавите се у Chrome</translation>
 <translation id="2876628302275096482">Сазнајте више о томе <ph name="BEGIN_LINK" />како Chrome штити приватност података<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Изаберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -150,6 +154,7 @@
 <translation id="6916015246697034114">Претражујте гласом у у Chrome-у</translation>
 <translation id="6964931465519938134">Сада можете да користите Chrome сваки пут када додирнете линкове у порукама, документима и другим апликацијама.</translation>
 <translation id="6975725306479268850">Изаберите Chrome за аутоматско попуњавање</translation>
+<translation id="7004159181872656283">Претражите визуелни материјал у Chrome-у.</translation>
 <translation id="7056826488869329999">Отвара и покреће Проверу безбедности у Chrome-у.</translation>
 <translation id="7059914902409643750">Прилагодите Chrome себи</translation>
 <translation id="7124339256045485976">Редовно ажурирају Chrome</translation>
@@ -176,6 +181,7 @@
 <translation id="7855730255114109580">Google Chrome је актуелан</translation>
 <translation id="7897703007638178753">Погледајте недавне картице у Chrome-у</translation>
 <translation id="7925119591961387184">Изаберите „Chrome“.</translation>
+<translation id="7933491483529363150">Отворите најновију картицу у Chrome-у.</translation>
 <translation id="8022947259858476807">Подразумевано користите Chrome да бисте отварали линкове, претраживали из виџета и аутоматски попуњавали лозинке у другим апликацијама</translation>
 <translation id="804638182476029347">Дозволите Chrome обавештења да бисте добијали обавештења о снижењима</translation>
 <translation id="81358522153858150">Chrome сада подржава смернице за корисника за управљани налог</translation>

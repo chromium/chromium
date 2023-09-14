@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Consulta l'historial de Chromium</translation>
 <translation id="2052320862053429062">Chromium comprova periòdicament si les teves contrasenyes es troben en llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="2054703085270098503">Protegeix-te amb Chromium</translation>
+<translation id="2098023844024447022">Obre la meva darrera pestanya a Chromium.</translation>
 <translation id="2168108852149185974">Alguns complements fan que Chromium es bloquegi. Desinstal·la:</translation>
 <translation id="2178608107313874732">Chromium no pot utilitzar la càmera en aquest moment</translation>
 <translation id="2195025571279539885">La propera vegada, voleu que Chromium s'ofereixi per traduir les pàgines d'aquest lloc escrites en <ph name="LANGUAGE_NAME" />?</translation>
@@ -84,6 +85,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Obre la pàgina de configuració de les formes de pagament a Chromium.</translation>
 <translation id="4585809515399340748">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
+<translation id="459080529287102949">Cerca elements visuals a Chromium</translation>
 <translation id="4633738821577273991">Obtén també Navegació segura millorada per a aquest perfil de Chromium</translation>
 <translation id="4654936625574199632">Per ajudar a millorar l'aplicació, Chromium envia dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activa l'escàner de Chromium</translation>
@@ -152,6 +154,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7045244423563602563">Personalitza Chromium</translation>
 <translation id="7055269218854630176">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chromium. L'administrador pot configurar o restringir determinades funcions.</translation>
 <translation id="7099326575020694068">Chromium no pot utilitzar la càmera en mode de visualització dividida</translation>
+<translation id="7163483974919055112">Cerca elements visuals a Chromium.</translation>
 <translation id="7165402419892018581">Tria Chromium a Emplenament automàtic</translation>
 <translation id="7175400662502680481">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
 <translation id="7192111075364461693">En aquests moments, les notificacions de Chromium estan desactivades a la configuració del dispositiu.</translation>
@@ -191,6 +194,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8663480472502753423">Mantén Chromium actualitzat</translation>
 <translation id="8685813584220679697">Inicia la sessió en aquest lloc web i a Chromium.</translation>
 <translation id="8730503818204408000">Obre la configuració de Chromium per establir Chromium com a navegador predeterminat.</translation>
+<translation id="8742300022028858275">Obre la meva darrera pestanya a Chromium</translation>
 <translation id="8747378496147986285">Quan aquesta opció està activada:
 <ph name="BEGIN_INDENT" />  • Ajuda a millorar Chromium per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
 

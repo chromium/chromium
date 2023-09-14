@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1105362920864247682">Chrome の閲覧データを削除します。</translation>
 <translation id="1143896152279775643">パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="1180362651362502943">Google アカウントの Chrome データを引き続き使用してください。</translation>
 <translation id="1282031177488366470">Chrome の機能と動作の改善に協力する</translation>
 <translation id="1333745675627230582">Chrome Dino ゲームをプレイ</translation>
 <translation id="1352919863522755794">Google パスワード マネージャーでパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="1407843355326180937">このサイトと Chrome にログインすると、すべてのデバイスで同じブックマークやその他の設定を使用できます。</translation>
+<translation id="1436059927646026729">Chrome で最近使ったタブを開く</translation>
 <translation id="1462727070346936664">Chrome を最大限に活用するにはログインしてください。</translation>
 <translation id="1479202195792305274">Google アカウントでログインすると、Chrome でパスワードを確認できるようになります。</translation>
 <translation id="1491435845014430217">[Chrome を終了するときにシークレット タブをロックする] をオンにします。</translation>
@@ -24,6 +26,7 @@
 
   • Google アカウントと履歴を同期した場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
+<translation id="1657395063736185342">Chrome でビジュアルを検索する</translation>
 <translation id="1675955119303651351">Chrome データの一部が Google アカウントにまだ保存されていません。
         数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="1682483655351012182">Chrome のデータを同期する</translation>
@@ -55,6 +58,7 @@
 <translation id="2736805085127235148">現在、デバイスの設定で Chrome の通知がオフになっています。</translation>
 <translation id="2767464022270041271">保存されているパスワードがありません。パスワードを保存すると、Google パスワード マネージャーで確認できるようになります。</translation>
 <translation id="2840432500933227975">iOS で Chrome の設定を開き、[デフォルトのブラウザアプリ] をタップして [Chrome] を選択します。</translation>
+<translation id="2868822340714096138">Chrome の閲覧データを削除する</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>
 <translation id="2957447865124070833">[<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />] を選択する</translation>
@@ -150,6 +154,7 @@
 <translation id="6916015246697034114">Chrome で音声検索</translation>
 <translation id="6964931465519938134">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chrome で開かれるようになります。</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>
+<translation id="7004159181872656283">Chrome でビジュアルを検索します。</translation>
 <translation id="7056826488869329999">Chrome で安全確認を開いて実行します。</translation>
 <translation id="7059914902409643750">Chrome を独自にカスタマイズ</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
@@ -176,6 +181,7 @@
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
 <translation id="7897703007638178753">Chrome で最近使ったタブを表示</translation>
 <translation id="7925119591961387184">[Chrome] を選択します。</translation>
+<translation id="7933491483529363150">Chrome で最近使ったタブを開きます。</translation>
 <translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリへのパスワード自動入力に使用できるようになります</translation>
 <translation id="804638182476029347">Chrome の通知設定で値下げアラートの受信を許可する</translation>
 <translation id="81358522153858150">Chrome で管理対象アカウントのユーザー ポリシーがサポートされるようになりました</translation>

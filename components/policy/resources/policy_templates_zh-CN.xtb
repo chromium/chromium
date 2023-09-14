@@ -808,6 +808,7 @@
 <translation id="1690383938831887552">阻止加载通过 Signed HTTP Exchange (SXG) 提供的内容</translation>
 <translation id="1692990221685273468">确定内置证书验证程序是否会强制执行从平台可信存储区加载的信任锚中经过编码的限制条件。</translation>
 <translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
+<translation id="1696501581280568361">建议进行资料分离</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 以光栅化模式打印 PDF 时的打印图片分辨率。
 
       使用“以图片形式打印”选项打印 PDF 时，不妨指定与设备的打印机设置或 PDF 默认值不同的打印分辨率，因为这样做可能会大有裨益。高分辨率会显著增加处理和打印用时，低分辨率则可能会导致图片质量不佳。
@@ -1380,6 +1381,11 @@
 
       如果此政策设为 False，通过显示隐藏文件并在“我的文件”或“下载内容”下找到 .Trash 目录，用户仍可查看之前位于回收站中的文件。</translation>
 <translation id="2159486052528894673">允许用户级云政策覆盖计算机级云政策。</translation>
+<translation id="2160170953213468208">启用后，此政策会强制找到具有 MIME 类型且通常由<ph name="BASIC_EDITOR_NAME" />处理的所有 Office 文档，以便下载相应文件。
+
+如果此政策被停用，这些文档将改为在<ph name="BASIC_EDITOR_NAME" />中自动打开。
+
+如果未针对普通用户设置此政策，则在功能上等同于已启用此政策（例如系统会下载相应文件）；如果未针对企业用户设置此政策，则在功能上等同于已停用此政策（例如相应文件将在<ph name="BASIC_EDITOR_NAME" />中打开）。</translation>
 <translation id="2160336427036785721">配置在单个 <ph name="PRODUCT_NAME" /> 实例使用的内存量达到多少后浏览器会为节省内存空间而开始舍弃标签页（即：标签页使用的内存将被释放，而且在用户切换到此标签页时它必须重新加载）。
 
       如果设置了此政策，那么当超出该上限后，浏览器将开始舍弃标签页以节省内存空间。不过，我们无法保证浏览器运行时占用的内存量会始终低于该上限。任何小于 1024 的值都会被向上舍入到 1024。
@@ -1935,6 +1941,7 @@
 <translation id="2661628029848851543">允许受管理的账号的所有使用情况</translation>
 <translation id="2664391398878045611">“新标签页”页面将不会显示中间槽通知（即使有）</translation>
 <translation id="2664682171745499686">禁止在特定网域中针对相似域名显示警告</translation>
+<translation id="2665129863304939984">让用户决定是否将现有浏览数据添加到受管理资料名下</translation>
 <translation id="2665422249821137126">在登录屏幕上启用大号光标</translation>
 <translation id="2667894101494585925">启用优化指南提取功能</translation>
 <translation id="2669157090883237118">不更改建议的 <ph name="PRODUCT_OS_NAME" /> 配置。</translation>
@@ -1967,6 +1974,7 @@
 <translation id="2702023190395322609">启用媒体推荐内容</translation>
 <translation id="270582584528242502">在用户尝试退出时不显示警告对话框</translation>
 <translation id="2706708761587205154">仅允许在有 PIN 码的情况下打印</translation>
+<translation id="2707733461906745082">资料分离</translation>
 <translation id="2707873794476722903">“安全浏览”功能会处于开启状态且会在标准模式下运行。</translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="2713977837384407666">始终向 Google 发送指标</translation>
@@ -2120,6 +2128,7 @@
 <translation id="2868756546751652023">允许用户使用“即时网络共享”功能</translation>
 <translation id="286898786908566256">允许用户将电话号码从 Chrome 发送到 Android 设备</translation>
 <translation id="2872098849906555324">停用 Google 云端硬盘同步</translation>
+<translation id="2872189563975139803">企业资料分离设置</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2872968825059227580">停用 GIF 支持。</translation>
 <translation id="2874209944580848064">针对支持 Android 应用的 <ph name="PRODUCT_OS_NAME" />设备的注意事项：</translation>
@@ -2302,6 +2311,7 @@
 
         此政策不会影响已发布的政策。</translation>
 <translation id="3002067315837777719">不允许启用 Phone Hub 通知</translation>
+<translation id="3003490107503207900">强制下载 Office 文档（例如 .docx），而不是在<ph name="BASIC_EDITOR_NAME" />中打开它们</translation>
 <translation id="3010907817113180883">设备活动检测信号收集时间间隔（以毫秒为单位）。</translation>
 <translation id="3017578958356048910">PDF 查看器能在 PDF 文件中添加注释</translation>
 <translation id="3020623128585817424">禁止在启动浏览器时检查是否为默认浏览器</translation>
@@ -3126,6 +3136,7 @@
 <translation id="3702518095257671450">远程证明</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（我们已弃用并将于日后移除单行字段。请开始使用下面的多行文本框。）</translation>
 <translation id="3711895659073496551">暂停</translation>
+<translation id="3712861436661566358">强制执行资料分离</translation>
 <translation id="3719826155360621982">首页</translation>
 <translation id="372668389978450673">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许从用户管理器中添加新用户。
 
@@ -3291,6 +3302,7 @@
 （自 117 版起）<ph name="PREVENT_CLOSE_FIELD" /> 字段用于指明是否应阻止以任何方式（例如由用户、任务管理器、Web API）关闭 Web 应用的行为。只有在 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 设为“<ph name="RUN_WINDOWED" />”时，才能允许这种行为。如果该应用已经在运行，只有在重启该应用后，此属性才会生效。如果未指定此字段，用户将可以关闭应用。</translation>
 <translation id="3825873934240606959">阻止使用“本地设备发现”功能</translation>
 <translation id="3826475866868158882">已启用 Google 位置信息服务</translation>
+<translation id="3829344785870486923">企业资料分离辅助网域许可名单</translation>
 <translation id="3831376478177535007">启用此设置后，只要赛门铁克公司 (Symantec Corporation) 的旧版公钥基础设施 (PKI) 操作签发的证书已以其他方式成功通过验证并关联至一个公认的 CA 证书，<ph name="PRODUCT_NAME" /> 就会允许信任这些证书。
 
       请注意，此政策有赖于相应操作系统是否仍能识别赛门铁克的旧版基础架构颁发的证书。如果该操作系统的某项更新更改了它对此类证书的处理方式，此政策便不再具有效力。另请注意，此政策只是一种临时解决方法，旨在让企业拥有更多时间来弃用旧版赛门铁克证书。我们将于 2019 年 1 月 1 日当天或前后撤消此政策。
@@ -4604,6 +4616,7 @@
 
 如果您未为某个网站设置此政策，系统便会将 <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="5078623750797048009">启用 PDF 注释</translation>
+<translation id="5080300140183363718">资料分离数据迁移设置</translation>
 <translation id="5081204761483900654">受限受管理访客会话</translation>
 <translation id="5082296146261894974">允许用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5082572440690475059">允许在这些网站上通过 File System API 读取内容</translation>
@@ -5324,6 +5337,7 @@
       如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可选择是否要在外部打开 PDF。</translation>
 <translation id="5705055136345677598">停用后台模式</translation>
 <translation id="5705828032077475554">报告 CRD 会话</translation>
+<translation id="57072195677044908">停用资料分离</translation>
 <translation id="5708969689202733975">配置所允许的“快速解锁”模式</translation>
 <translation id="5714563837055244378">启用 Android 应用至 Web 应用分享功能。</translation>
 <translation id="5715617256528927547">通过设置此政策，您可以指定群组政策对象 (GPO) 缓存期限（以小时为单位），即 GPO 在不必重新下载的情况下可被重复使用的时长上限。只要 GPO 的版本未变，系统便会重复使用已缓存的 GPO，而不是在每次提取政策时都重新下载 GPO。
@@ -5988,6 +6002,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您未设置此政策，屏幕键盘会在登录屏幕上处于关闭状态。用户可以随时开启该键盘，并且它在登录屏幕上的状态对所有用户都一致。
 
       注意：<ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
+<translation id="6315039134652691025">用户无法将现有浏览数据添加到受管理资料名下</translation>
 <translation id="6316885783540658874">此政策旨在控制是否为 Chrome 操作系统上的 <ph name="DM_CRYPT" /> 用户主目录启用“<ph name="AES_KL_NAME" />”实现方案来进行用户存储加密（若支持）。
 
        此政策仅适用于那些使用 <ph name="DM_CRYPT" /> 进行加密的用户主目录。旧版用户主目录（不使用 <ph name="DM_CRYPT" /> 的那些用户主目录）不支持使用“<ph name="AES_KL_NAME" />”，而是默认使用“<ph name="AES_NI_NAME" />”。
@@ -8775,6 +8790,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策已启用，首次运行时系统会从先前的默认浏览器导入已保存的密码，用户也可从“设置”页面中手动导入。
 如果此政策已停用，首次运行时系统不会导入任何已保存的密码，用户也无法从“设置”页面中手动导入。
 如果此政策未设置，首次运行时系统不会导入任何已保存的密码，但用户可以选择从“设置”页面中执行导入操作。</translation>
+<translation id="8697738827698599333">通过设置此政策，您可指定：对于哪些 WebAuthn RP ID，当网站要求安全密钥提供认证证书时，系统不会显示任何提示。系统还会向安全密钥发送信号，表明可能会使用企业认证。如果您未设置此政策，当网站要求安全密钥提供认证证书时，<ph name="PRODUCT_NAME" /> 65 版及更高版本会向用户显示提示。</translation>
 <translation id="8698286761337647563">用于指定提前多少天通知密码快要到期的 SAML 用户</translation>
 <translation id="8699392919012430269">报告设备的蓝牙信息。
 
@@ -8875,6 +8891,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果未设置，此政策会处于开启状态，而且无法被用户关闭。</translation>
 <translation id="8789053142986648624">受管理的账号必须是主账号，而且允许用户在创建它时导入现有数据</translation>
 <translation id="8789338675663014675">配置与扩展程序相关的政策。用户无法安装任何已被屏蔽的扩展程序（除非它们已被加入白名单）。您也可以在 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 中指定某些扩展程序，从而强制 <ph name="PRODUCT_NAME" /> 自动安装这些扩展程序。强制安装的扩展程序均会被安装（无论它们是否包含在屏蔽名单内）。</translation>
+<translation id="878964451356911302">建议用户将其现有数据添加到受管理资料名下，同时为用户提供用于拒绝这样做的选项</translation>
 <translation id="879697755145469671">不检测被遮挡的窗口</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8799492680917278474">如果您设置了此政策，当会话时长达到此政策中指定的分钟数之后，远程访问连接将会自动断开。这不会阻止客户端在达到会话时长上限后重新建立连接。如果您为此政策指定的值不在下限值/上限值范围内，主机可能会因此无法启动。此政策不影响远程支持场景。

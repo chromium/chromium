@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Zobraziť históriu prehliadača Chromium</translation>
 <translation id="2052320862053429062">Chromium pravidelne kontroluje heslá podľa zoznamov, ktoré boli zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
 <translation id="2054703085270098503">Zaistite svoju bezpečnosť s prehliadačom Chromium</translation>
+<translation id="2098023844024447022">Otvorenie najnovšej karty v prehliadači Chromium.</translation>
 <translation id="2168108852149185974">Niektoré doplnky spôsobujú zlyhanie prehliadača Chromium. Odinštalujte ich.</translation>
 <translation id="2178608107313874732">Chromium momentálne nemôže použiť váš fotoaparát</translation>
 <translation id="2195025571279539885">Chcete, aby prehliadač Chromium nabudúce ponúkol možnosť prekladu stránok v jazyku <ph name="LANGUAGE_NAME" />?</translation>
@@ -84,6 +85,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Otvorí stránku nastavení spôsobov platby v prehliadači Chromium.</translation>
 <translation id="4585809515399340748">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
+<translation id="459080529287102949">Vyhľadať vizuálne prvky v prehliadači Chromium</translation>
 <translation id="4633738821577273991">Získajte aj Zlepšené bezpečné prehliadanie pre tento profil prehliadača Chromium</translation>
 <translation id="4654936625574199632">Chromium odosiela údaje o používaní a pádoch Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Zapnutie skenera prehliadača Chromium</translation>
@@ -152,6 +154,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>
 <translation id="7055269218854630176">Vaša organizácia <ph name="DOMAIN" /> spravuje účet, do ktorého sa prihlasujete, a spôsob, akým sa dá Chromium používať. Váš správca môže nastaviť alebo obmedziť určité funkcie.</translation>
 <translation id="7099326575020694068">Chromium nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
+<translation id="7163483974919055112">Vyhľadať vizuálne prvky v prehliadači Chromium.</translation>
 <translation id="7165402419892018581">Ak chcete využívať automatické dopĺňanie, vyberte si Chromium</translation>
 <translation id="7175400662502680481">Pri porušení ochrany údajov došlo k prezradeniu vášho hesla. Správca hesiel odporúča okamžite ho zmeniť.</translation>
 <translation id="7192111075364461693">Upozornenia prehliadača Chromium sú momentálne v nastaveniach zariadenia vypnuté.</translation>
@@ -191,6 +194,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8685813584220679697">Prihláste sa na tomto webe a v prehliadači Chromium.</translation>
 <translation id="8730503818204408000">Otvorí nastavenia prehliadača Chromium, aby bolo možné Chromium nakonfigurovať ako predvolený prehliadač.</translation>
+<translation id="8742300022028858275">Otvoriť najnovšiu kartu v prehliadači Chromium</translation>
 <translation id="8747378496147986285">Keď túto možnosť zapnete:
 <ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať Chromium pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
 

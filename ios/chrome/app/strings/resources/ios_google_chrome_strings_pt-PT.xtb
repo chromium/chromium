@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1105362920864247682">Limpe os dados de navegação no Chrome.</translation>
 <translation id="1143896152279775643">A palavra-passe será guardada no Gestor de palavras-passe da Google para <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Continue a usar os dados do Chrome na sua Conta Google.</translation>
 <translation id="1282031177488366470">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="1333745675627230582">Jogar Chrome Dino</translation>
 <translation id="1352919863522755794">O Gestor de Palavras-passe da Google não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="1407843355326180937">Inicie sessão neste site e no Chrome para obter os seus marcadores e muito mais em todos os seus dispositivos.</translation>
+<translation id="1436059927646026729">Abrir separador mais recente no Chrome</translation>
 <translation id="1462727070346936664">Inicie sessão para tirar o máximo partido do Chrome.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="1491435845014430217">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chrome".</translation>
@@ -24,6 +26,7 @@ Aspetos a considerar:
 
   • Se sincronizar o histórico com a sua Conta Google, as métricas também podem incluir informações acerca dos URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Tem a segurança mais avançada do Chrome contra Websites prejudiciais</translation>
+<translation id="1657395063736185342">Pesquise imagens no Chrome</translation>
 <translation id="1675955119303651351">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
         Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="1682483655351012182">Sincronizar os dados do Chrome</translation>
@@ -55,6 +58,7 @@ Aspetos a considerar:
 <translation id="2736805085127235148">As notificações do Chrome estão atualmente desativadas nas Definições do dispositivo.</translation>
 <translation id="2767464022270041271">Não existem palavras-passe guardadas. O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando as guardar.</translation>
 <translation id="2840432500933227975">Abra as Definições do Chrome no iOS, toque em "APP de navegador predefinida" e selecione o Chrome.</translation>
+<translation id="2868822340714096138">Limpar dados de navegação no Chrome</translation>
 <translation id="2869959624320573933">Inicie sessão no Chrome</translation>
 <translation id="2876628302275096482">Saiba <ph name="BEGIN_LINK" />como o Chrome mantém os seus dados privados<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Selecione <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
@@ -150,6 +154,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="6916015246697034114">Pesquise com a voz no Chrome</translation>
 <translation id="6964931465519938134">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
+<translation id="7004159181872656283">Pesquise imagens no Chrome.</translation>
 <translation id="7056826488869329999">Abre e executa a verificação de segurança no Chrome.</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
 <translation id="7124339256045485976">Mantenha o Chrome atualizado.</translation>
@@ -176,6 +181,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="7897703007638178753">Veja os separadores recentes do Chrome</translation>
 <translation id="7925119591961387184">Selecione "Chrome".</translation>
+<translation id="7933491483529363150">Abra o separador mais recente no Chrome.</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="804638182476029347">Permita que as notificações do Chrome recebam alertas de descida do preço</translation>
 <translation id="81358522153858150">O Chrome suporta agora Políticas do Utilizador para a sua conta gerida</translation>

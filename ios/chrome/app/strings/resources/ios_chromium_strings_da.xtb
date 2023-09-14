@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Se din Chromium-historik</translation>
 <translation id="2052320862053429062">Chromium tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="2054703085270098503">Sikkerhed i Chromium</translation>
+<translation id="2098023844024447022">Åbn min seneste fane i Chromium.</translation>
 <translation id="2168108852149185974">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere:</translation>
 <translation id="2178608107313874732">Chromium kan ikke bruge dit kamera lige nu</translation>
 <translation id="2195025571279539885">Skal Chromium tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
@@ -84,6 +85,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-da
 <translation id="4555020257205549924">Når denne funktion er aktiveret, vil Chromium tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Åbner siden med indstillinger for betalingsmetoder i Chromium.</translation>
 <translation id="4585809515399340748">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
+<translation id="459080529287102949">Søg efter visuelle elementer i Chromium</translation>
 <translation id="4633738821577273991">Få også Udvidet beskyttet browsing til denne Chromium-profil</translation>
 <translation id="4654936625574199632">Chromium sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivér Chromium-scanner</translation>
@@ -152,6 +154,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7045244423563602563">Tilpas Chromium</translation>
 <translation id="7055269218854630176">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chromium kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
+<translation id="7163483974919055112">Søg efter visuelle elementer i Chromium.</translation>
 <translation id="7165402419892018581">Vælg Chromium for Autofyld</translation>
 <translation id="7175400662502680481">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
 <translation id="7192111075364461693">Chromium-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
@@ -191,6 +194,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8663480472502753423">Sørger for, at Chromium er opdateret</translation>
 <translation id="8685813584220679697">Log ind på dette website og Chromium.</translation>
 <translation id="8730503818204408000">Åbner indstillingen for Chromium, så du kan angive Chromium som standardbrowser.</translation>
+<translation id="8742300022028858275">Åbn min seneste fane i Chromium</translation>
 <translation id="8747378496147986285">Ved aktivering:
 <ph name="BEGIN_INDENT" />  • Hjælp med at gøre Chromium bedre for andre, der bruger Chromium på samme måde som dig.<ph name="END_INDENT" />
 

@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1105362920864247682">Kosongkan Data Semakan Imbas dalam Chrome.</translation>
 <translation id="1143896152279775643">Kata laluan anda akan disimpan pada Pengurus Kata Laluan Google untuk <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Kekal menggunakan data Chrome dalam Google Account anda.</translation>
 <translation id="1282031177488366470">Bantu Tingkatkan Ciri dan Prestasi Chrome</translation>
 <translation id="1333745675627230582">Main Permainan Dino Chrome</translation>
 <translation id="1352919863522755794">Google Password Manager tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
 <translation id="1407843355326180937">Log masuk ke laman ini dan Chrome untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
+<translation id="1436059927646026729">Buka Tab Terbaharu Saya dalam Chrome</translation>
 <translation id="1462727070346936664">Log masuk untuk memanfaatkan Chrome sepenuhnya.</translation>
 <translation id="1479202195792305274">Chrome boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="1491435845014430217">Hidupkan “Kunci Tab Inkognito Apabila Anda Menutup Chrome”.</translation>
@@ -24,6 +26,7 @@ Perkara yang perlu dipertimbangkan:
 
   • Jika anda menyegerakkan sejarah anda kepada Google Account anda, metrik mungkin merangkumi maklumat URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Anda mempunyai keselamatan terkuat Chrome terhadap laman web berbahaya</translation>
+<translation id="1657395063736185342">Cari Visual dalam Chrome</translation>
 <translation id="1675955119303651351">Sesetengah data Chrome anda belum disimpan dalam Google Account anda.
         Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="1682483655351012182">Segerakkan Data Chrome Anda</translation>
@@ -55,6 +58,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="2736805085127235148">Pemberitahuan Chrome dimatikan dalam tetapan peranti anda pada masa ini.</translation>
 <translation id="2767464022270041271">Tiada kata laluan yang disimpan. Google Password Manager boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="2840432500933227975">Buka Tetapan Chromium dalam iOS, kemudian ketik pada "Penyemak Imbas Lalai APP" dan pilih Chrome.</translation>
+<translation id="2868822340714096138">Kosongkan Data Semakan Imbas dalam Chrome</translation>
 <translation id="2869959624320573933">Log Masuk ke Chrome</translation>
 <translation id="2876628302275096482">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chrome mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -150,6 +154,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="6916015246697034114">Cari Dengan Suara dalam Chrome</translation>
 <translation id="6964931465519938134">Kini, anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="6975725306479268850">Pilih Chrome untuk AutoLengkap</translation>
+<translation id="7004159181872656283">Cari Visual dalam Chrome.</translation>
 <translation id="7056826488869329999">Buka dan Jalankan Pemeriksaan Keselamatan dalam Chrome.</translation>
 <translation id="7059914902409643750">Peribadikan Chrome Anda</translation>
 <translation id="7124339256045485976">Pastikan Chrome terkini</translation>
@@ -176,6 +181,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="7855730255114109580">Google Chrome adalah yang terkini</translation>
 <translation id="7897703007638178753">Lihat Tab Terbaharu Chrome</translation>
 <translation id="7925119591961387184">Pilih "Chrome".</translation>
+<translation id="7933491483529363150">Buka Tab Terbaharu Saya dalam Chrome.</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara lalai untuk membuka pautan, mencari daripada widget dan melengkapkan kata laluan secara automatik dalam apl lain</translation>
 <translation id="804638182476029347">Benarkan pemberitahuan Chrome untuk menerima makluman penurunan harga</translation>
 <translation id="81358522153858150">Kini Chrome menyokong dasar pengguna untuk akaun terurus anda</translation>

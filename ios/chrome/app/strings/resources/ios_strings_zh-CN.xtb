@@ -421,6 +421,7 @@
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3340938510625667914">Chrome 操作</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
+<translation id="3349676726073650389">您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="3365529507898144230">保存在 Google 相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
@@ -790,6 +791,7 @@
 <translation id="5597915316964418992">打开标签页网格</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
+<translation id="5619871095170816857">此卡片会显示过去 24 小时内您在所有同步设备上最后使用的处于打开状态的标签页。</translation>
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="562753339521713441">运行安全检查</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
@@ -1091,6 +1093,7 @@
 <translation id="7082853213442715471">开启锁定模式后，系统会屏蔽某些网络技术，这可能会导致部分网站的加载速度变慢或无法正常运行。</translation>
 <translation id="7095110968493193530">保存到 <ph name="EMAIL" /> 的 Google 密码管理工具</translation>
 <translation id="7099761977003084116">最近打开的标签页</translation>
+<translation id="7101580180124131336">现在，您会在“已关注”部分中看到来自<ph name="CHANNEL_NAME" />及与其相关的内容。</translation>
 <translation id="7102005569666697658">正在下载…<ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">隐藏</translation>
 <translation id="7108762695052995889">访问网站</translation>
@@ -1172,6 +1175,7 @@
 <translation id="764827086632467055">点按“默认浏览器应用”</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7666861622396822790">您可在<ph name="BEGIN_LINK" />内容设置<ph name="END_LINK" />中进行管理。</translation>
 <translation id="7671141431838911305">安装</translation>
 <translation id="7679915578945954324">已复制网址</translation>
 <translation id="7687508192620387263">有可用的日历文件</translation>
@@ -1246,6 +1250,7 @@
 <translation id="8032569120109842252">已关注</translation>
 <translation id="804225253087497565">当您登录后，系统可能会将<ph name="BEGIN_LINK" />搜索记录<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活动记录<ph name="END_LINK" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="804427445359061970">您在其他设备上打开的标签页会显示在此处</translation>
+<translation id="8044568254381073661">直接保存，不加密</translation>
 <translation id="8059533439631660104">合拢此部分。</translation>
 <translation id="8065292699993359127">在 Chrome 中以无痕模式打开网址</translation>
 <translation id="806745655614357130">单独保存我的数据</translation>
@@ -1302,7 +1307,9 @@
 <translation id="8386068868580335421">重置</translation>
 <translation id="838867811594159347">输入口令…</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> 天未用过的标签页</translation>
+<translation id="8395339334550012808">不久之后，您就会在“已关注”部分中看到来自<ph name="CHANNEL_NAME" />及与其相关的内容。</translation>
 <translation id="8395378633507873708">地址栏</translation>
+<translation id="8403629764260204788">隐藏“继续浏览”</translation>
 <translation id="8407669440184693619">未找到任何用于此网站的密码</translation>
 <translation id="842017693807136194">所用登录身份</translation>
 <translation id="8423121072346537366">刚刚</translation>

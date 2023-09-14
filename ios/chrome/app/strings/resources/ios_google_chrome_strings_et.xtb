@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Chrome'i dinosaurusemängu mängimine</translation>
 <translation id="1352919863522755794">Google'i paroolihalduril ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
 <translation id="1407843355326180937">Logige sisse sellele saidile ja Chrome’i, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
+<translation id="1436059927646026729">Ava Chrome'is minu viimane vaheleht</translation>
 <translation id="1462727070346936664">Chrome'i parimal moel kasutamiseks logige sisse.</translation>
 <translation id="1479202195792305274">Chrome saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="1491435845014430217">Lülitage sisse valik „Lukusta Chrome'i sulgemisel inkognito vahelehed“.</translation>
@@ -24,6 +25,7 @@ Tasub teada
 
   • Kui sünkroonite oma ajaloo Google’i kontoga, võivad mõõdikud sisaldada teavet ka teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Teil on Chrome'i tugevaim kaitse ohtlike veebisaitide vastu</translation>
+<translation id="1657395063736185342">Otsi Chrome'is visuaale</translation>
 <translation id="1675955119303651351">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
         Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="1682483655351012182">Chrome'i andmete sünkroonimine</translation>
@@ -150,6 +152,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="6916015246697034114">Chrome'is hääle abil otsimine</translation>
 <translation id="6964931465519938134">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
+<translation id="7004159181872656283">Otsige Chrome'is visuaale.</translation>
 <translation id="7056826488869329999">Avab ja käitab Chrome'is ohutuskontrolli.</translation>
 <translation id="7059914902409643750">Isikupärastage Chrome'i</translation>
 <translation id="7124339256045485976">Hoidke Chrome ajakohasena</translation>
@@ -176,6 +179,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
 <translation id="7897703007638178753">Kuva Chrome'i hiljutised vahelehed</translation>
 <translation id="7925119591961387184">Tehke valik Chrome.</translation>
+<translation id="7933491483529363150">Chrome'is minu viimase vahelehe avamine.</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>
 <translation id="804638182476029347">Hinnaalanduse märguannete saamiseks lubage Chrome’i märguanded</translation>
 <translation id="81358522153858150">Chrome toetab nüüd hallatud konto puhul kasutajareegleid</translation>

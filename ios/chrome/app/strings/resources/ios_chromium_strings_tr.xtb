@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Chromium geçmişimi göster</translation>
 <translation id="2052320862053429062">Chromium, internette yayınlanan listelerle karşılaştırarak şifrelerinizi belirli aralıklarla kontrol eder. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="2054703085270098503">Chromium ile Güvende Kalın</translation>
+<translation id="2098023844024447022">Chromium'daki en son sekmemi aç.</translation>
 <translation id="2168108852149185974">Bazı eklentiler Chromium'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="2178608107313874732">Chromium şu anda kameranızı kullanamıyor</translation>
 <translation id="2195025571279539885">Chromium'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
@@ -84,6 +85,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium v
 <translation id="4555020257205549924">Bu özellik açık durumdayken Chromium, diğer dillerde yazılmış sayfaları Google Çeviri'yi kullanarak çevirmeyi teklif eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium'daki ödeme yöntemi ayarları sayfasını açar.</translation>
 <translation id="4585809515399340748">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz.</translation>
+<translation id="459080529287102949">Görselleri Chromium'da Ara</translation>
 <translation id="4633738821577273991">Bu Chromium profilinde Gelişmiş Güvenli Tarama'yı da edinin</translation>
 <translation id="4654936625574199632">Chromium, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium tarayıcıyı açın</translation>
@@ -152,6 +154,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="7045244423563602563">Chromium'u Kendinize Uyarlayın</translation>
 <translation id="7055269218854630176">Oturum açtığınız hesabı ve Chromium'un nasıl kullanılabileceğini kuruluşunuz <ph name="DOMAIN" /> yönetiyor. Yöneticiniz belirli özellikleri ayarlayabilir veya kısıtlayabilir.</translation>
 <translation id="7099326575020694068">Chromium, kameranızı Bölünmüş Görünüm modunda kullanamıyor</translation>
+<translation id="7163483974919055112">Görselleri Chromium'da arayın.</translation>
 <translation id="7165402419892018581">Otomatik doldurma için Chromium'u seçin</translation>
 <translation id="7175400662502680481">Şifreniz bir veri ihlali nedeniyle açığa çıktı. Şifre Yöneticisi bu şifreyi hemen değiştirmenizi öneriyor.</translation>
 <translation id="7192111075364461693">Chromium bildirimleri cihaz ayarlarınızda devre dışı bırakılmış.</translation>
@@ -191,6 +194,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="8663480472502753423">Chromium'u güncel tutun</translation>
 <translation id="8685813584220679697">Bu sitede ve Chromium'da oturum açın.</translation>
 <translation id="8730503818204408000">Chromium'u varsayılan tarayıcı olarak ayarlamak için Chromium ayarlarını açar.</translation>
+<translation id="8742300022028858275">Chromium'daki en son sekmemi aç</translation>
 <translation id="8747378496147986285">İzni kabul ederek:
 <ph name="BEGIN_INDENT" />  • Sizinkine benzer kullanımı olan kişiler için Chromium'u daha iyi hale getirmemize yardımcı olun.<ph name="END_INDENT" />
 

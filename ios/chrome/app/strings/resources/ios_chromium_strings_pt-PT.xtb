@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">Veja o histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="2054703085270098503">Proteja-se com o Chromium</translation>
+<translation id="2098023844024447022">Abra o separador mais recente no Chromium.</translation>
 <translation id="2168108852149185974">Alguns suplementos provocam falhas no sistema do Chromium. Desinstale:</translation>
 <translation id="2178608107313874732">O Chromium não pode utilizar a câmara neste momento</translation>
 <translation id="2195025571279539885">Quer que o Chromium se ofereça para traduzir as páginas em <ph name="LANGUAGE_NAME" /> deste site da próxima vez?</translation>
@@ -60,6 +61,7 @@
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="3472200483164753384">Opção não suportada no Chromium Canary.</translation>
 <translation id="3478750326643748149">Oculte a mensagem "Tire o máximo partido do Chromium"</translation>
+<translation id="3554027294407525061">Limpe os dados de navegação no Chromium.</translation>
 <translation id="3567399274263440288">Para tirar o máximo partido do Chromium, inicie sessão no mesmo com a sua Conta Google.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava a utilizar o Chromium e deixou marcadores, palavras-passe e outras definições neste dispositivo.</translation>
@@ -84,6 +86,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromiu
 <translation id="4555020257205549924">Se esta funcionalidade estiver ativada, o Chromium oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Abre a página Definição dos métodos de pagamento no Chromium.</translation>
 <translation id="4585809515399340748">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
+<translation id="459080529287102949">Pesquise imagens no Chromium</translation>
 <translation id="4633738821577273991">Obtenha também a Navegação segura melhorada para este perfil do Chromium</translation>
 <translation id="4654936625574199632">Para ajudar a melhorar a app, o Chromium envia relatórios de utilização e falhas para a Google. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ative o leitor do Chromium</translation>
@@ -95,6 +98,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromiu
 <translation id="4999538639245140991">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chromium serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
 <translation id="5042011327527167688">Toque em "Ver com o Google Maps no Chromium".</translation>
 <translation id="5048795749726991615">Para obter facilmente as palavras-passe guardadas nas outras apps, use o Chromium para o preenchimento automático</translation>
+<translation id="5076601183701536878">Limpar dados de navegação no Chromium</translation>
 <translation id="5131565040785979529">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chromium é usado.</translation>
 <translation id="5171868502429358653">Inicie sessão no Chromium</translation>
 <translation id="5213683223491576284">Abre o Gestor de Palavras-passe no Chromium.</translation>
@@ -152,6 +156,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7055269218854630176">A sua organização, <ph name="DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chromium pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>
 <translation id="7099326575020694068">O Chromium não pode utilizar a câmara no modo Vista dividida</translation>
+<translation id="7163483974919055112">Pesquise imagens no Chromium.</translation>
 <translation id="7165402419892018581">Escolha o Chromium para o preenchimento automático</translation>
 <translation id="7175400662502680481">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe recomenda que a altere agora.</translation>
 <translation id="7192111075364461693">As notificações do Chromium estão atualmente desativadas nas Definições do dispositivo.</translation>
@@ -191,6 +196,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8663480472502753423">Mantenha o Chromium atualizado.</translation>
 <translation id="8685813584220679697">Inicie sessão neste site e no Chromium.</translation>
 <translation id="8730503818204408000">Abre a definição do Chromium para definir o Chromium como o navegador predefinido.</translation>
+<translation id="8742300022028858275">Abrir separador mais recente no Chromium</translation>
 <translation id="8747378496147986285">Quando a opção está ativada:
 <ph name="BEGIN_INDENT" />  • Ajude a melhorar o Chromium para as pessoas que o usam de forma semelhante à sua.<ph name="END_INDENT" />
 

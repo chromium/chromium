@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Chrome Dino oʻyinini boshlash</translation>
 <translation id="1352919863522755794">Google Parollar menejeri parollarni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="1407843355326180937">Bukmarklar va boshqalarni barcha qurilmalarda olish uchun bu sayt va Chromega Google hisobingizdan kiring.</translation>
+<translation id="1436059927646026729">Oxirgi varagʻimni Chromeda och</translation>
 <translation id="1462727070346936664">Chromening barcha imkoniyatlaridan foydalanish uchun hisobga kiring.</translation>
 <translation id="1479202195792305274">Google hisobingizga kirsangiz, Chrome parollaringizni tekshira oladi.</translation>
 <translation id="1491435845014430217">“Chrome yopilganda Inkognito varaqlar qulflansin” parametrini yoqing.</translation>
@@ -25,6 +26,7 @@ Bularni hisobga olish kerak:
   • Sinxronizatsiya yoqilsa, koʻrsatkichlarga siz kiritgan URL manzillar ham biriktiriladi.
 <ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
+<translation id="1657395063736185342">Chrome orqali vizual qidiruv</translation>
 <translation id="1675955119303651351">Ayrim Chrome maʼlumotlari Google hisobingizga hali saqlanmagan.
         Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="1682483655351012182">Chrome axborotini sinxronlash</translation>
@@ -151,6 +153,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="6916015246697034114">Chromeda ovoz bilan qidirish</translation>
 <translation id="6964931465519938134">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>
+<translation id="7004159181872656283">Chrome orqali vizual qidiruv.</translation>
 <translation id="7056826488869329999">Chromeda xavfsizliktekshiruvini ishga tushiradi.</translation>
 <translation id="7059914902409643750">Chrome brauzerini oʻzingizga moslashtiring</translation>
 <translation id="7124339256045485976">Chrome brauzerini yangilab boring</translation>
@@ -177,6 +180,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7855730255114109580">Google Chrome versiyasi yangi</translation>
 <translation id="7897703007638178753">Chromeda oxirgi varaqlarni ochish</translation>
 <translation id="7925119591961387184">Chrome bandini tanlang.</translation>
+<translation id="7933491483529363150">Oxirgi varagʻimni Chromeda och.</translation>
 <translation id="8022947259858476807">Havolalarni ochish, vidjetlar orqali qidiruv, boshqa ilovalarda parollar avtomatik kitilishda Chrome birlamchi ilova sifatida ishlatilsin</translation>
 <translation id="804638182476029347">Chrome bildirishnomalari narx tushishi haqida xabar berishiga ruxsat bering</translation>
 <translation id="81358522153858150">Chrome endi boshqariladigan hisobingiz uchun foydalanuvchi siyosatlarini qoʻllab-quvvatlaydi</translation>

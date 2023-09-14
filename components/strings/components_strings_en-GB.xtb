@@ -2250,6 +2250,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5653432653077411130">Water supply and treatment</translation>
 <translation id="5654927323611874862">Uploaded crash report ID:</translation>
 <translation id="5659593005791499971">Email</translation>
+<translation id="5660122698869360728">A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more.</translation>
 <translation id="5663955426505430495">The administrator of this device has installed extensions for additional functions. Extensions have access to some of your data.</translation>
 <translation id="5666606186680807225">Beaches and islands</translation>
 <translation id="5667827081946850877">Audiobooks</translation>
@@ -3015,6 +3016,7 @@ Additional details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Rear tray</translation>
 <translation id="725866823122871198">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your computer's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
+<translation id="7260075294900977274">A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more</translation>
 <translation id="7265608370113700582">Address is only available on this device</translation>
 <translation id="7275334191706090484">Managed Bookmarks</translation>
 <translation id="7277998515889183784">Make-up and cosmetics</translation>
@@ -3317,6 +3319,7 @@ Additional details:
 <translation id="7822611063308883975">Handheld Game Consoles</translation>
 <translation id="7825558994363763489">Microwaves</translation>
 <translation id="782886543891417279">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit its login page.</translation>
+<translation id="7831993212387676366">What is the Shopping list?</translation>
 <translation id="7840103971441592723">Screen capture has started</translation>
 <translation id="784137052867620416">Shopping insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>

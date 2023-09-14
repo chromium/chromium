@@ -30,6 +30,7 @@
 <translation id="2042889939382983733">查看 Chromium 歷史記錄</translation>
 <translation id="2052320862053429062">Chromium 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="2054703085270098503">讓 Chromium 保障你的安全</translation>
+<translation id="2098023844024447022">在 Chromium 中開啟我的最新分頁。</translation>
 <translation id="2168108852149185974">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式：</translation>
 <translation id="2178608107313874732">Chromium 目前無法使用你的相機</translation>
 <translation id="2195025571279539885">下次造訪這個網站時，需要 Chromium 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
@@ -84,6 +85,7 @@
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">使用 Chromium 開啟「付款方式設定」頁面。</translation>
 <translation id="4585809515399340748">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chromium 開啟。</translation>
+<translation id="459080529287102949">在 Chromium 中搜尋影像內容</translation>
 <translation id="4633738821577273991">一併為這個 Chromium 設定檔啟用安全瀏覽強化防護功能</translation>
 <translation id="4654936625574199632">為協助改善應用程式，Chromium 會將使用情形和當機報告傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
@@ -152,6 +154,7 @@
 <translation id="7045244423563602563">使用你專屬的 Chromium</translation>
 <translation id="7055269218854630176">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chromium 的使用方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="7099326575020694068">Chromium 無法在分割模式中使用你的相機</translation>
+<translation id="7163483974919055112">在 Chromium 中搜尋影像內容。</translation>
 <translation id="7165402419892018581">選擇使用 Chromium 的自動填入功能</translation>
 <translation id="7175400662502680481">你的密碼因為資料侵害事件遭到外洩，密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="7192111075364461693">目前未在裝置設定中開啟 Chromium 通知。</translation>
@@ -191,6 +194,7 @@
 <translation id="8663480472502753423">取得 Chromium 最新版本</translation>
 <translation id="8685813584220679697">登入這個網站和 Chromium。</translation>
 <translation id="8730503818204408000">開啟 Chromium 設定，將 Chromium 設為預設瀏覽器。</translation>
+<translation id="8742300022028858275">在 Chromium 中開啟我的最新分頁</translation>
 <translation id="8747378496147986285">開啟時：
 <ph name="BEGIN_INDENT" />  • 可協助 Chromium 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
 

@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1105362920864247682">Slett nettlesingsdata i Chrome.</translation>
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Fortsett å bruke Chrome-dataene i Google-kontoen din.</translation>
 <translation id="1282031177488366470">Bidra til å gjøre Chrome bedre og raskere</translation>
 <translation id="1333745675627230582">Spill Chrome Dino-spillet</translation>
 <translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="1407843355326180937">Logg på dette nettstedet og Chrome for å få bokmerkene dine med mer på alle enhetene dine.</translation>
+<translation id="1436059927646026729">Åpne den nyligste fanen min i Chrome</translation>
 <translation id="1462727070346936664">Logg på for å få mest mulig ut av Chrome.</translation>
 <translation id="1479202195792305274">Chrome kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="1491435845014430217">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>
@@ -24,6 +26,7 @@ Du bør tenke på følgende:
 
   • Hvis du synkroniserer loggen din med Google-kontoen din, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
+<translation id="1657395063736185342">Søk i visuelle elementer i Chrome</translation>
 <translation id="1675955119303651351">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
         Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
@@ -55,6 +58,7 @@ Du bør tenke på følgende:
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2840432500933227975">Åpne Chrome-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chrome.</translation>
+<translation id="2868822340714096138">Slett nettlesingsdata i Chrome</translation>
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Velg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -150,6 +154,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="6916015246697034114">Søk med stemmen i Chrome</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="6975725306479268850">Velg Chrome for autofyll</translation>
+<translation id="7004159181872656283">Søk i visuelle elementer i Chrome.</translation>
 <translation id="7056826488869329999">Åpner og kjører sikkerhetssjekken i Chrome.</translation>
 <translation id="7059914902409643750">Gi Chrome et personlig preg</translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
@@ -176,6 +181,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7855730255114109580">Google Chrome er oppdatert</translation>
 <translation id="7897703007638178753">Se nylige faner fra Chrome</translation>
 <translation id="7925119591961387184">Velg «Chrome».</translation>
+<translation id="7933491483529363150">Åpne den nyligste fanen min i Chrome.</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="804638182476029347">Tillat at Chrome-varsler mottar varsler om prisavslag</translation>
 <translation id="81358522153858150">Chrome støtter nå brukerinnstillinger for den administrerte kontoen din</translation>

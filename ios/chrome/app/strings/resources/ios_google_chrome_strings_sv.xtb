@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Spela Chrome Dino-spelet</translation>
 <translation id="1352919863522755794">Google Lösenordshantering kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="1407843355326180937">Logga in på den här webbplatsen och i Chrome om du vill få dina bokmärken med mera på alla dina enheter.</translation>
+<translation id="1436059927646026729">Öppna Min senaste flik i Chrome</translation>
 <translation id="1462727070346936664">Logga in så att du får ut mesta möjliga av Chrome.</translation>
 <translation id="1479202195792305274">Chrome kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="1491435845014430217">Aktivera Lås inkognitoflikar när du stänger Chrome.</translation>
@@ -24,6 +25,7 @@ Tänk på detta:
 
   • Om du synkroniserar historiken med Google-kontot kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du har den starkaste säkerheten i Chrome mot skadliga webbplatser</translation>
+<translation id="1657395063736185342">Sök efter bilder i Chrome</translation>
 <translation id="1675955119303651351">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
         Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
@@ -150,6 +152,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="6916015246697034114">Sök med rösten i Chrome</translation>
 <translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="6975725306479268850">Välj Chrome för Autofyll</translation>
+<translation id="7004159181872656283">Sök efter bilder i Chrome.</translation>
 <translation id="7056826488869329999">Öppnar och kör en säkerhetskontroll i Chrome.</translation>
 <translation id="7059914902409643750">Anpassa Chrome</translation>
 <translation id="7124339256045485976">Håll Chrome uppdaterad</translation>
@@ -176,6 +179,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7855730255114109580">Google Chrome behöver inte uppdateras</translation>
 <translation id="7897703007638178753">Visa de senaste flikarna i Chrome</translation>
 <translation id="7925119591961387184">Välj Chrome.</translation>
+<translation id="7933491483529363150">Öppna Min senaste flik i Chrome.</translation>
 <translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="804638182476029347">Tillåt Chrome-aviseringar om sänkt pris</translation>
 <translation id="81358522153858150">Chrome har nu stöd för användarpolicyer för dina hanterade konton</translation>

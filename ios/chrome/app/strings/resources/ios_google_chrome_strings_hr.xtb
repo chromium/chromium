@@ -1,12 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1105362920864247682">Brisanje podataka o pregledavanju u Chromeu.</translation>
 <translation id="1143896152279775643">Zaporka će se spremiti u Google upravitelj zaporki za <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Nastavite upotrebljavati podatke iz Chromea na svom Google računu.</translation>
 <translation id="1282031177488366470">Pomozite poboljšati Chromeove značajke i izvedbu</translation>
 <translation id="1333745675627230582">Igraj igru Dinosaur na Chromeu</translation>
 <translation id="1352919863522755794">Google upravitelj zaporki nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="1407843355326180937">Prijavite se na ovu web-lokaciju i Chrome kako biste imali pristup svojim oznakama i još toga na svim svojim uređajima.</translation>
+<translation id="1436059927646026729">Otvaranje moje najnovije kartice u Chromeu</translation>
 <translation id="1462727070346936664">Prijavite se da biste iskoristili sve prednosti Chromea.</translation>
 <translation id="1479202195792305274">Chrome može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="1491435845014430217">Uključite opciju "Zaključajte anonimne kartice pri zatvaranju Chromea".</translation>
@@ -24,6 +26,7 @@ Važne napomene:
 
   • Ako povijest sinkronizirate s Google računom, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjećujete.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Imate najjaču Chromeovu zaštitu od štetnih web-lokacija</translation>
+<translation id="1657395063736185342">Pretraživanje slika u Chromeu</translation>
 <translation id="1675955119303651351">Neki vaši podaci iz Chromea još nisu spremljeni na vaš Google račun.
         Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="1682483655351012182">Sinkroniziraj podatke iz Chromea</translation>
@@ -55,6 +58,7 @@ Važne napomene:
 <translation id="2736805085127235148">Obavijesti Chromea trenutačno su isključene u postavkama uređaja.</translation>
 <translation id="2767464022270041271">Nema nijedne spremljene zaporke. Google upravitelj zaporki može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="2840432500933227975">Otvorite postavke Chromea na iOS-u, zatim dodirnite "Zadana aplikacija preglednika" i odaberite Chrome.</translation>
+<translation id="2868822340714096138">Brisanje podataka o pregledavanju u Chromeu</translation>
 <translation id="2869959624320573933">Prijava u Chrome</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -150,6 +154,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="6916015246697034114">Glasovno pretraživanje u Chromeu</translation>
 <translation id="6964931465519938134">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6975725306479268850">Odabir Chromea za automatsko popunjavanje</translation>
+<translation id="7004159181872656283">Pretraživanje slika u Chromeu.</translation>
 <translation id="7056826488869329999">Otvara i pokreće sigurnosnu provjeru u Chromeu.</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7124339256045485976">Ažuriranje Chromea</translation>
@@ -176,6 +181,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="7855730255114109580">Google Chrome ažuriran je</translation>
 <translation id="7897703007638178753">Prikaz nedavnih kartica u Chromeu</translation>
 <translation id="7925119591961387184">Odaberite Chrome.</translation>
+<translation id="7933491483529363150">Otvori moju najnoviju karticu u Chromeu.</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dopustite Chromeove obavijesti da biste primali upozorenja o sniženju cijena</translation>
 <translation id="81358522153858150">Chrome sada za vaš upravljani račun podržava korisnička pravila</translation>
