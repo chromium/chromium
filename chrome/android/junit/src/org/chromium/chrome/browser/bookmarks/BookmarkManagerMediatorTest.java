@@ -673,6 +673,28 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testDrag_improvedBookmarks_whileFiltering() {
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+
+        finishLoading();
+        mMediator.openFolder(mMobileFolderId);
+        DraggabilityProvider draggabilityProvider = mMediator.getDraggabilityProvider();
+        assertTrue(draggabilityProvider.isPassivelyDraggable(mModelList.get(1).model));
+        assertTrue(draggabilityProvider.isActivelyDraggable(mModelList.get(1).model));
+        DragStateDelegate dragStateDelegate = mMediator.getDragStateDelegate();
+        assertTrue(dragStateDelegate.getDragEnabled());
+
+        // When a filter is selected, dragging should be disabled.
+        PropertyModel model = mModelList.get(0).model;
+        assertTrue(model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+        model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK).onResult(true);
+        assertTrue(draggabilityProvider.isPassivelyDraggable(mModelList.get(1).model));
+        assertTrue(draggabilityProvider.isActivelyDraggable(mModelList.get(1).model));
+        assertFalse(dragStateDelegate.getDragEnabled());
+    }
+
+    @Test
     public void testSearch() {
         when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId3));
