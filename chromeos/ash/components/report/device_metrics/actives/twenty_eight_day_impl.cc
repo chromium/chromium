@@ -56,6 +56,10 @@ void TwentyEightDayImpl::Run(base::OnceCallback<void()> callback) {
   }
 }
 
+base::WeakPtr<TwentyEightDayImpl> TwentyEightDayImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void TwentyEightDayImpl::CheckMembershipOprf() {
   SetPsmRlweClient(kPsmUseCase, GetPsmIdentifiersToQuery());
 

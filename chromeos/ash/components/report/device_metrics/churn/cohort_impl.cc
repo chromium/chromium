@@ -55,6 +55,10 @@ void CohortImpl::Run(base::OnceCallback<void()> callback) {
   }
 }
 
+base::WeakPtr<CohortImpl> CohortImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void CohortImpl::CheckMembershipOprf() {
   SetPsmRlweClient(kPsmUseCase, GetPsmIdentifiersToQuery());
 

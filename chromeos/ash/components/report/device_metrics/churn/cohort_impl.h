@@ -28,6 +28,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) CohortImpl
   // UseCase:
   void Run(base::OnceCallback<void()> callback) override;
 
+  // Used by ReportController to destruct pending callbacks appropriately.
+  base::WeakPtr<device_metrics::CohortImpl> GetWeakPtr();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;

@@ -55,6 +55,10 @@ void ObservationImpl::Run(base::OnceCallback<void()> callback) {
   }
 }
 
+base::WeakPtr<ObservationImpl> ObservationImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ObservationImpl::CheckMembershipOprf() {
   SetPsmRlweClient(kPsmUseCase, GetPsmIdentifiersToQuery());
 

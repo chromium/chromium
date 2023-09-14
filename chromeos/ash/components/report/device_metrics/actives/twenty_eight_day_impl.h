@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) TwentyEightDayImpl
   // UseCase:
   void Run(base::OnceCallback<void()> callback) override;
 
+  // Used by ReportController to destruct pending callbacks appropriately.
+  base::WeakPtr<TwentyEightDayImpl> GetWeakPtr();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;

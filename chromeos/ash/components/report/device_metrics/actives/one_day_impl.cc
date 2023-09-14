@@ -48,6 +48,10 @@ void OneDayImpl::Run(base::OnceCallback<void()> callback) {
   }
 }
 
+base::WeakPtr<OneDayImpl> OneDayImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void OneDayImpl::CheckMembershipOprf() {
   SetPsmRlweClient(kPsmUseCase, GetPsmIdentifiersToQuery());
 

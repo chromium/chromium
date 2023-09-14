@@ -28,6 +28,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ObservationImpl
   // UseCase:
   void Run(base::OnceCallback<void()> callback) override;
 
+  // Used by ReportController to destruct pending callbacks appropriately.
+  base::WeakPtr<ObservationImpl> GetWeakPtr();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;

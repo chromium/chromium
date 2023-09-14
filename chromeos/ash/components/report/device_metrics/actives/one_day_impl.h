@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) OneDayImpl
   // UseCase:
   void Run(base::OnceCallback<void()> callback) override;
 
+  // Used by ReportController to destruct pending callbacks appropriately.
+  base::WeakPtr<OneDayImpl> GetWeakPtr();
+
  protected:
   // UseCase:
   void CheckMembershipOprf() override;
