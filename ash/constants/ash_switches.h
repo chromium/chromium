@@ -333,6 +333,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuppressMessageCenterPopups[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTelemetryExtensionDirectory[];
+extern const char kTemporaryAllowEmptyPasswordsInTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTestEncryptionMigrationUI[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTestWallpaperServer[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -426,6 +427,10 @@ bool IsOOBEChromeVoxHintTimerDisabledForTesting();
 // connection is disabled for testing.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsOOBENetworkScreenSkippingDisabledForTesting();
+
+// Returns true if empty passwords can be used by automated tests.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool AreEmptyPasswordsAllowedForForTesting();
 
 // Returns true if the OOBE ChromeVox hint is enabled for dev mode.
 COMPONENT_EXPORT(ASH_CONSTANTS)

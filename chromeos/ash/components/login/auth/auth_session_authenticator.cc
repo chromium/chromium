@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -243,6 +244,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
   DCHECK(!user_exists || !ephemeral);
   LOGIN_LOG(EVENT) << "Regular user CompleteLogin " << user_exists;
   bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
+  const bool has_password = !context->GetKey()->GetSecret().empty();
   std::vector<AuthOperation> steps;
   if (!user_exists) {
     if (safe_mode_delegate_->IsSafeMode()) {
@@ -276,6 +278,18 @@ void AuthSessionAuthenticator::DoCompleteLogin(
           base::BindOnce(&AuthFactorEditor::AddContextChallengeResponseKey,
                          auth_factor_editor_->AsWeakPtr()));
     } else {
+      if (!ash::switches::AreEmptyPasswordsAllowedForForTesting()) {
+        // Empty passwords are currently not supported in ChromeOS, and
+        // upcoming work on local passwords would significantly change code
+        // behavior if empty password is used during initial login.
+        // Some older tests might still use empty string as a password.
+        // Such tests should be fixed by owners to use non-empty passwords.
+        // If such fix requires non-trivial changes, the following flag
+        // can be used as a short-term solution:
+        // `--allow-empty-passwords-in-tests`
+        CHECK(has_password)
+            << "Empty passwords are not supported during user creation";
+      }
       steps.push_back(base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
                                      auth_factor_editor_->AsWeakPtr()));
     }

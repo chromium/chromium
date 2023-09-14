@@ -1008,6 +1008,12 @@ const char kSuppressMessageCenterPopups[] = "suppress-message-center-popups";
 // Specifies directory for the Telemetry System Web Extension.
 const char kTelemetryExtensionDirectory[] = "telemetry-extension-dir";
 
+// TODO(b/299642185): Remove this flag by the end of 2023.
+// ChromeOS does not support empty passwords for users, but some legacy test
+// setups might use empty password for users.
+const char kTemporaryAllowEmptyPasswordsInTests[] =
+    "allow-empty-passwords-in-tests";
+
 // Enables testing for encryption migration UI.
 const char kTestEncryptionMigrationUI[] = "test-encryption-migration-ui";
 
@@ -1155,6 +1161,11 @@ bool ShouldScaleOobe() {
 bool IsAueReachedForUpdateRequiredForTest() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kUpdateRequiredAueForTest);
+}
+
+bool AreEmptyPasswordsAllowedForForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kTemporaryAllowEmptyPasswordsInTests);
 }
 
 bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
