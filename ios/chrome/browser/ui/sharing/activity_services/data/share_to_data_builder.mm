@@ -54,13 +54,13 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
           : [[ChromeActivityItemThumbnailGenerator alloc]
                 initWithWebState:web_state];
 
-  const GURL& finalURLToShare =
+  const GURL& final_url_to_share =
       !share_url.is_empty() ? share_url : web_state->GetVisibleURL();
-  web::NavigationItem* visibleItem =
+  web::NavigationItem* visible_item =
       web_state->GetNavigationManager()->GetVisibleItem();
-  web::UserAgentType userAgent = web::UserAgentType::NONE;
-  if (visibleItem) {
-    userAgent = visibleItem->GetUserAgentType();
+  web::UserAgentType user_agent = web::UserAgentType::NONE;
+  if (visible_item) {
+    user_agent = visible_item->GetUserAgentType();
   }
 
   auto* helper = GetConcreteFindTabHelperFromWebState(web_state);
@@ -71,19 +71,20 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
-  ChromeAccountManagerService* accountManagerService =
+  ChromeAccountManagerService* account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
   send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
       SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state);
   // When there are no device-level accounts, it's only possible to show the
   // promo UI if IsConsistencyNewAccountInterfaceEnabled() is true.
   BOOL can_send_tab_to_self =
-      (accountManagerService->HasIdentities() ||
+      account_manager_service &&
+      (account_manager_service->HasIdentities() ||
        IsConsistencyNewAccountInterfaceEnabled()) &&
       send_tab_to_self_service &&
-      send_tab_to_self_service->GetEntryPointDisplayReason(finalURLToShare);
+      send_tab_to_self_service->GetEntryPointDisplayReason(final_url_to_share);
 
-  return [[ShareToData alloc] initWithShareURL:finalURLToShare
+  return [[ShareToData alloc] initWithShareURL:final_url_to_share
                                     visibleURL:web_state->GetVisibleURL()
                                          title:tab_title
                                 additionalText:nil
@@ -91,7 +92,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                isPagePrintable:is_page_printable
                               isPageSearchable:is_page_searchable
                               canSendTabToSelf:can_send_tab_to_self
-                                     userAgent:userAgent
+                                     userAgent:user_agent
                             thumbnailGenerator:thumbnail_generator
                                   linkMetadata:nil];
 }
