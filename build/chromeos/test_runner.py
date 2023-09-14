@@ -482,6 +482,9 @@ class GTestTest(RemoteTest):
     super().__init__(args, unknown_args)
 
     self._test_cmd = ['vpython3'] + self._test_cmd
+    if not args.clean:
+      self._test_cmd += ['--no-clean']
+
     self._test_exe = args.test_exe
     self._runtime_deps_path = args.runtime_deps_path
     self._vpython_dir = args.vpython_dir
@@ -926,6 +929,13 @@ def main():
       action='store_true',
       help='When set, will run test_sudo_helper before the test and stop it '
       'after test finishes.')
+  gtest_parser.add_argument(
+      "--no-clean",
+      action="store_false",
+      dest="clean",
+      default=True,
+      help="Do not clean up the deployed files after running the test. "
+      "Only supported for --remote-cmd tests")
 
   # Tast test args.
   # pylint: disable=line-too-long
