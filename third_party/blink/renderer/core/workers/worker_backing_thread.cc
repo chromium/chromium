@@ -81,12 +81,12 @@ void MemoryPressureNotificationToWorkerThreadIsolates(
 }
 
 void IsolateInBackgroundNotification() {
-  MainThreadIsolate()->IsolateInBackgroundNotification();
+  V8PerIsolateData::MainThreadIsolate()->IsolateInBackgroundNotification();
   WorkerBackingThread::IsolateInBackgroundNotificationToWorkerThreadIsolates();
 }
 
 void IsolateInForegroundNotification() {
-  MainThreadIsolate()->IsolateInForegroundNotification();
+  V8PerIsolateData::MainThreadIsolate()->IsolateInForegroundNotification();
   WorkerBackingThread::IsolateInForegroundNotificationToWorkerThreadIsolates();
 }
 

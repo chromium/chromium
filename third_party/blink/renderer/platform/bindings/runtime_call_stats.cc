@@ -20,7 +20,9 @@ namespace blink {
 
 void LogRuntimeCallStats() {
   LOG(INFO) << "\n"
-            << RuntimeCallStats::From(MainThreadIsolate())->ToString().Utf8();
+            << RuntimeCallStats::From(V8PerIsolateData::MainThreadIsolate())
+                   ->ToString()
+                   .Utf8();
 }
 
 namespace {

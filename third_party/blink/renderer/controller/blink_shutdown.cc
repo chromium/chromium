@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "v8/include/v8-isolate.h"
 
 namespace blink {
@@ -18,7 +19,7 @@ void LogStatsDuringShutdown() {
 
   // Give the V8 isolate a chance to dump internal stats useful for performance
   // evaluation and debugging.
-  blink::MainThreadIsolate()->DumpAndResetStats();
+  V8PerIsolateData::MainThreadIsolate()->DumpAndResetStats();
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDumpRuntimeCallStats)) {
