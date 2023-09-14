@@ -81,6 +81,12 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       showEditPasswordDialog_: Boolean,
       showDeletePasswordDialog_: Boolean,
 
+      showShareButton_: {
+        type: Boolean,
+        computed: 'computeShowShareButton_(enableSendPasswords_, ' +
+            'isOptedInForAccountStorage, isSyncingPasswords)',
+      },
+
       showShareFlow_: {
         type: Boolean,
         value: false,
@@ -206,8 +212,9 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return hasApps ? this.i18n('appsLabel') : this.i18n('sitesLabel');
   }
 
-  private showShareButton_(): boolean {
-    return this.isSyncingPasswords && this.enableSendPasswords_;
+  private computeShowShareButton_(): boolean {
+    return this.enableSendPasswords_ && !this.isFederated_() &&
+        (this.isSyncingPasswords || this.isOptedInForAccountStorage);
   }
 }
 

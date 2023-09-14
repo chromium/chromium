@@ -374,6 +374,45 @@ suite('PasswordDetailsCardTest', function() {
     assertTrue(!!shareFlow);
   });
 
+  test('share button available for account store users', async function() {
+    loadTimeData.overrideValues({enableSendPasswords: true});
+
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    passwordManager.data.isOptedInAccountStorage = true;
+
+    const card = await createCardElement();
+
+    const shareButton =
+        card.shadowRoot!.querySelector<HTMLElement>('#shareButton');
+    assertTrue(!!shareButton);
+    assertTrue(isVisible(shareButton));
+    assertEquals(shareButton.textContent!.trim(), card.i18n('share'));
+  });
+
+  test('sharing unavailable for federated credentials', async function() {
+    loadTimeData.overrideValues({enableSendPasswords: true});
+
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: true,
+    };
+
+    const card =
+        await createCardElement(createPasswordEntry({federationText: 'text'}));
+
+    const shareButton =
+        card.shadowRoot!.querySelector<HTMLElement>('#shareButton');
+    assertFalse(!!shareButton);
+
+    const sharePasswordFlow =
+        card.shadowRoot!.querySelector('share-password-flow');
+    assertFalse(!!sharePasswordFlow);
+  });
+
   test('sharing unavailable without enableSendPasswords', async function() {
     loadTimeData.overrideValues({enableSendPasswords: false});
 
