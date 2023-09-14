@@ -164,6 +164,7 @@ static_library("devtools") {
       "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/shell_dialogs",
+      "//ui/views/controls/webview",
     ]
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]

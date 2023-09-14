@@ -92,8 +92,7 @@ Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
 }
 
 bool ChromeImpl::IsBrowserWindow(const WebViewInfo& view) const {
-  return base::Contains(window_types_, view.type) ||
-         (view.type == WebViewInfo::kOther && view.url == "chrome://print/");
+  return base::Contains(window_types_, view.type);
 }
 
 Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,

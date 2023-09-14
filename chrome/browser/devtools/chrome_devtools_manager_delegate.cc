@@ -52,6 +52,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -169,9 +170,15 @@ std::string ChromeDevToolsManagerDelegate::GetTargetType(
 
   std::string extension_name;
   std::string extension_type;
-  if (!GetExtensionInfo(web_contents, &extension_name, &extension_type))
-    return DevToolsAgentHost::kTypeOther;
-  return extension_type;
+  if (GetExtensionInfo(web_contents, &extension_name, &extension_type)) {
+    return extension_type;
+  }
+
+  if (views::WebView::IsWebViewContents(web_contents)) {
+    return DevToolsAgentHost::kTypePage;
+  }
+
+  return DevToolsAgentHost::kTypeOther;
 }
 
 std::string ChromeDevToolsManagerDelegate::GetTargetTitle(

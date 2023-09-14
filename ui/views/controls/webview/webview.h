@@ -55,6 +55,8 @@ class WEBVIEW_EXPORT WebView : public View,
 
   ~WebView() override;
 
+  static bool IsWebViewContents(const content::WebContents* web_contents);
+
   // This creates a WebContents if |browser_context_| has been set and there is
   // not yet a WebContents associated with this WebView, otherwise it will
   // return a nullptr.
