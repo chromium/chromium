@@ -235,10 +235,11 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
   ui::DragDropTypes::DragOperation OnDragUpdated(
       const ui::OSExchangeData& data,
       const gfx::Point& location_in_screen) override {
-    // Dropping `data` on the wallpaper will have no effect unless doing so
-    // would result in pinning of files to holding space.
-    return CanDrop(data) ? ui::DragDropTypes::DragOperation::DRAG_COPY
-                         : ui::DragDropTypes::DragOperation::DRAG_NONE;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
+    DCHECK(CanDrop(data));
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+    return ui::DragDropTypes::DragOperation::DRAG_COPY;
   }
 
   void OnDragExited() override {
