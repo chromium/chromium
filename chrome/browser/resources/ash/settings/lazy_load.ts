@@ -147,6 +147,7 @@ export {CustomizeButtonsSubsectionElement} from './device_page/customize_buttons
 export {SettingsCustomizeMouseButtonsSubpageElement} from './device_page/customize_mouse_buttons_subpage.js';
 export {SettingsCustomizePenButtonsSubpageElement} from './device_page/customize_pen_buttons_subpage.js';
 export {SettingsCustomizeTabletButtonsSubpageElement} from './device_page/customize_tablet_buttons_subpage.js';
+export {KeyCombinationInputDialogElement} from './device_page/key_combination_input_dialog.js';
 export {SettingsPowerElement} from './device_page/power.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';

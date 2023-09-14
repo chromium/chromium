@@ -2775,6 +2775,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_LABEL" translateable="false" desc="Label above renaming button input field on the dialog in customize device buttons pages.">
     New button name
   </message>
+  <message name="IDS_SETTINGS_KEY_COMBINATION_DIALOG_TITLE" translateable="false" desc="Title of the key combination dialog that pops up after clicking key combination choice in the button remapping action dropdown menu.">
+    Enter key combination
+  </message>
 
   <!-- Bluetooth page (OS settings) -->
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">

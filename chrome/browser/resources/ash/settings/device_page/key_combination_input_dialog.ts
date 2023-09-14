@@ -1,0 +1,46 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import './input_device_settings_shared.css.js';
+import '../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './key_combination_input_dialog.html.js';
+
+/**
+ * @fileoverview
+ * 'key-combination-input-dialog' is a dialog that pops up after clicking the
+ * 'Key combination' choice in the dropdown menu to allow users to input a
+ * combination of keyboard keys as a button remapping action.
+ */
+const KeyCombinationInputDialogElementBase = I18nMixin(PolymerElement);
+
+export class KeyCombinationInputDialogElement extends
+    KeyCombinationInputDialogElementBase {
+  static get is() {
+    return 'key-combination-input-dialog' as const;
+  }
+
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
+  }
+
+  static get properties(): PolymerElementProperties {
+    return {};
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [KeyCombinationInputDialogElement.is]: KeyCombinationInputDialogElement;
+  }
+}
+
+customElements.define(
+    KeyCombinationInputDialogElement.is, KeyCombinationInputDialogElement);
