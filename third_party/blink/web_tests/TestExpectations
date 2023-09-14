@@ -6667,3 +6667,6 @@ crbug.com/1478928 http/tests/inspector-protocol/runtime/serialization-dom-types.
 # Sheriff 2023-09-13
 crbug.com/1481207 [ Mac ] http/tests/misc/destroy-middle-click-locked-target-crash.html [ Failure Pass ]
 crbug.com/1481207 [ Win ] http/tests/misc/destroy-middle-click-locked-target-crash.html [ Failure Pass ]
+
+# Gardener 2023-09-14
+crbug.com/1481209 [ Mac ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
