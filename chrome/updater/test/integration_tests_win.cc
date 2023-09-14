@@ -473,12 +473,14 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
                            : launch_offline_install();
 }
 
+// Enumerates immediate child windows of `parent`, and calls `filter_.Run` for
+// each window:
+// * If `filter_.Run` returns `false`, continues enumerating.
+// * If `filter_.Run` returns `true`, stops enumerating.
 class WindowEnumerator {
  public:
-  WindowEnumerator(HWND parent,
-                   base::RepeatingCallback<bool(HWND hwnd)> filter,
-                   base::RepeatingCallback<void(HWND hwnd)> action)
-      : parent_(parent), filter_(filter), action_(action) {}
+  WindowEnumerator(HWND parent, base::RepeatingCallback<bool(HWND hwnd)> filter)
+      : parent_(parent), filter_(filter) {}
 
   WindowEnumerator(const WindowEnumerator&) = delete;
   WindowEnumerator& operator=(const WindowEnumerator&) = delete;
@@ -516,14 +518,7 @@ class WindowEnumerator {
   }
 
  private:
-  bool OnWindow(HWND hwnd) const {
-    if (filter_.Run(hwnd)) {
-      action_.Run(hwnd);
-    }
-
-    // Returns true to keep enumerating.
-    return true;
-  }
+  bool OnWindow(HWND hwnd) const { return !filter_.Run(hwnd); }
 
   static BOOL CALLBACK OnWindowProc(HWND hwnd, LPARAM lparam) {
     return reinterpret_cast<WindowEnumerator*>(lparam)->OnWindow(hwnd);
@@ -531,7 +526,6 @@ class WindowEnumerator {
 
   const HWND parent_;
   base::RepeatingCallback<bool(HWND hwnd)> filter_;
-  base::RepeatingCallback<void(HWND hwnd)> action_;
 };
 
 DISPID GetDispId(Microsoft::WRL::ComPtr<IDispatch> dispatch,
@@ -710,7 +704,13 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
                   offline_dir_guid, is_silent_install)
                   .IsValid());
 
-  if (is_silent_install) {
+  // * Silent installs do not show any UI.
+  // * Successful interactive installs show a progress UI, but once the install
+  //   completes, the `InstallerSuccessLaunchCmdLine` is launched and the UI
+  //   closes automatically.
+  // * Unsuccessful interactive installs show an install error dialog that needs
+  //   to be explicitly closed via `CloseInstallCompleteDialog`.
+  if (is_silent_install || expect_success) {
     EXPECT_TRUE(WaitForUpdaterExit(scope));
   } else {
     CloseInstallCompleteDialog(GetLocalizedString(string_resource_id_to_find));
@@ -1813,37 +1813,44 @@ void RunFakeLegacyUpdater(UpdaterScope scope) {
 }
 
 void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
-  EXPECT_TRUE(WaitFor(
-      [&child_window_text_to_find] {
-        // Enumerate the top-level dialogs to find the setup dialog.
-        WindowEnumerator(
-            ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
-              return WindowEnumerator::IsSystemDialog(hwnd) &&
-                     base::Contains(WindowEnumerator::GetWindowText(hwnd),
-                                    GetLocalizedStringF(
-                                        IDS_INSTALLER_DISPLAY_NAME_BASE,
-                                        GetLocalizedString(
-                                            IDS_FRIENDLY_COMPANY_NAME_BASE)));
-            }),
-            base::BindLambdaForTesting([&child_window_text_to_find](HWND hwnd) {
-              // Enumerates the dialog items to search for installation
-              // complete message. Once found, close the dialog.
-              WindowEnumerator(
-                  hwnd,
-                  base::BindLambdaForTesting([&child_window_text_to_find](
-                                                 HWND hwnd) {
-                    return base::Contains(WindowEnumerator::GetWindowText(hwnd),
-                                          child_window_text_to_find);
-                  }),
-                  base::BindRepeating([](HWND hwnd) {
-                    ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
-                  }))
-                  .Run();
-            }))
-            .Run();
-        return !IsUpdaterRunning();
+  const std::wstring window_title =
+      GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE,
+                          GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE));
+  bool found = false;
+  ASSERT_TRUE(WaitFor(
+      [&]() {
+        if (!found) {
+          // Enumerate the top-level dialogs to find the setup dialog.
+          WindowEnumerator(
+              ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
+                if (!WindowEnumerator::IsSystemDialog(hwnd) ||
+                    !base::Contains(WindowEnumerator::GetWindowText(hwnd),
+                                    window_title)) {
+                  return false;
+                }
+                // Enumerate the child windows to search for
+                // `child_window_text_to_find`. If found, close the dialog.
+                WindowEnumerator(
+                    hwnd, base::BindLambdaForTesting([&](HWND hwnd) {
+                      if (!base::Contains(WindowEnumerator::GetWindowText(hwnd),
+                                          child_window_text_to_find)) {
+                        return false;
+                      }
+                      found = true;
+                      ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
+                      return found;
+                    }))
+                    .Run();
+                return found;
+              }))
+              .Run();
+        }
+        return found && !IsUpdaterRunning();
       },
-      [] { VLOG(0) << "Still waiting for the process exit."; }));
+      [&] {
+        VLOG(0) << "Still waiting, `found`: " << found
+                << ": `!IsUpdaterRunning()`: " << !IsUpdaterRunning();
+      }));
 }
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {

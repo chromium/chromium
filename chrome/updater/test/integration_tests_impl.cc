@@ -424,6 +424,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
   command_line.AppendSwitchASCII(kTagSwitch, "usagestats=1");
   command_line.AppendSwitchASCII(kAppIdSwitch, app_id);
   if (is_silent_install) {
+    ASSERT_TRUE(child_window_text_to_find.empty());
     command_line.AppendSwitch(kSilentSwitch);
   }
 
@@ -903,10 +904,6 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   ASSERT_TRUE(process.IsValid());
 
   if (!exit_code) {
-#if BUILDFLAG(IS_WIN)
-    ::WaitForInputIdle(process.Handle(),
-                       TestTimeouts::tiny_timeout().InMilliseconds() * 50);
-#endif
     return;
   }
 
