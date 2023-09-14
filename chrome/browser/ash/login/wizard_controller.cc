@@ -1670,6 +1670,9 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
     case CryptohomeRecoveryScreen::Result::kNotApplicable:
       ShowGaiaPasswordChangedScreen(std::move(wizard_context_->user_context));
       break;
+    case CryptohomeRecoveryScreen::Result::kTimeout:
+      ShowLoginScreen();
+      break;
   }
 }
 

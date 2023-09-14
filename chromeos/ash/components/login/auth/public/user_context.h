@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
-
+#include "base/time/time.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -78,7 +78,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     void SetAuthSessionId(const std::string& authsession_id);
     void ResetAuthSessionId();
     const std::string& GetAuthSessionId() const;
-
+    base::Time GetSessionLifetime() const;
+    void SetSessionLifetime(const base::Time& valid_until);
     void AddAuthorizedIntent(AuthSessionIntent auth_intent);
     AuthSessionIntents GetAuthorizedIntents() const;
 
@@ -92,6 +93,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     std::string authsession_id_;
     AuthSessionIntents authorized_for_;
     std::string user_id_hash_;
+    base::Time valid_until_;
   };
 
   UserContext();
@@ -228,6 +230,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   void SetAuthSessionId(const std::string& authsession_id);
   void ResetAuthSessionId();
   const std::string& GetAuthSessionId() const;
+  base::Time GetSessionLifetime() const;
+  void SetSessionLifetime(const base::Time& valid_until);
 
   void AddAuthorizedIntent(AuthSessionIntent auth_intent);
 

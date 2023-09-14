@@ -578,6 +578,8 @@ void AuthPerformer::OnAuthenticateAuthFactor(
       context->AddAuthorizedIntent(intent.value());
     }
   }
+  context->SetSessionLifetime(base::Time::Now() +
+                              base::Seconds(reply->seconds_left()));
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   std::move(callback).Run(std::move(context), absl::nullopt);
 }

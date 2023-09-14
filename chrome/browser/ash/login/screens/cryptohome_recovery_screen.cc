@@ -20,6 +20,9 @@ constexpr char kUserActionDone[] = "done";
 constexpr char kUserActionRetry[] = "retry";
 constexpr char kUserActionEnterOldPassword[] = "enter-old-password";
 constexpr char kUserActionReauth[] = "reauth";
+// The time difference between the timeout on the screen, and Auth Session
+// expiry.
+const base::TimeDelta kTimeoutDiff = base::Seconds(10);
 
 }  // namespace
 
@@ -40,6 +43,8 @@ std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
       return "NoRecoveryFactor";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
+    case Result::kTimeout:
+      return "Timeout";
   }
 }
 
@@ -187,6 +192,21 @@ void CryptohomeRecoveryScreen::OnReplaceContextKey(
     return;
   }
   view_->OnRecoverySucceeded();
+
+  auto delta = context()->user_context->GetSessionLifetime() -
+               base::Time::Now() - kTimeoutDiff;
+  if (!delta.is_positive()) {
+    OnAuthSessionExpired();
+    return;
+  }
+  expiration_timer_ = std::make_unique<base::OneShotTimer>();
+  expiration_timer_->Start(FROM_HERE, delta, this,
+                           &CryptohomeRecoveryScreen::OnAuthSessionExpired);
+}
+
+void CryptohomeRecoveryScreen::OnAuthSessionExpired() {
+  LOG(WARNING) << "Exiting due to expired Auth Session.";
+  exit_callback_.Run(Result::kTimeout);
 }
 
 }  // namespace ash
