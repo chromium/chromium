@@ -308,6 +308,10 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
   }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDiskCacheDir)) {
+    if (!context_params->file_paths) {
+      context_params->file_paths =
+          ::network::mojom::NetworkContextFilePaths::New();
+    }
     context_params->file_paths->http_cache_directory =
         command_line->GetSwitchValuePath(switches::kDiskCacheDir);
   } else if (!user_data_path_.empty()) {
