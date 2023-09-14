@@ -2741,7 +2741,7 @@ BASE_FEATURE(kWallpaperPerDesk,
 // Enable daily wallpaper refresh revamp.
 BASE_FEATURE(kWallpaperRefreshRevamp,
              "WallpaperRefreshRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables special handling of Chrome tab drags from a WebUI tab strip.
 // These will be treated similarly to a window drag, showing split view

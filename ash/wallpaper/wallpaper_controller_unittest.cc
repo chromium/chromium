@@ -4352,6 +4352,8 @@ TEST_P(WallpaperControllerTest, UpdateDailyRefreshWallpaper_NoCollectionId) {
 
 TEST_P(WallpaperControllerTest,
        UpdateDailyRefreshWallpaper_TimerStartsOnPrefServiceChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   using base::Time;
 
   SimulateUserLogin(kAccountId1);
@@ -4377,6 +4379,8 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        UpdateDailyRefreshWallpaper_RetryTimerTriggersOnFailedFetchInfo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   using base::Time;
 
   client_.set_fetch_daily_refresh_info_fails(true);
@@ -4401,6 +4405,8 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        UpdateDailyRefreshWallpaper_RetryTimerTriggersOnFailedFetchData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   using base::Time;
 
   SimulateUserLogin(kAccountId1);
@@ -4518,6 +4524,8 @@ TEST_P(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
 
 TEST_P(WallpaperControllerTest,
        SetDailyRefreshCollectionId_UpdatesDailyRefreshTimer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   using base::Time;
 
   pref_manager_->SetUserWallpaperInfo(
@@ -4866,6 +4874,8 @@ TEST_P(WallpaperControllerTest,
 
 TEST_P(WallpaperControllerTest,
        UpdateDailyWallpaperVariantOnColorModeChanged_RefreshTimerDoesntReset) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   using base::Time;
 
   SimulateUserLogin(kAccountId1);
@@ -5281,6 +5291,8 @@ TEST_P(WallpaperControllerTest, SetGooglePhotosWallpaperFails) {
 
 TEST_P(WallpaperControllerTest,
        RetryTimerTriggersOnFailedFetchPhotoForStalenessCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   using base::Time;
 
   SimulateUserLogin(kAccountId1);
@@ -5630,6 +5642,8 @@ TEST_P(WallpaperControllerTest, UpdateGooglePhotosDailyRefreshWallpaper) {
 }
 
 TEST_P(WallpaperControllerTest, DailyRefreshTimerStartsForDailyGooglePhotos) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   SimulateUserLogin(kAccountId1);
 
   GooglePhotosWallpaperParams params(
@@ -5653,6 +5667,8 @@ TEST_P(WallpaperControllerTest, DailyRefreshTimerStartsForDailyGooglePhotos) {
 }
 
 TEST_P(WallpaperControllerTest, DailyRefreshRetryTimerStartsOnFailedFetch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   SimulateUserLogin(kAccountId1);
 
   GooglePhotosWallpaperParams params(
@@ -5761,6 +5777,8 @@ TEST_P(WallpaperControllerTest, DailyGooglePhotosAreCached) {
 
 TEST_P(WallpaperControllerTest,
        SetGooglePhotosDailyRefreshAlbumId_UpdatesDailyRefreshTimer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWallpaperRefreshRevamp);
   using base::Time;
 
   pref_manager_->SetUserWallpaperInfo(
