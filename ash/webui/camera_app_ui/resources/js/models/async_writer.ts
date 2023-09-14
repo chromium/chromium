@@ -40,7 +40,7 @@ export class AsyncWriter {
    */
   async write(blob: Blob): Promise<void> {
     assert(!this.closed);
-    await this.queue.push(() => this.ops.write(blob));
+    await this.queue.push(() => this.ops.write(blob)).result;
   }
 
   /**
@@ -50,10 +50,12 @@ export class AsyncWriter {
    */
   async seek(offset: number): Promise<void> {
     assert(!this.closed);
-    await this.queue.push(async () => {
-      assert(this.ops.seek !== null);
-      await this.ops.seek(offset);
-    });
+    await this.queue
+        .push(async () => {
+          assert(this.ops.seek !== null);
+          await this.ops.seek(offset);
+        })
+        .result;
   }
 
   /**
@@ -66,11 +68,13 @@ export class AsyncWriter {
       return;
     }
     this.closed = true;
-    await this.queue.push(async () => {
-      if (this.ops.close !== null) {
-        await this.ops.close();
-      }
-    });
+    await this.queue
+        .push(async () => {
+          if (this.ops.close !== null) {
+            await this.ops.close();
+          }
+        })
+        .result;
   }
 
   /**

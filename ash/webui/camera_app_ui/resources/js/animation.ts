@@ -59,5 +59,5 @@ export async function play(
     await Promise.allSettled(getAnimations(el).map((a) => a.finished));
     el.classList.remove('animate');
   }
-  await queue.push(job);
+  await queue.push(job).result;
 }

@@ -469,7 +469,7 @@ export class OperationScheduler {
   }
 
   toggleVideoRecordingPause(): void {
-    void this.togglePausedEventQueue.push(async () => {
+    this.togglePausedEventQueue.push(async () => {
       if (this.ongoingOperationType !== OperationType.CAPTURE) {
         return;
       }
