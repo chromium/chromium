@@ -178,6 +178,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_INCOGNITO = "CCTIncognito";
     public static final String CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY =
             "CCTIncognitoAvailableToThirdParty";
+    public static final String CCT_MINIMIZED = "CCTMinimized";
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_NEW_DOWNLOAD_TAB = "CCTNewDownloadTab";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
@@ -510,6 +511,7 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
     public static final CachedFlag sCctIntentFeatureOverrides =
             new CachedFlag(CCT_INTENT_FEATURE_OVERRIDES, true);
+    public static final CachedFlag sCctMinimized = new CachedFlag(CCT_MINIMIZED, false);
     public static final CachedFlag sCctRemoveRemoteViewIds =
             new CachedFlag(CCT_REMOVE_REMOTE_VIEW_IDS, true);
     public static final CachedFlag sCctResizable90MaximumHeight =
@@ -625,6 +627,7 @@ public abstract class ChromeFeatureList {
         sCctIncognito,
         sCctIncognitoAvailableToThirdParty,
         sCctIntentFeatureOverrides,
+        sCctMinimized,
         sCctRemoveRemoteViewIds,
         sCctResizable90MaximumHeight,
         sCctResizableForThirdParties,
