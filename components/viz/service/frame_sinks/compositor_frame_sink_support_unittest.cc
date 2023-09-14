@@ -2079,7 +2079,7 @@ TEST_F(CompositorFrameSinkSupportTest,
   const auto props_with_frame =
       support_->GetRequestRegionProperties(VideoCaptureSubTarget());
   EXPECT_EQ((kDefaultOutputRect), props_with_frame->render_pass_subrect);
-  EXPECT_EQ((kDefaultSize), props_with_frame->root_render_pass_size);
+  EXPECT_EQ(kDefaultSize, props_with_frame->root_render_pass_size);
   EXPECT_TRUE(props_with_frame->transform_to_root.IsIdentity());
 }
 
@@ -2100,7 +2100,7 @@ TEST_F(CompositorFrameSinkSupportTest,
   const auto props_with_subtree =
       support_->GetRequestRegionProperties(kSubtreeId);
   EXPECT_EQ((gfx::Rect{0, 0, 13, 17}), props_with_subtree->render_pass_subrect);
-  EXPECT_EQ((kDefaultSize), props_with_subtree->root_render_pass_size);
+  EXPECT_EQ(kDefaultSize, props_with_subtree->root_render_pass_size);
   EXPECT_TRUE(props_with_subtree->transform_to_root.IsIdentity());
 }
 
@@ -2132,7 +2132,7 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   ASSERT_TRUE(region_properties);
   EXPECT_EQ((gfx::Rect{0, 0, 15, 14}), region_properties->render_pass_subrect);
-  EXPECT_EQ((kDefaultSize), region_properties->root_render_pass_size);
+  EXPECT_EQ(kDefaultSize, region_properties->root_render_pass_size);
   EXPECT_EQ(transform, region_properties->transform_to_root);
 }
 
@@ -2165,8 +2165,10 @@ TEST_F(
       support_->GetRequestRegionProperties(kSubtreeId);
   ASSERT_TRUE(region_properties);
 
-  EXPECT_EQ((gfx::Rect{0, 0, 15, 14}), region_properties->render_pass_subrect);
-  EXPECT_EQ((kDefaultSize), region_properties->root_render_pass_size);
+  // The render pass is partially offscreen and needs to be intersected with
+  // the viewport.
+  EXPECT_EQ((gfx::Rect{0, 0, 8, 10}), region_properties->render_pass_subrect);
+  EXPECT_EQ(kDefaultSize, region_properties->root_render_pass_size);
   EXPECT_EQ(transform, region_properties->transform_to_root);
 }
 
@@ -2210,7 +2212,7 @@ TEST_F(CompositorFrameSinkSupportTest,
   const auto region_properties = support_->GetRequestRegionProperties(crop_id);
   ASSERT_TRUE(region_properties);
   EXPECT_EQ((gfx::Rect{0, 0, 13, 13}), region_properties->render_pass_subrect);
-  EXPECT_EQ((kDefaultSize), region_properties->root_render_pass_size);
+  EXPECT_EQ(kDefaultSize, region_properties->root_render_pass_size);
   EXPECT_TRUE(region_properties->transform_to_root.IsIdentity());
 }
 

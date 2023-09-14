@@ -59,6 +59,24 @@ void AdjustPresentationFeedback(gfx::PresentationFeedback* feedback,
       std::max(feedback->latch_timestamp, feedback->ready_timestamp);
 }
 
+// Takes a given `rect` and then transforms it to a given space via
+// `transform_to_space` to be interested by an `intersectee_in_space`, then
+// transforms it back to its original space. NOTE: `transform_to_space` must be
+// invertible.
+gfx::Rect IntersectInSpace(const gfx::Rect& rect,
+                           const gfx::Transform& transform_to_space,
+                           const gfx::Rect& intersectee_in_space) {
+  const gfx::Rect rect_in_space = transform_to_space.MapRect(rect);
+
+  const gfx::Rect intersected_in_space =
+      gfx::IntersectRects(rect_in_space, intersectee_in_space);
+
+  const absl::optional<gfx::Rect> intersected =
+      transform_to_space.InverseMapRect(intersected_in_space);
+
+  return intersected.value_or(gfx::Rect{});
+}
+
 }  // namespace
 
 CompositorFrameSinkSupport::CompositorFrameSinkSupport(
@@ -1177,10 +1195,16 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
   const SubtreeCaptureId& id = absl::get<SubtreeCaptureId>(sub_target);
   for (const auto& render_pass : frame.render_pass_list) {
     if (render_pass->subtree_capture_id == id) {
-      out.render_pass_subrect = !render_pass->subtree_size.IsEmpty()
-                                    ? gfx::Rect(render_pass->subtree_size)
-                                    : render_pass->output_rect;
       out.transform_to_root = render_pass->transform_to_root_target;
+
+      if (!render_pass->subtree_size.IsEmpty()) {
+        out.render_pass_subrect = gfx::Rect(render_pass->subtree_size);
+      } else {
+        out.render_pass_subrect =
+            IntersectInSpace(render_pass->output_rect, out.transform_to_root,
+                             gfx::Rect(out.root_render_pass_size));
+      }
+
       if (!out.render_pass_subrect.IsEmpty() &&
           render_pass->output_rect.Contains(out.render_pass_subrect)) {
         return out;
