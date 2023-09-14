@@ -41,7 +41,7 @@ def get_names(xml_files):
 
 
 def histogram_xml_files():
-  return [open(f) for f in histogram_paths.ALL_XMLS]
+  return [open(f, encoding="utf-8") for f in histogram_paths.ALL_XMLS]
 
 
 def get_diff(revision):
