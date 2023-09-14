@@ -1,10 +1,11 @@
 caption: Control use of insecure content exceptions
+default: 3
 desc: |-
   Allows you to set whether users can add exceptions to allow mixed content for specific sites.
 
-            This policy can be overridden for specific URL patterns using the 'InsecureContentAllowedForUrls' and 'InsecureContentBlockedForUrls' policies.
+  This policy can be overridden for specific URL patterns using the 'InsecureContentAllowedForUrls' and 'InsecureContentBlockedForUrls' policies.
 
-            If this policy is left not set, users will be allowed to add exceptions to allow blockable mixed content and disable autoupgrades for optionally blockable mixed content.
+  If this policy is left not set, users will be allowed to add exceptions to allow blockable mixed content and disable autoupgrades for optionally blockable mixed content.
 example_value: 2
 features:
   dynamic_refresh: true

@@ -1,8 +1,9 @@
 caption: Default JavaScript setting
+default: null
 desc: |-
   Setting the policy to 1 lets websites run JavaScript. Setting the policy to 2 denies JavaScript.
 
-        Leaving it unset allows JavaScript, but users can change this setting.
+  Leaving it unset allows JavaScript, but users can change this setting.
 example_value: 1
 features:
   dynamic_refresh: true
