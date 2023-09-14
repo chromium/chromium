@@ -13,9 +13,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
+class PrefService;
+
 namespace signin {
 class IdentityManager;
-}
+class PersistentRepeatingTimer;
+}  // namespace signin
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -32,10 +35,11 @@ class PlusAddressService : public KeyedService {
   PlusAddressService();
   ~PlusAddressService() override;
 
-  // Initialize the PlusAddressService with the `IdentityManager` and a
-  // `SharedURLLoaderFactory`.
+  // Initialize the PlusAddressService with a `IdentityManager`, `PrefService`,
+  // and a `SharedURLLoaderFactory`.
   PlusAddressService(
       signin::IdentityManager* identity_manager,
+      PrefService* pref_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Returns `true` when plus addresses are supported. Currently requires only
@@ -71,6 +75,13 @@ class PlusAddressService : public KeyedService {
   void set_use_url_based_plus_addresses_for_testing(bool enabled);
 
  private:
+  bool is_enabled() const;
+
+  // Create a timer to keep `plus_address_by_site_` and `plus_addresses` in sync
+  // with a remote plus address server.
+  std::unique_ptr<signin::PersistentRepeatingTimer> CreateTimer(
+      PrefService* pref_service);
+
   // The user's existing set of plus addresses, scoped to sites.
   std::unordered_map<std::string, std::string> plus_address_by_site_;
 
@@ -81,6 +92,10 @@ class PlusAddressService : public KeyedService {
   // Stores pointer to IdentityManager instance. It must outlive the
   // PlusAddressService and can be null during tests.
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // A timer to periodically retrieve all plus addresses from a remote server
+  // to keep this service in sync.
+  std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
   // Controls whether this service uses the url-based approach or  the remote
   // service integration to create a plus-address.

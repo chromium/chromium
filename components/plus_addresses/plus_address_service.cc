@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/plus_addresses/plus_address_service.h"
+
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
@@ -61,22 +64,22 @@ absl::optional<std::string> MakePlusAddress(std::string email,
 
 PlusAddressService::PlusAddressService()
     : PlusAddressService(/*identity_manager=*/nullptr,
+                         /*pref_service=*/nullptr,
                          /*url_loader_factory=*/nullptr) {}
 
 PlusAddressService::~PlusAddressService() = default;
 
 PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
+      repeating_timer_(CreateTimer(pref_service)),
       plus_address_client_(identity_manager, std::move(url_loader_factory)) {}
 
 bool PlusAddressService::SupportsPlusAddresses(url::Origin origin) {
-  return base::FeatureList::IsEnabled(plus_addresses::kFeature) &&
-         identity_manager_ != nullptr &&
-         // Note that having a primary account implies that account's email will
-         // be populated.
-         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  // TODO(b/295187452): Also check `origin` here.
+  return is_enabled();
 }
 
 absl::optional<std::string> PlusAddressService::GetPlusAddress(
@@ -103,8 +106,7 @@ bool PlusAddressService::IsPlusAddress(std::string potential_plus_address) {
 void PlusAddressService::OfferPlusAddressCreation(
     const url::Origin& origin,
     PlusAddressCallback callback) {
-  if (!identity_manager_ ||
-      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!is_enabled()) {
     return;
   }
 
@@ -151,4 +153,26 @@ void PlusAddressService::set_use_url_based_plus_addresses_for_testing(
   use_url_based_plus_address_ = enabled;
 }
 
+bool PlusAddressService::is_enabled() const {
+  return base::FeatureList::IsEnabled(plus_addresses::kFeature) &&
+         identity_manager_ != nullptr &&
+         // Note that having a primary account implies that account's email will
+         // be populated.
+         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+std::unique_ptr<signin::PersistentRepeatingTimer>
+PlusAddressService::CreateTimer(PrefService* pref_service) {
+  if (!is_enabled() || !pref_service) {
+    return nullptr;
+  }
+  // TODO(b/297366364):
+  // - Make delay configurable via a Finch parameter.
+  // - Replace task with a RepeatingCallback to fetch plus addresses and update
+  //   the structures in this class.
+  return std::make_unique<signin::PersistentRepeatingTimer>(
+      pref_service, prefs::kPlusAddressLastFetchedTime,
+      /*delay=*/base::Hours(24),
+      /*task=*/base::DoNothing());
+}
 }  // namespace plus_addresses

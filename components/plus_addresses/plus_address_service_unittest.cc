@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/plus_addresses/features.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -69,13 +71,14 @@ TEST_F(PlusAddressServiceTest, DefaultSupportsPlusAddressesState) {
 }
 
 TEST_F(PlusAddressServiceTest, OfferPlusAddressCreation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
 
-  PlusAddressService service(
-      identity_test_env.identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
 
   // Make the PlusAddressService not use the service integration for testing.
   service.set_use_url_based_plus_addresses_for_testing(true);
@@ -126,9 +129,8 @@ TEST_F(PlusAddressServiceTest, LabelOverrideWithSpaces) {
 
 TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
   signin::IdentityTestEnvironment identity_test_env;
-  PlusAddressService service(
-      identity_test_env.identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
@@ -140,15 +142,17 @@ TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
 }
 
 TEST_F(PlusAddressServiceTest, PlusAddressCreationWithExistingPlus) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(plus_addresses::kFeature);
+
   const std::string expected_dummy_plus_address = "plus+1242@plus.plus";
 
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus+plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
 
-  PlusAddressService service(
-      identity_test_env.identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
   // Make the PlusAddressService not use the service integration for testing.
   service.set_use_url_based_plus_addresses_for_testing(true);
   const url::Origin no_subdomain_origin =
@@ -167,9 +171,8 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
   identity_test_env.MakeAccountAvailable(invalid_email,
                                          {signin::ConsentLevel::kSignin});
 
-  PlusAddressService service(
-      identity_test_env.identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
@@ -196,9 +199,8 @@ TEST_F(PlusAddressServiceDisabledTest, FeatureExplicitlyDisabled) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
-  PlusAddressService service(
-      identity_test_env.identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
   EXPECT_FALSE(service.SupportsPlusAddresses(
       url::Origin::Create(GURL("https://test.example"))));
 }
@@ -226,9 +228,8 @@ TEST_F(PlusAddressServiceEnabledTest, NoSignedInUser) {
   // Without a signed in user, the `SupportsPlusAddresses` function should
   // return `false`.
   signin::IdentityTestEnvironment identity_test_env;
-  PlusAddressService service(
-      identity_test_env.identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
   EXPECT_FALSE(service.SupportsPlusAddresses(
       url::Origin::Create(GURL("https://test.example"))));
 }
@@ -239,9 +240,8 @@ TEST_F(PlusAddressServiceEnabledTest, FullySupported) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
-  PlusAddressService service(
-      identity_test_env.identity_manager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
+                             nullptr);
   EXPECT_TRUE(service.SupportsPlusAddresses(
       url::Origin::Create(GURL("https://test.example"))));
 }

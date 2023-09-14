@@ -256,6 +256,7 @@ include_rules = [
   "+components/permissions",
   "+components/pdf/browser",
   "+components/pdf/common",
+  "+components/plus_addresses",
   "+components/policy",
   "+components/power_bookmarks",
   "+components/power_metrics",

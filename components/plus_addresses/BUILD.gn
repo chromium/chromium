@@ -6,10 +6,13 @@ source_set("plus_addresses") {
   sources = [
     "plus_address_client.cc",
     "plus_address_client.h",
+    "plus_address_prefs.cc",
+    "plus_address_prefs.h",
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
   deps = [
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//net",
     "//services/data_decoder/public/cpp",
@@ -48,6 +51,7 @@ source_set("unit_tests") {
     ":features",
     ":plus_addresses",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
