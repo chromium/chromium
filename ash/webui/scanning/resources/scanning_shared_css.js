@@ -8,8 +8,8 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './scanning_fonts_css.js';
 
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './scanning_shared_css.html.js';
 
 const styleMod = document.createElement('dom-module');
-styleMod.appendChild(html`{__html_template__}`.content);
+styleMod.appendChild(getTemplate().content);
 styleMod.register('scanning-shared');

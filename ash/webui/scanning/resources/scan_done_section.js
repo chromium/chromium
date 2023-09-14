@@ -13,8 +13,9 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './scan_done_section.html.js';
 import {FileType} from './scanning.mojom-webui.js';
 import {AppState, ScanCompleteAction} from './scanning_app_types.js';
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
@@ -39,7 +40,7 @@ class ScanDoneSectionElement extends ScanDoneSectionElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

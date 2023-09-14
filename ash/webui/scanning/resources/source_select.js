@@ -7,11 +7,12 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScanSource, SourceType} from './scanning.mojom-webui.js';
 import {alphabeticalCompare, getSourceTypeString} from './scanning_app_util.js';
 import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {getTemplate} from './source_select.html.js';
 
 /** @type {SourceType} */
 const DEFAULT_SOURCE_TYPE = SourceType.kFlatbed;
@@ -37,7 +38,7 @@ class SourceSelectElement extends SourceSelectElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   /**

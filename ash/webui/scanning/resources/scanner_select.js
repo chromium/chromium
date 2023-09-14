@@ -9,8 +9,9 @@ import './scan_settings_section.js';
 import './strings.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './scanner_select.html.js';
 import {Scanner} from './scanning.mojom-webui.js';
 import {ScannerArr, ScannerInfo} from './scanning_app_types.js';
 import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scanning_app_util.js';
@@ -34,7 +35,7 @@ class ScannerSelectElement extends ScannerSelectElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

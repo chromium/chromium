@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
@@ -263,27 +263,17 @@ non_web_component_files = [
   "select_behavior.js",
 ]
 
-preprocess_if_expr("preprocess_generated_files") {
-  in_folder = target_gen_dir
-  in_files = web_component_files
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess_generated.json"
-  deps = [ ":web_components" ]
+html_files = []
+html_wrapper_files = []
+foreach(f, web_component_files) {
+  file_name = string_replace(f, ".js", ".html")
+  html_files += [ file_name ]
+  html_wrapper_files += [ file_name + ".js" ]
 }
 
-preprocess_if_expr("preprocess_mojo") {
-  in_folder = target_gen_dir
-  in_files = [
-    "accessibility_features.mojom-webui.js",
-    "scanning.mojom-webui.js",
-  ]
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
-  deps = [ ":copy_webui_mojo" ]
-}
-
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_wrapper("html_wrapper_files") {
+  use_js = true
+  in_files = html_files
 }
 
 copy("copy_webui_mojo") {
@@ -298,14 +288,42 @@ copy("copy_webui_mojo") {
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  in_files = web_component_files + non_web_component_files
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess.json"
+}
+
+preprocess_if_expr("preprocess_generated_files") {
+  in_folder = target_gen_dir
+  in_files = html_wrapper_files
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_generated.json"
+  deps = [ ":html_wrapper_files" ]
+}
+
+preprocess_if_expr("preprocess_mojo") {
+  in_folder = target_gen_dir
+  in_files = [
+    "accessibility_features.mojom-webui.js",
+    "scanning.mojom-webui.js",
+  ]
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
+  deps = [ ":copy_webui_mojo" ]
+}
+
 generate_grd("build_grd") {
-  input_files = static_files + non_web_component_files
+  input_files = static_files
   input_files_base_dir = rebase_path(".", "//")
   deps = [
+    ":preprocess",
     ":preprocess_generated_files",
     ":preprocess_mojo",
   ]
   manifest_files = [
+    "$target_gen_dir/manifest_preprocess.json",
     "$target_gen_dir/manifest_preprocess_generated.json",
     "$target_gen_dir/manifest_preprocess_mojo.json",
   ]
