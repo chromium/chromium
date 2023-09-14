@@ -82,6 +82,7 @@ def clang_mac_builder(*, name, cores = 12, **kwargs):
             # Xcode.
             "xcode_build_version": "14c18",
         },
+        contact_team_email = "lexan@google.com",
         **kwargs
     )
 
@@ -96,6 +97,7 @@ def clang_tot_linux_builder(short_name, category = "ToT Linux", **kwargs):
             notify_emails = ["thomasanderson@chromium.org"],
             on_new_status = ["FAILURE"],
         )],
+        contact_team_email = "lexan@google.com",
         **kwargs
     )
 
@@ -105,6 +107,7 @@ ci.builder(
         category = "CFI|Linux",
         short_name = "CF",
     ),
+    contact_team_email = "lexan@google.com",
     notifies = ["CFI Linux"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -116,6 +119,7 @@ ci.builder(
         category = "CFI|Linux",
         short_name = "ToT",
     ),
+    contact_team_email = "lexan@google.com",
     notifies = ["CFI Linux"],
 )
 
@@ -126,6 +130,7 @@ ci.builder(
         category = "ToT Windows|Asan",
         short_name = "asn",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -135,6 +140,7 @@ ci.builder(
         category = "ToT Windows|Asan",
         short_name = "dll",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -143,6 +149,7 @@ ci.builder(
         category = "ToT Android",
         short_name = "rel",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -151,6 +158,7 @@ ci.builder(
         category = "ToT Android",
         short_name = "dbg",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -159,6 +167,7 @@ ci.builder(
         category = "ToT Android",
         short_name = "x64",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -167,6 +176,7 @@ ci.builder(
         category = "ToT Android",
         short_name = "x86",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -175,6 +185,7 @@ ci.builder(
         category = "ToT Code Coverage",
         short_name = "and",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -183,6 +194,7 @@ ci.builder(
         category = "ToT Android",
         short_name = "a64",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -191,6 +203,7 @@ ci.builder(
         category = "ToT Android",
         short_name = "asn",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -199,6 +212,7 @@ ci.builder(
         category = "ToT Android",
         short_name = "off",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -207,6 +221,7 @@ ci.builder(
         category = "ToT ChromeOS",
         short_name = "rel",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -215,6 +230,7 @@ ci.builder(
         category = "ToT ChromeOS",
         short_name = "dbg",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -231,6 +247,7 @@ ci.builder(
             short_name = "x64",
         ),
     ],
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -247,6 +264,7 @@ ci.builder(
             short_name = "arm64-off",
         ),
     ],
+    contact_team_email = "lexan@google.com",
 )
 
 clang_tot_linux_builder(
@@ -307,6 +325,7 @@ ci.builder(
         category = "ToT Windows",
         short_name = "rel",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -317,6 +336,7 @@ ci.builder(
         category = "ToT Windows",
         short_name = "dbg",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -326,6 +346,7 @@ ci.builder(
         category = "ToT Windows",
         short_name = "dll",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -335,6 +356,7 @@ ci.builder(
         category = "ToT Windows|x64",
         short_name = "rel",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -345,6 +367,7 @@ ci.builder(
         category = "ToT Windows|x64",
         short_name = "dbg",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -355,6 +378,7 @@ ci.builder(
         category = "ToT Windows|x64",
         short_name = "dll",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -365,6 +389,7 @@ ci.builder(
         category = "ToT Windows|Asan",
         short_name = "fuz",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -394,6 +419,7 @@ ci.builder(
         category = "ToT Windows",
         short_name = "pgo-arm",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -404,6 +430,7 @@ ci.builder(
         category = "ToT Code Coverage",
         short_name = "win",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -413,6 +440,7 @@ ci.builder(
         category = "ToT Windows|x64",
         short_name = "pgo",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -421,6 +449,7 @@ ci.builder(
         category = "ToT Windows",
         short_name = "lxw",
     ),
+    contact_team_email = "lexan@google.com",
 )
 
 ci.builder(
@@ -433,6 +462,7 @@ ci.builder(
         category = "iOS|public",
         short_name = "sim",
     ),
+    contact_team_email = "lexan@google.com",
     xcode = xcode.x14main,
 )
 
@@ -446,6 +476,7 @@ ci.builder(
         category = "iOS|public",
         short_name = "dev",
     ),
+    contact_team_email = "lexan@google.com",
     xcode = xcode.x14main,
 )
 
