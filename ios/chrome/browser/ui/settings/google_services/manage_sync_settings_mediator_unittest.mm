@@ -298,14 +298,16 @@ TEST_F(ManageSyncSettingsMediatorTest,
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
   CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSyncing);
   SimulateFirstSetupSyncOnWithConsentEnabled();
-  EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
-      .WillOnce(Return(syncer::SyncService::DisableReasonSet()))
-      .WillOnce(Return(syncer::SyncService::DisableReasonSet(
-          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
+  syncer::SyncService::DisableReasonSet disable_reasons =
+      syncer::SyncService::DisableReasonSet();
+  ON_CALL(*sync_service_mock_, GetDisableReasons())
+      .WillByDefault([&disable_reasons]() { return disable_reasons; });
 
   // Loads the Sync page once in success state.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
   // Loads the Sync page again in disabled state.
+  disable_reasons = syncer::SyncService::DisableReasonSet(
+      {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
   [mediator_ onSyncStateChanged];
 
   EXPECT_TRUE([mediator_.consumer.tableViewModel
