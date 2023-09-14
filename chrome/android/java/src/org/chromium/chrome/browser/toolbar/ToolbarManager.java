@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
@@ -699,6 +700,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     mEphemeralTabCoordinatorSupplier,
                     mTabCreatorManager.getTabCreator(
                             mIncognitoStateProvider.isIncognitoSelected()));
+            OmniboxSuggestionsDropdownScrollListener scrollListener =
+                    toolbarLayout instanceof OmniboxSuggestionsDropdownScrollListener
+                    ? (OmniboxSuggestionsDropdownScrollListener) toolbarLayout
+                    : null;
             // clang-format off
             LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
                     mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
@@ -721,7 +726,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     merchantTrustSignalsCoordinatorSupplier,
                     omniboxActionDelegate, mControlsVisibilityDelegate,
                     ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
-                    toolbarLayout, openHistoryClustersDelegate, tabModelSelectorSupplier);
+                    scrollListener, openHistoryClustersDelegate, tabModelSelectorSupplier);
             // clang-format on
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);

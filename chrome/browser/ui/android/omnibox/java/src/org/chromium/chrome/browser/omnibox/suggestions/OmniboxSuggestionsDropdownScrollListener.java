@@ -12,10 +12,10 @@ public interface OmniboxSuggestionsDropdownScrollListener {
     /**
      * Invoked whenever the User scrolls the list.
      */
-    default void onSuggestionDropdownScroll(){};
+    void onSuggestionDropdownScroll();
 
     /**
      * Invoked whenever the User scrolls the list to the top.
      */
-    default void onSuggestionDropdownOverscrolledToTop(){};
+    void onSuggestionDropdownOverscrolledToTop();
 }
