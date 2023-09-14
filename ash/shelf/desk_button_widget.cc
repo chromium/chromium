@@ -18,6 +18,7 @@
 #include "base/i18n/rtl.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -196,13 +197,13 @@ bool DeskButtonWidget::ShouldBeVisible() const {
 }
 
 void DeskButtonWidget::SetExpanded(bool expanded) {
-  if (is_expanded_ == expanded) {
+  if (is_expanded_ == expanded || !ShouldBeVisible()) {
     return;
   }
 
   is_expanded_ = expanded;
 
-  if (is_horizontal_shelf_ && ShouldBeVisible()) {
+  if (is_horizontal_shelf_) {
     // If we are in horizontal alignment, then we need to recalculate and update
     // the hotseat bounds with the new button state before recalculating and
     // updating the desk button bounds so that the hotseat provides the correct
@@ -232,8 +233,12 @@ void DeskButtonWidget::PrepareForAlignmentChange(ShelfAlignment new_alignment) {
 }
 
 void DeskButtonWidget::CalculateTargetBounds() {
-  target_bounds_ =
-      is_expanded_ ? GetTargetExpandedBounds() : GetTargetShrunkBounds();
+  if (ShouldBeVisible()) {
+    target_bounds_ =
+        is_expanded_ ? GetTargetExpandedBounds() : GetTargetShrunkBounds();
+  } else {
+    target_bounds_ = gfx::Rect();
+  }
 }
 
 gfx::Rect DeskButtonWidget::GetTargetBounds() const {
@@ -259,7 +264,13 @@ void DeskButtonWidget::UpdateLayout(bool animate) {
     return;
   }
 
-  const bool animate_transform = initial_bounds.size() == target_bounds_.size();
+  // We only animate x axis movement for bottom shelf and y axis movement for
+  // side shelf when the widget size remains the same and non empty.
+  const bool animate_transform =
+      initial_bounds.size() == target_bounds_.size() &&
+      !target_bounds_.IsEmpty() &&
+      ((is_horizontal_shelf_ && initial_bounds.y() == target_bounds_.y()) ||
+       (!is_horizontal_shelf_ && initial_bounds.x() == target_bounds_.x()));
 
   if (animate_transform) {
     const gfx::Transform initial_transform = gfx::TransformBetweenRects(

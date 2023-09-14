@@ -2013,7 +2013,8 @@ void ShelfLayoutManager::UpdateWorkAreaInsetsAndNotifyObservers(
 }
 
 void ShelfLayoutManager::HandleScrollableShelfContainerBoundsChange() const {
-  if (DeskButtonWidget* desk_button = shelf_widget_->desk_button_widget()) {
+  DeskButtonWidget* desk_button = shelf_widget_->desk_button_widget();
+  if (desk_button && desk_button->IsVisible()) {
     // The desk button widget bounds depend on the scrollable shelf container
     // bounds.
     ScrollableShelfView* scrollable_shelf_view =
@@ -2024,12 +2025,14 @@ void ShelfLayoutManager::HandleScrollableShelfContainerBoundsChange() const {
     // bounds because we want to avoid a cycle where the button shrinks, the
     // shelf is no longer overflown, the button expands because the shelf is no
     // longer overflown, the shelf is overflown again, etc.
-    if (shelf_->IsHorizontalAlignment()) {
-      desk_button->SetExpanded(
-          !scrollable_shelf_view->CalculateShelfOverflowForAvailableLength(
-              scrollable_shelf_view->GetLocalBounds().width() +
-              desk_button->GetPreferredLength() -
-              desk_button->GetPreferredExpandedWidth()));
+    bool should_expand =
+        shelf_->IsHorizontalAlignment() &&
+        !scrollable_shelf_view->CalculateShelfOverflowForAvailableLength(
+            scrollable_shelf_view->GetLocalBounds().width() +
+            desk_button->GetPreferredLength() -
+            desk_button->GetPreferredExpandedWidth());
+    if (desk_button->is_expanded() != should_expand) {
+      desk_button->SetExpanded(should_expand);
     } else {
       // `SetExpanded` already calculates and sets the target bounds, so we only
       // have to do this when the shelf is vertical.
