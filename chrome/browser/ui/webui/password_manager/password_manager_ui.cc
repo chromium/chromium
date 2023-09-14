@@ -428,6 +428,12 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
+  source->AddString("passwordSharingLearnMoreURL",
+                    chrome::kPasswordSharingLearnMoreURL);
+
+  source->AddString("passwordSharingTroubleshootURL",
+                    chrome::kPasswordSharingTroubleshootURL);
+
   source->AddString("passwordManagerLearnMoreURL",
                     chrome::kPasswordManagerLearnMoreURL);
 

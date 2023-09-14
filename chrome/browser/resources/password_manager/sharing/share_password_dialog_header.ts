@@ -26,10 +26,25 @@ export class SharePasswordDialogHeaderElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      isError: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  isError: boolean;
+
   private onHelpClick_() {
-    // TODO(crbug/1445526): Update learn more url to be more specific.
+    if (this.isError) {
+      OpenWindowProxyImpl.getInstance().openUrl(
+          loadTimeData.getString('passwordSharingTroubleshootURL'));
+      return;
+    }
     OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('passwordManagerLearnMoreURL'));
+        loadTimeData.getString('passwordSharingLearnMoreURL'));
   }
 }
 

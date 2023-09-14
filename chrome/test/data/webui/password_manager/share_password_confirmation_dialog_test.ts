@@ -103,7 +103,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
                   substitutions: [
                     'New User',
                     SHARED_PASSWORD_NAME,
-                    dialog.i18n('passwordManagerLearnMoreURL'),
+                    dialog.i18n('passwordSharingLearnMoreURL'),
                   ],
                 })
             .toString());
@@ -164,7 +164,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
                     'sharePasswordConfirmationDescriptionMultipleRecipients', {
                       substitutions: [
                         SHARED_PASSWORD_NAME,
-                        dialog.i18n('passwordManagerLearnMoreURL'),
+                        dialog.i18n('passwordSharingLearnMoreURL'),
                       ],
                     })
                 .toString());

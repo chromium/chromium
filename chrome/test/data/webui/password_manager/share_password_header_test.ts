@@ -20,7 +20,7 @@ suite('SharePasswordHeaderTest', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
 
-  test('HelpIconClickOpensHelpUrl', async function() {
+  test('HelpIconClickOpensSharingHelpUrl', async function() {
     const header = document.createElement('share-password-dialog-header');
     document.body.appendChild(header);
     flush();
@@ -29,6 +29,19 @@ suite('SharePasswordHeaderTest', function() {
     header.$.helpButton.click();
 
     const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, loadTimeData.getString('passwordManagerLearnMoreURL'));
+    assertEquals(url, loadTimeData.getString('passwordSharingLearnMoreURL'));
+  });
+
+  test('HelpIconClickOpensSharingTroubleshootHelpUrl', async function() {
+    const header = document.createElement('share-password-dialog-header');
+    header.isError = true;
+    document.body.appendChild(header);
+    flush();
+
+    assertTrue(isVisible(header.$.helpButton));
+    header.$.helpButton.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('passwordSharingTroubleshootURL'));
   });
 });

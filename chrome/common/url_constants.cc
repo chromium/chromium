@@ -246,6 +246,12 @@ const char kPasswordManagerLearnMoreURL[] =
 const char kPasswordManagerImportLearnMoreURL[] =
     "https://support.google.com/chrome/?p=import-passwords-desktop";
 
+const char kPasswordSharingLearnMoreURL[] =
+    "https://support.google.com/chrome/?p=password_sharing";
+
+const char kPasswordSharingTroubleshootURL[] =
+    "https://support.google.com/chrome/?p=password_sharing_troubleshoot";
+
 const char kPaymentMethodsURL[] =
     "https://pay.google.com/payments/"
     "home?utm_source=chrome&utm_medium=settings&utm_campaign=chrome-payment#"

@@ -120,7 +120,7 @@ export class SharePasswordConfirmationDialogElement extends
           'sharePasswordConfirmationDescriptionMultipleRecipients', {
             substitutions: [
               this.passwordName,
-              this.i18n('passwordManagerLearnMoreURL'),
+              this.i18n('passwordSharingLearnMoreURL'),
             ],
           });
     }
@@ -129,7 +129,7 @@ export class SharePasswordConfirmationDialogElement extends
           substitutions: [
             this.recipients[0].displayName,
             this.passwordName,
-            this.i18n('passwordManagerLearnMoreURL'),
+            this.i18n('passwordSharingLearnMoreURL'),
           ],
         });
   }
