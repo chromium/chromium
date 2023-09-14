@@ -355,6 +355,9 @@ media::VAImplementation VendorStringToImplementationType(
   } else if (base::StartsWith(va_vendor_string, "Intel iHD driver",
                               base::CompareCase::SENSITIVE)) {
     return media::VAImplementation::kIntelIHD;
+  } else if (base::StartsWith(va_vendor_string, "Chromium fake libva driver",
+                              base::CompareCase::SENSITIVE)) {
+    return media::VAImplementation::kChromiumFakeDriver;
   }
   return media::VAImplementation::kOther;
 }
@@ -2498,6 +2501,7 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   // plumbed for JPEG decoding and encoding.
   const bool use_drm_prime_2 =
       (GetImplementationType() == VAImplementation::kIntelIHD ||
+       GetImplementationType() == VAImplementation::kChromiumFakeDriver ||
        GetImplementationType() == VAImplementation::kMesaGallium) &&
       !protected_content &&
       pixmap->GetBufferFormatModifier() != gfx::NativePixmapHandle::kNoModifier;

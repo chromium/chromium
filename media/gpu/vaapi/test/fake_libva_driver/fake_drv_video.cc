@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <va/va.h>
 #include <va/va_backend.h>
+#include <va/va_drmcommon.h>
 
 #include <set>
 
@@ -777,8 +778,11 @@ extern "C" VAStatus DLL_EXPORT __vaDriverInit_1_0(VADriverContextP ctx) {
 
   ctx->version_major = VA_MAJOR_VERSION;
   ctx->version_minor = VA_MINOR_VERSION;
-  ctx->str_vendor = "libfake";
-  ctx->pDriverData = new media::internal::FakeDriver();
+  ctx->str_vendor = "Chromium fake libva driver";
+  CHECK(ctx->drm_state);
+
+  ctx->pDriverData = new media::internal::FakeDriver(
+      (static_cast<drm_state*>(ctx->drm_state))->fd);
 
   ctx->max_profiles = MAX_PROFILES;
   ctx->max_entrypoints = MAX_ENTRYPOINTS;

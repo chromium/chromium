@@ -28,9 +28,15 @@ source_set("fake_libva_driver_internals") {
     "fake_surface.cc",
     "fake_surface.h",
     "object_tracker.h",
+    "scoped_bo_mapping_factory.cc",
+    "scoped_bo_mapping_factory.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build/config/linux/libdrm",
+  ]
+  public_deps = [ "//third_party/minigbm" ]
 }
 
 test("fake_libva_driver_unittest") {

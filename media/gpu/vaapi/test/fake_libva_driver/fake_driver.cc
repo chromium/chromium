@@ -6,7 +6,8 @@
 
 namespace media::internal {
 
-FakeDriver::FakeDriver() = default;
+FakeDriver::FakeDriver(int drm_fd) : scoped_bo_mapping_factory_(drm_fd) {}
+
 FakeDriver::~FakeDriver() = default;
 
 FakeConfig::IdType FakeDriver::CreateConfig(
@@ -33,7 +34,8 @@ FakeSurface::IdType FakeDriver::CreateSurface(
     unsigned int width,
     unsigned int height,
     std::vector<VASurfaceAttrib> attrib_list) {
-  return surface_.CreateObject(format, width, height, std::move(attrib_list));
+  return surface_.CreateObject(format, width, height, std::move(attrib_list),
+                               scoped_bo_mapping_factory_);
 }
 
 bool FakeDriver::SurfaceExists(FakeSurface::IdType id) {

@@ -12,6 +12,7 @@
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/object_tracker.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/scoped_bo_mapping_factory.h"
 
 namespace media::internal {
 
@@ -20,7 +21,10 @@ namespace media::internal {
 // thread-safe.
 class FakeDriver {
  public:
-  FakeDriver();
+  // FakeDriver doesn't dup() or close() |drm_fd|, i.e., it's expected that the
+  // driver's user maintains the FD valid at least until after vaTerminate()
+  // returns.
+  explicit FakeDriver(int drm_fd);
   FakeDriver(const FakeDriver&) = delete;
   FakeDriver& operator=(const FakeDriver&) = delete;
   ~FakeDriver();
@@ -59,6 +63,11 @@ class FakeDriver {
   void DestroyBuffer(FakeBuffer::IdType id);
 
  private:
+  // |scoped_bo_mapping_factory_| is used by FakeSurface to map BOs. It needs
+  // to be declared before |surface_| since we pass a reference to
+  // |scoped_bo_mapping_factory_| when creating a FakeSurface. Therefore,
+  // |scoped_bo_mapping_factory_| should outlive all FakeSurface instances.
+  ScopedBOMappingFactory scoped_bo_mapping_factory_;
   ObjectTracker<FakeConfig> config_;
   ObjectTracker<FakeSurface> surface_;
   ObjectTracker<FakeContext> context_;

@@ -9,19 +9,31 @@
 
 #include <vector>
 
+#include "media/gpu/vaapi/test/fake_libva_driver/scoped_bo_mapping_factory.h"
+
 namespace media::internal {
 
 // Class used for tracking a VASurface and all information relevant to it.
-// All objects of this class are immutable and thread safe.
+//
+// The metadata (ID, format, dimensions, and attribute list) of a FakeSurface
+// is immutable. The accessors for such metadata are thread-safe. The contents
+// of the backing buffer object (if applicable) are mutable, but the reference
+// to that buffer object is immutable, i.e., the backing buffer object is
+// always the same, but the contents may change. Thus, while the accessor for
+// the mapped buffer object is thread-safe, writes and reads to this mapping
+// must be synchronized externally.
 class FakeSurface {
  public:
   using IdType = VASurfaceID;
 
+  // Note: |scoped_bo_mapping_factory| must outlive the `FakeSurface` since
+  // it's used to unmap the backing buffer object (if applicable).
   FakeSurface(IdType id,
               unsigned int format,
               unsigned int width,
               unsigned int height,
-              std::vector<VASurfaceAttrib> attrib_list);
+              std::vector<VASurfaceAttrib> attrib_list,
+              ScopedBOMappingFactory& scoped_bo_mapping_factory);
   FakeSurface(const FakeSurface&) = delete;
   FakeSurface& operator=(const FakeSurface&) = delete;
   ~FakeSurface();
@@ -31,6 +43,7 @@ class FakeSurface {
   unsigned int GetWidth() const;
   unsigned int GetHeight() const;
   const std::vector<VASurfaceAttrib>& GetSurfaceAttribs() const;
+  const ScopedBOMapping& GetMappedBO() const;
 
  private:
   const IdType id_;
@@ -38,6 +51,7 @@ class FakeSurface {
   const unsigned int width_;
   const unsigned int height_;
   const std::vector<VASurfaceAttrib> attrib_list_;
+  ScopedBOMapping mapped_bo_;
 };
 
 }  // namespace media::internal

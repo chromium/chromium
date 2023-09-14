@@ -93,6 +93,7 @@ enum class VAImplementation {
   kMesaGallium,
   kIntelI965,
   kIntelIHD,
+  kChromiumFakeDriver,
   kOther,
   kInvalid,
 };

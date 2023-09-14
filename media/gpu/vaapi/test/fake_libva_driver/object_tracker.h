@@ -26,10 +26,11 @@ class ObjectTracker {
   ~ObjectTracker() = default;
 
   template <class... Args>
-  typename T::IdType CreateObject(Args... args) {
+  typename T::IdType CreateObject(Args&&... args) {
     base::AutoLock lock(lock_);
 
-    objects_.push_back(std::make_unique<T>(next_id_, args...));
+    objects_.push_back(
+        std::make_unique<T>(next_id_, std::forward<Args>(args)...));
 
     do {
       CHECK_LT(next_id_, std::numeric_limits<typename T::IdType>::max());
