@@ -154,7 +154,6 @@ class SourceBuilder {
   uint64_t source_event_id_ = 123;
   base::Time source_time_;
   base::TimeDelta expiry_;
-  absl::optional<base::TimeDelta> event_report_window_;
   absl::optional<base::TimeDelta> aggregatable_report_window_;
   attribution_reporting::SuitableOrigin source_origin_;
   attribution_reporting::DestinationSet destination_sites_;

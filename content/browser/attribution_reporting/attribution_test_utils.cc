@@ -287,7 +287,7 @@ StoredSource SourceBuilder::BuildStored() const {
       expiry_time,
       event_report_windows_.value_or(
           *attribution_reporting::EventReportWindows::CreateWindows(
-              base::Milliseconds(0), {event_report_window_.value_or(expiry_)})),
+              base::Milliseconds(0), {expiry_})),
       ComputeReportWindowTime(GetReportWindowTimeForTesting(
                                   aggregatable_report_window_, source_time_),
                               expiry_time),
