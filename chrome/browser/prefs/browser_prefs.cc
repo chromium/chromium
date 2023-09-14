@@ -912,6 +912,12 @@ inline constexpr char kChromeCleaner[] = "chrome_cleaner";
 inline constexpr char kSettingsResetPrompt[] = "settings_reset_prompt";
 #endif
 
+// Deprecated 09/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kGestureEducationNotificationShown[] =
+    "ash.gesture_education.notification_shown";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1040,6 +1046,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN)
   registry->RegisterDictionaryPref(kSwReporter);
   registry->RegisterDictionaryPref(kChromeCleaner);
+#endif
+
+  // Deprecated 09/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kGestureEducationNotificationShown, true);
 #endif
 }
 
@@ -2111,6 +2122,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_WIN)
   local_state->ClearPref(kSwReporter);
   local_state->ClearPref(kChromeCleaner);
+#endif
+
+// Added 09/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kGestureEducationNotificationShown);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

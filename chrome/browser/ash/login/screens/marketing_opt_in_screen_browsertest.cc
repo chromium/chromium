@@ -212,8 +212,6 @@ MarketingOptInScreen* MarketingOptInScreenTest::GetScreen() {
 void MarketingOptInScreenTest::ShowMarketingOptInScreen() {
   PerformLogin();
   OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      prefs::kGestureEducationNotificationShown, true);
   LoginDisplayHost::default_host()->StartWizard(
       MarketingOptInScreenView::kScreenId);
 }

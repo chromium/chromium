@@ -880,13 +880,6 @@ Style notes:
       <message name="IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY" desc="The body text of a dialog that tells users the device must be restarted right now. MANAGER can be a domain or an email address.">
         <ph name="MANAGER">$1<ex>google.com</ex></ph> requires you to update your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> immediately
       </message>
-
-      <message name="IDS_GESTURE_NOTIFICATION_TITLE" desc="The title of the notification to show off new gestures.">
-        Try gestures to navigate
-      </message>
-      <message name="IDS_GESTURE_NOTIFICATION_MESSAGE_LEARN_MORE" desc="The body of the notification to show off new gestures. This notification body links to the help page for the gestures.">
-        Use gestures to quickly switch between apps and interact with your Chromebook in tablet mode.
-      </message>
       <message name="IDS_CHANGE_ENTER_OVERVIEW_REVERSE_GESTURE" desc="The toast of changing enter overview gesture">
         Swipe up with three fingers to enter Overview
       </message>

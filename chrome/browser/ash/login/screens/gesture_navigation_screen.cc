@@ -102,11 +102,6 @@ void GestureNavigationScreen::HideImpl() {}
 void GestureNavigationScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionExitPressed) {
-    // Make sure the user does not see a notification about the new gestures
-    // since they have already gone through this gesture education screen.
-    ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-        prefs::kGestureEducationNotificationShown, true);
-
     RecordPageShownTimeMetrics();
     exit_callback_.Run(Result::NEXT);
     return;

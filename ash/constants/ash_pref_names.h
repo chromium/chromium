@@ -758,11 +758,6 @@ inline constexpr char kAllowMGSToStoreDisplayProperties[] =
 inline constexpr char kFullscreenAlertEnabled[] =
     "ash.fullscreen_alert_enabled";
 
-// A boolean pref storing whether the gesture education notification has ever
-// been shown to the user, which we use to stop showing it again.
-inline constexpr char kGestureEducationNotificationShown[] =
-    "ash.gesture_education.notification_shown";
-
 // A boolean pref which stores whether a stylus has been seen before.
 inline constexpr char kHasSeenStylus[] = "ash.has_seen_stylus";
 // A boolean pref which stores whether a the palette warm welcome bubble

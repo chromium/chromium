@@ -10,7 +10,6 @@
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/cast/cast_notification_controller.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
-#include "ash/system/gesture_education/gesture_education_notification_controller.h"
 #include "ash/system/hotspot/hotspot_notifier.h"
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
@@ -48,8 +47,6 @@ SystemNotificationController::SystemNotificationController()
           features::IsQsRevampEnabled()
               ? std::make_unique<DoNotDisturbNotificationController>()
               : nullptr),
-      gesture_education_(
-          std::make_unique<GestureEducationNotificationController>()),
       lock_screen_(features::IsQsRevampEnabled()
                        ? std::make_unique<LockScreenNotificationController>()
                        : nullptr),
