@@ -64,7 +64,6 @@ class ExtensionTelemetryServiceBrowserTest
         /*enabled_features=*/
         {kExtensionTelemetry, kExtensionTelemetryReportContactedHosts,
          kExtensionTelemetryReportHostsContactedViaWebSocket,
-         kExtensionTelemetryDeclarativeNetRequestSignal,
          kExtensionTelemetryTabsApiSignal},
         /*disabled_features=*/
         {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer});

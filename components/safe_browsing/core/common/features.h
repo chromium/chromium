@@ -158,10 +158,6 @@ BASE_DECLARE_FEATURE(
 // telemetry reports to SB servers.
 BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 
-// Enables collection of DeclarativeNetRequest rules when an extension invokes
-// the updateDynamicRules()/updateSessionRules() APIs.
-BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal);
-
 // Enables remotely disabling of malicious off-store extensions identified in
 // Extension Telemetry service reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
