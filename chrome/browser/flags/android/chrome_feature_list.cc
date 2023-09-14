@@ -171,6 +171,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidHatsRefactor,
     &kAndroidSearchEngineChoiceNotification,
     &kAndroidImprovedBookmarks,
+    &kAndroidNoVisibleHintForTablets,
     &kAndroidVisibleUrlTruncation,
     &kAnimatedImageDragShadow,
     &kAppMenuMobileSiteOption,
@@ -482,6 +483,10 @@ BASE_FEATURE(kAndroidSearchEngineChoiceNotification,
 
 BASE_FEATURE(kAndroidImprovedBookmarks,
              "AndroidImprovedBookmarks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidNoVisibleHintForTablets,
+             "AndroidNoVisibleHintForTablets",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidVisibleUrlTruncation,

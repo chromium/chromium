@@ -99,6 +99,10 @@ public class OmniboxFeatures {
     private static final MutableFlagWithSafeDefault sVisibleUrlTruncationFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION, false);
 
+    private static final MutableFlagWithSafeDefault sNoVisibleHintForTablets =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_TABLETS, false);
+
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
     /**
@@ -255,5 +259,14 @@ public class OmniboxFeatures {
      */
     public static boolean shouldTruncateVisibleUrl() {
         return sVisibleUrlTruncationFlag.isEnabled();
+    }
+
+    /**
+     * @param context The activity context.
+     * @return Whether to calculate the visible hint. We always calculate the visible hint, except
+     * on tablets that have sNoVisibleHintForTablets enabled.
+     */
+    public static boolean shouldCalculateVisibleHint(Context context) {
+        return !(isTablet(context) && sNoVisibleHintForTablets.isEnabled());
     }
 }
