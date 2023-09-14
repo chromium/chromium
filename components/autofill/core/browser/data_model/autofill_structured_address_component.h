@@ -140,11 +140,7 @@ class AddressComponent {
  public:
   // Constructor for a compound child node.
   AddressComponent(ServerFieldType storage_type,
-                   AddressComponent* parent,
-                   unsigned int merge_mode);
-
-  AddressComponent(ServerFieldType storage_type,
-                   std::vector<std::unique_ptr<AddressComponent>> children,
+                   std::vector<std::unique_ptr<AddressComponent>> subcomponents,
                    unsigned int merge_mode);
 
   // Disallows copies and direct assignments since they are not needed in the
@@ -303,7 +299,7 @@ class AddressComponent {
   bool MergeTokenEquivalentComponent(const AddressComponent& newer_component);
 
   // Returns a constant vector of pointers to the child nodes of the component.
-  const std::vector<AddressComponent*>& Subcomponents() const {
+  const std::vector<std::unique_ptr<AddressComponent>>& Subcomponents() const {
     return subcomponents_;
   }
 
@@ -493,7 +489,7 @@ class AddressComponent {
 
   // Function to be called by child nodes on construction to register
   // themselves as child nodes.
-  void RegisterChildNode(AddressComponent* child);
+  void RegisterChildNode(std::unique_ptr<AddressComponent> child);
 
   // Returns the node in the tree that supports `field_type`. This node, if it
   // exists, is unique by definition. Returns nullptr if no such node exists.
@@ -567,10 +563,7 @@ class AddressComponent {
   const ServerFieldType storage_type_;
 
   // A vector of children of the component.
-  std::vector<std::unique_ptr<AddressComponent>> children_;
-
-  // A vector of pointers to the subcomponents.
-  std::vector<AddressComponent*> subcomponents_;
+  std::vector<std::unique_ptr<AddressComponent>> subcomponents_;
 
   // A vector that contains the tokens of |value_| after normalization,
   // meaning that it was converted to lower case and diacritics have been
@@ -580,7 +573,7 @@ class AddressComponent {
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.
-  raw_ptr<AddressComponent> parent_;
+  raw_ptr<AddressComponent> parent_ = nullptr;
 
   // Defines if and how two components can be merged.
   int merge_mode_;

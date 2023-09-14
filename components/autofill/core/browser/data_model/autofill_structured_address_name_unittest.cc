@@ -89,7 +89,7 @@ void TestLastNameParsing(const std::u16string& last_name,
                          const std::u16string& target_second) {
   SCOPED_TRACE(last_name);
 
-  NameLast last_name_component(nullptr);
+  NameLast last_name_component;
   last_name_component.SetValueForType(NAME_LAST, last_name,
                                       VerificationStatus::kObserved);
 

@@ -30,17 +30,13 @@ using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
 class TestAtomicFirstNameAddressComponent : public AddressComponent {
  public:
   TestAtomicFirstNameAddressComponent()
-      : TestAtomicFirstNameAddressComponent(nullptr) {}
-  explicit TestAtomicFirstNameAddressComponent(AddressComponent* parent)
-      : AddressComponent(NAME_FIRST, parent, MergeMode::kDefault) {}
+      : AddressComponent(NAME_FIRST, {}, MergeMode::kDefault) {}
 };
 
 class TestAtomicMiddleNameAddressComponent : public AddressComponent {
  public:
   TestAtomicMiddleNameAddressComponent()
-      : TestAtomicMiddleNameAddressComponent(nullptr) {}
-  explicit TestAtomicMiddleNameAddressComponent(AddressComponent* parent)
-      : AddressComponent(NAME_MIDDLE, parent, MergeMode::kDefault) {}
+      : AddressComponent(NAME_MIDDLE, {}, MergeMode::kDefault) {}
 
   const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override {
     constexpr ServerFieldTypeSet supported_types{NAME_MIDDLE_INITIAL};
@@ -65,52 +61,40 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
 class TestAtomicLastNameAddressComponent : public AddressComponent {
  public:
   TestAtomicLastNameAddressComponent()
-      : TestAtomicLastNameAddressComponent(nullptr) {}
-  explicit TestAtomicLastNameAddressComponent(AddressComponent* parent)
-      : AddressComponent(NAME_LAST, parent, MergeMode::kDefault) {}
+      : AddressComponent(NAME_LAST, {}, MergeMode::kDefault) {}
 };
 
 // Creates a compound name for testing purposes.
 class TestCompoundNameAddressComponent : public AddressComponent {
  public:
   TestCompoundNameAddressComponent()
-      : TestCompoundNameAddressComponent(nullptr) {}
-  explicit TestCompoundNameAddressComponent(AddressComponent* parent)
-      : AddressComponent(NAME_FULL,
-                         parent,
-                         MergeMode::kDefault) {}
-
-  AddressComponent* GetFirstNameSubComponentForTesting() {
-    return &first_name_;
+      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
   }
 
- private:
-  TestAtomicFirstNameAddressComponent first_name_{this};
-  TestAtomicMiddleNameAddressComponent middle_name_{this};
-  TestAtomicLastNameAddressComponent last_name_{this};
+  AddressComponent* GetFirstNameSubComponentForTesting() {
+    return GetNodeForTypeForTesting(NAME_FIRST);
+  }
 };
 
 // Creates a compound name for testing purposes that uses a method for parsing.
 class TestCompoundNameMethodParsedAddressComponent : public AddressComponent {
  public:
   TestCompoundNameMethodParsedAddressComponent()
-      : TestCompoundNameMethodParsedAddressComponent(nullptr) {}
-  explicit TestCompoundNameMethodParsedAddressComponent(
-      AddressComponent* parent)
-      : AddressComponent(NAME_FULL,
-                         parent,
-                         MergeMode::kDefault) {}
+      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+  }
 
   bool ParseValueAndAssignSubcomponentsByMethod() override {
     // Assigns everything to the first name.
-    first_name_.SetValue(GetValue(), VerificationStatus::kParsed);
+    GetNodeForTypeForTesting(NAME_FIRST)
+        ->SetValue(GetValue(), VerificationStatus::kParsed);
     return true;
   }
-
- private:
-  TestAtomicFirstNameAddressComponent first_name_{this};
-  TestAtomicMiddleNameAddressComponent middle_name_{this};
-  TestAtomicLastNameAddressComponent last_name_{this};
 };
 
 // Creates a compound name for testing purposes that uses an expression to
@@ -118,15 +102,15 @@ class TestCompoundNameMethodParsedAddressComponent : public AddressComponent {
 class TestCompoundNameRegExParsedAddressComponent : public AddressComponent {
  public:
   TestCompoundNameRegExParsedAddressComponent()
-      : TestCompoundNameRegExParsedAddressComponent(nullptr) {
+      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+
     expression1_ =
         BuildRegExFromPattern("(?P<NAME_FULL>(?P<NAME_MIDDLE>\\d*))");
     expression2_ = BuildRegExFromPattern("(?P<NAME_FULL>(?P<NAME_LAST>.*))");
   }
-  explicit TestCompoundNameRegExParsedAddressComponent(AddressComponent* parent)
-      : AddressComponent(NAME_FULL,
-                         parent,
-                         MergeMode::kDefault) {}
 
   std::vector<const RE2*> GetParseRegularExpressionsByRelevance()
       const override {
@@ -138,31 +122,22 @@ class TestCompoundNameRegExParsedAddressComponent : public AddressComponent {
  private:
   std::unique_ptr<const RE2> expression1_;
   std::unique_ptr<const RE2> expression2_;
-  TestAtomicFirstNameAddressComponent first_name_{this};
-  TestAtomicMiddleNameAddressComponent middle_name_{this};
-  TestAtomicLastNameAddressComponent last_name_{this};
 };
 
 // Creates a compound name with a custom format for testing purposes.
 class TestCompoundNameCustomFormatAddressComponent : public AddressComponent {
  public:
   TestCompoundNameCustomFormatAddressComponent()
-      : TestCompoundNameCustomFormatAddressComponent(nullptr) {}
-  explicit TestCompoundNameCustomFormatAddressComponent(
-      AddressComponent* parent)
-      : AddressComponent(NAME_FULL,
-                         parent,
-                         MergeMode::kDefault) {}
+      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+  }
 
   // Introduces a custom format with a leading last name.
   std::u16string GetFormatString() const override {
     return u"${NAME_LAST}, ${NAME_FIRST}";
   }
-
- private:
-  TestAtomicFirstNameAddressComponent first_name{this};
-  TestAtomicMiddleNameAddressComponent middle_name{this};
-  TestAtomicLastNameAddressComponent last_name{this};
 };
 
 // Creates a compound name with a custom format for testing purposes.
@@ -170,47 +145,32 @@ class TestCompoundNameCustomAffixedFormatAddressComponent
     : public AddressComponent {
  public:
   TestCompoundNameCustomAffixedFormatAddressComponent()
-      : TestCompoundNameCustomAffixedFormatAddressComponent(nullptr) {}
-  explicit TestCompoundNameCustomAffixedFormatAddressComponent(
-      AddressComponent* parent)
-      : AddressComponent(NAME_FULL,
-                         parent,
-                         MergeMode::kDefault) {}
+      : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicMiddleNameAddressComponent>());
+    RegisterChildNode(std::make_unique<TestAtomicLastNameAddressComponent>());
+  }
 
   // Introduces a custom format with a leading last name.
   std::u16string GetFormatString() const override {
     return u"${NAME_LAST;Dr. ; MD}, ${NAME_FIRST}";
   }
-
- private:
-  TestAtomicFirstNameAddressComponent first_name{this};
-  TestAtomicMiddleNameAddressComponent middle_name{this};
-  TestAtomicLastNameAddressComponent last_name{this};
 };
 
 class TestAtomicTitleAddressComponent : public AddressComponent {
  public:
   TestAtomicTitleAddressComponent()
-      : TestAtomicTitleAddressComponent(nullptr) {}
-  explicit TestAtomicTitleAddressComponent(AddressComponent* parent)
-      : AddressComponent(NAME_HONORIFIC_PREFIX,
-                         parent,
-                         MergeMode::kDefault) {}
+      : AddressComponent(NAME_HONORIFIC_PREFIX, {}, MergeMode::kDefault) {}
 };
 
 // Creates a fictional compound component with sub- and sub subcomponents.
 class TestCompoundNameWithTitleAddressComponent : public AddressComponent {
  public:
   TestCompoundNameWithTitleAddressComponent()
-      : TestCompoundNameWithTitleAddressComponent(nullptr) {}
-  explicit TestCompoundNameWithTitleAddressComponent(AddressComponent* parent)
-      : AddressComponent(CREDIT_CARD_NAME_FULL,
-                         parent,
-                         MergeMode::kDefault) {}
-
- private:
-  TestAtomicTitleAddressComponent title{this};
-  TestCompoundNameAddressComponent full_name{this};
+      : AddressComponent(CREDIT_CARD_NAME_FULL, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicTitleAddressComponent>());
+    RegisterChildNode(std::make_unique<TestCompoundNameAddressComponent>());
+  }
 };
 
 // Creates a tree that is not proper in the sense that it contains the same type
@@ -218,14 +178,9 @@ class TestCompoundNameWithTitleAddressComponent : public AddressComponent {
 class TestNonProperFirstNameAddressComponent : public AddressComponent {
  public:
   TestNonProperFirstNameAddressComponent()
-      : TestNonProperFirstNameAddressComponent(nullptr) {}
-  explicit TestNonProperFirstNameAddressComponent(AddressComponent* parent)
-      : AddressComponent(NAME_FIRST,
-                         parent,
-                         MergeMode::kDefault) {}
-
- private:
-  TestAtomicFirstNameAddressComponent second_name_first_node_{this};
+      : AddressComponent(NAME_FIRST, {}, MergeMode::kDefault) {
+    RegisterChildNode(std::make_unique<TestAtomicFirstNameAddressComponent>());
+  }
 };
 
 // Tests the merging of two atomic component with |type|, and values
@@ -240,8 +195,8 @@ void TestAtomMerging(ServerFieldType type,
                      bool is_mergeable,
                      int merge_modes,
                      bool newer_was_more_recently_used = true) {
-  AddressComponent older(type, nullptr, merge_modes);
-  AddressComponent newer(type, nullptr, merge_modes);
+  AddressComponent older(type, {}, merge_modes);
+  AddressComponent newer(type, {}, merge_modes);
 
   SetTestValues(&older, older_values);
   SetTestValues(&newer, newer_values);
@@ -269,7 +224,7 @@ void TestCompoundNameMerging(AddressComponentTestValues older_values,
 // Tests that the destructor does not crash
 TEST(AutofillStructuredAddressAddressComponent, ConstructAndDestruct) {
   AddressComponent* component =
-      new AddressComponent(NAME_FULL, nullptr, MergeMode::kDefault);
+      new AddressComponent(NAME_FULL, {}, MergeMode::kDefault);
   delete component;
   EXPECT_TRUE(true);
 }
@@ -387,8 +342,8 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedTypes) {
 
 // Tests the comparison of thw atoms of the same type.
 TEST(AutofillStructuredAddressAddressComponent, TestComparison_Atom) {
-  AddressComponent left(NAME_FIRST, nullptr, MergeMode::kReplaceEmpty);
-  AddressComponent right(NAME_FIRST, nullptr, MergeMode::kReplaceEmpty);
+  AddressComponent left(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
+  AddressComponent right(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
 
   left.SetValue(u"some value", VerificationStatus::kParsed);
   right.SetValue(u"some other value", VerificationStatus::kFormatted);
@@ -405,9 +360,9 @@ TEST(AutofillStructuredAddressAddressComponent, TestComparison_Atom) {
 // Tests comparison of two different types.
 TEST(AutofillStructuredAddressAddressComponent,
      TestComparisonOperator_DifferentTypes) {
-  AddressComponent type_a1(NAME_FIRST, nullptr, MergeMode::kReplaceEmpty);
-  AddressComponent type_a2(NAME_FIRST, nullptr, MergeMode::kReplaceEmpty);
-  AddressComponent type_b(NAME_LAST, nullptr, MergeMode::kReplaceEmpty);
+  AddressComponent type_a1(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
+  AddressComponent type_a2(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
+  AddressComponent type_b(NAME_LAST, {}, MergeMode::kReplaceEmpty);
 
   EXPECT_TRUE(type_a1.SameAs(type_a2));
   EXPECT_FALSE(type_a1.SameAs(type_b));
@@ -416,7 +371,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 // Tests the comparison with itself.
 TEST(AutofillStructuredAddressAddressComponent,
      TestComparisonOperator_SelfComparison) {
-  AddressComponent type_a(NAME_FIRST, nullptr, MergeMode::kReplaceEmpty);
+  AddressComponent type_a(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
 
   EXPECT_TRUE(type_a.SameAs(type_a));
 }
@@ -477,8 +432,8 @@ TEST(AutofillStructuredAddressAddressComponent, TestComparison_Compound) {
 
 // Tests the assignment operator.
 TEST(AutofillStructuredAddressAddressComponent, TestAssignmentOperator_Atom) {
-  AddressComponent left(NAME_FIRST, nullptr, MergeMode::kReplaceEmpty);
-  AddressComponent right(NAME_FIRST, nullptr, MergeMode::kReplaceEmpty);
+  AddressComponent left(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
+  AddressComponent right(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
 
   left.SetValue(u"some value", VerificationStatus::kParsed);
   right.SetValue(u"some other value", VerificationStatus::kFormatted);
@@ -1541,7 +1496,7 @@ TEST(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
   older.SetMergeModeForTesting(MergeMode::kMergeChildrenAndReformatIfNeeded);
   // Set the merge modes of the children to replace empty values and use
   // supersets.
-  for (auto* subcomponent : older.Subcomponents()) {
+  for (auto& subcomponent : older.Subcomponents()) {
     subcomponent->SetMergeModeForTesting(kReplaceEmpty | kReplaceSubset);
   }
 

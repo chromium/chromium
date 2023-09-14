@@ -37,8 +37,8 @@ bool IsTree(AddressComponent* node, ServerFieldTypeSet* visited_types) {
     return true;
   }
   return base::ranges::all_of(node->Subcomponents(),
-                              [&visited_types](AddressComponent* child) {
-                                return IsTree(child, visited_types);
+                              [&visited_types](auto& child) {
+                                return IsTree(child.get(), visited_types);
                               });
 }
 }  // namespace
