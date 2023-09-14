@@ -588,9 +588,21 @@ TEST_F(DriveApiRequestsTest, DriveApiDataRequest_Fields) {
 }
 
 TEST_F(DriveApiRequestsTest, FilesInsertRequest) {
-  const base::Time::Exploded kModifiedDate = {2012, 7, 0, 19, 15, 59, 13, 123};
-  const base::Time::Exploded kLastViewedByMeDate = {2013, 7,  0,  19,
-                                                    15,   59, 13, 123};
+  static constexpr base::Time::Exploded kModifiedDate = {.year = 2012,
+                                                         .month = 7,
+                                                         .day_of_month = 19,
+                                                         .hour = 15,
+                                                         .minute = 59,
+                                                         .second = 13,
+                                                         .millisecond = 123};
+  static constexpr base::Time::Exploded kLastViewedByMeDate = {
+      .year = 2013,
+      .month = 7,
+      .day_of_month = 19,
+      .hour = 15,
+      .minute = 59,
+      .second = 13,
+      .millisecond = 123};
 
   // Set an expected data file containing the directory's entry data.
   expected_data_file_path_ =
@@ -658,9 +670,21 @@ TEST_F(DriveApiRequestsTest, FilesInsertRequest) {
 }
 
 TEST_F(DriveApiRequestsTest, FilesPatchRequest) {
-  const base::Time::Exploded kModifiedDate = {2012, 7, 0, 19, 15, 59, 13, 123};
-  const base::Time::Exploded kLastViewedByMeDate = {2013, 7,  0,  19,
-                                                    15,   59, 13, 123};
+  static constexpr base::Time::Exploded kModifiedDate = {.year = 2012,
+                                                         .month = 7,
+                                                         .day_of_month = 19,
+                                                         .hour = 15,
+                                                         .minute = 59,
+                                                         .second = 13,
+                                                         .millisecond = 123};
+  static constexpr base::Time::Exploded kLastViewedByMeDate = {
+      .year = 2013,
+      .month = 7,
+      .day_of_month = 19,
+      .hour = 15,
+      .minute = 59,
+      .second = 13,
+      .millisecond = 123};
 
   // Set an expected data file containing valid result.
   expected_data_file_path_ =
@@ -839,7 +863,13 @@ TEST_F(DriveApiRequestsTest, ChangesListNextPageRequest) {
 }
 
 TEST_F(DriveApiRequestsTest, FilesCopyRequest) {
-  const base::Time::Exploded kModifiedDate = {2012, 7, 0, 19, 15, 59, 13, 123};
+  static constexpr base::Time::Exploded kModifiedDate = {.year = 2012,
+                                                         .month = 7,
+                                                         .day_of_month = 19,
+                                                         .hour = 15,
+                                                         .minute = 59,
+                                                         .second = 13,
+                                                         .millisecond = 123};
 
   // Set an expected data file containing the dummy file entry data.
   // It'd be returned if we copy a file.
@@ -1505,9 +1535,21 @@ TEST_F(DriveApiRequestsTest, UploadNewLargeFileRequest) {
 }
 
 TEST_F(DriveApiRequestsTest, UploadNewFileWithMetadataRequest) {
-  const base::Time::Exploded kModifiedDate = {2012, 7, 0, 19, 15, 59, 13, 123};
-  const base::Time::Exploded kLastViewedByMeDate = {2013, 7,  0,  19,
-                                                    15,   59, 13, 123};
+  static constexpr base::Time::Exploded kModifiedDate = {.year = 2012,
+                                                         .month = 7,
+                                                         .day_of_month = 19,
+                                                         .hour = 15,
+                                                         .minute = 59,
+                                                         .second = 13,
+                                                         .millisecond = 123};
+  static constexpr base::Time::Exploded kLastViewedByMeDate = {
+      .year = 2013,
+      .month = 7,
+      .day_of_month = 19,
+      .hour = 15,
+      .minute = 59,
+      .second = 13,
+      .millisecond = 123};
 
   // Set an expected url for uploading.
   expected_upload_path_ = kTestUploadNewFilePath;
@@ -1878,9 +1920,21 @@ TEST_F(DriveApiRequestsTest,
 }
 
 TEST_F(DriveApiRequestsTest, UploadExistingFileWithMetadataRequest) {
-  const base::Time::Exploded kModifiedDate = {2012, 7, 0, 19, 15, 59, 13, 123};
-  const base::Time::Exploded kLastViewedByMeDate = {2013, 7,  0,  19,
-                                                    15,   59, 13, 123};
+  static constexpr base::Time::Exploded kModifiedDate = {.year = 2012,
+                                                         .month = 7,
+                                                         .day_of_month = 19,
+                                                         .hour = 15,
+                                                         .minute = 59,
+                                                         .second = 13,
+                                                         .millisecond = 123};
+  static constexpr base::Time::Exploded kLastViewedByMeDate = {
+      .year = 2013,
+      .month = 7,
+      .day_of_month = 19,
+      .hour = 15,
+      .minute = 59,
+      .second = 13,
+      .millisecond = 123};
 
   // Set an expected url for uploading.
   expected_upload_path_ = kTestUploadExistingFilePath;

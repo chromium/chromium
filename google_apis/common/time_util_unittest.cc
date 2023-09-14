@@ -89,18 +89,30 @@ TEST(TimeUtilTest, GetDateOnlyFromStringBasic) {
 }
 
 TEST(TimeUtilTest, FormatTimeAsString) {
-  base::Time::Exploded exploded_time = {2012, 7, 0, 19, 15, 59, 13, 123};
+  static constexpr base::Time::Exploded kTime = {.year = 2012,
+                                                 .month = 7,
+                                                 .day_of_month = 19,
+                                                 .hour = 15,
+                                                 .minute = 59,
+                                                 .second = 13,
+                                                 .millisecond = 123};
   base::Time time;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded_time, &time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kTime, &time));
   EXPECT_EQ("2012-07-19T15:59:13.123Z", FormatTimeAsString(time));
 
   EXPECT_EQ("null", FormatTimeAsString(base::Time()));
 }
 
 TEST(TimeUtilTest, FormatTimeAsStringLocalTime) {
-  base::Time::Exploded exploded_time = {2012, 7, 0, 19, 15, 59, 13, 123};
+  static constexpr base::Time::Exploded kTime = {.year = 2012,
+                                                 .month = 7,
+                                                 .day_of_month = 19,
+                                                 .hour = 15,
+                                                 .minute = 59,
+                                                 .second = 13,
+                                                 .millisecond = 123};
   base::Time time;
-  EXPECT_TRUE(base::Time::FromLocalExploded(exploded_time, &time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kTime, &time));
   EXPECT_EQ("2012-07-19T15:59:13.123", FormatTimeAsStringLocaltime(time));
 
   EXPECT_EQ("null", FormatTimeAsStringLocaltime(base::Time()));
