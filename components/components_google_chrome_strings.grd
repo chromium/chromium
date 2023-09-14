@@ -3,7 +3,7 @@
 <grit latest_public_release="0" current_release="1"
       output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
   <outputs>
-    <output filename="grit/components_chromium_strings.h" type="rc_header">
+    <output filename="grit/components_branded_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
     <output filename="components_google_chrome_strings_af.pak" type="data_package" lang="af" />

@@ -8,7 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/security_state/core/security_state.h"
 #import "components/ssl_errors/error_info.h"
-#import "components/strings/grit/components_chromium_strings.h"
+#import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"

@@ -8,13 +8,13 @@ generate_ui_string_overrider("chrome_ui_string_overrider_factory") {
   inputs = [
     "$root_gen_dir/chrome/grit/branded_strings.h",
     "$root_gen_dir/chrome/grit/generated_resources.h",
-    "$root_gen_dir/components/strings/grit/components_chromium_strings.h",
+    "$root_gen_dir/components/strings/grit/components_branded_strings.h",
     "$root_gen_dir/components/strings/grit/components_strings.h",
   ]
   deps = [
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
-    "//components/strings:components_chromium_strings",
+    "//components/strings:components_branded_strings",
     "//components/strings:components_strings",
     "//components/variations:variations",
   ]

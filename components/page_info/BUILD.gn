@@ -37,7 +37,7 @@ static_library("page_info") {
     "//components/security_state/core",
     "//components/signin/public/identity_manager",
     "//components/ssl_errors:ssl_errors",
-    "//components/strings:components_chromium_strings_grit",
+    "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
     "//components/subresource_filter/core/browser",
     "//components/ukm/content",

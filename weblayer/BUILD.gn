@@ -80,10 +80,10 @@ if (is_android) {
                               [ "components_strings_{{source_name_part}}.pak" ])
   }
 
-  grit("generate_components_chromium_strings") {
+  grit("generate_components_branded_strings") {
     source = "../components/components_chromium_strings.grd"
 
-    # components_chromium_strings contains Chromium-specific strings. WebLayer
+    # components_branded_strings contains Chromium-specific strings. WebLayer
     # will never display most of them, so we try to limit the included
     # strings.
     allowlist = rebase_path("grit_strings_allowlist.txt", root_build_dir)
@@ -92,7 +92,7 @@ if (is_android) {
       "-w",
       allowlist,
     ]
-    outputs = [ "grit/components_chromium_strings.h" ] +
+    outputs = [ "grit/components_branded_strings.h" ] +
               process_file_template(
                   all_chrome_locales,
                   [ "components_chromium_strings_{{source_name_part}}.pak" ])
@@ -108,7 +108,7 @@ if (is_android) {
       "${root_gen_dir}/weblayer/components_strings_",
     ]
     deps = [
-      ":generate_components_chromium_strings",
+      ":generate_components_branded_strings",
       ":generate_components_strings",
       "//components/strings:components_locale_settings",
       "//device/bluetooth/strings",

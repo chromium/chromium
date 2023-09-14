@@ -79,7 +79,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/resources/android/theme_resources.h"
-#include "components/strings/grit/components_chromium_strings.h"
+#include "components/strings/grit/components_branded_strings.h"
 #else
 #include "third_party/blink/public/common/features.h"
 #endif  // BUILDFLAG(IS_ANDROID)

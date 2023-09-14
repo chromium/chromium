@@ -29,7 +29,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/grit/version_ui_resources.h"
 #include "components/grit/version_ui_resources_map.h"
-#include "components/strings/grit/components_chromium_strings.h"
+#include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/service/variations_service.h"
 #include "components/version_info/version_info.h"

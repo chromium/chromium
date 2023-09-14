@@ -49,7 +49,7 @@ template("chrome_repack_locales") {
       "//chrome/app/resources:locale_settings",
       "//chrome/app/resources:platform_locale_settings",
       "//components/omnibox/resources:omnibox_pedal_synonyms",
-      "//components/strings:components_chromium_strings",
+      "//components/strings:components_branded_strings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
       "//device/bluetooth/strings",
