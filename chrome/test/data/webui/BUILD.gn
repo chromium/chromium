@@ -231,11 +231,6 @@ if (include_js2gtest_tests) {
       "//skia",
     ]
 
-    if (use_nss_certs) {
-      deps +=
-          [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
-    }
-
     if (is_chromeos_ash) {
       sources += [
         "../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
