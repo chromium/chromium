@@ -124,6 +124,9 @@
   }
 
   #icon {
+    background-color: white;
+    /* Need both this and size so default icon shrinks. */
+    background-size: 10px;
     height: 16px;
     margin-inline-end: 8px;
     width: 16px;
@@ -215,7 +218,7 @@
    aria-label$="[[tileLabel_]]">
   <div id="label-container">
     <page-favicon id="icon" url="[[cart.cartUrl]]"
-                  is-known-to-sync="[[visit.isKnownToSync]]">
+                  is-known-to-sync="[[visit.isKnownToSync]]" size="10">
     </page-favicon>
     <div id="label" class="truncate">[[cart.domain]]</div>
   </div>
