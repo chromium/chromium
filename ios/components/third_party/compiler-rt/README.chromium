@@ -1,0 +1,12 @@
+Name: LLVM OS Version Check
+Short Name: LLVM
+URL: https://reviews.llvm.org/source/llvm-github/repository/main/
+Version: 0
+Date: 2023-08-24
+License: Apache 2.0
+License File: LICENSE.TXT
+Shipped: yes
+Security Critical: no
+CPEPrefix: unknown
+Description: LLVM Compiler RT OS Version Check
+Local Modifications: None
