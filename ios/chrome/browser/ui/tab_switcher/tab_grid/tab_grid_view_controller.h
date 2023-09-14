@@ -23,7 +23,6 @@ class GURL;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
 @class LayoutGuideCenter;
-@protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
 @class TabGridBottomToolbar;
@@ -35,7 +34,6 @@ class GURL;
 @protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
-@class TabGridViewController;
 
 // Configurations for tab grid pages.
 enum class TabGridPageConfiguration {
@@ -56,15 +54,6 @@ enum class TabGridPageConfiguration {
 @end
 
 @protocol TabGridViewControllerDelegate <NSObject>
-
-// Asks the delegate for the page that should currently be active.
-- (TabGridPage)activePageForTabGridViewController:
-    (TabGridViewController*)tabGridViewController;
-
-// Notifies the delegate that the tab grid was dismissed via the
-// ViewRevealingAnimatee.
-- (void)tabGridViewControllerDidDismiss:
-    (TabGridViewController*)tabGridViewController;
 
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
@@ -95,9 +84,6 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 @property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
-// Handlers for popup menu commands for the regular and incognito states.
-@property(nonatomic, weak) id<PopupMenuCommands> regularPopupMenuHandler;
-@property(nonatomic, weak) id<PopupMenuCommands> incognitoPopupMenuHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
