@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/js_test_api.h"
+#include "content/public/test/unittest_test_suite.h"
 #include "third_party/blink/public/web/blink.h"
 
 namespace {
@@ -20,14 +21,15 @@ namespace {
 std::string LogArgs2String(const v8::FunctionCallbackInfo<v8::Value>& args) {
   std::string message;
   bool first = true;
+  v8::Isolate* isolate = args.GetIsolate();
   for (int i = 0; i < args.Length(); i++) {
-    v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+    v8::HandleScope handle_scope(isolate);
     if (first)
       first = false;
     else
       message += " ";
 
-    v8::String::Utf8Value str(args.GetIsolate(), args[i]);
+    v8::String::Utf8Value str(isolate, args[i]);
     message += *str;
   }
   return message;
@@ -76,7 +78,9 @@ bool FindLibraryFile(base::FilePath* library_path) {
 
 }  // namespace
 
-V8UnitTest::V8UnitTest() : handle_scope_(blink::MainThreadIsolate()) {
+V8UnitTest::V8UnitTest()
+    : handle_scope_(
+          content::UnitTestTestSuite::MainThreadIsolateForUnitTestSuite()) {
   InitPathsAndLibraries();
 }
 
@@ -119,7 +123,7 @@ bool V8UnitTest::RunJavascriptTestF(const std::string& test_fixture,
   if (!ExecuteJavascriptLibraries())
     return false;
 
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = handle_scope_.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate, context_);
@@ -187,7 +191,7 @@ void V8UnitTest::InitPathsAndLibraries() {
 }
 
 void V8UnitTest::SetUp() {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = handle_scope_.GetIsolate();
   v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate);
   v8::Local<v8::String> log_string =
       v8::String::NewFromUtf8(isolate, "log", v8::NewStringType::kInternalized)
@@ -252,7 +256,7 @@ void V8UnitTest::SetUp() {
 
 void V8UnitTest::SetGlobalStringVar(const std::string& var_name,
                                     const std::string& value) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = handle_scope_.GetIsolate();
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate, context_);
   v8::Context::Scope context_scope(context);
@@ -272,7 +276,7 @@ void V8UnitTest::SetGlobalStringVar(const std::string& var_name,
 
 void V8UnitTest::ExecuteScriptInContext(const base::StringPiece& script_source,
                                         const base::StringPiece& script_name) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = handle_scope_.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate, context_);
@@ -293,16 +297,16 @@ void V8UnitTest::ExecuteScriptInContext(const base::StringPiece& script_source,
   v8::Local<v8::Script> script;
   // Ensure the script compiled without errors.
   if (!v8::Script::Compile(context, source, &origin).ToLocal(&script))
-    FAIL() << ExceptionToString(try_catch);
+    FAIL() << ExceptionToString(isolate, try_catch);
 
   // Ensure the script ran without errors.
   if (script->Run(context).IsEmpty())
-    FAIL() << ExceptionToString(try_catch);
+    FAIL() << ExceptionToString(isolate, try_catch);
 }
 
-std::string V8UnitTest::ExceptionToString(const v8::TryCatch& try_catch) {
+std::string V8UnitTest::ExceptionToString(v8::Isolate* isolate,
+                                          const v8::TryCatch& try_catch) {
   std::string str;
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::String::Utf8Value exception(isolate, try_catch.Exception());
@@ -324,7 +328,7 @@ std::string V8UnitTest::ExceptionToString(const v8::TryCatch& try_catch) {
 }
 
 void V8UnitTest::TestFunction(const std::string& function_name) {
-  v8::Isolate* isolate = blink::MainThreadIsolate();
+  v8::Isolate* isolate = handle_scope_.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate, context_);
@@ -350,7 +354,7 @@ void V8UnitTest::TestFunction(const std::string& function_name) {
           .FromMaybe(v8::Local<v8::Value>());
   // The test fails if an exception was thrown.
   if (result.IsEmpty())
-    FAIL() << ExceptionToString(try_catch);
+    FAIL() << ExceptionToString(isolate, try_catch);
 }
 
 // static
