@@ -16,8 +16,8 @@ namespace blink {
 class Font;
 class GraphicsContext;
 class NGInlinePaintContext;
+class NGTextDecorationOffset;
 class TextDecorationInfo;
-class TextDecorationOffsetBase;
 struct NGTextFragmentPaintInfo;
 struct PaintInfo;
 struct PhysicalOffset;
@@ -52,7 +52,7 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
   //   3. Paint line through text decoration
   void PaintUnderOrOverLineDecorations(
       const NGTextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffsetBase& decoration_offset,
+      const NGTextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const PaintInfo& paint_info,
@@ -74,7 +74,7 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
 
   void PaintUnderOrOverLineDecorationShadows(
       const NGTextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffsetBase& decoration_offset,
+      const NGTextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,
@@ -83,7 +83,7 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
 
   void PaintUnderOrOverLineDecorations(
       const NGTextFragmentPaintInfo& fragment_paint_info,
-      const TextDecorationOffsetBase& decoration_offset,
+      const NGTextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,
