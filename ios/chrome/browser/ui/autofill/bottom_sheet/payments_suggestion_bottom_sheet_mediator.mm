@@ -392,7 +392,12 @@
 
   id<FormInputSuggestionsProvider> provider =
       tabHelper->GetAccessoryViewProvider();
-  [provider retrieveSuggestionsForForm:_params
+  // Setting this to true only when we are retrieving suggestions for the bottom
+  // sheet. We are not using the results from this call, it is just to set the
+  // provider so the bottom sheet can fill the fields later.
+  autofill::FormActivityParams params = _params;
+  params.has_user_gesture = true;
+  [provider retrieveSuggestionsForForm:params
                               webState:activeWebState
               accessoryViewUpdateBlock:nil];
 }
