@@ -1273,9 +1273,10 @@
     {
       name: "Database",
       public: true,
-      status: "test",
+      status: "experimental",
       base_feature: "none",
       origin_trial_feature_name: "WebSQL",
+      origin_trial_type: "deprecation",
     },
     {
       name: "DateInputInlineBlock",
