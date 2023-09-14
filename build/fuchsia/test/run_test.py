@@ -107,6 +107,14 @@ def main():
             stack.enter_context(
                 ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'))
             stack.enter_context(ScopedFfxConfig('log.level', 'debug'))
+            if runner_args.everlasting:
+                # Setting the emu.instance_dir to match the named cache, so we
+                # can keep these files across multiple runs.
+                stack.enter_context(
+                    ScopedFfxConfig(
+                        'emu.instance_dir',
+                        os.path.join(os.environ['HOME'],
+                                     '.fuchsia_emulator/')))
             log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
             start_ffx_daemon()
             stack.callback(stop_ffx_daemon)
