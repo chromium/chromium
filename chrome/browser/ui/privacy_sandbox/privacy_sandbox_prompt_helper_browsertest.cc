@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
   // Check when no prompt is required, it is not shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabPageURL),
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabPageURL),
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(1);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               IsPromptOpenForBrowser(browser()))
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUISettingsURL),
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUIHistoryURL),
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // there.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
 
   GURL ntp_url = https_test_server()->GetURL("/title1.html");
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, NoPromptSync) {
   // Check when sync setup is in progress, that no prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
   test_sync_service()->SetSetupInProgress(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // Check when profile setup is in progress, that no prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
   // Show the profile customization dialog.
   browser()->signin_view_controller()->ShowModalProfileCustomizationDialog(
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
   // Check that no prompt is shown for navigations to unsuitable URLs.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(0);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // Check that only a single prompt is opened per browser window at a time.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser(), testing::_))
       .Times(1);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               IsPromptOpenForBrowser(browser()))
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
   // appropriate tabs, two prompts are opened.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              PromptOpenedForBrowser(testing::_))
+              PromptOpenedForBrowser(testing::_, testing::_))
       .Times(2);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,

@@ -38,6 +38,10 @@ namespace browsing_topics {
 class BrowsingTopicsService;
 }
 
+namespace views {
+class Widget;
+}
+
 // Service which encapsulates logic related to displaying and controlling the
 // users Privacy Sandbox settings. This service contains the chrome/ specific
 // logic used by the UI, including decision making around what the users'
@@ -173,15 +177,17 @@ class PrivacySandboxService : public KeyedService {
   // Functions for coordinating the display of the Privacy Sandbox prompts
   // across multiple browser windows. Only relevant for Desktop.
 
+#if !BUILDFLAG(IS_ANDROID)
   // Informs the service that a Privacy Sandbox prompt has been opened
   // or closed for |browser|.
   // Virtual to allow mocking in tests.
-  virtual void PromptOpenedForBrowser(Browser* browser);
+  virtual void PromptOpenedForBrowser(Browser* browser, views::Widget* widget);
   virtual void PromptClosedForBrowser(Browser* browser);
 
   // Returns whether a Privacy Sandbox prompt is currently open for |browser|.
   // Virtual to allow mocking in tests.
   virtual bool IsPromptOpenForBrowser(Browser* browser);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Disables the display of the Privacy Sandbox prompt for testing. When
   // |disabled| is true, GetRequiredPromptType() will only ever return that no
@@ -556,6 +562,12 @@ class PrivacySandboxService : public KeyedService {
       privacy_sandbox::TopicsConsentUpdateSource source,
       bool did_consent) const;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // If appropriate based on feature state, closes all currently open Privacy
+  // Sandbox prompts.
+  void MaybeCloseOpenPrompts();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   raw_ptr<privacy_sandbox::PrivacySandboxSettings, DanglingUntriaged>
       privacy_sandbox_settings_;
@@ -574,8 +586,11 @@ class PrivacySandboxService : public KeyedService {
 
   PrefChangeRegistrar user_prefs_registrar_;
 
-  // The set of Browser windows which have an open Privacy Sandbox prompt.
-  std::set<Browser*> browsers_with_open_prompts_;
+#if !BUILDFLAG(IS_ANDROID)
+  // A map of Browser windows which have an open Privacy Sandbox prompt,
+  // to the Widget for that prompt.
+  std::map<Browser*, views::Widget*> browsers_to_open_prompts_;
+#endif
 
   // Fake implementation for current and blocked topics.
   static constexpr int kFakeTaxonomyVersion = 1;
