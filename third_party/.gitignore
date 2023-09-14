@@ -120,6 +120,7 @@
 /glfw/src
 /gn/
 /gnu_binutils/
+/google-java-format/*.jar
 /google-truth/lib/
 /google_benchmark/src
 /google_toolbox_for_mac/src

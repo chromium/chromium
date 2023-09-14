@@ -1451,6 +1451,18 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/google-java-format': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/google-java-format',
+              'version': 'AQn4F5NfPAs_GKX-z3OW_Q7-yJ9N6tPrDnmnDScjkTEC',
+          },
+      ],
+      # Needed on Linux for use on chromium_presubmit.
+      'condition': 'checkout_android or checkout_linux',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/hamcrest': {
       'packages': [
           {
