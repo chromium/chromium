@@ -361,6 +361,10 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
     std::unique_ptr<views::Widget> bar_widget =
         DeskBarViewBase::CreateDeskWidget(root, bounds,
                                           DeskBarViewBase::Type::kDeskButton);
+    // This pattern is unconventional, but we need to show the empty widget here
+    // before setting the contents view to prevent the wrong layer being
+    // mirrored in `DeskPreviewView`. See b/287116737#comment6 for more details.
+    bar_widget->Show();
     bar_view = bar_widget->SetContentsView(std::make_unique<DeskBarView>(root));
     bar_view->Init();
     // TODO(b/293658108): remove this once the bento bar bounds and layout are
@@ -369,10 +373,11 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
 
     // Ownership transfer and bookkeeping.
     desk_bars_.emplace_back(bar_view, std::move(bar_widget));
+  } else {
+    bar_view->GetWidget()->Show();
   }
 
   SetDeskButtonActivation(root, /*is_activated=*/true);
-  bar_view->GetWidget()->Show();
 }
 
 void DeskBarController::CloseDeskBar(aura::Window* root) {
