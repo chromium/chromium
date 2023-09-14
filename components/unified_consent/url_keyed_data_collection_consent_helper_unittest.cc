@@ -135,30 +135,33 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
 
 TEST_F(UrlKeyedDataCollectionConsentHelperTest,
        PersonalizedBookmarksDataCollection) {
-    std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
-        UrlKeyedDataCollectionConsentHelper::
-            NewPersonalizedBookmarksDataCollectionConsentHelper(&sync_service_);
-    helper->AddObserver(this);
-    EXPECT_FALSE(helper->IsEnabled());
-    EXPECT_TRUE(state_changed_notifications_.empty());
+  std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
+      UrlKeyedDataCollectionConsentHelper::
+          NewPersonalizedBookmarksDataCollectionConsentHelper(
+              &sync_service_,
+              /*require_sync_feature_enabled=*/true);
+  helper->AddObserver(this);
+  EXPECT_FALSE(helper->IsEnabled());
+  EXPECT_TRUE(state_changed_notifications_.empty());
 
-    sync_service_.GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false,
-        /*types=*/{syncer::UserSelectableType::kBookmarks});
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kBookmarks});
 
-    sync_service_.FireOnStateChangeOnAllObservers();
-    EXPECT_TRUE(helper->IsEnabled());
-    EXPECT_EQ(1U, state_changed_notifications_.size());
-    helper->RemoveObserver(this);
+  sync_service_.FireOnStateChangeOnAllObservers();
+  EXPECT_TRUE(helper->IsEnabled());
+  EXPECT_EQ(1U, state_changed_notifications_.size());
+  helper->RemoveObserver(this);
 }
 
 TEST_F(UrlKeyedDataCollectionConsentHelperTest,
        PersonalizedBookmarksDataCollection_NullSyncService) {
-    std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
-        UrlKeyedDataCollectionConsentHelper::
-            NewPersonalizedBookmarksDataCollectionConsentHelper(
-                nullptr /* sync_service */);
-    EXPECT_FALSE(helper->IsEnabled());
+  std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
+      UrlKeyedDataCollectionConsentHelper::
+          NewPersonalizedBookmarksDataCollectionConsentHelper(
+              /*sync_service=*/nullptr,
+              /*require_sync_feature_enabled=*/true);
+  EXPECT_FALSE(helper->IsEnabled());
 }
 
 }  // namespace

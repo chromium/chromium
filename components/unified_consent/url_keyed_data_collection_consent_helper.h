@@ -60,7 +60,8 @@ class UrlKeyedDataCollectionConsentHelper {
   // bookmarks data collection keyed by their Google account.
   static std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
   NewPersonalizedBookmarksDataCollectionConsentHelper(
-      syncer::SyncService* sync_service);
+      syncer::SyncService* sync_service,
+      bool require_sync_feature_enabled);
 
   UrlKeyedDataCollectionConsentHelper(
       const UrlKeyedDataCollectionConsentHelper&) = delete;

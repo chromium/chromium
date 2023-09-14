@@ -134,7 +134,8 @@ ShoppingService::ShoppingService(
       bookmark_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedBookmarksDataCollectionConsentHelper(
-                  sync_service)),
+                  sync_service,
+                  /*require_sync_feature_enabled=*/true)),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
