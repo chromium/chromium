@@ -336,8 +336,7 @@ bool DoPartialPathInternal(const CHAR* spec,
             // the last character of the escape sequence.
             char unescaped_flags = kPathCharLookup[unescaped_value];
 
-            if (!base::FeatureList::IsEnabled(
-                    url::kDontDecodeAsciiPercentEncodedURLPath) &&
+            if (!url::IsUsingDontDecodeAsciiPercentEncodedURLPath() &&
                 (unescaped_flags & UNESCAPE)) {
               // This escaped value shouldn't be escaped.  Try to copy it.
               unescape_escaped_char = true;

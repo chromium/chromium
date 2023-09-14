@@ -18,6 +18,10 @@ COMPONENT_EXPORT(URL) bool IsUsingIDNA2008NonTransitional();
 // Returns true if Chrome is recording IDNA 2008 related metrics.
 COMPONENT_EXPORT(URL) bool IsRecordingIDNA2008Metrics();
 
+// Returns true if kDontDecodeAsciiPercentEncodedURLPath feature is enabled.
+// See url::kDontDecodeAsciiPercentEncodedURLPath for details.
+COMPONENT_EXPORT(URL) bool IsUsingDontDecodeAsciiPercentEncodedURLPath();
+
 // Returns true if Chrome is enforcing the 4 part check for IPv4 embedded IPv6
 // addresses.
 COMPONENT_EXPORT(URL)
