@@ -24,13 +24,6 @@ class NetInternalsTest : public WebUIMochaBrowserTest {
 
  private:
   class MessageHandler;
-
-  // Attempts to start the test server.  Returns true on success or if the
-  // TestServer is already started.
-  bool StartTestServer();
-
-  // True if the test server has already been successfully started.
-  bool test_server_started_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NET_INTERNALS_NET_INTERNALS_UI_BROWSERTEST_H_
