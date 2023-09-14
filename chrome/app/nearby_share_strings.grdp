@@ -304,6 +304,9 @@
   <message name="IDS_NEARBY_VISIBILITY_YOUR_DEVICES_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting is Your Devices for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current visibility setting is your devices
   </message>
+  <message name="IDS_NEARBY_VISIBILITY_ALL_CONTACTS_TOGGLE" desc="Describes a toggle that enables/disables the ability to filter which contacts can discover this device.">
+    Visible to all contacts
+  </message>
   <message name="IDS_NEARBY_VISIBLITY_HIDDEN" desc="Describes the user preference state for the user to be visibile to none of their contacts (hidden) in the Nearby Share feature.">
     Hidden
   </message>
