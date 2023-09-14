@@ -12,6 +12,7 @@
 
 #include <algorithm>
 
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/android/build_info.h"
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
@@ -182,6 +183,11 @@ class SandboxedHandler {
     }
   }
 
+  using CrashHandlerFunc = bool (*)(int, siginfo_t*, ucontext_t*);
+  void SetLastChanceExceptionHandler(CrashHandlerFunc handler) {
+    last_chance_handler_ = handler;
+  }
+
  private:
   SandboxedHandler() = default;
   ~SandboxedHandler() = delete;
@@ -233,6 +239,11 @@ class SandboxedHandler {
   static void HandleCrash(int signo, siginfo_t* siginfo, void* context) {
     SandboxedHandler* state = Get();
     state->HandleCrashNonFatal(signo, siginfo, context);
+    if (state->last_chance_handler_ &&
+        state->last_chance_handler_(signo, siginfo,
+                                    static_cast<ucontext_t*>(context))) {
+      return;
+    }
     Signals::RestoreHandlerAndReraiseSignalOnReturn(
         siginfo, state->restore_previous_handler_
                      ? state->old_actions_.ActionForSignal(signo)
@@ -243,6 +254,7 @@ class SandboxedHandler {
   SanitizationInformation sanitization_;
   int server_fd_;
   unsigned char request_dump_;
+  CrashHandlerFunc last_chance_handler_;
 
   // true if the previously installed signal handler is restored after
   // handling a crash. Otherwise SIG_DFL is restored.
@@ -697,12 +709,23 @@ bool PlatformCrashpadInitialization(
   if (browser_process) {
     HandlerStarter* starter = HandlerStarter::Get();
     *database_path = starter->Initialize(dump_at_crash);
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    // Handler gets called in SignalHandler::HandleOrReraiseSignal() after
+    // reporting the crash.
+    crashpad::CrashpadClient::SetLastChanceExceptionHandler(
+        partition_alloc::PermissiveMte::HandleCrash);
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
     return true;
   }
 
   crashpad::SandboxedHandler* handler = crashpad::SandboxedHandler::Get();
   bool result = handler->Initialize(dump_at_crash);
   DCHECK(result);
+
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+  handler->SetLastChanceExceptionHandler(
+      partition_alloc::PermissiveMte::HandleCrash);
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
   *database_path = base::FilePath();
   return true;

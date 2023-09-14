@@ -1131,6 +1131,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                 partition_alloc::TagViolationReportingMode::kAsynchronous;
             break;
         }
+        partition_alloc::PermissiveMte::SetEnabled(base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocPermissiveMte));
         partition_alloc::internal::
             ChangeMemoryTaggingModeForAllThreadsPerProcess(
                 memory_tagging_reporting_mode);
