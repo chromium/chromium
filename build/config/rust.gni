@@ -153,6 +153,16 @@ if (enable_rust) {
 # for gtests from the `//testing/test:test` template.
 can_build_rust_unit_tests = toolchain_has_rust && !is_android
 
+# Whether artifacts produced by the Rust compiler can participate in ThinLTO.
+#
+# One important consideration is whether the linker uses the same LLVM
+# version as `rustc` (i.e. if it can understand the LLVM-IR from the
+# compilation artifacts produced by `rustc`).  In LaCrOS builds this may not
+# be true - see b/299483903.
+#
+# TODO(https://crbug.com/1482525): Re-enable ThinLTO for Rust on LaCrOS
+toolchain_supports_rust_thin_lto = !is_chromeos_lacros
+
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might
 # be an absolute path, but we'll do our best.

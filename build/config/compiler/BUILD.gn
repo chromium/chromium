@@ -782,13 +782,18 @@ config("compiler") {
     if (!is_android || current_cpu == "arm64") {
       cflags += [ "-fwhole-program-vtables" ]
 
-      # whole-program-vtables implies -fsplit-lto-unit, and Rust needs to match
-      # behaviour. Rust needs to know the linker will be doing LTO in this case
-      # or it rejects the Zsplit-lto-unit flag.
-      rustflags += [
-        "-Zsplit-lto-unit",
-        "-Clinker-plugin-lto=yes",
-      ]
+      if (toolchain_supports_rust_thin_lto) {
+        # whole-program-vtables implies -fsplit-lto-unit, and Rust needs to match
+        # behaviour. Rust needs to know the linker will be doing LTO in this case
+        # or it rejects the Zsplit-lto-unit flag.
+        rustflags += [
+          "-Zsplit-lto-unit",
+          "-Clinker-plugin-lto=yes",
+        ]
+      } else {
+        # Don't include bitcode if it won't be used.
+        rustflags += [ "-Cembed-bitcode=no" ]
+      }
 
       if (!is_win) {
         ldflags += [ "-fwhole-program-vtables" ]
@@ -1042,10 +1047,15 @@ config("thinlto_optimize_default") {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
 
-    # We always point Rust to a linker that performs LTO, so we don't want Rust
-    # to preemptively do so during compilation too or they conflict. But we do
-    # want Rust to generate LTO metadata in order for the linker to do its job.
-    rustflags = [ "-Clinker-plugin-lto=yes" ]
+    if (toolchain_supports_rust_thin_lto) {
+      # We always point Rust to a linker that performs LTO, so we don't want Rust
+      # to preemptively do so during compilation too or they conflict. But we do
+      # want Rust to generate LTO metadata in order for the linker to do its job.
+      rustflags = [ "-Clinker-plugin-lto=yes" ]
+    } else {
+      # Don't include bitcode if it won't be used.
+      rustflags += [ "-Cembed-bitcode=no" ]
+    }
   }
 }
 
@@ -1071,10 +1081,15 @@ config("thinlto_optimize_max") {
       ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
     }
 
-    # We always point Rust to a linker that performs LTO, so we don't want Rust
-    # to preemptively do so during compilation too or they conflict. But we do
-    # want Rust to generate LTO metadata in order for the linker to do its job.
-    rustflags = [ "-Clinker-plugin-lto=yes" ]
+    if (toolchain_supports_rust_thin_lto) {
+      # We always point Rust to a linker that performs LTO, so we don't want Rust
+      # to preemptively do so during compilation too or they conflict. But we do
+      # want Rust to generate LTO metadata in order for the linker to do its job.
+      rustflags = [ "-Clinker-plugin-lto=yes" ]
+    } else {
+      # Don't include bitcode if it won't be used.
+      rustflags += [ "-Cembed-bitcode=no" ]
+    }
   }
 }
 

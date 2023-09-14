@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/clang/clang.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -324,14 +325,19 @@ config("cfi_flags") {
       "-fsanitize-ignorelist=$cfi_ignorelist_path",
     ]
 
-    # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
-    # behaviour.  Rust needs to know the linker will be doing LTO in this case
-    # or it rejects the Zsplit-lto-unit flag.
-    # TODO(crbug.com/1442331): Add -Zsanitize=cfi instead.
-    rustflags += [
-      "-Zsplit-lto-unit",
-      "-Clinker-plugin-lto=yes",
-    ]
+    if (toolchain_supports_rust_thin_lto) {
+      # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
+      # behaviour.  Rust needs to know the linker will be doing LTO in this case
+      # or it rejects the Zsplit-lto-unit flag.
+      # TODO(crbug.com/1442331): Add -Zsanitize=cfi instead.
+      rustflags += [
+        "-Zsplit-lto-unit",
+        "-Clinker-plugin-lto=yes",
+      ]
+    } else {
+      # Don't include bitcode if it won't be used.
+      rustflags += [ "-Cembed-bitcode=no" ]
+    }
 
     if (use_cfi_cast) {
       cflags += [
