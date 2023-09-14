@@ -1048,6 +1048,8 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityFaceTrackingEnabled,
+                                false);
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition

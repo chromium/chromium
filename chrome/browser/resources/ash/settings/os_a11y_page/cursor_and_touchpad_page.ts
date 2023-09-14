@@ -218,6 +218,18 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
+       * Whether the face movements mouse cursor and keyboard control feature is
+       * enabled.
+       */
+      isAccessibilityFaceTrackingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityGameFaceIntegrationEnabled');
+        },
+      },
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -250,6 +262,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
+  private isAccessibilityFaceTrackingEnabled_: boolean;
 
   constructor() {
     super();

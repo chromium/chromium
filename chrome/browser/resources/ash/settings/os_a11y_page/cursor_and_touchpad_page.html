@@ -64,6 +64,26 @@
       label="$i18n{autoclickRevertToLeftClick}">
   </settings-toggle-button>
 </div>
+<!-- TODO(b/299724949): Add deep link focus ID -->
+<template is="dom-if" if="[[isAccessibilityFaceTrackingEnabled_]]">
+  <settings-toggle-button
+      id="faceTrackingToggle"
+      pref="{{prefs.settings.a11y.face_tracking.enabled}}"
+      icon="os-settings:face-tracking"
+      label="$i18n{accessibilityFaceTrackingLabel}"
+      sub-label="$i18n{accessibilityFaceTrackingDescription}">
+  </settings-toggle-button>
+  <iron-collapse opened="[[prefs.settings.a11y.face_tracking.enabled.value]]">
+    <div class="sub-item">
+      <!-- TODO(b/299725221): Open the face tracking settings app from here -->
+      <cr-link-row id="faceTrackingSettingsButton"
+          class="settings-box"
+          label="$i18n{accessibilityFaceTrackingSettings}"
+          external>
+      </cr-link-row>
+    </div>
+  </iron-collapse>
+</template>
 <settings-toggle-button
     id="largeCursorEnabledControl"
     class="hr"
