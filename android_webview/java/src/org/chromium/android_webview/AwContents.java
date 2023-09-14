@@ -49,6 +49,7 @@ import android.webkit.JavascriptInterface;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
@@ -402,10 +403,30 @@ public class AwContents implements SmartClipProvider {
     private boolean mIsViewVisible;
     private boolean mIsWindowVisible;
     private boolean mIsAttachedToWindow;
-    // Visiblity state of |mWebContents|.
+
+    // Visibility state of |mWebContents|.
     private boolean mIsContentVisible;
     private boolean mIsUpdateVisibilityTaskPending;
     private Runnable mUpdateVisibilityRunnable;
+
+    /**
+     * Set to true if there is ever a call to {@link AwContents#getBrowserContext()}.
+     * This flag is primarily used to prevent setting a new browser context via. {@link
+     * AwContents#setBrowserContext(AwBrowserContext)} after it has been retrieved externally.
+     */
+    private boolean mBrowserContextAccessed;
+
+    /**
+     * Set to true if the browser context has ever been set explicitly via.
+     * {@link AwContents#setBrowserContext(AwBrowserContext)}.
+     */
+    private boolean mBrowserContextSetExplicitly;
+
+    /**
+     * Set to true if {@link AwContents#evaluateJavaScript(String, Callback)}
+     * has been called.
+     */
+    private boolean mHasEvaluatedJavascript;
 
     @VisibleForTesting
     public static final long FUNCTOR_RECLAIM_DELAY_MS = 10000;
@@ -1256,6 +1277,71 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
+     * For multi-profile public API. For internal access to the browser context,
+     * use the member variable {@link AwContents#mBrowserContext} directly.
+     */
+    @NonNull
+    public AwBrowserContext getBrowserContext() {
+        mBrowserContextAccessed = true;
+        return mBrowserContext;
+    }
+
+    /**
+     * For multi-profile public API. Sets a new browser context which will
+     * cause the web contents to reinitialize. All exception messages should
+     * be developer friendly and refer to the browser context as a "Profile".
+     *
+     * @throws IllegalStateException if the WebView has been destroyed via. {@link
+     *         AwContents#destroy()}.
+     * @throws IllegalStateException if the browser context has been accessed via. {@link
+     *         AwContents#getBrowserContext()}.
+     * @throws IllegalStateException if the browser context has already been set explicitly via.
+     *         {@link AwContents#setBrowserContext(AwBrowserContext)}.
+     * @throws IllegalStateException if the {@link AwContents#evaluateJavaScript(String, Callback)}
+     *         has been called on the WebView.
+     * @throws IllegalStateException if the WebView has previously navigated to a web page.
+     */
+    public void setBrowserContext(@NonNull AwBrowserContext browserContext) {
+        if (browserContext == mBrowserContext) {
+            return;
+        }
+        if (isDestroyed(NO_WARN)) {
+            throw new IllegalStateException(
+                    "Cannot set new profile on a WebView that has been destroyed");
+        }
+        if (mBrowserContextAccessed) {
+            throw new IllegalStateException(
+                    "Cannot set new profile after the current one has been retrieved via. "
+                    + "getProfile");
+        }
+        if (mBrowserContextSetExplicitly) {
+            throw new IllegalStateException("Cannot set new profile after one has already been set"
+                    + "via. setProfile");
+        }
+        if (mHasEvaluatedJavascript) {
+            throw new IllegalStateException(
+                    "Cannot set new profile after call to evaluateJavascript");
+        }
+
+        final NavigationHistory navigationHistory = getNavigationHistory();
+        if (navigationHistory.getEntryCount() != 0
+                && !navigationHistory.getEntryAtIndex(0).isInitialEntry()) {
+            throw new IllegalStateException(
+                    "Cannot set new profile on a WebView that has been previously navigated.");
+        }
+
+        // Save existing state and reset.
+        StateSnapshot previousState = captureStateAndResetView();
+        mBrowserContext = browserContext;
+        mBrowserContextSetExplicitly = true;
+        setNewAwContents(
+                AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));
+
+        // Finally refresh all view state.
+        restoreState(previousState);
+    }
+
+    /**
      * Transitions this {@link AwContents} to fullscreen mode and returns the
      * {@link View} where the contents will be drawn while in fullscreen, or null
      * if this AwContents has already been destroyed.
@@ -1404,6 +1490,41 @@ public class AwContents implements SmartClipProvider {
             if (mDisplayCutoutController != null) {
                 mDisplayCutoutController.setCurrentContainerView(mContainerView);
             }
+        }
+    }
+
+    /**
+     * Used for saving and restoring the WebView's state during a native web contents change.
+     * Currently this occurs either after receiving popup contents, or after a browser context
+     * change via. the multi-profile public API.
+     */
+    private static class StateSnapshot {
+        public final boolean wasAttached;
+        public final boolean wasViewVisible;
+        public final boolean wasWindowVisible;
+        public final boolean wasPaused;
+        public final boolean wasFocused;
+        public final boolean wasWindowFocused;
+        public final @NonNull Map<String, Pair<Object, Class>> javascriptInterfaces;
+        public final @Nullable WebMessageListenerInfo[] webMessageListenerInfo;
+
+        public StateSnapshot(@NonNull AwContents awContents) {
+            wasAttached = awContents.mIsAttachedToWindow;
+            wasViewVisible = awContents.mIsViewVisible;
+            wasWindowVisible = awContents.mIsWindowVisible;
+            wasPaused = awContents.mIsPaused;
+            wasFocused = awContents.mContainerViewFocused;
+            wasWindowFocused = awContents.mWindowFocused;
+
+            // Save injected JavaScript interfaces.
+            javascriptInterfaces = new HashMap<>();
+            if (awContents.mWebContents != null) {
+                javascriptInterfaces.putAll(awContents.getJavascriptInjector().getInterfaces());
+            }
+
+            // Save injected WebMessageListeners.
+            webMessageListenerInfo = AwContentsJni.get().getJsObjectsInfo(
+                    awContents.mNativeAwContents, WebMessageListenerInfo.class);
         }
     }
 
@@ -1562,7 +1683,10 @@ public class AwContents implements SmartClipProvider {
         updateNativeAwGLFunctor();
 
         mWebContents = AwContentsJni.get().getWebContents(mNativeAwContents);
-        mBrowserContext = AwContentsJni.get().getBrowserContext(mNativeAwContents);
+
+        if (!mBrowserContextSetExplicitly) {
+            mBrowserContext = AwContentsJni.get().getBrowserContext(mNativeAwContents);
+        }
 
         mWindowAndroid = getWindowAndroid(mContext);
         mViewAndroidDelegate =
@@ -1626,59 +1750,44 @@ public class AwContents implements SmartClipProvider {
         newContents.receivePopupContents(popupNativeAwContents);
     }
 
-    // Recap: supplyContentsForPopup() is called on the parent window's content, this method is
-    // called on the popup window's content.
-    // See //android_webview/docs/how-does-on-create-window-work.md for more details.
-    private void receivePopupContents(long popupNativeAwContents) {
-        if (isDestroyed(WARN)) return;
-        // Save existing view state.
-        final boolean wasAttached = mIsAttachedToWindow;
-        final boolean wasViewVisible = mIsViewVisible;
-        final boolean wasWindowVisible = mIsWindowVisible;
-        final boolean wasPaused = mIsPaused;
-        final boolean wasFocused = mContainerViewFocused;
-        final boolean wasWindowFocused = mWindowFocused;
+    /**
+     * Captures the WebView's state before doing a full reset of the view state to prepare
+     * for a new native web contents.
+     */
+    private StateSnapshot captureStateAndResetView() {
+        // Save the existing state.
+        StateSnapshot state = new StateSnapshot(this);
 
-        // Properly clean up existing mNativeAwContents.
-        if (wasFocused) onFocusChanged(false, 0, null);
-        if (wasWindowFocused) onWindowFocusChanged(false);
-        if (wasViewVisible) setViewVisibilityInternal(false);
-        if (wasWindowVisible) setWindowVisibilityInternal(false);
-        if (wasAttached) onDetachedFromWindow();
-        if (!wasPaused) onPause();
+        // Reset the view state.
+        if (state.wasFocused) onFocusChanged(false, 0, null);
+        if (state.wasWindowFocused) onWindowFocusChanged(false);
+        if (state.wasViewVisible) setViewVisibilityInternal(false);
+        if (state.wasWindowVisible) setWindowVisibilityInternal(false);
+        if (state.wasAttached) onDetachedFromWindow();
+        if (!state.wasPaused) onPause();
 
-        // Save injected JavaScript interfaces.
-        Map<String, Pair<Object, Class>> javascriptInterfaces =
-                new HashMap<String, Pair<Object, Class>>();
-        if (mWebContents != null) {
-            javascriptInterfaces.putAll(getJavascriptInjector().getInterfaces());
-        }
+        return state;
+    }
 
-        // Save injected WebMessageListeners
-        WebMessageListenerInfo[] listeners = AwContentsJni.get().getJsObjectsInfo(
-                mNativeAwContents, WebMessageListenerInfo.class);
-
-        setNewAwContents(popupNativeAwContents);
-        // We defer loading any URL on the popup until it has been properly initialized (through
-        // setNewAwContents). We resume the load here.
-        AwContentsJni.get().resumeLoadingCreatedPopupWebContents(mNativeAwContents);
-
-        // Finally refresh all view state for mNativeAwContents.
-        if (!wasPaused) onResume();
-        if (wasAttached) {
+    /**
+     * Restores the WebView to its previous state before a native web contents change.
+     * @param previousState the state to restore to.
+     */
+    private void restoreState(StateSnapshot previousState) {
+        if (!previousState.wasPaused) onResume();
+        if (previousState.wasAttached) {
             onAttachedToWindow();
             mContainerView.postInvalidateOnAnimation();
         }
         onSizeChanged(mContainerView.getWidth(), mContainerView.getHeight(), 0, 0);
-        if (wasWindowVisible) setWindowVisibilityInternal(true);
-        if (wasViewVisible) setViewVisibilityInternal(true);
-        if (wasWindowFocused) onWindowFocusChanged(wasWindowFocused);
-        if (wasFocused) onFocusChanged(true, 0, null);
-
-        mIsPopupWindow = true;
+        if (previousState.wasWindowVisible) setWindowVisibilityInternal(true);
+        if (previousState.wasViewVisible) setViewVisibilityInternal(true);
+        if (previousState.wasWindowFocused) onWindowFocusChanged(true);
+        if (previousState.wasFocused) onFocusChanged(true, 0, null);
 
         // Restore injected JavaScript interfaces.
-        for (Map.Entry<String, Pair<Object, Class>> entry : javascriptInterfaces.entrySet()) {
+        for (Map.Entry<String, Pair<Object, Class>> entry :
+                previousState.javascriptInterfaces.entrySet()) {
             @SuppressWarnings("unchecked")
             Class<? extends Annotation> requiredAnnotation = entry.getValue().second;
             getJavascriptInjector().addPossiblyUnsafeInterface(
@@ -1686,12 +1795,33 @@ public class AwContents implements SmartClipProvider {
         }
 
         // Restore injected WebMessageListeners.
-        if (listeners != null) {
-            for (WebMessageListenerInfo info : listeners) {
+        WebMessageListenerInfo[] previousWebMessageListenerInfo =
+                previousState.webMessageListenerInfo;
+        if (previousWebMessageListenerInfo != null) {
+            for (WebMessageListenerInfo info : previousWebMessageListenerInfo) {
                 addWebMessageListener(
                         info.mObjectName, info.mAllowedOriginRules, info.mHolder.getListener());
             }
         }
+    }
+
+    // Recap: supplyContentsForPopup() is called on the parent window's content, this method is
+    // called on the popup window's content.
+    // See //android_webview/docs/how-does-on-create-window-work.md for more details.
+    private void receivePopupContents(long popupNativeAwContents) {
+        if (isDestroyed(WARN)) return;
+        // Capture as reset the view state for mNativeAwContents.
+        StateSnapshot prePopupState = captureStateAndResetView();
+
+        setNewAwContents(popupNativeAwContents);
+        // We defer loading any URL on the popup until it has been properly initialized (through
+        // setNewAwContents). We resume the load here.
+        AwContentsJni.get().resumeLoadingCreatedPopupWebContents(mNativeAwContents);
+
+        // Finally refresh all view state for mNativeAwContents.
+        restoreState(prePopupState);
+
+        mIsPopupWindow = true;
     }
 
     private JavascriptInjector getJavascriptInjector() {
@@ -3108,6 +3238,7 @@ public class AwContents implements SmartClipProvider {
             };
         }
 
+        mHasEvaluatedJavascript = true;
         mWebContents.evaluateJavaScript(script, jsCallback);
     }
 
