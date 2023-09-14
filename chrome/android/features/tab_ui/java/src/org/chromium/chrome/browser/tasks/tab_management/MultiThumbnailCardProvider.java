@@ -268,8 +268,11 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         private void drawFaviconDrawableOnCanvasWithFrame(Drawable favicon, int index) {
             mCanvas.drawRoundRect(mFaviconBackgroundRects.get(index), mFaviconFrameCornerRadius,
                     mFaviconFrameCornerRadius, mFaviconBackgroundPaint);
+            Rect oldBounds = new Rect(favicon.getBounds());
             favicon.setBounds(mFaviconRects.get(index));
             favicon.draw(mCanvas);
+            // Restore the bounds since this may be a shared drawable.
+            favicon.setBounds(oldBounds);
         }
 
         private void drawFaviconThenMaybeSendBack(Drawable favicon, int index) {
