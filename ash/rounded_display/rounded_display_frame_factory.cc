@@ -141,7 +141,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   if (!resource->context_provider) {
     resource->context_provider = aura::Env::GetInstance()
                                      ->context_factory()
-                                     ->SharedMainThreadContextProvider();
+                                     ->SharedMainThreadRasterContextProvider();
     if (!resource->context_provider) {
       LOG(ERROR) << "Failed to acquire a context provider";
       return nullptr;

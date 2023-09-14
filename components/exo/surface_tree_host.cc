@@ -19,7 +19,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -28,7 +28,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -120,7 +120,7 @@ SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name,
   InitHostWindow(window_name);
   context_provider_ = aura::Env::GetInstance()
                           ->context_factory()
-                          ->SharedMainThreadContextProvider();
+                          ->SharedMainThreadRasterContextProvider();
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
 }
@@ -356,8 +356,8 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
     }
     sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
   }
-  gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
-  gles2->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
+  gpu::InterfaceBase* rii = context_provider_->RasterInterface();
+  rii->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
 
   prev_frame_verified_tokens_.clear();
   for (auto& resource : frame.resource_list) {
@@ -628,7 +628,7 @@ void SurfaceTreeHost::HandleContextLost() {
   // Get new context and start observing it.
   context_provider_ = aura::Env::GetInstance()
                           ->context_factory()
-                          ->SharedMainThreadContextProvider();
+                          ->SharedMainThreadRasterContextProvider();
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
 

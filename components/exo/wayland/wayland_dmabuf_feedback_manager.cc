@@ -310,10 +310,10 @@ WaylandDmabufSurfaceFeedback::~WaylandDmabufSurfaceFeedback() {
 
 WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     : display_(display) {
-  scoped_refptr<viz::ContextProvider> context_provider =
+  scoped_refptr<viz::RasterContextProvider> context_provider =
       aura::Env::GetInstance()
           ->context_factory()
-          ->SharedMainThreadContextProvider();
+          ->SharedMainThreadRasterContextProvider();
   gpu::Capabilities caps = context_provider->ContextCapabilities();
 
   // Intel CCS modifiers leak memory on gbm to gl buffer import. Block these

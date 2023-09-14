@@ -234,7 +234,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
             std::move(buffer_handle->get_gpu_memory_buffer_handle())),
         buffer_planes_(CreateGpuBufferPlanes()),
         context_factory_(context_factory),
-        context_provider_(context_factory_->SharedMainThreadContextProvider()),
+        context_provider_(
+            context_factory_->SharedMainThreadRasterContextProvider()),
         buffer_texture_target_(CalculateBufferTextureTarget(
             context_provider_->ContextCapabilities())) {
     DCHECK(buffer_handle->is_gpu_memory_buffer_handle());
@@ -294,7 +295,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     }
     release_sync_token_ = gpu::SyncToken();
 
-    context_provider_ = context_factory_->SharedMainThreadContextProvider();
+    context_provider_ =
+        context_factory_->SharedMainThreadRasterContextProvider();
     if (context_provider_) {
       context_provider_->AddObserver(this);
       buffer_texture_target_ = CalculateBufferTextureTarget(
@@ -469,7 +471,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   // Used to create a GPU memory buffer from its handle.
   gpu::GpuMemoryBufferSupport gpu_memory_buffer_support_;
 
-  scoped_refptr<viz::ContextProvider> context_provider_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
 
   // The texture target we use to create a `MailboxHolder`. This value is
   // calculated for out GPU buffer format, and GPU buffer usage, and the current

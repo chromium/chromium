@@ -26,7 +26,7 @@ class Window;
 }  // namespace aura
 
 namespace viz {
-class ContextProvider;
+class RasterContextProvider;
 }
 
 namespace exo {
@@ -293,7 +293,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   viz::FrameTokenGenerator next_token_;
 
-  scoped_refptr<viz::ContextProvider> context_provider_;
+  scoped_refptr<viz::RasterContextProvider> context_provider_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

@@ -64,7 +64,7 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
-scoped_refptr<viz::ContextProvider> GetContextProvider() {
+scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
 #if BUILDFLAG(IS_MAC) || defined(USE_AURA)
   auto* image_transport_factory = ImageTransportFactory::GetInstance();
   DCHECK(image_transport_factory);
@@ -74,7 +74,7 @@ scoped_refptr<viz::ContextProvider> GetContextProvider() {
     return nullptr;
   }
 
-  return ui_context_factory->SharedMainThreadContextProvider();
+  return ui_context_factory->SharedMainThreadRasterContextProvider();
 #else
   return nullptr;
 #endif
@@ -146,7 +146,7 @@ class ContextProviderObserver : viz::ContextLostObserver {
   const OnGpuCapabilitiesFetched on_gpu_capabilities_fetched_;
 
   // Context provider that was used to query the GPU capabilities. May be null.
-  scoped_refptr<viz::ContextProvider> context_provider_
+  scoped_refptr<viz::RasterContextProvider> context_provider_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   SEQUENCE_CHECKER(main_sequence_checker_);
