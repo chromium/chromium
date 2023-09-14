@@ -177,12 +177,9 @@ base::TimeDelta TimeUntilNewPTMonth() {
 
   // Exploded structure uses 1-based month (values 1 = January, etc.)
   // Increment current ts to be the new month/year.
-  if (exploded_current_ts.month == 12) {
-    exploded_current_ts.month = 1;
-    exploded_current_ts.year += 1;
-  } else {
-    exploded_current_ts.month += 1;
-  }
+  // "+ 11) % 12) + 1" wraps the month around if it goes outside 1..12.
+  exploded_current_ts.month = (((exploded_current_ts.month + 1) + 11) % 12) + 1;
+  exploded_current_ts.year += (exploded_current_ts.month == 1);
 
   // New timestamp should reflect first day of new month.
   exploded_current_ts.day_of_month = 1;

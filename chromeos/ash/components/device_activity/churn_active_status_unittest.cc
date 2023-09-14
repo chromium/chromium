@@ -33,18 +33,11 @@ base::Time GetNextMonth(base::Time ts) {
   ts.UTCExplode(&exploded);
 
   // Set new time to the first midnight of the next month.
+  // "+ 11) % 12) + 1" wraps the month around if it goes outside 1..12.
+  exploded.month = (((exploded.month + 1) + 11) % 12) + 1;
+  exploded.year += (exploded.month == 1);
   exploded.day_of_month = 1;
-  exploded.month += 1;
-  exploded.hour = 0;
-  exploded.minute = 0;
-  exploded.second = 0;
-  exploded.millisecond = 0;
-
-  // Handle case when month is december.
-  if (exploded.month > 12) {
-    exploded.year += 1;
-    exploded.month = 1;
-  }
+  exploded.hour = exploded.minute = exploded.second = exploded.millisecond = 0;
 
   base::Time new_month_ts;
   EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &new_month_ts));
