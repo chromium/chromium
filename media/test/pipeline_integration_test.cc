@@ -115,17 +115,16 @@ static base::Time kLiveTimelineOffset() {
   // 2012-11-10 12:34:56.789123456
   // Since base::Time only has a resolution of microseconds,
   // construct a base::Time for 2012-11-10 12:34:56.789123.
-  base::Time::Exploded exploded_time;
-  exploded_time.year = 2012;
-  exploded_time.month = 11;
-  exploded_time.day_of_month = 10;
-  exploded_time.day_of_week = 6;
-  exploded_time.hour = 12;
-  exploded_time.minute = 34;
-  exploded_time.second = 56;
-  exploded_time.millisecond = 789;
+  static constexpr base::Time::Exploded kExplodedTime = {.year = 2012,
+                                                         .month = 11,
+                                                         .day_of_week = 6,
+                                                         .day_of_month = 10,
+                                                         .hour = 12,
+                                                         .minute = 34,
+                                                         .second = 56,
+                                                         .millisecond = 789};
   base::Time timeline_offset;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded_time, &timeline_offset));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kExplodedTime, &timeline_offset));
 
   timeline_offset += base::Microseconds(123);
 
