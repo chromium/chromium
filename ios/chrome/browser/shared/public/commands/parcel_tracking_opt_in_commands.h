@@ -10,10 +10,9 @@
 // Commands related to the parcel tracking opt-in prompt.
 @protocol ParcelTrackingOptInCommands <NSObject>
 
-// Shows the parcel tracking opt-in prompt.
-- (void)showParcelTrackingOptInPromptWithParcels:
-            (NSArray<CustomTextCheckingResult*>*)parcels
-                                     forWebState:(web::WebState*)webState;
+// Shows the parcel tracking opt-in UI if the user is eligible.
+- (void)showParcelTrackingUIWithParcels:
+    (NSArray<CustomTextCheckingResult*>*)parcels;
 
 @end
 

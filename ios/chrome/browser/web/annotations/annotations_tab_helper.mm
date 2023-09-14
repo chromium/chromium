@@ -156,14 +156,18 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     DCHECK(manager);
     base::Value annotations(std::move(deferred.value()));
     if (IsIOSParcelTrackingEnabled()) {
-      AnnotationsTabHelper::MaybeShowParcelTrackingUI(annotations.GetList());
+      AnnotationsTabHelper::ProcessParcelTrackingNumbers(annotations.GetList());
     }
     manager->DecorateAnnotations(web_state_, annotations, seq_id);
   }
 }
 
-void AnnotationsTabHelper::MaybeShowParcelTrackingUI(
+void AnnotationsTabHelper::ProcessParcelTrackingNumbers(
     base::Value::List& annotations_list) {
+  // Return early if not currently active WebState.
+  if (!web_state_->IsVisible()) {
+    return;
+  }
   NSMutableArray<CustomTextCheckingResult*>* parcels =
       [[NSMutableArray alloc] init];
   for (size_t i = 0; i < annotations_list.size();) {
@@ -180,21 +184,18 @@ void AnnotationsTabHelper::MaybeShowParcelTrackingUI(
     annotations_list.EraseValue(annotations_list[i]);
   }
   if ([parcels count] > 0) {
-    ChromeBrowserState* browser_state =
-        ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-    if (IsUserEligibleParcelTrackingOptInPrompt(browser_state)) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&AnnotationsTabHelper::ShowParcelTrackingUI,
-                                    weak_factory_.GetWeakPtr(), parcels));
-    }
+    // Call asynchronously to allow the rest of the annotations to be decorated
+    // first.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AnnotationsTabHelper::MaybeShowParcelTrackingUI,
+                       weak_factory_.GetWeakPtr(), parcels));
   }
 }
 
-void AnnotationsTabHelper::ShowParcelTrackingUI(
+void AnnotationsTabHelper::MaybeShowParcelTrackingUI(
     NSArray<CustomTextCheckingResult*>* parcels) {
-  [parcel_tracking_handler_
-      showParcelTrackingOptInPromptWithParcels:parcels
-                                   forWebState:web_state_];
+  [parcel_tracking_handler_ showParcelTrackingUIWithParcels:parcels];
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTabHelper)

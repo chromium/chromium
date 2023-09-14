@@ -15,6 +15,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
@@ -42,6 +43,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
@@ -59,6 +61,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -2303,14 +2306,58 @@ enum class ToolbarKind {
 
 #pragma mark - ParcelTrackingOptInCommands
 
-- (void)showParcelTrackingOptInPromptWithParcels:
+- (void)showParcelTrackingUIWithParcels:
+    (NSArray<CustomTextCheckingResult*>*)parcels {
+  // TODO(crbug.com/1473449): Once Shopping Service API is ready, return
+  // early if the parcels are already being tracked.
+  if (IsUserEligibleParcelTrackingOptInPrompt(
+          self.browser->GetBrowserState())) {
+    [self showParcelTrackingOptInPromptWithParcels:parcels];
+  } else {
+    [self maybeShowParcelTrackingInfobarWithParcels:parcels];
+  }
+}
+
+#pragma mark - ParcelTrackingOptInCommands helpers
+
+- (void)showParcelTrackingInfobarWithParcels:
             (NSArray<CustomTextCheckingResult*>*)parcels
-                                     forWebState:(web::WebState*)webState {
+                                     forStep:(ParcelTrackingStep)step {
+  // TODO(crbug.com/1473449): add infobar to InfobarManager.
+}
+
+- (void)maybeShowParcelTrackingInfobarWithParcels:
+    (NSArray<CustomTextCheckingResult*>*)parcels {
+  IOSParcelTrackingOptInStatus optInStatus =
+      static_cast<IOSParcelTrackingOptInStatus>(
+          self.browser->GetBrowserState()->GetPrefs()->GetInteger(
+              prefs::kIosParcelTrackingOptInStatus));
+  ParcelTrackingStep step;
+  switch (optInStatus) {
+    case IOSParcelTrackingOptInStatus::kAlwaysTrack:
+      step = ParcelTrackingStep::kNewPackageTracked;
+      break;
+    case IOSParcelTrackingOptInStatus::kAskToTrack:
+      step = ParcelTrackingStep::kAskedToTrackPackage;
+      break;
+    case IOSParcelTrackingOptInStatus::kNeverTrack:
+      // Do not display infobar.
+      return;
+  }
+  [self showParcelTrackingInfobarWithParcels:parcels forStep:step];
+}
+
+- (void)showParcelTrackingOptInPromptWithParcels:
+    (NSArray<CustomTextCheckingResult*>*)parcels {
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState) {
+    return;
+  }
   [self dismissParcelTrackingOptInPrompt];
   self.parcelTrackingOptInCoordinator = [[ParcelTrackingOptInCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        webState:webState
+                        webState:activeWebState
                          parcels:parcels];
   [self.parcelTrackingOptInCoordinator start];
 }

@@ -10,6 +10,21 @@ source_set("metrics") {
   deps = [ "//base" ]
 }
 
+source_set("infobar_delegate") {
+  sources = [
+    "parcel_tracking_infobar_delegate.h",
+    "parcel_tracking_infobar_delegate.mm",
+  ]
+  deps = [
+    ":util",
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
+    "//ios/web/public/annotations:custom_text_check_result",
+  ]
+}
+
 source_set("util") {
   sources = [
     "parcel_tracking_util.h",

@@ -19,6 +19,13 @@ enum class IOSParcelTrackingOptInStatus {
   kAskToTrack = 2,
 };
 
+// Enum that denotes the state the user is in for parcel tracking.
+enum class ParcelTrackingStep {
+  kNewPackageTracked = 0,
+  kAskedToTrackPackage = 1,
+  kPackageUntracked = 2,
+};
+
 // Returns true if the parcel tracking feature is enabled.
 bool IsIOSParcelTrackingEnabled();
 

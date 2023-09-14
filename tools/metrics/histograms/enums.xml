@@ -54241,6 +54241,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="115" label="LOCAL_TEST_POLICIES_APPLIED_INFOBAR"/>
   <int value="116"
       label="BIDDING_AND_AUCTION_USER_CONSENTED_DEBUGGING_DELEGATE"/>
+  <int value="117" label="PARCEL_TRACKING_INFOBAR_DELEGATE"/>
 </enum>
 
 <enum name="InfoBarResponse">
