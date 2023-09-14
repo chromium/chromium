@@ -737,7 +737,7 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       ax_tree_source_(BlinkAXTreeSource::Create(*this)),
       ax_tree_serializer_(
           std::make_unique<
-              ui::AXTreeSerializer<AXObject*, HeapVector<AXObject*>>>(
+              ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>>(
               ax_tree_source_,
               /*crash_on_error*/ true)) {
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();

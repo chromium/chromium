@@ -1085,7 +1085,7 @@ class MODULES_EXPORT AXObjectCacheImpl
       render_accessibility_host_;
 
   Member<BlinkAXTreeSource> ax_tree_source_;
-  std::unique_ptr<ui::AXTreeSerializer<AXObject*, HeapVector<AXObject*>>>
+  std::unique_ptr<ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>>
       ax_tree_serializer_;
 
   HeapDeque<Member<AXDirtyObject>> dirty_objects_;
