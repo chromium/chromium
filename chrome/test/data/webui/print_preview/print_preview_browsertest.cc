@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -75,4 +76,153 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettingsTest) {
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelectTest) {
   RunTest("print_preview/settings_select_test.js", "mocha.run()");
+}
+
+class PrintPreviewAppTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/print_preview_app_test.js",
+        base::StringPrintf("runMochaTest('PrintPreviewAppTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, PrintPresets) {
+  RunTestCase("PrintPresets");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, DestinationsManaged) {
+  RunTestCase("DestinationsManaged");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, HeaderFooterManaged) {
+  RunTestCase("HeaderFooterManaged");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, CssBackgroundManaged) {
+  RunTestCase("CssBackgroundManaged");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, SheetsManaged) {
+  RunTestCase("SheetsManaged");
+}
+#endif
+
+class PrintPreviewSidebarTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/print_preview_sidebar_test.js",
+        base::StringPrintf("runMochaTest('PrintPreviewSidebarTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewSidebarTest,
+                       SettingsSectionsVisibilityChange) {
+  RunTestCase("SettingsSectionsVisibilityChange");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewSidebarTest, SheetCountWithDuplex) {
+  RunTestCase("SheetCountWithDuplex");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewSidebarTest, SheetCountWithCopies) {
+  RunTestCase("SheetCountWithCopies");
+}
+
+class PrintPreviewPagesSettingsTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/pages_settings_test.js",
+        base::StringPrintf("runMochaTest('PagesSettingsTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, PagesDropdown) {
+  RunTestCase("PagesDropdown");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, NoParityOptions) {
+  RunTestCase("NoParityOptions");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest,
+                       ParitySelectionMemorized) {
+  RunTestCase("ParitySelectionMemorized");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, ValidPageRanges) {
+  RunTestCase("ValidPageRanges");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, InvalidPageRanges) {
+  RunTestCase("InvalidPageRanges");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsTest, NupChangesPages) {
+  RunTestCase("NupChangesPages");
+}
+
+class PrintPreviewPdfToolbarManagerTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/pdf_toolbar_manager_test.js",
+        base::StringPrintf("runMochaTest('PdfToolbarManagerTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPdfToolbarManagerTest, KeyboardNavigation) {
+  RunTestCase("KeyboardNavigation");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPdfToolbarManagerTest,
+                       ResetKeyboardNavigation) {
+  RunTestCase("ResetKeyboardNavigation");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPdfToolbarManagerTest, TouchInteraction) {
+  RunTestCase("TouchInteraction");
+}
+
+class PrintPreviewPdfViewerTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/pdf_viewer_test.js",
+        base::StringPrintf("runMochaTest('PdfViewerTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPdfViewerTest, Basic) {
+  RunTestCase("Basic");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPdfViewerTest, PageIndicator) {
+  RunTestCase("PageIndicator");
+}
+
+class PrintPreviewPdfZoomToolbarTest : public PrintPreviewBrowserTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewBrowserTest::RunTest(
+        "print_preview/pdf_zoom_toolbar_test.js",
+        base::StringPrintf("runMochaTest('PdfZoomToolbarTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPdfZoomToolbarTest, Toggle) {
+  RunTestCase("Toggle");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewPdfZoomToolbarTest, ForceFitToPage) {
+  RunTestCase("ForceFitToPage");
 }

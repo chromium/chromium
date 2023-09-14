@@ -173,6 +173,10 @@ source_set("interactive_ui_tests") {
     sources += [ "extensions/extensions_focus_test.cc" ]
   }
 
+  if (enable_print_preview) {
+    sources += [ "print_preview/print_preview_focus_test.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [

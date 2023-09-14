@@ -111,36 +111,6 @@ TEST_F(
 GEN('#endif');
 
 
-var PrintPreviewPagesSettingsTest =
-    class extends PrintPreviewInteractiveUITest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/pages_settings_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return pages_settings_test.suiteName;
-  }
-};
-
-TEST_F('PrintPreviewPagesSettingsTest', 'ClearInput', function() {
-  this.runMochaTest(pages_settings_test.TestNames.ClearInput);
-});
-
-TEST_F(
-    'PrintPreviewPagesSettingsTest', 'InputNotDisabledOnValidityChange',
-    function() {
-      this.runMochaTest(
-          pages_settings_test.TestNames.InputNotDisabledOnValidityChange);
-    });
-
-TEST_F(
-    'PrintPreviewPagesSettingsTest', 'EnterOnInputTriggersPrint', function() {
-      this.runMochaTest(
-          pages_settings_test.TestNames.EnterOnInputTriggersPrint);
-    });
-
 var PrintPreviewNumberSettingsSectionInteractiveTest =
     class extends PrintPreviewInteractiveUITest {
   /** @override */

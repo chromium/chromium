@@ -14,18 +14,7 @@ import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
 
 
-const print_preview_sidebar_test = {
-  suiteName: 'PrintPreviewSidebarTest',
-  TestNames: {
-    SettingsSectionsVisibilityChange: 'settings sections visibility change',
-    SheetCountWithDuplex: 'sheet count with duplex',
-    SheetCountWithCopies: 'sheet count with copies',
-  },
-};
-
-Object.assign(window, {print_preview_sidebar_test: print_preview_sidebar_test});
-
-suite(print_preview_sidebar_test.suiteName, function() {
+suite('PrintPreviewSidebarTest', function() {
   let sidebar: PrintPreviewSidebarElement;
 
   let model: PrintPreviewModelElement;
@@ -57,8 +46,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
   });
 
   test(
-      print_preview_sidebar_test.TestNames.SettingsSectionsVisibilityChange,
-      function() {
+      'SettingsSectionsVisibilityChange', function() {
         const moreSettingsElement =
             sidebar.shadowRoot!.querySelector('print-preview-more-settings')!;
         moreSettingsElement.$.label.click();
@@ -82,7 +70,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
 
   // Tests that number of sheets is correctly calculated if duplex setting is
   // enabled.
-  test(print_preview_sidebar_test.TestNames.SheetCountWithDuplex, function() {
+  test('SheetCountWithDuplex', function() {
     const header = sidebar.shadowRoot!.querySelector('print-preview-header')!;
     assertEquals(1, header.sheetCount);
     sidebar.setSetting('pages', [1, 2, 3]);
@@ -95,7 +83,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
 
   // Tests that number of sheets is correctly calculated if multiple copies
   // setting is enabled.
-  test(print_preview_sidebar_test.TestNames.SheetCountWithCopies, function() {
+  test('SheetCountWithCopies', function() {
     const header = sidebar.shadowRoot!.querySelector('print-preview-header')!;
     assertEquals(1, header.sheetCount);
     sidebar.setSetting('copies', 4);

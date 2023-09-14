@@ -101,18 +101,7 @@ function makeTapEvent(x: number, y: number): MouseEvent {
   return e;
 }
 
-const pdf_toolbar_manager_test = {
-  suiteName: 'PdfToolbarManagerTest',
-  TestNames: {
-    KeyboardNavigation: 'keyboard navigation',
-    ResetKeyboardNavigation: 'reset keyboard navigation',
-    TouchInteraction: 'touch interaction',
-  },
-};
-
-Object.assign(window, {pdf_toolbar_manager_test});
-
-suite(pdf_toolbar_manager_test.suiteName, function() {
+suite('PdfToolbarManagerTest', function() {
   let mockWindow: MockWindow;
 
   let zoomToolbar: ViewerZoomToolbarElement;
@@ -138,7 +127,7 @@ suite(pdf_toolbar_manager_test.suiteName, function() {
   /**
    * Test that the toolbar will not be hidden when navigating with the tab key.
    */
-  test(pdf_toolbar_manager_test.TestNames.KeyboardNavigation, function() {
+  test('KeyboardNavigation', function() {
     function mouseMove(
         fromX: number, fromY: number, toX: number, toY: number, steps: number) {
       getMouseMoveEvents(fromX, fromY, toX, toY, steps)
@@ -169,7 +158,7 @@ suite(pdf_toolbar_manager_test.suiteName, function() {
    * Simulates focusing and then un-focusing the zoom toolbar buttons from Print
    * Preview.
    */
-  test(pdf_toolbar_manager_test.TestNames.ResetKeyboardNavigation, function() {
+  test('ResetKeyboardNavigation', function() {
     // Move the mouse and wait for a timeout to ensure toolbar is invisible.
     getMouseMoveEvents(200, 200, 800, 800, 5).forEach(function(e: Event) {
       document.dispatchEvent(e);
@@ -210,7 +199,7 @@ suite(pdf_toolbar_manager_test.suiteName, function() {
    * Test that the toolbars can be shown or hidden by tapping with a touch
    * device.
    */
-  test(pdf_toolbar_manager_test.TestNames.TouchInteraction, function() {
+  test('TouchInteraction', function() {
     toolbarManager.resetKeyboardNavigationAndHideToolbar();
     mockWindow.runTimeout();
     assertFalse(zoomToolbar.isVisible());

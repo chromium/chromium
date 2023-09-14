@@ -13,24 +13,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
-const pages_settings_test = {
-  suiteName: 'PagesSettingsTest',
-  TestNames: {
-    PagesDropdown: 'pages dropdown',
-    NoParityOptions: 'no parity options',
-    ParitySelectionMemorized: 'parity selection memorized',
-    ValidPageRanges: 'valid page ranges',
-    InvalidPageRanges: 'invalid page ranges',
-    NupChangesPages: 'nup changes pages',
-    ClearInput: 'clear input',
-    InputNotDisabledOnValidityChange: 'input not disabled on validity change',
-    EnterOnInputTriggersPrint: 'enter on input triggers print',
-  },
-};
-
-Object.assign(window, {pages_settings_test: pages_settings_test});
-
-suite(pages_settings_test.suiteName, function() {
+suite('PagesSettingsTest', function() {
   let pagesSection: PrintPreviewPagesSettingsElement;
 
   const oneToHundred: number[] = Array.from({length: 100}, (_x, i) => i + 1);
@@ -90,7 +73,7 @@ suite(pages_settings_test.suiteName, function() {
 
   // Verifies that the pages setting updates correctly when the dropdown
   // changes.
-  test(pages_settings_test.TestNames.PagesDropdown, async () => {
+  test('PagesDropdown', async () => {
     pagesSection.pageCount = 5;
 
     // Default value is all pages.
@@ -140,7 +123,7 @@ suite(pages_settings_test.suiteName, function() {
 
   // Tests that the odd-only and even-only options are hidden when the document
   // has only one page.
-  test(pages_settings_test.TestNames.NoParityOptions, async () => {
+  test('NoParityOptions', async () => {
     pagesSection.pageCount = 1;
 
     const oddOption = pagesSection.shadowRoot!.querySelector<HTMLOptionElement>(
@@ -155,7 +138,7 @@ suite(pages_settings_test.suiteName, function() {
 
   // Tests that the odd-only and even-only selections are preserved when the
   // page counts change.
-  test(pages_settings_test.TestNames.ParitySelectionMemorized, async () => {
+  test('ParitySelectionMemorized', async () => {
     const select = pagesSection.shadowRoot!.querySelector('select')!;
 
     pagesSection.pageCount = 2;
@@ -177,7 +160,7 @@ suite(pages_settings_test.suiteName, function() {
   });
 
   // Tests that the page ranges set are valid for different user inputs.
-  test(pages_settings_test.TestNames.ValidPageRanges, async () => {
+  test('ValidPageRanges', async () => {
     pagesSection.pageCount = 100;
     const tenToHundred = Array.from({length: 91}, (_x, i) => i + 10);
 
@@ -225,7 +208,7 @@ suite(pages_settings_test.suiteName, function() {
 
   // Tests that the correct error messages are shown for different user
   // inputs.
-  test(pages_settings_test.TestNames.InvalidPageRanges, async () => {
+  test('InvalidPageRanges', async () => {
     pagesSection.pageCount = 100;
     const syntaxError = 'Invalid page range, use e.g. 1-5, 8, 11-13';
 
@@ -261,7 +244,7 @@ suite(pages_settings_test.suiteName, function() {
   // Tests that the pages are set correctly for different values of pages per
   // sheet, and that ranges remain fixed (since they are used for generating
   // the print preview ticket).
-  test(pages_settings_test.TestNames.NupChangesPages, async () => {
+  test('NupChangesPages', async () => {
     pagesSection.pageCount = 100;
     await selectOption(pagesSection, PagesValue.CUSTOM.toString());
     await setCustomInput('1, 2, 3, 1, 56');
@@ -294,7 +277,7 @@ suite(pages_settings_test.suiteName, function() {
   // input does not show an error message but does not reset the preview, and
   // changing focus from an empty input in either case fills in the dropdown
   // with the full page range.
-  test(pages_settings_test.TestNames.ClearInput, async () => {
+  test('ClearInput', async () => {
     pagesSection.pageCount = 3;
     const input = pagesSection.$.pageSettingsCustomInput.inputElement;
     const select = pagesSection.shadowRoot!.querySelector('select')!;
@@ -380,8 +363,7 @@ suite(pages_settings_test.suiteName, function() {
   // Verifies that the input is never disabled when the validity of the
   // setting changes.
   test(
-      pages_settings_test.TestNames.InputNotDisabledOnValidityChange,
-      async () => {
+      'InputNotDisabledOnValidityChange', async () => {
         pagesSection.pageCount = 3;
         // In the real UI, the print preview app listens for this event from
         // this section and others and sets disabled to true if any change from
@@ -422,7 +404,7 @@ suite(pages_settings_test.suiteName, function() {
   // element, so that it will be bubbled to the print preview app to trigger a
   // print.
   test(
-      pages_settings_test.TestNames.EnterOnInputTriggersPrint, async () => {
+      'EnterOnInputTriggersPrint', async () => {
         pagesSection.pageCount = 3;
         const input = pagesSection.$.pageSettingsCustomInput.inputElement;
         const whenPrintReceived = eventToPromise('keydown', pagesSection);

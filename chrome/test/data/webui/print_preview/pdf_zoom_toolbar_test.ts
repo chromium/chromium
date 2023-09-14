@@ -6,17 +6,7 @@ import {CrIconButtonElement, FittingType, ViewerZoomButtonElement, ViewerZoomToo
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-const pdf_zoom_toolbar_test = {
-  suiteName: 'PdfZoomToolbarTest',
-  TestNames: {
-    Toggle: 'toggle',
-    ForceFitToPage: 'force fit to page',
-  },
-};
-
-Object.assign(window, {pdf_zoom_toolbar_test: pdf_zoom_toolbar_test});
-
-suite(pdf_zoom_toolbar_test.suiteName, function() {
+suite('PdfZoomToolbarTest', function() {
   let zoomToolbar: ViewerZoomToolbarElement;
 
   let fitButton: ViewerZoomButtonElement;
@@ -40,7 +30,7 @@ suite(pdf_zoom_toolbar_test.suiteName, function() {
    * Test that the zoom toolbar toggles between showing the fit-to-page and
    * fit-to-width buttons.
    */
-  test(pdf_zoom_toolbar_test.TestNames.Toggle, async () => {
+  test('Toggle', async () => {
     // Initial: Show fit-to-page.
     assertTrue(button.ironIcon!.endsWith(fitPageIcon));
 
@@ -92,7 +82,7 @@ suite(pdf_zoom_toolbar_test.suiteName, function() {
     assertTrue(button.ironIcon!.endsWith(fitWidthIcon));
   });
 
-  test(pdf_zoom_toolbar_test.TestNames.ForceFitToPage, async () => {
+  test('ForceFitToPage', async () => {
     // Initial: Show fit-to-page.
     assertTrue(button.ironIcon!.endsWith(fitPageIcon));
 

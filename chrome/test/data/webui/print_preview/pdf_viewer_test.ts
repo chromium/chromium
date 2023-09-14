@@ -13,22 +13,12 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-const pdf_viewer_test = {
-  suiteName: 'PdfViewerTest',
-  TestNames: {
-    Basic: 'basic',
-    PageIndicator: 'page indicator',
-  },
-};
-
-Object.assign(window, {pdf_viewer_test});
-
-suite(pdf_viewer_test.suiteName, function() {
+suite('PdfViewerTest', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  test(pdf_viewer_test.TestNames.Basic, async () => {
+  test('Basic', async () => {
     const plugin = pdfCreateOutOfProcessPlugin(
         'chrome-untrusted://print/test.pdf',
         'chrome://print/pdf/index_print.html');
@@ -72,7 +62,7 @@ suite(pdf_viewer_test.suiteName, function() {
     assertTrue(!!viewer.shadowRoot!.querySelector('viewer-error-dialog'));
   });
 
-  test(pdf_viewer_test.TestNames.PageIndicator, function() {
+  test('PageIndicator', function() {
     const indicator = document.createElement('viewer-page-indicator');
     document.body.appendChild(indicator);
 
