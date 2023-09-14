@@ -496,10 +496,10 @@ class UpdateMetadata(Command):
             UpdateAbortError: If one or more builds finished with
                 `INFRA_FAILURE` and the user chose not to continue.
         """
-        if GitCL.filter_infra_failed(build_statuses):
+        if GitCL.filter_incomplete(build_statuses):
             if not self._tool.user.confirm(default=User.DEFAULT_NO):
-                raise UpdateAbortError('Aborting update due to build(s) with '
-                                       'infrastructure failures.')
+                raise UpdateAbortError(
+                    'Aborting update due to build(s) with incomplete results.')
         # TODO(crbug.com/1299650): Filter by failed builds again after the FYI
         # builders are green and no longer experimental.
         build_ids = [

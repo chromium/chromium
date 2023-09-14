@@ -203,7 +203,7 @@ class BuildResolver:
 
     def log_builds(self, build_statuses: BuildStatuses):
         """Log builds in a tabular format."""
-        self._warn_about_infra_failures(build_statuses)
+        self._warn_about_incomplete_results(build_statuses)
         finished_builds = {
             build: result or '--'
             for build, (status, result) in build_statuses.items()
@@ -226,15 +226,16 @@ class BuildResolver:
             _log.info('Scheduled or started builds:')
             self._log_build_statuses(unfinished_builds)
 
-    def _warn_about_infra_failures(self, build_statuses: BuildStatuses):
-        builds_with_infra_failures = GitCL.filter_infra_failed(build_statuses)
-        if builds_with_infra_failures:
-            _log.warning('Some builds have infrastructure failures:')
-            for build in sorted(builds_with_infra_failures,
+    def _warn_about_incomplete_results(self, build_statuses: BuildStatuses):
+        builds_with_incomplete_results = GitCL.filter_incomplete(
+            build_statuses)
+        if builds_with_incomplete_results:
+            _log.warning('Some builds have incomplete results:')
+            for build in sorted(builds_with_incomplete_results,
                                 key=_build_sort_key):
                 _log.warning('  "%s" build %s', build.builder_name,
                              str(build.build_number or '--'))
-            _log.warning('Examples of infrastructure failures include:')
+            _log.warning('Examples of incomplete results include:')
             _log.warning('  * Shard terminated the harness after timing out.')
             _log.warning('  * Harness exited early due to '
                          'excessive unexpected failures.')

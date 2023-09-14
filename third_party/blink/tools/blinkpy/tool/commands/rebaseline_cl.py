@@ -161,22 +161,22 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             _log.error('%s', error)
             return 1
 
-        builders_with_infra_failures = {
+        builders_with_incomplete_results = {
             build.builder_name
-            for build in GitCL.filter_infra_failed(build_statuses)
+            for build in GitCL.filter_incomplete(build_statuses)
         }
         jobs_to_results = self._fetch_results(build_statuses)
         builders_with_results = {b.builder_name for b in jobs_to_results}
         builders_without_results = (set(self.selected_try_bots) -
                                     builders_with_results -
-                                    builders_with_infra_failures)
+                                    builders_with_incomplete_results)
         if builders_without_results:
             _log.warning('Some builders have no results:')
             for builder in sorted(builders_without_results):
                 _log.warning('  %s', builder)
 
         fill_missing = False
-        builders_without_results.update(builders_with_infra_failures)
+        builders_without_results.update(builders_with_incomplete_results)
         if builders_without_results:
             fill_missing = self._tool.user.confirm(
                 'Would you like to continue?\n'

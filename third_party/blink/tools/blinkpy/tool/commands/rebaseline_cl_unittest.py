@@ -638,9 +638,17 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
+            'WARNING: Some builds have incomplete results:\n',
+            'WARNING:   "MOCK Try Win" build 5000\n',
+            'WARNING: Examples of incomplete results include:\n',
+            'WARNING:   * Shard terminated the harness after timing out.\n',
+            'WARNING:   * Harness exited early due to excessive unexpected failures.\n',
+            'WARNING:   * Build failed on a non-test step.\n',
+            'WARNING: Please consider retrying the failed builders or '
+            'giving the builders more shards.\n',
+            'WARNING: See https://chromium.googlesource.com/chromium/src/+/'
+            'HEAD/docs/testing/web_test_expectations.md#handle-bot-timeouts\n',
             'INFO: All builds finished.\n',
-            'WARNING: Some builders have no results:\n',
-            'WARNING:   MOCK Try Win\n',
             'INFO: Would you like to continue?\n'
             'Note: This will try to fill in missing results '
             'with available results.\n'
@@ -662,9 +670,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertLog([
             'WARNING: `--{no-,}fill-missing` is deprecated and will be removed '
             'soon due to limited utility (crbug.com/1383284).\n',
-            'WARNING: Some builds have infrastructure failures:\n',
+            'WARNING: Some builds have incomplete results:\n',
             'WARNING:   "MOCK Try Win" build 5000\n',
-            'WARNING: Examples of infrastructure failures include:\n',
+            'WARNING: Examples of incomplete results include:\n',
             'WARNING:   * Shard terminated the harness after timing out.\n',
             'WARNING:   * Harness exited early due to excessive unexpected failures.\n',
             'WARNING:   * Build failed on a non-test step.\n',

@@ -260,11 +260,15 @@ class GitCL(object):
         return {b: s for b, s in try_results.items() if b in latest_builds}
 
     @staticmethod
-    def filter_infra_failed(build_statuses: BuildStatuses) -> Set[Build]:
+    def filter_incomplete(build_statuses: BuildStatuses) -> Set[Build]:
+        incomplete_statuses = {
+            TryJobStatus.from_bb_status('INFRA_FAILURE'),
+            TryJobStatus.from_bb_status('CANCELED'),
+        }
         return {
             build
             for build, status in build_statuses.items()
-            if status == TryJobStatus.from_bb_status('INFRA_FAILURE')
+            if status in incomplete_statuses
         }
 
     def try_job_results(self,
