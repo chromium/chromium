@@ -113,8 +113,7 @@ NOINLINE void* HandleMemorySafetyCheckedOperatorNew(std::size_t count) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
-    return root->AllocNoHooks<GetAllocFlags(checks)>(
-        count, partition_alloc::PartitionPageSize());
+    return root->AllocInline<GetAllocFlags(checks)>(count);
   } else
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {

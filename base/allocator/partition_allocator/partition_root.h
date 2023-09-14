@@ -474,7 +474,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInline(
       size_t requested_size,
       const char* type_name = nullptr) {
-    static_assert((flags & AllocFlags::kNoHooks) == 0);  // Internal only.
     return AllocInternal<flags>(requested_size, internal::PartitionPageSize(),
                                 type_name);
   }
@@ -490,19 +489,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       size_t requested_size,
       size_t slot_span_alignment,
       const char* type_name);
-  // Same as |Alloc()|, but bypasses the allocator hooks.
-  //
-  // This is separate from Alloc() because other callers of
-  // Alloc() should not have the extra branch checking whether the
-  // hooks should be ignored or not. This is the same reason why |FreeNoHooks()|
-  // exists. However, |AlignedAlloc()| and |Realloc()| have few callers, so
-  // taking the extra branch in the non-malloc() case doesn't hurt. In addition,
-  // for the malloc() case, the compiler correctly removes the branch, since
-  // this is marked |PA_ALWAYS_INLINE|.
-  template <unsigned int flags = 0>
-  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocNoHooks(
-      size_t requested_size,
-      size_t slot_span_alignment);
 
   template <unsigned int flags = 0>
   PA_NOINLINE PA_MALLOC_ALIGNED void* Realloc(void* ptr,
@@ -898,6 +884,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return ret;
   }
 
+  // Same as |AllocInternal()|, but don't handle allocation hooks.
+  template <unsigned int flags = 0>
+  PA_ALWAYS_INLINE PA_MALLOC_FN PA_MALLOC_ALIGNED void* AllocInternalNoHooks(
+      size_t requested_size,
+      size_t slot_span_alignment);
   // Allocates a memory slot, without initializing extras.
   //
   // - |flags| are as in Alloc().
@@ -1449,7 +1440,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   // Note: ref-count and cookie can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment inside
-  // AllocNoHooks().
+  // AllocInternalNoHooks().
 
   if (settings.use_cookie) {
     // Verify the cookie after the allocated region.
@@ -1895,61 +1886,67 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternal(size_t requested_size,
   PA_DCHECK(
       (slot_span_alignment >= internal::PartitionPageSize()) &&
       partition_alloc::internal::base::bits::IsPowerOfTwo(slot_span_alignment));
-
-  PA_DCHECK((flags & AllocFlags::kNoHooks) == 0);  // Internal only.
   static_assert((flags & AllocFlags::kMemoryShouldBeTaggedForMte) ==
                 0);  // Internal only.
-  PA_DCHECK(initialized);
+
+  constexpr bool no_hooks = flags & AllocFlags::kNoHooks;
+  bool hooks_enabled;
+
+  if constexpr (!no_hooks) {
+    PA_DCHECK(initialized);
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  if constexpr (!(flags & AllocFlags::kNoMemoryToolOverride)) {
-    CHECK_MAX_SIZE_OR_RETURN_NULLPTR(requested_size, flags);
-    constexpr bool zero_fill = flags & AllocFlags::kZeroFill;
-    void* result =
-        zero_fill ? calloc(1, requested_size) : malloc(requested_size);
-    PA_CHECK(result || flags & AllocFlags::kReturnNull);
-    return result;
-  }
-#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  void* object = nullptr;
-  const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
-  if (hooks_enabled) {
-    unsigned int additional_flags = 0;
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
-    if (IsMemoryTaggingEnabled()) {
-      additional_flags |= AllocFlags::kMemoryShouldBeTaggedForMte;
+    if constexpr (!(flags & AllocFlags::kNoMemoryToolOverride)) {
+      CHECK_MAX_SIZE_OR_RETURN_NULLPTR(requested_size, flags);
+      constexpr bool zero_fill = flags & AllocFlags::kZeroFill;
+      void* result =
+          zero_fill ? calloc(1, requested_size) : malloc(requested_size);
+      PA_CHECK(result || flags & AllocFlags::kReturnNull);
+      return result;
     }
+#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    void* object = nullptr;
+    hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
+    if (hooks_enabled) {
+      unsigned int additional_flags = 0;
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+      if (IsMemoryTaggingEnabled()) {
+        additional_flags |= AllocFlags::kMemoryShouldBeTaggedForMte;
+      }
 #endif
-    // The override hooks will return false if it can't handle the request, i.e.
-    // due to unsupported flags. In this case, we forward the allocation request
-    // to the default mechanisms.
-    // TODO(crbug.com/1137393): See if we can make the forwarding more verbose
-    // to ensure that this situation doesn't go unnoticed.
-    if (PartitionAllocHooks::AllocationOverrideHookIfEnabled(
-            &object, flags | additional_flags, requested_size, type_name)) {
+      // The override hooks will return false if it can't handle the request,
+      // i.e. due to unsupported flags. In this case, we forward the allocation
+      // request to the default mechanisms.
+      // TODO(crbug.com/1137393): See if we can make the forwarding more verbose
+      // to ensure that this situation doesn't go unnoticed.
+      if (PartitionAllocHooks::AllocationOverrideHookIfEnabled(
+              &object, flags | additional_flags, requested_size, type_name)) {
+        PartitionAllocHooks::AllocationObserverHookIfEnabled(
+            CreateAllocationNotificationData(object, requested_size,
+                                             type_name));
+        return object;
+      }
+    }
+  }
+
+  void* const object =
+      AllocInternalNoHooks<flags>(requested_size, slot_span_alignment);
+
+  if constexpr (!no_hooks) {
+    if (PA_UNLIKELY(hooks_enabled)) {
       PartitionAllocHooks::AllocationObserverHookIfEnabled(
           CreateAllocationNotificationData(object, requested_size, type_name));
-      return object;
     }
-  }
-
-  object = AllocNoHooks<flags>(requested_size, slot_span_alignment);
-
-  if (PA_UNLIKELY(hooks_enabled)) {
-    PartitionAllocHooks::AllocationObserverHookIfEnabled(
-        CreateAllocationNotificationData(object, requested_size, type_name));
   }
 
   return object;
 }
 
 template <unsigned int flags>
-PA_ALWAYS_INLINE void* PartitionRoot::AllocNoHooks(size_t requested_size,
-                                                   size_t slot_span_alignment) {
+PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
+    size_t requested_size,
+    size_t slot_span_alignment) {
   static_assert(flags < AllocFlags::kLastFlag << 1);
-  PA_DCHECK(
-      (slot_span_alignment >= internal::PartitionPageSize()) &&
-      partition_alloc::internal::base::bits::IsPowerOfTwo(slot_span_alignment));
 
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/ref-count management
@@ -2207,7 +2204,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
                   raw_size - 1));
     }
     PA_DCHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(raw_size));
-    // Adjust back, because AllocNoHooks/Alloc will adjust it again.
+    // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
 
     // Overflow check. adjusted_size must be larger or equal to requested_size.
@@ -2228,10 +2225,9 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   // don't pass anything less, because it'll mess up callee's calculations.
   size_t slot_span_alignment =
       std::max(alignment, internal::PartitionPageSize());
-  constexpr bool no_hooks = flags & AllocFlags::kNoHooks;
-  void* object = no_hooks
-                     ? AllocNoHooks(adjusted_size, slot_span_alignment)
-                     : AllocInternal<0>(adjusted_size, slot_span_alignment, "");
+  // TODO(mikt): Investigate why all flags except kNoHooks are ignored here.
+  void* object = AllocInternal<flags & AllocFlags::kNoHooks>(
+      adjusted_size, slot_span_alignment, nullptr);
 
   // |alignment| is a power of two, but the compiler doesn't necessarily know
   // that. A regular % operation is very slow, make sure to use the equivalent,
@@ -2252,12 +2248,9 @@ void* PartitionRoot::ReallocInline(void* ptr,
   PA_CHECK(result || flags & AllocFlags::kReturnNull);
   return result;
 #else
-  constexpr bool no_hooks = flags & AllocFlags::kNoHooks;
   if (PA_UNLIKELY(!ptr)) {
-    return no_hooks
-               ? AllocNoHooks<flags>(new_size, internal::PartitionPageSize())
-               : AllocInternal<flags>(new_size, internal::PartitionPageSize(),
-                                      type_name);
+    return AllocInternal<flags>(new_size, internal::PartitionPageSize(),
+                                type_name);
   }
 
   if (PA_UNLIKELY(!new_size)) {
@@ -2272,6 +2265,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
     internal::PartitionExcessiveAllocationSize(new_size);
   }
 
+  constexpr bool no_hooks = flags & AllocFlags::kNoHooks;
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   bool overridden = false;
   size_t old_usable_size;
@@ -2318,10 +2312,8 @@ void* PartitionRoot::ReallocInline(void* ptr,
   }
 
   // This realloc cannot be resized in-place. Sadness.
-  void* ret = no_hooks
-                  ? AllocNoHooks<flags>(new_size, internal::PartitionPageSize())
-                  : AllocInternal<flags>(
-                        new_size, internal::PartitionPageSize(), type_name);
+  void* ret =
+      AllocInternal<flags>(new_size, internal::PartitionPageSize(), type_name);
   if (!ret) {
     if constexpr (flags & AllocFlags::kReturnNull) {
       return nullptr;

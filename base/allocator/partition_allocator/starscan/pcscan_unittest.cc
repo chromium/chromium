@@ -142,7 +142,7 @@ FullSlotSpanAllocation GetFullSlotSpan(PartitionRoot& root,
   uintptr_t first = 0;
   uintptr_t last = 0;
   for (size_t i = 0; i < num_slots; ++i) {
-    void* ptr = root.AllocNoHooks(object_size, PartitionPageSize());
+    void* ptr = root.Alloc<partition_alloc::AllocFlags::kNoHooks>(object_size);
     EXPECT_TRUE(ptr);
     if (i == 0) {
       first = root.ObjectToSlotStart(ptr);
@@ -388,7 +388,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromFullPage) {
   // This allocation must go through the slow path and call SetNewActivePage(),
   // which will flush the full page from the active page list.
   void* value_buffer =
-      root().AllocNoHooks(sizeof(ValueList), PartitionPageSize());
+      root().Alloc<partition_alloc::AllocFlags::kNoHooks>(sizeof(ValueList));
 
   // Assert that the first and the last objects are in different slot spans but
   // in the same bucket.
@@ -691,9 +691,8 @@ TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
     void* scan_bitmap;
     void* guard_page2;
   };
-
   auto* const pointers = static_cast<Pointers*>(
-      root().AllocNoHooks(sizeof(Pointers), PartitionPageSize()));
+      root().Alloc<partition_alloc::AllocFlags::kNoHooks>(sizeof(Pointers)));
 
   // Converting to slot start strips MTE tag.
   const uintptr_t super_page =

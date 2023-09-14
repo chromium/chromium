@@ -222,8 +222,8 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
     PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
     // TODO(bartekn): See if the compiler optimizes branches down the stack on
     // Mac, where PartitionPageSize() isn't constexpr.
-    return Allocator()->AllocNoHooks(size,
-                                     partition_alloc::PartitionPageSize());
+    return Allocator()->AllocInline<partition_alloc::AllocFlags::kNoHooks>(
+        size);
   }
 
   return AlignedAllocator()
@@ -237,15 +237,16 @@ namespace allocator_shim::internal {
 
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return Allocator()->AllocNoHooks(size, partition_alloc::PartitionPageSize());
+  return Allocator()->AllocInline<partition_alloc::AllocFlags::kNoHooks>(size);
 }
 
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                size_t size,
                                void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return Allocator()->AllocNoHooks<partition_alloc::AllocFlags::kReturnNull>(
-      size, partition_alloc::PartitionPageSize());
+  return Allocator()
+      ->AllocInline<partition_alloc::AllocFlags::kReturnNull |
+                    partition_alloc::AllocFlags::kNoHooks>(size);
 }
 
 void* PartitionCalloc(const AllocatorDispatch*,
@@ -255,8 +256,9 @@ void* PartitionCalloc(const AllocatorDispatch*,
   partition_alloc::ScopedDisallowAllocations guard{};
   const size_t total =
       partition_alloc::internal::base::CheckMul(n, size).ValueOrDie();
-  return Allocator()->AllocNoHooks<partition_alloc::AllocFlags::kZeroFill>(
-      total, partition_alloc::PartitionPageSize());
+  return Allocator()
+      ->AllocInline<partition_alloc::AllocFlags::kZeroFill |
+                    partition_alloc::AllocFlags::kNoHooks>(total);
 }
 
 void* PartitionMemalign(const AllocatorDispatch*,

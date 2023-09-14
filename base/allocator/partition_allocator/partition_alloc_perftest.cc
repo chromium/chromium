@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_for_testing.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
@@ -96,7 +97,7 @@ class PartitionAllocator : public Allocator {
   ~PartitionAllocator() override { alloc_.DestructForTesting(); }
 
   void* Alloc(size_t size) override {
-    return alloc_.AllocNoHooks(size, PartitionPageSize());
+    return alloc_.AllocInline<AllocFlags::kNoHooks>(size);
   }
   void Free(void* data) override {
     // Even though it's easy to invoke the fast path with
@@ -124,7 +125,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   ~PartitionAllocatorWithThreadCache() override = default;
 
   void* Alloc(size_t size) override {
-    return allocator_.root()->AllocNoHooks(size, PartitionPageSize());
+    return allocator_.root()->AllocInline<AllocFlags::kNoHooks>(size);
   }
   void Free(void* data) override {
     // Even though it's easy to invoke the fast path with
