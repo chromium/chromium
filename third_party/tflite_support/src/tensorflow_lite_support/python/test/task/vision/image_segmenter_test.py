@@ -224,7 +224,7 @@ class ImageSegmenterTest(parameterized.TestCase, tf.test.TestCase):
         [confidence_mask.value for confidence_mask in confidence_masks])
 
     # Check if data type of `confidence_masks` are correct.
-    self.assertEqual(confidence_mask_array.dtype, np.float)
+    self.assertEqual(confidence_mask_array.dtype, float)
 
     # Compute the category mask from the created confidence mask.
     calculated_category_mask = np.argmax(confidence_mask_array, axis=0)

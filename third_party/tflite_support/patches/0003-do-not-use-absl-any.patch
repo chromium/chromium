@@ -1,7 +1,7 @@
-From 6ce4a4268a42bc615683aa3178386093255c0a32 Mon Sep 17 00:00:00 2001
+From 832b8e2be5159a7499ffb6084b1d999095d5e1fb Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:10 -0800
-Subject: [PATCH 04/14] do not use absl any
+Subject: [PATCH 3/9] do not use absl any
 
 ---
  .../cc/task/vision/core/frame_buffer.h        | 27 -------------------
@@ -60,5 +60,5 @@ index 344879341479f..77a41e081b72b 100644
    Format format_;
    Orientation orientation_;
 -- 
-2.38.1.584.g0f3c55d4c2-goog
+2.42.0.459.ge4e396fd5e-goog
 

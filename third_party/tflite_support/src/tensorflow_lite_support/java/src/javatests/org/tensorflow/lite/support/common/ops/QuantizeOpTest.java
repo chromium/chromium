@@ -26,14 +26,15 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 /** Tests of {@link QuantizeOp}. */
 @RunWith(RobolectricTestRunner.class)
 public final class QuantizeOpTest {
-    @Test
-    public void quantizeShouldSuccess() {
-        float[] originalData = {0.5f, 0.25f, -0.5f, 0, 1, -0.9921875f}; // -0.9921875 == -127 / 128
-        QuantizeOp op = new QuantizeOp(127.0f, 1.0f / 128);
-        TensorBuffer input = TensorBuffer.createFixedSize(new int[] {6}, DataType.FLOAT32);
-        input.loadArray(originalData);
-        TensorBuffer quantized = op.apply(input);
-        assertThat(quantized.getDataType()).isEqualTo(DataType.FLOAT32);
-        assertThat(quantized.getIntArray()).isEqualTo(new int[] {191, 159, 63, 127, 255, 0});
-    }
+
+  @Test
+  public void quantizeShouldSuccess() {
+    float[] originalData = {0.5f, 0.25f, -0.5f, 0, 1, -0.9921875f}; // -0.9921875 == -127 / 128
+    QuantizeOp op = new QuantizeOp(127.0f, 1.0f / 128);
+    TensorBuffer input = TensorBuffer.createFixedSize(new int[] {6}, DataType.FLOAT32);
+    input.loadArray(originalData);
+    TensorBuffer quantized = op.apply(input);
+    assertThat(quantized.getDataType()).isEqualTo(DataType.FLOAT32);
+    assertThat(quantized.getIntArray()).isEqualTo(new int[] {191, 159, 63, 127, 255, 0});
+  }
 }

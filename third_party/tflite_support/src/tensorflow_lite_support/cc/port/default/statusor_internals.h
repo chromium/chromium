@@ -21,8 +21,8 @@ limitations under the License.
 #include <utility>
 
 #include "absl/meta/type_traits.h"  // from @com_google_absl
-#include "absl/status/status.h"     // from @com_google_absl
-#include "absl/utility/utility.h"   // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/utility/utility.h"  // from @com_google_absl
 
 namespace tflite {
 namespace support {
@@ -63,8 +63,7 @@ struct IsDirectInitializationAmbiguous
                        U>::value,
           std::false_type,
           IsDirectInitializationAmbiguous<
-              T,
-              absl::remove_cv_t<absl::remove_reference_t<U>>>> {};
+              T, absl::remove_cv_t<absl::remove_reference_t<U>>>> {};
 
 template <typename T, typename V>
 struct IsDirectInitializationAmbiguous<T, tflite::support::StatusOr<V>>
@@ -102,8 +101,7 @@ struct IsForwardingAssignmentAmbiguous
                        U>::value,
           std::false_type,
           IsForwardingAssignmentAmbiguous<
-              T,
-              absl::remove_cv_t<absl::remove_reference_t<U>>>> {};
+              T, absl::remove_cv_t<absl::remove_reference_t<U>>>> {};
 
 template <typename T, typename U>
 struct IsForwardingAssignmentAmbiguous<T, tflite::support::StatusOr<U>>
@@ -138,8 +136,7 @@ template <typename T, typename... Args>
 void PlacementNew(void* p, Args&&... args) {
 #if defined(__GNUC__) && !defined(__clang__)
   // Teach gcc that 'p' cannot be null, fixing code size issues.
-  if (p == nullptr)
-    __builtin_unreachable();
+  if (p == nullptr) __builtin_unreachable();
 #endif
   new (p) T(std::forward<Args>(args)...);
 }
@@ -210,8 +207,7 @@ class StatusOrData {
   }
 
   StatusOrData& operator=(const StatusOrData& other) {
-    if (this == &other)
-      return *this;
+    if (this == &other) return *this;
     if (other.ok())
       Assign(other.data_);
     else
@@ -220,8 +216,7 @@ class StatusOrData {
   }
 
   StatusOrData& operator=(StatusOrData&& other) {
-    if (this == &other)
-      return *this;
+    if (this == &other) return *this;
     if (other.ok())
       Assign(std::move(other.data_));
     else
@@ -300,18 +295,15 @@ class StatusOrData {
   };
 
   void Clear() {
-    if (ok())
-      data_.~T();
+    if (ok()) data_.~T();
   }
 
   void EnsureOk() const {
-    if (ABSL_PREDICT_FALSE(!ok()))
-      Helper::Crash(status_);
+    if (ABSL_PREDICT_FALSE(!ok())) Helper::Crash(status_);
   }
 
   void EnsureNotOk() {
-    if (ABSL_PREDICT_FALSE(ok()))
-      Helper::HandleInvalidStatusCtorArg(&status_);
+    if (ABSL_PREDICT_FALSE(ok())) Helper::HandleInvalidStatusCtorArg(&status_);
   }
 
   // Construct the value (ie. data_) through placement new with the passed
@@ -370,9 +362,8 @@ struct MoveCtorBase<T, false> {
   MoveCtorBase& operator=(MoveCtorBase&&) = default;
 };
 
-template <typename T,
-          bool = std::is_copy_constructible<T>::value&&
-              std::is_copy_assignable<T>::value>
+template <typename T, bool = std::is_copy_constructible<T>::value&&
+                          std::is_copy_assignable<T>::value>
 struct CopyAssignBase {
   CopyAssignBase() = default;
   CopyAssignBase(const CopyAssignBase&) = default;
@@ -390,9 +381,8 @@ struct CopyAssignBase<T, false> {
   CopyAssignBase& operator=(CopyAssignBase&&) = default;
 };
 
-template <typename T,
-          bool = std::is_move_constructible<T>::value&&
-              std::is_move_assignable<T>::value>
+template <typename T, bool = std::is_move_constructible<T>::value&&
+                          std::is_move_assignable<T>::value>
 struct MoveAssignBase {
   MoveAssignBase() = default;
   MoveAssignBase(const MoveAssignBase&) = default;

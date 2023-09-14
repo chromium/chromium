@@ -33,10 +33,8 @@ std::string JoinPathImpl(bool honor_abs,
 std::string JoinPath(absl::string_view path1, absl::string_view path2);
 
 template <typename... T>
-inline std::string JoinPath(absl::string_view path1,
-                            absl::string_view path2,
-                            absl::string_view path3,
-                            const T&... args) {
+inline std::string JoinPath(absl::string_view path1, absl::string_view path2,
+                            absl::string_view path3, const T&... args) {
   return internal::JoinPathImpl(false, {path1, path2, path3, args...});
 }
 

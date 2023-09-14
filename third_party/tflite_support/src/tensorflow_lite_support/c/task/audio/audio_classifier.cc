@@ -109,8 +109,7 @@ TfLiteAudioClassifierOptions TfLiteAudioClassifierOptionsCreate(void) {
 }
 
 TfLiteAudioClassifier* TfLiteAudioClassifierFromOptions(
-    const TfLiteAudioClassifierOptions* options,
-    TfLiteSupportError** error) {
+    const TfLiteAudioClassifierOptions* options, TfLiteSupportError** error) {
   StatusOr<AudioClassifierOptionsCpp> cpp_option_status =
       CreateAudioClassifierCppOptionsFromCOptions(options);
 
@@ -182,8 +181,7 @@ TfLiteClassificationResult* GetClassificationResultCStruct(
 
 TfLiteClassificationResult* TfLiteAudioClassifierClassify(
     const TfLiteAudioClassifier* classifier,
-    const TfLiteAudioBuffer* audio_buffer,
-    TfLiteSupportError** error) {
+    const TfLiteAudioBuffer* audio_buffer, TfLiteSupportError** error) {
   if (classifier == nullptr) {
     tflite::support::CreateTfLiteSupportError(
         kInvalidArgumentError, "Expected non null audio classifier.", error);
@@ -213,8 +211,7 @@ TfLiteClassificationResult* TfLiteAudioClassifierClassify(
 }
 
 int TfLiteAudioClassifierGetRequiredInputBufferSize(
-    TfLiteAudioClassifier* classifier,
-    TfLiteSupportError** error) {
+    TfLiteAudioClassifier* classifier, TfLiteSupportError** error) {
   if (classifier == nullptr) {
     tflite::support::CreateTfLiteSupportError(
         kInvalidArgumentError, "Expected non null audio classifier.", error);
@@ -229,8 +226,7 @@ void TfLiteAudioClassifierDelete(TfLiteAudioClassifier* classifier) {
 }
 
 TfLiteAudioFormat* TfLiteAudioClassifierGetRequiredAudioFormat(
-    TfLiteAudioClassifier* classifier,
-    TfLiteSupportError** error) {
+    TfLiteAudioClassifier* classifier, TfLiteSupportError** error) {
   if (classifier == nullptr) {
     tflite::support::CreateTfLiteSupportError(
         kInvalidArgumentError, "Expected non null audio classifier.", error);

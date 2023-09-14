@@ -36,8 +36,7 @@ using ::tflite::task::vision::FrameBuffer;
 /* static */
 tflite::support::StatusOr<std::unique_ptr<ImagePreprocessor>>
 ImagePreprocessor::Create(
-    core::TfLiteEngine* engine,
-    const std::initializer_list<int> input_indices,
+    core::TfLiteEngine* engine, const std::initializer_list<int> input_indices,
     const vision::FrameBufferUtils::ProcessEngine& process_engine) {
   ASSIGN_OR_RETURN(auto processor,
                    Processor::Create<ImagePreprocessor>(
@@ -50,8 +49,7 @@ ImagePreprocessor::Create(
 
 // Returns false if image preprocessing could be skipped, true otherwise.
 bool ImagePreprocessor::IsImagePreprocessingNeeded(
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& roi) {
+    const FrameBuffer& frame_buffer, const BoundingBox& roi) {
   // Is crop required?
   if (roi.origin_x() != 0 || roi.origin_y() != 0 ||
       roi.width() != frame_buffer.dimension().width ||

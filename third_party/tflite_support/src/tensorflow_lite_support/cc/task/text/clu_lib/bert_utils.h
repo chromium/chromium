@@ -80,13 +80,10 @@ namespace tflite::task::text::clu {
 absl::Status BertPreprocessing(
     const tflite::support::text::tokenizer::BertTokenizer* tokenizer,
     const std::vector<absl::string_view>& utterances_in_reverse_order,
-    int max_seq_length,
-    int max_history_turns,
-    std::vector<int>* out_token_ids,
+    int max_seq_length, int max_history_turns, std::vector<int>* out_token_ids,
     std::vector<std::pair<int, int>>* out_token_alignments,
     std::vector<int>* out_token_first_subword_indicators,
-    std::vector<int>* out_segment_id_list,
-    std::vector<int>* out_turn_id_list);
+    std::vector<int>* out_segment_id_list, std::vector<int>* out_turn_id_list);
 
 }  // namespace tflite::task::text::clu
 

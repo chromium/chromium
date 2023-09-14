@@ -14,7 +14,7 @@ limitations under the License.
 ==============================================================================*/
 
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
-#include "flatbuffers/idl.h"          // from @flatbuffers
+#include "flatbuffers/idl.h"  // from @flatbuffers
 #include "pybind11/pybind11.h"
 #include "pybind11/pytypes.h"
 #include "pybind11/stl.h"
@@ -41,18 +41,18 @@ PYBIND11_MODULE(_pywrap_flatbuffers, m) {
         self->PushFlatBuffer(reinterpret_cast<const uint8_t*>(contents.c_str()),
                              contents.length());
       });
-  m.def("generate_text_file", &flatbuffers::GenerateTextFile);
-  m.def(
-      "generate_text",
-      [](const flatbuffers::Parser& parser,
-         const std::string& buffer) -> std::string {
-        std::string text;
-        if (!flatbuffers::GenerateText(
-                parser, reinterpret_cast<const void*>(buffer.c_str()), &text)) {
-          return "";
-        }
-        return text;
-      });
+  m.def("generate_text_file", &flatbuffers::GenTextFile);
+  m.def("generate_text",
+        [](const flatbuffers::Parser& parser,
+           const std::string& buffer) -> std::string {
+          std::string text;
+          const char* result = flatbuffers::GenText(
+              parser, reinterpret_cast<const void*>(buffer.c_str()), &text);
+          if (result) {
+            return "";
+          }
+          return text;
+        });
 }
 
 }  // namespace support

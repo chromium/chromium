@@ -18,11 +18,10 @@ import enum
 import os
 
 from absl.testing import parameterized
+import flatbuffers
 import six
 import tensorflow as tf
 
-import flatbuffers
-from tensorflow.python.platform import resource_loader
 from tensorflow_lite_support.metadata import metadata_schema_py_generated as _metadata_fb
 from tensorflow_lite_support.metadata import schema_py_generated as _schema_fb
 from tensorflow_lite_support.metadata.python import metadata as _metadata
@@ -810,7 +809,7 @@ class MetadataDisplayerTest(MetadataTest):
     actual_json = _metadata.convert_to_json(actual_buffer)
 
     # Verifies the generated json file.
-    golden_json_file_path = resource_loader.get_path_to_datafile(
+    golden_json_file_path = tf.compat.v1.resource_loader.get_path_to_datafile(
         "testdata/golden_json.json")
     with open(golden_json_file_path, "r") as f:
       expected = f.read()
@@ -822,7 +821,7 @@ class MetadataDisplayerTest(MetadataTest):
     actual = displayer.get_metadata_json()
 
     # Verifies the generated json file.
-    golden_json_file_path = resource_loader.get_path_to_datafile(
+    golden_json_file_path = tf.compat.v1.resource_loader.get_path_to_datafile(
         "testdata/golden_json.json")
     expected = _read_file(golden_json_file_path, "r")
     self.assertEqual(actual, expected)
@@ -850,7 +849,7 @@ class MetadataUtilTest(MetadataTest):
     metadata_json = _metadata.convert_to_json(metadata_buf)
 
     # Verifies the generated json file.
-    golden_json_file_path = resource_loader.get_path_to_datafile(
+    golden_json_file_path = tf.compat.v1.resource_loader.get_path_to_datafile(
         "testdata/golden_json.json")
     expected = _read_file(golden_json_file_path, "r")
     self.assertEqual(metadata_json, expected)

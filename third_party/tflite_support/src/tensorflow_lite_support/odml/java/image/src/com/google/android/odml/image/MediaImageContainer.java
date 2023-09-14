@@ -19,56 +19,55 @@ import android.media.Image;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-
 import androidx.annotation.RequiresApi;
-
 import com.google.android.odml.image.MlImage.ImageFormat;
 
 @RequiresApi(VERSION_CODES.KITKAT)
 class MediaImageContainer implements ImageContainer {
-    private final Image mediaImage;
-    private final ImageProperties properties;
 
-    public MediaImageContainer(Image mediaImage) {
-        this.mediaImage = mediaImage;
-        this.properties = ImageProperties.builder()
-                                  .setStorageType(MlImage.STORAGE_TYPE_MEDIA_IMAGE)
-                                  .setImageFormat(convertFormatCode(mediaImage.getFormat()))
-                                  .build();
-    }
+  private final Image mediaImage;
+  private final ImageProperties properties;
 
-    public Image getImage() {
-        return mediaImage;
-    }
+  public MediaImageContainer(Image mediaImage) {
+    this.mediaImage = mediaImage;
+    this.properties = ImageProperties.builder()
+        .setStorageType(MlImage.STORAGE_TYPE_MEDIA_IMAGE)
+        .setImageFormat(convertFormatCode(mediaImage.getFormat()))
+        .build();
+  }
 
-    @Override
-    public ImageProperties getImageProperties() {
-        return properties;
-    }
+  public Image getImage() {
+    return mediaImage;
+  }
 
-    @Override
-    public void close() {
-        mediaImage.close();
-    }
+  @Override
+  public ImageProperties getImageProperties() {
+    return properties;
+  }
 
-    @ImageFormat
-    static int convertFormatCode(int graphicsFormat) {
-        // We only cover the format mentioned in
-        // https://developer.android.com/reference/android/media/Image#getFormat()
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (graphicsFormat == android.graphics.ImageFormat.FLEX_RGBA_8888) {
-                return MlImage.IMAGE_FORMAT_RGBA;
-            } else if (graphicsFormat == android.graphics.ImageFormat.FLEX_RGB_888) {
-                return MlImage.IMAGE_FORMAT_RGB;
-            }
-        }
-        switch (graphicsFormat) {
-            case android.graphics.ImageFormat.JPEG:
-                return MlImage.IMAGE_FORMAT_JPEG;
-            case android.graphics.ImageFormat.YUV_420_888:
-                return MlImage.IMAGE_FORMAT_YUV_420_888;
-            default:
-                return MlImage.IMAGE_FORMAT_UNKNOWN;
-        }
+  @Override
+  public void close() {
+    mediaImage.close();
+  }
+
+  @ImageFormat
+  static int convertFormatCode(int graphicsFormat) {
+    // We only cover the format mentioned in
+    // https://developer.android.com/reference/android/media/Image#getFormat()
+    if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (graphicsFormat == android.graphics.ImageFormat.FLEX_RGBA_8888) {
+        return MlImage.IMAGE_FORMAT_RGBA;
+      } else if (graphicsFormat == android.graphics.ImageFormat.FLEX_RGB_888) {
+        return MlImage.IMAGE_FORMAT_RGB;
+      }
     }
+    switch (graphicsFormat) {
+      case android.graphics.ImageFormat.JPEG:
+        return MlImage.IMAGE_FORMAT_JPEG;
+      case android.graphics.ImageFormat.YUV_420_888:
+        return MlImage.IMAGE_FORMAT_YUV_420_888;
+      default:
+        return MlImage.IMAGE_FORMAT_UNKNOWN;
+    }
+  }
 }

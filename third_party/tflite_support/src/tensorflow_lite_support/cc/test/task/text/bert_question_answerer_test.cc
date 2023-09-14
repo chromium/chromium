@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <fcntl.h>
 
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
@@ -66,10 +66,11 @@ constexpr char kContext[] =
     "the curriculum.";
 constexpr int kPredictAnsNum = 5;
 
-class BertQuestionAnswererTest : public tflite_shims::testing::Test {};
+class BertQuestionAnswererTest : public tflite::testing::Test {};
 
 std::string GetFullPath(absl::string_view file_name) {
-  return JoinPath("./" /*test src dir*/, kTestDataDirectory, file_name);
+  return JoinPath("./" /*test src dir*/, kTestDataDirectory,
+                  file_name);
 }
 
 TEST_F(BertQuestionAnswererTest,
@@ -107,8 +108,8 @@ TEST_F(BertQuestionAnswererTest, AnswerSucceedsWithModelWithMetadata) {
     options.mutable_base_options()->mutable_model_file()->set_file_content(
         contents);
 
-    SUPPORT_ASSERT_OK_AND_ASSIGN(
-        question_answerer, BertQuestionAnswerer::CreateFromOptions(options));
+    SUPPORT_ASSERT_OK_AND_ASSIGN(question_answerer,
+                         BertQuestionAnswerer::CreateFromOptions(options));
   }
 
   std::vector<QaAnswer> answer = question_answerer->Answer(kContext, kQuestion);
@@ -150,13 +151,13 @@ TEST_F(BertQuestionAnswererTest, TestAlbertCreationFromBinary) {
       LoadBinaryContent(GetFullPath(kTestAlBertModelPath).c_str());
   std::string vocab_buffer =
       LoadBinaryContent(GetFullPath(kTestSPModelPath).c_str());
-  SUPPORT_ASSERT_OK(BertQuestionAnswerer::CreateBertQuestionAnswererFromBuffer(
+  SUPPORT_ASSERT_OK(BertQuestionAnswerer::CreateAlbertQuestionAnswererFromBuffer(
       model_buffer.data(), model_buffer.size(), vocab_buffer.data(),
       vocab_buffer.size()));
 }
 
 TEST_F(BertQuestionAnswererTest, TestAlbertCreationFromFile) {
-  SUPPORT_ASSERT_OK(BertQuestionAnswerer::CreateBertQuestionAnswererFromFile(
+  SUPPORT_ASSERT_OK(BertQuestionAnswerer::CreateAlbertQuestionAnswererFromFile(
       GetFullPath(kTestAlBertModelPath).c_str(),
       GetFullPath(kTestSPModelPath).c_str()));
 }
@@ -228,7 +229,7 @@ TEST_F(BertQuestionAnswererTest,
               HasSubstr("No input process unit found from metadata."));
   EXPECT_THAT(question_answerer_or.status().GetPayload(
                   tflite::support::kTfLiteSupportPayload),
-              testing::Optional(absl::Cord(absl::StrCat(
+              ::testing::Optional(absl::Cord(absl::StrCat(
                   TfLiteSupportStatus::kMetadataInvalidTokenizerError))));
 }
 

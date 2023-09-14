@@ -16,21 +16,19 @@ limitations under the License.
 package org.tensorflow.lite.task.text.bertclu;
 
 import com.google.auto.value.AutoValue;
-
-import org.tensorflow.lite.task.core.annotations.UsedByReflection;
-
 import java.util.List;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 /** The input dialogue history for the {@link BertCluAnnotator}. */
 // Based on third_party/tensorflow_lite_support/cc/task/text/proto/clu.proto.
 @AutoValue
 @UsedByReflection("bert_clu_annotator_jni.cc")
 public abstract class CluRequest {
-    public static CluRequest create(List<String> utterances) {
-        return new AutoValue_CluRequest(utterances);
-    }
+  public static CluRequest create(List<String> utterances) {
+    return new AutoValue_CluRequest(utterances);
+  }
 
-    @SuppressWarnings("AutoValueImmutableFields")
-    @UsedByReflection("bert_clu_annotator_jni.cc")
-    public abstract List<String> getUtterances();
+  @SuppressWarnings("AutoValueImmutableFields")
+  @UsedByReflection("bert_clu_annotator_jni.cc")
+  public abstract List<String> getUtterances();
 }

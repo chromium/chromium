@@ -1,7 +1,6 @@
 load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -14,8 +13,8 @@ cc_library_with_tflite(
         "jni_utils.h",
     ],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite/core/shims:delegate_plugin",
-        "@org_tensorflow//tensorflow/lite/core/shims:delegate_registry",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration/c:delegate_plugin",
+        "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_registry",
         "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_plugin_converter",
     ],
     visibility = [

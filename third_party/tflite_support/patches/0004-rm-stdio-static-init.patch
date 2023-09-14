@@ -1,14 +1,14 @@
-From 2128f5cac7b3d345608b4dca865cc8f73b757af9 Mon Sep 17 00:00:00 2001
+From c2425417757f1723e6fb92629319324b1791c5e1 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:12 -0800
-Subject: [PATCH 05/14] rm stdio static init
+Subject: [PATCH 4/9] rm stdio static init
 
 ---
  .../cc/task/core/tflite_engine.cc                 | 15 ---------------
  1 file changed, 15 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-index dfdbddaf4b92f..0ec88d5bd1846 100644
+index 6ad1124659454..0b9af59afdc79 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 @@ -36,21 +36,6 @@ namespace tflite {
@@ -34,5 +34,5 @@ index dfdbddaf4b92f..0ec88d5bd1846 100644
  using ::tflite::proto::ComputeSettings;
  using ::tflite::support::CreateStatusWithPayload;
 -- 
-2.38.1.584.g0f3c55d4c2-goog
+2.42.0.459.ge4e396fd5e-goog
 

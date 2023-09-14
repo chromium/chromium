@@ -19,7 +19,7 @@ limitations under the License.
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/audio/core/audio_buffer.h"
 #include "tensorflow_lite_support/cc/task/audio/proto/audio_classifier_options.pb.h"
@@ -73,7 +73,7 @@ class AudioClassifier
   CreateFromOptions(
       const AudioClassifierOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Performs classification on the provided audio buffer.
   //

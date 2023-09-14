@@ -20,10 +20,10 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow_lite_support/codegen/code_generator.h"
 #include "tensorflow_lite_support/codegen/utils.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
+#include "tensorflow/lite/schema/schema_generated.h"
 
 namespace tflite {
 namespace support {
@@ -90,8 +90,7 @@ class AndroidJavaGenerator : public CodeGenerator {
   /// as "ImageClassifier", "MobileNetV2" or "MyModel".
   /// - model_asset_path: The relevant path to the model file in the asset.
   // TODO(b/141225157): Automatically generate model_class_name.
-  GenerationResult Generate(const Model* model,
-                            const std::string& package_name,
+  GenerationResult Generate(const Model* model, const std::string& package_name,
                             const std::string& model_class_name,
                             const std::string& model_asset_path);
 

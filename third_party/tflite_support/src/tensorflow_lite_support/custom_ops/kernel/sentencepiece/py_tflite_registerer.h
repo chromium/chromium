@@ -20,6 +20,6 @@ limitations under the License.
 // C-function that is called from the Python Wrapper.
 
 extern "C" void TFLite_SentencepieceTokenizerRegisterer(
-    tflite::MutableOpResolver* resolver);
+    tflite::MutableOpResolver *resolver);
 
 #endif  // TENSORFLOW_LITE_SUPPORT_CUSTOM_OPS_KERNEL_SENTENCEPIECE_PY_TFLITE_REGISTERER_H_

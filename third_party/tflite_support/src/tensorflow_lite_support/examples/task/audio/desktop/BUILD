@@ -1,5 +1,4 @@
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//tensorflow_lite_support:internal",
     ],
@@ -11,15 +10,15 @@ cc_library(
     srcs = ["audio_classifier_lib.cc"],
     hdrs = ["audio_classifier_lib.h"],
     deps = [
-        "@com_google_absl//absl/status",
-        "@com_google_absl//absl/strings:str_format",
         "//tensorflow_lite_support/cc/port:status_macros",
         "//tensorflow_lite_support/cc/port:statusor",
-        "//tensorflow_lite_support/cc/task/audio/utils:wav_io",
         "//tensorflow_lite_support/cc/task/audio:audio_classifier",
         "//tensorflow_lite_support/cc/task/audio/core:audio_buffer",
         "//tensorflow_lite_support/cc/task/audio/proto:classifications_proto_inc",
+        "//tensorflow_lite_support/cc/task/audio/utils:wav_io",
         "//tensorflow_lite_support/cc/task/core:category",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings:str_format",
     ] + select({
         "//tensorflow_lite_support/examples/task:darwinn_portable": [
             "//tensorflow_lite_support/acceleration/configuration:edgetpu_coral_plugin",

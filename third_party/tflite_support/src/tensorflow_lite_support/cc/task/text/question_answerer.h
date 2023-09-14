@@ -45,9 +45,9 @@ struct QaAnswer {
 };
 
 // Interface for an Question-Answer API.
-class QuestionAnswerer : public core::BaseTaskApi<std::vector<QaAnswer>,
-                                                  const std::string&,
-                                                  const std::string&> {
+class QuestionAnswerer
+    : public core::BaseTaskApi<std::vector<QaAnswer>, const std::string&,
+                               const std::string&> {
  public:
   explicit QuestionAnswerer(std::unique_ptr<core::TfLiteEngine> engine)
       : BaseTaskApi(std::move(engine)) {}

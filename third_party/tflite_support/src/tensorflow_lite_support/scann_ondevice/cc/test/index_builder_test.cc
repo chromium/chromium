@@ -18,18 +18,18 @@ limitations under the License.
 #include <cstdint>
 #include <string>
 
-#include "absl/flags/flag.h"           // from @com_google_absl
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
-#include "leveldb/env.h"               // from @com_google_leveldb
-#include "leveldb/iterator.h"          // from @com_google_leveldb
-#include "leveldb/options.h"           // from @com_google_leveldb
-#include "leveldb/slice.h"             // from @com_google_leveldb
-#include "leveldb/status.h"            // from @com_google_leveldb
-#include "leveldb/table.h"             // from @com_google_leveldb
+#include "absl/types/span.h"  // from @com_google_absl
+#include "leveldb/env.h"  // from @com_google_leveldb
+#include "leveldb/iterator.h"  // from @com_google_leveldb
+#include "leveldb/options.h"  // from @com_google_leveldb
+#include "leveldb/slice.h"  // from @com_google_leveldb
+#include "leveldb/status.h"  // from @com_google_leveldb
+#include "leveldb/table.h"  // from @com_google_leveldb
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
@@ -137,23 +137,22 @@ TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithPartitioner) {
 
   {
     tflite::scann_ondevice::core::ScannOnDeviceConfig config =
-        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(
-            R"pb(
-              partitioner: {
-                leaf { dimension: 0 dimension: 0 }
-                leaf { dimension: 1 dimension: 1 }
-                leaf { dimension: 2 dimension: 2 }
-                leaf { dimension: 3 dimension: 3 }
-                leaf { dimension: 4 dimension: 4 }
-                leaf { dimension: 5 dimension: 5 }
-                leaf { dimension: 6 dimension: 6 }
-                leaf { dimension: 7 dimension: 7 }
-                leaf { dimension: 8 dimension: 8 }
-                leaf { dimension: 9 dimension: 9 }
-                leaf { dimension: 10 dimension: 10 }
-                leaf { dimension: 11 dimension: 11 }
-              }
-            )pb");
+        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(R"pb(
+          partitioner: {
+            leaf { dimension: 0 dimension: 0 }
+            leaf { dimension: 1 dimension: 1 }
+            leaf { dimension: 2 dimension: 2 }
+            leaf { dimension: 3 dimension: 3 }
+            leaf { dimension: 4 dimension: 4 }
+            leaf { dimension: 5 dimension: 5 }
+            leaf { dimension: 6 dimension: 6 }
+            leaf { dimension: 7 dimension: 7 }
+            leaf { dimension: 8 dimension: 8 }
+            leaf { dimension: 9 dimension: 9 }
+            leaf { dimension: 10 dimension: 10 }
+            leaf { dimension: 11 dimension: 11 }
+          }
+        )pb");
     std::vector<uint8_t> hashed_database;
     hashed_database.reserve(kNumEmbeddings * kDimensions);
     for (int i = 0; i < kNumEmbeddings; ++i) {
@@ -203,18 +202,16 @@ TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithPartitioner) {
   auto hashed_table_iterator =
       absl::WrapUnique(hashed_table->NewIterator(leveldb::ReadOptions()));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string serialized_config,
-      LookupKey(hashed_table_iterator.get(), "INDEX_CONFIG"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string serialized_config,
+                       LookupKey(hashed_table_iterator.get(), "INDEX_CONFIG"));
   IndexConfig index_config;
   EXPECT_TRUE(index_config.ParseFromString(serialized_config));
   EXPECT_THAT(
       index_config,
       EqualsProto(CreateExpectedConfigWithPartitioner(IndexConfig::UINT8)));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string userinfo,
-      LookupKey(hashed_table_iterator.get(), "USER_INFO"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string userinfo,
+                       LookupKey(hashed_table_iterator.get(), "USER_INFO"));
   EXPECT_EQ(userinfo, "hashed_userinfo");
 
   // Partition assignment is based on i % kNumPartitions, so:
@@ -256,10 +253,9 @@ TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithoutPartitioner) {
 
   {
     tflite::scann_ondevice::core::ScannOnDeviceConfig config =
-        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(
-            R"pb(
-              query_distance: SQUARED_L2_DISTANCE
-            )pb");
+        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(R"pb(
+          query_distance: SQUARED_L2_DISTANCE
+        )pb");
     std::vector<uint8_t> hashed_database;
     hashed_database.reserve(kNumEmbeddings * kDimensions);
     for (int i = 0; i < kNumEmbeddings; ++i) {
@@ -303,23 +299,22 @@ TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithoutPartitioner) {
   auto float_table_iterator =
       absl::WrapUnique(float_table->NewIterator(leveldb::ReadOptions()));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string serialized_config,
-      LookupKey(float_table_iterator.get(), "INDEX_CONFIG"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string serialized_config,
+                       LookupKey(float_table_iterator.get(), "INDEX_CONFIG"));
   IndexConfig index_config;
   EXPECT_TRUE(index_config.ParseFromString(serialized_config));
   EXPECT_THAT(
       index_config,
       EqualsProto(CreateExpectedConfigWithoutPartitioner(IndexConfig::UINT8)));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string userinfo, LookupKey(float_table_iterator.get(), "USER_INFO"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string userinfo,
+                       LookupKey(float_table_iterator.get(), "USER_INFO"));
   EXPECT_EQ(userinfo, "hashed_userinfo");
 
   // Check that the unique embedding partition has the exact same contents as
   // the database used at construction time.
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::string raw_partition_hashed,
-                               LookupKey(float_table_iterator.get(), "E_0"));
+                       LookupKey(float_table_iterator.get(), "E_0"));
   std::vector<char> hashed_partition(raw_partition_hashed.begin(),
                                      raw_partition_hashed.end());
   std::vector<char> expected;
@@ -347,23 +342,22 @@ TEST_P(PopulateIndexFileTest, WritesFloatDatabaseWithPartitioner) {
 
   {
     tflite::scann_ondevice::core::ScannOnDeviceConfig config =
-        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(
-            R"pb(
-              partitioner: {
-                leaf { dimension: 0 dimension: 0 }
-                leaf { dimension: 1 dimension: 1 }
-                leaf { dimension: 2 dimension: 2 }
-                leaf { dimension: 3 dimension: 3 }
-                leaf { dimension: 4 dimension: 4 }
-                leaf { dimension: 5 dimension: 5 }
-                leaf { dimension: 6 dimension: 6 }
-                leaf { dimension: 7 dimension: 7 }
-                leaf { dimension: 8 dimension: 8 }
-                leaf { dimension: 9 dimension: 9 }
-                leaf { dimension: 10 dimension: 10 }
-                leaf { dimension: 11 dimension: 11 }
-              }
-            )pb");
+        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(R"pb(
+          partitioner: {
+            leaf { dimension: 0 dimension: 0 }
+            leaf { dimension: 1 dimension: 1 }
+            leaf { dimension: 2 dimension: 2 }
+            leaf { dimension: 3 dimension: 3 }
+            leaf { dimension: 4 dimension: 4 }
+            leaf { dimension: 5 dimension: 5 }
+            leaf { dimension: 6 dimension: 6 }
+            leaf { dimension: 7 dimension: 7 }
+            leaf { dimension: 8 dimension: 8 }
+            leaf { dimension: 9 dimension: 9 }
+            leaf { dimension: 10 dimension: 10 }
+            leaf { dimension: 11 dimension: 11 }
+          }
+        )pb");
     std::vector<float> float_database;
     float_database.reserve(kNumEmbeddings * kDimensions);
     for (int i = 0; i < kNumEmbeddings; ++i) {
@@ -413,17 +407,16 @@ TEST_P(PopulateIndexFileTest, WritesFloatDatabaseWithPartitioner) {
   auto float_table_iterator =
       absl::WrapUnique(float_table->NewIterator(leveldb::ReadOptions()));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string serialized_config,
-      LookupKey(float_table_iterator.get(), "INDEX_CONFIG"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string serialized_config,
+                       LookupKey(float_table_iterator.get(), "INDEX_CONFIG"));
   IndexConfig index_config;
   EXPECT_TRUE(index_config.ParseFromString(serialized_config));
   EXPECT_THAT(
       index_config,
       EqualsProto(CreateExpectedConfigWithPartitioner(IndexConfig::FLOAT)));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string userinfo, LookupKey(float_table_iterator.get(), "USER_INFO"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string userinfo,
+                       LookupKey(float_table_iterator.get(), "USER_INFO"));
   EXPECT_EQ(userinfo, "float_userinfo");
 
   // Partition assignment is based on i % kNumPartitions, so:
@@ -468,10 +461,9 @@ TEST_P(PopulateIndexFileTest, WritesFloatDatabaseWithoutPartitioner) {
 
   {
     tflite::scann_ondevice::core::ScannOnDeviceConfig config =
-        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(
-            R"pb(
-              query_distance: SQUARED_L2_DISTANCE
-            )pb");
+        ParseTextProtoOrDie<tflite::scann_ondevice::core::ScannOnDeviceConfig>(R"pb(
+          query_distance: SQUARED_L2_DISTANCE
+        )pb");
     std::vector<float> float_database;
     float_database.reserve(kNumEmbeddings * kDimensions);
     for (int i = 0; i < kNumEmbeddings; ++i) {
@@ -514,23 +506,22 @@ TEST_P(PopulateIndexFileTest, WritesFloatDatabaseWithoutPartitioner) {
   auto float_table_iterator =
       absl::WrapUnique(float_table->NewIterator(leveldb::ReadOptions()));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string serialized_config,
-      LookupKey(float_table_iterator.get(), "INDEX_CONFIG"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string serialized_config,
+                       LookupKey(float_table_iterator.get(), "INDEX_CONFIG"));
   IndexConfig index_config;
   EXPECT_TRUE(index_config.ParseFromString(serialized_config));
   EXPECT_THAT(
       index_config,
       EqualsProto(CreateExpectedConfigWithoutPartitioner(IndexConfig::FLOAT)));
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::string userinfo, LookupKey(float_table_iterator.get(), "USER_INFO"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::string userinfo,
+                       LookupKey(float_table_iterator.get(), "USER_INFO"));
   EXPECT_EQ(userinfo, "float_userinfo");
 
   // Check that the unique embedding partition has the exact same contents as
   // the database used at construction time.
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::string raw_partition_float,
-                               LookupKey(float_table_iterator.get(), "E_0"));
+                       LookupKey(float_table_iterator.get(), "E_0"));
   const float* raw_partition_float_ptr =
       reinterpret_cast<const float*>(raw_partition_float.data());
   std::vector<float> float_partition(

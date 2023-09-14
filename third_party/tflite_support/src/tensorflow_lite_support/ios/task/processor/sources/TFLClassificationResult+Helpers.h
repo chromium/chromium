@@ -20,18 +20,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TFLClassificationResult (Helpers)
 
 /**
- * Creates and returns a TFLClassificationResult from a
- * TfLiteClassificationResult returned by TFLite Task C Library Classification
- * tasks.
+ * Creates and returns a TFLClassificationResult from a TfLiteClassificationResult returned by
+ * TFLite Task C Library Classification tasks.
  *
- * @param cClassificationResult Classification results returned by TFLite Task C
- * Library Classification tasks
+ * @param cClassificationResult Classification results returned by TFLite Task C Library
+ * Classification tasks
  *
- * @return Classification Result of type TFLClassificationResult to be returned
- * by inference methods of the iOS TF Lite Task Classification tasks.
+ * @return Classification Result of type TFLClassificationResult to be returned by inference methods
+ * of the iOS TF Lite Task Classification tasks.
  */
-+ (TFLClassificationResult*)classificationResultWithCResult:
-    (TfLiteClassificationResult*)cClassificationResult;
++ (TFLClassificationResult *)classificationResultWithCResult:
+    (TfLiteClassificationResult *)cClassificationResult;
 @end
 
 NS_ASSUME_NONNULL_END

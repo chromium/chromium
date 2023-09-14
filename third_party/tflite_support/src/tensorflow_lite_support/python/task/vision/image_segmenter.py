@@ -35,8 +35,11 @@ class ImageSegmenterOptions:
     base_options: Base options for the image segmenter task.
     segmentation_options: Segmentation options for the image segmenter task.
   """
+
   base_options: _BaseOptions
-  segmentation_options: _SegmentationOptions = _SegmentationOptions()
+  segmentation_options: _SegmentationOptions = dataclasses.field(
+      default_factory=_SegmentationOptions
+  )
 
 
 class ImageSegmenter(object):

@@ -23,9 +23,9 @@ limitations under the License.
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
-#include "absl/strings/string_view.h"      // from @com_google_absl
-#include "absl/types/optional.h"           // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
+#include "absl/types/optional.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/label_map_item.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
@@ -37,10 +37,7 @@ namespace core {
 // Sigmoid structure.
 struct Sigmoid {
   Sigmoid() : scale(1.0) {}
-  Sigmoid(std::string label,
-          float slope,
-          float offset,
-          float scale = 1.0,
+  Sigmoid(std::string label, float slope, float offset, float scale = 1.0,
           absl::optional<float> min_uncalibrated_score = absl::nullopt)
       : label(label),
         slope(slope),

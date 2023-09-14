@@ -32,9 +32,7 @@ using ::tflite::task::text::BertNLClassifierOptions;
 using ::tflite::task::text::nlclassifier::RunClassifier;
 
 BertNLClassifierOptions ConvertJavaBertNLClassifierOptions(
-    JNIEnv* env,
-    jobject java_options,
-    jlong base_options_handle) {
+    JNIEnv* env, jobject java_options, jlong base_options_handle) {
   BertNLClassifierOptions proto_options;
 
   if (base_options_handle != kInvalidPointer) {
@@ -49,18 +47,13 @@ BertNLClassifierOptions ConvertJavaBertNLClassifierOptions(
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_BertNLClassifier_deinitJni(
-    JNIEnv* env,
-    jobject thiz,
-    jlong native_handle) {
+    JNIEnv* env, jobject thiz, jlong native_handle) {
   delete reinterpret_cast<BertNLClassifier*>(native_handle);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_BertNLClassifier_initJniWithByteBuffer(
-    JNIEnv* env,
-    jclass thiz,
-    jobject model_buffer,
-    jobject java_options,
+    JNIEnv* env, jclass thiz, jobject model_buffer, jobject java_options,
     jlong base_options_handle) {
   BertNLClassifierOptions proto_options = ConvertJavaBertNLClassifierOptions(
       env, java_options, base_options_handle);
@@ -83,10 +76,7 @@ Java_org_tensorflow_lite_task_text_nlclassifier_BertNLClassifier_initJniWithByte
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_BertNLClassifier_initJniWithFileDescriptor(
-    JNIEnv* env,
-    jclass thiz,
-    jint fd,
-    jobject java_options,
+    JNIEnv* env, jclass thiz, jint fd, jobject java_options,
     jlong base_options_handle) {
   BertNLClassifierOptions proto_options = ConvertJavaBertNLClassifierOptions(
       env, java_options, base_options_handle);
@@ -110,9 +100,6 @@ Java_org_tensorflow_lite_task_text_nlclassifier_BertNLClassifier_initJniWithFile
 
 extern "C" JNIEXPORT jobject JNICALL
 Java_org_tensorflow_lite_task_text_nlclassifier_BertNLClassifier_classifyNative(
-    JNIEnv* env,
-    jclass clazz,
-    jlong native_handle,
-    jstring text) {
+    JNIEnv* env, jclass clazz, jlong native_handle, jstring text) {
   return RunClassifier(env, native_handle, text);
 }

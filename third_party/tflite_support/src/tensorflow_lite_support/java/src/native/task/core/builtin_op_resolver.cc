@@ -13,14 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 
 namespace tflite {
 namespace task {
 // Default provider for OpResolver, provides BuiltinOpResolver.
 std::unique_ptr<OpResolver> CreateOpResolver() {  // NOLINT
-  return std::unique_ptr<tflite_shims::ops::builtin::BuiltinOpResolver>(
-      new tflite_shims::ops::builtin::BuiltinOpResolver);
+  return std::unique_ptr<tflite::ops::builtin::BuiltinOpResolver>(
+      new tflite::ops::builtin::BuiltinOpResolver);
 }
 
 }  // namespace task

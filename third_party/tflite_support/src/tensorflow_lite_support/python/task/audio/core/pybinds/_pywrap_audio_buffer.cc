@@ -39,15 +39,16 @@ PYBIND11_MODULE(_pywrap_audio_buffer, m) {
       .def_readonly("sample_rate", &AudioBuffer::AudioFormat::sample_rate);
 
   py::class_<AudioBuffer>(m, "AudioBuffer", py::buffer_protocol())
-      .def(py::init([](py::buffer buffer, const int sample_count,
-                       const AudioBuffer::AudioFormat& audio_format)
-                        -> std::unique_ptr<AudioBuffer> {
-        py::buffer_info info = buffer.request();
+      .def(py::init([](
+            py::buffer buffer, const int sample_count,
+            const AudioBuffer::AudioFormat& audio_format)
+            -> std::unique_ptr<AudioBuffer> {
+              py::buffer_info info = buffer.request();
 
-        auto audio_buffer = AudioBuffer::Create(static_cast<float*>(info.ptr),
-                                                sample_count, audio_format);
-        return core::get_value(audio_buffer);
-      }))
+              auto audio_buffer = AudioBuffer::Create(
+                  static_cast<float*>(info.ptr), sample_count, audio_format);
+              return core::get_value(audio_buffer);
+          }))
       .def_property_readonly("audio_format", &AudioBuffer::GetAudioFormat)
       .def_property_readonly("buffer_size", &AudioBuffer::GetBufferSize)
       .def_property_readonly("float_buffer", [](AudioBuffer& self) {

@@ -4,7 +4,6 @@ load(
 )
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//visibility:private",
     ],
@@ -32,7 +31,7 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/cc/test/testdata/task/text:nl_classifier_models",
     ],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
         "//tensorflow_lite_support/cc/task/core:base_task_api",
         "//tensorflow_lite_support/cc/task/text/nlclassifier:nl_classifier",
     ],

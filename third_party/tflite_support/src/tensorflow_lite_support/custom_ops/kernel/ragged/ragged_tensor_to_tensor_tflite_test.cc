@@ -82,8 +82,7 @@ class RaggedTensorToTensorOpModel : public SingleOpModel {
   std::vector<int32> GetOutputInt() { return ExtractVector<int32>(output_); }
 
   void InvokeFloat(const std::vector<int>& shape,
-                   const std::vector<float>& values,
-                   float default_value,
+                   const std::vector<float>& values, float default_value,
                    const std::vector<std::vector<int>>& partition_values) {
     PopulateTensor(input_shape_, shape);
     PopulateTensor(input_values_, values);
@@ -94,8 +93,7 @@ class RaggedTensorToTensorOpModel : public SingleOpModel {
     SingleOpModel::Invoke();
   }
   void InvokeInt(const std::vector<int>& shape,
-                 const std::vector<int32>& values,
-                 int32 default_value,
+                 const std::vector<int32>& values, int32 default_value,
                  const std::vector<std::vector<int>>& partition_values) {
     PopulateTensor(input_shape_, shape);
     PopulateTensor(input_values_, values);

@@ -34,8 +34,7 @@ namespace processor {
 class RegexPreprocessor : public TextPreprocessor {
  public:
   static tflite::support::StatusOr<std::unique_ptr<RegexPreprocessor>> Create(
-      tflite::task::core::TfLiteEngine* engine,
-      int input_tensor_index);
+      tflite::task::core::TfLiteEngine* engine, int input_tensor_index);
 
   absl::Status Preprocess(const std::string& text);
 

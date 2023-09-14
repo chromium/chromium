@@ -16,7 +16,6 @@ limitations under the License.
 package org.tensorflow.lite.task.core.vision;
 
 import android.graphics.Rect;
-
 import com.google.auto.value.AutoValue;
 
 /**
@@ -46,74 +45,74 @@ import com.google.auto.value.AutoValue;
  */
 @AutoValue
 public abstract class ImageProcessingOptions {
+
+  /**
+   * Orientation type that follows EXIF specification.
+   *
+   * <p>The name of each enum value defines the position of the 0th row and the 0th column of the
+   * image content. See the <a href="http://jpegclub.org/exif_orientation.html">EXIF orientation
+   * documentation</a> for details.
+   */
+  public enum Orientation {
+    TOP_LEFT(0),
+    TOP_RIGHT(1),
+    BOTTOM_RIGHT(2),
+    BOTTOM_LEFT(3),
+    LEFT_TOP(4),
+    RIGHT_TOP(5),
+    RIGHT_BOTTOM(6),
+    LEFT_BOTTOM(7);
+
+    private final int value;
+
+    Orientation(int value) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
+    }
+  };
+
+  private static final Rect defaultRoi = new Rect();
+  private static final Orientation DEFAULT_ORIENTATION = Orientation.TOP_LEFT;
+
+  public abstract Rect getRoi();
+
+  public abstract Orientation getOrientation();
+
+  public static Builder builder() {
+    return new AutoValue_ImageProcessingOptions.Builder()
+        .setRoi(defaultRoi)
+        .setOrientation(DEFAULT_ORIENTATION);
+  }
+
+  /** Builder for {@link ImageProcessingOptions}. */
+  @AutoValue.Builder
+  public abstract static class Builder {
+
     /**
-     * Orientation type that follows EXIF specification.
+     * Sets the region of interest (ROI) of the image. Defaults to the entire image.
      *
-     * <p>The name of each enum value defines the position of the 0th row and the 0th column of the
-     * image content. See the <a href="http://jpegclub.org/exif_orientation.html">EXIF orientation
-     * documentation</a> for details.
+     * <p>Cropping according to this region of interest is prepended to the pre-processing
+     * operations.
      */
-    public enum Orientation {
-        TOP_LEFT(0),
-        TOP_RIGHT(1),
-        BOTTOM_RIGHT(2),
-        BOTTOM_LEFT(3),
-        LEFT_TOP(4),
-        RIGHT_TOP(5),
-        RIGHT_BOTTOM(6),
-        LEFT_BOTTOM(7);
+    public abstract Builder setRoi(Rect roi);
 
-        private final int value;
+    /**
+     * Sets the orientation of the image. Defaults to {@link Orientation#TOP_LEFT}.
+     *
+     * <p>Rotation will be applied accordingly so that inference is performed on an "upright" image.
+     */
+    public abstract Builder setOrientation(Orientation orientation);
 
-        Orientation(int value) {
-            this.value = value;
-        }
+    abstract Rect getRoi();
 
-        public int getValue() {
-            return value;
-        }
+    abstract ImageProcessingOptions autoBuild();
+
+    public ImageProcessingOptions build() {
+      setRoi(new Rect(getRoi())); // Make a defensive copy, since Rect is mutable.
+      return autoBuild();
     }
-    ;
-
-    private static final Rect defaultRoi = new Rect();
-    private static final Orientation DEFAULT_ORIENTATION = Orientation.TOP_LEFT;
-
-    public abstract Rect getRoi();
-
-    public abstract Orientation getOrientation();
-
-    public static Builder builder() {
-        return new AutoValue_ImageProcessingOptions.Builder()
-                .setRoi(defaultRoi)
-                .setOrientation(DEFAULT_ORIENTATION);
-    }
-
-    /** Builder for {@link ImageProcessingOptions}. */
-    @AutoValue.Builder
-    public abstract static class Builder {
-        /**
-         * Sets the region of interest (ROI) of the image. Defaults to the entire image.
-         *
-         * <p>Cropping according to this region of interest is prepended to the pre-processing
-         * operations.
-         */
-        public abstract Builder setRoi(Rect roi);
-
-        /**
-         * Sets the orientation of the image. Defaults to {@link Orientation#TOP_LEFT}.
-         *
-         * <p>Rotation will be applied accordingly so that inference is performed on an "upright"
-         * image.
-         */
-        public abstract Builder setOrientation(Orientation orientation);
-
-        abstract Rect getRoi();
-
-        abstract ImageProcessingOptions autoBuild();
-
-        public ImageProcessingOptions build() {
-            setRoi(new Rect(getRoi())); // Make a defensive copy, since Rect is mutable.
-            return autoBuild();
-        }
-    }
+  }
 }

@@ -57,8 +57,7 @@ absl::Status SanityCheckOptions(const BertNLClassifierOptions& options) {
 }  // namespace
 
 absl::Status BertNLClassifier::Preprocess(
-    const std::vector<TfLiteTensor*>& input_tensors,
-    const std::string& input) {
+    const std::vector<TfLiteTensor*>& input_tensors, const std::string& input) {
   return preprocessor_->Preprocess(input);
 }
 

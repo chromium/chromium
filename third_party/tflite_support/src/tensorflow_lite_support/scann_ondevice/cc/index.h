@@ -18,12 +18,12 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/status/statusor.h"      // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "leveldb/cache.h"             // from @com_google_leveldb
-#include "leveldb/iterator.h"          // from @com_google_leveldb
-#include "leveldb/table.h"             // from @com_google_leveldb
+#include "leveldb/cache.h"  // from @com_google_leveldb
+#include "leveldb/iterator.h"  // from @com_google_leveldb
+#include "leveldb/table.h"  // from @com_google_leveldb
 #include "tensorflow_lite_support/scann_ondevice/cc/mem_random_access_file.h"
 #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
 
@@ -43,8 +43,7 @@ class Index {
   // Warning: Does not take ownership of the provided buffer, which must outlive
   // this object.
   static absl::StatusOr<std::unique_ptr<Index>> CreateFromIndexBuffer(
-      const char* buffer_data,
-      size_t buffer_size);
+      const char* buffer_data, size_t buffer_size);
 
   // Parses and returns the `IndexConfig` stored in the index file.
   absl::StatusOr<IndexConfig> GetIndexConfig() const;

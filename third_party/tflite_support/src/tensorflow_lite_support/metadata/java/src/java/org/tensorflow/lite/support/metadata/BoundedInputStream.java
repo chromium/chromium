@@ -33,84 +33,84 @@ import java.nio.ByteBuffer;
  * synchronized as well.
  */
 final class BoundedInputStream extends InputStream {
-    private final ByteBuffer singleByteBuffer = ByteBuffer.allocate(1);
-    private final long end; // The valid data for the stream is between [start, end).
-    private long position;
-    private final SeekableByteChannelCompat channel;
+  private final ByteBuffer singleByteBuffer = ByteBuffer.allocate(1);
+  private final long end; // The valid data for the stream is between [start, end).
+  private long position;
+  private final SeekableByteChannelCompat channel;
 
-    /**
-     * Creates a {@link BoundedInputStream} with a {@link SeekableByteChannelCompat}.
-     *
-     * @param channel the {@link SeekableByteChannelCompat} that backs up this {@link
-     *     BoundedInputStream}
-     * @param start the starting position of this {@link BoundedInputStream} in the given {@link
-     *     SeekableByteChannelCompat}
-     * @param remaining the length of this {@link BoundedInputStream}
-     * @throws IllegalArgumentException if {@code start} or {@code remaining} is negative
-     */
-    BoundedInputStream(SeekableByteChannelCompat channel, long start, long remaining) {
-        checkArgument(remaining >= 0 && start >= 0,
-                String.format(
-                        "Invalid length of stream at offset=%d, length=%d", start, remaining));
+  /**
+   * Creates a {@link BoundedInputStream} with a {@link SeekableByteChannelCompat}.
+   *
+   * @param channel the {@link SeekableByteChannelCompat} that backs up this {@link
+   *     BoundedInputStream}
+   * @param start the starting position of this {@link BoundedInputStream} in the given {@link
+   *     SeekableByteChannelCompat}
+   * @param remaining the length of this {@link BoundedInputStream}
+   * @throws IllegalArgumentException if {@code start} or {@code remaining} is negative
+   */
+  BoundedInputStream(SeekableByteChannelCompat channel, long start, long remaining) {
+    checkArgument(
+        remaining >= 0 && start >= 0,
+        String.format("Invalid length of stream at offset=%d, length=%d", start, remaining));
 
-        end = start + remaining;
-        this.channel = channel;
-        position = start;
+    end = start + remaining;
+    this.channel = channel;
+    position = start;
+  }
+
+  @Override
+  public int available() throws IOException {
+    return (int) (Math.min(end, channel.size()) - position);
+  }
+
+  @Override
+  public int read() throws IOException {
+    if (position >= end) {
+      return -1;
     }
 
-    @Override
-    public int available() throws IOException {
-        return (int) (Math.min(end, channel.size()) - position);
+    singleByteBuffer.rewind();
+    int count = read(position, singleByteBuffer);
+    if (count < 0) {
+      return count;
     }
 
-    @Override
-    public int read() throws IOException {
-        if (position >= end) {
-            return -1;
-        }
+    position++;
+    return singleByteBuffer.get() & 0xff;
+  }
 
-        singleByteBuffer.rewind();
-        int count = read(position, singleByteBuffer);
-        if (count < 0) {
-            return count;
-        }
+  @Override
+  public int read(byte[] b, int off, int len) throws IOException {
+    checkNotNull(b);
+    checkElementIndex(off, b.length, "The start offset");
+    checkElementIndex(len, b.length - off + 1, "The maximumn number of bytes to read");
 
-        position++;
-        return singleByteBuffer.get() & 0xff;
+    if (len == 0) {
+      return 0;
     }
 
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-        checkNotNull(b);
-        checkElementIndex(off, b.length, "The start offset");
-        checkElementIndex(len, b.length - off + 1, "The maximumn number of bytes to read");
-
-        if (len == 0) {
-            return 0;
-        }
-
-        if (len > end - position) {
-            if (position >= end) {
-                return -1;
-            }
-            len = (int) (end - position);
-        }
-
-        ByteBuffer buf = ByteBuffer.wrap(b, off, len);
-        int count = read(position, buf);
-        if (count > 0) {
-            position += count;
-        }
-        return count;
+    if (len > end - position) {
+      if (position >= end) {
+        return -1;
+      }
+      len = (int) (end - position);
     }
 
-    private int read(long position, ByteBuffer buf) throws IOException {
-        int count;
-        synchronized (channel) {
-            channel.position(position);
-            count = channel.read(buf);
-        }
-        buf.flip();
-        return count;
+    ByteBuffer buf = ByteBuffer.wrap(b, off, len);
+    int count = read(position, buf);
+    if (count > 0) {
+      position += count;
     }
+    return count;
+  }
+
+  private int read(long position, ByteBuffer buf) throws IOException {
+    int count;
+    synchronized (channel) {
+      channel.position(position);
+      count = channel.read(buf);
+    }
+    buf.flip();
+    return count;
+  }
 }

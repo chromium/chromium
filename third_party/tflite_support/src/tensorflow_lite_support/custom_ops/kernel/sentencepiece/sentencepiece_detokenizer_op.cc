@@ -73,7 +73,8 @@ class TFSentencepieceDetokenizerOp : public tensorflow::OpKernel {
           ctx,
           res.type ==
               tflite::ops::custom::sentencepiece::DecoderResultType::SUCCESS,
-          tensorflow::Status(tensorflow::error::INTERNAL,
+          tensorflow::Status(static_cast<tensorflow::errors::Code>(
+                                 tensorflow::error::INTERNAL),
                              "Sentencepiece conversion failed"));
       output_flat(i) = res.decoded;
     }

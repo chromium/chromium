@@ -16,17 +16,15 @@
 
 @implementation TFLAudioTensor (Utils)
 
-// This method expects the caller to pass in the ring buffer's floatBuffer as
-// opposed to getting the float buffer using [self.ringBuffer floatBuffer]
-// within the implementation in order to avoid performing an extra memcpy.
-// TFLFloatBuffer free's its float *data when it deallocates. Accessing
-// [self.ringBuffer floatBuffer] inside this method will cause the returned
-// float* to be deallocated when this method call completes and hence will
-// warrant a copy of the float * to the cAudioBuffer. Instead the classify() of
-// TFLAudioClassifier calls [audioTensor floatBuffer] and passes it into this
-// method which will prevent the float* from being deallocated until classify()
-// method completes.
-- (TfLiteAudioBuffer)cAudioBufferFromFloatBuffer:(TFLFloatBuffer*)floatBuffer {
+// This method expects the caller to pass in the ring buffer's floatBuffer as opposed to getting the
+// float buffer using [self.ringBuffer floatBuffer] within the implementation in order to avoid
+// performing an extra memcpy. TFLFloatBuffer free's its float *data when it deallocates. Accessing
+// [self.ringBuffer floatBuffer] inside this method will cause the returned float* to be deallocated
+// when this method call completes and hence will warrant a copy of the float * to the cAudioBuffer.
+// Instead the classify() of TFLAudioClassifier calls [audioTensor floatBuffer] and passes it into
+// this method which will prevent the float* from being deallocated until classify() method
+// completes.
+- (TfLiteAudioBuffer)cAudioBufferFromFloatBuffer:(TFLFloatBuffer *)floatBuffer {
   TfLiteAudioFormat cFormat = {.channels = (int)self.audioFormat.channelCount,
                                .sample_rate = (int)self.audioFormat.sampleRate};
 

@@ -22,7 +22,7 @@ limitations under the License.
 #include <vector>
 
 #include "absl/container/flat_hash_map.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
@@ -169,8 +169,7 @@ StatusOr<FeatureVector> UniversalSentenceEncoderQA::EncodeQuery(
 }
 
 StatusOr<FeatureVector> UniversalSentenceEncoderQA::EncodeResponse(
-    absl::string_view response_text,
-    absl::string_view response_context) {
+    absl::string_view response_text, absl::string_view response_context) {
   if (response_text.empty() && response_context.empty()) {
     return Status(
         StatusCode::kInvalidArgument,
@@ -191,8 +190,7 @@ StatusOr<float> UniversalSentenceEncoderQA::Similarity(const FeatureVector& a,
 }
 
 std::vector<size_t> UniversalSentenceEncoderQA::Top(
-    const RetrievalOutput& output,
-    size_t k) {
+    const RetrievalOutput& output, size_t k) {
   // Ensure k in [0, total_size).
   // If k == 0, it means that all outputs are ranked.
   if (k == 0) {
@@ -216,8 +214,7 @@ std::vector<size_t> UniversalSentenceEncoderQA::Top(
 }
 
 Status UniversalSentenceEncoderQA::Preprocess(
-    const std::vector<TfLiteTensor*>& input_tensors,
-    const QAInput& input) {
+    const std::vector<TfLiteTensor*>& input_tensors, const QAInput& input) {
   RETURN_IF_ERROR(
       PopulateTensor(input.query_text, input_tensors[input_indices_[0]]));
   RETURN_IF_ERROR(
@@ -238,8 +235,7 @@ StatusOr<QAOutput> UniversalSentenceEncoderQA::Postprocess(
 }
 
 internal::QAOutput UniversalSentenceEncoderQA::Run(
-    absl::string_view query_text,
-    absl::string_view response_text,
+    absl::string_view query_text, absl::string_view response_text,
     absl::string_view response_context) {
   QAInput input;
   input.query_text = std::string(query_text);

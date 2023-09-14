@@ -14,9 +14,9 @@ limitations under the License.
 ==============================================================================*/
 
 // Demostration the usage of UniversalSentenceEncoderQA.
-#include "absl/flags/flag.h"         // from @com_google_absl
-#include "absl/flags/parse.h"        // from @com_google_absl
-#include "absl/status/status.h"      // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_split.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/task/text/universal_sentence_encoder_qa.h"
 #include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
@@ -29,17 +29,12 @@ using tflite::task::text::RetrievalOutput;
 using tflite::task::text::UniversalSentenceEncoderQA;
 }  // namespace
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' UniversalSentenceEncoderQA model.");
-ABSL_FLAG(std::string,
-          question,
-          "How are you feeling today?",
+ABSL_FLAG(std::string, question, "How are you feeling today?",
           "Question to ask.");
 ABSL_FLAG(
-    std::string,
-    answers,
+    std::string, answers,
     "I'm not feeling very well.:Paris is the capital of France.:He looks good.",
     "Candidate answers seperated by `:`.");
 

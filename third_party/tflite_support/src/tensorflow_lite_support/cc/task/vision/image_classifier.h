@@ -20,10 +20,10 @@ limitations under the License.
 #include <vector>
 
 #include "absl/container/flat_hash_set.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
@@ -109,8 +109,7 @@ class ImageClassifier : public BaseVisionTaskApi<ClassificationResult> {
   // region of interest is not clamped, so this method will return a non-ok
   // status if the region is out of these bounds.
   tflite::support::StatusOr<ClassificationResult> Classify(
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi);
+      const FrameBuffer& frame_buffer, const BoundingBox& roi);
 
  protected:
   // The options used to build this ImageClassifier.
@@ -124,8 +123,7 @@ class ImageClassifier : public BaseVisionTaskApi<ClassificationResult> {
   // results.
   tflite::support::StatusOr<ClassificationResult> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors,
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi) override;
+      const FrameBuffer& frame_buffer, const BoundingBox& roi) override;
 
   // Performs sanity checks on the provided ImageClassifierOptions.
   static absl::Status SanityCheckOptions(const ImageClassifierOptions& options);

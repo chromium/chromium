@@ -24,27 +24,28 @@ import android.graphics.Bitmap;
  * {@link IllegalArgumentException} will be thrown.
  */
 public final class BitmapExtractor {
-    /**
-     * Extracts a {@link android.graphics.Bitmap} from an {@link MlImage}.
-     *
-     * <p>Notice: Properties of the {@code image} like rotation will not take effects.
-     *
-     * @param image the image to extract {@link android.graphics.Bitmap} from.
-     * @return the {@link android.graphics.Bitmap} stored in {@link MlImage}
-     * @throws IllegalArgumentException when the extraction requires unsupported format or data type
-     *     conversions.
-     */
-    public static Bitmap extract(MlImage image) {
-        ImageContainer imageContainer = image.getContainer(MlImage.STORAGE_TYPE_BITMAP);
-        if (imageContainer != null) {
-            return ((BitmapImageContainer) imageContainer).getBitmap();
-        } else {
-            // TODO(b/180504869): Support ByteBuffer -> Bitmap conversion.
-            throw new IllegalArgumentException(
-                    "Extracting Bitmap from an MlImage created by objects other than Bitmap is not"
-                    + " supported");
-        }
-    }
 
-    private BitmapExtractor() {}
+  /**
+   * Extracts a {@link android.graphics.Bitmap} from an {@link MlImage}.
+   *
+   * <p>Notice: Properties of the {@code image} like rotation will not take effects.
+   *
+   * @param image the image to extract {@link android.graphics.Bitmap} from.
+   * @return the {@link android.graphics.Bitmap} stored in {@link MlImage}
+   * @throws IllegalArgumentException when the extraction requires unsupported format or data type
+   *     conversions.
+   */
+  public static Bitmap extract(MlImage image) {
+    ImageContainer imageContainer = image.getContainer(MlImage.STORAGE_TYPE_BITMAP);
+    if (imageContainer != null) {
+      return ((BitmapImageContainer) imageContainer).getBitmap();
+    } else {
+      // TODO(b/180504869): Support ByteBuffer -> Bitmap conversion.
+      throw new IllegalArgumentException(
+          "Extracting Bitmap from an MlImage created by objects other than Bitmap is not"
+              + " supported");
+    }
+  }
+
+  private BitmapExtractor() {}
 }

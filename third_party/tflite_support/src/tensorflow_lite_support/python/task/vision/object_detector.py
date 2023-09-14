@@ -35,8 +35,11 @@ class ObjectDetectorOptions:
     base_options: Base options for the object detector task.
     detection_options: Detection options for the object detector task.
   """
+
   base_options: _BaseOptions
-  detection_options: _DetectionOptions = _DetectionOptions()
+  detection_options: _DetectionOptions = dataclasses.field(
+      default_factory=_DetectionOptions
+  )
 
 
 class ObjectDetector(object):

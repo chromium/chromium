@@ -71,12 +71,9 @@ TfLiteStatus EvalT(TfLiteContext* context, TfLiteNode* node) {
   // nrows (number of output rows) is the size of the non-broadcast inputs,
   // or 1 if all inputs are scalars.
   std::vector<int> in_sizes;
-  if (!broadcast_starts)
-    in_sizes.push_back(input_starts.dims->data[0]);
-  if (!broadcast_limits)
-    in_sizes.push_back(input_limits.dims->data[0]);
-  if (!broadcast_deltas)
-    in_sizes.push_back(input_deltas.dims->data[0]);
+  if (!broadcast_starts) in_sizes.push_back(input_starts.dims->data[0]);
+  if (!broadcast_limits) in_sizes.push_back(input_limits.dims->data[0]);
+  if (!broadcast_deltas) in_sizes.push_back(input_deltas.dims->data[0]);
   if (std::adjacent_find(std::begin(in_sizes), std::end(in_sizes),
                          std::not_equal_to<>()) != std::end(in_sizes)) {
     context->ReportError(

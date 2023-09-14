@@ -24,10 +24,10 @@
 
 @interface TFLAudioClassifier () {
   NSInteger _requiredCBufferSize;
-  TfLiteAudioFormat* _requiredCAudioFormat;
+  TfLiteAudioFormat *_requiredCAudioFormat;
 }
 /** Audio Classifier backed by C API */
-@property(nonatomic) TfLiteAudioClassifier* audioClassifier;
+@property(nonatomic) TfLiteAudioClassifier *audioClassifier;
 @end
 
 @implementation TFLAudioClassifierOptions
@@ -44,7 +44,7 @@
   return self;
 }
 
-- (instancetype)initWithModelPath:(NSString*)modelPath {
+- (instancetype)initWithModelPath:(NSString *)modelPath {
   self = [self init];
   if (self) {
     self.baseOptions.modelFile.filePath = modelPath;
@@ -60,10 +60,10 @@
   TfLiteAudioClassifierDelete(_audioClassifier);
 }
 
-- (BOOL)populateRequiredBufferSizeWithError:(NSError**)error {
-  TfLiteSupportError* requiredBufferSizeError = NULL;
-  _requiredCBufferSize = TfLiteAudioClassifierGetRequiredInputBufferSize(
-      _audioClassifier, &requiredBufferSizeError);
+- (BOOL)populateRequiredBufferSizeWithError:(NSError **)error {
+  TfLiteSupportError *requiredBufferSizeError = NULL;
+  _requiredCBufferSize =
+      TfLiteAudioClassifierGetRequiredInputBufferSize(_audioClassifier, &requiredBufferSizeError);
 
   // Populate iOS error if C Error is not null and afterwards delete it.
   if (![TFLCommonUtils checkCError:requiredBufferSizeError toError:error]) {
@@ -73,10 +73,10 @@
   return _requiredCBufferSize > 0;
 }
 
-- (BOOL)populateRequiredAudioFormatWithError:(NSError**)error {
-  TfLiteSupportError* getAudioFormatError = nil;
-  _requiredCAudioFormat = TfLiteAudioClassifierGetRequiredAudioFormat(
-      _audioClassifier, &getAudioFormatError);
+- (BOOL)populateRequiredAudioFormatWithError:(NSError **)error {
+  TfLiteSupportError *getAudioFormatError = nil;
+  _requiredCAudioFormat =
+      TfLiteAudioClassifierGetRequiredAudioFormat(_audioClassifier, &getAudioFormatError);
 
   if (![TFLCommonUtils checkCError:getAudioFormatError toError:error]) {
     TfLiteSupportErrorDelete(getAudioFormatError);
@@ -85,9 +85,8 @@
   return _requiredCAudioFormat != NULL;
 }
 
-- (nullable instancetype)initWithAudioClassifier:
-                             (TfLiteAudioClassifier*)audioClassifier
-                                           error:(NSError**)error {
+- (nullable instancetype)initWithAudioClassifier:(TfLiteAudioClassifier *)audioClassifier
+                                           error:(NSError **)error {
   self = [super init];
   if (self) {
     _audioClassifier = audioClassifier;
@@ -102,56 +101,49 @@
   return self;
 }
 
-+ (nullable instancetype)audioClassifierWithOptions:
-                             (TFLAudioClassifierOptions*)options
-                                              error:(NSError**)error {
++ (nullable instancetype)audioClassifierWithOptions:(TFLAudioClassifierOptions *)options
+                                              error:(NSError **)error {
   if (!options) {
-    [TFLCommonUtils
-        createCustomError:error
-                 withCode:TFLSupportErrorCodeInvalidArgumentError
-              description:@"TFLAudioClassifierOptions argument cannot be nil."];
+    [TFLCommonUtils createCustomError:error
+                             withCode:TFLSupportErrorCodeInvalidArgumentError
+                          description:@"TFLAudioClassifierOptions argument cannot be nil."];
     return nil;
   }
 
   TfLiteAudioClassifierOptions cOptions = TfLiteAudioClassifierOptionsCreate();
 
-  if (![options.classificationOptions
-          copyToCOptions:&(cOptions.classification_options)
-                   error:error]) {
-    [options.classificationOptions deleteAllocatedMemoryOfClassificationOptions:
-                                       &(cOptions.classification_options)];
+  if (![options.classificationOptions copyToCOptions:&(cOptions.classification_options)
+                                               error:error]) {
+    [options.classificationOptions
+        deleteAllocatedMemoryOfClassificationOptions:&(cOptions.classification_options)];
     return nil;
   }
 
   [options.baseOptions copyToCOptions:&(cOptions.base_options)];
 
-  TfLiteSupportError* cCreateClassifierError = NULL;
-  TfLiteAudioClassifier* cAudioClassifier =
+  TfLiteSupportError *cCreateClassifierError = NULL;
+  TfLiteAudioClassifier *cAudioClassifier =
       TfLiteAudioClassifierFromOptions(&cOptions, &cCreateClassifierError);
 
-  [options.classificationOptions deleteAllocatedMemoryOfClassificationOptions:
-                                     &(cOptions.classification_options)];
+  [options.classificationOptions
+      deleteAllocatedMemoryOfClassificationOptions:&(cOptions.classification_options)];
 
-  // Populate iOS error if TfliteSupportError is not null and afterwards delete
-  // it.
+  // Populate iOS error if TfliteSupportError is not null and afterwards delete it.
   if (![TFLCommonUtils checkCError:cCreateClassifierError toError:error]) {
     TfLiteSupportErrorDelete(cCreateClassifierError);
   }
 
-  // Return nil if classifier evaluates to nil. If an error was generted by the
-  // C layer, it has already been populated to an NSError and deleted before
-  // returning from the method.
+  // Return nil if classifier evaluates to nil. If an error was generted by the C layer, it has
+  // already been populated to an NSError and deleted before returning from the method.
   if (!cAudioClassifier) {
     return nil;
   }
 
-  return [[TFLAudioClassifier alloc] initWithAudioClassifier:cAudioClassifier
-                                                       error:error];
+  return [[TFLAudioClassifier alloc] initWithAudioClassifier:cAudioClassifier error:error];
 }
 
-- (nullable TFLClassificationResult*)classifyWithAudioTensor:
-                                         (TFLAudioTensor*)audioTensor
-                                                       error:(NSError**)error {
+- (nullable TFLClassificationResult *)classifyWithAudioTensor:(TFLAudioTensor *)audioTensor
+                                                        error:(NSError **)error {
   if (!audioTensor) {
     [TFLCommonUtils createCustomError:error
                              withCode:TFLSupportErrorCodeInvalidArgumentError
@@ -159,51 +151,46 @@
     return nil;
   }
 
-  TFLFloatBuffer* audioTensorBuffer = audioTensor.buffer;
-  TfLiteAudioBuffer cAudioBuffer =
-      [audioTensor cAudioBufferFromFloatBuffer:audioTensorBuffer];
+  TFLFloatBuffer *audioTensorBuffer = audioTensor.buffer;
+  TfLiteAudioBuffer cAudioBuffer = [audioTensor cAudioBufferFromFloatBuffer:audioTensorBuffer];
 
-  TfLiteSupportError* classifyError = NULL;
-  TfLiteClassificationResult* cClassificationResult =
-      TfLiteAudioClassifierClassify(_audioClassifier, &cAudioBuffer,
-                                    &classifyError);
+  TfLiteSupportError *classifyError = NULL;
+  TfLiteClassificationResult *cClassificationResult =
+      TfLiteAudioClassifierClassify(_audioClassifier, &cAudioBuffer, &classifyError);
 
   // Populate iOS error if C Error is not null and afterwards delete it.
   if (![TFLCommonUtils checkCError:classifyError toError:error]) {
     TfLiteSupportErrorDelete(classifyError);
   }
 
-  // Return nil if C result evaluates to nil. If an error was generted by the C
-  // layer, it has already been populated to an NSError and deleted before
-  // returning from the method.
+  // Return nil if C result evaluates to nil. If an error was generted by the C layer, it has
+  // already been populated to an NSError and deleted before returning from the method.
   if (!cClassificationResult) {
     return nil;
   }
 
-  TFLClassificationResult* classificationResult = [TFLClassificationResult
-      classificationResultWithCResult:cClassificationResult];
+  TFLClassificationResult *classificationResult =
+      [TFLClassificationResult classificationResultWithCResult:cClassificationResult];
   TfLiteClassificationResultDelete(cClassificationResult);
 
   return classificationResult;
 }
 
-- (TFLAudioTensor*)createInputAudioTensor {
-  TFLAudioFormat* format = [[TFLAudioFormat alloc]
-      initWithChannelCount:_requiredCAudioFormat->channels
-                sampleRate:_requiredCAudioFormat->sample_rate];
-  return [[TFLAudioTensor alloc]
-      initWithAudioFormat:format
-              sampleCount:_requiredCBufferSize / format.channelCount];
+- (TFLAudioTensor *)createInputAudioTensor {
+  TFLAudioFormat *format =
+      [[TFLAudioFormat alloc] initWithChannelCount:_requiredCAudioFormat->channels
+                                        sampleRate:_requiredCAudioFormat->sample_rate];
+  return [[TFLAudioTensor alloc] initWithAudioFormat:format
+                                         sampleCount:_requiredCBufferSize / format.channelCount];
 }
 
-- (TFLAudioRecord*)createAudioRecordWithError:(NSError**)error {
-  // The sample count of audio record should be strictly longer than audio
-  // tensor's so that clients could run TFLAudioRecord's
-  // `startRecordingWithError:` together with TFLAudioClassifier's
-  // `classifyWithAudioTensor:error:`
-  TFLAudioFormat* format = [[TFLAudioFormat alloc]
-      initWithChannelCount:_requiredCAudioFormat->channels
-                sampleRate:_requiredCAudioFormat->sample_rate];
+- (TFLAudioRecord *)createAudioRecordWithError:(NSError **)error {
+  // The sample count of audio record should be strictly longer than audio tensor's so that
+  // clients could run TFLAudioRecord's `startRecordingWithError:`
+  // together with TFLAudioClassifier's `classifyWithAudioTensor:error:`
+  TFLAudioFormat *format =
+      [[TFLAudioFormat alloc] initWithChannelCount:_requiredCAudioFormat->channels
+                                        sampleRate:_requiredCAudioFormat->sample_rate];
 
   return [[TFLAudioRecord alloc] initWithAudioFormat:format
                                           bufferSize:_requiredCBufferSize * 2

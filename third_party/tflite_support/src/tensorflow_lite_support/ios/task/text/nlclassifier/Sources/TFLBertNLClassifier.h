@@ -27,17 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * Classifier API for NLClassification tasks with Bert models, categorizes
- * string into different classes. The API expects a Bert based TFLite model with
- * metadata populated.
+ * Classifier API for NLClassification tasks with Bert models, categorizes string into different
+ * classes. The API expects a Bert based TFLite model with metadata populated.
  *
  * The metadata should contain the following information:
  *   1 input_process_unit for Wordpiece/Sentencepiece Tokenizer.
  *   3 input tensors with names "ids", "mask" and "segment_ids".
- *   1 output tensor of type float32[1, 2], with a optionally attached label
- * file. If a label file is attached, the file should be a plain text file with
- * one label per line, the number of labels should match the number of
- * categories the model outputs.
+ *   1 output tensor of type float32[1, 2], with a optionally attached label file. If a label
+ *     file is attached, the file should be a plain text file with one label per line, the number
+ *     of labels should match the number of categories the model outputs.
  */
 @interface TFLBertNLClassifier : NSObject
 
@@ -47,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param modelPath Path to the classification model.
  * @return A TFLBertNLClassifier instance.
  */
-+ (instancetype)bertNLClassifierWithModelPath:(NSString*)modelPath
++ (instancetype)bertNLClassifierWithModelPath:(NSString *)modelPath
     NS_SWIFT_NAME(bertNLClassifier(modelPath:));
 
 /**
@@ -56,9 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
  * @param modelPath Path to the classification model.
  * @return A TFLBertNLClassifier instance.
  */
-+ (instancetype)bertNLClassifierWithModelPath:(NSString*)modelPath
-                                      options:
-                                          (TFLBertNLClassifierOptions*)options
++ (instancetype)bertNLClassifierWithModelPath:(NSString *)modelPath
+                                      options:(TFLBertNLClassifierOptions *)options
     NS_SWIFT_NAME(bertNLClassifier(modelPath:options:));
 
 /**
@@ -68,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param text input text to the model.
  * @return A NSDictionary of categorization results.
  */
-- (NSDictionary<NSString*, NSNumber*>*)classifyWithText:(NSString*)text
+- (NSDictionary<NSString *, NSNumber *> *)classifyWithText:(NSString *)text
     NS_SWIFT_NAME(classify(text:));
 @end
 NS_ASSUME_NONNULL_END

@@ -40,8 +40,7 @@ using ::testing::ElementsAreArray;
 class NgramsModel : public SingleOpModel {
  public:
   // Constructor for testing the op with a tf.Tensor
-  NgramsModel(int width,
-              const std::string& string_separator,
+  NgramsModel(int width, const std::string& string_separator,
               const std::vector<std::string>& input_values,
               const std::vector<int>& input_shape) {
     input_values_ = AddInput(TensorType_STRING);
@@ -57,8 +56,7 @@ class NgramsModel : public SingleOpModel {
   // Constructor for the op with a tf.RaggedTensor
   // Note: This interface uses row_lengths, as they're closer to the
   // dimensions in a TensorShape, but internally everything is row_splits.
-  NgramsModel(int width,
-              const std::string& string_separator,
+  NgramsModel(int width, const std::string& string_separator,
               const std::vector<std::string>& input_values,
               const std::vector<std::vector<int64_t>> nested_row_lengths) {
     std::vector<std::vector<int>> input_shapes;
@@ -205,7 +203,8 @@ TEST(NgramsTest, TensorMultidimensionalInputWidthTwo) {
 TEST(NgramsTest, RaggedTensorSingleSequenceWidthTwo) {
   std::vector<std::vector<int64_t>> nested_row_lengths;
   nested_row_lengths.push_back({4});
-  NgramsModel m(2, " ", {"this", "is", "a", "test"}, nested_row_lengths);
+  NgramsModel m(2, " ", {"this", "is", "a", "test"},
+                nested_row_lengths);
   EXPECT_THAT(m.GetValuesTensorShape(), ElementsAre(3));
   EXPECT_THAT(m.ExtractValuesTensorVector(),
               ElementsAre("this is", "is a", "a test"));

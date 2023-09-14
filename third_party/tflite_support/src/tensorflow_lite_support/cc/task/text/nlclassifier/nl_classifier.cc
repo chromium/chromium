@@ -22,10 +22,10 @@ limitations under the License.
 #include <vector>
 
 #include "absl/algorithm/container.h"  // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_cat.h"      // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "flatbuffers/flatbuffers.h"   // from @flatbuffers
+#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
 #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
@@ -127,8 +127,7 @@ StatusOr<std::vector<Category>> NLClassifier::ClassifyText(
 }
 
 absl::Status NLClassifier::Preprocess(
-    const std::vector<TfLiteTensor*>& input_tensors,
-    const std::string& input) {
+    const std::vector<TfLiteTensor*>& input_tensors, const std::string& input) {
   return preprocessor_->Preprocess(input);
 }
 
@@ -312,8 +311,7 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromOptions(
 
 StatusOr<std::unique_ptr<NLClassifier>>
 NLClassifier::CreateFromBufferAndOptions(
-    const char* model_buffer_data,
-    size_t model_buffer_size,
+    const char* model_buffer_data, size_t model_buffer_size,
     const NLClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   std::unique_ptr<NLClassifier> nl_classifier;
@@ -326,8 +324,7 @@ NLClassifier::CreateFromBufferAndOptions(
 }
 
 StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFileAndOptions(
-    const std::string& path_to_model,
-    const NLClassifierOptions& options,
+    const std::string& path_to_model, const NLClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   std::unique_ptr<NLClassifier> nl_classifier;
   ASSIGN_OR_RETURN(nl_classifier,
@@ -338,8 +335,7 @@ StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFileAndOptions(
 }
 
 StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromFdAndOptions(
-    int fd,
-    const NLClassifierOptions& options,
+    int fd, const NLClassifierOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   std::unique_ptr<NLClassifier> nl_classifier;
   ASSIGN_OR_RETURN(nl_classifier,

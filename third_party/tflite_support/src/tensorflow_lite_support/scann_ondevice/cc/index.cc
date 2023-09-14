@@ -18,17 +18,17 @@ limitations under the License.
 #include <cstddef>
 #include <memory>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/status/statusor.h"      // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "leveldb/cache.h"             // from @com_google_leveldb
-#include "leveldb/iterator.h"          // from @com_google_leveldb
-#include "leveldb/options.h"           // from @com_google_leveldb
-#include "leveldb/slice.h"             // from @com_google_leveldb
-#include "leveldb/status.h"            // from @com_google_leveldb
-#include "leveldb/table.h"             // from @com_google_leveldb
+#include "leveldb/cache.h"  // from @com_google_leveldb
+#include "leveldb/iterator.h"  // from @com_google_leveldb
+#include "leveldb/options.h"  // from @com_google_leveldb
+#include "leveldb/slice.h"  // from @com_google_leveldb
+#include "leveldb/status.h"  // from @com_google_leveldb
+#include "leveldb/table.h"  // from @com_google_leveldb
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/mem_random_access_file.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/utils.h"
@@ -60,8 +60,7 @@ absl::StatusOr<absl::string_view> GetValueForKey(leveldb::Iterator* iterator,
 
 /* static */
 absl::StatusOr<std::unique_ptr<Index>> Index::CreateFromIndexBuffer(
-    const char* buffer_data,
-    size_t buffer_size) {
+    const char* buffer_data, size_t buffer_size) {
   // Use absl::WrapUnique() to call private constructor:
   // https://abseil.io/tips/126.
   std::unique_ptr<Index> index = absl::WrapUnique(new Index());

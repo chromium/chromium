@@ -117,8 +117,7 @@ absl::Status BertPreprocessor::Init() {
         TfLiteSupportStatus::kInvalidInputTensorSizeError);
   }
 
-  if (input_tensors_are_dynamic_)
-    return absl::OkStatus();
+  if (input_tensors_are_dynamic_) return absl::OkStatus();
 
   bert_max_seq_len_ = ids_tensor.dims->data[1];
   if (bert_max_seq_len_ < 2) {

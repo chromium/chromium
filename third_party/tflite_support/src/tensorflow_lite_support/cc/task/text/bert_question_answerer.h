@@ -16,9 +16,9 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_QA_BERT_QUESTION_ANSWERER_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_QA_BERT_QUESTION_ANSWERER_H_
 
-#include "absl/base/macros.h"              // from @com_google_absl
+#include "absl/base/macros.h"  // from @com_google_absl
 #include "absl/container/flat_hash_map.h"  // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
@@ -69,7 +69,7 @@ class BertQuestionAnswerer : public QuestionAnswerer {
   CreateFromOptions(
       const BertQuestionAnswererOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
   static tflite::support::StatusOr<std::unique_ptr<QuestionAnswerer>>
@@ -136,8 +136,7 @@ class BertQuestionAnswerer : public QuestionAnswerer {
   void InitializeSentencepieceTokenizer(const std::string& path_to_spmodel);
   // Initialize API with a SentencepieceTokenizer from the model buffer.
   void InitializeSentencepieceTokenizerFromBinary(
-      const char* spmodel_buffer_data,
-      size_t spmodel_buffer_size);
+      const char* spmodel_buffer_data, size_t spmodel_buffer_size);
 
   // Initialize the API with the tokenizer set in the metadata.
   absl::Status InitializeFromMetadata(

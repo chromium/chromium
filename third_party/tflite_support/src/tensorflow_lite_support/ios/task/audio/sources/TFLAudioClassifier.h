@@ -31,32 +31,29 @@ NS_SWIFT_NAME(AudioClassifierOptions)
  * Base options that are used for creation of any type of task.
  * @discussion Please see `TFLBaseOptions` for more details.
  */
-@property(nonatomic, copy) TFLBaseOptions* baseOptions;
+@property(nonatomic, copy) TFLBaseOptions *baseOptions;
 
 /**
  * Options that configure the display and filtering of results.
  * @discussion Please see `TFLClassificationOptions` for more details.
  */
-@property(nonatomic, copy) TFLClassificationOptions* classificationOptions;
+@property(nonatomic, copy) TFLClassificationOptions *classificationOptions;
 
 /**
- * Initializes a new `TFLAudioClassifierOptions` with the absolute path to the
- * model file stored locally on the device.
- *
- * @discussion The external model file must be a single standalone TFLite file.
- * It could be packed with TFLite Model Metadata[1] and associated files if
- * exist. Fail to provide the necessary metadata and associated files might
- * result in errors. Check the
- * [documentation](https://www.tensorflow.org/lite/convert/metadata) for each
- * task about the specific requirement.
- *
- * @param modelPath An absolute path to a TensorFlow Lite model file stored
+ * Initializes a new `TFLAudioClassifierOptions` with the absolute path to the model file stored
  * locally on the device.
  *
- * @return An instance of `TFLAudioClassifierOptions` initialized to the given
- * model path.
+ * @discussion The external model file must be a single standalone TFLite file. It could be packed
+ * with TFLite Model Metadata[1] and associated files if exist. Fail to provide the necessary
+ * metadata and associated files might result in errors. Check the
+ * [documentation](https://www.tensorflow.org/lite/convert/metadata) for each task about the
+ * specific requirement.
+ *
+ * @param modelPath An absolute path to a TensorFlow Lite model file stored locally on the device.
+ *
+ * @return An instance of `TFLAudioClassifierOptions` initialized to the given model path.
  */
-- (instancetype)initWithModelPath:(NSString*)modelPath;
+- (instancetype)initWithModelPath:(NSString *)modelPath;
 
 @end
 
@@ -67,69 +64,61 @@ NS_SWIFT_NAME(AudioClassifier)
 @interface TFLAudioClassifier : NSObject
 
 /**
- * Creates a new instance of `TFLAudioClassifier` from the given
- * `TFLAudioClassifierOptions`.
+ * Creates a new instance of `TFLAudioClassifier` from the given `TFLAudioClassifierOptions`.
  *
  * @param options The options to use for configuring the `TFLAudioClassifier`.
- * @param error An optional error parameter populated when there is an error in
- * initializing the audio classifier.
+ * @param error An optional error parameter populated when there is an error in initializing
+ * the audio classifier.
  *
- * @return A new instance of `TFLAudioClassifier` with the given options. `nil`
- * if there is an error in initializing the audio classifier.
+ * @return A new instance of `TFLAudioClassifier` with the given options. `nil` if there is an error
+ * in initializing the audio classifier.
  */
-+ (nullable instancetype)audioClassifierWithOptions:
-                             (TFLAudioClassifierOptions*)options
-                                              error:(NSError**)error
++ (nullable instancetype)audioClassifierWithOptions:(TFLAudioClassifierOptions *)options
+                                              error:(NSError **)error
     NS_SWIFT_NAME(classifier(options:));
 
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
- * Creates a `TFLAudioTensor` instance to store the input audio samples to be
- * classified. The created `TFLAudioTensor` has the same buffer size as the
- * model input tensor and audio format required by the model.
+ * Creates a `TFLAudioTensor` instance to store the input audio samples to be classified. The
+ * created `TFLAudioTensor` has the same buffer size as the model input tensor and audio format
+ * required by the model.
  *
- * @param error An optional error parameter populated when there is an error in
- * creating the audio tensor.
+ * @param error An optional error parameter populated when there is an error in creating the audio
+ * tensor.
  *
- * @return A `TFLAudioTensor` with the same buffer size as the model input
- * tensor and audio format required by the model, if creation is successful
- * otherwise nil.
+ * @return A `TFLAudioTensor` with the same buffer size as the model input tensor and audio format
+ * required by the model, if creation is successful otherwise nil.
  */
-- (TFLAudioTensor*)createInputAudioTensor;
+- (TFLAudioTensor *)createInputAudioTensor;
 
 /**
- * Creates a `TFLAudioRecord` instance to start recording audio input from the
- * microphone. The returned `TFLAudioRecord` instance instance is initialized
- * with the audio format and twice the input buffer size required by the model.
+ * Creates a `TFLAudioRecord` instance to start recording audio input from the microphone. The
+ * returned `TFLAudioRecord` instance instance is initialized with the audio format and twice the
+ * input buffer size required by the model.
  *
- * @discussion After creating the `TFLAudioRecord` using this function, the
- * client needs to call
- * -[TFLAudioRecord startRecordingWithError:] to start recording the audio from
- * the microphone.
+ * @discussion After creating the `TFLAudioRecord` using this function, the client needs to call
+ * -[TFLAudioRecord startRecordingWithError:] to start recording the audio from the microphone.
  *
- * @param error An optional error parameter populated if there is an error in
- * creating the audio record.
+ * @param error An optional error parameter populated if there is an error in creating the audio
+ * record.
  *
- * @return A `TFLAudioRecord` instance with audio format and twice the input
- * buffer size required by the model, if creation is successful or nil in case
- * of failure.
+ * @return A `TFLAudioRecord` instance with audio format and twice the input buffer size required by
+ * the model, if creation is successful or nil in case of failure.
  */
-- (nullable TFLAudioRecord*)createAudioRecordWithError:(NSError**)error;
+- (nullable TFLAudioRecord *)createAudioRecordWithError:(NSError **)error;
 
 /**
- * Performs classification on an array of audio samples encapsulated by
- * `TFLAudioTensor`.
+ * Performs classification on an array of audio samples encapsulated by `TFLAudioTensor`.
  *
  * @param audioTensor A `TFLAudioTensor` to be classified.
  *
- * @return A `TFLClassificationResult` with one set of results per audio
- * classifier head. `nil` if there is an error encountered during
- * classification. Please see `TFLClassificationResult` for more details.
+ * @return A `TFLClassificationResult` with one set of results per audio classifier head. `nil` if
+ * there is an error encountered during classification. Please see `TFLClassificationResult` for
+ * more details.
  */
-- (nullable TFLClassificationResult*)classifyWithAudioTensor:
-                                         (TFLAudioTensor*)audioTensor
-                                                       error:(NSError**)error
+- (nullable TFLClassificationResult *)classifyWithAudioTensor:(TFLAudioTensor *)audioTensor
+                                                        error:(NSError **)error
     NS_SWIFT_NAME(classify(audioTensor:));
 
 - (instancetype)init NS_UNAVAILABLE;

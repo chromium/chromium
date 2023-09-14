@@ -18,10 +18,10 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/flags/flag.h"           // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -125,7 +125,7 @@ void ExpectApproximatelyEqual(const SearchResult& actual,
   }
 }
 
-class CreateFromOptionsTest : public tflite_shims::testing::Test {};
+class CreateFromOptionsTest : public tflite::testing::Test {};
 
 TEST_F(CreateFromOptionsTest, SucceedsWithStandaloneIndex) {
   auto options = std::make_unique<SearchOptions>();
@@ -136,13 +136,13 @@ TEST_F(CreateFromOptionsTest, SucceedsWithStandaloneIndex) {
 }
 
 TEST_F(CreateFromOptionsTest, SucceedsWithMetadataIndex) {
-  StatusOr<std::string> index_file_content =
-      GetIndexFileContentFromModelFile(JoinPath(
-          "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Searcher));
+  StatusOr<std::string> index_file_content = GetIndexFileContentFromModelFile(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Searcher));
   SUPPORT_ASSERT_OK(index_file_content);
 
   SUPPORT_ASSERT_OK(EmbeddingSearcher::Create(std::make_unique<SearchOptions>(),
-                                              *index_file_content));
+                                      *index_file_content));
 }
 
 TEST_F(CreateFromOptionsTest, FailsWithMissingIndexAndMissingMetadataIndex) {
@@ -181,20 +181,19 @@ TEST(SearchTest, SucceedsWithStandaloneIndex) {
   auto options = std::make_unique<SearchOptions>();
   options->mutable_index_file()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<EmbeddingSearcher> embedding_searcher,
-      EmbeddingSearcher::Create(std::move(options)));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<EmbeddingSearcher> embedding_searcher,
+                       EmbeddingSearcher::Create(std::move(options)));
 
   // Load the embedding proto associated with burger.jpg.
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       std::string embedding_file_content,
-      GetFileContent(JoinPath("./" /*test src dir*/, kTestDataDirectory,
-                              kBurgerJpgEmbeddingProto)));
+      GetFileContent(JoinPath("./" /*test src dir*/,
+                              kTestDataDirectory, kBurgerJpgEmbeddingProto)));
   Embedding embedding = ParseTextProtoOrDie<Embedding>(embedding_file_content);
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               embedding_searcher->Search(embedding));
+                       embedding_searcher->Search(embedding));
 
   // Check results.
   ExpectApproximatelyEqual(
@@ -208,9 +207,9 @@ TEST(SearchTest, SucceedsWithStandaloneIndex) {
 }
 
 TEST(SearchTest, SucceedsWithMetadataIndex) {
-  StatusOr<std::string> index_file_content =
-      GetIndexFileContentFromModelFile(JoinPath(
-          "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3Searcher));
+  StatusOr<std::string> index_file_content = GetIndexFileContentFromModelFile(
+      JoinPath("./" /*test src dir*/, kTestDataDirectory,
+               kMobileNetV3Searcher));
   SUPPORT_ASSERT_OK(index_file_content);
 
   // Create Searcher.
@@ -222,13 +221,13 @@ TEST(SearchTest, SucceedsWithMetadataIndex) {
   // Load the embedding proto associated with burger.jpg.
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       std::string embedding_file_content,
-      GetFileContent(JoinPath("./" /*test src dir*/, kTestDataDirectory,
-                              kBurgerJpgEmbeddingProto)));
+      GetFileContent(JoinPath("./" /*test src dir*/,
+                              kTestDataDirectory, kBurgerJpgEmbeddingProto)));
   Embedding embedding = ParseTextProtoOrDie<Embedding>(embedding_file_content);
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               embedding_searcher->Search(embedding));
+                       embedding_searcher->Search(embedding));
 
   // Check results.
   ExpectApproximatelyEqual(
@@ -247,20 +246,19 @@ TEST(SearchTest, SucceedsWithMaxResults) {
   options->mutable_index_file()->set_file_name(
       JoinPath("./" /*test src dir*/, kTestDataDirectory, kIndex));
   options->set_max_results(2);
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<EmbeddingSearcher> embedding_searcher,
-      EmbeddingSearcher::Create(std::move(options)));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<EmbeddingSearcher> embedding_searcher,
+                       EmbeddingSearcher::Create(std::move(options)));
 
   // Load the embedding proto associated with burger.jpg.
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       std::string embedding_file_content,
-      GetFileContent(JoinPath("./" /*test src dir*/, kTestDataDirectory,
-                              kBurgerJpgEmbeddingProto)));
+      GetFileContent(JoinPath("./" /*test src dir*/,
+                              kTestDataDirectory, kBurgerJpgEmbeddingProto)));
   Embedding embedding = ParseTextProtoOrDie<Embedding>(embedding_file_content);
 
   // Perform search.
   SUPPORT_ASSERT_OK_AND_ASSIGN(const SearchResult& result,
-                               embedding_searcher->Search(embedding));
+                       embedding_searcher->Search(embedding));
   // Check results.
   ExpectApproximatelyEqual(
       result, ParseTextProtoOrDie<SearchResult>(R"pb(

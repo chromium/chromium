@@ -20,11 +20,11 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
-#include "absl/strings/str_split.h"    // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/optional.h"       // from @com_google_absl
+#include "absl/types/optional.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 

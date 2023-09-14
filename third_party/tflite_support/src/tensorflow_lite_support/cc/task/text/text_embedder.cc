@@ -58,8 +58,7 @@ absl::Status SanityCheckOptions(const TextEmbedderOptions& options) {
 
 /* static */
 tflite::support::StatusOr<double> TextEmbedder::CosineSimilarity(
-    const FeatureVector& u,
-    const FeatureVector& v) {
+    const FeatureVector& u, const FeatureVector& v) {
   return processor::EmbeddingPostprocessor::CosineSimilarity(u, v);
 }
 
@@ -171,8 +170,7 @@ tflite::support::StatusOr<EmbeddingResult> TextEmbedder::Embed(
 }
 
 absl::Status TextEmbedder::Preprocess(
-    const std::vector<TfLiteTensor*>& input_tensors,
-    const std::string& input) {
+    const std::vector<TfLiteTensor*>& input_tensors, const std::string& input) {
   return preprocessor_->Preprocess(input);
 }
 

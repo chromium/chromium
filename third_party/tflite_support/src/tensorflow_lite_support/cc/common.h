@@ -16,7 +16,7 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_COMMON_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_COMMON_H_
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 
 namespace tflite {
@@ -164,8 +164,7 @@ enum class TfLiteSupportStatus {
 // more than returning an object identical to an OK status. See `absl::Status`
 // for more details.
 absl::Status CreateStatusWithPayload(
-    absl::StatusCode canonical_code,
-    absl::string_view message,
+    absl::StatusCode canonical_code, absl::string_view message,
     tflite::support::TfLiteSupportStatus tfls_code =
         tflite::support::TfLiteSupportStatus::kError);
 

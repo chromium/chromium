@@ -24,10 +24,10 @@ limitations under the License.
 #include <iostream>
 #include <limits>
 
-#include "absl/flags/flag.h"          // from @com_google_absl
-#include "absl/flags/parse.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
-#include "absl/strings/match.h"       // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/match.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
@@ -40,48 +40,32 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' object detector model.");
-ABSL_FLAG(std::string,
-          image_path,
-          "",
+ABSL_FLAG(std::string, image_path, "",
           "Absolute path to the image to run detection on. The image must be "
           "RGB or RGBA (grayscale is not supported). The image EXIF "
           "orientation flag, if any, is NOT taken into account.");
-ABSL_FLAG(std::string,
-          output_png,
-          "",
+ABSL_FLAG(std::string, output_png, "",
           "Absolute path to a file where to draw the detection results on top "
           "of the input image. Must have a '.png' extension.");
-ABSL_FLAG(int32,
-          max_results,
-          5,
+ABSL_FLAG(int32, max_results, 5,
           "Maximum number of detection results to display.");
 ABSL_FLAG(
-    float,
-    score_threshold,
-    std::numeric_limits<float>::lowest(),
+    float, score_threshold, std::numeric_limits<float>::lowest(),
     "Detection results with a confidence score below this value are "
     "rejected. If specified, overrides the score threshold(s) provided in the "
     "TFLite Model Metadata. Ignored otherwise.");
 ABSL_FLAG(
-    std::vector<std::string>,
-    class_name_whitelist,
-    {},
+    std::vector<std::string>, class_name_whitelist, {},
     "Comma-separated list of class names that acts as a whitelist. If "
     "non-empty, detections results whose 'class_name' is not in this list "
     "are filtered out. Mutually exclusive with 'class_name_blacklist'.");
-ABSL_FLAG(std::vector<std::string>,
-          class_name_blacklist,
-          {},
+ABSL_FLAG(std::vector<std::string>, class_name_blacklist, {},
           "Comma-separated list of class names that acts as a blacklist. If "
           "non-empty, detections results whose 'class_name' is in this list "
           "are filtered out. Mutually exclusive with 'class_name_whitelist'.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 

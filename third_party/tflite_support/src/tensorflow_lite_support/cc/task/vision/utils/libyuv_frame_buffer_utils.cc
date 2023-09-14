@@ -20,12 +20,12 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/status/status.h"       // from @com_google_absl
-#include "absl/strings/str_cat.h"     // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
-#include "libyuv.h"                   // from @libyuv
-#include "libyuv/convert_argb.h"      // from @libyuv
-#include "libyuv/scale.h"             // from @libyuv
+#include "libyuv.h"  // from @libyuv
+#include "libyuv/convert_argb.h"  // from @libyuv
+#include "libyuv/scale.h"  // from @libyuv
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -331,8 +331,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
 
 // Resizes YV12/YV21 `buffer` to the target `output_buffer`.
 absl::Status ResizeYv(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer,
+    const FrameBuffer& buffer, FrameBuffer* output_buffer,
     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
@@ -359,8 +358,7 @@ absl::Status ResizeYv(
 
 // Resizes NV12/NV21 `buffer` to the target `output_buffer`.
 absl::Status ResizeNv(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer,
+    const FrameBuffer& buffer, FrameBuffer* output_buffer,
     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
@@ -391,8 +389,7 @@ absl::Status ResizeNv(
 
 // Converts `buffer` to libyuv ARGB format and stores the conversion result
 // in `dest_argb`.
-absl::Status ConvertRgbToArgb(const FrameBuffer& buffer,
-                              uint8* dest_argb,
+absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
                               int dest_stride_argb) {
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   if (buffer.format() != FrameBuffer::Format::kRGB) {
@@ -429,8 +426,7 @@ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer,
 
 // Converts `src_argb` in libyuv ARGB format to FrameBuffer::kRGB format and
 // stores the conversion result in `output_buffer`.
-absl::Status ConvertArgbToRgb(uint8* src_argb,
-                              int src_stride_argb,
+absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
                               FrameBuffer* output_buffer) {
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
   if (output_buffer->format() != FrameBuffer::Format::kRGB) {
@@ -466,8 +462,7 @@ absl::Status ConvertArgbToRgb(uint8* src_argb,
 
 // Converts `buffer` in FrameBuffer::kRGBA format to libyuv ARGB (BGRA in
 // memory) format and stores the conversion result in `dest_argb`.
-absl::Status ConvertRgbaToArgb(const FrameBuffer& buffer,
-                               uint8* dest_argb,
+absl::Status ConvertRgbaToArgb(const FrameBuffer& buffer, uint8* dest_argb,
                                int dest_stride_argb) {
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   if (buffer.format() != FrameBuffer::Format::kRGBA) {
@@ -699,8 +694,7 @@ libyuv::RotationMode GetLibyuvRotationMode(int angle_deg) {
   }
 }
 
-absl::Status RotateRgba(const FrameBuffer& buffer,
-                        int angle_deg,
+absl::Status RotateRgba(const FrameBuffer& buffer, int angle_deg,
                         FrameBuffer* output_buffer) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
@@ -724,8 +718,7 @@ absl::Status RotateRgba(const FrameBuffer& buffer,
   return absl::OkStatus();
 }
 
-absl::Status RotateRgb(const FrameBuffer& buffer,
-                       int angle_deg,
+absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
                        FrameBuffer* output_buffer) {
   // libyuv does not support rotate kRGB (RGB24) foramat. In this method, the
   // implementation converts kRGB format to ARGB and use ARGB buffer for
@@ -758,8 +751,7 @@ absl::Status RotateRgb(const FrameBuffer& buffer,
                           output_buffer);
 }
 
-absl::Status RotateGray(const FrameBuffer& buffer,
-                        int angle_deg,
+absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
                         FrameBuffer* output_buffer) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
@@ -782,8 +774,7 @@ absl::Status RotateGray(const FrameBuffer& buffer,
 }
 
 // Rotates YV12/YV21 frame buffer.
-absl::Status RotateYv(const FrameBuffer& buffer,
-                      int angle_deg,
+absl::Status RotateYv(const FrameBuffer& buffer, int angle_deg,
                       FrameBuffer* output_buffer) {
   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
@@ -808,8 +799,7 @@ absl::Status RotateYv(const FrameBuffer& buffer,
 // Rotates NV12/NV21 frame buffer.
 // TODO(b/152097364): Refactor NV12/NV21 rotation after libyuv explicitly
 // support that.
-absl::Status RotateNv(const FrameBuffer& buffer,
-                      int angle_deg,
+absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
                       FrameBuffer* output_buffer) {
   if (buffer.format() != FrameBuffer::Format::kNV12 &&
       buffer.format() != FrameBuffer::Format::kNV21) {
@@ -899,12 +889,8 @@ absl::Status FlipPlaneVertically(const FrameBuffer& buffer,
 }
 
 // This method only supports kGRAY, kRGBA, and kRGB formats.
-absl::Status CropPlane(const FrameBuffer& buffer,
-                       int x0,
-                       int y0,
-                       int x1,
-                       int y1,
-                       FrameBuffer* output_buffer) {
+absl::Status CropPlane(const FrameBuffer& buffer, int x0, int y0, int x1,
+                       int y1, FrameBuffer* output_buffer) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
         StatusCode::kInternal,
@@ -931,11 +917,7 @@ absl::Status CropPlane(const FrameBuffer& buffer,
 
 // Crops NV12/NV21 FrameBuffer to the subregion defined by the top left pixel
 // position (x0, y0) and the bottom right pixel position (x1, y1).
-absl::Status CropNv(const FrameBuffer& buffer,
-                    int x0,
-                    int y0,
-                    int x1,
-                    int y1,
+absl::Status CropNv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
                     FrameBuffer* output_buffer) {
   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
@@ -967,11 +949,7 @@ absl::Status CropNv(const FrameBuffer& buffer,
 
 // Crops YV12/YV21 FrameBuffer to the subregion defined by the top left pixel
 // position (x0, y0) and the bottom right pixel position (x1, y1).
-absl::Status CropYv(const FrameBuffer& buffer,
-                    int x0,
-                    int y0,
-                    int x1,
-                    int y1,
+absl::Status CropYv(const FrameBuffer& buffer, int x0, int y0, int x1, int y1,
                     FrameBuffer* output_buffer) {
   ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
                    FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
@@ -1006,12 +984,8 @@ absl::Status CropYv(const FrameBuffer& buffer,
   return absl::OkStatus();
 }
 
-absl::Status CropResizeYuv(const FrameBuffer& buffer,
-                           int x0,
-                           int y0,
-                           int x1,
-                           int y1,
-                           FrameBuffer* output_buffer) {
+absl::Status CropResizeYuv(const FrameBuffer& buffer, int x0, int y0, int x1,
+                           int y1, FrameBuffer* output_buffer) {
   FrameBuffer::Dimension crop_dimension = GetCropDimension(x0, x1, y0, y1);
   if (crop_dimension == output_buffer->dimension()) {
     switch (buffer.format()) {
@@ -1126,8 +1100,7 @@ absl::Status FlipHorizontallyPlane(const FrameBuffer& buffer,
 }
 
 absl::Status ResizeRgb(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer,
+    const FrameBuffer& buffer, FrameBuffer* output_buffer,
     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
@@ -1201,8 +1174,7 @@ absl::Status FlipHorizontallyRgb(const FrameBuffer& buffer,
 }
 
 absl::Status ResizeRgba(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer,
+    const FrameBuffer& buffer, FrameBuffer* output_buffer,
     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
@@ -1327,8 +1299,7 @@ absl::Status FlipVerticallyYv(const FrameBuffer& buffer,
 // Resize `buffer` to metadata defined in `output_buffer`. This
 // method assumes buffer has pixel stride equals to 1 (grayscale equivalent).
 absl::Status ResizeGray(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer,
+    const FrameBuffer& buffer, FrameBuffer* output_buffer,
     libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
   if (buffer.plane_count() > 1) {
     return CreateStatusWithPayload(
@@ -1348,12 +1319,8 @@ absl::Status ResizeGray(
 }
 
 // This method only supports kGRAY, kRGBA, and kRGB formats.
-absl::Status CropResize(const FrameBuffer& buffer,
-                        int x0,
-                        int y0,
-                        int x1,
-                        int y1,
-                        FrameBuffer* output_buffer) {
+absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
+                        int y1, FrameBuffer* output_buffer) {
   FrameBuffer::Dimension crop_dimension = GetCropDimension(x0, x1, y0, y1);
   if (crop_dimension == output_buffer->dimension()) {
     return CropPlane(buffer, x0, y0, x1, y1, output_buffer);
@@ -1387,11 +1354,8 @@ absl::Status CropResize(const FrameBuffer& buffer,
 
 }  // namespace
 
-absl::Status LibyuvFrameBufferUtils::Crop(const FrameBuffer& buffer,
-                                          int x0,
-                                          int y0,
-                                          int x1,
-                                          int y1,
+absl::Status LibyuvFrameBufferUtils::Crop(const FrameBuffer& buffer, int x0,
+                                          int y0, int x1, int y1,
                                           FrameBuffer* output_buffer) {
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
@@ -1442,8 +1406,7 @@ absl::Status LibyuvFrameBufferUtils::Resize(const FrameBuffer& buffer,
 }
 
 absl::Status LibyuvFrameBufferUtils::ResizeNearestNeighbor(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer) {
+    const FrameBuffer& buffer, FrameBuffer* output_buffer) {
   RETURN_IF_ERROR(ValidateResizeBufferInputs(buffer, *output_buffer));
   switch (buffer.format()) {
     case FrameBuffer::Format::kYV12:
@@ -1497,8 +1460,7 @@ absl::Status LibyuvFrameBufferUtils::Rotate(const FrameBuffer& buffer,
 }
 
 absl::Status LibyuvFrameBufferUtils::FlipHorizontally(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer) {
+    const FrameBuffer& buffer, FrameBuffer* output_buffer) {
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
   RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));
@@ -1526,8 +1488,7 @@ absl::Status LibyuvFrameBufferUtils::FlipHorizontally(
 }
 
 absl::Status LibyuvFrameBufferUtils::FlipVertically(
-    const FrameBuffer& buffer,
-    FrameBuffer* output_buffer) {
+    const FrameBuffer& buffer, FrameBuffer* output_buffer) {
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
   RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
   RETURN_IF_ERROR(ValidateFlipBufferInputs(buffer, *output_buffer));

@@ -1,7 +1,7 @@
-From ef8099a4ffa8d6ee4164e6f6c01f70af6b6b616d Mon Sep 17 00:00:00 2001
+From 2479a184514e7d84bb32bb117628c6ec5446cb9d Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:21 -0800
-Subject: [PATCH 07/14] Fix TFLite build errors on linux when using the system
+Subject: [PATCH 6/9] Fix TFLite build errors on linux when using the system
 
 ---
  .../metadata/cc/metadata_extractor.cc                        | 5 +++--
@@ -107,5 +107,5 @@ index 762dd58f0fb41..bb27d96aef4b5 100644
  namespace tflite {
  namespace metadata {
 -- 
-2.38.1.584.g0f3c55d4c2-goog
+2.42.0.459.ge4e396fd5e-goog
 

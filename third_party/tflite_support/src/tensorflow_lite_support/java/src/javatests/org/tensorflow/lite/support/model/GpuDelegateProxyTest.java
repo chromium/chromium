@@ -23,10 +23,11 @@ import org.robolectric.RobolectricTestRunner;
 /** Tests of {@link org.tensorflow.lite.support.model.GpuDelegateProxy}. */
 @RunWith(RobolectricTestRunner.class)
 public final class GpuDelegateProxyTest {
-    @Test
-    public void createGpuDelegateProxyWithoutDependencyShouldReturnNull() {
-        GpuDelegateProxy proxy = GpuDelegateProxy.maybeNewInstance();
 
-        assertThat(proxy).isNull();
-    }
+  @Test
+  public void createGpuDelegateProxyWithoutDependencyShouldReturnNull() {
+    GpuDelegateProxy proxy = GpuDelegateProxy.maybeNewInstance();
+
+    assertThat(proxy).isNull();
+  }
 }

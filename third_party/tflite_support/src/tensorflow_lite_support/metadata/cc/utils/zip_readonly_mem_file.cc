@@ -41,17 +41,14 @@ zlib_filefunc64_def& ZipReadOnlyMemFile::GetFileFunc64Def() {
 }
 
 /* static */
-voidpf ZipReadOnlyMemFile::OpenFile(voidpf opaque,
-                                    const void* filename,
+voidpf ZipReadOnlyMemFile::OpenFile(voidpf opaque, const void* filename,
                                     int mode) {
   // Result is never used, but needs to be non-null for `zipOpen2` not to fail.
   return opaque;
 }
 
 /* static */
-uLong ZipReadOnlyMemFile::ReadFile(voidpf opaque,
-                                   voidpf stream,
-                                   void* buf,
+uLong ZipReadOnlyMemFile::ReadFile(voidpf opaque, voidpf stream, void* buf,
                                    uLong size) {
   auto* mem_file = static_cast<ZipReadOnlyMemFile*>(opaque);
   if (mem_file->offset_ < 0 || mem_file->Size() < mem_file->offset_) {
@@ -68,10 +65,8 @@ uLong ZipReadOnlyMemFile::ReadFile(voidpf opaque,
 }
 
 /* static */
-uLong ZipReadOnlyMemFile::WriteFile(voidpf opaque,
-                                    voidpf stream,
-                                    const void* buf,
-                                    uLong size) {
+uLong ZipReadOnlyMemFile::WriteFile(voidpf opaque, voidpf stream,
+                                    const void* buf, uLong size) {
   // File is not writable.
   return 0;
 }

@@ -22,7 +22,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -59,9 +59,7 @@ T CheckNotNull(JNIEnv* env, T&& t) {
 // interable before adding it to the ArrayList.
 template <typename Iterator>
 jobject ConvertVectorToArrayList(
-    JNIEnv* env,
-    const Iterator& begin,
-    const Iterator& end,
+    JNIEnv* env, const Iterator& begin, const Iterator& end,
     std::function<jobject(typename std::iterator_traits<Iterator>::value_type)>
         converter) {
   jclass array_list_class = env->FindClass("java/util/ArrayList");
@@ -96,8 +94,7 @@ jbyteArray CreateByteArray(JNIEnv* env, const jbyte* data, int num_bytes);
 
 void ThrowException(JNIEnv* env, const char* clazz, const char* fmt, ...);
 
-void ThrowExceptionWithMessage(JNIEnv* env,
-                               const char* clazz,
+void ThrowExceptionWithMessage(JNIEnv* env, const char* clazz,
                                const char* message);
 
 const char* GetExceptionClassNameForStatusCode(absl::StatusCode status_code);

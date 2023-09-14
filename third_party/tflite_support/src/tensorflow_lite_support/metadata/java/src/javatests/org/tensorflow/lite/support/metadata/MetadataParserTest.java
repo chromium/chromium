@@ -17,20 +17,20 @@ package org.tensorflow.lite.support.metadata;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.regex.Pattern;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.util.regex.Pattern;
-
 /** Tests of {@link MetadataParser}. */
 @RunWith(JUnit4.class)
 public final class MetadataParserTest {
-    @Test
-    public void version_wellFormedAsSemanticVersion() throws Exception {
-        // Validates that the version is well-formed (x.y.z).
-        String pattern = "[0-9]+\\.[0-9]+\\.[0-9]+";
-        Pattern r = Pattern.compile(pattern);
-        assertThat(MetadataParser.VERSION).matches(r);
-    }
+
+  @Test
+  public void version_wellFormedAsSemanticVersion() throws Exception {
+    // Validates that the version is well-formed (x.y.z).
+    String pattern = "[0-9]+\\.[0-9]+\\.[0-9]+";
+    Pattern r = Pattern.compile(pattern);
+    assertThat(MetadataParser.VERSION).matches(r);
+  }
 }

@@ -20,8 +20,8 @@ limitations under the License.
 #include <vector>
 
 #include <glog/logging.h>
-#include "absl/memory/memory.h"       // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
@@ -141,8 +141,7 @@ StatusOr<const BoundingBoxProperties*> GetBoundingBoxProperties(
 
 StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
     const ModelMetadataExtractor& metadata_extractor,
-    const TensorMetadata& tensor_metadata,
-    absl::string_view locale) {
+    const TensorMetadata& tensor_metadata, absl::string_view locale) {
   const std::string labels_filename =
       ModelMetadataExtractor::FindFirstAssociatedFileName(
           tensor_metadata, tflite::AssociatedFileType_TENSOR_VALUE_LABELS);
@@ -371,9 +370,7 @@ absl::Status ObjectDetector::PreInit() {
   return absl::OkStatus();
 }
 
-absl::Status ObjectDetector::PostInit() {
-  return InitScoreCalibrations();
-}
+absl::Status ObjectDetector::PostInit() { return InitScoreCalibrations(); }
 
 StatusOr<SigmoidCalibrationParameters> BuildCalibrationParametersIfAny(
     const tflite::metadata::ModelMetadataExtractor& metadata_extractor,
@@ -602,8 +599,7 @@ StatusOr<DetectionResult> ObjectDetector::Detect(
 
 StatusOr<DetectionResult> ObjectDetector::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors,
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& frame_buffer, const BoundingBox& /*roi*/) {
   // Most of the checks here should never happen, as outputs have been validated
   // at construction time. Checking nonetheless and returning internal errors if
   // something bad happens.

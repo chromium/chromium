@@ -16,7 +16,6 @@ limitations under the License.
 package org.tensorflow.lite.support.image.ops;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.tensorflow.lite.DataType.UINT8;
@@ -25,9 +24,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.media.Image;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,55 +40,54 @@ import org.tensorflow.lite.support.image.TensorImage;
 /** Instrumented unit test for {@link TransformToGrayscaleOp}. */
 @RunWith(AndroidJUnit4.class)
 public class TransformToGrayScaleOpInstrumentedTest {
-    @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
 
-    private TensorImage input;
+  @Rule public final MockitoRule mockito = MockitoJUnit.rule();
 
-    private static final int EXAMPLE_WIDTH = 2;
-    private static final int EXAMPLE_HEIGHT = 3;
-    @Mock
-    Image imageMock;
+  private TensorImage input;
 
-    @Before
-    public void setUp() {
-        Bitmap exampleBitmap = createExampleBitmap();
-        input = new TensorImage(DataType.UINT8);
-        input.load(exampleBitmap);
-    }
+  private static final int EXAMPLE_WIDTH = 2;
+  private static final int EXAMPLE_HEIGHT = 3;
+  @Mock Image imageMock;
 
-    @Test
-    public void apply_onRgb_succeeds() {
-        ImageProcessor processor =
-                new ImageProcessor.Builder().add(new TransformToGrayscaleOp()).build();
+  @Before
+  public void setUp() {
+    Bitmap exampleBitmap = createExampleBitmap();
+    input = new TensorImage(DataType.UINT8);
+    input.load(exampleBitmap);
+  }
 
-        TensorImage output = processor.process(input);
-        int[] pixels = output.getTensorBuffer().getIntArray();
+  @Test
+  public void apply_onRgb_succeeds() {
+    ImageProcessor processor =
+        new ImageProcessor.Builder().add(new TransformToGrayscaleOp()).build();
 
-        assertThat(output.getWidth()).isEqualTo(EXAMPLE_WIDTH);
-        assertThat(output.getHeight()).isEqualTo(EXAMPLE_HEIGHT);
-        assertThat(output.getColorSpaceType()).isEqualTo(ColorSpaceType.GRAYSCALE);
-        assertThat(pixels).isEqualTo(new int[] {0, 255, 76, 29, 150, 179});
-    }
+    TensorImage output = processor.process(input);
+    int[] pixels = output.getTensorBuffer().getIntArray();
 
-    @Test
-    public void apply_onYuv_throws() {
-        setUpImageMock(imageMock, ImageFormat.YUV_420_888);
-        TensorImage tensorImage = new TensorImage(UINT8);
-        tensorImage.load(imageMock);
-        ImageProcessor processor =
-                new ImageProcessor.Builder().add(new TransformToGrayscaleOp()).build();
+    assertThat(output.getWidth()).isEqualTo(EXAMPLE_WIDTH);
+    assertThat(output.getHeight()).isEqualTo(EXAMPLE_HEIGHT);
+    assertThat(output.getColorSpaceType()).isEqualTo(ColorSpaceType.GRAYSCALE);
+    assertThat(pixels).isEqualTo(new int[] {0, 255, 76, 29, 150, 179});
+  }
 
-        assertThrows(IllegalArgumentException.class, () -> processor.process(tensorImage));
-    }
+  @Test
+  public void apply_onYuv_throws() {
+    setUpImageMock(imageMock, ImageFormat.YUV_420_888);
+    TensorImage tensorImage = new TensorImage(UINT8);
+    tensorImage.load(imageMock);
+    ImageProcessor processor =
+        new ImageProcessor.Builder().add(new TransformToGrayscaleOp()).build();
 
-    private static Bitmap createExampleBitmap() {
-        int[] colors = new int[] {
-                Color.BLACK, Color.WHITE, Color.RED, Color.BLUE, Color.GREEN, Color.CYAN};
-        return Bitmap.createBitmap(colors, EXAMPLE_WIDTH, EXAMPLE_HEIGHT, Bitmap.Config.ARGB_8888);
-    }
+    assertThrows(IllegalArgumentException.class, () -> processor.process(tensorImage));
+  }
 
-    private static void setUpImageMock(Image imageMock, int imageFormat) {
-        doReturn(imageFormat).when(imageMock).getFormat();
-    }
+  private static Bitmap createExampleBitmap() {
+    int[] colors =
+        new int[] {Color.BLACK, Color.WHITE, Color.RED, Color.BLUE, Color.GREEN, Color.CYAN};
+    return Bitmap.createBitmap(colors, EXAMPLE_WIDTH, EXAMPLE_HEIGHT, Bitmap.Config.ARGB_8888);
+  }
+
+  private static void setUpImageMock(Image imageMock, int imageFormat) {
+    doReturn(imageFormat).when(imageMock).getFormat();
+  }
 }

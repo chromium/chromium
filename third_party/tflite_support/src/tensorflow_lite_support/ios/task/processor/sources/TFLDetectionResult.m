@@ -17,7 +17,7 @@ limitations under the License.
 @implementation TFLDetection
 
 - (instancetype)initWithBoundingBox:(CGRect)boundingBox
-                         categories:(NSArray<TFLCategory*>*)categories {
+                         categories:(NSArray<TFLCategory *> *)categories {
   self = [super init];
   if (self) {
     _boundingBox = boundingBox;
@@ -30,7 +30,7 @@ limitations under the License.
 
 @implementation TFLDetectionResult
 
-- (instancetype)initWithDetections:(NSArray<TFLDetection*>*)detections {
+- (instancetype)initWithDetections:(NSArray<TFLDetection *> *)detections {
   self = [super init];
   if (self) {
     _detections = detections;

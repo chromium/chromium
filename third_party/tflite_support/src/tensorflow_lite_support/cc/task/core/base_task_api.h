@@ -18,7 +18,7 @@ limitations under the License.
 
 #include <utility>
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"

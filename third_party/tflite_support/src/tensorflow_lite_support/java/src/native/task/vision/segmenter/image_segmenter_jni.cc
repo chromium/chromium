@@ -194,9 +194,7 @@ jlong CreateImageSegmenterFromOptions(JNIEnv* env,
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_deinitJni(
-    JNIEnv* env,
-    jobject thiz,
-    jlong native_handle) {
+    JNIEnv* env, jobject thiz, jlong native_handle) {
   delete reinterpret_cast<ImageSegmenter*>(native_handle);
 }
 
@@ -205,14 +203,9 @@ Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_deinitJni(
 // values will be ignored.
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_initJniWithModelFdAndOptions(
-    JNIEnv* env,
-    jclass thiz,
-    jint file_descriptor,
-    jlong file_descriptor_length,
-    jlong file_descriptor_offset,
-    jstring display_names_locale,
-    jint output_type,
-    jlong base_options_handle) {
+    JNIEnv* env, jclass thiz, jint file_descriptor,
+    jlong file_descriptor_length, jlong file_descriptor_offset,
+    jstring display_names_locale, jint output_type, jlong base_options_handle) {
   ImageSegmenterOptions proto_options = ConvertToProtoOptions(
       env, display_names_locale, output_type, base_options_handle);
   auto file_descriptor_meta = proto_options.mutable_base_options()
@@ -230,12 +223,8 @@ Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_initJniWithModelFd
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_initJniWithByteBuffer(
-    JNIEnv* env,
-    jclass thiz,
-    jobject model_buffer,
-    jstring display_names_locale,
-    jint output_type,
-    jlong base_options_handle) {
+    JNIEnv* env, jclass thiz, jobject model_buffer,
+    jstring display_names_locale, jint output_type, jlong base_options_handle) {
   ImageSegmenterOptions proto_options = ConvertToProtoOptions(
       env, display_names_locale, output_type, base_options_handle);
   proto_options.mutable_base_options()->mutable_model_file()->set_file_content(
@@ -246,13 +235,8 @@ Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_initJniWithByteBuf
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_segmentNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle,
-    jlong frame_buffer_handle,
-    jobject jmask_buffers,
-    jintArray jmask_shape,
-    jobject jcolored_labels) {
+    JNIEnv* env, jclass thiz, jlong native_handle, jlong frame_buffer_handle,
+    jobject jmask_buffers, jintArray jmask_shape, jobject jcolored_labels) {
   auto* segmenter = reinterpret_cast<ImageSegmenter*>(native_handle);
   // frame_buffer will be deleted after inference is done in
   // base_vision_api_jni.cc.

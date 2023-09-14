@@ -48,8 +48,7 @@ typedef struct TfLiteBertNLClassifierOptions {
 // Creates TfLiteBertNLClassifier from model path and options, returns nullptr
 // if the file doesn't exist or is not a well formatted TFLite model path.
 TfLiteBertNLClassifier* TfLiteBertNLClassifierCreateFromOptions(
-    const char* model_path,
-    const TfLiteBertNLClassifierOptions* options);
+    const char* model_path, const TfLiteBertNLClassifierOptions* options);
 
 // Creates TfLiteBertNLClassifier from model path and default options, returns
 // nullptr if the file doesn't exist or is not a well formatted TFLite model
@@ -58,8 +57,7 @@ TfLiteBertNLClassifier* TfLiteBertNLClassifierCreate(const char* model_path);
 
 // Invokes the encapsulated TFLite model and classifies the input text.
 Categories* TfLiteBertNLClassifierClassify(
-    const TfLiteBertNLClassifier* classifier,
-    const char* text);
+    const TfLiteBertNLClassifier* classifier, const char* text);
 
 void TfLiteBertNLClassifierDelete(TfLiteBertNLClassifier* classifier);
 

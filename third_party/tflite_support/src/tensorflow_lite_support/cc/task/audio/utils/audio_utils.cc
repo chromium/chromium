@@ -20,9 +20,7 @@ namespace task {
 namespace audio {
 
 tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
-    const std::string& wav_file_path,
-    uint32_t* buffer_size,
-    uint32_t* offset,
+    const std::string& wav_file_path, uint32_t* buffer_size, uint32_t* offset,
     std::vector<float>* wav_data) {
   std::string contents = ReadFile(wav_file_path);
 

@@ -18,24 +18,21 @@ limitations under the License.
 using ::tflite::support::text::tokenizer::Tokenizer;
 
 /**
- * Invokes the cpp tokenizer's tokenize function and converts input/output to
- * objc.
+ * Invokes the cpp tokenizer's tokenize function and converts input/output to objc.
  *
  * @param tokenizer The cpp tokenizer pointer.
  * @param input The input string to be tokenized.
  *
  * @return A list of tokens.
  */
-NSArray<NSString*>* Tokenize(Tokenizer* tokenizer, NSString* input);
+NSArray<NSString *> *Tokenize(Tokenizer *tokenizer, NSString *input);
 
 /**
- * Invokes the cpp tokenizer's convertTokensToIds function and converts
- * input/output to objc.
+ * Invokes the cpp tokenizer's convertTokensToIds function and converts input/output to objc.
  *
  * @param tokenizer The cpp tokenizer pointer.
  * @param input The tokens to be converted.
  *
  * @return A list of ids.
  */
-NSArray<NSNumber*>* ConvertTokensToIds(Tokenizer* tokenizer,
-                                       NSArray<NSString*>* tokens);
+NSArray<NSNumber *> *ConvertTokensToIds(Tokenizer *tokenizer, NSArray<NSString *> *tokens);

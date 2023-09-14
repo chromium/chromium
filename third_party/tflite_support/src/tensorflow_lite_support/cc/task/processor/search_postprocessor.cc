@@ -23,7 +23,7 @@ limitations under the License.
 #include <optional>
 #include <vector>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
@@ -88,8 +88,7 @@ StatusOr<absl::string_view> GetIndexFileContentFromMetadata(
 
 /* static */
 StatusOr<std::unique_ptr<SearchPostprocessor>> SearchPostprocessor::Create(
-    TfLiteEngine* engine,
-    int output_index,
+    TfLiteEngine* engine, int output_index,
     std::unique_ptr<SearchOptions> search_options,
     std::unique_ptr<EmbeddingOptions> embedding_options) {
   ASSIGN_OR_RETURN(auto embedding_postprocessor,

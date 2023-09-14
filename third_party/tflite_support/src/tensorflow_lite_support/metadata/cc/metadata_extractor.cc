@@ -17,8 +17,8 @@ limitations under the License.
 
 #include <string>
 
-#include "absl/memory/memory.h"       // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
@@ -29,6 +29,7 @@ limitations under the License.
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
 #include "third_party/zlib/contrib/minizip/ioapi.h"
 #include "third_party/zlib/contrib/minizip/unzip.h"
+
 
 namespace tflite {
 namespace metadata {
@@ -46,8 +47,7 @@ using ::tflite::support::TfLiteSupportStatus;
 // Util to get item from src_vector specified by index.
 template <typename T>
 const T* GetItemFromVector(
-    const flatbuffers::Vector<flatbuffers::Offset<T>>* src_vector,
-    int index) {
+    const flatbuffers::Vector<flatbuffers::Offset<T>>* src_vector, int index) {
   if (src_vector == nullptr || index < 0 || index >= src_vector->size()) {
     return nullptr;
   }
@@ -162,8 +162,7 @@ ModelMetadataExtractor::FindFirstProcessUnit(
 /* static */
 std::string ModelMetadataExtractor::FindFirstAssociatedFileName(
     const tflite::TensorMetadata& tensor_metadata,
-    tflite::AssociatedFileType type,
-    absl::string_view locale) {
+    tflite::AssociatedFileType type, absl::string_view locale) {
   if (tensor_metadata.associated_files() == nullptr) {
     return std::string();
   }
@@ -180,8 +179,7 @@ std::string ModelMetadataExtractor::FindFirstAssociatedFileName(
 }
 
 absl::Status ModelMetadataExtractor::InitFromModelBuffer(
-    const char* buffer_data,
-    size_t buffer_size) {
+    const char* buffer_data, size_t buffer_size) {
   // Rely on the simplest, base flatbuffers verifier. Here is not the place to
   // e.g. use an OpResolver: we just want to make sure the buffer is valid to
   // access the metadata.
@@ -240,8 +238,7 @@ absl::Status ModelMetadataExtractor::InitFromModelBuffer(
 }
 
 absl::Status ModelMetadataExtractor::ExtractAssociatedFiles(
-    const char* buffer_data,
-    size_t buffer_size) {
+    const char* buffer_data, size_t buffer_size) {
   // Create in-memory read-only zip file.
   ZipReadOnlyMemFile mem_file = ZipReadOnlyMemFile(buffer_data, buffer_size);
   // Open zip.

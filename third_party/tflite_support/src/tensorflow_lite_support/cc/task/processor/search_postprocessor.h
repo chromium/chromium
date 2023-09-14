@@ -46,8 +46,7 @@ namespace processor {
 class SearchPostprocessor : public Postprocessor {
  public:
   static tflite::support::StatusOr<std::unique_ptr<SearchPostprocessor>> Create(
-      tflite::task::core::TfLiteEngine* engine,
-      int output_index,
+      tflite::task::core::TfLiteEngine* engine, int output_index,
       std::unique_ptr<SearchOptions> search_options,
       std::unique_ptr<EmbeddingOptions> embedding_options =
           std::make_unique<EmbeddingOptions>());

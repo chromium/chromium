@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <iostream>
 
-#include "absl/strings/str_cat.h"     // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "absl/strings/substitute.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/utils/common_utils.h"
 namespace tflite {
@@ -61,7 +61,7 @@ RegexTokenizer::RegexTokenizer(const std::string& regex_pattern,
 }
 
 TokenizerResult RegexTokenizer::Tokenize(const std::string& input) {
-  absl::string_view leftover(input.data());
+  absl::string_view leftover = input;
   absl::string_view last_end = leftover;
 
   TokenizerResult result;

@@ -29,8 +29,7 @@ namespace audio {
 
 /* static */
 tflite::support::StatusOr<double> AudioEmbedder::CosineSimilarity(
-    const processor::FeatureVector& u,
-    const processor::FeatureVector& v) {
+    const processor::FeatureVector& u, const processor::FeatureVector& v) {
   return processor::EmbeddingPostprocessor::CosineSimilarity(u, v);
 }
 

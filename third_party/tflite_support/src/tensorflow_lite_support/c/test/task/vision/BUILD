@@ -4,7 +4,6 @@ load(
 )
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//visibility:private",
     ],
@@ -22,7 +21,7 @@ cc_test_with_tflite(
     ],
     tflite_deps = [
         "//tensorflow_lite_support/c/task/vision:image_classifier",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
     deps = [
         "//tensorflow_lite_support/c:common",
@@ -44,7 +43,7 @@ cc_test_with_tflite(
     ],
     tflite_deps = [
         "//tensorflow_lite_support/c/task/vision:object_detector",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
     deps = [
         "//tensorflow_lite_support/c:common",
@@ -65,7 +64,7 @@ cc_test_with_tflite(
     ],
     tflite_deps = [
         "//tensorflow_lite_support/c/task/vision:image_segmenter",
-        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+        "@org_tensorflow//tensorflow/lite:test_util",
     ],
     deps = [
         "//tensorflow_lite_support/c:common",

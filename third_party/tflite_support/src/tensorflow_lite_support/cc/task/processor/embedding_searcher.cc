@@ -22,11 +22,16 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
+#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "absl/types/span.h"           // from @com_google_absl
+#include "absl/types/span.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -34,11 +39,6 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_options.pb.h"
 #include "tensorflow_lite_support/cc/task/processor/proto/search_result.pb.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/partitioner.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/processor.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/searcher.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
-#include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/index.h"
 #include "tensorflow_lite_support/scann_ondevice/proto/index_config.pb.h"
 
@@ -50,14 +50,14 @@ namespace {
 
 constexpr int kNoNeighborId = -1;
 
-using ::tflite::scann_ondevice::Index;
-using ::tflite::scann_ondevice::IndexConfig;
 using ::tflite::scann_ondevice::core::AsymmetricHashFindNeighbors;
 using ::tflite::scann_ondevice::core::DistanceMeasure;
 using ::tflite::scann_ondevice::core::FloatFindNeighbors;
 using ::tflite::scann_ondevice::core::QueryInfo;
 using ::tflite::scann_ondevice::core::ScannOnDeviceConfig;
 using ::tflite::scann_ondevice::core::TopN;
+using ::tflite::scann_ondevice::Index;
+using ::tflite::scann_ondevice::IndexConfig;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
@@ -176,8 +176,9 @@ StatusOr<std::unique_ptr<EmbeddingSearcher>> EmbeddingSearcher::Create(
     std::optional<absl::string_view> optional_index_file_content) {
   auto embedding_searcher = std::make_unique<EmbeddingSearcher>();
 
-  RETURN_IF_ERROR(embedding_searcher->Init(std::move(search_options),
-                                           optional_index_file_content));
+  RETURN_IF_ERROR(
+      embedding_searcher->Init(
+          std::move(search_options), optional_index_file_content));
   return embedding_searcher;
 }
 
@@ -269,8 +270,7 @@ absl::Status EmbeddingSearcher::Init(
             index_config_.scann_config().partitioner().search_fraction())),
         partitioner_->NumPartitions());
   } else {
-    partitioner_ =
-        absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
+    partitioner_ = absl::make_unique<tflite::scann_ondevice::core::NoOpPartitioner>();
     num_leaves_to_search_ = partitioner_->NumPartitions();
   }
 
@@ -284,8 +284,7 @@ absl::Status EmbeddingSearcher::Init(
 }
 
 absl::Status EmbeddingSearcher::QuantizedSearch(
-    Eigen::Ref<Eigen::MatrixXf> query,
-    std::vector<int> leaves_to_search,
+    Eigen::Ref<Eigen::MatrixXf> query, std::vector<int> leaves_to_search,
     absl::Span<TopN> top_n) {
   int dim = index_config_.embedding_dim();
   // Prepare QueryInfo used for all leaves.

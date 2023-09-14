@@ -19,7 +19,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -34,9 +34,7 @@ namespace task {
 namespace audio {
 
 tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
-    const std::string& wav_file,
-    uint32_t* buffer_size,
-    uint32_t* offset,
+    const std::string& wav_file, uint32_t* buffer_size, uint32_t* offset,
     std::vector<float>* wav_data) {
   std::string contents = ReadFile(wav_file);
 
@@ -57,8 +55,7 @@ tflite::support::StatusOr<AudioBuffer> LoadAudioBufferFromFile(
 }
 
 tflite::support::StatusOr<ClassificationResult> Classify(
-    const std::string& model_path,
-    const std::string& wav_file,
+    const std::string& model_path, const std::string& wav_file,
     bool use_coral) {
   AudioClassifierOptions options;
   options.mutable_base_options()->mutable_model_file()->set_file_name(
@@ -101,8 +98,7 @@ void Display(const ClassificationResult& result, float score_threshold) {
     std::cout << absl::StrFormat("\nHead[%d]: %s\n", i, head.head_name());
     for (int j = 0; j < head.classes_size(); j++) {
       const auto& category = head.classes(j);
-      if (category.score() < score_threshold)
-        continue;
+      if (category.score() < score_threshold) continue;
       std::cout << absl::StrFormat("\tcategory[%s]: %.5f\t",
                                    category.class_name(), category.score());
       if (!category.display_name().empty()) {

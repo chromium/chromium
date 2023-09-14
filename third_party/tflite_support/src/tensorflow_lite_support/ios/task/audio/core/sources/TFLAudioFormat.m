@@ -18,8 +18,7 @@
 
 @implementation TFLAudioFormat
 
-- (instancetype)initWithChannelCount:(NSUInteger)channelCount
-                          sampleRate:(NSUInteger)sampleRate {
+- (instancetype)initWithChannelCount:(NSUInteger)channelCount sampleRate:(NSUInteger)sampleRate {
   self = [super init];
   if (self) {
     _channelCount = channelCount;
@@ -29,14 +28,13 @@
 }
 
 - (instancetype)initWithSampleRate:(NSUInteger)sampleRate {
-  return [self initWithChannelCount:DEFAULT_CHANNEL_COUNT
-                         sampleRate:sampleRate];
+  return [self initWithChannelCount:DEFAULT_CHANNEL_COUNT sampleRate:sampleRate];
 }
 
 - (BOOL)isEqual:(id)object {
   return [object isKindOfClass:[self class]] &&
-         self.channelCount == [(TFLAudioFormat*)object channelCount] &&
-         self.sampleRate == [(TFLAudioFormat*)object sampleRate];
+         self.channelCount == [(TFLAudioFormat *)object channelCount] &&
+         self.sampleRate == [(TFLAudioFormat *)object sampleRate];
 }
 
 @end

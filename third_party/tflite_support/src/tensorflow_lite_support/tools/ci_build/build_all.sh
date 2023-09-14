@@ -45,6 +45,9 @@ bazel build -c opt ${BAZEL_PARALLEL} --config=monolithic \
 # Android targets.
 bazel build -c opt ${BAZEL_PARALLEL} --config=monolithic \
     --config=android_arm64 --fat_apk_cpu=x86,x86_64,arm64-v8a,armeabi-v7a \
+    --define=xnn_enable_arm_fp16=false \
+    --define=android_dexmerger_tool=d8_dexmerger \
+    --define=android_incremental_dexing_tool=d8_dexbuilder\
     //tensorflow_lite_support/java:tensorflowlite_support \
     //tensorflow_lite_support/cc/task/vision:image_embedder \
     //tensorflow_lite_support/cc/task/vision:image_searcher \

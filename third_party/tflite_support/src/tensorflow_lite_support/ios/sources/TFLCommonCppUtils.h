@@ -28,10 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
  * Converts an absl status to an NSError.
  *
  * @param status absl status.
- * @param error Pointer to the memory location where the created error should be
- * saved. If `nil`, no error will be saved.
+ * @param error Pointer to the memory location where the created error should be saved. If `nil`,
+ * no error will be saved.
  */
-+ (BOOL)checkCppError:(const absl::Status&)status toError:(NSError**)error;
++ (BOOL)checkCppError:(const absl::Status &)status toError:(NSError **)error;
 
 @end
 

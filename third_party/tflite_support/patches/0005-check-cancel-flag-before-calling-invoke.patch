@@ -1,14 +1,14 @@
-From a3c369c6af151eada05e1204a97566119b035fd7 Mon Sep 17 00:00:00 2001
+From a095f775e73e167e9e0a5518dd43f457c3610442 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:16 -0800
-Subject: [PATCH 06/14] check cancel flag before calling invoke
+Subject: [PATCH 5/9] check cancel flag before calling invoke
 
 ---
  .../cc/port/default/tflite_wrapper.cc              | 14 ++++++++++----
  1 file changed, 10 insertions(+), 4 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
-index d47c1ce7e5179..11f9d584cfdd0 100644
+index dce66868264cb..70fedca9a3f22 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc
 @@ -258,8 +258,10 @@ absl::Status TfLiteInterpreterWrapper::InvokeWithFallback(
@@ -53,5 +53,5 @@ index d47c1ce7e5179..11f9d584cfdd0 100644
      }
      return absl::InternalError("Invoke() failed.");
 -- 
-2.38.1.584.g0f3c55d4c2-goog
+2.42.0.459.ge4e396fd5e-goog
 

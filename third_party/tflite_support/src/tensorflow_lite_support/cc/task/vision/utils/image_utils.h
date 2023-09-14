@@ -15,9 +15,9 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_EXAMPLES_TASK_VISION_DESKTOP_UTILS_IMAGE_UTILS_H_
 #define TENSORFLOW_LITE_SUPPORT_EXAMPLES_TASK_VISION_DESKTOP_UTILS_IMAGE_UTILS_H_
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "stb_image.h"                 // from @stblib
+#include "stb_image.h"  // from @stblib
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
@@ -50,8 +50,7 @@ tflite::support::StatusOr<ImageData> DecodeImageFromFile(
 // underlying pixel data using `ImageDataFree`.
 // Supports a wide range of image formats, listed in `stb_image/stb_image.h`.
 tflite::support::StatusOr<ImageData> DecodeImageFromBuffer(
-    unsigned char const* buffer,
-    int len);
+    unsigned char const* buffer, int len);
 
 // Encodes the image provided as an ImageData as lossless PNG to the provided
 // path.

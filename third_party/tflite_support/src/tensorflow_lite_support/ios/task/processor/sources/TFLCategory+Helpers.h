@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  * results returned by inference methods of the iOS TF Lite Task Classification
  * tasks.
  */
-+ (TFLCategory*)categoryWithCCategory:(TfLiteCategory*)cCategory;
++ (TFLCategory *)categoryWithCCategory:(TfLiteCategory *)cCategory;
 @end
 
 NS_ASSUME_NONNULL_END

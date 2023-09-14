@@ -19,8 +19,8 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
@@ -110,8 +110,7 @@ StatusOr<absl::string_view> ImageSearcher::GetUserInfo() {
 
 StatusOr<SearchResult> ImageSearcher::Postprocess(
     const std::vector<const TfLiteTensor*>& /*output_tensors*/,
-    const FrameBuffer& /*frame_buffer*/,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& /*frame_buffer*/, const BoundingBox& /*roi*/) {
   return postprocessor_->Postprocess();
 }
 

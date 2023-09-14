@@ -17,7 +17,6 @@
 import os
 import tensorflow as tf
 
-from tensorflow.python.platform import resource_loader
 from tensorflow_lite_support.metadata import metadata_schema_py_generated as _metadata_fb
 from tensorflow_lite_support.metadata.python import metadata as _metadata
 from tensorflow_lite_support.metadata.python.metadata_writers import metadata_info
@@ -30,7 +29,9 @@ _MULTI_OUTPUTS_MODEL = "../testdata/audio_classifier/two_heads.tflite"
 _MODEL_NAME = "mobilenet_v2_1.0_224_quant"
 _INPUT_NAME = "image"
 _OUTPUT_NAME = "probability"
-_LABEL_FILE = resource_loader.get_path_to_datafile("../testdata/labels.txt")
+_LABEL_FILE = tf.compat.v1.resource_loader.get_path_to_datafile(
+    "../testdata/labels.txt"
+)
 _EXPECTED_DUMMY_JSON = "../testdata/mobilenet_v2_1.0_224_quant_dummy.json"
 _EXPECTED_META_INFO_JSON = "../testdata/mobilenet_v2_1.0_224_quant_meta_info_.json"
 _EXPECTED_DEFAULT_JSON = "../testdata/mobilenet_v2_1.0_224_quant_default.json"

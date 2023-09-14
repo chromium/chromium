@@ -47,7 +47,8 @@ constexpr char kTestBertCluAnnotatorModelWithMetadataPath[] =
     "bert_clu_annotator_with_metadata.tflite";
 
 std::string GetFullPath(absl::string_view file_name) {
-  return JoinPath("./" /*test src dir*/, kTestDataDirectory, file_name);
+  return JoinPath("./" /*test src dir*/, kTestDataDirectory,
+                  file_name);
 }
 
 // Checks that the two provided `CluResponse` protos are equal.
@@ -73,7 +74,8 @@ void ExpectApproximatelyEqual(const CluResponse& actual,
     EXPECT_EQ(a.prediction().display_name(), b.prediction().display_name());
   }
 
-  ASSERT_EQ(actual.mentioned_slots_size(), expected.mentioned_slots_size());
+  ASSERT_EQ(actual.mentioned_slots_size(),
+            expected.mentioned_slots_size());
   for (int i = 0; i < actual.mentioned_slots_size(); ++i) {
     const auto& a = actual.mentioned_slots(i);
     const auto& b = expected.mentioned_slots(i);
@@ -101,10 +103,10 @@ TEST(BertCluAnnotatorTest, TestAnnotatorEmptyRequest) {
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       GetFullPath(kTestBertCluAnnotatorModelWithMetadataPath));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<CluAnnotator> clu_annotator,
-                               BertCluAnnotator::CreateFromOptions(options));
+                       BertCluAnnotator::CreateFromOptions(options));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(const auto response,
-                               clu_annotator->Annotate(CluRequest()));
+                       clu_annotator->Annotate(CluRequest()));
 
   ExpectApproximatelyEqual(response, CluResponse());
 }
@@ -114,14 +116,13 @@ TEST(BertCluAnnotatorTest, TestAnnotatorEmptyUtterance) {
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       GetFullPath(kTestBertCluAnnotatorModelWithMetadataPath));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<CluAnnotator> clu_annotator,
-                               BertCluAnnotator::CreateFromOptions(options));
+                       BertCluAnnotator::CreateFromOptions(options));
   CluRequest request;
   ASSERT_TRUE(TextFormat::ParseFromString(R"pb(
                                             utterances: ""
                                           )pb",
                                           &request));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(const auto response,
-                               clu_annotator->Annotate(request));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const auto response, clu_annotator->Annotate(request));
   ExpectApproximatelyEqual(response, CluResponse());
 }
 
@@ -130,7 +131,7 @@ TEST(BertCluAnnotatorTest, TestAnnotatorBasic) {
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       GetFullPath(kTestBertCluAnnotatorModelWithMetadataPath));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<CluAnnotator> clu_annotator,
-                               BertCluAnnotator::CreateFromOptions(options));
+                       BertCluAnnotator::CreateFromOptions(options));
   CluRequest request;
   ASSERT_TRUE(TextFormat::ParseFromString(
       R"pb(
@@ -139,8 +140,7 @@ TEST(BertCluAnnotatorTest, TestAnnotatorBasic) {
         utterances: "Can I get a reservation for two people at Andes Cafe?"
       )pb",
       &request));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(const auto response,
-                               clu_annotator->Annotate(request));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const auto response, clu_annotator->Annotate(request));
 
   ExpectApproximatelyEqual(
       response, ParseTextProtoOrDie<CluResponse>(R"pb(
@@ -164,7 +164,7 @@ TEST(BertCluAnnotatorTest, TestAnnotatorThresholds) {
   options.mutable_base_options()->mutable_model_file()->set_file_name(
       GetFullPath(kTestBertCluAnnotatorModelWithMetadataPath));
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<CluAnnotator> clu_annotator,
-                               BertCluAnnotator::CreateFromOptions(options));
+                       BertCluAnnotator::CreateFromOptions(options));
   CluRequest request;
   ASSERT_TRUE(TextFormat::ParseFromString(
       R"pb(
@@ -173,8 +173,7 @@ TEST(BertCluAnnotatorTest, TestAnnotatorThresholds) {
         utterances: "Can I get a reservation for two people at Andes Cafe?"
       )pb",
       &request));
-  SUPPORT_ASSERT_OK_AND_ASSIGN(const auto response,
-                               clu_annotator->Annotate(request));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(const auto response, clu_annotator->Annotate(request));
   ExpectApproximatelyEqual(response,
                            ParseTextProtoOrDie<CluResponse>(R"pb()pb"));
 }

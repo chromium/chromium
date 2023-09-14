@@ -20,9 +20,9 @@ limitations under the License.
 
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_AUDIO_UTILS_WAV_IO_H_
 
-#include <cstdint>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -65,10 +65,8 @@ absl::Status DecodeLin16WaveAsFloatVector(const std::string& wav_string,
 
 // Handles moving the data index forward, validating the arguments, and avoiding
 // overflow or underflow.
-absl::Status IncrementOffset(uint32_t old_offset,
-                             size_t increment,
-                             size_t max_size,
-                             uint32_t* new_offset);
+absl::Status IncrementOffset(uint32_t old_offset, size_t increment,
+                             size_t max_size, uint32_t* new_offset);
 
 // This function is only exposed in the header for testing purposes, as a
 // template that needs to be instantiated. Reads a typed numeric value from a

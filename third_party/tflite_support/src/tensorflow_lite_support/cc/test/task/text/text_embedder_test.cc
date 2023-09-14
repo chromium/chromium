@@ -17,9 +17,9 @@ limitations under the License.
 
 #include <iostream>
 
-#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
@@ -52,12 +52,12 @@ constexpr float kValueDiffTolerance = 1e-4;
 // Tolerancy for cosine similarity evaluation.
 constexpr double kSimilarityTolerancy = 1e-6;
 
-class CreateFromOptionsTest : public tflite_shims::testing::Test {};
+class CreateFromOptionsTest : public tflite::testing::Test {};
 
 TextEmbedderOptions GetBasicOptions(absl::string_view model_name) {
   TextEmbedderOptions options;
-  options.mutable_base_options()->mutable_model_file()->set_file_name(
-      JoinPath("./" /*test src dir*/, kTestDataDirectory, model_name));
+  options.mutable_base_options()->mutable_model_file()->set_file_name(JoinPath(
+      "./" /*test src dir*/, kTestDataDirectory, model_name));
   return options;
 }
 
@@ -109,7 +109,7 @@ TEST_F(CreateFromOptionsTest, FailsWithIncorrectNumberOfHeadOptions) {
   EXPECT_EQ(text_embedder_or.status().code(),
             absl::StatusCode::kInvalidArgument);
   EXPECT_THAT(text_embedder_or.status().message(),
-              testing::HasSubstr("Invalid embedding_options"));
+              ::testing::HasSubstr("Invalid embedding_options"));
 }
 
 TEST_F(CreateFromOptionsTest, FailsWithMissingModel) {
@@ -122,7 +122,7 @@ TEST_F(CreateFromOptionsTest, FailsWithMissingModel) {
             absl::StatusCode::kInvalidArgument);
   EXPECT_THAT(
       text_embedder_or.status().GetPayload(support::kTfLiteSupportPayload),
-      testing::Optional(absl::Cord(
+      ::testing::Optional(absl::Cord(
           absl::StrCat(support::TfLiteSupportStatus::kInvalidArgumentError))));
 }
 
@@ -130,7 +130,7 @@ TEST(EmbedTest, SucceedsWithMobileBertModel) {
   TextEmbedderOptions options = GetBasicOptions(kMobileBert);
   // No Embedding options means all head get a default option.
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<TextEmbedder> text_embedder,
-                               TextEmbedder::CreateFromOptions(options));
+                       TextEmbedder::CreateFromOptions(options));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       auto result0,
@@ -141,8 +141,8 @@ TEST(EmbedTest, SucceedsWithMobileBertModel) {
   EXPECT_NEAR(result0.embeddings(0).feature_vector().value_float(0), 19.9016f,
               kValueDiffTolerance);
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      auto result1, text_embedder->Embed("what a great and fantastic trip"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(auto result1,
+                       text_embedder->Embed("what a great and fantastic trip"));
   EXPECT_EQ(result1.embeddings_size(), 1);
   EXPECT_EQ(result1.embeddings(0).feature_vector().value_float_size(), 512);
 
@@ -162,7 +162,7 @@ TEST(EmbedTest, SucceedsWithRegexModel) {
   TextEmbedderOptions options = GetBasicOptions(kRegexOneEmbeddingModel);
   // No Embedding options means all head get a default option.
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<TextEmbedder> text_embedder,
-                               TextEmbedder::CreateFromOptions(options));
+                       TextEmbedder::CreateFromOptions(options));
 
   SUPPORT_ASSERT_OK_AND_ASSIGN(
       auto result0,
@@ -173,8 +173,8 @@ TEST(EmbedTest, SucceedsWithRegexModel) {
   EXPECT_NEAR(result0.embeddings(0).feature_vector().value_float(0), 0.0309356f,
               kValueDiffTolerance);
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      auto result1, text_embedder->Embed("what a great and fantastic trip"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(auto result1,
+                       text_embedder->Embed("what a great and fantastic trip"));
   EXPECT_EQ(result1.embeddings_size(), 1);
   EXPECT_EQ(result1.embeddings(0).feature_vector().value_float_size(), 16);
 
@@ -206,8 +206,8 @@ TEST(EmbedTest, SucceedsWithUniversalSentenceEncoder) {
   EXPECT_NEAR(result0.embeddings(0).feature_vector().value_float(0), 1.422951f,
               kValueDiffTolerance);
 
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      auto result1, text_embedder->Embed("what a great and fantastic trip"));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(auto result1,
+                       text_embedder->Embed("what a great and fantastic trip"));
   EXPECT_EQ(result1.embeddings_size(), 1);
   EXPECT_EQ(result1.embeddings(0).feature_vector().value_float_size(), 100);
 
@@ -227,7 +227,7 @@ TEST(GetEmbeddingDimension, Succeeds) {
   // Create embedder.
   TextEmbedderOptions options = GetBasicOptions(kMobileBert);
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<TextEmbedder> text_embedder,
-                               TextEmbedder::CreateFromOptions(options));
+                       TextEmbedder::CreateFromOptions(options));
 
   EXPECT_EQ(text_embedder->GetEmbeddingDimension(0), 512);
   EXPECT_EQ(text_embedder->GetEmbeddingDimension(1), -1);
@@ -238,7 +238,7 @@ TEST(GetNumberOfOutputLayers, Succeeds) {
   TextEmbedderOptions options = GetBasicOptions(kMobileBert);
   // No Embedding options means all head get a default option.
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<TextEmbedder> text_embedder,
-                               TextEmbedder::CreateFromOptions(options));
+                       TextEmbedder::CreateFromOptions(options));
   EXPECT_EQ(text_embedder->GetNumberOfOutputLayers(), kNumberOfOutputLayers);
 }
 

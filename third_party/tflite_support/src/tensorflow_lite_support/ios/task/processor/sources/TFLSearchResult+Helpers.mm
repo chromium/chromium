@@ -22,27 +22,24 @@ using SearchResultCpp = tflite::task::processor::SearchResult;
 
 @implementation TFLSearchResult (Helpers)
 
-+ (nullable TFLSearchResult*)
-    searchResultWithCppResult:(const StatusOr<SearchResultCpp>&)cppSearchResult
-                        error:(NSError**)error {
-  if (![TFLCommonCppUtils checkCppError:cppSearchResult.status()
-                                toError:error]) {
++ (nullable TFLSearchResult *)searchResultWithCppResult:
+                                  (const StatusOr<SearchResultCpp> &)cppSearchResult
+                                                  error:(NSError **)error {
+  if (![TFLCommonCppUtils checkCppError:cppSearchResult.status() toError:error]) {
     return nil;
   }
 
-  NSMutableArray<TFLNearestNeighbor*>* nearestNeighbors =
-      [[NSMutableArray alloc] init];
+  NSMutableArray<TFLNearestNeighbor *> *nearestNeighbors = [[NSMutableArray alloc] init];
 
   auto cppSearchResultValue = cppSearchResult.value();
 
   for (int i = 0; i < cppSearchResultValue.nearest_neighbors_size(); i++) {
     auto cppNearestNeighbor = cppSearchResultValue.nearest_neighbors(i);
-    NSString* metadata =
-        [NSString stringWithCString:cppNearestNeighbor.metadata().c_str()
-                           encoding:NSUTF8StringEncoding];
-    TFLNearestNeighbor* nearestNeighbor = [[TFLNearestNeighbor alloc]
-        initWithMetadata:metadata
-                distance:(CGFloat)cppNearestNeighbor.distance()];
+    NSString *metadata = [NSString stringWithCString:cppNearestNeighbor.metadata().c_str()
+                                            encoding:NSUTF8StringEncoding];
+    TFLNearestNeighbor *nearestNeighbor =
+        [[TFLNearestNeighbor alloc] initWithMetadata:metadata
+                                            distance:(CGFloat)cppNearestNeighbor.distance()];
     [nearestNeighbors addObject:nearestNeighbor];
   }
 

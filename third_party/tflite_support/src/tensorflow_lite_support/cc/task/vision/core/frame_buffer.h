@@ -22,12 +22,12 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"    // from @com_google_absl
-#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_cat.h"  // from @com_google_absl
-#include "absl/time/clock.h"       // from @com_google_absl
-#include "absl/time/time.h"        // from @com_google_absl
-#include "absl/types/optional.h"   // from @com_google_absl
+#include "absl/time/clock.h"  // from @com_google_absl
+#include "absl/time/time.h"  // from @com_google_absl
+#include "absl/types/optional.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 
@@ -175,8 +175,7 @@ class FrameBuffer {
   // buffers. In a streaming use case (e.g continuous camera stream), the
   // timestamp can be used as an ID to identify a frame.
   static std::unique_ptr<FrameBuffer> Create(const std::vector<Plane>& planes,
-                                             Dimension dimension,
-                                             Format format,
+                                             Dimension dimension, Format format,
                                              Orientation orientation,
                                              absl::Time timestamp) {
     return absl::make_unique<FrameBuffer>(planes, dimension, format,
@@ -187,8 +186,7 @@ class FrameBuffer {
   // backing buffers. In a streaming use case (e.g continuous camera stream),
   // the timestamp can be used as an ID to identify a frame.
   static std::unique_ptr<FrameBuffer> Create(std::vector<Plane>&& planes,
-                                             Dimension dimension,
-                                             Format format,
+                                             Dimension dimension, Format format,
                                              Orientation orientation,
                                              absl::Time timestamp) {
     return absl::make_unique<FrameBuffer>(std::move(planes), dimension, format,
@@ -200,8 +198,7 @@ class FrameBuffer {
   // more suitable for processing use case that does not need to re-identify
   // this buffer.
   static std::unique_ptr<FrameBuffer> Create(const std::vector<Plane>& planes,
-                                             Dimension dimension,
-                                             Format format,
+                                             Dimension dimension, Format format,
                                              Orientation orientation) {
     return absl::make_unique<FrameBuffer>(planes, dimension, format,
                                           orientation, absl::Now());
@@ -212,8 +209,7 @@ class FrameBuffer {
   // method is more suitable for processing use case that does not need to
   // re-identify this buffer.
   static std::unique_ptr<FrameBuffer> Create(std::vector<Plane>&& planes,
-                                             Dimension dimension,
-                                             Format format,
+                                             Dimension dimension, Format format,
                                              Orientation orientation) {
     return absl::make_unique<FrameBuffer>(std::move(planes), dimension, format,
                                           orientation, absl::Now());
@@ -230,11 +226,8 @@ class FrameBuffer {
   // The FrameBuffer does not take ownership of the backing buffer. The backing
   // buffer is read-only and the caller is responsible for maintaining the
   // backing buffer lifecycle for the lifetime of FrameBuffer.
-  FrameBuffer(const std::vector<Plane>& planes,
-              Dimension dimension,
-              Format format,
-              Orientation orientation,
-              absl::Time timestamp)
+  FrameBuffer(const std::vector<Plane>& planes, Dimension dimension,
+              Format format, Orientation orientation, absl::Time timestamp)
       : planes_(planes),
         dimension_(dimension),
         format_(format),
@@ -246,11 +239,8 @@ class FrameBuffer {
   // The FrameBuffer does not take ownership of the backing buffer. The backing
   // buffer is read-only and the caller is responsible for maintaining the
   // backing buffer lifecycle for the lifetime of FrameBuffer.
-  FrameBuffer(std::vector<Plane>&& planes,
-              Dimension dimension,
-              Format format,
-              Orientation orientation,
-              absl::Time timestamp)
+  FrameBuffer(std::vector<Plane>&& planes, Dimension dimension, Format format,
+              Orientation orientation, absl::Time timestamp)
       : planes_(std::move(planes)),
         dimension_(dimension),
         format_(format),

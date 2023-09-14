@@ -31,8 +31,7 @@ FlatHashMapBackedWordpiece::FlatHashMapBackedWordpiece(
 }
 
 tensorflow::text::LookupStatus FlatHashMapBackedWordpiece::Contains(
-    absl::string_view key,
-    bool* value) const {
+    absl::string_view key, bool* value) const {
   *value = index_map_.contains(key);
   return tensorflow::text::LookupStatus();
 }

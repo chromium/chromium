@@ -3,7 +3,6 @@ load("@build_bazel_rules_android//android:rules.bzl", "android_library")
 load("@org_tensorflow//tensorflow/lite:build_def.bzl", "tflite_jni_binary")
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//tensorflow_lite_support:internal",
     ],
@@ -93,9 +92,9 @@ cc_test(
         "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "@com_google_googletest//:gtest_main",
         "@org_tensorflow//tensorflow/lite:framework",
-        "@org_tensorflow//tensorflow/lite/c:common",
         "@org_tensorflow//tensorflow/lite/acceleration/configuration:configuration_fbs",
         "@org_tensorflow//tensorflow/lite/acceleration/configuration:delegate_registry",
+        "@org_tensorflow//tensorflow/lite/c:common",
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
 )

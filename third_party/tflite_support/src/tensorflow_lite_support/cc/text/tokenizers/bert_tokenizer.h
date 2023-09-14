@@ -103,8 +103,7 @@ class BertTokenizer : public tflite::support::text::tokenizer::Tokenizer {
 
   // Initialize the tokenizer from buffer and size of vocab and tokenizer
   // configs.
-  BertTokenizer(const char* vocab_buffer_data,
-                size_t vocab_buffer_size,
+  BertTokenizer(const char* vocab_buffer_data, size_t vocab_buffer_size,
                 const BertTokenizerOptions& options = {})
       : BertTokenizer(
             utils::LoadVocabFromBuffer(vocab_buffer_data, vocab_buffer_size),

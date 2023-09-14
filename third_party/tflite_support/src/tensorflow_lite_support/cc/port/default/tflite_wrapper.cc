@@ -15,7 +15,7 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/port/default/tflite_wrapper.h"
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h"
 #include "tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h"
@@ -310,9 +310,7 @@ absl::Status TfLiteInterpreterWrapper::InvokeWithoutFallback() {
   return absl::OkStatus();
 }
 
-void TfLiteInterpreterWrapper::Cancel() {
-  cancel_flag_.Set(true);
-}
+void TfLiteInterpreterWrapper::Cancel() { cancel_flag_.Set(true); }
 
 void TfLiteInterpreterWrapper::SetTfLiteCancellation() {
   // Create a cancellation check function and set to the TFLite interpreter.
@@ -325,8 +323,7 @@ void TfLiteInterpreterWrapper::SetTfLiteCancellation() {
 }
 
 absl::Status TfLiteInterpreterWrapper::LoadDelegatePlugin(
-    const std::string& name,
-    const tflite::TFLiteSettings& tflite_settings) {
+    const std::string& name, const tflite::TFLiteSettings& tflite_settings) {
   delegate_plugin_ = DelegatePluginRegistry::CreateByName(
       absl::StrFormat("%sPlugin", name), tflite_settings);
 

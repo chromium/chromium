@@ -16,7 +16,6 @@ limitations under the License.
 package com.google.android.odml.image;
 
 import static com.google.common.truth.Truth.assertThat;
-
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -24,7 +23,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.ImageFormat;
 import android.media.Image;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,34 +33,34 @@ import org.robolectric.RobolectricTestRunner;
 /** Tests for {@link MediaImageExtractor} */
 @RunWith(RobolectricTestRunner.class)
 public final class MediaImageExtractorTest {
-    private static final int HEIGHT = 100;
-    private static final int WIDTH = 50;
+  private static final int HEIGHT = 100;
+  private static final int WIDTH = 50;
 
-    @Mock
-    private Image mediaImage;
+  @Mock private Image mediaImage;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+  @Before
+  public void setUp() {
+    MockitoAnnotations.initMocks(this);
 
-        when(mediaImage.getHeight()).thenReturn(HEIGHT);
-        when(mediaImage.getWidth()).thenReturn(WIDTH);
-        when(mediaImage.getFormat()).thenReturn(ImageFormat.YUV_420_888);
-    }
+    when(mediaImage.getHeight()).thenReturn(HEIGHT);
+    when(mediaImage.getWidth()).thenReturn(WIDTH);
+    when(mediaImage.getFormat()).thenReturn(ImageFormat.YUV_420_888);
+  }
 
-    @Test
-    public void extract_fromMediaMlImage_succeeds() {
-        MlImage image = new MediaMlImageBuilder(mediaImage).build();
-        Image extractedMediaImage = MediaImageExtractor.extract(image);
+  @Test
+  public void extract_fromMediaMlImage_succeeds() {
+    MlImage image = new MediaMlImageBuilder(mediaImage).build();
+    Image extractedMediaImage = MediaImageExtractor.extract(image);
 
-        assertThat(extractedMediaImage).isSameInstanceAs(image);
-    }
+    assertThat(extractedMediaImage).isSameInstanceAs(image);
+  }
 
-    @Test
-    public void extract_fromBitmapMlImage_throwsException() {
-        MlImage image = new BitmapMlImageBuilder(
+  @Test
+  public void extract_fromBitmapMlImage_throwsException() {
+    MlImage image =
+        new BitmapMlImageBuilder(
                 Bitmap.createBitmap(/* width= */ 20, /* height= */ 25, Config.ARGB_8888))
-                                .build();
-        assertThrows(IllegalArgumentException.class, () -> MediaImageExtractor.extract(image));
-    }
+            .build();
+    assertThrows(IllegalArgumentException.class, () -> MediaImageExtractor.extract(image));
+  }
 }

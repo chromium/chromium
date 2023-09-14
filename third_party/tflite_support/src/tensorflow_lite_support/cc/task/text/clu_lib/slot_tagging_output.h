@@ -41,12 +41,10 @@ namespace tflite::task::text::clu {
 //   Outputs:
 //     response
 absl::Status SlotModulePopulateResponse(
-    const std::vector<absl::string_view>& tags,
-    const float* confidences,
+    const std::vector<absl::string_view>& tags, const float* confidences,
     const std::vector<std::pair<int, int>>& token_alignments,
     const std::vector<int>& token_turn_ids,
-    const std::vector<int>& first_subword_indicators,
-    float threshold,
+    const std::vector<int>& first_subword_indicators, float threshold,
     const std::vector<absl::string_view>& reverse_utterance_list_to_encode,
     CluResponse* response);
 

@@ -16,9 +16,9 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/image_classifier.h"
 
 #include "absl/algorithm/container.h"  // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "flatbuffers/flatbuffers.h"   // from @flatbuffers
+#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -146,9 +146,7 @@ absl::Status ImageClassifier::PreInit() {
   return absl::OkStatus();
 }
 
-absl::Status ImageClassifier::PostInit() {
-  return InitScoreCalibrations();
-}
+absl::Status ImageClassifier::PostInit() { return InitScoreCalibrations(); }
 
 absl::Status ImageClassifier::CheckAndSetOutputs() {
   num_outputs_ = TfLiteEngine::OutputCount(GetTfLiteEngine()->interpreter());
@@ -382,15 +380,13 @@ StatusOr<ClassificationResult> ImageClassifier::Classify(
 }
 
 StatusOr<ClassificationResult> ImageClassifier::Classify(
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& roi) {
+    const FrameBuffer& frame_buffer, const BoundingBox& roi) {
   return InferWithFallback(frame_buffer, roi);
 }
 
 StatusOr<ClassificationResult> ImageClassifier::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors,
-    const FrameBuffer& /*frame_buffer*/,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& /*frame_buffer*/, const BoundingBox& /*roi*/) {
   if (output_tensors.size() != num_outputs_) {
     return CreateStatusWithPayload(
         StatusCode::kInternal,

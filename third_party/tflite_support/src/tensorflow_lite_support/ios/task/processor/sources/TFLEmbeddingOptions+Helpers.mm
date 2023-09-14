@@ -16,8 +16,7 @@
 
 @implementation TFLEmbeddingOptions (Helpers)
 
-- (void)copyToCppOptions:
-    (tflite::task::processor::EmbeddingOptions*)cppEmbeddingOptions {
+- (void)copyToCppOptions:(tflite::task::processor::EmbeddingOptions *)cppEmbeddingOptions {
   cppEmbeddingOptions->set_l2_normalize(self.l2Normalize);
   cppEmbeddingOptions->set_quantize(self.quantize);
 }

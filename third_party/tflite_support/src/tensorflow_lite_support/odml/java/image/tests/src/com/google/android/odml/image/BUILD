@@ -1,7 +1,5 @@
 load("@build_bazel_rules_android//android:rules.bzl", "android_library", "android_local_test")
 
-package(default_applicable_licenses = ["//tensorflow_lite_support:license"])
-
 licenses(["notice"])
 
 INSTRUMENTED_TESTS = glob(["*InstrumentedTest.java"])

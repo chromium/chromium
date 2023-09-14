@@ -16,9 +16,7 @@ limitations under the License.
 package com.google.android.odml.image;
 
 import android.graphics.Rect;
-
 import com.google.android.odml.image.MlImage.ImageFormat;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -30,74 +28,79 @@ import java.nio.ByteBuffer;
  * <p>Use {@link ByteBufferExtractor} to get {@link ByteBuffer} you passed in.
  */
 public class ByteBufferMlImageBuilder {
-    // Mandatory fields.
-    private final ByteBuffer buffer;
-    private final int width;
-    private final int height;
-    @ImageFormat
-    private final int imageFormat;
 
-    // Optional fields.
-    private int rotation;
-    private Rect roi;
-    private long timestamp;
+  // Mandatory fields.
+  private final ByteBuffer buffer;
+  private final int width;
+  private final int height;
+  @ImageFormat private final int imageFormat;
 
-    /**
-     * Creates the builder with mandatory {@link ByteBuffer} and the represented image.
-     *
-     * <p>We will validate the size of the {@code byteBuffer} with given {@code width}, {@code
-     * height} and {@code imageFormat}.
-     *
-     * <p>Also calls {@link #setRotation(int)} to set the optional properties. If not set, the
-     * values will be set with default:
-     *
-     * <ul>
-     *   <li>rotation: 0
-     * </ul>
-     *
-     * @param byteBuffer image data object.
-     * @param width the width of the represented image.
-     * @param height the height of the represented image.
-     * @param imageFormat how the data encode the image.
-     */
-    public ByteBufferMlImageBuilder(
-            ByteBuffer byteBuffer, int width, int height, @ImageFormat int imageFormat) {
-        this.buffer = byteBuffer;
-        this.width = width;
-        this.height = height;
-        this.imageFormat = imageFormat;
-        // TODO(b/180504869): Validate bytebuffer size with width, height and image format
-        this.rotation = 0;
-        this.roi = new Rect(0, 0, width, height);
-        this.timestamp = 0;
-    }
+  // Optional fields.
+  private int rotation;
+  private Rect roi;
+  private long timestamp;
 
-    /**
-     * Sets value for {@link MlImage#getRotation()}.
-     *
-     * @throws IllegalArgumentException if the rotation value is not 0, 90, 180 or 270.
-     */
-    public ByteBufferMlImageBuilder setRotation(int rotation) {
-        MlImage.validateRotation(rotation);
-        this.rotation = rotation;
-        return this;
-    }
+  /**
+   * Creates the builder with mandatory {@link ByteBuffer} and the represented image.
+   *
+   * <p>We will validate the size of the {@code byteBuffer} with given {@code width}, {@code height}
+   * and {@code imageFormat}.
+   *
+   * <p>Also calls {@link #setRotation(int)} to set the optional properties. If not set, the values
+   * will be set with default:
+   *
+   * <ul>
+   *   <li>rotation: 0
+   * </ul>
+   *
+   * @param byteBuffer image data object.
+   * @param width the width of the represented image.
+   * @param height the height of the represented image.
+   * @param imageFormat how the data encode the image.
+   */
+  public ByteBufferMlImageBuilder(
+      ByteBuffer byteBuffer, int width, int height, @ImageFormat int imageFormat) {
+    this.buffer = byteBuffer;
+    this.width = width;
+    this.height = height;
+    this.imageFormat = imageFormat;
+    // TODO(b/180504869): Validate bytebuffer size with width, height and image format
+    this.rotation = 0;
+    this.roi = new Rect(0, 0, width, height);
+    this.timestamp = 0;
+  }
 
-    /** Sets value for {@link MlImage#getRoi()}. */
-    ByteBufferMlImageBuilder setRoi(Rect roi) {
-        this.roi = roi;
-        return this;
-    }
+  /**
+   * Sets value for {@link MlImage#getRotation()}.
+   *
+   * @throws IllegalArgumentException if the rotation value is not 0, 90, 180 or 270.
+   */
+  public ByteBufferMlImageBuilder setRotation(int rotation) {
+    MlImage.validateRotation(rotation);
+    this.rotation = rotation;
+    return this;
+  }
 
-    /** Sets value for {@link MlImage#getTimestamp()}. */
-    ByteBufferMlImageBuilder setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-        return this;
-    }
+  /** Sets value for {@link MlImage#getRoi()}. */
+  ByteBufferMlImageBuilder setRoi(Rect roi) {
+    this.roi = roi;
+    return this;
+  }
 
-    /** Builds an {@link MlImage} instance. */
-    public MlImage build() {
-        return new MlImage(new ByteBufferImageContainer(buffer, imageFormat), rotation, roi,
-                timestamp, width, height);
-    }
+  /** Sets value for {@link MlImage#getTimestamp()}. */
+  ByteBufferMlImageBuilder setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
+    return this;
+  }
+
+  /** Builds an {@link MlImage} instance. */
+  public MlImage build() {
+    return new MlImage(
+        new ByteBufferImageContainer(buffer, imageFormat),
+        rotation,
+        roi,
+        timestamp,
+        width,
+        height);
+  }
 }

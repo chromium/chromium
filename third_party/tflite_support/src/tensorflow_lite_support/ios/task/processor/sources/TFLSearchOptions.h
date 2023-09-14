@@ -24,11 +24,11 @@ NS_SWIFT_NAME(SearchOptions)
 @interface TFLSearchOptions : NSObject <NSCopying>
 
 /**
- * The index file to search into. Mandatory only if the index is not attached to
- * the output tensor metadata as an AssociatedFile with type SCANN_INDEX_FILE.
- * Note that in case both are provided, this field takes precedence.
+ * The index file to search into. Mandatory only if the index is not attached to the output tensor
+ * metadata as an AssociatedFile with type SCANN_INDEX_FILE. Note that in case both are provided,
+ * this field takes precedence.
  */
-@property(nonatomic, copy) TFLExternalFile* indexFile;
+@property(nonatomic, copy) TFLExternalFile *indexFile;
 
 /**
  * Maximum number of nearest neighbor results to return. Defaults to 5.

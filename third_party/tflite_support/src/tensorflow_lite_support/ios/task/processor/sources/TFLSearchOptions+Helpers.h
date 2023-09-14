@@ -19,8 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLSearchOptions (Helpers)
 
-- (void)copyToCppOptions:
-    (tflite::task::processor::SearchOptions*)cppSearchOptions;
+- (void)copyToCppOptions:(tflite::task::processor::SearchOptions *)cppSearchOptions;
 
 @end
 

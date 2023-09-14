@@ -28,8 +28,7 @@ namespace audio {
 // than what the model requires, only the beginning section is used for
 // inference.
 tflite::support::StatusOr<ClassificationResult> Classify(
-    const std::string& model_path,
-    const std::string& wav_file,
+    const std::string& model_path, const std::string& wav_file,
     bool use_coral = false);
 
 // Prints the output classification result in the standard output. It only

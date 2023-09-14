@@ -30,8 +30,7 @@ typedef NS_ENUM(NSUInteger, CoreMLDelegateEnabledDevices) {
 
 /** Initializes a Core ML Delegate Settings instance. */
 - (instancetype)initWithCoreMLVersion:(int32_t)coreMLVersion
-                       enableddevices:
-                           (CoreMLDelegateEnabledDevices)enabledDevices;
+                       enableddevices:(CoreMLDelegateEnabledDevices)enabledDevices;
 
 /** The device set to enable Core ML Delegate. */
 @property(nonatomic, readonly) CoreMLDelegateEnabledDevices enabledDevices;
@@ -50,10 +49,10 @@ typedef NS_ENUM(NSUInteger, CoreMLDelegateEnabledDevices) {
 NS_SWIFT_NAME(CpuSettings)
 @interface TFLCpuSettings : NSObject <NSCopying>
 
-/** Specifies the number of threads to be used for TFLite ops that support
- * multi-threadingwhen running inference with CPU.
- * @discussion This property hould be greater than 0 or equal to -1. Setting  it
- * to -1 has the effect to let TFLite runtime set the value.
+/** Specifies the number of threads to be used for TFLite ops that support multi-threadingwhen
+ * running inference with CPU.
+ * @discussion This property hould be greater than 0 or equal to -1. Setting  it to -1 has the
+ * effect to let TFLite runtime set the value.
  */
 @property(nonatomic) NSInteger numThreads;
 
@@ -66,38 +65,34 @@ NS_SWIFT_NAME(ComputeSettings)
 @interface TFLComputeSettings : NSObject <NSCopying>
 
 /** Holds cpu settings. */
-@property(nonatomic, copy) TFLCpuSettings* cpuSettings;
+@property(nonatomic, copy) TFLCpuSettings *cpuSettings;
 
 @end
 
 /**
- * Holds the base options that is used for creation of any type of task. It has
- * fields with important information acceleration configuration, tflite model
- * source etc.
+ * Holds the base options that is used for creation of any type of task. It has fields with
+ * important information acceleration configuration, tflite model source etc.
  */
 NS_SWIFT_NAME(BaseOptions)
 @interface TFLBaseOptions : NSObject <NSCopying>
 
 /**
- * The external model file, as a single standalone TFLite file. It could be
- * packed with TFLite Model Metadata[1] and associated files if exist. Fail to
- * provide the necessary metadata and associated files might result in errors.
+ * The external model file, as a single standalone TFLite file. It could be packed with TFLite Model
+ * Metadata[1] and associated files if exist. Fail to provide the necessary metadata and associated
+ * files might result in errors.
  */
-@property(nonatomic, copy) TFLExternalFile* modelFile;
+@property(nonatomic, copy) TFLExternalFile *modelFile;
 
 /**
- * Holds settings for one possible acceleration configuration including.cpu/gpu
- * settings. Please see documentation of TfLiteComputeSettings and its members
- * for more details.
+ * Holds settings for one possible acceleration configuration including.cpu/gpu settings.
+ * Please see documentation of TfLiteComputeSettings and its members for more details.
  */
-@property(nonatomic, copy) TFLComputeSettings* computeSettings;
+@property(nonatomic, copy) TFLComputeSettings *computeSettings;
 
 /**
- * Holds settings for CoreML Delegate. If set, CoreML Delegate will be
- * activated.
+ * Holds settings for CoreML Delegate. If set, CoreML Delegate will be activated.
  */
-@property(nonatomic, copy, nullable)
-    TFLCoreMLDelegateSettings* coreMLDelegateSettings;
+@property(nonatomic, copy, nullable) TFLCoreMLDelegateSettings *coreMLDelegateSettings;
 
 @end
 

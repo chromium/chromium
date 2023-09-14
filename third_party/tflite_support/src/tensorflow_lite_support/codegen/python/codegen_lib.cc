@@ -29,10 +29,11 @@ using overload_cast_ = pybind11::detail::overload_cast_impl<Args...>;
 
 PYBIND11_MODULE(_pywrap_codegen, m) {
   pybind11::class_<AndroidJavaGenerator>(m, "AndroidJavaGenerator")
-      .def(pybind11::init<const std::string&>())
-      .def("generate", overload_cast_<const char*, const std::string&,
-                                      const std::string&, const std::string&>()(
-                           &AndroidJavaGenerator::Generate))
+      .def(pybind11::init<const std::string &>())
+      .def("generate",
+           overload_cast_<const char *, const std::string &,
+                          const std::string &, const std::string &>()(
+               &AndroidJavaGenerator::Generate))
       .def("get_error_message", &AndroidJavaGenerator::GetErrorMessage);
   pybind11::class_<GenerationResult>(m, "GenerationResult")
       .def(pybind11::init<>())

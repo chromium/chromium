@@ -27,7 +27,7 @@ void TfLiteClassificationResultDelete(
   for (int head = 0; head < classification_result->size; ++head) {
     TfLiteClassifications classifications =
         classification_result->classifications[head];
-    free(classifications.head_name);
+        free(classifications.head_name);
     for (int rank = 0; rank < classifications.size; ++rank) {
       TfLiteCategoryDelete(&(classifications.categories[rank]));
     }

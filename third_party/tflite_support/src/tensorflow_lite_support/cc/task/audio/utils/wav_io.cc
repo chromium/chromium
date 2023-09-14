@@ -27,8 +27,8 @@ limitations under the License.
 #include <fstream>
 #include <limits>
 
-#include "absl/status/status.h"       // from @com_google_absl
-#include "absl/strings/str_cat.h"     // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 
@@ -61,10 +61,8 @@ std::string ReadFile(const std::string filepath) {
 
 // Handles moving the data index forward, validating the arguments, and avoiding
 // overflow or underflow.
-absl::Status IncrementOffset(uint32_t old_offset,
-                             size_t increment,
-                             size_t max_size,
-                             uint32_t* new_offset) {
+absl::Status IncrementOffset(uint32_t old_offset, size_t increment,
+                             size_t max_size, uint32_t* new_offset) {
   if (old_offset < 0) {
     return absl::InvalidArgumentError(
         absl::StrFormat("Negative offsets are not allowed: %d", old_offset));
@@ -88,8 +86,7 @@ absl::Status IncrementOffset(uint32_t old_offset,
 }
 
 absl::Status ExpectText(const std::string& data,
-                        const std::string& expected_text,
-                        uint32_t* offset) {
+                        const std::string& expected_text, uint32_t* offset) {
   uint32_t new_offset;
   RETURN_IF_ERROR(
       IncrementOffset(*offset, expected_text.size(), data.size(), &new_offset));
@@ -103,10 +100,8 @@ absl::Status ExpectText(const std::string& data,
   return absl::OkStatus();
 }
 
-absl::Status ReadString(const std::string& data,
-                        size_t expected_length,
-                        std::string* value,
-                        uint32_t* offset) {
+absl::Status ReadString(const std::string& data, size_t expected_length,
+                        std::string* value, uint32_t* offset) {
   uint32_t new_offset;
   RETURN_IF_ERROR(
       IncrementOffset(*offset, expected_length, data.size(), &new_offset));

@@ -18,10 +18,11 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/base/macros.h"    // from @com_google_absl
+#include "absl/base/macros.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
 #include "tensorflow/lite/kernels/op_macros.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -48,8 +49,7 @@ class TaskAPIFactory {
       "Use CreateFromBaseOptions and configure model input from "
       "tensorflow_lite_support/cc/task/core/proto/base_options.proto")
   static tflite::support::StatusOr<std::unique_ptr<T>> CreateFromBuffer(
-      const char* buffer_data,
-      size_t buffer_size,
+      const char* buffer_data, size_t buffer_size,
       std::unique_ptr<tflite::OpResolver> resolver =
           absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
       int num_threads = 1,
@@ -104,8 +104,8 @@ class TaskAPIFactory {
   static tflite::support::
       StatusOr<std::unique_ptr<T>> CreateFromExternalFileProto(
           const ExternalFile* external_file,
-          std::unique_ptr<tflite::OpResolver> resolver =
-              absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>(),
+          std::unique_ptr<tflite::OpResolver> resolver = absl::make_unique<
+              tflite::ops::builtin::BuiltinOpResolver>(),
           int num_threads = 1,
           const tflite::proto::ComputeSettings& compute_settings =
               tflite::proto::ComputeSettings()) {
@@ -157,8 +157,7 @@ class TaskAPIFactory {
  private:
   template <typename T, EnableIfBaseUntypedTaskApiSubclass<T> = nullptr>
   static tflite::support::StatusOr<std::unique_ptr<T>> CreateFromTfLiteEngine(
-      std::unique_ptr<TfLiteEngine> engine,
-      int num_threads,
+      std::unique_ptr<TfLiteEngine> engine, int num_threads,
       const tflite::proto::ComputeSettings& compute_settings =
           tflite::proto::ComputeSettings()) {
     tflite::proto::ComputeSettings settings_copy =

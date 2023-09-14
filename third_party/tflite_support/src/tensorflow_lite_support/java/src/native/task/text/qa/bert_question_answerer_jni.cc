@@ -52,19 +52,14 @@ BertQuestionAnswererOptions ConvertToProtoOptions(jlong base_options_handle) {
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_deinitJni(
-    JNIEnv* env,
-    jobject thiz,
-    jlong native_handle) {
+    JNIEnv* env, jobject thiz, jlong native_handle) {
   delete reinterpret_cast<QuestionAnswerer*>(native_handle);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_initJniWithFileDescriptor(
-    JNIEnv* env,
-    jclass thiz,
-    jint file_descriptor,
-    jlong file_descriptor_length,
-    jlong file_descriptor_offset,
+    JNIEnv* env, jclass thiz, jint file_descriptor,
+    jlong file_descriptor_length, jlong file_descriptor_offset,
     jlong base_options_handle) {
   BertQuestionAnswererOptions proto_options =
       ConvertToProtoOptions(base_options_handle);
@@ -94,9 +89,7 @@ Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_initJniWithFileDescri
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_initJniWithBertByteBuffers(
-    JNIEnv* env,
-    jclass thiz,
-    jobjectArray model_buffers) {
+    JNIEnv* env, jclass thiz, jobjectArray model_buffers) {
   absl::string_view model =
       GetMappedFileBuffer(env, env->GetObjectArrayElement(model_buffers, 0));
   absl::string_view vocab =
@@ -118,9 +111,7 @@ Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_initJniWithBertByteBu
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_initJniWithAlbertByteBuffers(
-    JNIEnv* env,
-    jclass thiz,
-    jobjectArray model_buffers) {
+    JNIEnv* env, jclass thiz, jobjectArray model_buffers) {
   absl::string_view model =
       GetMappedFileBuffer(env, env->GetObjectArrayElement(model_buffers, 0));
   absl::string_view sp_model =
@@ -142,10 +133,7 @@ Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_initJniWithAlbertByte
 
 extern "C" JNIEXPORT jobject JNICALL
 Java_org_tensorflow_lite_task_text_qa_BertQuestionAnswerer_answerNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle,
-    jstring context,
+    JNIEnv* env, jclass thiz, jlong native_handle, jstring context,
     jstring question) {
   auto* question_answerer = reinterpret_cast<QuestionAnswerer*>(native_handle);
 

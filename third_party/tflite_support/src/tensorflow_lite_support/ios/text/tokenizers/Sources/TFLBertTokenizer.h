@@ -28,13 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Initializes the tokenizer with the path to wordpiece vocabulary file.
  */
-- (instancetype)initWithVocabPath:(NSString*)vocabPath
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithVocabPath:(NSString *)vocabPath NS_DESIGNATED_INITIALIZER;
 
 /**
  * Initializes the tokenizer with a list of tokens.
  */
-- (instancetype)initWithVocab:(NSArray<NSString*>*)vocab
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithVocab:(NSArray<NSString *> *)vocab NS_DESIGNATED_INITIALIZER;
 @end
 NS_ASSUME_NONNULL_END

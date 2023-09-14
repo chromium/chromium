@@ -16,7 +16,7 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_CLU_LIB_TFLITE_MODULES_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_TEXT_CLU_LIB_TFLITE_MODULES_H_
 
-#include "absl/status/statusor.h"      // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
 #include "tensorflow_lite_support/cc/task/text/proto/bert_clu_annotator_options_proto_inc.h"
@@ -85,8 +85,7 @@ class AbstractModule {
   // output tensors.
   // The tensors are assumed to be of shape [1, max_seq_len]
   absl::StatusOr<NamesAndConfidences> NamesAndConfidencesFromOutput(
-      int names_tensor_idx,
-      int scores_tensor_idx) const;
+      int names_tensor_idx, int scores_tensor_idx) const;
 
   // TFLite interpreter
   core::TfLiteEngine::Interpreter* interpreter_ = nullptr;

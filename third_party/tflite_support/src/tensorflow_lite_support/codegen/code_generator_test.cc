@@ -36,8 +36,7 @@ class CodeGeneratorTest : public ::testing::Test {
       return CodeGenerator::ConvertToValidName(name);
     }
     static void ResolveConflictedInputAndOutputNames(
-        std::vector<std::string>* input,
-        std::vector<std::string>* output) {
+        std::vector<std::string>* input, std::vector<std::string>* output) {
       CodeGenerator::ResolveConflictedInputAndOutputNames(input, output);
     }
   };

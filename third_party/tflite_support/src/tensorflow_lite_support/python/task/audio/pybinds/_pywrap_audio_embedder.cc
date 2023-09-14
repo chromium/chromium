@@ -15,9 +15,9 @@ limitations under the License.
 
 #include "pybind11/pybind11.h"
 #include "pybind11_protobuf/native_proto_caster.h"  // from @pybind11_protobuf
+#include "tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
 #include "tensorflow_lite_support/cc/task/audio/audio_embedder.h"
 #include "tensorflow_lite_support/cc/task/audio/core/audio_buffer.h"
-#include "tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
 #include "tensorflow_lite_support/python/task/core/pybinds/task_utils.h"
 
 namespace tflite {
@@ -50,17 +50,17 @@ PYBIND11_MODULE(_pywrap_audio_embedder, m) {
             return core::get_value(embedder);
           })
       .def_static("cosine_similarity",
-                  [](const processor::FeatureVector& u,
-                     const processor::FeatureVector& v) -> double {
-                    auto similarity = AudioEmbedder::CosineSimilarity(u, v);
-                    return core::get_value(similarity);
-                  })
+        [](const processor::FeatureVector& u,
+           const processor::FeatureVector& v) -> double {
+            auto similarity = AudioEmbedder::CosineSimilarity(u, v);
+            return core::get_value(similarity);
+          })
       .def("embed",
-           [](AudioEmbedder& self,
-              const AudioBuffer& audio_buffer) -> processor::EmbeddingResult {
-             auto embedding_result = self.Embed(audio_buffer);
-             return core::get_value(embedding_result);
-           })
+        [](AudioEmbedder& self,
+           const AudioBuffer& audio_buffer) -> processor::EmbeddingResult {
+          auto embedding_result = self.Embed(audio_buffer);
+          return core::get_value(embedding_result);
+        })
       .def("get_embedding_dimension", &AudioEmbedder::GetEmbeddingDimension)
       .def("get_number_of_output_layers",
            &AudioEmbedder::GetNumberOfOutputLayers)

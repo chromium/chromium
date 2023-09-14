@@ -23,10 +23,10 @@ limitations under the License.
 
 #include <iostream>
 
-#include "absl/flags/flag.h"          // from @com_google_absl
-#include "absl/flags/parse.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
-#include "absl/strings/match.h"       // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/match.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
@@ -37,24 +37,16 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' image segmenter model.");
-ABSL_FLAG(std::string,
-          image_path,
-          "",
+ABSL_FLAG(std::string, image_path, "",
           "Absolute path to the image to segment. The image must be RGB or "
           "RGBA (grayscale is not supported). The image EXIF orientation "
           "flag, if any, is NOT taken into account.");
-ABSL_FLAG(std::string,
-          output_mask_png,
-          "",
+ABSL_FLAG(std::string, output_mask_png, "",
           "Absolute path to the output category mask (confidence masks outputs "
           "are not supported by this tool). Must have a '.png' extension.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 

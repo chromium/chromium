@@ -23,12 +23,12 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/base/macros.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/base/macros.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow/lite/string_type.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -109,8 +109,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
   static tflite::support::StatusOr<std::unique_ptr<NLClassifier>>
   CreateFromBufferAndOptions(
-      const char* model_buffer_data,
-      size_t model_buffer_size,
+      const char* model_buffer_data, size_t model_buffer_size,
       const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
           absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
@@ -119,8 +118,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
   static tflite::support::StatusOr<std::unique_ptr<NLClassifier>>
   CreateFromFileAndOptions(
-      const std::string& path_to_model,
-      const NLClassifierOptions& options = {},
+      const std::string& path_to_model, const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
           absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
@@ -128,8 +126,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
   ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
   static tflite::support::StatusOr<std::unique_ptr<NLClassifier>>
   CreateFromFdAndOptions(
-      int fd,
-      const NLClassifierOptions& options = {},
+      int fd, const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
           absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
@@ -185,8 +182,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
       const std::vector<TensorType*>& tensors,
       const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
           metadata_array,
-      const std::string& name,
-      int index) {
+      const std::string& name, int index) {
     int tensor_index = FindTensorIndex(tensors, metadata_array, name, index);
     return tensor_index >= 0 && tensor_index < tensors.size()
                ? tensors[tensor_index]
@@ -201,8 +197,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
       const std::vector<TensorType*>& tensors,
       const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
           metadata_array,
-      const std::string& name,
-      int default_index) {
+      const std::string& name, int default_index) {
     if (metadata_array != nullptr && metadata_array->size() == tensors.size()) {
       for (size_t i = 0; i < metadata_array->size(); i++) {
         if (strcmp(name.data(), metadata_array->Get(i)->name()->c_str()) == 0) {

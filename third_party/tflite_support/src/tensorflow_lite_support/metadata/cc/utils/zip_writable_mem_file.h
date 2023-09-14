@@ -59,9 +59,7 @@ class ZipWritableMemFile {
   // The file function implementations used in the `zlib_filefunc64_def`.
   static voidpf OpenFile(voidpf opaque, const void* filename, int mode);
   static uLong ReadFile(voidpf opaque, voidpf stream, void* buf, uLong size);
-  static uLong WriteFile(voidpf opaque,
-                         voidpf stream,
-                         const void* buf,
+  static uLong WriteFile(voidpf opaque, voidpf stream, const void* buf,
                          uLong size);
   static ZPOS64_T TellFile(voidpf opaque, voidpf stream);
   static long SeekFile  // NOLINT

@@ -28,26 +28,18 @@ limitations under the License.
 #include "absl/flags/parse.h"  // from @com_google_absl
 #include "tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_lib.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' audio classification model.");
-ABSL_FLAG(std::string,
-          audio_wav_path,
-          "",
+ABSL_FLAG(std::string, audio_wav_path, "",
           "Absolute path to the 16-bit PCM WAV file to classify. The WAV "
           "file must be monochannel and has a sampling rate matches the model "
           "expected sampling rate (as in the Metadata).  If the WAV file is "
           "longer than what the model requires, only the beginning section is "
           "used for inference.");
-ABSL_FLAG(float,
-          score_threshold,
-          0.001f,
+ABSL_FLAG(float, score_threshold, 0.001f,
           "Apply a filter on the results. Only display classes with score "
           "higher than the threshold.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 

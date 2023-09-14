@@ -26,51 +26,51 @@ import org.tensorflow.lite.DataType;
 /** Tests of {@link org.tensorflow.lite.support.tensorbuffer.TensorBufferFloat}. */
 @RunWith(RobolectricTestRunner.class)
 public final class TensorBufferFloatTest {
-    @Test
-    public void testCreateDynamic() {
-        TensorBufferFloat tensorBufferFloat = new TensorBufferFloat();
-        assertThat(tensorBufferFloat).isNotNull();
-    }
+  @Test
+  public void testCreateDynamic() {
+    TensorBufferFloat tensorBufferFloat = new TensorBufferFloat();
+    assertThat(tensorBufferFloat).isNotNull();
+  }
 
-    @Test
-    public void testCreateFixedSize() {
-        int[] shape = new int[] {1, 2, 3};
-        TensorBufferFloat tensorBufferFloat = new TensorBufferFloat(shape);
-        assertThat(tensorBufferFloat).isNotNull();
-        assertThat(tensorBufferFloat.getFlatSize()).isEqualTo(6);
-    }
+  @Test
+  public void testCreateFixedSize() {
+    int[] shape = new int[] {1, 2, 3};
+    TensorBufferFloat tensorBufferFloat = new TensorBufferFloat(shape);
+    assertThat(tensorBufferFloat).isNotNull();
+    assertThat(tensorBufferFloat.getFlatSize()).isEqualTo(6);
+  }
 
-    @Test
-    public void testCreateFixedSizeWithScalarShape() {
-        int[] shape = new int[] {};
-        TensorBufferFloat tensorBufferFloat = new TensorBufferFloat(shape);
-        assertThat(tensorBufferFloat).isNotNull();
-        assertThat(tensorBufferFloat.getFlatSize()).isEqualTo(1);
-    }
+  @Test
+  public void testCreateFixedSizeWithScalarShape() {
+    int[] shape = new int[] {};
+    TensorBufferFloat tensorBufferFloat = new TensorBufferFloat(shape);
+    assertThat(tensorBufferFloat).isNotNull();
+    assertThat(tensorBufferFloat.getFlatSize()).isEqualTo(1);
+  }
 
-    @Test
-    public void testCreateWithNullShape() {
-        int[] shape = null;
-        Assert.assertThrows(NullPointerException.class, () -> new TensorBufferFloat(shape));
-    }
+  @Test
+  public void testCreateWithNullShape() {
+    int[] shape = null;
+    Assert.assertThrows(NullPointerException.class, () -> new TensorBufferFloat(shape));
+  }
 
-    @Test
-    public void testCreateWithInvalidShape() {
-        int[] shape = new int[] {1, -1, 2};
-        Assert.assertThrows(IllegalArgumentException.class, () -> new TensorBufferFloat(shape));
-    }
+  @Test
+  public void testCreateWithInvalidShape() {
+    int[] shape = new int[] {1, -1, 2};
+    Assert.assertThrows(IllegalArgumentException.class, () -> new TensorBufferFloat(shape));
+  }
 
-    @Test
-    public void testCreateUsingShapeWithZero() {
-        int[] shape = new int[] {1, 0, 2};
-        TensorBufferFloat tensorBufferFloat = new TensorBufferFloat(shape);
-        assertThat(tensorBufferFloat).isNotNull();
-        assertThat(tensorBufferFloat.getFlatSize()).isEqualTo(0);
-    }
+  @Test
+  public void testCreateUsingShapeWithZero() {
+    int[] shape = new int[] {1, 0, 2};
+    TensorBufferFloat tensorBufferFloat = new TensorBufferFloat(shape);
+    assertThat(tensorBufferFloat).isNotNull();
+    assertThat(tensorBufferFloat.getFlatSize()).isEqualTo(0);
+  }
 
-    @Test
-    public void testGetDataType() {
-        TensorBufferFloat tensorBufferFloat = new TensorBufferFloat();
-        assertThat(tensorBufferFloat.getDataType()).isEqualTo(DataType.FLOAT32);
-    }
+  @Test
+  public void testGetDataType() {
+    TensorBufferFloat tensorBufferFloat = new TensorBufferFloat();
+    assertThat(tensorBufferFloat.getDataType()).isEqualTo(DataType.FLOAT32);
+  }
 }

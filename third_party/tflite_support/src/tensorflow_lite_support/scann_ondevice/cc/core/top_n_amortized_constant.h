@@ -44,8 +44,7 @@ class TopNAmortizedConstant {
   std::vector<T> TakeUnsorted() {
     DCHECK_GT(limit_, 0) << "Cannot call TakeUnsorted on uninitialized "
                             "TopNAmortizedConstant instance.";
-    if (elements_.size() > limit_)
-      PartitionAndResizeToLimit();
+    if (elements_.size() > limit_) PartitionAndResizeToLimit();
     auto result = std::move(elements_);
     elements_.clear();
     approx_bottom_ = original_approx_bottom_;
@@ -54,15 +53,13 @@ class TopNAmortizedConstant {
   const std::vector<T>& ExtractUnsorted() {
     DCHECK_GT(limit_, 0) << "Cannot call ExtractUnsorted on uninitialized "
                             "TopNAmortizedConstant instance.";
-    if (elements_.size() > limit_)
-      PartitionAndResizeToLimit();
+    if (elements_.size() > limit_) PartitionAndResizeToLimit();
     return elements_;
   }
   std::vector<T> Take() {
     DCHECK_GT(limit_, 0) << "Cannot call Take on uninitialized "
                             "TopNAmortizedConstant instance.";
-    if (elements_.size() > limit_)
-      PartitionAndResizeToLimit();
+    if (elements_.size() > limit_) PartitionAndResizeToLimit();
     std::sort(elements_.begin(), elements_.end(), cmp_);
     auto result = std::move(elements_);
     elements_.clear();
@@ -103,8 +100,7 @@ struct Comparator {
                   const std::pair<float, int>& b) const {
     return a.first < b.first;
   }
-  bool operator()(float distance,
-                  int,
+  bool operator()(float distance, int,
                   const std::pair<float, int>& other) const {
     return distance < other.first;
   }

@@ -54,13 +54,13 @@ struct TFLPos {
  * @param modelPath The file path to the tflite model.
  * @return A BertQuestionAnswerer instance.
  */
-+ (instancetype)questionAnswererWithModelPath:(NSString*)modelPath
++ (instancetype)questionAnswererWithModelPath:(NSString *)modelPath
     NS_SWIFT_NAME(questionAnswerer(modelPath:));
 
 /**
  * Answers question based on the context. Could be empty if no answer was found
  * from the given context.
- *
+ * 
  * @param context Context the question bases on.
  * @param question Question to ask.
  *

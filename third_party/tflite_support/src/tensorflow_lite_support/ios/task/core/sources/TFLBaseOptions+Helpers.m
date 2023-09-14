@@ -22,18 +22,16 @@
     cBaseOptions->compute_settings.cpu_settings.num_threads =
         (int)self.computeSettings.cpuSettings.numThreads;
     if (self.coreMLDelegateSettings) {
-      cBaseOptions->compute_settings.coreml_delegate_settings.enable_delegate =
-          true;
+      cBaseOptions->compute_settings.coreml_delegate_settings.enable_delegate = true;
       cBaseOptions->compute_settings.coreml_delegate_settings.coreml_version =
           self.coreMLDelegateSettings.coreMLVersion;
       switch (self.coreMLDelegateSettings.enabledDevices) {
         case TFLCoreMLDelegateSettings_DevicesAll:
-          cBaseOptions->compute_settings.coreml_delegate_settings
-              .enabled_devices = kDevicesAll;
+          cBaseOptions->compute_settings.coreml_delegate_settings.enabled_devices = kDevicesAll;
           break;
         case TFLCoreMLDelegateSettings_DevicesWithNeuralEngine:
-          cBaseOptions->compute_settings.coreml_delegate_settings
-              .enabled_devices = kDevicesWithNeuralEngine;
+          cBaseOptions->compute_settings.coreml_delegate_settings.enabled_devices =
+              kDevicesWithNeuralEngine;
           break;
       }
     }

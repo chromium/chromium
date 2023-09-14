@@ -1,7 +1,6 @@
 load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
@@ -11,7 +10,7 @@ cc_library_with_tflite(
     srcs = ["tflite_engine.cc"],
     hdrs = ["tflite_engine.h"],
     tflite_deps = [
-        "@org_tensorflow//tensorflow/lite/core/shims:common",
+        "@org_tensorflow//tensorflow/lite/c:common",
         # The dependency on builtin_ops here is only for the default
         # value of the OpResolver parameter:
         #     std::unique_ptr<tflite::IterableOpResolver> resolver =
@@ -19,9 +18,9 @@ cc_library_with_tflite(
         # When linking statically, if the client of this library doesn't use
         # the default argument, this dependency does not cause all the builtin ops
         # to get included in the executable.
-        "@org_tensorflow//tensorflow/lite/core/shims:builtin_ops",
-        "@org_tensorflow//tensorflow/lite/core/shims:framework",
-        "@org_tensorflow//tensorflow/lite/core/shims:verifier",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite/tools:verifier",
         "//tensorflow_lite_support/cc/port:tflite_wrapper",
     ],
     visibility = [
@@ -70,6 +69,7 @@ cc_library_with_tflite(
     tflite_deps = [
         ":base_task_api",
         ":tflite_engine",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",  # For default value of OpResolver parameter.
     ],
     visibility = [
         "//tensorflow_lite_support:internal",

@@ -20,7 +20,7 @@ limitations under the License.
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
@@ -90,8 +90,7 @@ class ImageEmbedder
   // region of interest. Note that the region of interest is not clamped, so
   // this method will fail if the region is out of bounds of the input image.
   tflite::support::StatusOr<EmbeddingResult> Embed(
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi);
+      const FrameBuffer& frame_buffer, const BoundingBox& roi);
 
   // Returns the Embedding output by the output_index'th layer. In (the most
   // common) case where a single embedding is produced, you can just call
@@ -114,8 +113,7 @@ class ImageEmbedder
   //
   // [1]: https://en.wikipedia.org/wiki/Cosine_similarity
   static tflite::support::StatusOr<double> CosineSimilarity(
-      const FeatureVector& u,
-      const FeatureVector& v);
+      const FeatureVector& u, const FeatureVector& v);
 
  protected:
   // The options used to build this ImageEmbedder.
@@ -124,8 +122,7 @@ class ImageEmbedder
   // Post-processing to transform the raw model outputs into embedding results.
   tflite::support::StatusOr<EmbeddingResult> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors,
-      const FrameBuffer& frame_buffer,
-      const BoundingBox& roi) override;
+      const FrameBuffer& frame_buffer, const BoundingBox& roi) override;
 
   // Performs pre-initialization actions.
   virtual absl::Status PreInit();

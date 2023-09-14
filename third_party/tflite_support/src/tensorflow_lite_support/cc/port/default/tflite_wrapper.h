@@ -19,7 +19,7 @@ limitations under the License.
 #include <string>
 #include <utility>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/acceleration/configuration/configuration.pb.h"
 #include "tensorflow/lite/acceleration/configuration/delegate_registry.h"

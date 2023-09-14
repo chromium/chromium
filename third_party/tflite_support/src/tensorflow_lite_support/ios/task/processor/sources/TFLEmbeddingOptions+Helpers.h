@@ -19,8 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLEmbeddingOptions (Helpers)
 
-- (void)copyToCppOptions:
-    (tflite::task::processor::EmbeddingOptions*)cppEmbeddingOptions;
+- (void)copyToCppOptions:(tflite::task::processor::EmbeddingOptions *)cppEmbeddingOptions;
 
 @end
 

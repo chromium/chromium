@@ -14,7 +14,7 @@ limitations under the License.
 ==============================================================================*/
 #include "tensorflow_lite_support/cc/task/processor/audio_preprocessor.h"
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -29,8 +29,7 @@ namespace {
 // Looks up AudioProperty from metadata. If no error occurs, the returned value
 // is guaranteed to be valid (not null).
 tflite::support::StatusOr<const AudioProperties*> GetAudioPropertiesSafe(
-    const TensorMetadata* tensor_metadata,
-    int input_index) {
+    const TensorMetadata* tensor_metadata, int input_index) {
   if (tensor_metadata->content() == nullptr ||
       tensor_metadata->content()->content_properties() == nullptr) {
     return CreateStatusWithPayload(

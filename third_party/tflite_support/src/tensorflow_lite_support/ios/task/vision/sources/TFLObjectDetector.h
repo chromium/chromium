@@ -30,31 +30,28 @@ NS_SWIFT_NAME(ObjectDetectorOptions)
  * Base options that is used for creation of any type of task.
  * @discussion Please see `TFLBaseOptions` for more details.
  */
-@property(nonatomic, copy) TFLBaseOptions* baseOptions;
+@property(nonatomic, copy) TFLBaseOptions *baseOptions;
 
 /**
  * Options that configure the display and filtering of results.
  * @discussion Please see `TFLClassificationOptions` for more details.
  */
-@property(nonatomic, copy) TFLClassificationOptions* classificationOptions;
+@property(nonatomic, copy) TFLClassificationOptions *classificationOptions;
 
 /**
- * Initializes a new `TFLObjectDetectorOptions` with the absolute path to the
- * model file stored locally on the device, set to the given the model path.
+ * Initializes a new `TFLObjectDetectorOptions` with the absolute path to the model file
+ * stored locally on the device, set to the given the model path.
  *
- * @discussion The external model file, must be a single standalone TFLite file.
- * It could be packed with TFLite Model Metadata[1] and associated files if
- * exist. Fail to provide the necessary metadata and associated files might
- * result in errors. Check the [documentation]
- * (https://www.tensorflow.org/lite/convert/metadata) for each task about the
- * specific requirement.
+ * @discussion The external model file, must be a single standalone TFLite file. It could be packed
+ * with TFLite Model Metadata[1] and associated files if exist. Fail to provide the necessary
+ * metadata and associated files might result in errors. Check the [documentation]
+ * (https://www.tensorflow.org/lite/convert/metadata) for each task about the specific requirement.
  *
- * @param modelPath An absolute path to a TensorFlow Lite model file stored
- * locally on the device.
+ * @param modelPath An absolute path to a TensorFlow Lite model file stored locally on the device.
  * @return An instance of `TFLObjectDetectorOptions` initialized to the given
  * model path.
  */
-- (instancetype)initWithModelPath:(NSString*)modelPath;
+- (instancetype)initWithModelPath:(NSString *)modelPath;
 
 @end
 
@@ -62,43 +59,40 @@ NS_SWIFT_NAME(ObjectDetector)
 @interface TFLObjectDetector : NSObject
 
 /**
- * Creates a new instance of `TFLObjectDetector` from the given
- * `TFLObjectDetectorOptions`.
+ * Creates a new instance of `TFLObjectDetector` from the given `TFLObjectDetectorOptions`.
  *
  * @param options The options to use for configuring the `TFLObjectDetector`.
- * @param error An optional error parameter populated when there is an error in
- * initializing the object detector.
+ * @param error An optional error parameter populated when there is an error in initializing
+ * the object detector.
  *
- * @return A new instance of `TFLObjectDetector` with the given options. `nil`
- * if there is an error in initializing the object detector.
+ * @return A new instance of `TFLObjectDetector` with the given options. `nil` if there is an error
+ * in initializing the object detector.
  */
-+ (nullable instancetype)objectDetectorWithOptions:
-                             (TFLObjectDetectorOptions*)options
-                                             error:(NSError**)error
++ (nullable instancetype)objectDetectorWithOptions:(TFLObjectDetectorOptions *)options
+                                             error:(NSError **)error
     NS_SWIFT_NAME(detector(options:));
 
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
  * Performs object detection on the given GMLImage.
- * @discussion This method currently supports object detection on only the
- * following types of images:
+ * @discussion This method currently supports object detection on only the following types of
+ * images:
  * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
  * 2. `kCVPixelFormatType_32BGRA` for `GMLImageSourceTypePixelBuffer` and
- *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to
- * setup camera and get the frames for inference, you must request for this
- * format from AVCaptureVideoDataOutput. Otherwise your object detection results
- * will be wrong.
+ *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to setup
+ *    camera and get the frames for inference, you must request for this format
+ *    from AVCaptureVideoDataOutput. Otherwise your object detection
+ *    results will be wrong.
  *
- * @param image An image on which object detection is to be performed,
- * represented as a `GMLImage`.
+ * @param image An image on which object detection is to be performed, represented as a `GMLImage`.
  *
- * @return A `TFLDetectionResult` holding an array of TFLDetection objects, each
- * having a bounding box specifying the region the were detected in and an array
- * of predicted classes. Please see `TFLDetectionResult` for more details.
+ * @return A `TFLDetectionResult` holding an array of TFLDetection objects, each having a bounding
+ * box specifying the region the were detected in and an array of predicted classes. Please see
+ * `TFLDetectionResult` for more details.
  */
-- (nullable TFLDetectionResult*)detectWithGMLImage:(GMLImage*)image
-                                             error:(NSError**)error
+- (nullable TFLDetectionResult *)detectWithGMLImage:(GMLImage *)image
+                                              error:(NSError **)error
     NS_SWIFT_NAME(detect(mlImage:));
 
 - (instancetype)init NS_UNAVAILABLE;

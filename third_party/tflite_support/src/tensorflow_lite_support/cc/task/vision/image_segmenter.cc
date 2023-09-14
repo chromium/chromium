@@ -17,10 +17,10 @@ limitations under the License.
 
 #include <algorithm>
 
-#include "absl/memory/memory.h"        // from @com_google_absl
-#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
-#include "flatbuffers/flatbuffers.h"   // from @flatbuffers
+#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
@@ -110,8 +110,7 @@ constexpr uint8 kColorMap[768] = {
 
 StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
     const ModelMetadataExtractor& metadata_extractor,
-    const TensorMetadata& tensor_metadata,
-    absl::string_view locale) {
+    const TensorMetadata& tensor_metadata, absl::string_view locale) {
   const std::string labels_filename =
       ModelMetadataExtractor::FindFirstAssociatedFileName(
           tensor_metadata, tflite::AssociatedFileType_TENSOR_AXIS_LABELS);
@@ -333,8 +332,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Segment(
 
 StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors,
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& frame_buffer, const BoundingBox& /*roi*/) {
   if (output_tensors.size() != 1) {
     return CreateStatusWithPayload(
         StatusCode::kInternal,
@@ -434,10 +432,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
 }
 
 StatusOr<float> ImageSegmenter::GetOutputConfidence(
-    const TfLiteTensor& output_tensor,
-    int x,
-    int y,
-    int depth) {
+    const TfLiteTensor& output_tensor, int x, int y, int depth) {
   int index = output_width_ * output_depth_ * y + output_depth_ * x + depth;
   if (has_uint8_outputs_) {
     ASSIGN_OR_RETURN(const uint8* data,

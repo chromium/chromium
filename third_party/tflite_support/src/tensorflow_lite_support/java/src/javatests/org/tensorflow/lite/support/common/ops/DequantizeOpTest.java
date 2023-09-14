@@ -26,15 +26,16 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 /** Tests of {@link DequantizeOp}. */
 @RunWith(RobolectricTestRunner.class)
 public final class DequantizeOpTest {
-    @Test
-    public void dequantizeShouldSucess() {
-        int[] originalData = new int[] {191, 159, 63, 127, 255, 0};
-        DequantizeOp op = new DequantizeOp(127.0f, 1.0f / 128);
-        TensorBuffer input = TensorBuffer.createFixedSize(new int[] {6}, DataType.UINT8);
-        input.loadArray(originalData);
-        TensorBuffer dequantized = op.apply(input);
-        assertThat(dequantized.getDataType()).isEqualTo(DataType.FLOAT32);
-        assertThat(dequantized.getFloatArray())
-                .isEqualTo(new float[] {0.5f, 0.25f, -0.5f, 0, 1, -0.9921875f});
-    }
+
+  @Test
+  public void dequantizeShouldSucess() {
+    int[] originalData = new int[] {191, 159, 63, 127, 255, 0};
+    DequantizeOp op = new DequantizeOp(127.0f, 1.0f / 128);
+    TensorBuffer input = TensorBuffer.createFixedSize(new int[] {6}, DataType.UINT8);
+    input.loadArray(originalData);
+    TensorBuffer dequantized = op.apply(input);
+    assertThat(dequantized.getDataType()).isEqualTo(DataType.FLOAT32);
+    assertThat(dequantized.getFloatArray())
+        .isEqualTo(new float[] {0.5f, 0.25f, -0.5f, 0, 1, -0.9921875f});
+  }
 }

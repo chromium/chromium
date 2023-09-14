@@ -24,98 +24,114 @@ import org.robolectric.RobolectricTestRunner;
 /** Tests of {@link org.tensorflow.lite.support.label.Category}. */
 @RunWith(RobolectricTestRunner.class)
 public final class CategoryTest {
-    private static final String APPLE_LABEL = "apple";
-    private static final String DEFAULT_DISPLAY_NAME = "";
-    private static final String APPLE_DISPLAY_NAME = "manzana"; // "apple" in Spanish.
-    private static final float APPLE_SCORE = 0.5f;
-    private static final int APPLE_INDEX = 10;
+  private static final String APPLE_LABEL = "apple";
+  private static final String DEFAULT_DISPLAY_NAME = "";
+  private static final String APPLE_DISPLAY_NAME = "manzana"; // "apple" in Spanish.
+  private static final float APPLE_SCORE = 0.5f;
+  private static final int APPLE_INDEX = 10;
 
-    @Test
-    public void createShouldSucceed() {
-        Category category = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
+  @Test
+  public void createShouldSucceed() {
+    Category category = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
 
-        assertThat(category.getLabel()).isEqualTo(APPLE_LABEL);
-        assertThat(category.getDisplayName()).isEqualTo(APPLE_DISPLAY_NAME);
-        assertThat(category.getScore()).isWithin(1e-7f).of(APPLE_SCORE);
-    }
+    assertThat(category.getLabel()).isEqualTo(APPLE_LABEL);
+    assertThat(category.getDisplayName()).isEqualTo(APPLE_DISPLAY_NAME);
+    assertThat(category.getScore()).isWithin(1e-7f).of(APPLE_SCORE);
+  }
 
-    @Test
-    public void createWithIndexShouldSucceed() {
-        Category category =
-                Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
+  @Test
+  public void createWithIndexShouldSucceed() {
+    Category category = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
 
-        assertThat(category.getLabel()).isEqualTo(APPLE_LABEL);
-        assertThat(category.getDisplayName()).isEqualTo(APPLE_DISPLAY_NAME);
-        assertThat(category.getScore()).isWithin(1e-7f).of(APPLE_SCORE);
-        assertThat(category.getIndex()).isEqualTo(APPLE_INDEX);
-    }
+    assertThat(category.getLabel()).isEqualTo(APPLE_LABEL);
+    assertThat(category.getDisplayName()).isEqualTo(APPLE_DISPLAY_NAME);
+    assertThat(category.getScore()).isWithin(1e-7f).of(APPLE_SCORE);
+    assertThat(category.getIndex()).isEqualTo(APPLE_INDEX);
+  }
 
-    @Test
-    public void constructorShouldSucceed() {
-        Category category = new Category(APPLE_LABEL, APPLE_SCORE);
+  @Test
+  public void constructorShouldSucceed() {
+    Category category = new Category(APPLE_LABEL, APPLE_SCORE);
 
-        assertThat(category.getLabel()).isEqualTo(APPLE_LABEL);
-        // Using the constructor, displayName will be default to an empty string.
-        assertThat(category.getDisplayName()).isEqualTo(DEFAULT_DISPLAY_NAME);
-        assertThat(category.getScore()).isWithin(1e-7f).of(APPLE_SCORE);
-    }
+    assertThat(category.getLabel()).isEqualTo(APPLE_LABEL);
+    // Using the constructor, displayName will be default to an empty string.
+    assertThat(category.getDisplayName()).isEqualTo(DEFAULT_DISPLAY_NAME);
+    assertThat(category.getScore()).isWithin(1e-7f).of(APPLE_SCORE);
+  }
 
-    @Test
-    public void toStringWithCreateShouldProvideReadableResult() {
-        Category category = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
-        String categoryString = category.toString();
+  @Test
+  public void toStringWithCreateShouldProvideReadableResult() {
+    Category category = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
+    String categoryString = category.toString();
 
-        assertThat(categoryString)
-                .isEqualTo("<Category \"" + APPLE_LABEL + "\" (displayName=" + APPLE_DISPLAY_NAME
-                        + " score=" + APPLE_SCORE + " index=-1"
-                        + ")>");
-    }
+    assertThat(categoryString)
+        .isEqualTo(
+            "<Category \""
+                + APPLE_LABEL
+                + "\" (displayName="
+                + APPLE_DISPLAY_NAME
+                + " score="
+                + APPLE_SCORE
+                + " index=-1"
+                + ")>");
+  }
 
-    @Test
-    public void toStringWithCreateIndexShouldProvideReadableResult() {
-        Category category =
-                Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
-        String categoryString = category.toString();
+  @Test
+  public void toStringWithCreateIndexShouldProvideReadableResult() {
+    Category category = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
+    String categoryString = category.toString();
 
-        assertThat(categoryString)
-                .isEqualTo("<Category \"" + APPLE_LABEL + "\" (displayName=" + APPLE_DISPLAY_NAME
-                        + " score=" + APPLE_SCORE + " index=" + APPLE_INDEX + ")>");
-    }
+    assertThat(categoryString)
+        .isEqualTo(
+            "<Category \""
+                + APPLE_LABEL
+                + "\" (displayName="
+                + APPLE_DISPLAY_NAME
+                + " score="
+                + APPLE_SCORE
+                + " index="
+                + APPLE_INDEX
+                + ")>");
+  }
 
-    @Test
-    public void toStringWithConstuctorShouldProvideReadableResult() {
-        Category category = new Category(APPLE_LABEL, APPLE_SCORE);
-        String categoryString = category.toString();
+  @Test
+  public void toStringWithConstuctorShouldProvideReadableResult() {
+    Category category = new Category(APPLE_LABEL, APPLE_SCORE);
+    String categoryString = category.toString();
 
-        assertThat(categoryString)
-                .isEqualTo("<Category \"" + APPLE_LABEL + "\" (displayName=" + DEFAULT_DISPLAY_NAME
-                        + " score=" + APPLE_SCORE + " index=-1"
-                        + ")>");
-    }
+    assertThat(categoryString)
+        .isEqualTo(
+            "<Category \""
+                + APPLE_LABEL
+                + "\" (displayName="
+                + DEFAULT_DISPLAY_NAME
+                + " score="
+                + APPLE_SCORE
+                + " index=-1"
+                + ")>");
+  }
 
-    @Test
-    public void equalsShouldSucceedWithCreate() {
-        Category categoryA = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
-        Category categoryB = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
+  @Test
+  public void equalsShouldSucceedWithCreate() {
+    Category categoryA = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
+    Category categoryB = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE);
 
-        assertThat(categoryA).isEqualTo(categoryB);
-    }
+    assertThat(categoryA).isEqualTo(categoryB);
+  }
 
-    @Test
-    public void equalsShouldSucceedWithCreateIndex() {
-        Category categoryA =
-                Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
-        Category categoryB =
-                Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
+  @Test
+  public void equalsShouldSucceedWithCreateIndex() {
+    Category categoryA = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
+    Category categoryB = Category.create(APPLE_LABEL, APPLE_DISPLAY_NAME, APPLE_SCORE, APPLE_INDEX);
 
-        assertThat(categoryA).isEqualTo(categoryB);
-    }
+    assertThat(categoryA).isEqualTo(categoryB);
+  }
 
-    @Test
-    public void equalsShouldSucceedWithConstructor() {
-        Category categoryA = new Category(APPLE_LABEL, APPLE_SCORE);
-        Category categoryB = new Category(APPLE_LABEL, APPLE_SCORE);
+  @Test
+  public void equalsShouldSucceedWithConstructor() {
+    Category categoryA = new Category(APPLE_LABEL, APPLE_SCORE);
+    Category categoryB = new Category(APPLE_LABEL, APPLE_SCORE);
 
-        assertThat(categoryA).isEqualTo(categoryB);
-    }
+    assertThat(categoryA).isEqualTo(categoryB);
+  }
 }

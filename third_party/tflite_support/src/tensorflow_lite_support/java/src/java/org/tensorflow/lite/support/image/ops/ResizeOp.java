@@ -19,7 +19,6 @@ import static org.tensorflow.lite.support.common.internal.SupportPreconditions.c
 
 import android.graphics.Bitmap;
 import android.graphics.PointF;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tensorflow.lite.support.image.ColorSpaceType;
 import org.tensorflow.lite.support.image.ImageOperator;
@@ -33,60 +32,64 @@ import org.tensorflow.lite.support.image.TensorImage;
  * @see ResizeWithCropOrPadOp for resizing without content distortion.
  */
 public class ResizeOp implements ImageOperator {
-    /** Algorithms for resizing. */
-    public enum ResizeMethod { BILINEAR, NEAREST_NEIGHBOR }
 
-    private final int targetHeight;
-    private final int targetWidth;
-    private final boolean useBilinear;
+  /** Algorithms for resizing. */
+  public enum ResizeMethod {
+    BILINEAR,
+    NEAREST_NEIGHBOR
+  }
 
-    /**
-     * Creates a ResizeOp which can resize images to specified size in specified method.
-     *
-     * @param targetHeight The expected height of resized image.
-     * @param targetWidth The expected width of resized image.
-     * @param resizeMethod The algorithm to use for resizing. Options: {@link ResizeMethod}
-     */
-    public ResizeOp(int targetHeight, int targetWidth, ResizeMethod resizeMethod) {
-        this.targetHeight = targetHeight;
-        this.targetWidth = targetWidth;
-        useBilinear = (resizeMethod == ResizeMethod.BILINEAR);
-    }
+  private final int targetHeight;
+  private final int targetWidth;
+  private final boolean useBilinear;
 
-    /**
-     * Applies the defined resizing on given image and returns the result.
-     *
-     * <p>Note: the content of input {@code image} will change, and {@code image} is the same
-     * instance with the output.
-     *
-     * @param image input image.
-     * @return output image.
-     */
-    @Override
-    @NonNull
-    public TensorImage apply(@NonNull TensorImage image) {
-        checkArgument(image.getColorSpaceType() == ColorSpaceType.RGB,
-                "Only RGB images are supported in ResizeOp, but not "
-                        + image.getColorSpaceType().name());
-        Bitmap scaled = Bitmap.createScaledBitmap(
-                image.getBitmap(), targetWidth, targetHeight, useBilinear);
-        image.load(scaled);
-        return image;
-    }
+  /**
+   * Creates a ResizeOp which can resize images to specified size in specified method.
+   *
+   * @param targetHeight The expected height of resized image.
+   * @param targetWidth The expected width of resized image.
+   * @param resizeMethod The algorithm to use for resizing. Options: {@link ResizeMethod}
+   */
+  public ResizeOp(int targetHeight, int targetWidth, ResizeMethod resizeMethod) {
+    this.targetHeight = targetHeight;
+    this.targetWidth = targetWidth;
+    useBilinear = (resizeMethod == ResizeMethod.BILINEAR);
+  }
 
-    @Override
-    public int getOutputImageHeight(int inputImageHeight, int inputImageWidth) {
-        return targetHeight;
-    }
+  /**
+   * Applies the defined resizing on given image and returns the result.
+   *
+   * <p>Note: the content of input {@code image} will change, and {@code image} is the same instance
+   * with the output.
+   *
+   * @param image input image.
+   * @return output image.
+   */
+  @Override
+  @NonNull
+  public TensorImage apply(@NonNull TensorImage image) {
+    checkArgument(
+        image.getColorSpaceType() == ColorSpaceType.RGB,
+        "Only RGB images are supported in ResizeOp, but not " + image.getColorSpaceType().name());
+    Bitmap scaled =
+        Bitmap.createScaledBitmap(image.getBitmap(), targetWidth, targetHeight, useBilinear);
+    image.load(scaled);
+    return image;
+  }
 
-    @Override
-    public int getOutputImageWidth(int inputImageHeight, int inputImageWidth) {
-        return targetWidth;
-    }
+  @Override
+  public int getOutputImageHeight(int inputImageHeight, int inputImageWidth) {
+    return targetHeight;
+  }
 
-    @Override
-    public PointF inverseTransform(PointF point, int inputImageHeight, int inputImageWidth) {
-        return new PointF(
-                point.x * inputImageWidth / targetWidth, point.y * inputImageHeight / targetHeight);
-    }
+  @Override
+  public int getOutputImageWidth(int inputImageHeight, int inputImageWidth) {
+    return targetWidth;
+  }
+
+  @Override
+  public PointF inverseTransform(PointF point, int inputImageHeight, int inputImageWidth) {
+    return new PointF(
+        point.x * inputImageWidth / targetWidth, point.y * inputImageHeight / targetHeight);
+  }
 }

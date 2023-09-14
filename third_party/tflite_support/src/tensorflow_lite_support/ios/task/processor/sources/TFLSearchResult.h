@@ -22,10 +22,10 @@ NS_SWIFT_NAME(NearestNeighbor)
 @interface TFLNearestNeighbor : NSObject
 
 /**
- * User-defined metadata about the result. This could be a label, a unique ID, a
- * serialized proto of some sort, etc.
+ * User-defined metadata about the result. This could be a label, a unique ID, a serialized proto of
+ * some sort, etc.
  */
-@property(nonatomic, readonly) NSString* metadata;
+@property(nonatomic, readonly) NSString *metadata;
 
 /**
  * The distance score indicating how confident the result is. Lower is better.
@@ -35,15 +35,14 @@ NS_SWIFT_NAME(NearestNeighbor)
 /**
  * Initializes a new `TFLNearestNeighbor`.
  *
- * @param metadata User-defined metadata about the result. This could be a
- * label, a unique ID, a serialized proto of some sort, etc.User-defined
- * metadata about the result. This could be a label, a unique ID, a serialized
- * proto of some sort, etc.
+ * @param metadata User-defined metadata about the result. This could be a label, a unique ID, a
+ * serialized proto of some sort, etc.User-defined metadata about the result. This could be a label,
+ * a unique ID, a serialized proto of some sort, etc.
  * @param distance The distance score indicating how confident the result is.
  *
  * @return An instance of `TFLNearestNeighbor` initialized to the given values.
  */
-- (instancetype)initWithMetadata:(NSString*)metadata
+- (instancetype)initWithMetadata:(NSString *)metadata
                         distance:(CGFloat)distance NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -59,20 +58,20 @@ NS_SWIFT_NAME(SearchResult)
 /**
  * The nearest neighbors, sorted by increasing distance order.
  */
-@property(nonatomic, readonly) NSArray<TFLNearestNeighbor*>* nearestNeighbors;
+@property(nonatomic, readonly) NSArray<TFLNearestNeighbor *> *nearestNeighbors;
 
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
  * Initializes a new `TFLSearchResult`.
  *
- * @param nearestNeighbors An array of nearest neighbors detected in the search
- * sorted by increasing disance order.
+ * @param nearestNeighbors An array of nearest neighbors detected in the search sorted by increasing
+ * disance order.
  *
  * @return An instance of TFLSearchResult initialized to the given values.
  */
-- (instancetype)initWithNearestNeighbors:
-    (NSArray<TFLNearestNeighbor*>*)nearestNeighbors NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNearestNeighbors:(NSArray<TFLNearestNeighbor *> *)nearestNeighbors
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

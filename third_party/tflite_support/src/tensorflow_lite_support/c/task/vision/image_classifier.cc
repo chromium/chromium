@@ -108,8 +108,7 @@ TfLiteImageClassifierOptions TfLiteImageClassifierOptionsCreate(void) {
 }
 
 TfLiteImageClassifier* TfLiteImageClassifierFromOptions(
-    const TfLiteImageClassifierOptions* options,
-    TfLiteSupportError** error) {
+    const TfLiteImageClassifierOptions* options, TfLiteSupportError** error) {
   StatusOr<ImageClassifierOptionsCpp> cpp_option_status =
       CreateImageClassifierCppOptionsFromCOptions(options);
 
@@ -177,8 +176,7 @@ TfLiteClassificationResult* GetClassificationResultCStruct(
 
 TfLiteClassificationResult* TfLiteImageClassifierClassifyWithRoi(
     const TfLiteImageClassifier* classifier,
-    const TfLiteFrameBuffer* frame_buffer,
-    const TfLiteBoundingBox* roi,
+    const TfLiteFrameBuffer* frame_buffer, const TfLiteBoundingBox* roi,
     TfLiteSupportError** error) {
   if (classifier == nullptr) {
     tflite::support::CreateTfLiteSupportError(
@@ -221,8 +219,7 @@ TfLiteClassificationResult* TfLiteImageClassifierClassifyWithRoi(
 
 TfLiteClassificationResult* TfLiteImageClassifierClassify(
     const TfLiteImageClassifier* classifier,
-    const TfLiteFrameBuffer* frame_buffer,
-    TfLiteSupportError** error) {
+    const TfLiteFrameBuffer* frame_buffer, TfLiteSupportError** error) {
   return TfLiteImageClassifierClassifyWithRoi(classifier, frame_buffer, nullptr,
                                               error);
 }

@@ -43,8 +43,7 @@ using ::tflite::task::vision::ImageDataFree;
 
 using EdgeTpuCoralPluginTest = testing::TestWithParam<std::string>;
 
-INSTANTIATE_TEST_SUITE_P(CoralPluginTests,
-                         EdgeTpuCoralPluginTest,
+INSTANTIATE_TEST_SUITE_P(CoralPluginTests, EdgeTpuCoralPluginTest,
                          testing::Values(kRegularModelFilePath,
                                          kEdgeTpuModelFilePath));
 

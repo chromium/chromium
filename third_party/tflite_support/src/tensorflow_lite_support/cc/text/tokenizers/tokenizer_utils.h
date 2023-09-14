@@ -26,6 +26,7 @@ namespace support {
 namespace text {
 namespace tokenizer {
 
+
 // Create a Tokenizer from model metadata by extracting
 tflite::support::StatusOr<std::unique_ptr<Tokenizer>>
 CreateTokenizerFromProcessUnit(

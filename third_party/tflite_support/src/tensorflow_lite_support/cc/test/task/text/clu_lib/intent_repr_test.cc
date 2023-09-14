@@ -29,7 +29,7 @@ TEST(IntentClassification, IntentRepr) {
 
 TEST(IntentClassification, IntentRepr2) {
   SUPPORT_ASSERT_OK_AND_ASSIGN(const auto intent_repr,
-                               IntentRepr::CreateFromFullName("REQUEST"));
+                       IntentRepr::CreateFromFullName("REQUEST"));
   EXPECT_EQ(intent_repr.Name(), "REQUEST");
   EXPECT_EQ(intent_repr.Domain(), "");
 }

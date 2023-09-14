@@ -134,8 +134,7 @@ jobject ConvertToClassificationResults(JNIEnv* env,
 }
 
 // Creates an AudioClassifierOptions proto based on the Java class.
-AudioClassifierOptions ConvertToProtoOptions(JNIEnv* env,
-                                             jobject java_options,
+AudioClassifierOptions ConvertToProtoOptions(JNIEnv* env, jobject java_options,
                                              jlong base_options_handle) {
   AudioClassifierOptions proto_options;
 
@@ -215,9 +214,7 @@ jlong CreateAudioClassifierFromOptions(JNIEnv* env,
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_deinitJni(
-    JNIEnv* env,
-    jobject thiz,
-    jlong native_handle) {
+    JNIEnv* env, jobject thiz, jlong native_handle) {
   delete reinterpret_cast<AudioClassifier*>(native_handle);
 }
 
@@ -226,13 +223,9 @@ Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_deinitJni(
 // values will be ignored.
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_initJniWithModelFdAndOptions(
-    JNIEnv* env,
-    jclass thiz,
-    jint file_descriptor,
-    jlong file_descriptor_length,
-    jlong file_descriptor_offset,
-    jobject java_options,
-    jlong base_options_handle) {
+    JNIEnv* env, jclass thiz, jint file_descriptor,
+    jlong file_descriptor_length, jlong file_descriptor_offset,
+    jobject java_options, jlong base_options_handle) {
   AudioClassifierOptions proto_options =
       ConvertToProtoOptions(env, java_options, base_options_handle);
   auto file_descriptor_meta = proto_options.mutable_base_options()
@@ -250,10 +243,7 @@ Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_initJniWithModelF
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_initJniWithByteBuffer(
-    JNIEnv* env,
-    jclass thiz,
-    jobject model_buffer,
-    jobject java_options,
+    JNIEnv* env, jclass thiz, jobject model_buffer, jobject java_options,
     jlong base_options_handle) {
   AudioClassifierOptions proto_options =
       ConvertToProtoOptions(env, java_options, base_options_handle);
@@ -272,9 +262,7 @@ Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_initJniWithByteBu
 // caching it in JAVA layer.
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_getRequiredSampleRateNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle) {
+    JNIEnv* env, jclass thiz, jlong native_handle) {
   auto* classifier = reinterpret_cast<AudioClassifier*>(native_handle);
   StatusOr<AudioBuffer::AudioFormat> format_or =
       classifier->GetRequiredAudioFormat();
@@ -291,9 +279,7 @@ Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_getRequiredSample
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_getRequiredChannelsNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle) {
+    JNIEnv* env, jclass thiz, jlong native_handle) {
   auto* classifier = reinterpret_cast<AudioClassifier*>(native_handle);
   StatusOr<AudioBuffer::AudioFormat> format_or =
       classifier->GetRequiredAudioFormat();
@@ -310,21 +296,15 @@ Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_getRequiredChanne
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_getRequiredInputBufferSizeNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle) {
+    JNIEnv* env, jclass thiz, jlong native_handle) {
   auto* classifier = reinterpret_cast<AudioClassifier*>(native_handle);
   return classifier->GetRequiredInputBufferSize();
 }
 
 extern "C" JNIEXPORT jobject JNICALL
 Java_org_tensorflow_lite_task_audio_classifier_AudioClassifier_classifyNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle,
-    jbyteArray java_array,
-    jint channels,
-    jint sample_rate) {
+    JNIEnv* env, jclass thiz, jlong native_handle, jbyteArray java_array,
+    jint channels, jint sample_rate) {
   // Get the primitive native array. Depending on the JAVA runtime, the returned
   // array might be a copy of the JAVA array (or not).
   jbyte* native_array = env->GetByteArrayElements(java_array, nullptr);

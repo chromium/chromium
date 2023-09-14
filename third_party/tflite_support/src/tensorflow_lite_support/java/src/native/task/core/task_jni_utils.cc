@@ -30,10 +30,7 @@ using ::tflite::task::core::BaseOptions;
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_core_TaskJniUtils_createProtoBaseOptions(
-    JNIEnv* env,
-    jclass thiz,
-    jint delegate,
-    jint num_threads) {
+    JNIEnv* env, jclass thiz, jint delegate, jint num_threads) {
   StatusOr<Delegate> delegate_proto_or = ConvertToProtoDelegate(delegate);
   if (!delegate_proto_or.ok()) {
     ThrowException(env, kIllegalStateException,

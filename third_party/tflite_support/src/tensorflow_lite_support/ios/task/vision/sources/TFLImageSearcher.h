@@ -33,38 +33,33 @@ NS_SWIFT_NAME(ImageSearcherOptions)
  * model to use for embedding extraction, as well as hardware acceleration
  * options to use as inference time.
  */
-@property(nonatomic, copy) TFLBaseOptions* baseOptions;
+@property(nonatomic, copy) TFLBaseOptions *baseOptions;
 
 /**
  * Options controlling the behavior of the embedding model specified in the
  * base options.
  */
-@property(nonatomic, copy) TFLEmbeddingOptions* embeddingOptions;
+@property(nonatomic, copy) TFLEmbeddingOptions *embeddingOptions;
 
 /**
- * Options specifying the index to search into and controlling the search
- * behavior.
+ * Options specifying the index to search into and controlling the search behavior.
  */
-@property(nonatomic, copy) TFLSearchOptions* searchOptions;
+@property(nonatomic, copy) TFLSearchOptions *searchOptions;
 
 /**
- * Initializes a new `TFLImageSearcherOptions` with the absolute path to the
- * model file stored locally on the device, set to the given the model path.
+ * Initializes a new `TFLImageSearcherOptions` with the absolute path to the model file
+ * stored locally on the device, set to the given the model path.
  *
- * @discussion The external model file must be a single standalone TFLite file.
- * It could be packed with TFLite Model Metadata[1] and associated files if they
- * exist. Failure to provide the necessary metadata and associated files might
- * result in errors. Check the [documentation]
- * (https://www.tensorflow.org/lite/convert/metadata) for each task about the
- * specific requirement.
+ * @discussion The external model file must be a single standalone TFLite file. It could be packed
+ * with TFLite Model Metadata[1] and associated files if they exist. Failure to provide the
+ * necessary metadata and associated files might result in errors. Check the [documentation]
+ * (https://www.tensorflow.org/lite/convert/metadata) for each task about the specific requirement.
  *
- * @param modelPath An absolute path to a TensorFlow Lite model file stored
- * locally on the device.
+ * @param modelPath An absolute path to a TensorFlow Lite model file stored locally on the device.
  *
- * @return An instance of `TFLImageSearcherOptions` initialized to the given
- * model path.
+ * @return An instance of `TFLImageSearcherOptions` initialized to the given model path.
  */
-- (instancetype)initWithModelPath:(NSString*)modelPath;
+- (instancetype)initWithModelPath:(NSString *)modelPath;
 
 @end
 
@@ -75,77 +70,65 @@ NS_SWIFT_NAME(ImageSearcher)
 @interface TFLImageSearcher : NSObject
 
 /**
- * Creates a new instance of `TFLImageSearcher` from the given
- * `TFLImageSearcherOptions`.
+ * Creates a new instance of `TFLImageSearcher` from the given `TFLImageSearcherOptions`.
  *
  * @param options The options to use for configuring the `TFLImageSearcher`.
- * @param error An optional error parameter populated when there is an error in
- * initializing the image searcher.
+ * @param error An optional error parameter populated when there is an error in initializing
+ * the image searcher.
  *
- * @return A new instance of `ImageSearcher` with the given options. `nil` if
- * there is an error in initializing the image searcher.
+ * @return A new instance of `ImageSearcher` with the given options. `nil` if there is an error
+ * in initializing the image searcher.
  */
-+ (nullable instancetype)imageSearcherWithOptions:
-                             (TFLImageSearcherOptions*)options
-                                            error:(NSError**)error
++ (nullable instancetype)imageSearcherWithOptions:(TFLImageSearcherOptions *)options
+                                            error:(NSError **)error
     NS_SWIFT_NAME(searcher(options:));
 
 + (instancetype)new NS_UNAVAILABLE;
 
 /**
- * Performs embedding extraction on the given GMLImage, followed by
- nearest-neighbor search in the
+ * Performs embedding extraction on the given GMLImage, followed by nearest-neighbor search in the
  * index.
  *
- * @discussion This method currently supports searching on only the following
- types of images:
+ * @discussion This method currently supports searching on only the following types of images:
  * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
  * 2. kCVPixelFormatType_32BGRA for `GMLImageSourceTypePixelBuffer` and
- *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to
- setup
+ *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to setup
  *    camera and get the frames for inference, you must request for this format
- *    from AVCaptureVideoDataOutput. Otherwise your inference results will be
- wrong.
+ *    from AVCaptureVideoDataOutput. Otherwise your inference results will be wrong.
  *
- * @param image An image on which to perform embedding extraction, followed by a
- nearest-neighbor
+ * @param image An image on which to perform embedding extraction, followed by a nearest-neighbor
  * search in the index, represented as a `GMLImage`.
 
- * @return A `TFLSearchResult`. `nil` if there is an error encountered during
- embedding extraction
+ * @return A `TFLSearchResult`. `nil` if there is an error encountered during embedding extraction
  * and nearest neighbor search. Please see `TFLSearchResult` for more details.
  */
-- (nullable TFLSearchResult*)searchWithGMLImage:(GMLImage*)image
-                                          error:(NSError**)error
-    NS_SWIFT_NAME(search(mlImage:));
+- (nullable TFLSearchResult *)searchWithGMLImage:(GMLImage *)image
+                                           error:(NSError **)error NS_SWIFT_NAME(search(mlImage:));
 
 /**
- * Performs embedding extraction on the given GMLImage, followed by
- * nearest-neighbor search in the index on the pixels within the specified
- * region of interest of the given `GMLImage`.
- *
- * @discussion This method currently supports inference on only following type
- * of images:
- * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
- * 2. kCVPixelFormatType_32BGRA for `GMLImageSourceTypePixelBuffer` and
- *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to
- * setup camera and get the frames for inference, you must request for this
- * format from AVCaptureVideoDataOutput. Otherwise your classification results
- * will be wrong.
- *
- * @param image An image on which to perform embedding extraction, followed by a
- * nearest-neighbor search in the index, represented as a `GMLImage`.
- *
- * @param roi A CGRect specifying the region of interest within the given
+ * Performs embedding extraction on the given GMLImage, followed by nearest-neighbor search in the
+ * index on the pixels within the specified region of interest of the given
  * `GMLImage`.
  *
- * @return A TFLClassificationResult with one set of results per image
- * classifier head. `nil` if there is an error encountered during
- * classification.
+ * @discussion This method currently supports inference on only following type of images:
+ * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
+ * 2. kCVPixelFormatType_32BGRA for `GMLImageSourceTypePixelBuffer` and
+ *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to setup
+ *    camera and get the frames for inference, you must request for this format
+ *    from AVCaptureVideoDataOutput. Otherwise your classification
+ *    results will be wrong.
+ *
+ * @param image An image on which to perform embedding extraction, followed by a nearest-neighbor
+ * search in the index, represented as a `GMLImage`.
+ *
+ * @param roi A CGRect specifying the region of interest within the given `GMLImage`.
+ *
+ * @return A TFLClassificationResult with one set of results per image classifier head. `nil` if
+ * there is an error encountered during classification.
  */
-- (nullable TFLSearchResult*)searchWithGMLImage:(GMLImage*)image
-                               regionOfInterest:(CGRect)roi
-                                          error:(NSError**)error
+- (nullable TFLSearchResult *)searchWithGMLImage:(GMLImage *)image
+                                regionOfInterest:(CGRect)roi
+                                           error:(NSError **)error
     NS_SWIFT_NAME(search(mlImage:regionOfInterest:));
 
 - (instancetype)init NS_UNAVAILABLE;

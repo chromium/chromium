@@ -15,7 +15,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 
 #include "absl/memory/memory.h"  // from @com_google_absl
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/kernels/register.h"
 
 namespace tflite {
 namespace ops {
@@ -32,7 +32,7 @@ namespace text {
 
 std::unique_ptr<tflite::OpResolver> CreateTextOpResolver() {
   auto resolver =
-      absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>();
+      absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>();
   resolver->AddCustom(
       "TFSentencepieceTokenizeOp",
       ::tflite::ops::custom::Register_SENTENCEPIECE_TOKENIZER());

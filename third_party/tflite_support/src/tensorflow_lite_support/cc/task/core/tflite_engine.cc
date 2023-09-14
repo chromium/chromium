@@ -21,12 +21,12 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/strings/match.h"    // from @com_google_absl
+#include "absl/strings/match.h"  // from @com_google_absl
 #include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "tensorflow/lite/builtin_ops.h"
-#include "tensorflow/lite/core/kernels/register.h"
-#include "tensorflow/lite/core/tools/verifier.h"
+#include "tensorflow/lite/kernels/register.h"
 #include "tensorflow/lite/stderr_reporter.h"
+#include "tensorflow/lite/tools/verifier.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -42,8 +42,7 @@ using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::InterpreterCreationResources;
 using ::tflite::support::TfLiteSupportStatus;
 
-bool TfLiteEngine::Verifier::Verify(const char* data,
-                                    int length,
+bool TfLiteEngine::Verifier::Verify(const char* data, int length,
                                     tflite::ErrorReporter* reporter) {
   return tflite::Verify(data, length, reporter);
 }
@@ -74,8 +73,7 @@ std::vector<const TfLiteTensor*> TfLiteEngine::GetOutputs() {
 }
 
 void TfLiteEngine::VerifyAndBuildModelFromBuffer(
-    const char* buffer_data,
-    size_t buffer_size,
+    const char* buffer_data, size_t buffer_size,
     TfLiteVerifier* extra_verifier) {
   model_ = tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
       buffer_data, buffer_size, extra_verifier, &error_reporter_);
@@ -122,8 +120,7 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
 }
 
 absl::Status TfLiteEngine::BuildModelFromFlatBuffer(
-    const char* buffer_data,
-    size_t buffer_size,
+    const char* buffer_data, size_t buffer_size,
     const tflite::proto::ComputeSettings& compute_settings) {
   if (model_) {
     return CreateStatusWithPayload(StatusCode::kInternal,
@@ -212,8 +209,7 @@ absl::Status TfLiteEngine::InitInterpreter(int num_threads) {
 // absl::Status TfLiteEngine::InitInterpreter(
 //    const tflite::proto::ComputeSettings& compute_settings)
 absl::Status TfLiteEngine::InitInterpreter(
-    const tflite::proto::ComputeSettings& compute_settings,
-    int num_threads) {
+    const tflite::proto::ComputeSettings& compute_settings, int num_threads) {
   ComputeSettings settings_copy = ComputeSettings(compute_settings);
   settings_copy.mutable_tflite_settings()
       ->mutable_cpu_settings()

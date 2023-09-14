@@ -33,11 +33,11 @@ class ProtoMatcher {
       : message_(CloneMessage(message)) {}
 
   bool MatchAndExplain(const MessageType& m,
-                       testing::MatchResultListener*) const {
+                       ::testing::MatchResultListener*) const {
     return EqualsMessage(*message_, m);
   }
   bool MatchAndExplain(const MessageType* m,
-                       testing::MatchResultListener*) const {
+                       ::testing::MatchResultListener*) const {
     return EqualsMessage(*message_, *m);
   }
 

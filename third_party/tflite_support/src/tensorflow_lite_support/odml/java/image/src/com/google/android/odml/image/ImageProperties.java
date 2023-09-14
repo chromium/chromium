@@ -24,61 +24,63 @@ import com.google.auto.value.extension.memoized.Memoized;
 /** Groups a set of properties to describe how an image is stored. */
 @AutoValue
 public abstract class ImageProperties {
-    /**
-     * Gets the pixel format of the image.
-     *
-     * @see MlImage.ImageFormat
-     */
-    @ImageFormat
-    public abstract int getImageFormat();
+
+  /**
+   * Gets the pixel format of the image.
+   *
+   * @see MlImage.ImageFormat
+   */
+  @ImageFormat
+  public abstract int getImageFormat();
+
+  /**
+   * Gets the storage type of the image.
+   *
+   * @see MlImage.StorageType
+   */
+  @StorageType
+  public abstract int getStorageType();
+
+  @Memoized
+  @Override
+  public abstract int hashCode();
+
+  /**
+   * Creates a builder of {@link ImageProperties}.
+   *
+   * @see ImageProperties.Builder
+   */
+  @KeepForSdk
+  static Builder builder() {
+    return new AutoValue_ImageProperties.Builder();
+  }
+
+  /** Builds a {@link ImageProperties}. */
+  @AutoValue.Builder
+  @KeepForSdk
+  abstract static class Builder {
 
     /**
-     * Gets the storage type of the image.
+     * Sets the {@link MlImage.ImageFormat}.
      *
-     * @see MlImage.StorageType
-     */
-    @StorageType
-    public abstract int getStorageType();
-
-    @Memoized
-    @Override
-    public abstract int hashCode();
-
-    /**
-     * Creates a builder of {@link ImageProperties}.
-     *
-     * @see ImageProperties.Builder
+     * @see ImageProperties#getImageFormat
      */
     @KeepForSdk
-    static Builder builder() {
-        return new AutoValue_ImageProperties.Builder();
-    }
+    abstract Builder setImageFormat(@ImageFormat int value);
 
-    /** Builds a {@link ImageProperties}. */
-    @AutoValue.Builder
+    /**
+     * Sets the {@link MlImage.StorageType}.
+     *
+     * @see ImageProperties#getStorageType
+     */
     @KeepForSdk
-    abstract static class Builder {
-        /**
-         * Sets the {@link MlImage.ImageFormat}.
-         *
-         * @see ImageProperties#getImageFormat
-         */
-        @KeepForSdk
-        abstract Builder setImageFormat(@ImageFormat int value);
+    abstract Builder setStorageType(@StorageType int value);
 
-        /**
-         * Sets the {@link MlImage.StorageType}.
-         *
-         * @see ImageProperties#getStorageType
-         */
-        @KeepForSdk
-        abstract Builder setStorageType(@StorageType int value);
+    /** Builds the {@link ImageProperties}. */
+    @KeepForSdk
+    abstract ImageProperties build();
+  }
 
-        /** Builds the {@link ImageProperties}. */
-        @KeepForSdk
-        abstract ImageProperties build();
-    }
-
-    // Hide the constructor.
-    ImageProperties() {}
+  // Hide the constructor.
+  ImageProperties() {}
 }

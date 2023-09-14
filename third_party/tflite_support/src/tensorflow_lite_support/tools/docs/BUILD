@@ -1,9 +1,6 @@
 # Placeholder for internal Python strict binary compatibility macro.
 
-package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
-    licenses = ["notice"],
-)
+package(licenses = ["notice"])
 
 py_binary(
     name = "build_py_api_docs",

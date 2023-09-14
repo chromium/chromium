@@ -172,8 +172,7 @@ TfLiteImageSegmenterOptions TfLiteImageSegmenterOptionsCreate(void);
 // TfLiteSupportErrorDelete(error)
 //
 TfLiteImageSegmenter* TfLiteImageSegmenterFromOptions(
-    const TfLiteImageSegmenterOptions* options,
-    TfLiteSupportError** error);
+    const TfLiteImageSegmenterOptions* options, TfLiteSupportError** error);
 
 // Invokes the encapsulated TFLite model and performs image segmentation on
 // the frame_buffer.
@@ -202,8 +201,7 @@ TfLiteImageSegmenter* TfLiteImageSegmenterFromOptions(
 //
 TfLiteSegmentationResult* TfLiteImageSegmenterSegment(
     const TfLiteImageSegmenter* segmenter,
-    const TfLiteFrameBuffer* frame_buffer,
-    TfLiteSupportError** error);
+    const TfLiteFrameBuffer* frame_buffer, TfLiteSupportError** error);
 
 // Disposes of the image segmenter.
 void TfLiteImageSegmenterDelete(TfLiteImageSegmenter* segmenter);

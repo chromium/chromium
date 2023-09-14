@@ -19,17 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLDetectionResult (Helpers)
 /**
- * Creates and retrurns a TFLDetectionResult from a TfLiteDetectionResult
- * returned by TFLite Task C Library Object Detection task.
+ * Creates and retrurns a TFLDetectionResult from a TfLiteDetectionResult returned by
+ * TFLite Task C Library Object Detection task.
  *
  * @param cDetectionResult Detection  results returned by TFLite Task C Library
  * Object Detection task.
  *
- * @return Detection Result of type TFLDetectionResult to be returned by
- * inference methods of the iOS TF Lite Task Object Detection task.
+ * @return Detection Result of type TFLDetectionResult to be returned by inference methods
+ * of the iOS TF Lite Task Object Detection task.
  */
-+ (TFLDetectionResult*)detectionResultWithCResult:
-    (TfLiteDetectionResult*)cDetectionResult;
++ (TFLDetectionResult *)detectionResultWithCResult:(TfLiteDetectionResult *)cDetectionResult;
 @end
 
 NS_ASSUME_NONNULL_END

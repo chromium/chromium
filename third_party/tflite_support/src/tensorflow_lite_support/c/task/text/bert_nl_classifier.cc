@@ -40,8 +40,7 @@ struct TfLiteBertNLClassifier {
 };
 
 TfLiteBertNLClassifier* TfLiteBertNLClassifierCreateFromOptions(
-    const char* model_path,
-    const TfLiteBertNLClassifierOptions* options) {
+    const char* model_path, const TfLiteBertNLClassifierOptions* options) {
   BertNLClassifierOptionsCpp cc_options;
 
   cc_options.mutable_base_options()->mutable_model_file()->set_file_name(
@@ -65,8 +64,7 @@ TfLiteBertNLClassifier* TfLiteBertNLClassifierCreate(const char* model_path) {
 }
 
 Categories* TfLiteBertNLClassifierClassify(
-    const TfLiteBertNLClassifier* classifier,
-    const char* text) {
+    const TfLiteBertNLClassifier* classifier, const char* text) {
   std::vector<CategoryCpp> results =
 
       classifier->impl->Classify(absl::string_view(text).data());

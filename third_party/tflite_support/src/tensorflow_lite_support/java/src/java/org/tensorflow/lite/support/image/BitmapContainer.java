@@ -21,67 +21,67 @@ import static org.tensorflow.lite.support.common.internal.SupportPreconditions.c
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.media.Image;
-
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 /** Holds a {@link Bitmap} and converts it to other image formats as needed. */
 final class BitmapContainer implements ImageContainer {
-    private final Bitmap bitmap;
 
-    /**
-     * Creates a {@link BitmapContainer} object with ARGB_8888 {@link Bitmap}.
-     *
-     * @throws IllegalArgumentException if the bitmap configuration is not ARGB_8888
-     */
-    static BitmapContainer create(Bitmap bitmap) {
-        return new BitmapContainer(bitmap);
-    }
+  private final Bitmap bitmap;
 
-    private BitmapContainer(Bitmap bitmap) {
-        checkNotNull(bitmap, "Cannot load null bitmap.");
-        checkArgument(bitmap.getConfig().equals(Config.ARGB_8888),
-                "Only supports loading ARGB_8888 bitmaps.");
-        this.bitmap = bitmap;
-    }
+  /**
+   * Creates a {@link BitmapContainer} object with ARGB_8888 {@link Bitmap}.
+   *
+   * @throws IllegalArgumentException if the bitmap configuration is not ARGB_8888
+   */
+  static BitmapContainer create(Bitmap bitmap) {
+    return new BitmapContainer(bitmap);
+  }
 
-    @Override
-    public BitmapContainer clone() {
-        return create(bitmap.copy(bitmap.getConfig(), bitmap.isMutable()));
-    }
+  private BitmapContainer(Bitmap bitmap) {
+    checkNotNull(bitmap, "Cannot load null bitmap.");
+    checkArgument(
+        bitmap.getConfig().equals(Config.ARGB_8888), "Only supports loading ARGB_8888 bitmaps.");
+    this.bitmap = bitmap;
+  }
 
-    @Override
-    public Bitmap getBitmap() {
-        // Not making a defensive copy for performance considerations. During image processing,
-        // users may need to set and get the bitmap many times.
-        return bitmap;
-    }
+  @Override
+  public BitmapContainer clone() {
+    return create(bitmap.copy(bitmap.getConfig(), bitmap.isMutable()));
+  }
 
-    @Override
-    public TensorBuffer getTensorBuffer(DataType dataType) {
-        TensorBuffer buffer = TensorBuffer.createDynamic(dataType);
-        ImageConversions.convertBitmapToTensorBuffer(bitmap, buffer);
-        return buffer;
-    }
+  @Override
+  public Bitmap getBitmap() {
+    // Not making a defensive copy for performance considerations. During image processing,
+    // users may need to set and get the bitmap many times.
+    return bitmap;
+  }
 
-    @Override
-    public Image getMediaImage() {
-        throw new UnsupportedOperationException(
-                "Converting from Bitmap to android.media.Image is unsupported.");
-    }
+  @Override
+  public TensorBuffer getTensorBuffer(DataType dataType) {
+    TensorBuffer buffer = TensorBuffer.createDynamic(dataType);
+    ImageConversions.convertBitmapToTensorBuffer(bitmap, buffer);
+    return buffer;
+  }
 
-    @Override
-    public int getWidth() {
-        return bitmap.getWidth();
-    }
+  @Override
+  public Image getMediaImage() {
+    throw new UnsupportedOperationException(
+        "Converting from Bitmap to android.media.Image is unsupported.");
+  }
 
-    @Override
-    public int getHeight() {
-        return bitmap.getHeight();
-    }
+  @Override
+  public int getWidth() {
+    return bitmap.getWidth();
+  }
 
-    @Override
-    public ColorSpaceType getColorSpaceType() {
-        return ColorSpaceType.fromBitmapConfig(bitmap.getConfig());
-    }
+  @Override
+  public int getHeight() {
+    return bitmap.getHeight();
+  }
+
+  @Override
+  public ColorSpaceType getColorSpaceType() {
+    return ColorSpaceType.fromBitmapConfig(bitmap.getConfig());
+  }
 }

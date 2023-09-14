@@ -26,51 +26,52 @@ import com.google.auto.value.AutoValue;
  */
 @AutoValue
 public abstract class ImageProperties {
-    private static final int DEFAULT_HEIGHT = -1;
-    private static final int DEFAULT_WIDTH = -1;
 
-    public abstract int getHeight();
+  private static final int DEFAULT_HEIGHT = -1;
+  private static final int DEFAULT_WIDTH = -1;
 
-    public abstract int getWidth();
+  public abstract int getHeight();
 
-    public abstract ColorSpaceType getColorSpaceType();
+  public abstract int getWidth();
 
-    public static Builder builder() {
-        return new AutoValue_ImageProperties.Builder()
-                .setHeight(DEFAULT_HEIGHT)
-                .setWidth(DEFAULT_WIDTH);
+  public abstract ColorSpaceType getColorSpaceType();
+
+  public static Builder builder() {
+    return new AutoValue_ImageProperties.Builder()
+        .setHeight(DEFAULT_HEIGHT)
+        .setWidth(DEFAULT_WIDTH);
+  }
+
+  /**
+   * Builder for {@link ImageProperties}. Different image objects may require different properties.
+   * See the detais below:
+   *
+   * <ul>
+   *   {@link org.tensorflow.lite.support.tensorbuffer.TensorBuffer}:
+   *   <li>Mandatory proterties: height / width / colorSpaceType. The shape of the TensorBuffer
+   *       object will not be used to determine image height and width.
+   * </ul>
+   */
+  @AutoValue.Builder
+  public abstract static class Builder {
+    public abstract Builder setHeight(int height);
+
+    public abstract Builder setWidth(int width);
+
+    public abstract Builder setColorSpaceType(ColorSpaceType colorSpaceType);
+
+    abstract ImageProperties autoBuild();
+
+    public ImageProperties build() {
+      ImageProperties properties = autoBuild();
+      // If width or hight are not configured by the Builder, they will be -1.
+      // Enforcing all properties to be populated (AutoValue will error out if objects, like
+      // colorSpaceType, are not set up), since they are required for TensorBuffer images.
+      // If in the future we have some image object types that only require a portion of these
+      // properties, we can delay the check when TensorImage#load() is executed.
+      checkState(properties.getHeight() >= 0, "Negative image height is not allowed.");
+      checkState(properties.getWidth() >= 0, "Negative image width is not allowed.");
+      return properties;
     }
-
-    /**
-     * Builder for {@link ImageProperties}. Different image objects may require different
-     * properties. See the detais below:
-     *
-     * <ul>
-     *   {@link org.tensorflow.lite.support.tensorbuffer.TensorBuffer}:
-     *   <li>Mandatory proterties: height / width / colorSpaceType. The shape of the TensorBuffer
-     *       object will not be used to determine image height and width.
-     * </ul>
-     */
-    @AutoValue.Builder
-    public abstract static class Builder {
-        public abstract Builder setHeight(int height);
-
-        public abstract Builder setWidth(int width);
-
-        public abstract Builder setColorSpaceType(ColorSpaceType colorSpaceType);
-
-        abstract ImageProperties autoBuild();
-
-        public ImageProperties build() {
-            ImageProperties properties = autoBuild();
-            // If width or hight are not configured by the Builder, they will be -1.
-            // Enforcing all properties to be populated (AutoValue will error out if objects, like
-            // colorSpaceType, are not set up), since they are required for TensorBuffer images.
-            // If in the future we have some image object types that only require a portion of these
-            // properties, we can delay the check when TensorImage#load() is executed.
-            checkState(properties.getHeight() >= 0, "Negative image height is not allowed.");
-            checkState(properties.getWidth() >= 0, "Negative image width is not allowed.");
-            return properties;
-        }
-    }
+  }
 }

@@ -45,11 +45,11 @@ typedef struct TfLiteAudioBuffer {
   int size;
 } TfLiteAudioBuffer;
 
-void TfLiteAudioBufferDelete(TfLiteAudioBuffer* buffer);
+void TfLiteAudioBufferDelete(TfLiteAudioBuffer *buffer);
 
 void TfLiteAudioBufferDeleteData(const TfLiteAudioBuffer audio_buffer);
 
-void TfLiteAudioFormatDelete(TfLiteAudioFormat* format);
+void TfLiteAudioFormatDelete(TfLiteAudioFormat *format);
 
 #ifdef __cplusplus
 }  // extern "C"

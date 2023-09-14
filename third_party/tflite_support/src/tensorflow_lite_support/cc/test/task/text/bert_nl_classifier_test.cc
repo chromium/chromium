@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <fcntl.h>
 
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
@@ -49,10 +49,11 @@ constexpr char kInvalidModelPath[] = "i/do/not/exist.tflite";
 constexpr int kMaxSeqLen = 128;
 
 std::string GetFullPath(absl::string_view file_name) {
-  return JoinPath("./" /*test src dir*/, kTestDataDirectory, file_name);
+  return JoinPath("./" /*test src dir*/, kTestDataDirectory,
+                  file_name);
 }
 
-class BertNLClassifierTest : public tflite_shims::testing::Test {};
+class BertNLClassifierTest : public tflite::testing::Test {};
 
 TEST_F(BertNLClassifierTest, CreateFromOptionsSucceedsWithModelWithMetadata) {
   BertNLClassifierOptions options;
@@ -76,15 +77,14 @@ TEST_F(BertNLClassifierTest, CreateFromOptionsFailsWithMissingBaseOptions) {
 }
 
 TEST_F(BertNLClassifierTest, TestNLClassifierCreationFilePath) {
-  SUPPORT_ASSERT_OK(
-      BertNLClassifier::CreateFromFile(GetFullPath(kTestModelPath)));
+  SUPPORT_ASSERT_OK(BertNLClassifier::CreateFromFile(GetFullPath(kTestModelPath)));
 }
 
 TEST_F(BertNLClassifierTest, TestNLClassifierCreationBinary) {
   std::string model_buffer =
       LoadBinaryContent(GetFullPath(kTestModelPath).c_str());
   SUPPORT_ASSERT_OK(BertNLClassifier::CreateFromBuffer(model_buffer.data(),
-                                                       model_buffer.size()));
+                                               model_buffer.size()));
 }
 
 TEST_F(BertNLClassifierTest, TestNLClassifierCreationFailure) {
@@ -95,7 +95,7 @@ TEST_F(BertNLClassifierTest, TestNLClassifierCreationFailure) {
   EXPECT_THAT(classifier_or.status().message(),
               HasSubstr("Unable to open file at i/do/not/exist.tflite"));
   EXPECT_THAT(classifier_or.status().GetPayload(kTfLiteSupportPayload),
-              testing::Optional(absl::Cord(
+              ::testing::Optional(absl::Cord(
                   absl::StrCat(TfLiteSupportStatus::kFileNotFoundError))));
 }
 
@@ -136,7 +136,7 @@ TEST_F(BertNLClassifierTest, ClassifySucceedsWithBaseOptions) {
         contents);
 
     SUPPORT_ASSERT_OK_AND_ASSIGN(classifier,
-                                 BertNLClassifier::CreateFromOptions(options));
+                         BertNLClassifier::CreateFromOptions(options));
   }
 
   verify_classifier(std::move(classifier), /*verify_positive=*/false);
@@ -146,8 +146,8 @@ TEST_F(BertNLClassifierTest, TestNLClassifier_ClassifyNegative) {
   std::string model_buffer =
       LoadBinaryContent(GetFullPath(kTestModelPath).c_str());
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<BertNLClassifier> classifier,
-                               BertNLClassifier::CreateFromBuffer(
-                                   model_buffer.data(), model_buffer.size()));
+                       BertNLClassifier::CreateFromBuffer(model_buffer.data(),
+                                                          model_buffer.size()));
 
   verify_classifier(std::move(classifier), false);
 }
@@ -156,26 +156,24 @@ TEST_F(BertNLClassifierTest, TestNLClassifier_ClassifyPositive) {
   std::string model_buffer =
       LoadBinaryContent(GetFullPath(kTestModelPath).c_str());
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<BertNLClassifier> classifier,
-                               BertNLClassifier::CreateFromBuffer(
-                                   model_buffer.data(), model_buffer.size()));
+                       BertNLClassifier::CreateFromBuffer(model_buffer.data(),
+                                                          model_buffer.size()));
 
   verify_classifier(std::move(classifier), true);
 }
 
 TEST_F(BertNLClassifierTest, TestNLClassifierFd_ClassifyPositive) {
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<BertNLClassifier> classifier,
-      BertNLClassifier::CreateFromFd(
-          open(GetFullPath(kTestModelPath).c_str(), O_RDONLY)));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<BertNLClassifier> classifier,
+                       BertNLClassifier::CreateFromFd(open(
+                           GetFullPath(kTestModelPath).c_str(), O_RDONLY)));
 
   verify_classifier(std::move(classifier), false);
 }
 
 TEST_F(BertNLClassifierTest, TestNLClassifierFd_ClassifyNegative) {
-  SUPPORT_ASSERT_OK_AND_ASSIGN(
-      std::unique_ptr<BertNLClassifier> classifier,
-      BertNLClassifier::CreateFromFd(
-          open(GetFullPath(kTestModelPath).c_str(), O_RDONLY)));
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<BertNLClassifier> classifier,
+                       BertNLClassifier::CreateFromFd(open(
+                           GetFullPath(kTestModelPath).c_str(), O_RDONLY)));
 
   verify_classifier(std::move(classifier), true);
 }
@@ -193,8 +191,8 @@ TEST_F(BertNLClassifierTest, TestNLClassifier_ClassifyLongPositive_notOOB) {
   }
   ss_for_positive_review << " movie review";
   SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<BertNLClassifier> classifier,
-                               BertNLClassifier::CreateFromBuffer(
-                                   model_buffer.data(), model_buffer.size()));
+                       BertNLClassifier::CreateFromBuffer(model_buffer.data(),
+                                                          model_buffer.size()));
 
   std::vector<core::Category> results =
       classifier->Classify(ss_for_positive_review.str());

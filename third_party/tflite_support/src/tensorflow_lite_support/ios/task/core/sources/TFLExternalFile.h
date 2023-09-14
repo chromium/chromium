@@ -20,7 +20,7 @@ NS_SWIFT_NAME(ExternalFile)
 @interface TFLExternalFile : NSObject <NSCopying>
 
 /** Path to the file in bundle. */
-@property(nonatomic, copy) NSString* filePath;
+@property(nonatomic, copy) NSString *filePath;
 /// Add provision for other sources in future.
 
 @end

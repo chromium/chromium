@@ -55,8 +55,7 @@ StatusOr<absl::string_view> CheckAndLoadFirstAssociatedFile(
 
 /* static */
 StatusOr<std::unique_ptr<RegexPreprocessor>> RegexPreprocessor::Create(
-    tflite::task::core::TfLiteEngine* engine,
-    int input_tensor_index) {
+    tflite::task::core::TfLiteEngine* engine, int input_tensor_index) {
   ASSIGN_OR_RETURN(auto processor, Processor::Create<RegexPreprocessor>(
                                        /* num_expected_tensors = */ 1, engine,
                                        {input_tensor_index},

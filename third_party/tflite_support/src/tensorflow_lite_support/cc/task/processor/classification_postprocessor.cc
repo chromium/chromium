@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow/lite/c/c_api_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -42,8 +42,7 @@ using ::tflite::task::core::ScoreCalibration;
 /* static */
 tflite::support::StatusOr<std::unique_ptr<ClassificationPostprocessor>>
 ClassificationPostprocessor::Create(
-    core::TfLiteEngine* engine,
-    const std::initializer_list<int> output_indices,
+    core::TfLiteEngine* engine, const std::initializer_list<int> output_indices,
     std::unique_ptr<ClassificationOptions> options) {
   ASSIGN_OR_RETURN(auto processor,
                    Processor::Create<ClassificationPostprocessor>(

@@ -24,9 +24,9 @@ limitations under the License.
 #include <iostream>
 #include <memory>
 
-#include "absl/flags/flag.h"          // from @com_google_absl
-#include "absl/flags/parse.h"         // from @com_google_absl
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/flags/flag.h"  // from @com_google_absl
+#include "absl/flags/parse.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -36,29 +36,19 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/text/text_embedder.h"
 #include "tensorflow_lite_support/cc/task/text/utils/text_op_resolver.h"
 
-ABSL_FLAG(std::string,
-          model_path,
-          "",
+ABSL_FLAG(std::string, model_path, "",
           "Absolute path to the '.tflite' text embedder model.");
-ABSL_FLAG(std::string,
-          first_sentence,
-          "",
+ABSL_FLAG(std::string, first_sentence, "",
           "First sentence, whose feature vector will be extracted and compared "
           "to the second sentence using cosine similarity.");
-ABSL_FLAG(std::string,
-          second_sentence,
-          "",
+ABSL_FLAG(std::string, second_sentence, "",
           "Second sentence, whose feature vector will be extracted and "
           "compared to the first sentence using cosine similarity.");
-ABSL_FLAG(bool,
-          l2_normalize,
-          false,
+ABSL_FLAG(bool, l2_normalize, false,
           "If true, the raw feature vectors returned by the image embedder "
           "will be normalized with L2-norm. Generally only needed if the model "
           "doesn't already contain a L2_NORMALIZATION TFLite Op.");
-ABSL_FLAG(bool,
-          use_coral,
-          false,
+ABSL_FLAG(bool, use_coral, false,
           "If true, inference will be delegated to a connected Coral Edge TPU "
           "device.");
 

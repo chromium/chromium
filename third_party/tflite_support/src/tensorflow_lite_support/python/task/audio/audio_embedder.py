@@ -39,7 +39,9 @@ class AudioEmbedderOptions:
     embedding_options: Embedding options for the audio embedder task.
   """
   base_options: _BaseOptions
-  embedding_options: _EmbeddingOptions = _EmbeddingOptions()
+  embedding_options: _EmbeddingOptions = dataclasses.field(
+      default_factory=_EmbeddingOptions
+  )
 
 
 class AudioEmbedder(object):

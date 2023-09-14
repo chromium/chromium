@@ -17,16 +17,13 @@
 
 @implementation TFLCategoryMask
 
-- (instancetype)initWithWidth:(NSInteger)width
-                       height:(NSInteger)height
-                         mask:(UInt8*)mask {
+- (instancetype)initWithWidth:(NSInteger)width height:(NSInteger)height mask:(UInt8 *)mask {
   self = [super init];
   if (self) {
     _width = width;
     _height = height;
     if (mask != NULL) {
-      _mask = [TFLCommonUtils mallocWithSize:width * height * sizeof(UInt8)
-                                       error:nil];
+      _mask = [TFLCommonUtils mallocWithSize:width * height * sizeof(UInt8) error:nil];
       if (_mask) {
         memcpy(_mask, mask, width * height * sizeof(UInt8));
       }
@@ -35,7 +32,7 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
+- (id)copyWithZone:(NSZone *)zone {
   return [[TFLCategoryMask alloc] initWithWidth:self.width
                                          height:self.height
                                            mask:self.mask];
@@ -49,16 +46,13 @@
 
 @implementation TFLConfidenceMask
 
-- (instancetype)initWithWidth:(NSInteger)width
-                       height:(NSInteger)height
-                         mask:(float*)mask {
+- (instancetype)initWithWidth:(NSInteger)width height:(NSInteger)height mask:(float *)mask {
   self = [super init];
   if (self) {
     _width = width;
     _height = height;
     if (mask != NULL) {
-      _mask = [TFLCommonUtils mallocWithSize:width * height * sizeof(float)
-                                       error:nil];
+      _mask = [TFLCommonUtils mallocWithSize:width * height * sizeof(float) error:nil];
       if (_mask) {
         memcpy(_mask, mask, width * height * sizeof(float));
       }
@@ -67,7 +61,7 @@
   return self;
 }
 
-- (id)copyWithZone:(NSZone*)zone {
+- (id)copyWithZone:(NSZone *)zone {
   return [[TFLConfidenceMask alloc] initWithWidth:self.width
                                            height:self.height
                                              mask:self.mask];
@@ -84,8 +78,8 @@
 - (instancetype)initWithRed:(NSUInteger)r
                       green:(NSUInteger)g
                        blue:(NSUInteger)b
-                      label:(NSString*)label
-                displayName:(NSString*)displayName {
+                      label:(NSString *)label
+                displayName:(NSString *)displayName {
   self = [super init];
   if (self) {
     _r = r;
@@ -101,25 +95,21 @@
 
 @implementation TFLSegmentation
 
-- (instancetype)
-    initWithConfidenceMasks:(NSArray<TFLConfidenceMask*>*)confidenceMasks
-              coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels {
+- (instancetype)initWithConfidenceMasks:(NSArray<TFLConfidenceMask *> *)confidenceMasks
+                          coloredLabels:(NSArray<TFLColoredLabel *> *)coloredLabels {
   return [self initWithConfidenceMasks:confidenceMasks
                           categoryMask:nil
                          coloredLabels:coloredLabels];
 }
 
-- (instancetype)initWithCategoryMask:(TFLCategoryMask*)categoryMask
-                       coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels {
-  return [self initWithConfidenceMasks:nil
-                          categoryMask:categoryMask
-                         coloredLabels:coloredLabels];
+- (instancetype)initWithCategoryMask:(TFLCategoryMask *)categoryMask
+                       coloredLabels:(NSArray<TFLColoredLabel *> *)coloredLabels {
+  return [self initWithConfidenceMasks:nil categoryMask:categoryMask coloredLabels:coloredLabels];
 }
 
-- (instancetype)
-    initWithConfidenceMasks:(NSArray<TFLConfidenceMask*>*)confidenceMasks
-               categoryMask:(TFLCategoryMask*)categoryMask
-              coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels {
+- (instancetype)initWithConfidenceMasks:(NSArray<TFLConfidenceMask *> *)confidenceMasks
+                           categoryMask:(TFLCategoryMask *)categoryMask
+                          coloredLabels:(NSArray<TFLColoredLabel *> *)coloredLabels {
   self = [super init];
   if (self) {
     _confidenceMasks = confidenceMasks;
@@ -133,8 +123,7 @@
 
 @implementation TFLSegmentationResult
 
-- (instancetype)initWithSegmentations:
-    (NSArray<TFLSegmentation*>*)segmentations {
+- (instancetype)initWithSegmentations:(NSArray<TFLSegmentation *> *)segmentations {
   self = [super init];
   if (self) {
     _segmentations = segmentations;

@@ -44,8 +44,7 @@ using ::tflite::task::text::clu::CluAnnotator;
 
 // Creates a BertCluAnnotatorOptions proto based on the Java class.
 BertCluAnnotatorOptions ConvertJavaBertCluAnnotatorProtoOptionsToCpp(
-    JNIEnv* env,
-    jobject java_bert_clu_annotator_options,
+    JNIEnv* env, jobject java_bert_clu_annotator_options,
     jlong base_options_handle) {
   static jclass bert_clu_annotator_options_class =
       static_cast<jclass>(env->NewGlobalRef(
@@ -59,8 +58,9 @@ BertCluAnnotatorOptions ConvertJavaBertCluAnnotatorProtoOptionsToCpp(
       bert_clu_annotator_options_class, "getIntentThreshold", "()F");
   static jmethodID categorical_slot_threshold_method_id = env->GetMethodID(
       bert_clu_annotator_options_class, "getCategoricalSlotThreshold", "()F");
-  static jmethodID mentioned_slot_threshold_method_id = env->GetMethodID(
-      bert_clu_annotator_options_class, "getMentionedSlotThreshold", "()F");
+  static jmethodID mentioned_slot_threshold_method_id =
+      env->GetMethodID(bert_clu_annotator_options_class,
+                       "getMentionedSlotThreshold", "()F");
   BertCluAnnotatorOptions proto_options;
 
   if (base_options_handle != kInvalidPointer) {
@@ -76,8 +76,9 @@ BertCluAnnotatorOptions ConvertJavaBertCluAnnotatorProtoOptionsToCpp(
       java_bert_clu_annotator_options, intent_threshold_method_id));
   proto_options.set_categorical_slot_threshold(env->CallFloatMethod(
       java_bert_clu_annotator_options, categorical_slot_threshold_method_id));
-  proto_options.set_mentioned_slot_threshold(env->CallFloatMethod(
-      java_bert_clu_annotator_options, mentioned_slot_threshold_method_id));
+  proto_options.set_mentioned_slot_threshold(
+      env->CallFloatMethod(java_bert_clu_annotator_options,
+                           mentioned_slot_threshold_method_id));
 
   return proto_options;
 }
@@ -151,7 +152,7 @@ jobject ConvertCppCategoricalSlotsToJava(JNIEnv* env,
 
 // Builds a Java List of `MentionedSlot`s based on the input `clu_response`.
 jobject ConvertCppMentionedSlotsToJava(JNIEnv* env,
-                                       const CluResponse& clu_response) {
+                                            const CluResponse& clu_response) {
   static jclass mention_class =
       static_cast<jclass>(env->NewGlobalRef(env->FindClass(
           "org/tensorflow/lite/task/text/bertclu/CluResponse$Mention")));
@@ -159,14 +160,15 @@ jobject ConvertCppMentionedSlotsToJava(JNIEnv* env,
       env->GetStaticMethodID(mention_class, "create",
                              "(Ljava/lang/String;FII)Lorg/tensorflow/lite/task/"
                              "text/bertclu/CluResponse$Mention;");
-  static jclass mentioned_slot_class =
-      static_cast<jclass>(env->NewGlobalRef(env->FindClass(
-          "org/tensorflow/lite/task/text/bertclu/CluResponse$MentionedSlot")));
-  static jmethodID mentioned_slot_create_method_id = env->GetStaticMethodID(
-      mentioned_slot_class, "create",
-      "(Ljava/lang/String;Lorg/tensorflow/lite/task/text/bertclu/"
-      "CluResponse$Mention;)Lorg/tensorflow/lite/task/text/bertclu/"
-      "CluResponse$MentionedSlot;");
+  static jclass mentioned_slot_class = static_cast<
+      jclass>(env->NewGlobalRef(env->FindClass(
+      "org/tensorflow/lite/task/text/bertclu/CluResponse$MentionedSlot")));
+  static jmethodID mentioned_slot_create_method_id =
+      env->GetStaticMethodID(
+          mentioned_slot_class, "create",
+          "(Ljava/lang/String;Lorg/tensorflow/lite/task/text/bertclu/"
+          "CluResponse$Mention;)Lorg/tensorflow/lite/task/text/bertclu/"
+          "CluResponse$MentionedSlot;");
 
   return ConvertVectorToArrayList(
       env, clu_response.mentioned_slots().begin(),
@@ -177,10 +179,11 @@ jobject ConvertCppMentionedSlotsToJava(JNIEnv* env,
             mention_class, mention_create_method_id,
             env->NewStringUTF(mention.value().c_str()), mention.score(),
             mention.start(), mention.end());
-        jstring java_slot = env->NewStringUTF(mentioned_slot.slot().c_str());
+        jstring java_slot =
+            env->NewStringUTF(mentioned_slot.slot().c_str());
         jobject java_mentioned_slots = env->CallStaticObjectMethod(
-            mentioned_slot_class, mentioned_slot_create_method_id, java_slot,
-            java_mention);
+            mentioned_slot_class, mentioned_slot_create_method_id,
+            java_slot, java_mention);
 
         env->DeleteLocalRef(java_mention);
         env->DeleteLocalRef(java_slot);
@@ -227,19 +230,14 @@ jobject ConvertCppCluResponseToJava(JNIEnv* env,
 
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_text_bertclu_BertCluAnnotator_deinitJni(
-    JNIEnv* env,
-    jobject thiz,
-    jlong native_handle) {
+    JNIEnv* env, jobject thiz, jlong native_handle) {
   delete reinterpret_cast<CluAnnotator*>(native_handle);
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_text_bertclu_BertCluAnnotator_initJniWithByteBuffer(
-    JNIEnv* env,
-    jclass thiz,
-    jobject bert_clu_annotator_options,
-    jobject model_buffer,
-    jlong base_options_handle) {
+    JNIEnv* env, jclass thiz, jobject bert_clu_annotator_options,
+    jobject model_buffer, jlong base_options_handle) {
   BertCluAnnotatorOptions proto_options =
       ConvertJavaBertCluAnnotatorProtoOptionsToCpp(
           env, bert_clu_annotator_options, base_options_handle);
@@ -262,10 +260,7 @@ Java_org_tensorflow_lite_task_text_bertclu_BertCluAnnotator_initJniWithByteBuffe
 
 extern "C" JNIEXPORT jobject JNICALL
 Java_org_tensorflow_lite_task_text_bertclu_BertCluAnnotator_annotateNative(
-    JNIEnv* env,
-    jclass thiz,
-    jlong native_handle,
-    jobject java_clu_request) {
+    JNIEnv* env, jclass thiz, jlong native_handle, jobject java_clu_request) {
   CluRequest clu_request = ConvertJavaCluRequestToCpp(env, java_clu_request);
   auto* bert_clu_annotator = reinterpret_cast<BertCluAnnotator*>(native_handle);
   absl::StatusOr<CluResponse> clu_response =

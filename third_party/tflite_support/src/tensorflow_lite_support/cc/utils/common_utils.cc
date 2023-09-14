@@ -83,8 +83,7 @@ absl::node_hash_map<std::string, int> LoadVocabAndIndexFromFile(
 }
 
 absl::node_hash_map<std::string, int> LoadVocabAndIndexFromBuffer(
-    const char* vocab_buffer_data,
-    const size_t vocab_buffer_size) {
+    const char* vocab_buffer_data, const size_t vocab_buffer_size) {
   membuf sbuf(const_cast<char*>(vocab_buffer_data),
               const_cast<char*>(vocab_buffer_data + vocab_buffer_size));
   absl::node_hash_map<std::string, int> vocab_index_map;

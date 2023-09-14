@@ -1,5 +1,4 @@
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = [
         "//tensorflow_lite_support:internal",
     ],
@@ -17,12 +16,12 @@ cc_binary(
     name = "bert_question_answerer_demo",
     srcs = ["bert_question_answerer_demo.cc"],
     deps = [
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/text:bert_question_answerer",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/flags:parse",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
-        "//tensorflow_lite_support/cc/port:statusor",
-        "//tensorflow_lite_support/cc/task/text:bert_question_answerer",
     ] + select({
         "//tensorflow_lite_support/examples/task:darwinn_portable": [
             "//tensorflow_lite_support/acceleration/configuration:edgetpu_coral_plugin",
@@ -42,13 +41,13 @@ cc_binary(
     name = "bert_nl_classifier_demo",
     srcs = ["bert_nl_classifier_demo.cc"],
     deps = [
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/core:category",
+        "//tensorflow_lite_support/cc/task/text:bert_nl_classifier",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/flags:parse",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
-        "//tensorflow_lite_support/cc/port:statusor",
-        "//tensorflow_lite_support/cc/task/core:category",
-        "//tensorflow_lite_support/cc/task/text:bert_nl_classifier",
     ] + select({
         "//tensorflow_lite_support/examples/task:darwinn_portable": [
             "//tensorflow_lite_support/acceleration/configuration:edgetpu_coral_plugin",
@@ -70,13 +69,13 @@ cc_binary(
     name = "nl_classifier_demo",
     srcs = ["nl_classifier_demo.cc"],
     deps = [
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/core:category",
+        "//tensorflow_lite_support/cc/task/text/nlclassifier:nl_classifier",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/flags:parse",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
-        "//tensorflow_lite_support/cc/port:statusor",
-        "//tensorflow_lite_support/cc/task/core:category",
-        "//tensorflow_lite_support/cc/task/text/nlclassifier:nl_classifier",
     ] + select({
         "//tensorflow_lite_support/examples/task:darwinn_portable": [
             "//tensorflow_lite_support/acceleration/configuration:edgetpu_coral_plugin",

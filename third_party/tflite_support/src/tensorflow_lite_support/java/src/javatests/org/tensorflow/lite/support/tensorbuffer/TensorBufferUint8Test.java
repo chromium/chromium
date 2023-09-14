@@ -26,51 +26,51 @@ import org.tensorflow.lite.DataType;
 /** Tests of {@link org.tensorflow.lite.support.tensorbuffer.TensorBufferUint8}. */
 @RunWith(RobolectricTestRunner.class)
 public final class TensorBufferUint8Test {
-    @Test
-    public void testCreateDynamic() {
-        TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8();
-        assertThat(tensorBufferUint8).isNotNull();
-    }
+  @Test
+  public void testCreateDynamic() {
+    TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8();
+    assertThat(tensorBufferUint8).isNotNull();
+  }
 
-    @Test
-    public void testCreateFixedSize() {
-        int[] shape = new int[] {1, 2, 3};
-        TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8(shape);
-        assertThat(tensorBufferUint8).isNotNull();
-        assertThat(tensorBufferUint8.getFlatSize()).isEqualTo(6);
-    }
+  @Test
+  public void testCreateFixedSize() {
+    int[] shape = new int[] {1, 2, 3};
+    TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8(shape);
+    assertThat(tensorBufferUint8).isNotNull();
+    assertThat(tensorBufferUint8.getFlatSize()).isEqualTo(6);
+  }
 
-    @Test
-    public void testCreateFixedSizeWithScalarShape() {
-        int[] shape = new int[] {};
-        TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8(shape);
-        assertThat(tensorBufferUint8).isNotNull();
-        assertThat(tensorBufferUint8.getFlatSize()).isEqualTo(1);
-    }
+  @Test
+  public void testCreateFixedSizeWithScalarShape() {
+    int[] shape = new int[] {};
+    TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8(shape);
+    assertThat(tensorBufferUint8).isNotNull();
+    assertThat(tensorBufferUint8.getFlatSize()).isEqualTo(1);
+  }
 
-    @Test
-    public void testCreateWithNullShape() {
-        int[] shape = null;
-        Assert.assertThrows(NullPointerException.class, () -> new TensorBufferUint8(shape));
-    }
+  @Test
+  public void testCreateWithNullShape() {
+    int[] shape = null;
+    Assert.assertThrows(NullPointerException.class, () -> new TensorBufferUint8(shape));
+  }
 
-    @Test
-    public void testCreateWithInvalidShape() {
-        int[] shape = new int[] {1, -1, 2};
-        Assert.assertThrows(IllegalArgumentException.class, () -> new TensorBufferUint8(shape));
-    }
+  @Test
+  public void testCreateWithInvalidShape() {
+    int[] shape = new int[] {1, -1, 2};
+    Assert.assertThrows(IllegalArgumentException.class, () -> new TensorBufferUint8(shape));
+  }
 
-    @Test
-    public void testCreateUsingShapeWithZero() {
-        int[] shape = new int[] {1, 0, 2};
-        TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8(shape);
-        assertThat(tensorBufferUint8).isNotNull();
-        assertThat(tensorBufferUint8.getFlatSize()).isEqualTo(0);
-    }
+  @Test
+  public void testCreateUsingShapeWithZero() {
+    int[] shape = new int[] {1, 0, 2};
+    TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8(shape);
+    assertThat(tensorBufferUint8).isNotNull();
+    assertThat(tensorBufferUint8.getFlatSize()).isEqualTo(0);
+  }
 
-    @Test
-    public void testGetDataType() {
-        TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8();
-        assertThat(tensorBufferUint8.getDataType()).isEqualTo(DataType.UINT8);
-    }
+  @Test
+  public void testGetDataType() {
+    TensorBufferUint8 tensorBufferUint8 = new TensorBufferUint8();
+    assertThat(tensorBufferUint8.getDataType()).isEqualTo(DataType.UINT8);
+  }
 }

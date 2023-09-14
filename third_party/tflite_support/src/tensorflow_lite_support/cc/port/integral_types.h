@@ -37,7 +37,7 @@ typedef unsigned long uword_t;
 #define GG_LL_FORMAT "ll"  // As in "%lld". Note that "q" is poor form also.
 #define GG_LL_FORMAT_W L"ll"
 
-const uint8 kuint8max{0xFF};
+const uint8   kuint8max{0xFF};
 const uint16 kuint16max{0xFFFF};
 const uint32 kuint32max{0xFFFFFFFF};
 const uint64 kuint64max{GG_ULONGLONG(0xFFFFFFFFFFFFFFFF)};

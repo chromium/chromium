@@ -64,8 +64,7 @@ size_t NumTotalFromShape(const std::initializer_list<int>& shape);
 
 template <>
 void PopulateTfLiteTensorValue<std::string>(
-    const std::initializer_list<std::string> values,
-    TfLiteTensor* tensor);
+    const std::initializer_list<std::string> values, TfLiteTensor* tensor);
 
 template <typename T>
 TfLiteType TypeToTfLiteType() {
@@ -85,8 +84,7 @@ void ReallocDynamicTensor(const std::initializer_list<int> shape,
   TfLiteIntArray* shape_arr = TfLiteIntArrayCreate(shape.size());
   int i = 0;
   const size_t num_total = NumTotalFromShape(shape);
-  for (const int dim : shape)
-    shape_arr->data[i++] = dim;
+  for (const int dim : shape) shape_arr->data[i++] = dim;
   tensor->dims = shape_arr;
   if (tensor->type != kTfLiteString) {
     TfLiteTensorRealloc(num_total * sizeof(T), tensor);

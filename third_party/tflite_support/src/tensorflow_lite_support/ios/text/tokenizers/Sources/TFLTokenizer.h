@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return A list of tokens.
  */
-- (NSArray<NSString*>*)tokensFromInput:(NSString*)input;
+- (NSArray<NSString *> *)tokensFromInput:(NSString *)input;
 
 /*
  * Convert a list of tokens back to their coressponding IDs.
@@ -34,6 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return A list of ids.
  */
-- (NSArray<NSNumber*>*)idsFromTokens:(NSArray<NSString*>*)tokens;
+- (NSArray<NSNumber *> *)idsFromTokens:(NSArray<NSString *> *)tokens;
 @end
 NS_ASSUME_NONNULL_END

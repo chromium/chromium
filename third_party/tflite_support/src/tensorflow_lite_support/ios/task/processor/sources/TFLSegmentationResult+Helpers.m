@@ -16,31 +16,29 @@
 
 @implementation TFLSegmentationResult (Helpers)
 
-+ (TFLSegmentationResult*)segmentationResultWithCResult:
-    (TfLiteSegmentationResult*)cSegmentationResult {
-  if (!cSegmentationResult)
-    return nil;
++ (TFLSegmentationResult *)segmentationResultWithCResult:
+    (TfLiteSegmentationResult *)cSegmentationResult {
+  if (!cSegmentationResult) return nil;
 
-  NSMutableArray* segmentations = [[NSMutableArray alloc] init];
+  NSMutableArray *segmentations = [[NSMutableArray alloc] init];
   for (int i = 0; i < cSegmentationResult->size; i++) {
     TfLiteSegmentation cSegmentation = cSegmentationResult->segmentations[i];
-    NSMutableArray* coloredLabels = [[NSMutableArray alloc] init];
+    NSMutableArray *coloredLabels = [[NSMutableArray alloc] init];
     for (int j = 0; j < cSegmentation.colored_labels_size; j++) {
       TfLiteColoredLabel cColoredLabel = cSegmentation.colored_labels[j];
 
-      NSString* displayName;
+      NSString *displayName;
       if (cColoredLabel.display_name) {
         displayName = [NSString stringWithCString:cColoredLabel.display_name
                                          encoding:NSUTF8StringEncoding];
       }
 
-      NSString* label;
+      NSString *label;
       if (cColoredLabel.label) {
-        label = [NSString stringWithCString:cColoredLabel.label
-                                   encoding:NSUTF8StringEncoding];
+        label = [NSString stringWithCString:cColoredLabel.label encoding:NSUTF8StringEncoding];
       }
 
-      TFLColoredLabel* coloredLabel =
+      TFLColoredLabel *coloredLabel =
           [[TFLColoredLabel alloc] initWithRed:(NSUInteger)cColoredLabel.r
                                          green:(NSUInteger)cColoredLabel.g
                                           blue:(NSUInteger)cColoredLabel.b
@@ -49,29 +47,27 @@
       [coloredLabels addObject:coloredLabel];
     }
 
-    TFLSegmentation* segmentation;
+    TFLSegmentation *segmentation;
 
     if (cSegmentation.confidence_masks) {
-      NSMutableArray* confidenceMasks = [[NSMutableArray alloc] init];
+      NSMutableArray *confidenceMasks = [[NSMutableArray alloc] init];
       for (int i = 0; i < cSegmentation.colored_labels_size; i++) {
-        TFLConfidenceMask* confidenceMask = [[TFLConfidenceMask alloc]
-            initWithWidth:(NSInteger)cSegmentation.width
-                   height:(NSInteger)cSegmentation.height
-                     mask:cSegmentation.confidence_masks[i]];
+        TFLConfidenceMask *confidenceMask =
+            [[TFLConfidenceMask alloc] initWithWidth:(NSInteger)cSegmentation.width
+                                              height:(NSInteger)cSegmentation.height
+                                                mask:cSegmentation.confidence_masks[i]];
         [confidenceMasks addObject:confidenceMask];
       }
-      segmentation =
-          [[TFLSegmentation alloc] initWithConfidenceMasks:confidenceMasks
-                                             coloredLabels:coloredLabels];
+      segmentation = [[TFLSegmentation alloc] initWithConfidenceMasks:confidenceMasks
+                                                        coloredLabels:coloredLabels];
 
     } else if (cSegmentation.category_mask) {
-      TFLCategoryMask* categoryMask =
+      TFLCategoryMask *categoryMask =
           [[TFLCategoryMask alloc] initWithWidth:(NSInteger)cSegmentation.width
                                           height:(NSInteger)cSegmentation.height
                                             mask:cSegmentation.category_mask];
-      segmentation =
-          [[TFLSegmentation alloc] initWithCategoryMask:categoryMask
-                                          coloredLabels:coloredLabels];
+      segmentation = [[TFLSegmentation alloc] initWithCategoryMask:categoryMask
+                                                     coloredLabels:coloredLabels];
     }
 
     [segmentations addObject:segmentation];

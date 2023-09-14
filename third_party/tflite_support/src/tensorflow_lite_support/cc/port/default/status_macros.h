@@ -18,7 +18,7 @@ limitations under the License.
 #define TENSORFLOW_LITE_SUPPORT_CC_PORT_DEFAULT_STATUS_MACROS_H_
 
 #include "absl/base/optimization.h"  // from @com_google_absl
-#include "absl/status/status.h"      // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 
 // Evaluates an expression that produces a `absl::Status`. If the status is not
 // ok, returns it from the current function.
@@ -30,14 +30,15 @@ limitations under the License.
 //     return absl::OkStatus();
 //   }
 #define RETURN_IF_ERROR(expr)                                          \
-  STATUS_MACROS_IMPL_ELSE_BLOCKER_                                     \
+  TFLITE_STATUS_MACROS_IMPL_ELSE_BLOCKER_                              \
   if (::tflite::support::status_macro_internal::StatusAdaptorForMacros \
           status_macro_internal_adaptor = {(expr)}) {                  \
   } else /* NOLINT */                                                  \
     return status_macro_internal_adaptor.Consume()
 
-#define STATUS_MACROS_CONCAT_NAME(x, y) STATUS_MACROS_CONCAT_IMPL(x, y)
-#define STATUS_MACROS_CONCAT_IMPL(x, y) x##y
+#define TFLITE_STATUS_MACROS_CONCAT_NAME(x, y) \
+  TFLITE_STATUS_MACROS_CONCAT_IMPL(x, y)
+#define TFLITE_STATUS_MACROS_CONCAT_IMPL(x, y) x##y
 
 // Executes an expression `rexpr` that returns a `tflite::support::StatusOr<T>`.
 // On OK, moves its value into the variable defined by `lhs`, otherwise returns
@@ -85,12 +86,12 @@ limitations under the License.
 //   ASSIGN_OR_RETURN((const auto& [first, second]), GetPair());
 
 #if defined(_WIN32)
-#define ASSIGN_OR_RETURN(_1, _2, ...) ASSIGN_OR_RETURN_IMPL_2(_1, _2)
+#define ASSIGN_OR_RETURN(_1, _2, ...) TFLITE_ASSIGN_OR_RETURN_IMPL_2(_1, _2)
 #else
-#define ASSIGN_OR_RETURN(...)                                                \
-  STATUS_MACROS_IMPL_GET_VARIADIC_((__VA_ARGS__,                             \
-                                    STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_,  \
-                                    STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_2_)) \
+#define ASSIGN_OR_RETURN(...)                                      \
+  TFLITE_STATUS_MACROS_IMPL_GET_VARIADIC_(                         \
+      (__VA_ARGS__, TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_, \
+       TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_2_))             \
   (__VA_ARGS__)
 #endif
 
@@ -109,18 +110,20 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
 
 // MSVC incorrectly expands variadic macros, splice together a macro call to
 // work around the bug.
-#define STATUS_MACROS_IMPL_GET_VARIADIC_HELPER_(_1, _2, _3, NAME, ...) NAME
-#define STATUS_MACROS_IMPL_GET_VARIADIC_(args) \
-  STATUS_MACROS_IMPL_GET_VARIADIC_HELPER_ args
+#define TFLITE_STATUS_MACROS_IMPL_GET_VARIADIC_HELPER_(_1, _2, _3, NAME, ...) \
+  NAME
+#define TFLITE_STATUS_MACROS_IMPL_GET_VARIADIC_(args) \
+  TFLITE_STATUS_MACROS_IMPL_GET_VARIADIC_HELPER_ args
 
-#define STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_2_(lhs, rexpr) \
-  STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_(lhs, rexpr, _)
-#define STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_(lhs, rexpr, error_expression) \
-  STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_(                                      \
-      STATUS_MACROS_IMPL_CONCAT_(_status_or_value, __LINE__), lhs, rexpr,    \
-      error_expression)
-#define STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_(statusor, lhs, rexpr,        \
-                                             error_expression)            \
+#define TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_2_(lhs, rexpr) \
+  TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_(lhs, rexpr, _)
+#define TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_(lhs, rexpr,         \
+                                                      error_expression)   \
+  TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_(                            \
+      TFLITE_STATUS_MACROS_IMPL_CONCAT_(_status_or_value, __LINE__), lhs, \
+      rexpr, error_expression)
+#define TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_(statusor, lhs, rexpr, \
+                                                    error_expression)     \
   auto statusor = (rexpr);                                                \
   if (ABSL_PREDICT_FALSE(!statusor.ok())) {                               \
     ::absl::Status _(std::move(statusor).status());                       \
@@ -134,58 +137,63 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
         "Identified potential conditional operator, consider not "        \
         "using ASSIGN_OR_RETURN");                                        \
   }                                                                       \
-  STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(lhs) =               \
+  TFLITE_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(lhs) =        \
       std::move(statusor).value()
 
-#define ASSIGN_OR_RETURN_IMPL_2(lhs, rexpr) ASSIGN_OR_RETURN_IMPL_3(lhs, rexpr)
+#define TFLITE_ASSIGN_OR_RETURN_IMPL_2(lhs, rexpr) \
+  TFLITE_ASSIGN_OR_RETURN_IMPL_3(lhs, rexpr)
 
-#define ASSIGN_OR_RETURN_IMPL_3(lhs, rexpr) \
-  ASSIGN_OR_RETURN_IMPL(                    \
-      STATUS_MACROS_CONCAT_NAME(_status_or_value, __COUNTER__), lhs, rexpr)
+#define TFLITE_ASSIGN_OR_RETURN_IMPL_3(lhs, rexpr)                          \
+  TFLITE_ASSIGN_OR_RETURN_IMPL(                                             \
+      TFLITE_STATUS_MACROS_CONCAT_NAME(_status_or_value, __COUNTER__), lhs, \
+      rexpr)
 
-#define ASSIGN_OR_RETURN_IMPL(statusor, lhs, rexpr) \
-  auto statusor = (rexpr);                          \
-  if (ABSL_PREDICT_FALSE(!statusor.ok())) {         \
-    return statusor.status();                       \
-  }                                                 \
+#define TFLITE_ASSIGN_OR_RETURN_IMPL(statusor, lhs, rexpr) \
+  auto statusor = (rexpr);                                 \
+  if (ABSL_PREDICT_FALSE(!statusor.ok())) {                \
+    return statusor.status();                              \
+  }                                                        \
   lhs = std::move(statusor).value()
 
 // Internal helpers for macro expansion.
-#define STATUS_MACROS_IMPL_EAT(...)
-#define STATUS_MACROS_IMPL_REM(...) __VA_ARGS__
-#define STATUS_MACROS_IMPL_EMPTY()
+#define TFLITE_STATUS_MACROS_IMPL_EAT(...)
+#define TFLITE_STATUS_MACROS_IMPL_REM(...) __VA_ARGS__
+#define TFLITE_STATUS_MACROS_IMPL_EMPTY()
 
 // Internal helpers for emptyness arguments check.
-#define STATUS_MACROS_IMPL_IS_EMPTY_INNER(...) \
-  STATUS_MACROS_IMPL_IS_EMPTY_INNER_I(__VA_ARGS__, 0, 1)
-#define STATUS_MACROS_IMPL_IS_EMPTY_INNER_I(e0, e1, is_empty, ...) is_empty
+#define TFLITE_STATUS_MACROS_IMPL_IS_EMPTY_INNER(...) \
+  TFLITE_STATUS_MACROS_IMPL_IS_EMPTY_INNER_I(__VA_ARGS__, 0, 1)
+#define TFLITE_STATUS_MACROS_IMPL_IS_EMPTY_INNER_I(e0, e1, is_empty, ...) \
+  is_empty
 
-#define STATUS_MACROS_IMPL_IS_EMPTY(...) \
-  STATUS_MACROS_IMPL_IS_EMPTY_I(__VA_ARGS__)
-#define STATUS_MACROS_IMPL_IS_EMPTY_I(...) \
-  STATUS_MACROS_IMPL_IS_EMPTY_INNER(_, ##__VA_ARGS__)
+#define TFLITE_STATUS_MACROS_IMPL_IS_EMPTY(...) \
+  TFLITE_STATUS_MACROS_IMPL_IS_EMPTY_I(__VA_ARGS__)
+#define TFLITE_STATUS_MACROS_IMPL_IS_EMPTY_I(...) \
+  TFLITE_STATUS_MACROS_IMPL_IS_EMPTY_INNER(_, ##__VA_ARGS__)
 
 // Internal helpers for if statement.
-#define STATUS_MACROS_IMPL_IF_1(_Then, _Else) _Then
-#define STATUS_MACROS_IMPL_IF_0(_Then, _Else) _Else
-#define STATUS_MACROS_IMPL_IF(_Cond, _Then, _Else)          \
-  STATUS_MACROS_IMPL_CONCAT_(STATUS_MACROS_IMPL_IF_, _Cond) \
+#define TFLITE_STATUS_MACROS_IMPL_IF_1(_Then, _Else) _Then
+#define TFLITE_STATUS_MACROS_IMPL_IF_0(_Then, _Else) _Else
+#define TFLITE_STATUS_MACROS_IMPL_IF(_Cond, _Then, _Else)                 \
+  TFLITE_STATUS_MACROS_IMPL_CONCAT_(TFLITE_STATUS_MACROS_IMPL_IF_, _Cond) \
   (_Then, _Else)
 
 // Expands to 1 if the input is parenthesized. Otherwise expands to 0.
-#define STATUS_MACROS_IMPL_IS_PARENTHESIZED(...) \
-  STATUS_MACROS_IMPL_IS_EMPTY(STATUS_MACROS_IMPL_EAT __VA_ARGS__)
+#define TFLITE_STATUS_MACROS_IMPL_IS_PARENTHESIZED(...) \
+  TFLITE_STATUS_MACROS_IMPL_IS_EMPTY(TFLITE_STATUS_MACROS_IMPL_EAT __VA_ARGS__)
 
 // If the input is parenthesized, removes the parentheses. Otherwise expands to
 // the input unchanged.
-#define STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(...)             \
-  STATUS_MACROS_IMPL_IF(STATUS_MACROS_IMPL_IS_PARENTHESIZED(__VA_ARGS__),   \
-                        STATUS_MACROS_IMPL_REM, STATUS_MACROS_IMPL_EMPTY()) \
+#define TFLITE_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(...)  \
+  TFLITE_STATUS_MACROS_IMPL_IF(                                         \
+      TFLITE_STATUS_MACROS_IMPL_IS_PARENTHESIZED(__VA_ARGS__),          \
+      TFLITE_STATUS_MACROS_IMPL_REM, TFLITE_STATUS_MACROS_IMPL_EMPTY()) \
   __VA_ARGS__
 
 // Internal helper for concatenating macro values.
-#define STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
-#define STATUS_MACROS_IMPL_CONCAT_(x, y) STATUS_MACROS_IMPL_CONCAT_INNER_(x, y)
+#define TFLITE_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
+#define TFLITE_STATUS_MACROS_IMPL_CONCAT_(x, y) \
+  TFLITE_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y)
 
 // The GNU compiler emits a warning for code like:
 //
@@ -198,9 +206,9 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
 //   if (do_expr)  RETURN_IF_ERROR(expr) << "Some message";
 //
 // The "switch (0) case 0:" idiom is used to suppress this.
-#define STATUS_MACROS_IMPL_ELSE_BLOCKER_ \
-  switch (0)                             \
-  case 0:                                \
+#define TFLITE_STATUS_MACROS_IMPL_ELSE_BLOCKER_ \
+  switch (0)                                    \
+  case 0:                                       \
   default:  // NOLINT
 
 namespace tflite {

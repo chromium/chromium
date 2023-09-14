@@ -18,7 +18,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/strings/str_cat.h"     // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 
@@ -36,10 +36,8 @@ constexpr int kGrayChannel = 1;
 // Creates a FrameBuffer from one plane raw NV21/NV12 buffer and passing
 // arguments.
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFromOnePlaneNVRawBuffer(
-    const uint8* input,
-    FrameBuffer::Dimension dimension,
-    FrameBuffer::Format format,
-    FrameBuffer::Orientation orientation,
+    const uint8* input, FrameBuffer::Dimension dimension,
+    FrameBuffer::Format format, FrameBuffer::Orientation orientation,
     const absl::Time timestamp) {
   FrameBuffer::Plane input_plane = {/*buffer=*/input,
                                     /*stride=*/{dimension.width, kGrayChannel}};
@@ -131,8 +129,7 @@ StatusOr<const uint8*> GetUvRawBuffer(const FrameBuffer& buffer) {
 }
 
 StatusOr<FrameBuffer::Dimension> GetUvPlaneDimension(
-    FrameBuffer::Dimension dimension,
-    FrameBuffer::Format format) {
+    FrameBuffer::Dimension dimension, FrameBuffer::Format format) {
   if (dimension.width <= 0 || dimension.height <= 0) {
     return absl::InvalidArgumentError(
         absl::StrFormat("Invalid input dimension: {%d, %d}.", dimension.width,
@@ -179,8 +176,7 @@ absl::Status ValidateBufferFormat(const FrameBuffer& buffer) {
     case FrameBuffer::Format::kGRAY:
     case FrameBuffer::Format::kRGB:
     case FrameBuffer::Format::kRGBA:
-      if (buffer.plane_count() == 1)
-        return absl::OkStatus();
+      if (buffer.plane_count() == 1) return absl::OkStatus();
       return absl::InvalidArgumentError(
           "Plane count must be 1 for grayscale and RGB[a] buffers.");
     case FrameBuffer::Format::kNV21:
@@ -256,11 +252,8 @@ absl::Status ValidateRotateBufferInputs(const FrameBuffer& buffer,
 }
 
 absl::Status ValidateCropBufferInputs(const FrameBuffer& buffer,
-                                      const FrameBuffer& output_buffer,
-                                      int x0,
-                                      int y0,
-                                      int x1,
-                                      int y1) {
+                                      const FrameBuffer& output_buffer, int x0,
+                                      int y0, int x1, int y1) {
   if (!AreBufferFormatsCompatible(buffer, output_buffer)) {
     return absl::InvalidArgumentError(
         "Input and output buffer formats must match.");
@@ -316,10 +309,8 @@ absl::Status ValidateConvertFormats(FrameBuffer::Format from_format,
 
 // Creates a FrameBuffer from raw RGBA buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromRgbaRawBuffer(
-    const uint8* input,
-    FrameBuffer::Dimension dimension,
-    FrameBuffer::Orientation orientation,
-    const absl::Time timestamp,
+    const uint8* input, FrameBuffer::Dimension dimension,
+    FrameBuffer::Orientation orientation, const absl::Time timestamp,
     FrameBuffer::Stride stride) {
   if (stride == kDefaultStride) {
     stride.row_stride_bytes = dimension.width * kRgbaChannels;
@@ -334,10 +325,8 @@ std::unique_ptr<FrameBuffer> CreateFromRgbaRawBuffer(
 
 // Creates a FrameBuffer from raw RGB buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromRgbRawBuffer(
-    const uint8* input,
-    FrameBuffer::Dimension dimension,
-    FrameBuffer::Orientation orientation,
-    const absl::Time timestamp,
+    const uint8* input, FrameBuffer::Dimension dimension,
+    FrameBuffer::Orientation orientation, const absl::Time timestamp,
     FrameBuffer::Stride stride) {
   if (stride == kDefaultStride) {
     stride.row_stride_bytes = dimension.width * kRgbChannels;
@@ -351,10 +340,8 @@ std::unique_ptr<FrameBuffer> CreateFromRgbRawBuffer(
 
 // Creates a FrameBuffer from raw grayscale buffer and passing arguments.
 std::unique_ptr<FrameBuffer> CreateFromGrayRawBuffer(
-    const uint8* input,
-    FrameBuffer::Dimension dimension,
-    FrameBuffer::Orientation orientation,
-    const absl::Time timestamp,
+    const uint8* input, FrameBuffer::Dimension dimension,
+    FrameBuffer::Orientation orientation, const absl::Time timestamp,
     FrameBuffer::Stride stride) {
   if (stride == kDefaultStride) {
     stride.row_stride_bytes = dimension.width * kGrayChannel;
@@ -369,16 +356,10 @@ std::unique_ptr<FrameBuffer> CreateFromGrayRawBuffer(
 
 // Creates a FrameBuffer from raw YUV buffer and passing arguments.
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFromYuvRawBuffer(
-    const uint8* y_plane,
-    const uint8* u_plane,
-    const uint8* v_plane,
-    FrameBuffer::Format format,
-    FrameBuffer::Dimension dimension,
-    int row_stride_y,
-    int row_stride_uv,
-    int pixel_stride_uv,
-    FrameBuffer::Orientation orientation,
-    const absl::Time timestamp) {
+    const uint8* y_plane, const uint8* u_plane, const uint8* v_plane,
+    FrameBuffer::Format format, FrameBuffer::Dimension dimension,
+    int row_stride_y, int row_stride_uv, int pixel_stride_uv,
+    FrameBuffer::Orientation orientation, const absl::Time timestamp) {
   const int pixel_stride_y = 1;
   std::vector<FrameBuffer::Plane> planes;
   if (format == FrameBuffer::Format::kNV21 ||
@@ -399,11 +380,9 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromYuvRawBuffer(
 }
 
 StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
-    const uint8* buffer,
-    FrameBuffer::Dimension dimension,
+    const uint8* buffer, FrameBuffer::Dimension dimension,
     const FrameBuffer::Format target_format,
-    FrameBuffer::Orientation orientation,
-    absl::Time timestamp) {
+    FrameBuffer::Orientation orientation, absl::Time timestamp) {
   switch (target_format) {
     case FrameBuffer::Format::kNV12:
       return CreateFromOnePlaneNVRawBuffer(buffer, dimension, target_format,

@@ -15,8 +15,8 @@ limitations under the License.
 
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/model_converter.h"
 
-#include "absl/status/status.h"          // from @com_google_absl
-#include "absl/strings/str_replace.h"    // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_replace.h"  // from @com_google_absl
 #include "src/sentencepiece_model.pb.h"  // from @com_google_sentencepiece
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/decoder_config_generated.h"
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/double_array_trie_builder.h"
@@ -48,8 +48,7 @@ DecodePrecompiledCharsmap(
 }
 
 tflite::support::StatusOr<std::string> ConvertSentencepieceModelToFlatBuffer(
-    const std::string& model_config_str,
-    int encoding_offset) {
+    const std::string& model_config_str, int encoding_offset) {
   ::sentencepiece::ModelProto model_config;
   if (!model_config.ParseFromString(model_config_str)) {
     return absl::InvalidArgumentError(
@@ -129,8 +128,7 @@ tflite::support::StatusOr<std::string> ConvertSentencepieceModelToFlatBuffer(
 
 tflite::support::StatusOr<std::string>
 ConvertSentencepieceModelToFlatBufferForDecoder(
-    const std::string& model_config_str,
-    int encoding_offset) {
+    const std::string& model_config_str, int encoding_offset) {
   ::sentencepiece::ModelProto model_config;
   if (!model_config.ParseFromString(model_config_str)) {
     return absl::InvalidArgumentError(

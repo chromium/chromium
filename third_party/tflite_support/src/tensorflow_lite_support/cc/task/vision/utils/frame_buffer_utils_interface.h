@@ -37,12 +37,8 @@ class FrameBufferUtilsInterface {
   //
   // The `output_buffer` should have metadata populated and its backing buffer
   // should be big enough to store the operation result.
-  virtual absl::Status Crop(const FrameBuffer& buffer,
-                            int x0,
-                            int y0,
-                            int x1,
-                            int y1,
-                            FrameBuffer* output_buffer) = 0;
+  virtual absl::Status Crop(const FrameBuffer& buffer, int x0, int y0, int x1,
+                            int y1, FrameBuffer* output_buffer) = 0;
 
   // Resizes `buffer` to the size of the given `output_buffer` using bilinear
   // interpolation.
@@ -72,8 +68,7 @@ class FrameBufferUtilsInterface {
   //
   // The `output_buffer` should have metadata populated and its backing buffer
   // should be big enough to store the operation result.
-  virtual absl::Status Rotate(const FrameBuffer& buffer,
-                              int angle_deg,
+  virtual absl::Status Rotate(const FrameBuffer& buffer, int angle_deg,
                               FrameBuffer* output_buffer) = 0;
 
   // Flips `buffer` horizontally.

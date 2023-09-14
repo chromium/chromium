@@ -65,16 +65,17 @@ PYBIND11_MODULE(_pywrap_object_detector, m) {
             return core::get_value(detector);
           })
       .def("detect",
-           [](ObjectDetector& self,
-              const ImageData& image_data) -> processor::DetectionResult {
+           [](ObjectDetector& self, const ImageData& image_data)
+               -> processor::DetectionResult {
              auto frame_buffer = CreateFrameBufferFromImageData(image_data);
-             auto vision_detection_result =
-                 self.Detect(*core::get_value(frame_buffer));
+             auto vision_detection_result = self.Detect(
+                   *core::get_value(frame_buffer));
              // Convert from vision::DetectionResult to
              // processor::DetectionResult as required by the Python layer.
              processor::DetectionResult detection_result;
-             detection_result.ParseFromString(
-                 core::get_value(vision_detection_result).SerializeAsString());
+               detection_result.ParseFromString(
+                 core::get_value(vision_detection_result)
+                 .SerializeAsString());
              return detection_result;
            });
 }

@@ -16,7 +16,7 @@
 
 import os
 from typing import Union
-from tensorflow.python.platform import resource_loader
+import tensorflow as tf
 
 
 def create_calibration_file(file_dir: str,
@@ -38,4 +38,4 @@ def load_file(file_name: str, mode: str = "rb") -> Union[str, bytes]:
 
 def get_resource_path(file_name: str) -> str:
   """Gets resource path from the loader."""
-  return resource_loader.get_path_to_datafile(file_name)
+  return tf.compat.v1.resource_loader.get_path_to_datafile(file_name)

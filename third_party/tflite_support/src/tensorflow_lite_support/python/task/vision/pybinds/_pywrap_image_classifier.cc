@@ -67,17 +67,17 @@ PYBIND11_MODULE(_pywrap_image_classifier, m) {
             return core::get_value(classifier);
           })
       .def("classify",
-           [](ImageClassifier& self,
-              const ImageData& image_data) -> processor::ClassificationResult {
+           [](ImageClassifier& self, const ImageData& image_data)
+               -> processor::ClassificationResult {
              auto frame_buffer = CreateFrameBufferFromImageData(image_data);
-             auto vision_classification_result =
-                 self.Classify(*core::get_value(frame_buffer));
+             auto vision_classification_result = self.Classify(
+                     *core::get_value(frame_buffer));
              // Convert from vision::ClassificationResult to
              // processor::ClassificationResult as required by the Python layer.
              processor::ClassificationResult classification_result;
-             classification_result.ParseFromString(
+               classification_result.ParseFromString(
                  core::get_value(vision_classification_result)
-                     .SerializeAsString());
+                 .SerializeAsString());
              return classification_result;
            })
       .def("classify",
@@ -96,9 +96,9 @@ PYBIND11_MODULE(_pywrap_image_classifier, m) {
              // Convert from vision::ClassificationResult to
              // processor::ClassificationResult as required by the Python layer.
              processor::ClassificationResult classification_result;
-             classification_result.ParseFromString(
+               classification_result.ParseFromString(
                  core::get_value(vision_classification_result)
-                     .SerializeAsString());
+                 .SerializeAsString());
              return classification_result;
            });
 }

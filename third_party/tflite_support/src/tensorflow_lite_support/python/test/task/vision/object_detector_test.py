@@ -37,45 +37,65 @@ _ObjectDetectorOptions = object_detector.ObjectDetectorOptions
 
 _MODEL_FILE = 'coco_ssd_mobilenet_v1_1.0_quant_2018_06_29.tflite'
 _IMAGE_FILE = 'cats_and_dogs.jpg'
-_EXPECTED_DETECTION_RESULT = _DetectionResult(detections=[
-    _Detection(
-        bounding_box=_BoundingBox(
-            origin_x=54, origin_y=396, width=393, height=196),
-        categories=[
-            _Category(
-                index=16,
-                score=0.64453125,
-                display_name='',
-                category_name='cat')
-        ]),
-    _Detection(
-        bounding_box=_BoundingBox(
-            origin_x=602, origin_y=157, width=394, height=447),
-        categories=[
-            _Category(
-                index=16,
-                score=0.59765625,
-                display_name='',
-                category_name='cat')
-        ]),
-    _Detection(
-        bounding_box=_BoundingBox(
-            origin_x=261, origin_y=394, width=179, height=209),
-        categories=[
-            _Category(
-                index=16, score=0.5625, display_name='', category_name='cat')
-        ]),
-    _Detection(
-        bounding_box=_BoundingBox(
-            origin_x=389, origin_y=197, width=276, height=409),
-        categories=[
-            _Category(
-                index=17,
-                score=0.51171875,
-                display_name='',
-                category_name='dog')
-        ])
-])
+_EXPECTED_DETECTION_RESULT = _DetectionResult(
+    detections=[
+        _Detection(
+            bounding_box=_BoundingBox(
+                origin_x=54, origin_y=396, width=393, height=196
+            ),
+            categories=[
+                _Category(
+                    index=16,
+                    score=0.644531,
+                    display_name='',
+                    category_name='cat',
+                )
+            ],
+        ),
+        _Detection(
+            bounding_box=_BoundingBox(
+                origin_x=602, origin_y=157, width=394, height=447
+            ),
+            categories=[
+                _Category(
+                    index=16,
+                    score=0.609375,
+                    display_name='',
+                    category_name='cat',
+                )
+            ],
+        ),
+        _Detection(
+            bounding_box=_BoundingBox(
+                origin_x=259,
+                origin_y=394,
+                width=181,
+                height=209,
+            ),
+            categories=[
+                _Category(
+                    index=16, score=0.5625, display_name='', category_name='cat'
+                )
+            ],
+        ),
+        _Detection(
+            bounding_box=_BoundingBox(
+                origin_x=387,
+                origin_y=197,
+                width=281,
+                height=409,
+            ),
+            categories=[
+                _Category(
+                    index=17,
+                    score=0.5,
+                    display_name='',
+                    category_name='dog',
+                )
+            ],
+        ),
+    ]
+)
 _ALLOW_LIST = ['cat', 'dog']
 _DENY_LIST = ['cat']
 _SCORE_THRESHOLD = 0.3
@@ -159,8 +179,74 @@ class ObjectDetectorTest(parameterized.TestCase, tf.test.TestCase):
     image_result = detector.detect(image)
 
     # Comparing results.
-    self.assertProtoEquals(image_result.to_pb2(),
-                           expected_detection_result.to_pb2())
+    self.assertEqual(
+        len(image_result.detections), len(expected_detection_result.detections)
+    )
+    for i in range(
+        min(
+            len(image_result.detections),
+            len(expected_detection_result.detections),
+        )
+    ):
+      self.assertEqual(
+          len(image_result.detections[i].categories),
+          len(expected_detection_result.detections[i].categories),
+      )
+      for j in range(
+          min(
+              len(image_result.detections[i].categories),
+              len(expected_detection_result.detections[i].categories),
+          )
+      ):
+        self.assertProtoEquals(
+            image_result.detections[i].categories[j].to_pb2(),
+            expected_detection_result.detections[i].categories[j].to_pb2(),
+        )
+      self.assertBoundingBoxApproximatelyEquals(
+          image_result.detections[i].bounding_box,
+          expected_detection_result.detections[i].bounding_box,
+          margin=5,
+      )
+
+  def assertBoundingBoxApproximatelyEquals(
+      self,
+      result_bounding_box: _BoundingBox,
+      expected_bounding_box: _BoundingBox,
+      margin: int,
+  ):
+    """Verify that a bounding box is within 'margin' pixels of the expected.
+
+    Args:
+      result_bounding_box: the actual bounding box returned by the API that we
+        want to test.  Each vertex of this box must be within 'margin' pixels of
+        the corresponding vertex of 'expected_bounding_box'.
+      expected_bounding_box: the bounding box that the test expects.
+      margin: (int) the permissable error margin, in pixels.
+    """
+    self.assertLessEqual(
+        result_bounding_box.origin_x, expected_bounding_box.origin_x + margin
+    )
+    self.assertGreaterEqual(
+        result_bounding_box.origin_x, expected_bounding_box.origin_x - margin
+    )
+    self.assertLessEqual(
+        result_bounding_box.origin_y, expected_bounding_box.origin_y + margin
+    )
+    self.assertGreaterEqual(
+        result_bounding_box.origin_y, expected_bounding_box.origin_y - margin
+    )
+    self.assertLessEqual(
+        result_bounding_box.width, expected_bounding_box.width + margin
+    )
+    self.assertGreaterEqual(
+        result_bounding_box.width, expected_bounding_box.width - margin
+    )
+    self.assertLessEqual(
+        result_bounding_box.height, expected_bounding_box.height + margin
+    )
+    self.assertGreaterEqual(
+        result_bounding_box.height, expected_bounding_box.height - margin
+    )
 
   def test_score_threshold_option(self):
     # Creates detector.

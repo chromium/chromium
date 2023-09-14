@@ -18,10 +18,10 @@ limitations under the License.
 #include <algorithm>
 
 #include "absl/container/node_hash_set.h"  // from @com_google_absl
-#include "absl/memory/memory.h"            // from @com_google_absl
-#include "absl/status/status.h"            // from @com_google_absl
-#include "absl/strings/str_format.h"       // from @com_google_absl
-#include "absl/strings/string_view.h"      // from @com_google_absl
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -51,8 +51,7 @@ CreatePostprocessor(core::TfLiteEngine* engine,
 
 /* static */
 tflite::support::StatusOr<double> ImageEmbedder::CosineSimilarity(
-    const FeatureVector& u,
-    const FeatureVector& v) {
+    const FeatureVector& u, const FeatureVector& v) {
   return processor::EmbeddingPostprocessor::CosineSimilarity(u, v);
 }
 
@@ -119,15 +118,13 @@ tflite::support::StatusOr<EmbeddingResult> ImageEmbedder::Embed(
 }
 
 tflite::support::StatusOr<EmbeddingResult> ImageEmbedder::Embed(
-    const FrameBuffer& frame_buffer,
-    const BoundingBox& roi) {
+    const FrameBuffer& frame_buffer, const BoundingBox& roi) {
   return InferWithFallback(frame_buffer, roi);
 }
 
 tflite::support::StatusOr<EmbeddingResult> ImageEmbedder::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors,
-    const FrameBuffer& /*frame_buffer*/,
-    const BoundingBox& /*roi*/) {
+    const FrameBuffer& /*frame_buffer*/, const BoundingBox& /*roi*/) {
   EmbeddingResult result;
   for (int i = 0; i < postprocessors_.size(); ++i) {
     RETURN_IF_ERROR(

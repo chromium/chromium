@@ -15,9 +15,9 @@
 """Tests for metadata info classes."""
 
 from absl.testing import parameterized
+import flatbuffers
 import tensorflow as tf
 
-import flatbuffers
 from tensorflow_lite_support.metadata import metadata_schema_py_generated as _metadata_fb
 from tensorflow_lite_support.metadata import schema_py_generated as _schema_fb
 from tensorflow_lite_support.metadata.python import metadata as _metadata

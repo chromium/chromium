@@ -40,7 +40,7 @@
   return self;
 }
 
-- (instancetype)initWithModelPath:(NSString*)modelPath {
+- (instancetype)initWithModelPath:(NSString *)modelPath {
   self = [self init];
   if (self) {
     self.baseOptions.modelFile.filePath = modelPath;
@@ -63,45 +63,40 @@
   return self;
 }
 
-+ (nullable instancetype)objectDetectorWithOptions:
-                             (TFLObjectDetectorOptions*)options
-                                             error:(NSError**)error {
++ (nullable instancetype)objectDetectorWithOptions:(TFLObjectDetectorOptions *)options
+                                             error:(NSError **)error {
   if (!options) {
-    [TFLCommonUtils
-        createCustomError:error
-                 withCode:TFLSupportErrorCodeInvalidArgumentError
-              description:@"TFLObjectDetectorOptions argument cannot be nil."];
+    [TFLCommonUtils createCustomError:error
+                             withCode:TFLSupportErrorCodeInvalidArgumentError
+                          description:@"TFLObjectDetectorOptions argument cannot be nil."];
     return nil;
   }
 
   TfLiteObjectDetectorOptions cOptions = TfLiteObjectDetectorOptionsCreate();
-  if (![options.classificationOptions
-          copyToCOptions:&(cOptions.classification_options)
-                   error:error]) {
+  if (![options.classificationOptions copyToCOptions:&(cOptions.classification_options)
+                                               error:error]) {
     // Deallocating any allocated memory on failure.
-    [options.classificationOptions deleteAllocatedMemoryOfClassificationOptions:
-                                       &(cOptions.classification_options)];
+    [options.classificationOptions
+        deleteAllocatedMemoryOfClassificationOptions:&(cOptions.classification_options)];
     return nil;
   }
 
   [options.baseOptions copyToCOptions:&(cOptions.base_options)];
 
-  TfLiteSupportError* cCreateObjectDetectorError = nil;
-  TfLiteObjectDetector* cObjectDetector =
+  TfLiteSupportError *cCreateObjectDetectorError = nil;
+  TfLiteObjectDetector *cObjectDetector =
       TfLiteObjectDetectorFromOptions(&cOptions, &cCreateObjectDetectorError);
 
-  [options.classificationOptions deleteAllocatedMemoryOfClassificationOptions:
-                                     &(cOptions.classification_options)];
+  [options.classificationOptions
+      deleteAllocatedMemoryOfClassificationOptions:&(cOptions.classification_options)];
 
-  // Populate iOS error if TfliteSupportError is not null and afterwards delete
-  // it.
+  // Populate iOS error if TfliteSupportError is not null and afterwards delete  it.
   if (![TFLCommonUtils checkCError:cCreateObjectDetectorError toError:error]) {
     TfLiteSupportErrorDelete(cCreateObjectDetectorError);
   }
 
-  // Return nil if C object detector evaluates to nil. If an error was generted
-  // by the C layer, it has already been populated to an NSError and deleted
-  // before returning from the method.
+  // Return nil if C object detector evaluates to nil. If an error was generted by the C layer, it
+  // has already been populated to an NSError and deleted before returning from the method.
   if (!cObjectDetector) {
     return nil;
   }
@@ -109,8 +104,8 @@
   return [[TFLObjectDetector alloc] initWithObjectDetector:cObjectDetector];
 }
 
-- (nullable TFLDetectionResult*)detectWithGMLImage:(GMLImage*)image
-                                             error:(NSError**)error {
+- (nullable TFLDetectionResult *)detectWithGMLImage:(GMLImage *)image
+                                              error:(NSError **)error {
   if (!image) {
     [TFLCommonUtils createCustomError:error
                              withCode:TFLSupportErrorCodeInvalidArgumentError
@@ -118,14 +113,14 @@
     return nil;
   }
 
-  TfLiteFrameBuffer* cFrameBuffer = [image cFrameBufferWithError:error];
+  TfLiteFrameBuffer *cFrameBuffer = [image cFrameBufferWithError:error];
 
   if (!cFrameBuffer) {
     return nil;
   }
 
-  TfLiteSupportError* cDetectError = nil;
-  TfLiteDetectionResult* cDetectionResult =
+  TfLiteSupportError *cDetectError = nil;
+  TfLiteDetectionResult *cDetectionResult =
       TfLiteObjectDetectorDetect(_objectDetector, cFrameBuffer, &cDetectError);
 
   free(cFrameBuffer->buffer);
@@ -139,9 +134,8 @@
     TfLiteSupportErrorDelete(cDetectError);
   }
 
-  // Return nil if C result evaluates to nil. If an error was generted by the C
-  // layer, it has already been populated to an NSError and deleted before
-  // returning from the method.
+  // Return nil if C result evaluates to nil. If an error was generted by the C layer, it has
+  // already been populated to an NSError and deleted before returning from the method.
   if (!cDetectionResult) {
     return nil;
   }

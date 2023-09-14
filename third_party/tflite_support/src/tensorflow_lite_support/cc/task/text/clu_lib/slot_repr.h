@@ -20,9 +20,9 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/status/status.h"        // from @com_google_absl
-#include "absl/status/statusor.h"      // from @com_google_absl
-#include "absl/strings/str_cat.h"      // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/task/text/clu_lib/constants.h"
 
@@ -68,8 +68,7 @@ class SlotRepr {
   static absl::StatusOr<SlotRepr> CreateFromIob(const absl::string_view);
 
   // Factory
-  static SlotRepr Create(absl::string_view name,
-                         absl::string_view domain = "",
+  static SlotRepr Create(absl::string_view name, absl::string_view domain = "",
                          const bool share_across_domains = true);
 
   // Splits the full_name into domain and slot name.

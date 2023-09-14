@@ -37,16 +37,12 @@ struct EncoderResult {
   std::vector<int> offsets;
 };
 std::tuple<std::string, std::vector<int>> NormalizeString(
-    const std::string& in_string,
-    const EncoderConfig& config);
+    const std::string& in_string, const EncoderConfig& config);
 
 // Encodes one string and returns ids and offsets. Takes the configuration as a
 // type-erased buffer.
-EncoderResult EncodeString(const std::string& string,
-                           const void* config_buffer,
-                           bool add_bos,
-                           bool add_eos,
-                           bool reverse);
+EncoderResult EncodeString(const std::string& string, const void* config_buffer,
+                           bool add_bos, bool add_eos, bool reverse);
 
 }  // namespace sentencepiece
 }  // namespace custom

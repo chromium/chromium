@@ -17,11 +17,11 @@ package org.tensorflow.lite.support.metadata;
 
 /** Information about the metadata parser that this metadata extractor library is depending on. */
 public final class MetadataParser {
-    /**
-     * The version of the metadata parser that this metadata extractor library is depending on. The
-     * value should match the value of "Schema Semantic version" in metadata_schema.fbs.
-     */
-    public static final String VERSION = "1.4.1";
+  /**
+   * The version of the metadata parser that this metadata extractor library is depending on. The
+   * value should match the value of "Schema Semantic version" in metadata_schema.fbs.
+   */
+  public static final String VERSION = "1.5.0";
 
-    private MetadataParser() {}
+  private MetadataParser() {}
 }

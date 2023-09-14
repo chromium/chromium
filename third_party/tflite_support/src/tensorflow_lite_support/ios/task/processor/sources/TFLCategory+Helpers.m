@@ -19,8 +19,8 @@
 + (TFLCategory *)categoryWithCCategory:(TfLiteCategory *)cCategory {
   if (cCategory == nil) return nil;
 
-  NSString* displayName;
-  NSString* label;
+  NSString *displayName;
+  NSString *label;
 
   if (cCategory->display_name != nil) {
     displayName = [NSString stringWithCString:cCategory->display_name
@@ -28,8 +28,7 @@
   }
 
   if (cCategory->label != nil) {
-    label = [NSString stringWithCString:cCategory->label
-                               encoding:NSUTF8StringEncoding];
+    label = [NSString stringWithCString:cCategory->label encoding:NSUTF8StringEncoding];
   }
 
   return [[TFLCategory alloc] initWithIndex:(NSInteger)cCategory->index

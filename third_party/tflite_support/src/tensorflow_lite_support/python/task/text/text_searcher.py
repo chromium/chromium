@@ -37,9 +37,14 @@ class TextSearcherOptions:
     embedding_options: Embedding options for the text searcher task.
     search_options: Search options for the text searcher task.
   """
+
   base_options: _BaseOptions
-  embedding_options: _EmbeddingOptions = _EmbeddingOptions()
-  search_options: _SearchOptions = _SearchOptions()
+  embedding_options: _EmbeddingOptions = dataclasses.field(
+      default_factory=_EmbeddingOptions
+  )
+  search_options: _SearchOptions = dataclasses.field(
+      default_factory=_SearchOptions
+  )
 
 
 class TextSearcher(object):

@@ -16,40 +16,37 @@
 #import "tensorflow_lite_support/ios/sources/TFLCommon.h"
 
 /** Error domain of TensorFlow Lite Support related errors. */
-NSString* const TFLSupportTaskErrorDomain = @"org.tensorflow.lite.tasks";
+NSString *const TFLSupportTaskErrorDomain = @"org.tensorflow.lite.tasks";
 
 @implementation TFLCommonUtils
 
-+ (void)createCustomError:(NSError**)error
++ (void)createCustomError:(NSError **)error
                  withCode:(NSUInteger)code
-              description:(NSString*)description {
+              description:(NSString *)description {
   [TFLCommonUtils createCustomError:error
                          withDomain:TFLSupportTaskErrorDomain
                                code:code
                         description:description];
 }
 
-+ (void)createCustomError:(NSError**)error
-               withDomain:(NSString*)domain
++ (void)createCustomError:(NSError **)error
+               withDomain:(NSString *)domain
                      code:(NSUInteger)code
-              description:(NSString*)description {
+              description:(NSString *)description {
   if (error) {
-    *error =
-        [NSError errorWithDomain:domain
-                            code:code
-                        userInfo:@{NSLocalizedDescriptionKey : description}];
+    *error = [NSError errorWithDomain:domain
+                                 code:code
+                             userInfo:@{NSLocalizedDescriptionKey : description}];
   }
 }
 
-+ (BOOL)checkCError:(TfLiteSupportError*)supportError toError:(NSError**)error {
++ (BOOL)checkCError:(TfLiteSupportError *)supportError toError:(NSError **)error {
   if (!supportError) {
     return YES;
   }
-  NSString* description = [NSString stringWithCString:supportError->message
+  NSString *description = [NSString stringWithCString:supportError->message
                                              encoding:NSUTF8StringEncoding];
-  [TFLCommonUtils createCustomError:error
-                           withCode:supportError->code
-                        description:description];
+  [TFLCommonUtils createCustomError:error withCode:supportError->code description:description];
   return NO;
 }
 

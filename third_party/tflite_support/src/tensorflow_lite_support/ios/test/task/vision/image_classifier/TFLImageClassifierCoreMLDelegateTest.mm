@@ -42,8 +42,7 @@ using ClassificationResult = ::tflite::task::vision::ClassificationResult;
   XCTAssertNotNil(_modelPath);
 }
 
-- (void)
-    testCoreMLDelegateCreationSucceedsWithDevicesAllUsingCppImageClassifier {
+- (void)testCoreMLDelegateCreationSucceedsWithDevicesAllUsingCppImageClassifier {
   // Configures the options.
   ImageClassifierOptions options;
   options.mutable_base_options()->mutable_model_file()->set_file_name(_modelPath.UTF8String);
@@ -99,35 +98,29 @@ using ClassificationResult = ::tflite::task::vision::ClassificationResult;
   XCTAssertEqualWithAccuracy(topClass.score(), 0.748976, 0.001);
 }
 
-- (void)
-    testCoreMLDelegateCreationSucceedsWithDevicesAllUsingObjcImageClassifier {
-  TFLCoreMLDelegateSettings* coreMLDelegateSettings =
-      [[TFLCoreMLDelegateSettings alloc]
-          initWithCoreMLVersion:3
-                 enableddevices:TFLCoreMLDelegateSettings_DevicesAll];
+- (void)testCoreMLDelegateCreationSucceedsWithDevicesAllUsingObjcImageClassifier {
+  TFLCoreMLDelegateSettings* coreMLDelegateSettings = [[TFLCoreMLDelegateSettings alloc]
+      initWithCoreMLVersion:3
+             enableddevices:TFLCoreMLDelegateSettings_DevicesAll];
   TFLImageClassifierOptions* imageClassifierOptions =
       [[TFLImageClassifierOptions alloc] initWithModelPath:_modelPath];
   // Implicitly enables Core ML Delegate.
-  imageClassifierOptions.baseOptions.coreMLDelegateSettings =
-      coreMLDelegateSettings;
+  imageClassifierOptions.baseOptions.coreMLDelegateSettings = coreMLDelegateSettings;
 
   TFLImageClassifier* imageClassifier =
-      [TFLImageClassifier imageClassifierWithOptions:imageClassifierOptions
-                                               error:nil];
+      [TFLImageClassifier imageClassifierWithOptions:imageClassifierOptions error:nil];
   XCTAssertNotNil(imageClassifier);
 
-  GMLImage* gmlImage = [GMLImage imageFromBundleWithClass:self.class
-                                                 fileName:@"burger"
-                                                   ofType:@"jpg"];
+  GMLImage* gmlImage =
+      [GMLImage imageFromBundleWithClass:self.class fileName:@"burger" ofType:@"jpg"];
   XCTAssertNotNil(gmlImage);
 
-  TFLClassificationResult* classificationResults =
-      [imageClassifier classifyWithGMLImage:gmlImage error:nil];
+  TFLClassificationResult* classificationResults = [imageClassifier classifyWithGMLImage:gmlImage
+                                                                                   error:nil];
   XCTAssertTrue(classificationResults.classifications.count > 0);
   XCTAssertTrue(classificationResults.classifications[0].categories.count > 0);
 
-  TFLCategory* category =
-      classificationResults.classifications[0].categories[0];
+  TFLCategory* category = classificationResults.classifications[0].categories[0];
   XCTAssertTrue([category.label isEqual:@"cheeseburger"]);
   // Comment from TFLImageClassifierTests.m:
   // "TODO: match the score as image_classifier_test.cc"

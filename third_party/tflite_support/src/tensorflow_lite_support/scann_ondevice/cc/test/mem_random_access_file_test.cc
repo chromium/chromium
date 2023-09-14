@@ -16,7 +16,7 @@ limitations under the License.
 #include "tensorflow_lite_support/scann_ondevice/cc/mem_random_access_file.h"
 
 #include "leveldb/slice.h"  // from @com_google_leveldb
-#include "tensorflow/lite/core/shims/cc/shims_test_util.h"
+#include "tensorflow/lite/test_util.h"
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
 
@@ -27,7 +27,7 @@ namespace {
 constexpr char kBufferData[] = "abcdef";
 constexpr size_t kBufferSize = 6;
 
-class MemRandomAccessFileTest : public tflite_shims::testing::Test {
+class MemRandomAccessFileTest : public tflite::testing::Test {
  public:
   MemRandomAccessFileTest() : file_(kBufferData, kBufferSize) {}
 

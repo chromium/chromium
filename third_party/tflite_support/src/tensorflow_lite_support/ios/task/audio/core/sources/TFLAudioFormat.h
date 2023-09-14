@@ -17,8 +17,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * This class wraps a few constants describing the format of the incoming audio
- * samples, namely number of channels and the sample rate.
+ * This class wraps a few constants describing the format of the incoming audio samples, namely
+ * number of channels and the sample rate.
  */
 NS_SWIFT_NAME(AudioFormat)
 @interface TFLAudioFormat : NSObject
@@ -30,25 +30,21 @@ NS_SWIFT_NAME(AudioFormat)
 @property(nonatomic, readonly) NSUInteger sampleRate;
 
 /**
- * Initializes a new `TFLAudioFormat` with the given channel count and sample
- * rate.
+ * Initializes a new `TFLAudioFormat` with the given channel count and sample rate.
  *
  * @param channelCount Number of channels.
  * @param sampleRate Sample rate.
  *
- * @return A new instance of `TFLAudioFormat` with the given channel count and
- * sample rate.
+ * @return A new instance of `TFLAudioFormat` with the given channel count and sample rate.
  */
-- (instancetype)initWithChannelCount:(NSUInteger)channelCount
-                          sampleRate:(NSUInteger)sampleRate;
+- (instancetype)initWithChannelCount:(NSUInteger)channelCount sampleRate:(NSUInteger)sampleRate;
 
 /**
- * Initializes a new `TFLAudioFormat` with the default channel count of 1 and
- * the given sample rate.
+ * Initializes a new `TFLAudioFormat` with the default channel count of 1 and the given sample rate.
  *
  * @param sampleRate Sample rate.
- * @return A new instance of `TFLAudioFormat` with the default channel count of
- * 1 and the given sample rate.
+ * @return A new instance of `TFLAudioFormat` with the default channel count of 1 and the given
+ * sample rate.
  */
 - (instancetype)initWithSampleRate:(NSUInteger)sampleRate;
 

@@ -19,9 +19,9 @@ limitations under the License.
 #include <string>
 #include <utility>
 
-#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
-#include "absl/strings/str_split.h"   // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"

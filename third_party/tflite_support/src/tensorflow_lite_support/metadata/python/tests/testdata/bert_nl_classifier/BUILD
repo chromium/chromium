@@ -1,7 +1,6 @@
 load("//tensorflow_lite_support/tools/build_rules:http_files.bzl", "tflite_file", "tflite_model")
 
 package(
-    default_applicable_licenses = ["//tensorflow_lite_support:license"],
     default_visibility = ["//tensorflow_lite_support:users"],
     licenses = ["notice"],  # Apache 2.0
 )
@@ -14,9 +13,9 @@ filegroup(
         "*.txt",
         "*.model",
     ]) + [
-        ":bert_nl_classifier_no_metadata",
         "mobilebert_vocab",
         ":30k-clean",
+        ":bert_nl_classifier_no_metadata",
     ],
 )
 
