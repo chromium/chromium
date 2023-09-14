@@ -65,6 +65,7 @@ source_set("commands") {
   ]
 
   deps = [
+    "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tabs",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",

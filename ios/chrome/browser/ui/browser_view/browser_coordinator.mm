@@ -13,6 +13,8 @@
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
@@ -37,12 +39,16 @@
 #import "ios/chrome/browser/find_in_page/util.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/followed_web_site.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
@@ -2318,13 +2324,26 @@ enum class ToolbarKind {
   }
 }
 
-#pragma mark - ParcelTrackingOptInCommands helpers
-
 - (void)showParcelTrackingInfobarWithParcels:
             (NSArray<CustomTextCheckingResult*>*)parcels
                                      forStep:(ParcelTrackingStep)step {
-  // TODO(crbug.com/1473449): add infobar to InfobarManager.
+  web::WebState* activeWebState = self.activeWebState;
+  CHECK(activeWebState);
+  std::unique_ptr<ParcelTrackingInfobarDelegate> delegate =
+      std::make_unique<ParcelTrackingInfobarDelegate>(
+          activeWebState, step, parcels,
+          HandlerForProtocol(self.dispatcher, ApplicationCommands),
+          HandlerForProtocol(self.dispatcher, ParcelTrackingOptInCommands));
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(activeWebState);
+
+  std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeParcelTracking, std::move(delegate));
+  infobar_manager->AddInfoBar(std::move(infobar),
+                              /*replace_existing=*/true);
 }
+
+#pragma mark - ParcelTrackingOptInCommands helpers
 
 - (void)maybeShowParcelTrackingInfobarWithParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels {
@@ -2350,9 +2369,7 @@ enum class ToolbarKind {
 - (void)showParcelTrackingOptInPromptWithParcels:
     (NSArray<CustomTextCheckingResult*>*)parcels {
   web::WebState* activeWebState = self.activeWebState;
-  if (!activeWebState) {
-    return;
-  }
+  CHECK(activeWebState);
   [self dismissParcelTrackingOptInPrompt];
   self.parcelTrackingOptInCoordinator = [[ParcelTrackingOptInCoordinator alloc]
       initWithBaseViewController:self.viewController

@@ -12,23 +12,31 @@ ParcelTrackingInfobarDelegate::ParcelTrackingInfobarDelegate(
     web::WebState* web_state,
     ParcelTrackingStep step,
     NSArray<CustomTextCheckingResult*>* parcel_list,
-    id<ApplicationCommands> application_commands_handler)
+    id<ApplicationCommands> application_commands_handler,
+    id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler)
     : web_state_(web_state),
       step_(step),
       parcel_list_(parcel_list),
-      application_commands_handler_(application_commands_handler) {}
+      application_commands_handler_(application_commands_handler),
+      parcel_tracking_commands_handler_(parcel_tracking_commands_handler) {}
 
 ParcelTrackingInfobarDelegate::~ParcelTrackingInfobarDelegate() = default;
 
 #pragma mark - Public
 
 void ParcelTrackingInfobarDelegate::TrackPackages() {
-  // TODO(crbug.com/1473449): display new infobar.
+  [parcel_tracking_commands_handler_
+      showParcelTrackingInfobarWithParcels:parcel_list_
+                                   forStep:ParcelTrackingStep::
+                                               kNewPackageTracked];
   // TODO(crbug.com/1473449): track once Shopping Service API is ready.
 }
 
 void ParcelTrackingInfobarDelegate::UntrackPackages() {
-  // TODO(crbug.com/1473449): display new infobar.
+  [parcel_tracking_commands_handler_
+      showParcelTrackingInfobarWithParcels:parcel_list_
+                                   forStep:ParcelTrackingStep::
+                                               kPackageUntracked];
   // TODO(crbug.com/1473449): untrack once Shopping Service API is ready.
 }
 

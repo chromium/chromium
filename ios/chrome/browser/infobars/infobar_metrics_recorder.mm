@@ -136,6 +136,18 @@ const char kInfobarTabPickupModalEventHistogram[] =
 const char kInfobarTabPickupBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeTabPickup";
 
+// Histogram names for the Parcel Tracking banner.
+const char kInfobarParcelTrackingBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeParcelTracking";
+const char kInfobarParcelTrackingBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeParcelTracking";
+// Modal.
+const char kInfobarParcelTrackingModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypeParcelTracking";
+// Badge.
+const char kInfobarParcelTrackingBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.InfobarTypeParcelTracking";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -198,6 +210,10 @@ const char kInfobarTabPickupBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeTabPickup:
       UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupBannerEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeParcelTracking:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingBannerEventHistogram,
+                                event);
+      break;
   }
 }
 
@@ -244,6 +260,10 @@ const char kInfobarTabPickupBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupBannerDismissTypeHistogram,
                                 dismissType);
       break;
+    case InfobarType::kInfobarTypeParcelTracking:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarParcelTrackingBannerDismissTypeHistogram, dismissType);
+      break;
   }
 }
 
@@ -287,6 +307,10 @@ const char kInfobarTabPickupBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeTabPickup:
       UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupModalEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeParcelTracking:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingModalEventHistogram,
+                                event);
+      break;
   }
 }
 
@@ -326,6 +350,10 @@ const char kInfobarTabPickupBadgeTappedHistogram[] =
       break;
     case InfobarType::kInfobarTypeTabPickup:
       UMA_HISTOGRAM_ENUMERATION(kInfobarTabPickupBadgeTappedHistogram, state);
+      break;
+    case InfobarType::kInfobarTypeParcelTracking:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingBadgeTappedHistogram,
+                                state);
       break;
   }
 }

@@ -29,6 +29,8 @@ enum class InfobarType {
   kInfobarTypeSyncError = 9,
   // Message Infobar for Tab Pickup.
   kInfobarTypeTabPickup = 10,
+  // Message Infobar for Parcel Tracking.
+  kInfobarTypeParcelTracking = 11,
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm

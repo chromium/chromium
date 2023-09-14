@@ -6,8 +6,10 @@
 #define IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_INFOBAR_DELEGATE_H_
 
 #import "components/infobars/core/confirm_infobar_delegate.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
 #import "ios/web/public/web_state.h"
 
@@ -19,7 +21,8 @@ class ParcelTrackingInfobarDelegate : public ConfirmInfoBarDelegate {
       web::WebState* web_state,
       ParcelTrackingStep step,
       NSArray<CustomTextCheckingResult*>* parcel_list,
-      id<ApplicationCommands> application_commands_handler);
+      id<ApplicationCommands> application_commands_handler,
+      id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler);
 
   ~ParcelTrackingInfobarDelegate() override;
 
@@ -46,6 +49,7 @@ class ParcelTrackingInfobarDelegate : public ConfirmInfoBarDelegate {
   ParcelTrackingStep step_;
   NSArray<CustomTextCheckingResult*>* parcel_list_;
   id<ApplicationCommands> application_commands_handler_;
+  id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_INFOBAR_DELEGATE_H_

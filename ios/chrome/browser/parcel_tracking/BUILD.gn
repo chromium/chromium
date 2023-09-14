@@ -16,13 +16,19 @@ source_set("infobar_delegate") {
     "parcel_tracking_infobar_delegate.mm",
   ]
   deps = [
+    ":parcel_tracking_step",
     ":util",
     "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/annotations",
     "//ios/web/public",
     "//ios/web/public/annotations:custom_text_check_result",
   ]
+}
+
+source_set("parcel_tracking_step") {
+  sources = [ "parcel_tracking_step.h" ]
 }
 
 source_set("util") {
