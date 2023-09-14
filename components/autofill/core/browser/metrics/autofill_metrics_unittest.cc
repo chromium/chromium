@@ -134,6 +134,8 @@ using UkmEditedAutofilledFieldAtSubmission =
     ukm::builders::Autofill_EditedAutofilledFieldAtSubmission;
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using UkmFieldInfoType = ukm::builders::Autofill2_FieldInfo;
+using UkmFieldInfoAfterSubmissionType =
+    ukm::builders::Autofill2_FieldInfoAfterSubmission;
 using UkmFormSummaryType = ukm::builders::Autofill2_FormSummary;
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
@@ -8400,8 +8402,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
                                      .begin()
                                      ->second->form_parsed_timestamp();
     // Simulate text input in the first fields.
-    SimulateUserChangedTextField(form, form.fields[0],
-                                 parse_time + base::Milliseconds(3));
+    SimulateUserChangedTextFieldTo(form, form.fields[0], u"United States",
+                                   parse_time + base::Milliseconds(3));
     test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
@@ -8457,6 +8459,42 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           {UFIT::kAutocompleteStateName,
            base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
           {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+      };
+      EXPECT_EQ(expected.size(), entry->metrics.size());
+      for (const auto& [metric, value] : expected) {
+        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
+      }
+    }
+
+    // Verify FieldInfoAfterSubmission UKM event for each field in the form.
+    auto submission_entries = test_ukm_recorder().GetEntriesByName(
+        UkmFieldInfoAfterSubmissionType::kEntryName);
+    // Form submission and user interaction trigger uploading votes twice.
+    ASSERT_EQ(6u, submission_entries.size());
+    for (size_t i = 0; i < submission_entries.size(); ++i) {
+      SCOPED_TRACE(testing::Message() << i);
+      using UFIAST = UkmFieldInfoAfterSubmissionType;
+      const auto* const entry = submission_entries[i];
+      ServerFieldType submitted_type1 =
+          i % 3 == 0 ? ADDRESS_HOME_COUNTRY : EMPTY_TYPE;
+
+      // TODO(crbug.com/1325851): Check that the second vote submission (with
+      // SubmissionSource::NONE) is always identical with the first one (it's
+      // possible that only the SubmissionSource::NONE exists). If we always
+      // get the same values, we should modify
+      // BrowserAutofillManager::OnFormSubmittedImpl to only send one vote
+      // submission.
+      SubmissionSource submission_source =
+          i < 3 ? SubmissionSource::FORM_SUBMISSION : SubmissionSource::NONE;
+      std::map<std::string, int64_t> expected = {
+          {UFIAST::kFormSessionIdentifierName,
+           AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+          {UFIAST::kFieldSessionIdentifierName,
+           AutofillMetrics::FieldGlobalIdToHash64Bit(
+               form.fields[i % 3].global_id())},
+          {UFIAST::kSubmittedType1Name, submitted_type1},
+          {UFIAST::kSubmissionSourceName, static_cast<int>(submission_source)},
+          {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
       };
       EXPECT_EQ(expected.size(), entry->metrics.size());
       for (const auto& [metric, value] : expected) {
@@ -8690,6 +8728,33 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
     }
   }
 
+  // Verify FieldInfoAfterSubmission UKM event for each field in the form.
+  auto submission_entries = test_ukm_recorder().GetEntriesByName(
+      UkmFieldInfoAfterSubmissionType::kEntryName);
+  // Form submission triggers uploading votes once.
+  ASSERT_EQ(5u, submission_entries.size());
+  for (size_t i = 0; i < submission_entries.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << i);
+    using UFIAST = UkmFieldInfoAfterSubmissionType;
+    const auto* const entry = submission_entries[i];
+    std::map<std::string, int64_t> expected = {
+        {UFIAST::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIAST::kFieldSessionIdentifierName,
+         AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
+        {UFIAST::kSubmittedType1Name, EMPTY_TYPE},
+        {UFIAST::kSubmissionSourceName,
+         static_cast<int>(SubmissionSource::FORM_SUBMISSION)},
+        {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 10},
+    };
+    EXPECT_EQ(expected.size(), entry->metrics.size());
+    for (const auto& [metric, value] : expected) {
+      if (metric == UFIAST::kMillisecondsFromFormParsedUntilSubmissionName) {
+        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
+      }
+    }
+  }
+
   // Verify FormSummary UKM event for the form.
   auto form_entries =
       test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
@@ -8747,12 +8812,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 
   test::FormDescription form_description = {
       .description_for_logging = "NumberOfAutofilledFields",
-      .fields = {{.role = NAME_FULL,
-                  .value = u"Elvis Aaron Presley",
-                  .is_autofilled = false},
-                 {.role = EMAIL_ADDRESS,
-                  .value = u"buddy@gmail.com",
-                  .is_autofilled = false},
+      .fields = {{.role = NAME_FULL, .value = u"", .is_autofilled = false},
+                 {.role = EMAIL_ADDRESS, .value = u"", .is_autofilled = false},
                  {.role = PHONE_HOME_CITY_AND_NUMBER, .is_autofilled = true}},
       .unique_renderer_id = test::MakeFormRendererId(),
       .main_frame_origin =
@@ -8765,10 +8826,10 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                    .begin()
                                    ->second->form_parsed_timestamp();
   // Simulate text input in the first and second fields.
-  SimulateUserChangedTextField(form, form.fields[0],
-                               parse_time + base::Milliseconds(3));
-  SimulateUserChangedTextField(form, form.fields[1],
-                               parse_time + base::Milliseconds(3));
+  SimulateUserChangedTextFieldTo(form, form.fields[0], u"Elvis Aaron Presley",
+                                 parse_time + base::Milliseconds(3));
+  SimulateUserChangedTextFieldTo(form, form.fields[1], u"buddy@gmail.com",
+                                 parse_time + base::Milliseconds(3));
   test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
@@ -8804,6 +8865,37 @@ TEST_F(AutofillMetricsFromLogEventsTest,
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
       test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
+    }
+  }
+
+  // Verify FieldInfoAfterSubmission UKM event for each field in the form.
+  std::vector<ServerFieldType> submitted_types{NAME_FULL, EMAIL_ADDRESS,
+                                               EMPTY_TYPE};
+  auto submission_entries = test_ukm_recorder().GetEntriesByName(
+      UkmFieldInfoAfterSubmissionType::kEntryName);
+  // Form submission and user interaction trigger uploading votes twice.
+  ASSERT_EQ(6u, submission_entries.size());
+  for (size_t i = 0; i < submission_entries.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << i);
+    using UFIAST = UkmFieldInfoAfterSubmissionType;
+    const auto* const entry = submission_entries[i];
+    SubmissionSource submission_source =
+        i < 3 ? SubmissionSource::FORM_SUBMISSION : SubmissionSource::NONE;
+    std::map<std::string, int64_t> expected = {
+        {UFIAST::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIAST::kFieldSessionIdentifierName,
+         AutofillMetrics::FieldGlobalIdToHash64Bit(
+             form.fields[i % 3].global_id())},
+        {UFIAST::kSubmittedType1Name, submitted_types[i % 3]},
+        {UFIAST::kSubmissionSourceName, static_cast<int>(submission_source)},
+        {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+    };
+    EXPECT_EQ(expected.size(), entry->metrics.size());
+    for (const auto& [metric, value] : expected) {
+      if (metric == UFIAST::kMillisecondsFromFormParsedUntilSubmissionName) {
+        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
+      }
     }
   }
 

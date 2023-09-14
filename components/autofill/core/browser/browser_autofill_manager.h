@@ -369,7 +369,8 @@ class BrowserAutofillManager : public AutofillManager,
       std::unique_ptr<FormStructure> submitted_form,
       base::TimeTicks interaction_time,
       base::TimeTicks submission_time,
-      bool observed_submission);
+      bool observed_submission,
+      ukm::SourceId source_id);
 
   // Returns the card image for `credit_card`. If the `credit_card` has a card
   // art image linked, prefer it. Otherwise fall back to the network icon.

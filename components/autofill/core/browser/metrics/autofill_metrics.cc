@@ -2750,6 +2750,49 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   builder.Record(ukm_recorder_);
 }
 
+// static
+void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    const FormStructure& form,
+    const base::TimeTicks& form_submitted_timestamp) {
+  for (const auto& field : form) {
+    // The possible field submitted types determined by comparing the submitted
+    // value in the field with the data stored in the Autofill server. We will
+    // have at most three possible field submitted types.
+    ServerFieldType submitted_type1 = UNKNOWN_TYPE;
+
+    ukm::builders::Autofill2_FieldInfoAfterSubmission builder(source_id);
+    builder
+        .SetFormSessionIdentifier(
+            AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id()))
+        .SetFieldSessionIdentifier(
+            AutofillMetrics::FieldGlobalIdToHash64Bit(field->global_id()));
+
+    const ServerFieldTypeSet& type_set = field->possible_types();
+    if (!type_set.empty()) {
+      auto type = type_set.begin();
+      submitted_type1 = *type;
+      if (type_set.size() >= 2) {
+        builder.SetSubmittedType2(*++type);
+      }
+      if (type_set.size() >= 3) {
+        builder.SetSubmittedType3(*++type);
+      }
+    }
+
+    // TODO(crbug.com/1325851): Modify the enum object of SubmissionSource by
+    // assigning values (= 0, = 1, ...) and adding a comment to not change it.
+    builder.SetSubmittedType1(submitted_type1)
+        .SetSubmissionSource(static_cast<int>(form.submission_source()))
+        .SetMillisecondsFromFormParsedUntilSubmission(
+            ukm::GetSemanticBucketMinForDurationTiming(
+                (form_submitted_timestamp - form.form_parsed_timestamp())
+                    .InMilliseconds()))
+        .Record(ukm_recorder);
+  }
+}
+
 void AutofillMetrics::FormInteractionsUkmLogger::
     LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,

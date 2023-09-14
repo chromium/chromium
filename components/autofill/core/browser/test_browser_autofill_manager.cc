@@ -109,7 +109,8 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
-    bool observed_submission) {
+    bool observed_submission,
+    const ukm::SourceId source_id) {
   submitted_form_signature_ = submitted_form->FormSignatureAsStr();
 
   if (observed_submission) {
@@ -142,7 +143,7 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
 
   BrowserAutofillManager::UploadVotesAndLogQuality(
       std::move(submitted_form), interaction_time, submission_time,
-      observed_submission);
+      observed_submission, source_id);
 }
 
 void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(

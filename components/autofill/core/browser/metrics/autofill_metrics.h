@@ -1408,6 +1408,14 @@ class AutofillMetrics {
   static uint64_t FieldGlobalIdToHash64Bit(
       const FieldGlobalId& field_global_id);
 
+  // Log the Autofill2_FieldInfoAfterSubmission UKM event after the form is
+  // submitted and uploaded for votes to the crowdsourcing server.
+  static void LogAutofillFieldInfoAfterSubmission(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      const FormStructure& form,
+      const base::TimeTicks& form_submitted_timestamp);
+
  private:
   static void Log(AutocompleteEvent event);
 };

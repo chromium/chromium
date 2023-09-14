@@ -3696,6 +3696,71 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill2.FieldInfoAfterSubmission">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Information about a specific field, recorded after form submission.
+  </summary>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values. FormSessionIdentifier and
+      FieldSessionIdentifier together are used to link to the field in
+      Autofill2.FieldInfo.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. FormSessionIdentifier and FieldSessionIdentifier
+      together are used to link to the field in Autofill2.FieldInfo.
+    </summary>
+  </metric>
+  <metric name="MillisecondsFromFormParsedUntilSubmission">
+    <summary>
+      The time interval from form parse to form submission in ms in exponential
+      buckets from |GetSemanticBucketMinForDurationTiming()|.
+    </summary>
+  </metric>
+  <metric name="SubmissionSource" enum="AutofillSubmissionSource">
+    <summary>
+      The source of form submission. The source is from
+      autofill::mojom::SubmissionSource.
+    </summary>
+  </metric>
+  <metric name="SubmittedType1" enum="AutofillServerFieldType">
+    <summary>
+      The first possible field submitted type is determined by comparing the
+      submitted value in the field with the stored user profiles. We will have
+      at most three possible field submitted types. The types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="SubmittedType2" enum="AutofillServerFieldType">
+    <summary>
+      The second possible field submitted type is determined by comparing the
+      submitted value in the field with the stored user profiles. We will have
+      at most three possible field submitted types. The types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="SubmittedType3" enum="AutofillServerFieldType">
+    <summary>
+      The third possible field submitted type is determined by comparing the
+      submitted value in the field with the stored user profiles. We will have
+      at most three possible field submitted types. The types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill2.FormSummary">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>

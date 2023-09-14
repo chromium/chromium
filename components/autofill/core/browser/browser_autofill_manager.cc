@@ -968,11 +968,11 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // BrowserAutofillManager::UploadVotesAndLogQuality() call.
   FormStructure* raw_form = form_structure.get();
 
-  base::OnceClosure call_after_determine_field_types =
-      base::BindOnce(&BrowserAutofillManager::UploadVotesAndLogQuality,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
-                     initial_interaction_timestamp_,
-                     AutofillTickClock::NowTicks(), observed_submission);
+  base::OnceClosure call_after_determine_field_types = base::BindOnce(
+      &BrowserAutofillManager::UploadVotesAndLogQuality,
+      weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
+      initial_interaction_timestamp_, AutofillTickClock::NowTicks(),
+      observed_submission, client().GetUkmSourceId());
 
   // If the form was not submitted (e.g. the user just removed the focus from
   // the form), it's possible that later modifications lead to more accurate
@@ -2056,7 +2056,8 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
-    bool observed_submission) {
+    bool observed_submission,
+    ukm::SourceId source_id) {
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
   if (observed_submission)
@@ -2088,6 +2089,13 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
 
   if (!submitted_form->ShouldBeUploaded())
     return;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLogUKMEventsWithSampleRate) &&
+      ShouldUploadUkm(*submitted_form)) {
+    AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
+        client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
+  }
 
   if (!download_manager())
     return;
