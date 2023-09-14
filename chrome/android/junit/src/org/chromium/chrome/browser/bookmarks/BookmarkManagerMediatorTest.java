@@ -1017,6 +1017,32 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    public void testcreateListMenuModelList_shopping_notEligible() {
+        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+
+        finishLoading();
+        mMediator.openFolder(mFolderId2);
+
+        doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
+        PowerBookmarkMeta meta =
+                PowerBookmarkMeta.newBuilder()
+                        .setShoppingSpecifics(ShoppingSpecifics.newBuilder()
+                                                      .setProductClusterId(123)
+                                                      .setOfferId(456)
+                                                      .setCountryCode("us")
+                                                      .setCurrentPrice(ProductPrice.newBuilder()
+                                                                               .setAmountMicros(100)
+                                                                               .build())
+                                                      .build())
+                        .build();
+        BookmarkListEntry entry = BookmarkListEntry.createBookmarkEntry(
+                mBookmarkItem21, meta, BookmarkRowDisplayPref.COMPACT);
+        ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
+        // The 7th item would be the enable/disable price tracking.
+        assertEquals(6, modelList.size());
+    }
+
+    @Test
     public void testCreateListMenuForBookmark() {
         finishLoading();
         mMediator.openFolder(mFolderId2);

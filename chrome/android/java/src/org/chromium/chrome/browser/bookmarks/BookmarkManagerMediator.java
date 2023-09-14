@@ -1269,7 +1269,7 @@ class BookmarkManagerMediator
         }
 
         PowerBookmarkMeta meta = entry.getPowerBookmarkMeta();
-        if (meta != null && meta.hasShoppingSpecifics()) {
+        if (PowerBookmarkUtils.isShoppingListItem(meta)) {
             CommerceSubscription sub =
                     PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
             boolean isSubscribed = mShoppingService.isSubscribedFromCache(sub);

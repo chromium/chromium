@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -42,6 +43,12 @@ import java.util.List;
 public class PowerBookmarkUtils {
     private static Boolean sPriceTrackingEligibleForTesting;
     private static PowerBookmarkMeta sPowerBookmarkMetaForTesting;
+
+    /** Returns whether the given meta is a shopping list item. */
+    public static boolean isShoppingListItem(PowerBookmarkMeta meta) {
+        return ShoppingFeatures.isShoppingListEligible() && meta != null
+                && meta.hasShoppingSpecifics();
+    }
 
     /**
      * Checks if the given tab is price-trackable.
