@@ -157,8 +157,16 @@ export class StatsTable {
     const metricsContainer = statsTable.firstChild;
     for (let i = 0; i < metricsContainer.children.length; ++i) {
       const metricElement = metricsContainer.children[i];
-      const metricName =
+      // `metricElement` IDs have the format `bla-bla-bla-bla-${metricName}`.
+      let metricName =
           metricElement.id.substring(metricElement.id.lastIndexOf('-') + 1);
+      if (metricName.endsWith(']')) {
+        // Computed metrics may contain the '-' character (e.g.
+        // `DifferenceCalculator` based metrics) in which case `metricName` will
+        // not have been parsed correctly. Instead look for starting '['.
+        metricName =
+            metricElement.id.substring(metricElement.id.indexOf('['));
+      }
       if (metricName && metricName != 'timestamp' &&
           !definedMetrics.has(metricName)) {
         this.updateStatsTableRow_(statsTable, metricName, '(removed)');
