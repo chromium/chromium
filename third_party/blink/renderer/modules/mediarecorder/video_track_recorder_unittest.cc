@@ -1079,24 +1079,28 @@ class CodecEnumeratorTest : public ::testing::Test {
 
 TEST_F(CodecEnumeratorTest, GetPreferredCodecIdDefault) {
   // Empty supported profiles.
+  MediaTrackContainerType type = GetMediaContainerTypeFromString("");
   const CodecEnumerator emulator(
       (media::VideoEncodeAccelerator::SupportedProfiles()));
-  EXPECT_EQ(CodecId::kVp8, emulator.GetPreferredCodecId());
+  EXPECT_EQ(CodecId::kVp8, emulator.GetPreferredCodecId(type));
 }
 
 TEST_F(CodecEnumeratorTest, GetPreferredCodecIdVp8) {
+  MediaTrackContainerType type = GetMediaContainerTypeFromString("");
   const CodecEnumerator emulator(MakeVp8Profiles());
-  EXPECT_EQ(CodecId::kVp8, emulator.GetPreferredCodecId());
+  EXPECT_EQ(CodecId::kVp8, emulator.GetPreferredCodecId(type));
 }
 
 TEST_F(CodecEnumeratorTest, GetPreferredCodecIdVp9) {
+  MediaTrackContainerType type = GetMediaContainerTypeFromString("");
   const CodecEnumerator emulator(MakeVp9Profiles());
-  EXPECT_EQ(CodecId::kVp9, emulator.GetPreferredCodecId());
+  EXPECT_EQ(CodecId::kVp9, emulator.GetPreferredCodecId(type));
 }
 
 TEST_F(CodecEnumeratorTest, GetPreferredCodecIdVp8Vp9) {
+  MediaTrackContainerType type = GetMediaContainerTypeFromString("");
   const CodecEnumerator emulator(MakeVp8Vp9Profiles());
-  EXPECT_EQ(CodecId::kVp8, emulator.GetPreferredCodecId());
+  EXPECT_EQ(CodecId::kVp8, emulator.GetPreferredCodecId(type));
 }
 
 TEST_F(CodecEnumeratorTest, MakeSupportedProfilesVp9) {

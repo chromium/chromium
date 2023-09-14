@@ -20,6 +20,7 @@
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
@@ -271,7 +272,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     // Returns the first CodecId that has an associated VEA VideoCodecProfile,
     // or VP8 if none available.
-    CodecId GetPreferredCodecId() const;
+    CodecId GetPreferredCodecId(MediaTrackContainerType type) const;
 
     // Returns supported VEA VideoCodecProfile which matches |codec| and
     // |profile| and whether VEA supports VBR encoding for the profile.
@@ -327,7 +328,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 // Encoder with its own threading subtleties, see the implementation file.
 class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
  public:
-  static CodecId GetPreferredCodecId();
+  static CodecId GetPreferredCodecId(MediaTrackContainerType type);
 
   // Returns true if the device has a hardware accelerated encoder which can
   // encode video of the given |width|x|height| and |framerate| to specific

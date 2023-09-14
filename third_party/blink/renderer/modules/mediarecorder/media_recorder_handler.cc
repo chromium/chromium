@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -24,6 +25,7 @@
 #include "media/base/video_frame.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
+#include "media/muxers/mp4_muxer.h"
 #include "media/muxers/muxer.h"
 #include "media/muxers/webm_muxer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -47,6 +49,9 @@ using base::TimeTicks;
 
 namespace blink {
 
+BASE_FEATURE(kMediaRecorderEnableMp4Muxer,
+             "MediaRecorderEnableMp4Muxer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 namespace {
 
 // Encoding smoothness depends on a number of parameters, namely: frame rate,
@@ -159,17 +164,56 @@ AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
     return AudioTrackRecorder::CodecId::kOpus;
   if (codecs_str.Find("pcm") != kNotFound)
     return AudioTrackRecorder::CodecId::kPcm;
-
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (codecs_str.Find("aac") != kNotFound) {
+    return AudioTrackRecorder::CodecId::kAac;
+  }
+#endif
   return AudioTrackRecorder::CodecId::kLast;
 }
 
 bool CanSupportVideoType(const String& type) {
-  return EqualIgnoringASCIICase(type, "video/webm") ||
-         EqualIgnoringASCIICase(type, "video/x-matroska");
+  bool support = EqualIgnoringASCIICase(type, "video/webm") ||
+                 EqualIgnoringASCIICase(type, "video/x-matroska");
+  if (support) {
+    return true;
+  }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
+    return EqualIgnoringASCIICase(type, "video/mp4");
+  }
+#endif
+  return false;
 }
 
 bool CanSupportAudioType(const String& type) {
-  return EqualIgnoringASCIICase(type, "audio/webm");
+  bool support = EqualIgnoringASCIICase(type, "audio/webm");
+  if (support) {
+    return true;
+  }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
+    return EqualIgnoringASCIICase(type, "audio/mp4");
+  }
+#endif
+  return false;
+}
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+bool IsAllowedMp4Type(const String& type) {
+  return EqualIgnoringASCIICase(type, "video/mp4") ||
+         EqualIgnoringASCIICase(type, "audio/mp4");
+}
+#endif
+
+bool IsMp4MuxerRequired(AudioTrackRecorder::CodecId audio_codec_id) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  return audio_codec_id == AudioTrackRecorder::CodecId::kAac;
+#else
+  return false;
+#endif
 }
 
 }  // anonymous namespace
@@ -216,6 +260,23 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
       video ? std::begin(kVideoCodecs) : std::begin(kAudioCodecs);
   auto* const* relevant_codecs_end =
       video ? std::end(kVideoCodecs) : std::end(kAudioCodecs);
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (IsAllowedMp4Type(type)) {
+    static const char* const kVideoCodecsForMP4[] = {
+        "h264",
+        "avc1",
+        "aac",
+    };
+    static const char* const kAudioCodecsForMp4[] = {"aac"};
+
+    relevant_codecs_begin =
+        video ? std::begin(kVideoCodecsForMP4) : std::begin(kAudioCodecsForMp4);
+    relevant_codecs_end =
+        video ? std::end(kVideoCodecsForMP4) : std::end(kAudioCodecsForMp4);
+  }
+#endif
+
   std::vector<std::string> codecs_list;
   media::SplitCodecs(web_codecs.Utf8(), &codecs_list);
   media::StripCodecs(&codecs_list);
@@ -251,18 +312,22 @@ bool MediaRecorderHandler::Initialize(
   // The histogram counts the number of calls to the JS API.
   UpdateWebRTCMethodCount(RTCAPIName::kMediaStreamRecorder);
 
-  if (!CanSupportMimeType(type, codecs)) {
+  type_ = type;
+
+  if (!CanSupportMimeType(type_, codecs)) {
     DLOG(ERROR) << "Unsupported " << type.Utf8() << ";codecs=" << codecs.Utf8();
     return false;
   }
 
-  passthrough_enabled_ = type.empty();
+  passthrough_enabled_ = type_.empty();
 
   // Once established that we support the codec(s), hunt then individually.
   video_codec_profile_ = VideoStringToCodecProfile(codecs);
   if (video_codec_profile_.codec_id == VideoTrackRecorder::CodecId::kLast) {
+    MediaTrackContainerType container_type =
+        GetMediaContainerTypeFromString(type_);
     video_codec_profile_.codec_id =
-        VideoTrackRecorderImpl::GetPreferredCodecId();
+        VideoTrackRecorderImpl::GetPreferredCodecId(container_type);
     DVLOG(1) << "Falling back to preferred video codec id "
              << static_cast<int>(video_codec_profile_.codec_id);
   }
@@ -270,9 +335,15 @@ bool MediaRecorderHandler::Initialize(
   // Do the same for the audio codec(s).
   const AudioTrackRecorder::CodecId audio_codec_id =
       AudioStringToCodecId(codecs);
-  audio_codec_id_ = (audio_codec_id != AudioTrackRecorder::CodecId::kLast)
-                        ? audio_codec_id
-                        : AudioTrackRecorder::GetPreferredCodecId();
+
+  if (audio_codec_id == AudioTrackRecorder::CodecId::kLast) {
+    MediaTrackContainerType container_type =
+        GetMediaContainerTypeFromString(type_);
+    audio_codec_id_ = AudioTrackRecorder::GetPreferredCodecId(container_type);
+  } else {
+    audio_codec_id_ = audio_codec_id;
+  }
+
   DVLOG_IF(1, audio_codec_id == AudioTrackRecorder::CodecId::kLast)
       << "Falling back to preferred audio codec id "
       << static_cast<int>(audio_codec_id_);
@@ -331,6 +402,8 @@ bool MediaRecorderHandler::Start(int timeslice,
     return false;
   }
 
+  const bool use_mp4_muxer = IsMp4MuxerRequired(audio_codec_id_);
+
   // For each track in tracks, if the User Agent cannot record the track using
   // the current configuration, abort. See step 14 in
   // https://w3c.github.io/mediacapture-record/MediaRecorder.html#dom-mediarecorder-start
@@ -343,13 +416,29 @@ bool MediaRecorderHandler::Start(int timeslice,
     if (use_audio_tracks && !(video_type_supported || audio_type_supported)) {
       return false;
     }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    if (use_mp4_muxer &&
+        !base::FeatureList::IsEnabled(kMediaRecorderEnableMp4Muxer)) {
+      return false;
+    }
+#endif
   }
 
-  muxer_ = std::make_unique<media::WebmMuxer>(
-      CodecIdToMediaAudioCodec(audio_codec_id_), use_video_tracks,
-      use_audio_tracks,
-      std::make_unique<media::LiveWebmMuxerDelegate>(WTF::BindRepeating(
-          &MediaRecorderHandler::WriteData, WrapWeakPersistent(this))));
+  if (use_mp4_muxer) {
+    muxer_ = std::make_unique<media::Mp4Muxer>(
+        CodecIdToMediaAudioCodec(audio_codec_id_), use_video_tracks,
+        use_audio_tracks,
+        WTF::BindRepeating(&MediaRecorderHandler::WriteData,
+                           WrapWeakPersistent(this)));
+  } else {
+    muxer_ = std::make_unique<media::WebmMuxer>(
+        CodecIdToMediaAudioCodec(audio_codec_id_), use_video_tracks,
+        use_audio_tracks,
+        std::make_unique<media::LiveWebmMuxerDelegate>(WTF::BindRepeating(
+            &MediaRecorderHandler::WriteData, WrapWeakPersistent(this))));
+  }
+
   if (timeslice > 0)
     muxer_->SetMaximumDurationToForceDataOutput(timeslice_);
   if (use_video_tracks) {
@@ -511,17 +600,34 @@ String MediaRecorderHandler::ActualMimeType() {
 
   StringBuilder mime_type;
   if (!has_video_tracks && has_audio_tracks) {
-    mime_type.Append("audio/webm;codecs=");
+    if (passthrough_enabled_) {
+      DCHECK(type_.empty());
+      mime_type.Append("audio/webm");
+    } else {
+      mime_type.Append(type_.Characters8(), type_.length());
+    }
+    mime_type.Append(";codecs=");
   } else {
     switch (video_codec_profile_.codec_id) {
       case VideoTrackRecorder::CodecId::kVp8:
       case VideoTrackRecorder::CodecId::kVp9:
       case VideoTrackRecorder::CodecId::kAv1:
-        mime_type.Append("video/webm;codecs=");
+        if (passthrough_enabled_) {
+          mime_type.Append("video/webm");
+        } else {
+          mime_type.Append(type_.Characters8(), type_.length());
+        }
+        mime_type.Append(";codecs=");
         break;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
       case VideoTrackRecorder::CodecId::kH264:
-        mime_type.Append("video/x-matroska;codecs=");
+        if (!passthrough_enabled_ &&
+            EqualIgnoringASCIICase(type_, "video/mp4")) {
+          mime_type.Append(type_.Characters8(), type_.length());
+        } else {
+          mime_type.Append("video/x-matroska");
+        }
+        mime_type.Append(";codecs=");
         break;
 #endif
       case VideoTrackRecorder::CodecId::kLast:

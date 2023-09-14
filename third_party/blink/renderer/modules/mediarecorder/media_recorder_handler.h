@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -37,6 +38,8 @@ class MediaRecorder;
 class MediaStreamDescriptor;
 struct WebMediaCapabilitiesInfo;
 struct WebMediaConfiguration;
+
+MODULES_EXPORT BASE_DECLARE_FEATURE(kMediaRecorderEnableMp4Muxer);
 
 // MediaRecorderHandler orchestrates the creation, lifetime management and
 // mapping between:
@@ -186,6 +189,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   bool invalidated_ = false;
   bool recording_ = false;
 
+  String type_;
   // True if we're observing track changes to `media_stream_`.
   bool is_media_stream_observer_ = false;
   // The MediaStream being recorded.

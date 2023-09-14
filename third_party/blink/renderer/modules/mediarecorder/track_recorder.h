@@ -41,6 +41,19 @@ void TrackRecorder<MediaStreamSink>::OnReadyStateChanged(
     std::move(track_ended_cb_).Run();
 }
 
+// It is muxer container type for the video and audio types.
+enum class MediaTrackContainerType {
+  kNone,
+  kVideoMp4,
+  kVideoWebM,
+  kVidoMatroska,
+  kAudioMp4,
+  kAudioWebM,
+};
+
+MODULES_EXPORT MediaTrackContainerType
+GetMediaContainerTypeFromString(const String& type);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_TRACK_RECORDER_H_

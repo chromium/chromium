@@ -72,7 +72,7 @@ class MODULES_EXPORT AudioTrackRecorder
       absl::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks capture_time)>;
 
-  static CodecId GetPreferredCodecId();
+  static CodecId GetPreferredCodecId(MediaTrackContainerType container_type);
 
   AudioTrackRecorder(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
