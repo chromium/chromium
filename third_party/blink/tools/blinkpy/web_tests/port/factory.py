@@ -357,7 +357,12 @@ def add_results_options_group(parser: argparse.ArgumentParser,
         results_group.add_argument(
             '--reset-results',
             action='store_true',
-            help='Reset test metadata to the generated results.')
+            help=('Reset expectations in test metadata to the generated '
+                  'results. Without existing platform-specific expectations, '
+                  'extend local results to all platforms. If `--product` or '
+                  '`--flag-specific` is specified, only reset expectations '
+                  'for that product or flag. Virtual expectations are always '
+                  'updated per-suite.'))
 
 
 def add_testing_options_group(parser: argparse.ArgumentParser,
