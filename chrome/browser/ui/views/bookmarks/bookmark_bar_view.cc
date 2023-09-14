@@ -1105,13 +1105,13 @@ void BookmarkBarView::Layout() {
     // the bookmark buttons.
     if (saved_tab_group_bar_width > 0) {
       // Possibly update the paddings of the separator
-      if (saved_tab_group_bar_->IsOverflowButtonVisible()) {
-        saved_tab_groups_separator_view_->UpdateBorderAndPreferredSize(
-            gfx::Insets::TLBR(0, 8, 0, 8));
-      } else {
-        saved_tab_groups_separator_view_->UpdateBorderAndPreferredSize(
-            gfx::Insets::TLBR(0, 16, 0, 8));
-      }
+      constexpr int kSeparatorPadding = 8;
+      const int left_padding = saved_tab_group_bar_->IsOverflowButtonVisible()
+                                   ? 0
+                                   : kSeparatorPadding;
+      saved_tab_groups_separator_view_->UpdateBorderAndPreferredSize(
+          gfx::Insets::TLBR(0, left_padding, 0, kSeparatorPadding));
+
       // Update the bounds for the separator.
       gfx::Size saved_tab_groups_separator_view_pref =
           saved_tab_groups_separator_view_->GetPreferredSize();
@@ -1158,12 +1158,20 @@ void BookmarkBarView::Layout() {
     }
   }
 
+  const bool show_bookmarks_overflow =
+      bookmark_model_->loaded() &&
+      (bookmark_model_->bookmark_bar_node()->children().size() >
+           bookmark_buttons_.size() ||
+       (!bookmark_buttons_.empty() && !bookmark_buttons_.back()->GetVisible()));
+
   // Set the visibility of the tab group separator if there are groups and
   // bookmarks.
   if (IsSavedTabGroupsEnabled()) {
+    const bool bookmarks_button_visible =
+        !bookmark_buttons_.empty() && bookmark_buttons_.front()->GetVisible();
     saved_tab_groups_separator_view_->SetVisible(
-        saved_tab_group_bar_width > 0 && !bookmark_buttons_.empty() &&
-        bookmark_buttons_[0]->GetVisible());
+        saved_tab_group_bar_width > 0 &&
+        (bookmarks_button_visible || show_bookmarks_overflow));
   }
 
   // Layout the right side buttons.
@@ -1171,12 +1179,7 @@ void BookmarkBarView::Layout() {
 
   // The overflow button.
   overflow_button_->SetBounds(x, y, overflow_pref.width(), button_height);
-  const bool show_overflow =
-      bookmark_model_->loaded() &&
-      (bookmark_model_->bookmark_bar_node()->children().size() >
-           bookmark_buttons_.size() ||
-       (!bookmark_buttons_.empty() && !bookmark_buttons_.back()->GetVisible()));
-  overflow_button_->SetVisible(show_overflow);
+  overflow_button_->SetVisible(show_bookmarks_overflow);
   x += overflow_pref.width();
 
   // Bookmarks Separator.

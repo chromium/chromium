@@ -91,10 +91,7 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
   }
 
   int GetWidthOfButtonsAndPadding() {
-    // Remove extra padding from the last button.
-    int size = saved_tab_group_bar_->children()[0]->GetVisible()
-                   ? -button_padding_
-                   : 0;
+    int size = 0;
 
     // Iterate through bubble getting size plus button padding calculated
     // button_sizes + extra_padding
@@ -356,7 +353,7 @@ TEST_F(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
   saved_tab_group_bar()->SetBounds(
       0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400), 2);
 
-  // Update the `new_width` to take the buttons into account
+  // Update the `new_width` to take the buttons into account.
   int new_width = GetWidthOfButtonsAndPadding();
   calculated_width =
       saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(new_width);

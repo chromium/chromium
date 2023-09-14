@@ -496,13 +496,8 @@ int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_width) const {
   const int last_visible_button_index =
       CalculateLastVisibleButtonIndexForWidth(max_width);
 
-  // Precompute the first button since it is guaranteed to be shown and never
-  // exceed `max_width`, and the overflow button if it should be shown and we
-  // have already reserved space for it.
-  int width = children()[0]->GetPreferredSize().width() +
-              (should_show_overflow ? overflow_button_width : 0);
-
-  for (int i = 1; i <= last_visible_button_index; ++i) {
+  int width = should_show_overflow ? overflow_button_width : 0;
+  for (int i = 0; i <= last_visible_button_index; ++i) {
     width += children()[i]->GetPreferredSize().width() + kBetweenElementSpacing;
   }
 
@@ -754,15 +749,15 @@ int SavedTabGroupBar::CalculateLastVisibleButtonIndexForWidth(
     int max_width) const {
   const int buttons_to_consider =
       std::min(children().size() - 1, size_t(kMaxVisibleButtons));
-  int current_width = children()[0]->GetPreferredSize().width();
+  int current_width = 0;
   int last_visible_button_index = 0;
 
-  // Only consider buttons from index 0 to kMaxVisibleButtons in the worst
+  // Only consider buttons from index 0 to kMaxVisibleButtons-1 in the worst
   // case. For each button to consider, check if we have enough room to
   // display it.
-  for (int i = 1; i < buttons_to_consider; ++i) {
+  for (int i = 0; i < buttons_to_consider; ++i) {
     const int button_width = children()[i]->GetPreferredSize().width();
-    current_width += kBetweenElementSpacing + button_width;
+    current_width += button_width + kBetweenElementSpacing;
 
     if (current_width > max_width) {
       break;
