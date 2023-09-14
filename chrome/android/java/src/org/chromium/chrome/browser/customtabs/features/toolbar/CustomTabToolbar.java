@@ -53,7 +53,6 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -1232,9 +1231,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 securityViewAnchor.setBottom(
                         securityViewAnchor.getBottom() + securityViewAnchor.getHeight() / 2);
 
-                mPageInfoIPHController = new PageInfoIPHController(
-                        ContextUtils.activityFromContext(getContext()), securityViewAnchor);
+                Tab currentTab = getCurrentTab();
+                if (currentTab == null) return;
+                Activity activity = currentTab.getWindowAndroid().getActivity().get();
+                if (activity == null) return;
+                mPageInfoIPHController = new PageInfoIPHController(activity, securityViewAnchor);
             }
+
             mTaskHandler.removeCallbacksAndMessages(null);
             mAnimDelegate.setUseRotationSecurityButtonTransition(true);
             mAnimDelegate.updateSecurityButton(R.drawable.ic_eye_crossed, true);
