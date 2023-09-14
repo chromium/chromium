@@ -80,15 +80,15 @@ class UserScript {
   // `can_execute_script_everywhere` is true, this will return ALL_SCHEMES.
   static int ValidUserScriptSchemes(bool can_execute_script_everywhere = false);
 
-  // Holds script file info.
-  class File {
+  // Holds the script content, which can come from a file or inline js.
+  class Content {
    public:
-    File(const base::FilePath& extension_root,
-         const base::FilePath& relative_path,
-         const GURL& url);
-    File();
-    File(const File& other);
-    ~File();
+    Content(const base::FilePath& extension_root,
+            const base::FilePath& relative_path,
+            const GURL& url);
+    Content();
+    Content(const Content& other);
+    ~Content();
 
     const base::FilePath& extension_root() const { return extension_root_; }
     const base::FilePath& relative_path() const { return relative_path_; }
@@ -133,7 +133,7 @@ class UserScript {
     std::string content_;
   };
 
-  using FileList = std::vector<std::unique_ptr<File>>;
+  using ContentList = std::vector<std::unique_ptr<Content>>;
 
   // Type of a API consumer instance that user scripts will be injected on.
   enum ConsumerInstanceType { TAB, WEBVIEW };
@@ -214,12 +214,12 @@ class UserScript {
   void add_exclude_url_pattern(const URLPattern& pattern);
 
   // List of js scripts for this user script
-  FileList& js_scripts() { return js_scripts_; }
-  const FileList& js_scripts() const { return js_scripts_; }
+  ContentList& js_scripts() { return js_scripts_; }
+  const ContentList& js_scripts() const { return js_scripts_; }
 
   // List of css scripts for this user script
-  FileList& css_scripts() { return css_scripts_; }
-  const FileList& css_scripts() const { return css_scripts_; }
+  ContentList& css_scripts() { return css_scripts_; }
+  const ContentList& css_scripts() const { return css_scripts_; }
 
   const std::string& extension_id() const { return host_id_.id; }
 
@@ -266,7 +266,7 @@ class UserScript {
                        bool is_subframe) const;
 
   // Serializes the UserScript into a pickle. The content of the scripts and
-  // paths to UserScript::Files will not be serialized!
+  // paths to UserScript::Content will not be serialized!
   void Pickle(base::Pickle* pickle) const;
 
   // Deserializes the script from a pickle. Note that this always succeeds
@@ -282,7 +282,7 @@ class UserScript {
   void PickleHostID(base::Pickle* pickle, const mojom::HostID& host_id) const;
   void PickleURLPatternSet(base::Pickle* pickle,
                            const URLPatternSet& pattern_list) const;
-  void PickleScripts(base::Pickle* pickle, const FileList& scripts) const;
+  void PickleScripts(base::Pickle* pickle, const ContentList& scripts) const;
 
   // Unpickle helper functions used to unpickle individual types of components.
   void UnpickleGlobs(const base::Pickle& pickle,
@@ -296,7 +296,7 @@ class UserScript {
                              URLPatternSet* pattern_list);
   void UnpickleScripts(const base::Pickle& pickle,
                        base::PickleIterator* iter,
-                       FileList* scripts);
+                       ContentList* scripts);
 
   // The location to run the script inside the document.
   mojom::RunLocation run_location_ = mojom::RunLocation::kDocumentIdle;
@@ -326,10 +326,10 @@ class UserScript {
   URLPatternSet exclude_url_set_;
 
   // List of js scripts defined in content_scripts
-  FileList js_scripts_;
+  ContentList js_scripts_;
 
   // List of css scripts defined in content_scripts
-  FileList css_scripts_;
+  ContentList css_scripts_;
 
   // The ID of the host this script is a part of. The |ID| of the
   // |host_id| can be empty if the script is a "standlone" user script.

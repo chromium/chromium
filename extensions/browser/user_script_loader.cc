@@ -351,12 +351,12 @@ base::ReadOnlySharedMemoryRegion UserScriptLoader::Serialize(
     script->Pickle(&pickle);
     // Write scripts as 'data' so that we can read it out in the slave without
     // allocating a new string.
-    for (const std::unique_ptr<UserScript::File>& js_file :
+    for (const std::unique_ptr<UserScript::Content>& js_file :
          script->js_scripts()) {
       base::StringPiece contents = js_file->GetContent();
       pickle.WriteData(contents.data(), contents.length());
     }
-    for (const std::unique_ptr<UserScript::File>& css_file :
+    for (const std::unique_ptr<UserScript::Content>& css_file :
          script->css_scripts()) {
       base::StringPiece contents = css_file->GetContent();
       pickle.WriteData(contents.data(), contents.length());

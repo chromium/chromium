@@ -90,7 +90,7 @@ std::unique_ptr<UserScript> ParseUserScript(
       DCHECK(source.file);
       GURL url = extension.GetResourceURL(*source.file);
       ExtensionResource resource = extension.GetResource(*source.file);
-      result->js_scripts().push_back(std::make_unique<UserScript::File>(
+      result->js_scripts().push_back(std::make_unique<UserScript::Content>(
           resource.extension_root(), resource.relative_path(), url));
     }
   }

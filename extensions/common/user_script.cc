@@ -123,23 +123,22 @@ int UserScript::ValidUserScriptSchemes(bool can_execute_script_everywhere) {
   return valid_schemes;
 }
 
-UserScript::File::File(const base::FilePath& extension_root,
-                       const base::FilePath& relative_path,
-                       const GURL& url)
+UserScript::Content::Content(const base::FilePath& extension_root,
+                             const base::FilePath& relative_path,
+                             const GURL& url)
     : extension_root_(extension_root),
       relative_path_(relative_path),
-      url_(url) {
-}
+      url_(url) {}
 
-UserScript::File::File() = default;
+UserScript::Content::Content() = default;
 
 // File content is not copied.
-UserScript::File::File(const File& other)
+UserScript::Content::Content(const Content& other)
     : extension_root_(other.extension_root_),
       relative_path_(other.relative_path_),
       url_(other.url_) {}
 
-UserScript::File::~File() = default;
+UserScript::Content::~Content() = default;
 
 UserScript::UserScript() = default;
 UserScript::~UserScript() = default;
@@ -158,13 +157,13 @@ std::unique_ptr<UserScript> UserScript::CopyMetadataFrom(
   script->url_set_ = other.url_set_.Clone();
   script->exclude_url_set_ = other.exclude_url_set_.Clone();
 
-  // Note: File content is not copied.
-  for (const std::unique_ptr<File>& file : other.js_scripts()) {
-    std::unique_ptr<File> file_copy(new File(*file));
+  // Note: Content is not copied.
+  for (const std::unique_ptr<Content>& file : other.js_scripts()) {
+    std::unique_ptr<Content> file_copy(new Content(*file));
     script->js_scripts_.push_back(std::move(file_copy));
   }
-  for (const std::unique_ptr<File>& file : other.css_scripts()) {
-    std::unique_ptr<File> file_copy(new File(*file));
+  for (const std::unique_ptr<Content>& file : other.css_scripts()) {
+    std::unique_ptr<Content> file_copy(new Content(*file));
     script->css_scripts_.push_back(std::move(file_copy));
   }
   script->host_id_ = other.host_id_;
@@ -231,14 +230,14 @@ bool UserScript::MatchesDocument(const GURL& effective_document_url,
   return MatchesURL(effective_document_url);
 }
 
-void UserScript::File::Pickle(base::Pickle* pickle) const {
+void UserScript::Content::Pickle(base::Pickle* pickle) const {
   pickle->WriteString(url_.spec());
   // Do not write path. It's not needed in the renderer.
   // Do not write content. It will be serialized by other means.
 }
 
-void UserScript::File::Unpickle(const base::Pickle& pickle,
-                                base::PickleIterator* iter) {
+void UserScript::Content::Unpickle(const base::Pickle& pickle,
+                                   base::PickleIterator* iter) {
   // Read the url from the pickle.
   std::string url;
   CHECK(iter->ReadString(&url));
@@ -290,10 +289,11 @@ void UserScript::PickleURLPatternSet(base::Pickle* pickle,
 }
 
 void UserScript::PickleScripts(base::Pickle* pickle,
-                               const FileList& scripts) const {
+                               const ContentList& scripts) const {
   pickle->WriteUInt32(scripts.size());
-  for (const std::unique_ptr<File>& file : scripts)
+  for (const std::unique_ptr<Content>& file : scripts) {
     file->Pickle(pickle);
+  }
 }
 
 void UserScript::Unpickle(const base::Pickle& pickle,
@@ -386,12 +386,12 @@ void UserScript::UnpickleURLPatternSet(const base::Pickle& pickle,
 
 void UserScript::UnpickleScripts(const base::Pickle& pickle,
                                  base::PickleIterator* iter,
-                                 FileList* scripts) {
+                                 ContentList* scripts) {
   uint32_t num_files = 0;
   CHECK(iter->ReadUInt32(&num_files));
   scripts->clear();
   for (uint32_t i = 0; i < num_files; ++i) {
-    std::unique_ptr<File> file(new File());
+    std::unique_ptr<Content> file(new Content());
     file->Unpickle(pickle, iter);
     scripts->push_back(std::move(file));
   }

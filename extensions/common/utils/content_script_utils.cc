@@ -242,7 +242,7 @@ bool ParseFileSources(const Extension* extension,
     for (const std::string& relative : *js) {
       GURL url = extension->GetResourceURL(relative);
       ExtensionResource resource = extension->GetResource(relative);
-      result->js_scripts().push_back(std::make_unique<UserScript::File>(
+      result->js_scripts().push_back(std::make_unique<UserScript::Content>(
           resource.extension_root(), resource.relative_path(), url));
     }
   }
@@ -252,7 +252,7 @@ bool ParseFileSources(const Extension* extension,
     for (const std::string& relative : *css) {
       GURL url = extension->GetResourceURL(relative);
       ExtensionResource resource = extension->GetResource(relative);
-      result->css_scripts().push_back(std::make_unique<UserScript::File>(
+      result->css_scripts().push_back(std::make_unique<UserScript::Content>(
           resource.extension_root(), resource.relative_path(), url));
     }
   }
@@ -274,7 +274,7 @@ bool ValidateFileSources(const UserScriptList& scripts,
   size_t remaining_scripts_length = GetMaxScriptsLengthPerExtension();
 
   for (const std::unique_ptr<UserScript>& script : scripts) {
-    for (const std::unique_ptr<UserScript::File>& js_script :
+    for (const std::unique_ptr<UserScript::Content>& js_script :
          script->js_scripts()) {
       const base::FilePath& path = ExtensionResource::GetFilePath(
           js_script->extension_root(), js_script->relative_path(),
@@ -288,7 +288,7 @@ bool ValidateFileSources(const UserScriptList& scripts,
       }
     }
 
-    for (const std::unique_ptr<UserScript::File>& css_script :
+    for (const std::unique_ptr<UserScript::Content>& css_script :
          script->css_scripts()) {
       const base::FilePath& path = ExtensionResource::GetFilePath(
           css_script->extension_root(), css_script->relative_path(),

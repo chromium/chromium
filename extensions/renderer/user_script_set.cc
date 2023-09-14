@@ -238,7 +238,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   return injection;
 }
 
-blink::WebString UserScriptSet::GetJsSource(const UserScript::File& file,
+blink::WebString UserScriptSet::GetJsSource(const UserScript::Content& file,
                                             bool emulate_greasemonkey) {
   const GURL& url = file.url();
   auto iter = script_sources_.find(url);
@@ -262,7 +262,7 @@ blink::WebString UserScriptSet::GetJsSource(const UserScript::File& file,
   return source;
 }
 
-blink::WebString UserScriptSet::GetCssSource(const UserScript::File& file) {
+blink::WebString UserScriptSet::GetCssSource(const UserScript::Content& file) {
   const GURL& url = file.url();
   auto iter = script_sources_.find(url);
   if (iter != script_sources_.end())

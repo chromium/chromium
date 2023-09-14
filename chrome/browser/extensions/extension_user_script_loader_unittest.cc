@@ -279,7 +279,7 @@ TEST_F(ExtensionUserScriptLoaderTest, SkipBOMAtTheBeginning) {
 
   auto user_script = std::make_unique<UserScript>();
   user_script->set_id("_mc_generated");
-  user_script->js_scripts().push_back(std::make_unique<UserScript::File>(
+  user_script->js_scripts().push_back(std::make_unique<UserScript::Content>(
       temp_dir_.GetPath(), path.BaseName(), GURL()));
 
   auto user_scripts = std::make_unique<UserScriptList>();
@@ -313,7 +313,7 @@ TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
 
   auto user_script = std::make_unique<UserScript>();
   user_script->set_id("_mc_test");
-  user_script->js_scripts().push_back(std::make_unique<UserScript::File>(
+  user_script->js_scripts().push_back(std::make_unique<UserScript::Content>(
       temp_dir_.GetPath(), path.BaseName(), GURL()));
 
   auto user_scripts = std::make_unique<UserScriptList>();
@@ -349,7 +349,7 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
 
   auto user_script = std::make_unique<UserScript>();
   user_script->set_id("_dc_test");
-  user_script->js_scripts().push_back(std::make_unique<UserScript::File>(
+  user_script->js_scripts().push_back(std::make_unique<UserScript::Content>(
       extension_path, resource_path, GURL()));
 
   auto user_scripts = std::make_unique<UserScriptList>();
@@ -391,15 +391,15 @@ TEST_F(ExtensionUserScriptLoaderTest, RecordScriptLengthUmas) {
   // Create a dynamic user script which specifies a 3kb and 2kb file.
   auto user_script_1 = std::make_unique<UserScript>();
   user_script_1->set_id("_dc_dynamic");
-  user_script_1->js_scripts().push_back(std::make_unique<UserScript::File>(
+  user_script_1->js_scripts().push_back(std::make_unique<UserScript::Content>(
       temp_dir_.GetPath(), a_script_path.BaseName(), GURL()));
-  user_script_1->js_scripts().push_back(std::make_unique<UserScript::File>(
+  user_script_1->js_scripts().push_back(std::make_unique<UserScript::Content>(
       temp_dir_.GetPath(), b_script_path.BaseName(), GURL()));
 
   // Create a manifest user script which specifies a 1kb file.
   auto user_script_2 = std::make_unique<UserScript>();
   user_script_2->set_id("_mc_generated_manifest");
-  user_script_2->js_scripts().push_back(std::make_unique<UserScript::File>(
+  user_script_2->js_scripts().push_back(std::make_unique<UserScript::Content>(
       temp_dir_.GetPath(), c_script_path.BaseName(), GURL()));
 
   auto user_scripts = std::make_unique<UserScriptList>();

@@ -105,38 +105,38 @@ extensions::mojom::HostID GenerateHostIDFromEmbedder(
 }
 
 // Creates content script files when parsing InjectionItems of "js" or "css"
-// proterties, and stores them in the |result|.
+// proterties, and stores them in the `contents`.
 void ParseScriptFiles(const GURL& owner_base_url,
                       const extensions::Extension* extension,
                       const InjectionItems& items,
-                      UserScript::FileList* list) {
-  DCHECK(list->empty());
-  list->reserve((items.files ? items.files->size() : 0) + (items.code ? 1 : 0));
+                      UserScript::ContentList* contents) {
+  DCHECK(contents->empty());
+  contents->reserve((items.files ? items.files->size() : 0) +
+                    (items.code ? 1 : 0));
   // files:
   if (items.files) {
     for (const std::string& relative : *items.files) {
       GURL url = owner_base_url.Resolve(relative);
       if (extension) {
         ExtensionResource resource = extension->GetResource(relative);
-
-        list->push_back(std::make_unique<extensions::UserScript::File>(
+        contents->push_back(std::make_unique<extensions::UserScript::Content>(
             resource.extension_root(), resource.relative_path(), url));
       } else {
-        list->push_back(std::make_unique<extensions::UserScript::File>(
+        contents->push_back(std::make_unique<extensions::UserScript::Content>(
             base::FilePath(), base::FilePath(), url));
       }
     }
   }
+
   // code:
   if (items.code) {
     GURL url = owner_base_url.Resolve(base::StringPrintf(
         "%s%s", kGeneratedScriptFilePrefix,
         base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
-    std::unique_ptr<extensions::UserScript::File> file(
-        new extensions::UserScript::File(base::FilePath(), base::FilePath(),
-                                         url));
-    file->set_content(*items.code);
-    list->push_back(std::move(file));
+    auto content = std::make_unique<extensions::UserScript::Content>(
+        base::FilePath(), base::FilePath(), url);
+    content->set_content(*items.code);
+    contents->push_back(std::move(content));
   }
 }
 

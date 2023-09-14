@@ -119,7 +119,7 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
   }
   for (const std::unique_ptr<UserScript>& script :
        ContentScriptsInfo::GetContentScripts(extension)) {
-    for (const std::unique_ptr<UserScript::File>& js_file :
+    for (const std::unique_ptr<UserScript::Content>& js_file :
          script->js_scripts()) {
       background_or_content_paths->insert(
           canonicalize_path(js_file->relative_path()));

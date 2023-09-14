@@ -46,16 +46,17 @@ class WebUIUserScriptLoader : public extensions::UserScriptLoader {
                    LoadScriptsCallback callback) override;
 
   // Called at the end of each fetch, tracking whether all fetches are done.
-  void OnSingleWebUIURLFetchComplete(extensions::UserScript::File* script_file,
-                                     bool success,
-                                     std::unique_ptr<std::string> data);
+  void OnSingleWebUIURLFetchComplete(
+      extensions::UserScript::Content* script_file,
+      bool success,
+      std::unique_ptr<std::string> data);
 
   // Called when the loads of the user scripts are done.
   void OnWebUIURLFetchComplete();
 
-  // Creates WebUiURLFetchers for the given |script_files|.
+  // Creates WebUiURLFetchers for the given `contents`.
   void CreateWebUIURLFetchers(
-      const extensions::UserScript::FileList& script_files,
+      const extensions::UserScript::ContentList& contents,
       int render_process_id,
       int render_frame_id);
 

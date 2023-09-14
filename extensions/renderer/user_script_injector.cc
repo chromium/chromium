@@ -82,11 +82,11 @@ blink::WebScriptSource GreasemonkeyApiJsString::GetSource() const {
 base::LazyInstance<GreasemonkeyApiJsString>::Leaky g_greasemonkey_api =
     LAZY_INSTANCE_INITIALIZER;
 
-bool ShouldInjectScripts(const UserScript::FileList& scripts,
+bool ShouldInjectScripts(const UserScript::ContentList& script_contents,
                          const std::set<std::string>& injected_files) {
-  for (const std::unique_ptr<UserScript::File>& file : scripts) {
+  for (const std::unique_ptr<UserScript::Content>& content : script_contents) {
     // Check if the script is already injected.
-    if (injected_files.count(file->url().path()) == 0) {
+    if (injected_files.count(content->url().path()) == 0) {
       return true;
     }
   }
@@ -242,14 +242,14 @@ std::vector<blink::WebScriptSource> UserScriptInjector::GetJsSources(
 
   DCHECK_EQ(script_->run_location(), run_location);
 
-  const UserScript::FileList& js_scripts = script_->js_scripts();
+  const UserScript::ContentList& js_scripts = script_->js_scripts();
   sources.reserve(js_scripts.size() +
                   (script_->emulate_greasemonkey() ? 1 : 0));
   // Emulate Greasemonkey API for scripts that were converted to extension
   // user scripts.
   if (script_->emulate_greasemonkey())
     sources.push_back(g_greasemonkey_api.Get().GetSource());
-  for (const std::unique_ptr<UserScript::File>& file : js_scripts) {
+  for (const std::unique_ptr<UserScript::Content>& file : js_scripts) {
     const GURL& script_url = file->url();
     // Check if the script is already injected.
     if (executing_scripts->count(script_url.path()) != 0)
@@ -275,9 +275,10 @@ std::vector<ScriptInjector::CSSSource> UserScriptInjector::GetCssSources(
 
   std::vector<CSSSource> sources;
 
-  const UserScript::FileList& css_scripts = script_->css_scripts();
+  const UserScript::ContentList& css_scripts = script_->css_scripts();
   sources.reserve(css_scripts.size());
-  for (const std::unique_ptr<UserScript::File>& file : script_->css_scripts()) {
+  for (const std::unique_ptr<UserScript::Content>& file :
+       script_->css_scripts()) {
     const std::string& stylesheet_path = file->url().path();
     // Check if the stylesheet is already injected.
     if (injected_stylesheets->count(stylesheet_path) != 0)

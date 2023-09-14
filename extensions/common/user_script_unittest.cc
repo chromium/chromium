@@ -200,15 +200,15 @@ TEST(ExtensionUserScriptTest, Pickle) {
   ASSERT_EQ(URLPattern::ParseResult::kSuccess, exclude2.Parse("https://*/*"));
 
   UserScript script1;
-  script1.js_scripts().push_back(std::make_unique<UserScript::File>(
+  script1.js_scripts().push_back(std::make_unique<UserScript::Content>(
       base::FilePath(FILE_PATH_LITERAL("c:\\foo\\")),
       base::FilePath(FILE_PATH_LITERAL("foo.user.js")),
       GURL("chrome-extension://abc/foo.user.js")));
-  script1.css_scripts().push_back(std::make_unique<UserScript::File>(
+  script1.css_scripts().push_back(std::make_unique<UserScript::Content>(
       base::FilePath(FILE_PATH_LITERAL("c:\\foo\\")),
       base::FilePath(FILE_PATH_LITERAL("foo.user.css")),
       GURL("chrome-extension://abc/foo.user.css")));
-  script1.css_scripts().push_back(std::make_unique<UserScript::File>(
+  script1.css_scripts().push_back(std::make_unique<UserScript::Content>(
       base::FilePath(FILE_PATH_LITERAL("c:\\foo\\")),
       base::FilePath(FILE_PATH_LITERAL("foo2.user.css")),
       GURL("chrome-extension://abc/foo2.user.css")));

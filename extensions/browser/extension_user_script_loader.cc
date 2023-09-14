@@ -65,9 +65,9 @@ namespace {
 
 using SubstitutionMap = std::map<std::string, std::string>;
 
-// Each map entry associates a UserScript::File object with the ID of the
+// Each map entry associates a UserScript::Content object with the ID of the
 // resource holding the content of the script.
-using ScriptResourceIds = std::map<UserScript::File*, absl::optional<int>>;
+using ScriptResourceIds = std::map<UserScript::Content*, absl::optional<int>>;
 
 // The source of script file from where it's read.
 enum class ReadScriptContentSource {
@@ -112,7 +112,7 @@ struct VerifyContentInfo {
 //   - content contains the std::string content, or nullopt if the script file
 // couldn't be read.
 std::tuple<absl::optional<std::string>, ReadScriptContentSource>
-ReadScriptContent(UserScript::File* script_file,
+ReadScriptContent(UserScript::Content* script_file,
                   const absl::optional<int>& script_resource_id,
                   size_t& remaining_length) {
   const base::FilePath& path = ExtensionResource::GetFilePath(
@@ -211,7 +211,7 @@ void RecordTotalContentScriptLengthForLoad(size_t manifest_scripts_length,
 
 // Loads user scripts from the extension who owns these scripts.
 void LoadScriptContent(const mojom::HostID& host_id,
-                       UserScript::File* script_file,
+                       UserScript::Content* script_file,
                        const absl::optional<int>& script_resource_id,
                        const SubstitutionMap* localization_messages,
                        const scoped_refptr<ContentVerifier>& verifier,
@@ -260,14 +260,14 @@ void LoadScriptContent(const mojom::HostID& host_id,
   }
 }
 
-void FillScriptFileResourceIds(const UserScript::FileList& script_files,
+void FillScriptFileResourceIds(const UserScript::ContentList& script_files,
                                ScriptResourceIds& script_resource_ids) {
   const ComponentExtensionResourceManager* extension_resource_manager =
       ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
   if (!extension_resource_manager)
     return;
 
-  for (const std::unique_ptr<UserScript::File>& script_file : script_files) {
+  for (const std::unique_ptr<UserScript::Content>& script_file : script_files) {
     if (!script_file->GetContent().empty())
       continue;
     int resource_id = 0;
@@ -324,7 +324,7 @@ void LoadUserScripts(
 
     if (added_script_ids.count(script->id()) == 0)
       continue;
-    for (const std::unique_ptr<UserScript::File>& script_file :
+    for (const std::unique_ptr<UserScript::Content>& script_file :
          script->js_scripts()) {
       if (script_file->GetContent().empty()) {
         LoadScriptContent(script->host_id(), script_file.get(),
@@ -340,7 +340,7 @@ void LoadUserScripts(
               host_info.file_path, script->host_id().id,
               host_info.default_locale, host_info.gzip_permission));
 
-      for (const std::unique_ptr<UserScript::File>& script_file :
+      for (const std::unique_ptr<UserScript::Content>& script_file :
            script->css_scripts()) {
         if (script_file->GetContent().empty()) {
           LoadScriptContent(script->host_id(), script_file.get(),
