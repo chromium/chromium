@@ -7,6 +7,9 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/scrollable_shelf_view.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
@@ -49,7 +52,8 @@ TEST_F(BubbleUtilsTest, EventInCaptureModeDoesNotCloseBubble) {
 TEST_F(BubbleUtilsTest, EventInContainerDoesNotCloseBubble) {
   const int kTestCases[] = {kShellWindowId_MenuContainer,
                             kShellWindowId_VirtualKeyboardContainer,
-                            kShellWindowId_SettingBubbleContainer};
+                            kShellWindowId_SettingBubbleContainer,
+                            kShellWindowId_HelpBubbleContainer};
   for (int container_id : kTestCases) {
     // Create a window and place it in the appropriate container.
     std::unique_ptr<aura::Window> window = CreateTestWindow();
@@ -62,6 +66,18 @@ TEST_F(BubbleUtilsTest, EventInContainerDoesNotCloseBubble) {
     EXPECT_FALSE(bubble_utils::ShouldCloseBubbleForEvent(event))
         << container_id;
   }
+}
+
+TEST_F(BubbleUtilsTest, EventInShelfAreaDoesNotCloseBubble) {
+  ui::MouseEvent event = CreateEventWithTarget(
+      GetPrimaryShelf()->hotseat_widget()->GetNativeWindow());
+  event.set_location(GetPrimaryShelf()
+                         ->hotseat_widget()
+                         ->scrollable_shelf_view()
+                         ->GetHotseatBackgroundBounds()
+                         .CenterPoint());
+
+  EXPECT_FALSE(bubble_utils::ShouldCloseBubbleForEvent(event));
 }
 
 }  // namespace

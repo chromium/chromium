@@ -137,13 +137,6 @@ void AppListPresenterEventFilter::ProcessLocatedEvent(ui::LocatedEvent* event) {
     return;
 
   if (!Shell::Get()->IsInTabletMode()) {
-    // Do not dismiss the app list if the event is targeting shelf area
-    // containing app icons.
-    if (target == shelf->hotseat_widget()->GetNativeWindow() &&
-        shelf->hotseat_widget()->EventTargetsShelfView(*event)) {
-      return;
-    }
-
     // Don't dismiss the auto-hide shelf if event happened in status area. Then
     // the event can still be propagated.
     const aura::Window* status_window =

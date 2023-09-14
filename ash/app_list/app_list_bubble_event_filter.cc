@@ -5,7 +5,6 @@
 #include "ash/app_list/app_list_bubble_event_filter.h"
 
 #include "ash/bubble/bubble_utils.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -74,24 +73,12 @@ void AppListBubbleEventFilter::ProcessPressedEvent(
   }
 
   if (aura::Window* const target = static_cast<aura::Window*>(event.target())) {
-    // Ignore clicks in the shelf area containing app icons.
-    Shelf* shelf = Shelf::ForWindow(target);
-    if (target == shelf->hotseat_widget()->GetNativeWindow() &&
-        shelf->hotseat_widget()->EventTargetsShelfView(event)) {
-      return;
-    }
-
     // Don't dismiss the auto-hide shelf if event happened in status area. Then
     // the event can still be propagated.
+    Shelf* shelf = Shelf::ForWindow(target);
     const aura::Window* status_window =
         shelf->shelf_widget()->status_area_widget()->GetNativeWindow();
     if (status_window && status_window->Contains(target)) {
-      return;
-    }
-
-    // Ignore clicks in the help bubble container.
-    if (aura::Window* const container = GetContainerForWindow(target);
-        container && container->GetId() == kShellWindowId_HelpBubbleContainer) {
       return;
     }
   }

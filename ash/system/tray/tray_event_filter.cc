@@ -4,10 +4,9 @@
 
 #include "ash/system/tray/tray_event_filter.h"
 
-#include "ash/capture_mode/capture_mode_util.h"
+#include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -19,11 +18,9 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
-#include "ash/wm/container_finder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -64,29 +61,9 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     return;
   }
 
-  // Users in a capture session may be trying to capture tray bubble(s).
-  if (capture_mode_util::IsCaptureModeActive()) {
+  if (event.type() != ui::ET_GESTURE_SCROLL_BEGIN &&
+      !bubble_utils::ShouldCloseBubbleForEvent(event)) {
     return;
-  }
-
-  // The hit target window for the virtual keyboard isn't the same as its
-  // views::Widget.
-  aura::Window* target = static_cast<aura::Window*>(event.target());
-  const aura::Window* container =
-      target ? GetContainerForWindow(target) : nullptr;
-  // TODO(https://crbug.com/1208083): Replace some of this logic with
-  // bubble_utils::ShouldCloseBubbleForEvent().
-  if (target && container) {
-    const int container_id = container->GetId();
-    // Don't process events that occurred inside an embedded menu, for example
-    // the right-click menu in a popup notification.
-    if (container_id == kShellWindowId_MenuContainer) {
-      return;
-    }
-    // Don't process events that occurred inside a virtual keyboard.
-    if (container_id == kShellWindowId_VirtualKeyboardContainer) {
-      return;
-    }
   }
 
   // Check the boundary for all bubbles, and do not handle the event if it
