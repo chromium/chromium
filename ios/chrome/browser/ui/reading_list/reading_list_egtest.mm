@@ -902,10 +902,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AssertEntryNotVisible(kReadTitle2);
   AssertEntryVisible(kUnreadTitle);
   AssertEntryVisible(kUnreadTitle2);
-  XCTAssertEqual([ReadingListAppInterface readEntriesCount],
-                 static_cast<long>(kNumberReadEntries - 1));
-  XCTAssertEqual([ReadingListAppInterface unreadEntriesCount],
-                 kNumberUnreadEntries);
+  GREYAssertEqual([ReadingListAppInterface readEntriesCount],
+                  static_cast<long>(kNumberReadEntries - 1),
+                  @"Wrong number of read entry after delete.");
+  GREYAssertEqual([ReadingListAppInterface unreadEntriesCount],
+                  kNumberUnreadEntries,
+                  @"Wrong number of unread entry after delete.");
 
   TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
   TapEntry(kReadTitle);
@@ -940,9 +942,11 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AssertHeaderNotVisible(kReadHeader);
   AssertEntryVisible(kUnreadTitle);
   AssertEntryVisible(kUnreadTitle2);
-  XCTAssertEqual(0l, [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(kNumberUnreadEntries,
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(0l, [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of unread entry.");
+  GREYAssertEqual(kNumberUnreadEntries,
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entries.");
 }
 
 // Marks all unread entries as read.
@@ -958,9 +962,11 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   AssertHeaderNotVisible(kUnreadHeader);
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + kNumberReadEntries),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(0l, [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries + kNumberReadEntries),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entries after marking all read.");
+  GREYAssertEqual(0l, [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entries after marking all read.");
 }
 
 // Marks all read entries as unread.
@@ -976,9 +982,11 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   AssertHeaderNotVisible(kReadHeader);
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + kNumberReadEntries),
-                 [ReadingListAppInterface unreadEntriesCount]);
-  XCTAssertEqual(0l, [ReadingListAppInterface readEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries + kNumberReadEntries),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entries after marking all unread.");
+  GREYAssertEqual(0l, [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entries after marking all unread.");
 }
 
 // Marks all read entries as unread, when there is a lot of entries. This is to
@@ -1005,10 +1013,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberReadEntries + 1),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberReadEntries + 1),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entries after marking read.");
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entries after marking read.");
 }
 
 // Selects an read entry and mark it as unread.
@@ -1020,10 +1030,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberReadEntries - 1),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + 1),
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberReadEntries - 1),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entries after marking unread.");
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries + 1),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entries after marking unread.");
 }
 
 // Selects read and unread entries and mark them as unread.
@@ -1039,10 +1051,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapContextMenuButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_UNREAD_BUTTON);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberReadEntries - 1),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + 1),
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberReadEntries - 1),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of unread entry after marking unread.");
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries + 1),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of read entry after marking unread.");
 }
 
 // Selects read and unread entries and mark them as read.
@@ -1058,10 +1072,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapContextMenuButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_READ_BUTTON);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberReadEntries + 1),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberReadEntries + 1),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entry after marking read.");
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entry after marking read.");
 }
 
 // Tests that you can delete multiple read items in the Reading List without
@@ -1173,10 +1189,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberReadEntries),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries),
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberReadEntries),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entry.");
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entry.");
 
   // Mark an unread entry as read.
   LongPressEntry(kUnreadTitle);
@@ -1185,10 +1203,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       performAction:grey_tap()];
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberReadEntries + 1),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberReadEntries + 1),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entry after marking read.");
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entry after marking read.");
 
   // Now mark it back as unread.
   LongPressEntry(kUnreadTitle);
@@ -1197,10 +1217,12 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       performAction:grey_tap()];
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(static_cast<long>(kNumberReadEntries),
-                 [ReadingListAppInterface readEntriesCount]);
-  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries),
-                 [ReadingListAppInterface unreadEntriesCount]);
+  GREYAssertEqual(static_cast<long>(kNumberReadEntries),
+                  [ReadingListAppInterface readEntriesCount],
+                  @"Wrong number of read entry after marking unread.");
+  GREYAssertEqual(static_cast<long>(kNumberUnreadEntries),
+                  [ReadingListAppInterface unreadEntriesCount],
+                  @"Wrong number of unread entry after marking unread.");
 }
 
 // Tests the Share context menu action for a reading list entry.
