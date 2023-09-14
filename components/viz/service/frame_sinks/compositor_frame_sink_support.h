@@ -220,7 +220,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   const FrameSinkId& GetFrameSinkId() const override;
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
-  gfx::Rect GetCopyOutputRequestRegion(
+  absl::optional<CapturableFrameSink::RegionProperties>
+  GetRequestRegionProperties(
       const VideoCaptureSubTarget& sub_target) const override;
   void OnClientCaptureStarted() override;
   void OnClientCaptureStopped() override;

@@ -581,7 +581,7 @@ CapturableFrameSink* FrameSinkManagerImpl::FindCapturableFrameSink(
   // Search the known CompositorFrameSinkSupport objects for region capture
   // bounds matching the crop ID specified by |target| (if one was set), and
   // return the corresponding frame sink.
-  if (absl::holds_alternative<RegionCaptureCropId>(target.sub_target)) {
+  if (IsRegionCapture(target.sub_target)) {
     const auto crop_id = absl::get<RegionCaptureCropId>(target.sub_target);
     for (const auto& id_and_sink : support_map_) {
       const RegionCaptureBounds& bounds =

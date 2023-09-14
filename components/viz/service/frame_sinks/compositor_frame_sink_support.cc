@@ -1130,18 +1130,9 @@ void CompositorFrameSinkSupport::OnClientCaptureStopped() {
   }
 }
 
-gfx::Rect CompositorFrameSinkSupport::GetCopyOutputRequestRegion(
+absl::optional<CapturableFrameSink::RegionProperties>
+CompositorFrameSinkSupport::GetRequestRegionProperties(
     const VideoCaptureSubTarget& sub_target) const {
-  // We will either have a subtree ID or a region capture crop_id, but not both.
-  if (absl::holds_alternative<RegionCaptureCropId>(sub_target)) {
-    const auto it = current_capture_bounds_.bounds().find(
-        absl::get<RegionCaptureCropId>(sub_target));
-    if (it != current_capture_bounds_.bounds().end()) {
-      return it->second;
-    }
-    return {};
-  }
-
   if (!last_activated_surface_id_.is_valid())
     return {};
 
@@ -1152,26 +1143,52 @@ gfx::Rect CompositorFrameSinkSupport::GetCopyOutputRequestRegion(
     return {};
   }
 
-  // We can exit early if there is no subtree, otherwise we need to
-  // intersect the bounds.
   const CompositorFrame& frame = current_surface->GetActiveFrame();
-  if (!absl::holds_alternative<SubtreeCaptureId>(sub_target)) {
-    return gfx::Rect(frame.size_in_pixels());
+  RegionProperties out;
+  out.root_render_pass_size = frame.size_in_pixels();
+  if (out.root_render_pass_size.IsEmpty()) {
+    return {};
   }
 
-  // Now we know we don't have a crop_id and we do have a subtree ID.
+  // If we don't have a sub target, capture everything in the frame.
+  if (IsEntireTabCapture(sub_target)) {
+    out.render_pass_subrect = gfx::Rect(out.root_render_pass_size);
+    return out;
+  }
+
+  // If we have a region capture crop ID, capture a subsection of the root
+  // render pass.
+  if (IsRegionCapture(sub_target)) {
+    const auto it = current_capture_bounds_.bounds().find(
+        absl::get<RegionCaptureCropId>(sub_target));
+    if (it != current_capture_bounds_.bounds().end() && !it->second.IsEmpty() &&
+        gfx::Rect(out.root_render_pass_size).Contains(it->second)) {
+      out.render_pass_subrect = it->second;
+      return out;
+    }
+
+    // Nothing to capture.
+    return {};
+  }
+
+  // Else, we have a subtree capture ID and should capture a subsection of a
+  // child render pass.
+  CHECK(IsSubtreeCapture(sub_target));
+  const SubtreeCaptureId& id = absl::get<SubtreeCaptureId>(sub_target);
   for (const auto& render_pass : frame.render_pass_list) {
-    if (render_pass->subtree_capture_id ==
-        absl::get<SubtreeCaptureId>(sub_target)) {
-      return render_pass->subtree_size.IsEmpty()
-                 ? render_pass->output_rect
-                 : gfx::Rect(render_pass->subtree_size);
+    if (render_pass->subtree_capture_id == id) {
+      out.render_pass_subrect = !render_pass->subtree_size.IsEmpty()
+                                    ? gfx::Rect(render_pass->subtree_size)
+                                    : render_pass->output_rect;
+      out.transform_to_root = render_pass->transform_to_root_target;
+      if (!out.render_pass_subrect.IsEmpty() &&
+          render_pass->output_rect.Contains(out.render_pass_subrect)) {
+        return out;
+      }
     }
   }
 
   // No target exists and no CopyOutputRequest will be added.
-  // If we reach here, it means we only want to capture a subtree but
-  // were unable to find it in a render pass--so don't capture anything.
   return {};
 }
 

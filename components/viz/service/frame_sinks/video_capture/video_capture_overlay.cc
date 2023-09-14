@@ -142,14 +142,18 @@ gfx::Rect Transform(const gfx::Rect& source,
 
 std::string VideoCaptureOverlay::CapturedFrameProperties::ToString() const {
   return base::StringPrintf(
-      "%s from %s into %s, format %s", sub_region.ToString().c_str(),
-      compositor_region.ToString().c_str(), content_region.ToString().c_str(),
+      "%s from %s into %s via transform %s, format %s",
+      region_properties.render_pass_subrect.ToString().c_str(),
+      region_properties.root_render_pass_size.ToString().c_str(),
+      content_rect.ToString().c_str(),
+      region_properties.transform_to_root.ToString().c_str(),
       media::VideoPixelFormatToString(format).c_str());
 }
 
 std::string VideoCaptureOverlay::BlendInformation::ToString() const {
   return base::StringPrintf(
-      "src_rect=%s, src_rect_in_content=%s, dst_rect_in_content=%s",
+      "source_region=%s, source_region_scaled=%s, "
+      "destination_region_content=%s",
       source_region.ToString().c_str(), source_region_scaled.ToString().c_str(),
       destination_region_content.ToString().c_str());
 }
@@ -157,8 +161,14 @@ std::string VideoCaptureOverlay::BlendInformation::ToString() const {
 absl::optional<VideoCaptureOverlay::BlendInformation>
 VideoCaptureOverlay::CalculateBlendInformation(
     const CapturedFrameProperties& properties) const {
+  const auto& compositor_frame_rect =
+      gfx::Rect(properties.region_properties.root_render_pass_size);
+  const gfx::Rect compositor_frame_subrect =
+      properties.region_properties.transform_to_root.MapRect(
+          properties.region_properties.render_pass_subrect);
+
   // The sub region should always be a subset of the frame region.
-  DCHECK(properties.compositor_region.Contains(properties.sub_region));
+  CHECK(compositor_frame_rect.Contains(compositor_frame_subrect));
 
   // If there's no image set yet, punt.
   if (image_.drawsNothing() || bounds_.IsEmpty()) {
@@ -177,11 +187,11 @@ VideoCaptureOverlay::CalculateBlendInformation(
   // for calculations such as mouse cursor position (which is retrieved in
   // relationship to the entire tab or window) to be scaled properly.
   const gfx::Rect bounds_in_compositor_space =
-      ToAbsoluteBoundsForI420(bounds_, properties.compositor_region);
+      ToAbsoluteBoundsForI420(bounds_, compositor_frame_rect);
 
   // If the sprite that we want to render does not fall within the subregion
   // that we are capturing, punt.
-  if (!bounds_in_compositor_space.Intersects(properties.sub_region)) {
+  if (!bounds_in_compositor_space.Intersects(compositor_frame_subrect)) {
     return absl::nullopt;
   }
 
@@ -189,8 +199,8 @@ VideoCaptureOverlay::CalculateBlendInformation(
   // frame, however blending may be done in the coordinate space of the
   // outputted video frame and must be scaled and translated.
   const gfx::Rect bounds_in_content_space =
-      Transform(bounds_in_compositor_space, properties.sub_region,
-                properties.content_region);
+      Transform(bounds_in_compositor_space, compositor_frame_subrect,
+                properties.content_rect);
 
   // If the sprite's size will be unreasonably large, punt.
   if (bounds_in_content_space.width() > media::limits::kMaxDimension ||
@@ -203,7 +213,7 @@ VideoCaptureOverlay::CalculateBlendInformation(
   // and if not, we will calculate which part of the sprite will be blended.
   // |blit_rect| is the region of the video frame that we will write into.
   const gfx::Rect blit_rect =
-      gfx::IntersectRects(bounds_in_content_space, properties.content_region);
+      gfx::IntersectRects(bounds_in_content_space, properties.content_rect);
 
   // If the scaled sprite's size is empty, punt.
   if (blit_rect.IsEmpty()) {
@@ -259,7 +269,7 @@ VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
                                            properties.format);
   }
 
-  dst_rect.Intersect(properties.content_region);
+  dst_rect.Intersect(properties.content_rect);
   if (dst_rect.IsEmpty())
     return {};
 

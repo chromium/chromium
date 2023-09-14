@@ -11,6 +11,7 @@
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class Rect;
@@ -32,13 +33,13 @@ class CapturableFrameSink {
     virtual ~Client() = default;
 
     // Called when a frame's content, or that of one or more of its child
-    // frames, has changed. |frame_size| is the output size of the currently-
-    // active compositor frame for the frame sink being monitored, with
-    // |damage_rect| being the region within that has changed (never empty).
-    // |expected_display_time| indicates when the content change was expected to
-    // appear on the Display.
+    // frames, has changed. `root_render_pass_size` is the output size of the
+    // currently-active compositor frame for the frame sink being monitored,
+    // with `damage_rect` being the region within that has changed (never
+    // empty). `expected_display_time` indicates when the content change was
+    // expected to appear on the Display.
     virtual void OnFrameDamaged(
-        const gfx::Size& frame_size,
+        const gfx::Size& root_render_pass_size,
         const gfx::Rect& damage_rect,
         base::TimeTicks expected_display_time,
         const CompositorFrameMetadata& frame_metadata) = 0;
@@ -58,14 +59,31 @@ class CapturableFrameSink {
   virtual void AttachCaptureClient(Client* client) = 0;
   virtual void DetachCaptureClient(Client* client) = 0;
 
-  // Returns the capture region of a render pass, either matching the
-  // |subtree_id| if set, or the root render pass if not set. Returns an empty
-  // rect if (1) there is no active frame, (2) |subtree_id| is valid/set and
-  // no matching render pass could be found, or (3) a valid crop ID is set and
-  // its associated bounds are set to empty or could not be found.
-  // NOTE: only one of |subtree_id| or |crop_id| should be set and valid, not
-  // both.
-  virtual gfx::Rect GetCopyOutputRequestRegion(
+  // Properties of the region associated with the video capture sub target that
+  // has been selected for capture.
+  struct RegionProperties {
+    // The size of the root render pass, in its own coordinate space's physical
+    // pixels.
+    gfx::Size root_render_pass_size;
+
+    // The area inside of the render pass that should be captured, in its own
+    // coordinate space in physical pixels. May be the entire render pass output
+    // rect, and may or may not be the root render pass.
+    gfx::Rect render_pass_subrect;
+
+    // The transform from the render pass coordinate space to the root render
+    // pass coordinate space. When applied to `render_pass_subrect`, performs a
+    // transformation of each coordinate into the corresponding coordinate in
+    // `root_render_pass_size`.
+    gfx::Transform transform_to_root;
+  };
+
+  // Returns the capture region information associated with the given
+  // `sub_target`, which includes the subsection of the render pass that should
+  // be capture, as well as information about the root render pass. Will return
+  // absl::nullopt if either of the render pass subrect or the compositor frame
+  // size are empty.
+  virtual absl::optional<RegionProperties> GetRequestRegionProperties(
       const VideoCaptureSubTarget& sub_target) const = 0;
 
   // Called when a video capture client starts or stops capturing.
@@ -73,7 +91,7 @@ class CapturableFrameSink {
   virtual void OnClientCaptureStopped() = 0;
 
   // Issues a request for a copy of the next composited frame whose
-  // LocalSurfaceId is at least |local_surface_id|. Note that if this id is
+  // LocalSurfaceId is at least `local_surface_id`. Note that if this id is
   // default constructed, then the next surface will provide the copy output
   // regardless of its LocalSurfaceId.
   virtual void RequestCopyOfOutput(

@@ -56,6 +56,9 @@ constexpr bool kIsRoot = false;
 constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 constexpr FrameSinkId kAnotherArbitraryFrameSinkId(2, 2);
 
+constexpr gfx::Size kDefaultSize(20, 20);
+constexpr gfx::Rect kDefaultOutputRect(kDefaultSize);
+
 const base::UnguessableToken kArbitraryToken =
     base::UnguessableToken::CreateForTesting(1, 2);
 const base::UnguessableToken kAnotherArbitraryToken =
@@ -2060,67 +2063,132 @@ TEST_F(CompositorFrameSinkSupportTest,
   EXPECT_FALSE(SupportHasSurfaceAnimationManager(support_.get()));
 }
 
-TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
-  // No surface with active frame.
-  EXPECT_EQ((gfx::Rect{}),
-            support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget()));
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_NoSurfaceWithActiveFrame) {
+  const auto props =
+      support_->GetRequestRegionProperties(VideoCaptureSubTarget());
+  EXPECT_EQ(absl::nullopt, props);
+}
 
-  // Surface with active frame but no capture identifier.
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_SurfaceWithNoCaptureIdentifier) {
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3),
                                   ResourceId(4), ResourceId(5)};
   SubmitCompositorFrameWithResources(first_frame_ids,
                                      std::size(first_frame_ids));
-  EXPECT_EQ((gfx::Rect{0, 0, 20, 20}),
-            (support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget())));
+  const auto props_with_frame =
+      support_->GetRequestRegionProperties(VideoCaptureSubTarget());
+  EXPECT_EQ((kDefaultOutputRect), props_with_frame->render_pass_subrect);
+  EXPECT_EQ((kDefaultSize), props_with_frame->root_render_pass_size);
+  EXPECT_TRUE(props_with_frame->transform_to_root.IsIdentity());
+}
 
-  // Render pass with subtree size.
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_RenderPassWithSubtreeSize) {
+  constexpr SubtreeCaptureId kSubtreeId(base::Token(0, 22u));
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
-  constexpr SubtreeCaptureId kSubtreeId1(base::Token(0, 22u));
 
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
                    .AddDefaultRenderPass()
                    .SetReferencedSurfaces({SurfaceRange(surface_id)})
                    .Build();
-  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId1;
-  frame.render_pass_list.front()->subtree_size = gfx::Size{13, 37};
+  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId;
+  frame.render_pass_list.front()->subtree_size = gfx::Size{13, 17};
   support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
   // The subtree size should be cropped by the size of the surface (20x20).
-  EXPECT_EQ((gfx::Rect{0, 0, 13, 37}),
-            support_->GetCopyOutputRequestRegion(kSubtreeId1));
+  const auto props_with_subtree =
+      support_->GetRequestRegionProperties(kSubtreeId);
+  EXPECT_EQ((gfx::Rect{0, 0, 13, 17}), props_with_subtree->render_pass_subrect);
+  EXPECT_EQ((kDefaultSize), props_with_subtree->root_render_pass_size);
+  EXPECT_TRUE(props_with_subtree->transform_to_root.IsIdentity());
+}
 
-  // Render pass but no subtree size, just a frame size in pixels.
-  constexpr SubtreeCaptureId kSubtreeId2(base::Token(0, 7u));
-  auto frame_with_output_size =
-      CompositorFrameBuilder()
-          .AddDefaultRenderPass()
-          .AddDefaultRenderPass()
-          .SetReferencedSurfaces({SurfaceRange(surface_id)})
-          .Build();
-  frame_with_output_size.render_pass_list.front()->subtree_capture_id =
-      kSubtreeId2;
-  frame_with_output_size.render_pass_list.front()->output_rect =
-      gfx::Rect{0, 0, 15, 15};
-  support_->SubmitCompositorFrame(local_surface_id_,
-                                  std::move(frame_with_output_size));
-  EXPECT_EQ((gfx::Rect{0, 0, 15, 15}),
-            support_->GetCopyOutputRequestRegion(kSubtreeId2));
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_RenderPassWithNoSubtreeSize) {
+  constexpr SubtreeCaptureId kSubtreeId(base::Token(0, 7u));
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
 
-  // Render pass with capture bounds.
+  auto frame = CompositorFrameBuilder()
+                   .AddDefaultRenderPass()
+                   .AddDefaultRenderPass()
+                   .SetReferencedSurfaces({SurfaceRange(surface_id)})
+                   .Build();
+  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId;
+  frame.render_pass_list.front()->output_rect = gfx::Rect{0, 0, 15, 14};
+  frame.metadata.capture_bounds =
+      RegionCaptureBounds{{{kSubtreeId.subtree_id(), gfx::Rect{5, 6, 15, 14}}}};
+  const auto transform = gfx::Transform::MakeTranslation(5.0f, 6.0f);
+  frame.render_pass_list.front()->transform_to_root_target = transform;
+
+  // Mark the surface as damaged to update the capture bounds.
+  support_->OnSurfaceAggregatedDamage(
+      /*surface*/ nullptr, local_surface_id_, frame, kDefaultOutputRect,
+      base::TimeTicks::Now());
+
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+  const auto region_properties =
+      support_->GetRequestRegionProperties(kSubtreeId);
+
+  ASSERT_TRUE(region_properties);
+  EXPECT_EQ((gfx::Rect{0, 0, 15, 14}), region_properties->render_pass_subrect);
+  EXPECT_EQ((kDefaultSize), region_properties->root_render_pass_size);
+  EXPECT_EQ(transform, region_properties->transform_to_root);
+}
+
+TEST_F(
+    CompositorFrameSinkSupportTest,
+    GetRequestRegionProperties_RenderPassWithNoSubtreeSizeShouldClipToViewport) {
+  constexpr SubtreeCaptureId kSubtreeId(base::Token(0, 7u));
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
+
+  auto frame = CompositorFrameBuilder()
+                   .AddDefaultRenderPass()
+                   .AddDefaultRenderPass()
+                   .SetReferencedSurfaces({SurfaceRange(surface_id)})
+                   .Build();
+  frame.render_pass_list.front()->subtree_capture_id = kSubtreeId;
+  frame.render_pass_list.front()->output_rect = gfx::Rect{0, 0, 15, 14};
+  // Same as the output rect to avoid cropping.
+  frame.metadata.capture_bounds = RegionCaptureBounds{
+      {{kSubtreeId.subtree_id(), gfx::Rect{12, 10, 15, 14}}}};
+  const auto transform = gfx::Transform::MakeTranslation(12.0f, 10.0f);
+  frame.render_pass_list.front()->transform_to_root_target = transform;
+
+  // Mark the surface as damaged to update the capture bounds.
+  support_->OnSurfaceAggregatedDamage(
+      /*surface*/ nullptr, local_surface_id_, frame, kDefaultOutputRect,
+      base::TimeTicks::Now());
+
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+  const auto region_properties =
+      support_->GetRequestRegionProperties(kSubtreeId);
+  ASSERT_TRUE(region_properties);
+
+  EXPECT_EQ((gfx::Rect{0, 0, 15, 14}), region_properties->render_pass_subrect);
+  EXPECT_EQ((kDefaultSize), region_properties->root_render_pass_size);
+  EXPECT_EQ(transform, region_properties->transform_to_root);
+}
+
+TEST_F(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_RenderPassWithCaptureBounds) {
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
   const auto crop_id = RegionCaptureCropId::CreateRandom();
+
   auto frame_with_crop_id =
       CompositorFrameBuilder()
           .AddDefaultRenderPass()
           .AddDefaultRenderPass()
           .SetReferencedSurfaces({SurfaceRange(surface_id)})
           .Build();
-  frame_with_crop_id.render_pass_list.front()->output_rect =
-      gfx::Rect{0, 0, 20, 20};
+  frame_with_crop_id.render_pass_list.front()->output_rect = kDefaultOutputRect;
   support_->SubmitCompositorFrame(local_surface_id_,
                                   std::move(frame_with_crop_id));
 
   // No capture bounds are set, so we shouldn't capture anything.
-  EXPECT_EQ((gfx::Rect{}), support_->GetCopyOutputRequestRegion(crop_id));
+  const auto props_without_capture_bounds =
+      support_->GetRequestRegionProperties(crop_id);
+  EXPECT_FALSE(props_without_capture_bounds);
 
   // After setting capture bounds, we should be able to crop to it.
   auto frame_with_crop_id_and_bounds =
@@ -2129,18 +2197,21 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
           .AddDefaultRenderPass()
           .SetReferencedSurfaces({SurfaceRange(surface_id)})
           .Build();
-  frame_with_crop_id_and_bounds.render_pass_list.front()->output_rect =
-      gfx::Rect{0, 0, 20, 20};
+  frame_with_crop_id_and_bounds.render_pass_list.back()->output_rect =
+      kDefaultOutputRect;
   frame_with_crop_id_and_bounds.metadata.capture_bounds =
       RegionCaptureBounds{{{crop_id, gfx::Rect{0, 0, 13, 13}}}};
 
-  // mark the surface as damaged to update the capture bounds.
+  // Mark the surface as damaged to update the capture bounds.
   support_->OnSurfaceAggregatedDamage(
       /*surface*/ nullptr, local_surface_id_, frame_with_crop_id_and_bounds,
-      gfx::Rect{0, 0, 20, 20}, base::TimeTicks::Now());
+      kDefaultOutputRect, base::TimeTicks::Now());
 
-  EXPECT_EQ((gfx::Rect{0, 0, 13, 13}),
-            support_->GetCopyOutputRequestRegion(crop_id));
+  const auto region_properties = support_->GetRequestRegionProperties(crop_id);
+  ASSERT_TRUE(region_properties);
+  EXPECT_EQ((gfx::Rect{0, 0, 13, 13}), region_properties->render_pass_subrect);
+  EXPECT_EQ((kDefaultSize), region_properties->root_render_pass_size);
+  EXPECT_TRUE(region_properties->transform_to_root.IsIdentity());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

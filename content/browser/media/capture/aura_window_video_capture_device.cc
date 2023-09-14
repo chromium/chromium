@@ -81,39 +81,39 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     DCHECK(!target_window_);
 
     target_window_ = DesktopMediaID::GetNativeWindowById(source_id);
-    if (target_window_ &&
-        target_window_->GetRootWindow()->GetFrameSinkId().is_valid()) {
-      target_ = viz::VideoCaptureTarget(
-          target_window_->GetRootWindow()->GetFrameSinkId());
-      if (!target_window_->IsRootWindow()) {
-        capture_request_ = target_window_->MakeWindowCapturable();
-        target_->sub_target = capture_request_.GetCaptureId();
-      }
-    } else {
-      target_ = absl::nullopt;
-    }
-
-    if (target_) {
-      video_capture_lock_ = target_window_->GetHost()->CreateVideoCaptureLock();
-#if BUILDFLAG(IS_CHROMEOS)
-      force_visible_.emplace(target_window_);
-#endif
-      target_window_->AddObserver(this);
-      device_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetChanged, device_,
-                         target_, /*crop_version=*/0));
-      // Note: The MouseCursorOverlayController runs on the UI thread. It's also
-      // important that SetTargetView() be called in the current stack while
-      // |target_window_| is known to be a valid pointer.
-      // http://crbug.com/818679
-      cursor_controller_->SetTargetView(target_window_);
-    } else {
+    aura::Window* const root_window =
+        target_window_ ? target_window_->GetRootWindow() : nullptr;
+    if (!target_window_ || !root_window->GetFrameSinkId().is_valid()) {
       device_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost,
                          device_));
+      return;
     }
+
+    target_ = viz::VideoCaptureTarget(root_window->GetFrameSinkId());
+    if (!target_window_->IsRootWindow()) {
+      capture_request_ = target_window_->MakeWindowCapturable();
+      target_->sub_target = capture_request_.GetCaptureId();
+    }
+
+    video_capture_lock_ = target_window_->GetHost()->CreateVideoCaptureLock();
+#if BUILDFLAG(IS_CHROMEOS)
+    force_visible_.emplace(target_window_);
+#endif
+    target_window_->AddObserver(this);
+    device_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetChanged,
+                                  device_, target_, /*crop_version=*/0));
+
+    // Note: The MouseCursorOverlayController runs on the UI thread. It's also
+    // important that SetTargetView() be called in the current stack while
+    // |target_window_| is known to be a valid pointer.
+    // http://crbug.com/818679
+    //
+    // NOTE: for Aura capture, the cursor controller's view should always be
+    // the root compositor frame sink.
+    cursor_controller_->SetTargetView(root_window);
   }
 
   // aura::WindowObserver override.

@@ -202,7 +202,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void RefreshEntireSourceNow();
 
   // CapturableFrameSink::Client implementation:
-  void OnFrameDamaged(const gfx::Size& frame_size,
+  void OnFrameDamaged(const gfx::Size& root_render_pass_size,
                       const gfx::Rect& damage_rect,
                       base::TimeTicks target_display_time,
                       const CompositorFrameMetadata& frame_metadata) final;
@@ -237,14 +237,14 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                          const CompositorFrameMetadata& frame_metadata);
 
   struct CaptureRequestProperties {
-    CaptureRequestProperties(int64_t capture_frame_number,
-                             OracleFrameNumber oracle_frame_number,
-                             int64_t content_version,
-                             gfx::Rect content_rect,
-                             gfx::Rect capture_rect,
-                             gfx::Rect active_frame_rect,
-                             scoped_refptr<media::VideoFrame> frame,
-                             base::TimeTicks request_time);
+    CaptureRequestProperties(
+        int64_t capture_frame_number,
+        OracleFrameNumber oracle_frame_number,
+        int64_t content_version,
+        gfx::Rect content_rect,
+        CapturableFrameSink::RegionProperties region_properties,
+        scoped_refptr<media::VideoFrame> frame,
+        base::TimeTicks request_time);
     CaptureRequestProperties();
     CaptureRequestProperties(const CaptureRequestProperties&);
     CaptureRequestProperties(CaptureRequestProperties&&);
@@ -269,20 +269,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     // become marked and can be resurrected.
     int64_t content_version;
 
-    // The actual content size of the copied frame, as a post-scaled size
-    // with an origin at (0, 0).
-    // TODO(https://crbug.com/1287686): replace zero-origin gfx::Rect with
-    // gfx::Size.
+    // The subsection of the output frame that the content gets scaled to and
+    // outputted on, in post-scaled physical pixels.
     gfx::Rect content_rect;
 
-    // The requested capture region, may be larger or at a different
-    // location than |content_rect| but is also post-scaling and should
-    // be in the same coordinate system.
-    gfx::Rect capture_rect;
-
-    // The size of the entire active frame. If we are not using sub target
-    // capture, should be the same size as the capture rect.
-    gfx::Rect active_frame_rect;
+    // Properties of the region being captured.
+    CapturableFrameSink::RegionProperties region_properties;
 
     // The actual frame.
     scoped_refptr<media::VideoFrame> frame;
@@ -291,8 +283,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     base::TimeTicks request_time;
   };
 
-  // Extracts the image data from the copy output |result|, populating the
-  // |content_rect| region of a [possibly letterboxed] video |frame|.
+  // Extracts the image data from the copy output result, populating the
+  // content region of a [possibly letterboxed] video frame.
   void DidCopyFrame(CaptureRequestProperties properties,
                     std::unique_ptr<CopyOutputResult> result);
 
