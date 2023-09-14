@@ -404,9 +404,9 @@ class TabGridViewBinder {
 
         thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected);
 
-            ViewCompat.setBackgroundTintList(backgroundView,
-                    TabUiThemeProvider.getHoveredCardBackgroundTintList(
-                            backgroundView.getContext(), isIncognito, isSelected));
+        ViewCompat.setBackgroundTintList(backgroundView,
+                TabUiThemeProvider.getHoveredCardBackgroundTintList(
+                        backgroundView.getContext(), isIncognito, isSelected));
     }
 
     private static void updateColorForActionButton(

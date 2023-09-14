@@ -117,7 +117,7 @@ public class TabUiFeatureUtilities {
                         && !shouldUseListMode(context);
             }
         }
-        return sIsTabToGtsAnimationEnabled.booleanValue();
+        return sIsTabToGtsAnimationEnabled;
     }
 
     /**
