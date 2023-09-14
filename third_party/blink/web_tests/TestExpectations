@@ -1312,6 +1312,12 @@ crbug.com/990657 external/wpt/css/css-lists/counters-002.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counters-003.html [ Failure ]
 crbug.com/990657 external/wpt/css/css-lists/counters-004.html [ Failure ]
 
+# CSS counters scope tests to be fixed with new implementation.
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-001.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-002.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-003.html [ Failure ]
+crbug.com/990657 external/wpt/css/css-lists/counters-scope-004.html [ Failure ]
+
 # LayoutNG failures that needs to be triaged
 crbug.com/591099 virtual/text-antialias/selection/selection-rect-line-height-too-small.html [ Failure ]
 crbug.com/591099 fast/css-intrinsic-dimensions/width-avoid-floats.html [ Failure ]
