@@ -55,7 +55,7 @@ class InstallableTask {
 
   // Evaluater.
   void CheckEligiblity();
-  void CheckManifestValid();
+  void CheckInstallability();
 
   base::WeakPtr<content::WebContents> web_contents_;
   base::WeakPtr<InstallableManager> manager_;
@@ -72,7 +72,7 @@ class InstallableTask {
     kCheckEligiblity = 1,
     kFetchWebPageMetadata = 2,
     kFetchManifest = 3,
-    kValidManifest = 4,
+    kCheckInstallability = 4,
     kFetchPrimaryIcon = 5,
     kFetchScreenshots = 6,
     kCheckServiceWorker = 7,

@@ -15,6 +15,7 @@ namespace webapps {
 
 using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
+// TODO(eriage): make this a class with proper getter and setter.
 struct InstallablePageData {
   struct ManifestProperty {
     ManifestProperty();
@@ -72,6 +73,7 @@ struct InstallablePageData {
   void Reset();
 
   const blink::mojom::Manifest& GetManifest() const;
+  const mojom::WebPageMetadata& WebPageMetadata() const;
 
   std::unique_ptr<ManifestProperty> manifest;
   std::unique_ptr<WebPageMetadataProperty> web_page_metadata;

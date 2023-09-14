@@ -40,6 +40,7 @@ InstallableDataFetcher::~InstallableDataFetcher() = default;
 
 void InstallableDataFetcher::FetchManifest(FetcherCallback finish_callback) {
   if (page_data_->manifest->fetched) {
+    // Stop and run the callback if manifest is already fetched.
     std::move(finish_callback).Run(page_data_->manifest->error);
     return;
   }
@@ -71,6 +72,7 @@ void InstallableDataFetcher::OnDidGetManifest(
 void InstallableDataFetcher::FetchWebPageMetadata(
     FetcherCallback finish_callback) {
   if (page_data_->web_page_metadata->fetched) {
+    // Stop and run the callback if metadata is already fetched.
     std::move(finish_callback).Run(page_data_->web_page_metadata->error);
     return;
   }
@@ -103,6 +105,10 @@ void InstallableDataFetcher::CheckServiceWorker(
     FetcherCallback finish_callback,
     base::OnceClosure pause_callback,
     bool wait_for_worker) {
+  // Stop and run the callback if service worker is already checked.
+  // Sites can always register a service worker after we finish checking, so
+  // if the previous check result was a missing service worker error, we still
+  // check again.
   if (page_data_->worker->fetched &&
       page_data_->worker->error != NO_MATCHING_SERVICE_WORKER) {
     std::move(finish_callback).Run(page_data_->worker->error);
@@ -110,7 +116,8 @@ void InstallableDataFetcher::CheckServiceWorker(
   }
 
   if (blink::IsEmptyManifest(*page_data_->manifest->manifest)) {
-    std::move(finish_callback).Run(MANIFEST_DEPENDENT_TASK_NOT_RUN);
+    // Skip fetching service worker and return if manifest is empty.
+    std::move(finish_callback).Run(NO_ERROR_DETECTED);
     return;
   }
 
@@ -170,11 +177,13 @@ void InstallableDataFetcher::CheckAndFetchBestPrimaryIcon(
     FetcherCallback finish_callback,
     bool prefer_maskable,
     bool fetch_favicon) {
-  if (blink::IsEmptyManifest(*page_data_->manifest->manifest)) {
-    std::move(finish_callback).Run(MANIFEST_DEPENDENT_TASK_NOT_RUN);
+  if (blink::IsEmptyManifest(*page_data_->manifest->manifest) &&
+      !fetch_favicon) {
+    std::move(finish_callback).Run(NO_ERROR_DETECTED);
     return;
   }
   if (page_data_->primary_icon->fetched) {
+    // Stop and run the callback if an icon is already fetched.
     std::move(finish_callback).Run(page_data_->primary_icon->error);
     return;
   }
@@ -186,6 +195,7 @@ void InstallableDataFetcher::CheckAndFetchBestPrimaryIcon(
 void InstallableDataFetcher::CheckAndFetchScreenshots(
     FetcherCallback finish_callback) {
   if (page_data_->is_screenshots_fetch_complete) {
+    // Stop and run the callback if screenshots was already fetched.
     std::move(finish_callback).Run(NO_ERROR_DETECTED);
     return;
   }

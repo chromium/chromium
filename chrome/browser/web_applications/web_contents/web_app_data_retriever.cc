@@ -150,7 +150,8 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     webapps::InstallableParams data_params;
     data_params.check_eligibility = true;
     data_params.valid_primary_icon = true;
-    data_params.valid_manifest = true;
+    data_params.installable_criteria =
+        webapps::InstallableCriteria::kValidManifestWithIcons;
     data_params.check_webapp_manifest_display = false;
     // Do not wait for a service worker if it doesn't exist.
     data_params.has_worker = !bypass_service_worker_check;
@@ -252,17 +253,17 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   Observe(nullptr);
 
   const bool is_installable = data.errors.empty();
-  DCHECK(!is_installable || data.valid_manifest);
+  CHECK(!is_installable || data.installable_check_passed);
 
   blink::mojom::ManifestPtr opt_manifest;
   if (!blink::IsEmptyManifest(*data.manifest)) {
     opt_manifest = data.manifest->Clone();
   }
 
-  DCHECK(!check_installability_callback_.is_null());
+  CHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
-      .Run(std::move(opt_manifest), *data.manifest_url, data.valid_manifest,
-           data.GetFirstError());
+      .Run(std::move(opt_manifest), *data.manifest_url,
+           data.installable_check_passed, data.GetFirstError());
 }
 
 void WebAppDataRetriever::OnIconsDownloaded(
@@ -296,7 +297,7 @@ void WebAppDataRetriever::CallCallbackOnError(
   } else if (check_installability_callback_) {
     std::move(check_installability_callback_)
         .Run(/*manifest=*/nullptr, /*manifest_url=*/GURL(),
-             /*valid_manifest_for_web_app=*/false,
+             /*installable_check_passed_for_web_app=*/false,
              /*error_code=*/
              error_code.value_or(
                  webapps::InstallableStatusCode::NO_ERROR_DETECTED));

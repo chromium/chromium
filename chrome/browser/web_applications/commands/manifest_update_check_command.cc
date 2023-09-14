@@ -150,7 +150,8 @@ void ManifestUpdateCheckCommand::DownloadNewManifestJson(
 
   webapps::InstallableParams params;
   params.valid_primary_icon = true;
-  params.valid_manifest = true;
+  params.installable_criteria =
+      webapps::InstallableCriteria::kValidManifestWithIcons;
   params.check_webapp_manifest_display = false;
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents_.get(),

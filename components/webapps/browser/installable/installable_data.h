@@ -48,7 +48,7 @@ struct InstallableData {
                   const SkBitmap* primary_icon,
                   bool has_maskable_primary_icon,
                   const std::vector<Screenshot>& screenshots,
-                  bool valid_manifest);
+                  bool installable_check_passed);
 
   InstallableData(const InstallableData&) = delete;
   InstallableData& operator=(const InstallableData&) = delete;
@@ -89,10 +89,11 @@ struct InstallableData {
   // The screenshots to show in the install UI.
   const raw_ref<const std::vector<Screenshot>, DanglingUntriaged> screenshots;
 
-  // true if the site has a valid, installable web app manifest. If
-  // |valid_manifest| was true and the site isn't installable, the reason will
-  // be in |errors|.
-  const bool valid_manifest = false;
+  // Whether the site has provided sufficient info for installing the web app.
+  // i.e. a valid, installable web app manifest. The result might be different
+  // depending on the task's |params|. If |installable_check_passed| was true
+  // and the site isn't installable, the reason will be in |errors|.
+  const bool installable_check_passed = false;
 };
 
 using InstallableCallback = base::OnceCallback<void(const InstallableData&)>;

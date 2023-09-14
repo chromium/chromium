@@ -7,6 +7,17 @@
 
 namespace webapps {
 
+enum class InstallableCriteria {
+  // Fetch data only, do not check if the page satisfied install criteria.
+  kDoNotCheck,
+  // The page is installable if it has a valid manifest that contains valid
+  // icons.
+  kValidManifestWithIcons,
+  // The page can be installable if required info (name, icon, display mode...)
+  // is provided implicitly with meta tags, favicon, etc.
+  kImplicitManifestFieldsHTML
+};
+
 // This struct specifies the work to be done by the InstallableManager.
 // Data is cached and fetched in the order specified in this struct.
 // Processing halts immediately upon the first error unless |is_debug_mode| is
@@ -39,12 +50,13 @@ struct InstallableParams {
   // available.
   bool fetch_favicon = false;
 
-  // Check whether the site has a manifest valid for a web app.
-  bool valid_manifest = false;
-
   // If the manifest is being checked, check the display setting in the manifest
   // is a valid webapp display setting.
   bool check_webapp_manifest_display = true;
+
+  // Check whether the site manifest and web page metadata provided sufficient
+  // info for installing the web app.
+  InstallableCriteria installable_criteria = InstallableCriteria::kDoNotCheck;
 
   // Whether to fetch the screenshots listed in the manifest.
   bool fetch_screenshots = false;

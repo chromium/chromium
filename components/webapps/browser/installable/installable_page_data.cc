@@ -48,4 +48,9 @@ const blink::mojom::Manifest& InstallablePageData::GetManifest() const {
   return *manifest->manifest;
 }
 
+const mojom::WebPageMetadata& InstallablePageData::WebPageMetadata() const {
+  DCHECK(web_page_metadata->metadata);
+  return *web_page_metadata->metadata;
+}
+
 }  // namespace webapps

@@ -7,9 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/webapps/browser/installable/installable_icon_fetcher.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_page_data.h"
+#include "components/webapps/browser/installable/installable_params.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -19,7 +19,11 @@ namespace webapps {
 // for installing the web app.
 class InstallableEvaluator {
  public:
-  InstallableEvaluator(const InstallablePageData& data, bool check_display);
+  InstallableEvaluator(content::WebContents* web_contents,
+                       const InstallablePageData& data,
+                       InstallableCriteria criteria,
+                       bool check_display);
+  ~InstallableEvaluator();
 
   // Maximum dimension size in pixels for icons.
   static const int kMaximumIconSizeInPx =
@@ -41,18 +45,22 @@ class InstallableEvaluator {
   static bool IsOriginConsideredSecure(const GURL& url);
 
   // Check if the web content is an incognito window or insecure context.
-  std::vector<InstallableStatusCode> CheckEligiblity(content::WebContents*);
-  std::vector<InstallableStatusCode> CheckManifestValid();
+  std::vector<InstallableStatusCode> CheckEligiblity(
+      content::WebContents*) const;
+
+  // Check if the web site has provided all information required for install,
+  // returns nullopt if the check was not run.
+  absl::optional<std::vector<InstallableStatusCode>> CheckInstallability()
+      const;
 
  private:
   friend class InstallableEvaluatorUnitTest;
   friend class TestInstallableManager;
 
-  static std::vector<InstallableStatusCode> IsManifestValidForWebApp(
-      const blink::mojom::Manifest& manifest,
-      bool check_webapp_manifest_display);
-
+  base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<const InstallablePageData> page_data_;
+  InstallableCriteria criteria_;
+  // TODO(eirage): merge check_display_ with the InstallableCriteria enum.
   bool check_display_;
 };
 

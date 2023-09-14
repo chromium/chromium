@@ -82,6 +82,7 @@ class InstallableManager
  private:
   friend class content::WebContentsUserData<InstallableManager>;
   friend class InstallableManagerBrowserTest;
+  friend class TestInstallableManager;
 
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            ManagerBeginsInEmptyState);

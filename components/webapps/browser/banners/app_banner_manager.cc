@@ -399,7 +399,7 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
 InstallableParams AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params;
   params.valid_primary_icon = true;
-  params.valid_manifest = true;
+  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
   params.fetch_screenshots = true;
 
   return params;
@@ -429,8 +429,9 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   }
 
   UpdateState(State::ACTIVE);
-  if (data.valid_manifest)
+  if (data.installable_check_passed) {
     TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_REQUESTED);
+  }
 
   bool is_installable = data.errors.empty();
 
@@ -455,7 +456,7 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     return;
   }
 
-  DCHECK(data.valid_manifest);
+  DCHECK(data.installable_check_passed);
   DCHECK(!data.primary_icon_url->is_empty());
   DCHECK(data.primary_icon);
 
