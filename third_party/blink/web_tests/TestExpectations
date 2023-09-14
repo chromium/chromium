@@ -4155,7 +4155,7 @@ crbug.com/834302 external/wpt/permissions-policy/permissions-policy-opaque-origi
 crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js [ Failure Pass ]
 
 # Non-streaming DSD is disabled for all but the virtual suite, so this test times out.
-crbug.com/1396384 http/tests/inspector-protocol/issues/non-streaming-declarative-shadow-dom-issue.js [ Timeout ]
+crbug.com/1396384 http/tests/inspector-protocol/issues/non-streaming-declarative-shadow-dom-issue.js [ Skip Timeout ]
 crbug.com/1396384 virtual/non-streaming-declarative-shadow-dom-enabled/http/tests/inspector-protocol/issues/non-streaming-declarative-shadow-dom-issue.js [ Pass ]
 
 # Sheriff 2019-12-27
