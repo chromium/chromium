@@ -22,8 +22,8 @@ source_set("unit_tests") {
   deps = [
     ":media_effects",
     "//base",
-    "//components/media_effects/test",
     "//components/prefs:test_support",
+    "//components/user_prefs/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

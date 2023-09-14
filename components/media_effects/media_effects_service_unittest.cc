@@ -6,10 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
-#include "components/media_effects/test/test_browser_context_with_prefs.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets_f.h"
 
@@ -44,7 +42,7 @@ void SetFramingSync(
 class MediaEffectsServiceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  media_effects::TestBrowserContextWithPrefs browser_context_;
+  user_prefs::TestBrowserContextWithPrefs browser_context_;
   MediaEffectsService service_{browser_context_.prefs()};
 };
 
