@@ -39,7 +39,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
@@ -464,6 +463,32 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   primary_icon_ = *data.primary_icon;
   has_maskable_primary_icon_ = data.has_maskable_primary_icon;
   screenshots_ = *(data.screenshots);
+
+  if (base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
+    SetInstallableWebAppCheckResult(
+        InstallableWebAppCheckResult::kYes_ByUserRequest);
+
+    InstallableParams check_promotable_params;
+    check_promotable_params.installable_criteria =
+        InstallableCriteria::kValidManifestWithIcons;
+    manager_->GetData(
+        check_promotable_params,
+        base::BindOnce(&AppBannerManager::OnDidPerformPromotableWebAppCheck,
+                       GetWeakPtrForThisNavigation()));
+    return;
+  }
+
+  SetInstallableWebAppCheckResult(
+      InstallableWebAppCheckResult::kYes_Promotable);
+  CheckSufficientEngagement();
+}
+
+void AppBannerManager::OnDidPerformPromotableWebAppCheck(
+    const InstallableData& data) {
+  if (!data.errors.empty()) {
+    Stop(data.GetFirstError());
+    return;
+  }
 
   SetInstallableWebAppCheckResult(
       InstallableWebAppCheckResult::kYes_Promotable);

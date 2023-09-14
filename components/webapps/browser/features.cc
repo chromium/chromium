@@ -75,15 +75,6 @@ BASE_FEATURE(kBlockInstallPromptIfIgnoreRecently,
              "BlockInstallPromptIfIgnoreRecently",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows installing a web app with fallback manifest values.
-BASE_FEATURE(kUniversalInstallManifest,
-             "UniversalInstallManifest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Allows installing a web app when no icon provided by the manifest.
-BASE_FEATURE(kUniversalInstallIcon,
-             "UniversalInstallIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When the user clicks "Create Shortcut" in the dot menu, the current page is
@@ -117,6 +108,16 @@ extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
 
 BASE_FEATURE(kWebAppsEnableMLModelForPromotion,
              "WebAppsEnableMLModelForPromotion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allows installing a web app with fallback manifest values.
+BASE_FEATURE(kUniversalInstallManifest,
+             "UniversalInstallManifest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allows installing a web app when no icon provided by the manifest.
+BASE_FEATURE(kUniversalInstallIcon,
+             "UniversalInstallIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

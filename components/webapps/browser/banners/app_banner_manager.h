@@ -353,6 +353,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // Callback invoked by the InstallableManager once it has finished checking
   // all other installable properties.
   virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
+  void OnDidPerformPromotableWebAppCheck(const InstallableData& data);
 
   // Records that a banner was shown.
   void RecordDidShowBanner();
