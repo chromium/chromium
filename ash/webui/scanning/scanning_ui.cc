@@ -175,7 +175,7 @@ ScanningUI::ScanningUI(
 
   const auto resources =
       base::make_span(kAshScanningAppResources, kAshScanningAppResourcesSize);
-  SetUpWebUIDataSource(html_source, resources, IDR_SCANNING_APP_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, resources, IDR_ASH_SCANNING_APP_INDEX_HTML);
 
   AddScanningAppStrings(html_source);
 

@@ -787,9 +787,9 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [5620],
   },
-  "ash/webui/scanning/resources/scanning_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/scanning/resources/resources.grd": {
+    "META": {"sizes": {"includes": [100],}},
     "includes": [5640],
-    "structures": [5660],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd": {
     "META": {"sizes": {"includes": [10],}},

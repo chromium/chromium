@@ -5,8 +5,9 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/repack.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
 
@@ -210,26 +211,79 @@ js_library("mojo_interface_provider") {
   ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "action_toolbar.js",
-    "color_mode_select.js",
-    "file_type_select.js",
-    "loading_page.js",
-    "multi_page_checkbox.js",
-    "multi_page_scan.js",
-    "page_size_select.js",
-    "resolution_select.js",
-    "scan_preview.js",
-    "scan_done_section.js",
-    "scan_settings_section.js",
-    "scanner_select.js",
-    "scan_to_select.js",
-    "scanning_app.js",
-    "scanning_fonts_css.js",
-    "scanning_shared_css.js",
-    "source_select.js",
+preprocess_folder = "$target_gen_dir/preprocessed"
+
+static_files = [
+  "index.html",
+  "scanning_app_icon_128.png",
+  "scanning_app_icon_16.png",
+  "scanning_app_icon_192.png",
+  "scanning_app_icon_256.png",
+  "scanning_app_icon_32.png",
+  "scanning_app_icon_48.png",
+  "scanning_app_icon_64.png",
+  "svg/illo_loading_scanner.svg",
+  "svg/illo_no_scanner.svg",
+  "svg/illo_ready_to_scan.svg",
+  "svg/no_scanners_dark.svg",
+  "svg/no_scanners.svg",
+  "svg/ready_to_scan_dark.svg",
+  "svg/ready_to_scan.svg",
+  "svg/remove_page.svg",
+  "svg/rescan_page.svg",
+  "svg/scanners_loading_dark.svg",
+  "svg/scanners_loading.svg",
+]
+
+web_component_files = [
+  "action_toolbar.js",
+  "color_mode_select.js",
+  "file_type_select.js",
+  "loading_page.js",
+  "multi_page_checkbox.js",
+  "multi_page_scan.js",
+  "page_size_select.js",
+  "resolution_select.js",
+  "scan_done_section.js",
+  "scanner_select.js",
+  "scanning_app.js",
+  "scanning_fonts_css.js",
+  "scanning_shared_css.js",
+  "scan_preview.js",
+  "scan_settings_section.js",
+  "scan_to_select.js",
+  "source_select.js",
+]
+
+non_web_component_files = [
+  "mojo_interface_provider.js",
+  "scanning_app_types.js",
+  "scanning_app_util.js",
+  "scanning_browser_proxy.js",
+  "select_behavior.js",
+]
+
+preprocess_if_expr("preprocess_generated_files") {
+  in_folder = target_gen_dir
+  in_files = web_component_files
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_generated.json"
+  deps = [ ":web_components" ]
+}
+
+preprocess_if_expr("preprocess_mojo") {
+  in_folder = target_gen_dir
+  in_files = [
+    "accessibility_features.mojom-webui.js",
+    "scanning.mojom-webui.js",
   ]
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
+  deps = [ ":copy_webui_mojo" ]
+}
+
+html_to_js("web_components") {
+  js_files = web_component_files
 }
 
 copy("copy_webui_mojo") {
@@ -242,4 +296,20 @@ copy("copy_webui_mojo") {
     "$root_gen_dir/mojom-webui/ash/webui/scanning/mojom/scanning.mojom-webui.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+generate_grd("build_grd") {
+  input_files = static_files + non_web_component_files
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [
+    ":preprocess_generated_files",
+    ":preprocess_mojo",
+  ]
+  manifest_files = [
+    "$target_gen_dir/manifest_preprocess_generated.json",
+    "$target_gen_dir/manifest_preprocess_mojo.json",
+  ]
+
+  grd_prefix = "ash_scanning_app"
+  out_grd = "$target_gen_dir/resources.grd"
 }

@@ -121,22 +121,10 @@ if (!is_official_build) {
   }
 }
 
-grit("scanning_app_resources") {
-  source = "//ash/webui/scanning/resources/scanning_app_resources.grd"
-
-  deps = [
-    "//ash/webui/scanning/resources:copy_webui_mojo",
-    "//ash/webui/scanning/resources:web_components",
-  ]
-
-  outputs = [
-    "ash_scanning_app_resources.pak",
-    "grit/ash_scanning_app_resources.h",
-    "grit/ash_scanning_app_resources_map.cc",
-    "grit/ash_scanning_app_resources_map.h",
-  ]
-
-  output_dir = "$ash_webui_grit_output_dir"
+ash_generated_grit("scanning_app_resources") {
+  scanning_app_gen_dir = "$root_gen_dir/ash/webui/scanning/resources"
+  source = "$scanning_app_gen_dir/resources.grd"
+  deps = [ "//ash/webui/scanning/resources:build_grd" ]
 }
 
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts

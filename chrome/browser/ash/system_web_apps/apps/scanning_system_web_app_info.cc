@@ -26,13 +26,20 @@ CreateWebAppInfoForScanningSystemWebApp() {
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {
-          {"scanning_app_icon_16.png", 16, IDR_SCANNING_APP_ICON_16},
-          {"scanning_app_icon_32.png", 32, IDR_SCANNING_APP_ICON_32},
-          {"scanning_app_icon_48.png", 48, IDR_SCANNING_APP_ICON_48},
-          {"scanning_app_icon_64.png", 64, IDR_SCANNING_APP_ICON_64},
-          {"scanning_app_icon_128.png", 128, IDR_SCANNING_APP_ICON_128},
-          {"scanning_app_icon_192.png", 192, IDR_SCANNING_APP_ICON_192},
-          {"scanning_app_icon_256.png", 256, IDR_SCANNING_APP_ICON_256},
+          {"scanning_app_icon_16.png", 16,
+           IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_16_PNG},
+          {"scanning_app_icon_32.png", 32,
+           IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_32_PNG},
+          {"scanning_app_icon_48.png", 48,
+           IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_48_PNG},
+          {"scanning_app_icon_64.png", 64,
+           IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_64_PNG},
+          {"scanning_app_icon_128.png", 128,
+           IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_128_PNG},
+          {"scanning_app_icon_192.png", 192,
+           IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_192_PNG},
+          {"scanning_app_icon_256.png", 256,
+           IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_256_PNG},
       },
       *info);
   info->theme_color =
