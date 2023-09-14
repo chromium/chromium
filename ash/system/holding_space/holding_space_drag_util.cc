@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/drag_drop/drag_drop_util.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -41,7 +42,6 @@ namespace {
 
 // Appearance.
 constexpr int kDragImageItemViewCornerRadius = 8;
-constexpr int kDragImageItemViewElevation = 2;
 constexpr int kDragImageItemChipViewIconSize = 24;
 constexpr auto kDragImageItemChipViewInsets = gfx::Insets::TLBR(8, 8, 8, 12);
 constexpr gfx::Size kDragImageItemChipViewPreferredSize(160, 40);
@@ -170,15 +170,15 @@ class DragImageItemView : public views::View {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(color_provider_->GetColor(kColorAshShieldAndBaseOpaque));
+    flags.setColor(
+        color_provider_->GetColor(drag_drop::kDragImageBackgroundColor));
     flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
     canvas->DrawRoundRect(bounds, kDragImageItemViewCornerRadius, flags);
   }
 
  private:
   const gfx::ShadowDetails& GetShadowDetails() const {
-    return gfx::ShadowDetails::Get(kDragImageItemViewElevation,
-                                   kDragImageItemViewCornerRadius);
+    return drag_drop::GetDragImageShadowDetails(kDragImageItemViewCornerRadius);
   }
 
   const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;

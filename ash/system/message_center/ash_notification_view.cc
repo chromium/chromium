@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/drag_drop/drag_drop_util.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -65,6 +66,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/shadow_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
@@ -78,6 +80,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_base.h"
+#include "ui/message_center/views/notification_view_util.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -910,9 +913,24 @@ absl::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
 
   // Assume that an Ash notification has at most one large image view. Fetch the
   // image shown in the large image view.
-  return static_cast<message_center::LargeImageView*>(
-             GetViewByID(message_center::NotificationViewBase::kLargeImageView))
-      ->drawn_image();
+  const gfx::ImageSkia& original_image =
+      static_cast<message_center::LargeImageView*>(
+          GetViewByID(message_center::NotificationViewBase::kLargeImageView))
+          ->drawn_image();
+
+  // Add the background color.
+  const absl::optional<size_t> radius =
+      message_center::notification_view_util::GetLargeImageCornerRadius();
+  const gfx::ImageSkia drag_image_with_background =
+      gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+          gfx::SizeF{original_image.size()}, radius.value_or(0),
+          GetColorProvider()->GetColor(drag_drop::kDragImageBackgroundColor),
+          original_image);
+
+  // Add the drop shadow.
+  return gfx::ImageSkiaOperations::CreateImageWithDropShadow(
+      drag_image_with_background,
+      drag_drop::GetDragImageShadowDetails(radius).values);
 }
 
 void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
