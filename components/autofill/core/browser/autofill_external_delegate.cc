@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -262,6 +263,32 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
+    case PopupItemId::kFillFullAddress:
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+           .field_types_to_fill = GetAddressFieldsForGroupFilling()});
+      break;
+    case PopupItemId::kFillFullName:
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+           .field_types_to_fill =
+               GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
+      break;
+    case PopupItemId::kFillFullPhoneNumber:
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/true,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+           .field_types_to_fill =
+               GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
+      break;
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kMerchantPromoCodeEntry:
@@ -336,6 +363,32 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
                                                 suggestion.popup_item_id,
                                                 query_form_, query_field_);
+      break;
+    case PopupItemId::kFillFullAddress:
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+           .field_types_to_fill = GetAddressFieldsForGroupFilling()});
+      break;
+    case PopupItemId::kFillFullName:
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+           .field_types_to_fill =
+               GetServerFieldTypesOfGroup(FieldTypeGroup::kName)});
+      break;
+    case PopupItemId::kFillFullPhoneNumber:
+      FillAutofillFormData(
+          suggestion.popup_item_id,
+          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source),
+           .field_types_to_fill =
+               GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)});
       break;
     case PopupItemId::kAutocompleteEntry:
       AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);

@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
+#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -53,7 +54,9 @@ namespace {
 Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
     AutofillTriggerDetails details) {
   return AllOf(
-      Field(&AutofillTriggerDetails::trigger_source, details.trigger_source));
+      Field(&AutofillTriggerDetails::trigger_source, details.trigger_source),
+      Field(&AutofillTriggerDetails::field_types_to_fill,
+            details.field_types_to_fill));
 }
 
 constexpr auto kDefaultTriggerSource =
@@ -636,7 +639,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kSeePromoCodeDetails,
                                      u"baz foo", gurl),
-      0, kDefaultTriggerSource);
+      /*position=*/0, kDefaultTriggerSource);
 }
 
 // Test that the ClearPreview call is only sent if the form was being previewed
@@ -702,8 +705,73 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kDatalistEntry, dummy_string),
-      0, kDefaultTriggerSource);
+      /*position=*/0, kDefaultTriggerSource);
 }
+
+// Test parameter data for asserting that group filling suggestions
+// forward the expected fields to the manager.
+struct GroupFillingTestParams {
+  const ServerFieldTypeSet field_types_to_fill;
+  const PopupItemId popup_item_id;
+  const std::string test_name;
+};
+
+class GroupFillingUnitTest
+    : public AutofillExternalDelegateUnitTest,
+      public ::testing::WithParamInterface<GroupFillingTestParams> {};
+
+const GroupFillingTestParams kGroupFillingTestCases[] = {
+    {.field_types_to_fill = GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
+     .popup_item_id = PopupItemId::kFillFullName,
+     .test_name = "_NameFields"},
+    {.field_types_to_fill = GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone),
+     .popup_item_id = PopupItemId::kFillFullPhoneNumber,
+     .test_name = "_PhoneFields"},
+    {.field_types_to_fill = GetAddressFieldsForGroupFilling(),
+     .popup_item_id = PopupItemId::kFillFullAddress,
+     .test_name = "_AddressFields"}};
+
+// Tests that the expected server field set is forwarded to the manager
+// depending on the chosen suggestion.
+TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
+  IssueOnQuery();
+  const GroupFillingTestParams& params = GetParam();
+  const Suggestion suggestion =
+      test::CreateAutofillSuggestion(params.popup_item_id, u"baz foo");
+  auto expected_source =
+#if BUILDFLAG(IS_ANDROID)
+      AutofillTriggerSource::kKeyboardAccessory;
+#else
+      AutofillTriggerSource::kPopup;
+#endif
+  // Test preview
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewForm(
+                  mojom::AutofillActionPersistence::kPreview, _, _, _,
+                  EqualsAutofilltriggerDetails(
+                      {.trigger_source = expected_source,
+                       .field_types_to_fill = params.field_types_to_fill})));
+  external_delegate_->DidSelectSuggestion(suggestion, kDefaultTriggerSource);
+
+  // Test fill
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewForm(
+                  mojom::AutofillActionPersistence::kFill, _, _, _,
+                  EqualsAutofilltriggerDetails(
+                      {.trigger_source = expected_source,
+                       .field_types_to_fill = params.field_types_to_fill})));
+  external_delegate_->DidAcceptSuggestion(suggestion,
+                                          /*position=*/0,
+                                          kDefaultTriggerSource);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillExternalDelegateUnitTest,
+    GroupFillingUnitTest,
+    ::testing::ValuesIn(kGroupFillingTestCases),
+    [](const ::testing::TestParamInfo<GroupFillingUnitTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 // Test that an accepted autofill suggestion will fill the form.
 TEST_F(AutofillExternalDelegateUnitTest,
@@ -717,13 +785,14 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAddressEntry,
                                      u"John Legend"),
-      2, kDefaultTriggerSource);  // Row 2
+      /*position=*/2, kDefaultTriggerSource);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
-       ExternalDelegateAcceptFillEverythingSuggestion) {
+       ExternalDelegateAccept_FillEverythingSuggestion_FillAndPreview) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  // Test fill
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _, _, _));
@@ -731,7 +800,17 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(
           PopupItemId::kFillEverythingFromAddressProfile, u"John Legend"),
-      2, kDefaultTriggerSource);  // Row 2
+      /*position=*/2, kDefaultTriggerSource);
+
+  // Test preview
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewForm(mojom::AutofillActionPersistence::kPreview, _,
+                                _, _, _));
+
+  external_delegate_->DidSelectSuggestion(
+      test::CreateAutofillSuggestion(
+          PopupItemId::kFillEverythingFromAddressProfile, u"John Legend"),
+      kDefaultTriggerSource);
 }
 
 // Tests that when accepting a suggestion, the `AutofillSuggestionTriggerSource`
@@ -808,7 +887,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, plus_address));
-  external_delegate_->DidAcceptSuggestion(suggestions[0], 0,
+  external_delegate_->DidAcceptSuggestion(suggestions[0], /*position=*/0,
                                           kDefaultTriggerSource);
 }
 
@@ -853,7 +932,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(
                   field_id_, kMockPlusAddressForCreationCallback));
-  external_delegate_->DidAcceptSuggestion(suggestions[0], 0,
+  external_delegate_->DidAcceptSuggestion(suggestions[0], /*position=*/0,
                                           kDefaultTriggerSource);
 }
 
@@ -889,7 +968,8 @@ TEST_P(AutofillExternalDelegateUnitTest_UndoAutofill,
     EXPECT_CALL(*autofill_driver_, RendererShouldClearFilledSection());
   }
   external_delegate_->DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
-                                          0, kDefaultTriggerSource);
+                                          /*position=*/0,
+                                          kDefaultTriggerSource);
 }
 
 // Test that the driver is directed to undo the form after being notified that
@@ -911,7 +991,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
 
   external_delegate_->DidAcceptSuggestion(
-      Suggestion(PopupItemId::kScanCreditCard), 0, kDefaultTriggerSource);
+      Suggestion(PopupItemId::kScanCreditCard), /*position=*/0,
+      kDefaultTriggerSource);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
@@ -936,7 +1017,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
     external_delegate_->OnPopupShown();
 
     external_delegate_->DidAcceptSuggestion(
-        Suggestion(PopupItemId::kScanCreditCard), 0, kDefaultTriggerSource);
+        Suggestion(PopupItemId::kScanCreditCard), /*position=*/0,
+        kDefaultTriggerSource);
 
     histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
                                 AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
@@ -956,7 +1038,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardPromptMetricsTest) {
     external_delegate_->OnPopupShown();
 
     external_delegate_->DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
-                                            0, kDefaultTriggerSource);
+                                            /*position=*/0,
+                                            kDefaultTriggerSource);
 
     histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
                                 AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
@@ -1030,7 +1113,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kAutocompleteEntry,
                                      dummy_autocomplete_string),
-      0, kDefaultTriggerSource);
+      /*position=*/0, kDefaultTriggerSource);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SuggestionAcceptedIndex.Autocomplete", 0, 1);
@@ -1053,7 +1136,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kMerchantPromoCodeEntry,
                                      dummy_promo_code_string),
-      0, kDefaultTriggerSource);
+      /*position=*/0, kDefaultTriggerSource);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
