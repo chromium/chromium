@@ -1479,16 +1479,25 @@ void ArcApps::OnInstallationStarted(const std::string& package_name) {
 void ArcApps::OnInstallationProgressChanged(const std::string& package_name,
                                             float progress) {
   if (ash::features::ArePromiseIconsEnabled()) {
-    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(
-            PackageId(AppType::kArc, package_name))) {
+    PackageId package_id = PackageId(AppType::kArc, package_name);
+    const PromiseApp* existing_promise_app =
+        proxy()->PromiseAppRegistryCache()->GetPromiseApp(package_id);
+    if (!existing_promise_app) {
       LOG(ERROR) << "Cannot update installation progress value for "
                  << package_name
                  << ", as there is no promise app registered for this package.";
       return;
     }
-    PromiseAppPtr promise_app =
-        AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
+    PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(package_id);
     promise_app->progress = progress;
+
+    // Update the status to reflect that the app is actively downloading/
+    // installing. We update the status here on the first progress update
+    // instead of in OnInstallationActiveChanged, due to some conflicts with
+    // what the ARC active status indicates and what we need.
+    if (existing_promise_app->status == PromiseStatus::kPending) {
+      promise_app->status = PromiseStatus::kInstalling;
+    }
     AppPublisher::PublishPromiseApp(std::move(promise_app));
   }
 }
@@ -1504,11 +1513,9 @@ void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
                  << ", as there is no promise app registered for this package.";
       return;
     }
-    PromiseAppPtr promise_app =
-        AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
-    promise_app->status =
-        active ? PromiseStatus::kInstalling : PromiseStatus::kPending;
-    AppPublisher::PublishPromiseApp(std::move(promise_app));
+    // TODO(b/261907409): Set PromiseStatus to kPending if the installation is
+    // no longer active, i.e. if active=false after there has been at least one
+    // progress change.
   }
 }
 

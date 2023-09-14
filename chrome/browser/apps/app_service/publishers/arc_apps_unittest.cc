@@ -691,7 +691,7 @@ TEST_F(ArcAppsPublisherTest, OnInstallationProgressChanged_UpdatesPromiseApp) {
   EXPECT_EQ(promise_app_result->progress.value(), progress_next);
 }
 
-TEST_F(ArcAppsPublisherTest, OnInstallationActiveChanged_UpdatesPromiseApp) {
+TEST_F(ArcAppsPublisherTest, ProgressUpdateChangesPromiseStatus) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
   app_service_proxy()->ReinitializeForTesting(profile());
@@ -708,23 +708,17 @@ TEST_F(ArcAppsPublisherTest, OnInstallationActiveChanged_UpdatesPromiseApp) {
   promise_app->status = apps::PromiseStatus::kPending;
   cache->OnPromiseApp(std::move(promise_app));
 
-  // Check that the initial status is correct.
+  // Check that the initial status is kPending.
   const apps::PromiseApp* promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
 
-  // Send an update and check the status.
-  arc_test()->app_instance()->SendInstallationActiveChanged(package_name, true);
+  // Send a progress update and check the status.
+  arc_test()->app_instance()->SendInstallationProgressChanged(package_name,
+                                                              0.2);
   promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kInstalling);
-
-  // Send an update and check the status.
-  arc_test()->app_instance()->SendInstallationActiveChanged(package_name,
-                                                            false);
-  promise_app_result = cache->GetPromiseApp(package_id);
-  EXPECT_TRUE(promise_app_result);
-  EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
 }
 
 // Verifies that only valid intent filters will be published from ARC.
