@@ -1826,6 +1826,15 @@ TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           lock_accelerator, &result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+
+  // Capslock key.
+  const ui::Accelerator capslock_accelerator(ui::VKEY_CAPITAL,
+                                             ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          capslock_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNonConfigConflict) {

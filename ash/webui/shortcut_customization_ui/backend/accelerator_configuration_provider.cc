@@ -230,8 +230,12 @@ constexpr int kCustomizationModifierMask =
 
 // The following are keys that are not allowed to be used as a customized
 // activation key.
+// VKEY_POWER, VKEY_SLEEP are related to power controls.
+// VKEY_F13 is treated as lock on certain devices.
+// VKEY_CAPITAL is capslock, capslock behavior is currently hardcoded and would
+// lead to complications if we allow users to use it for their own accelerators.
 constexpr ui::KeyboardCode kReservedKeys[] = {ui::VKEY_POWER, ui::VKEY_F13,
-                                              ui::VKEY_SLEEP};
+                                              ui::VKEY_SLEEP, ui::VKEY_CAPITAL};
 
 // Gets the parts of the string that don't contain replacements.
 // Ex: "Press and " -> ["Press ", " and "]
