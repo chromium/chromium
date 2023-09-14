@@ -22,9 +22,11 @@
 namespace ui {
 
 namespace {
+
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 59;
-}
+constexpr uint32_t kMaxVersion = 60;
+
+}  // namespace
 
 // static
 constexpr char WaylandZAuraShell::kInterfaceName[];
@@ -75,7 +77,8 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
       .activated = &OnActivated,
       .set_overview_mode = &OnSetOverviewMode,
       .unset_overview_mode = &OnUnsetOverviewMode,
-      .compositor_version = &OnCompositorVersion};
+      .compositor_version = &OnCompositorVersion,
+      .all_bug_fixes_sent = &OnAllBugFixesSent};
   zaura_shell_add_listener(obj_.get(), &kZAuraShellListener, this);
 
   if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
@@ -88,7 +91,8 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
 WaylandZAuraShell::~WaylandZAuraShell() = default;
 
 bool WaylandZAuraShell::HasBugFix(uint32_t id) {
-  return bug_fix_ids_.find(id) != bug_fix_ids_.end();
+  return std::find(bug_fix_ids_.begin(), bug_fix_ids_.end(), id) !=
+         bug_fix_ids_.end();
 }
 
 std::string WaylandZAuraShell::GetDeskName(int index) const {
@@ -103,6 +107,25 @@ int WaylandZAuraShell::GetNumberOfDesks() {
 
 int WaylandZAuraShell::GetActiveDeskIndex() const {
   return active_desk_index_;
+}
+
+bool WaylandZAuraShell::SupportsAllBugFixesSent() const {
+  return zaura_shell_get_version(wl_object()) >=
+         ZAURA_SHELL_ALL_BUG_FIXES_SENT_SINCE_VERSION;
+}
+
+void WaylandZAuraShell::ResetBugFixesStatusForTesting() {
+  all_bug_fixes_sent_ = false;
+  bug_fix_ids_.clear();
+}
+
+absl::optional<std::vector<uint32_t>> WaylandZAuraShell::MaybeGetBugFixIds()
+    const {
+  if (!all_bug_fixes_sent_) {
+    return absl::nullopt;
+  }
+
+  return absl::make_optional(bug_fix_ids_);
 }
 
 // static
@@ -139,7 +162,8 @@ void WaylandZAuraShell::OnBugFix(void* data,
                                  struct zaura_shell* zaura_shell,
                                  uint32_t id) {
   auto* self = static_cast<WaylandZAuraShell*>(data);
-  self->bug_fix_ids_.insert(id);
+  CHECK(!self->all_bug_fixes_sent_);
+  self->bug_fix_ids_.push_back(id);
 }
 
 // static
@@ -211,6 +235,23 @@ void WaylandZAuraShell::OnCompositorVersion(void* data,
   DCHECK_EQ(compositor_version.components().size(), 4u);
   DVLOG(1) << "Wayland compositor version: " << compositor_version;
   self->compositor_version_ = compositor_version;
+}
+
+// static
+void WaylandZAuraShell::OnAllBugFixesSent(void* data,
+                                          struct zaura_shell* zaura_shell) {
+  auto* self = static_cast<WaylandZAuraShell*>(data);
+  CHECK(!self->all_bug_fixes_sent_);
+  self->all_bug_fixes_sent_ = true;
+
+  if (!self->connection_->buffer_manager_host()) {
+    // This message may be called before WaylandConnection initialization. Bug
+    // fix ids will be sent on requested in such case.
+    return;
+  }
+
+  self->connection_->buffer_manager_host()->OnAllBugFixesSent(
+      self->bug_fix_ids_);
 }
 
 }  // namespace ui

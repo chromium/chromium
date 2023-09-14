@@ -17,7 +17,7 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kZAuraShellVersion = 59;
+constexpr uint32_t kZAuraShellVersion = 60;
 constexpr uint32_t kZAuraOutputVersion = 44;
 
 void GetAuraSurface(wl_client* client,
@@ -97,12 +97,20 @@ void TestZAuraShell::SetCompositorVersion(const std::string& version_string) {
 
 void TestZAuraShell::SetBugFixes(std::vector<uint32_t> bug_fixes) {
   bug_fixes_ = std::move(bug_fixes);
-  MaybeSendBugFixes();
+  SendBugFixes();
+}
+
+void TestZAuraShell::SendAllBugFixesSent() {
+  if (resource() && wl_resource_get_version(resource()) >=
+                        ZAURA_SHELL_ALL_BUG_FIXES_SENT_SINCE_VERSION) {
+    zaura_shell_send_all_bug_fixes_sent(resource());
+  }
 }
 
 void TestZAuraShell::OnBind() {
   MaybeSendCompositorVersion();
-  MaybeSendBugFixes();
+  SendBugFixes();
+  SendAllBugFixesSent();
 }
 
 void TestZAuraShell::MaybeSendCompositorVersion() {
@@ -115,7 +123,7 @@ void TestZAuraShell::MaybeSendCompositorVersion() {
   }
 }
 
-void TestZAuraShell::MaybeSendBugFixes() {
+void TestZAuraShell::SendBugFixes() {
   if (resource() && wl_resource_get_version(resource()) >=
                         ZAURA_SHELL_BUG_FIX_SINCE_VERSION) {
     for (const uint32_t bug_fix : bug_fixes_)

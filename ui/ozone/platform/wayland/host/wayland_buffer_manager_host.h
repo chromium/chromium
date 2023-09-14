@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -63,6 +64,14 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
 
   // Called by WaylandFrameManager if overlay data is invalid.
   void OnCommitOverlayError(const std::string& message);
+
+  // Called by WaylandZAuraShell when all bug fix ids are ready.
+  void OnAllBugFixesSent(std::vector<uint32_t> bug_fix_ids);
+
+  // Waits for all bug fix ids sent from the server asynchronously. If all bug
+  // ids are ready, `callback` runs synchronously.
+  void WaitForAllBugFixIds(
+      base::OnceCallback<void(const std::vector<uint32_t>&)> callback);
 
   // Returns supported buffer formats either from zwp_linux_dmabuf or wl_drm.
   wl::BufferFormatsWithModifiersMap GetSupportedBufferFormats() const;
@@ -206,6 +215,11 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // A callback, which is used to terminate a GPU process in case of invalid
   // data sent by the GPU to the browser process.
   base::OnceCallback<void(std::string)> terminate_gpu_cb_;
+
+  // A callback, which is called when all bug fix ids are ready. This is called
+  // from OnAllBugFixesSent.
+  base::OnceCallback<void(const std::vector<uint32_t>&)>
+      all_bug_fixes_sent_callback_;
 
   // Maps buffer_id's to corresponding WaylandBufferBacking objects.
   base::flat_map<uint32_t, std::unique_ptr<WaylandBufferBacking>>

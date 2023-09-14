@@ -60,7 +60,8 @@ class WaylandOverlayManagerTest : public WaylandTest {
         /*supports_viewporter=*/true,
         /*supports_acquire_fence=*/false,
         /*supports_overlays=*/true, kAugmentedSurfaceNotSupportedVersion,
-        /*supports_single_pixel_buffer=*/true);
+        /*supports_single_pixel_buffer=*/true,
+        /*bug_fix_ids=*/{});
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();

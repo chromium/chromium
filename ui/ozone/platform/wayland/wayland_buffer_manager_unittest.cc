@@ -119,8 +119,11 @@ class WaylandBufferManagerTest : public WaylandTest {
     // Set this bug fix so that WaylandFrameManager does not use a freeze
     // counter. Otherwise, we won't be able to have a reliable test order of
     // frame submissions. This must be set before any window is created
-    // (WaylandTest does that for us during the SetUp phase).
-    server_.zaura_shell()->SetBugFixes({1358908});
+    // (WaylandTest does that for us during the SetUp phase). See
+    // crbug.com/1358908 for more details.
+    constexpr uint32_t kBugIdFreezeTimer = 1358908;
+
+    server_.zaura_shell()->SetBugFixes({kBugIdFreezeTimer});
 
     WaylandTest::SetUp();
 
@@ -137,7 +140,8 @@ class WaylandBufferManagerTest : public WaylandTest {
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
                                     kAugmentedSurfaceNotSupportedVersion,
-                                    /*supports_single_pixel_buffer=*/true);
+                                    /*supports_single_pixel_buffer=*/true,
+                                    /*bug_fix_ids=*/{kBugIdFreezeTimer});
     surface_id_ = window_->root_surface()->get_surface_id();
   }
 
@@ -216,7 +220,8 @@ class WaylandBufferManagerTest : public WaylandTest {
                     /*supports_acquire_fence=*/false,
                     /*supports_overlays=*/true,
                     kAugmentedSurfaceNotSupportedVersion,
-                    /*supports_single_pixel_buffer=*/true);
+                    /*supports_single_pixel_buffer=*/true,
+                    /*bug_fix_ids=*/{});
               }));
     }
   }
@@ -2614,7 +2619,8 @@ TEST_P(WaylandBufferManagerTest,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true);
+                                  /*supports_single_pixel_buffer=*/true,
+                                  /*bug_fix_ids=*/{});
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
@@ -2734,7 +2740,8 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true);
+                                  /*supports_single_pixel_buffer=*/true,
+                                  /*bug_fix_ids=*/{});
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Now, create only one buffer and attach that to the root surface. The
@@ -3074,7 +3081,8 @@ TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
                                   kAugmentedSurfaceNotSupportedVersion,
-                                  /*supports_single_pixel_buffer=*/true);
+                                  /*supports_single_pixel_buffer=*/true,
+                                  /*bug_fix_ids=*/{});
 
   base::RunLoop().RunUntilIdle();
 

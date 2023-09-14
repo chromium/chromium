@@ -6,11 +6,11 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUFFER_MANAGER_CONNECTOR_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/ozone/public/gpu_platform_support_host.h"
-
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
+#include "ui/ozone/public/gpu_platform_support_host.h"
 
 namespace ui {
 
@@ -40,6 +40,10 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
  private:
   void OnTerminateGpuProcess(std::string message);
 
+  // Initializes WaylandBufferManagerGpu instance.
+  // Notified when all bug fix ids are ready. This must be called only once.
+  void OnAllBugFixesSent(const std::vector<uint32_t>& bug_fix_ids);
+
   // Non-owned pointer, which is used to bind a mojo pointer to the
   // WaylandBufferManagerHost.
   const raw_ptr<WaylandBufferManagerHost> buffer_manager_host_;
@@ -51,6 +55,8 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
   int host_id_ = -1;
 
   THREAD_CHECKER(ui_thread_checker_);
+
+  base::WeakPtrFactory<WaylandBufferManagerConnector> weak_factory_{this};
 };
 
 }  // namespace ui

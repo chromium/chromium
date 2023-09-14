@@ -34,6 +34,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
 
@@ -121,6 +122,41 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
     const std::string& message) {
   error_message_ = message;
   TerminateGpuProcess();
+}
+
+void WaylandBufferManagerHost::OnAllBugFixesSent(
+    std::vector<uint32_t> bug_fix_ids) {
+  // If `all_bug_fixes_sent_callback_` is not registered yet, `bug_fix_ids`
+  // should be obtained by WaitBugFixIds call later.
+  if (all_bug_fixes_sent_callback_.is_null()) {
+    return;
+  }
+
+  std::move(all_bug_fixes_sent_callback_).Run(bug_fix_ids);
+}
+
+void WaylandBufferManagerHost::WaitForAllBugFixIds(
+    base::OnceCallback<void(const std::vector<uint32_t>&)> callback) {
+  // If `zaura_shell_send_all_bug_fixes_sent` event is not supported on the
+  // server, we are not sure when the bug fix ids are ready, so stop waiting for
+  // the ids. This is deprecated path.
+  // TODO(crbug.com/1480226): Remove this when M119 Ash becomes old enough.
+  if (!connection_->zaura_shell() ||
+      !connection_->zaura_shell()->SupportsAllBugFixesSent()) {
+    std::move(callback).Run(std::vector<uint32_t>());
+    return;
+  }
+
+  auto bug_fix_ids = connection_->zaura_shell()->MaybeGetBugFixIds();
+  if (bug_fix_ids) {
+    // Immediately call `callback` synchronously if the bug fix ids are ready.
+    std::move(callback).Run(bug_fix_ids.value());
+    return;
+  }
+
+  // If bug_fix_ids is not yet ready, wait until OnAllBugFixesSent is notified.
+  CHECK(all_bug_fixes_sent_callback_.is_null());
+  all_bug_fixes_sent_callback_ = std::move(callback);
 }
 
 wl::BufferFormatsWithModifiersMap
