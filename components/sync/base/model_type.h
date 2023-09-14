@@ -383,7 +383,11 @@ constexpr ModelTypeSet LowPriorityUserTypes() {
       // of other data types.
       HISTORY,
       // User Events should not block or delay commits for other data types.
-      USER_EVENTS};
+      USER_EVENTS,
+      // Incoming password sharing invitations must be processed after
+      // Passwords data type to prevent storing incoming passwords locally first
+      // and overwriting the remote password during conflict resolution.
+      INCOMING_PASSWORD_SHARING_INVITATION};
 }
 
 // Returns a list of all control types.

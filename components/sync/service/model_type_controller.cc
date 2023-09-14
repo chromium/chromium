@@ -87,6 +87,7 @@ void ModelTypeController::InitModelTypeController(
     //   delegate, see SyncEngineBackend::LoadAndConnectNigoriController().
     // * BOOKMARKS and READING_LIST: Support is WIP.
     // * PASSWORDS: Already supported on desktop; mobile is WIP.
+    // * INCOMING_PASSWORD_SHARING_INVITATION: Depends on PASSWORDS support.
     // * PREFERENCES in all variants: Support is WIP.
     // * History-related types (HISTORY, HISTORY_DELETE_DIRECTIVES, TYPED_URLS,
     //   SESSIONS) are okay to *not* support transport mode.
@@ -107,6 +108,7 @@ void ModelTypeController::InitModelTypeController(
         BOOKMARKS,
         PREFERENCES,
         PASSWORDS,
+        INCOMING_PASSWORD_SHARING_INVITATION,
         AUTOFILL_PROFILE,
         AUTOFILL,
         AUTOFILL_WALLET_DATA,

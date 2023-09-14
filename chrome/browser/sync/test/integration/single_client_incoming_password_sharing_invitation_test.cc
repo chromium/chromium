@@ -14,10 +14,12 @@
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -37,6 +39,11 @@ using sync_pb::IncomingPasswordSharingInvitationSpecifics;
 using sync_pb::PasswordSharingInvitationData;
 using sync_pb::SyncEntity;
 using syncer::SyncServiceImpl;
+using testing::AllOf;
+using testing::Contains;
+using testing::Field;
+using testing::IsEmpty;
+using testing::SizeIs;
 
 namespace {
 
@@ -52,6 +59,8 @@ constexpr char kPasswordAvatarUrl[] = "http://avatar.url/";
 constexpr char kSenderEmail[] = "sender@gmail.com";
 constexpr char kSenderDisplayName[] = "Sender Name";
 constexpr char kSenderProfileImageUrl[] = "http://sender.url/image";
+
+constexpr char kLocalPasswordValue[] = "local_password_value";
 
 constexpr uint32_t kSenderKeyVersion = 1;
 
@@ -220,6 +229,21 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
+  void InjectTestPasswordToFakeServer() {
+    sync_pb::PasswordSpecificsData password_data;
+    // Used for computing the client tag.
+    password_data.set_origin(kOrigin);
+    password_data.set_username_element(kUsernameElement);
+    password_data.set_username_value(kUsernameValue);
+    password_data.set_password_element(kPasswordElement);
+    password_data.set_signon_realm(kSignonRealm);
+    // Other data.
+    password_data.set_password_value(kLocalPasswordValue);
+
+    passwords_helper::InjectKeystoreEncryptedServerPassword(password_data,
+                                                            GetFakeServer());
+  }
+
  private:
   base::test::ScopedFeatureList override_features_;
 };
@@ -269,6 +293,80 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   // PasswordStoredChecker above guarantees that there is an invitation present
   // on the server (which was injected earlier).
   EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
+                       ShouldHandleIncomingInvitationsAtInitialSync) {
+  // First, setup sync to initialize Nigori node with a public key to be able to
+  // inject invitations.
+  ASSERT_TRUE(SetupSync());
+
+  // Then stop sync service, inject an invitation to the server, and re-enable
+  // sync again.
+  GetClient(0)->StopSyncServiceAndClearData();
+  InjectInvitationToServer();
+  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+
+  // Wait the invitation to be processed and the password stored.
+  ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
+                                    GetProfilePasswordStoreInterface(0),
+                                    /*expected_count=*/1)
+                  .Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
+              Contains(Pointee(
+                  AllOf(Field(&PasswordForm::password_value,
+                              base::UTF8ToUTF16(std::string(kPasswordValue))),
+                        Field(&PasswordForm::type,
+                              PasswordForm::Type::kReceivedViaSharing)))));
+
+  // Check that all the invitations are deleted from the server.
+  EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientIncomingPasswordSharingInvitationTest,
+    ShouldIgnoreIncomingInvitationIfPasswordExistsAtInitialSync) {
+  base::HistogramTester histogram_tester;
+
+  // First, setup sync to initialize Nigori node with a public key to be able to
+  // inject invitations.
+  ASSERT_TRUE(SetupSync());
+
+  // Then stop sync service, inject an invitation and a different password
+  // (but having the same client tag to cause a collision) to the server, and
+  // re-enable sync again.
+  GetClient(0)->StopSyncServiceAndClearData();
+  InjectTestPasswordToFakeServer();
+  InjectInvitationToServer();
+  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+
+  // Wait the password to be stored.
+  ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
+                                    GetProfilePasswordStoreInterface(0),
+                                    /*expected_count=*/1)
+                  .Wait());
+
+  // Verify that the invitation has been processed and a tombstone has been
+  // uploaded.
+  ASSERT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
+
+  // The invitation should be ignored because the same password already exists.
+  EXPECT_THAT(
+      GetAllLogins(GetProfilePasswordStoreInterface(0)),
+      Contains(Pointee(AllOf(
+          Field(&PasswordForm::password_value,
+                base::UTF8ToUTF16(std::string(kLocalPasswordValue))),
+          Field(&PasswordForm::type, PasswordForm::Type::kFormSubmission)))));
+
+  // Double check that the invitation has not been processed and stored locally
+  // before the remote password has been stored. The following histogram is
+  // reported if the remote password exists locally during the initial sync
+  // merge.
+  // TODO(crbug.com/1478704): add a new histogram to record when an invitation
+  // is ignored because of existing local password.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.MergeSyncData.UpdateLoginSyncError",
+      /*expected_count=*/0);
 }
 
 }  // namespace

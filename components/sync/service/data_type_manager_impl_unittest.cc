@@ -845,6 +845,35 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfiguration) {
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 }
 
+TEST_F(SyncDataTypeManagerImplTest, ShouldPrioritizePasswordsOverInvitations) {
+  // Passwords must be configured and downloaded before incoming password
+  // sharing invitations.
+  AddController(PASSWORDS);
+  AddController(INCOMING_PASSWORD_SHARING_INVITATION);
+
+  // Initial configure.
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
+
+  // Start the configuration.
+  ASSERT_EQ(0, configurer_.configure_call_count());
+  Configure({PASSWORDS, INCOMING_PASSWORD_SHARING_INVITATION});
+
+  // Finishing the no-op download of the control types causes the next
+  // ConfigureDataTypes() call.
+  FinishDownload(ModelTypeSet(), ModelTypeSet());
+  EXPECT_EQ(AddControlTypesTo(PASSWORDS), last_configure_params().to_download);
+
+  // INCOMING_PASSWORD_SHARING_INVITATION is downloaded after PASSWORDS.
+  FinishDownload({PASSWORDS}, ModelTypeSet());
+  EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  EXPECT_EQ(AddControlTypesTo(INCOMING_PASSWORD_SHARING_INVITATION),
+            last_configure_params().to_download);
+
+  FinishDownload({INCOMING_PASSWORD_SHARING_INVITATION}, ModelTypeSet());
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+}
+
 TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfigurationReconfigure) {
   AddController(PRIORITY_PREFERENCES);
   AddController(BOOKMARKS);
