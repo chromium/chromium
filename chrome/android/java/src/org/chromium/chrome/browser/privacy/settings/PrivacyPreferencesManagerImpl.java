@@ -9,11 +9,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -31,10 +34,11 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     private final Context mContext;
     private final SharedPreferencesManager mPrefs;
-
-    private ObserverList<Observer> mObservers;
     private PolicyService mPolicyService;
     private PolicyService.Observer mPolicyServiceObserver;
+
+    // Supplier for other class to observe. Null until the supplier is requested.
+    private @Nullable ObservableSupplierImpl<Boolean> mCrashUploadPermittedSupplier;
 
     private boolean mNativeInitialized;
 
@@ -130,29 +134,14 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     @Override
     public void addObserver(Observer observer) {
-        if (mObservers == null) {
-            mObservers = new ObserverList<>();
-        }
-        mObservers.addObserver(observer);
-        mPrefs.addObserver(key -> {
-            if (key.equals(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER)
-                    || key.equals(
-                            ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY)) {
-                notifyObservers();
-            }
-        });
+        getUsageAndCrashReportingPermittedObservableSupplier().addObserver(
+                observer::onIsUsageAndCrashReportingPermittedChanged);
     }
 
     @Override
     public void removeObserver(Observer observer) {
-        mObservers.removeObserver(observer);
-    }
-
-    private void notifyObservers() {
-        boolean permitted = isUsageAndCrashReportingPermitted();
-        for (var observer : mObservers) {
-            observer.onIsUsageAndCrashReportingPermittedChanged(permitted);
-        }
+        getUsageAndCrashReportingPermittedObservableSupplier().removeObserver(
+                observer::onIsUsageAndCrashReportingPermittedChanged);
     }
 
     @Override
@@ -218,6 +207,17 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @Override
     public void setMetricsReportingEnabled(boolean enabled) {
         PrivacyPreferencesManagerImplJni.get().setMetricsReportingEnabled(enabled);
+        getUsageAndCrashReportingPermittedObservableSupplier().set(enabled);
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getUsageAndCrashReportingPermittedObservableSupplier() {
+        ThreadUtils.assertOnUiThread();
+        if (mCrashUploadPermittedSupplier == null) {
+            mCrashUploadPermittedSupplier = new ObservableSupplierImpl<>();
+            mCrashUploadPermittedSupplier.set(isUsageAndCrashReportingPermitted());
+        }
+        return mCrashUploadPermittedSupplier;
     }
 
     @NativeMethods

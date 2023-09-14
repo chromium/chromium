@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -74,6 +75,11 @@ public final class FeedProcessScopeDependencyProviderTest {
         }
         @Override
         public void setMetricsReportingEnabled(boolean enabled) {}
+
+        @Override
+        public ObservableSupplier<Boolean> getUsageAndCrashReportingPermittedObservableSupplier() {
+            return null;
+        }
     };
 
     @Before
