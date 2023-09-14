@@ -54,6 +54,7 @@ BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
 BASE_DECLARE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments);
 BASE_DECLARE_FEATURE(kQueryInMemoryTextEmbeddings);
 BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
+BASE_DECLARE_FEATURE(kOptimizationGuideModelExecution);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.

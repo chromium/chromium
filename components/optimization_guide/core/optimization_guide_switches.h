@@ -27,6 +27,7 @@ extern const char kFetchHintsOverride[];
 extern const char kFetchHintsOverrideTimer[];
 extern const char kOptimizationGuideServiceGetHintsURL[];
 extern const char kOptimizationGuideServiceGetModelsURL[];
+extern const char kOptimizationGuideServiceModelExecutionURL[];
 extern const char kOptimizationGuideServiceAPIKey[];
 extern const char kPurgeHintsStore[];
 extern const char kPurgeModelAndFeaturesStore[];

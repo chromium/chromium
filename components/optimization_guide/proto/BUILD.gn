@@ -17,6 +17,7 @@ proto_library("optimization_guide_proto") {
     "hint_cache.proto",
     "hints.proto",
     "loading_predictor_metadata.proto",
+    "model_execution.proto",
     "models.proto",
     "on_device_tail_suggest_model_metadata.proto",
     "page_entities_metadata.proto",

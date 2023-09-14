@@ -43,6 +43,10 @@ const char kOptimizationGuideServiceGetHintsURL[] =
 const char kOptimizationGuideServiceGetModelsURL[] =
     "optimization-guide-service-get-models-url";
 
+// Overrides the Optimization Guide model execution URL.
+const char kOptimizationGuideServiceModelExecutionURL[] =
+    "optimization-guide-service-model-execution-url";
+
 // Overrides the Optimization Guide Service API Key for remote requests to be
 // made.
 const char kOptimizationGuideServiceAPIKey[] =

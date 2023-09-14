@@ -270,6 +270,11 @@ BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
              "OptimizationGuidePredictionModelKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to enable model execution.
+BASE_FEATURE(kOptimizationGuideModelExecution,
+             "OptimizationGuideModelExecution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 size_t MaxRelatedSearchesCacheSize() {
   return GetFieldTrialParamByFeatureAsInt(
       kExtractRelatedSearchesFromPrefetchedZPSResponse,

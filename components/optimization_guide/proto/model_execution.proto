@@ -1,0 +1,38 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/common_types.proto";
+
+message ExecuteRequest {
+  // The feature that this execution request is for.
+  optional ModelExecutionFeature feature = 1;
+
+  // The metadata associated with this request used to understand how to
+  // execute the necessary feature models.
+  optional Any request_metadata = 2;
+}
+
+message ExecuteResponse {
+  optional int64 model_version = 1;
+
+  oneof response {
+    // The metadata for the response returned for the feature.
+    Any response_metadata = 2;
+    string error_message = 3;
+  }
+}
+
+enum ModelExecutionFeature {
+  MODEL_EXECUTION_FEATURE_UNSPECIFIED = 0;
+  MODEL_EXECUTION_FEATURE_1 = 1;
+  MODEL_EXECUTION_FEATURE_2 = 2;
+  MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH = 3;
+}
