@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -752,9 +751,8 @@ public abstract class AsyncInitializationActivity
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
         // Android T does not receive updated width upon foldable unfold from window context.
         // Continue to rely on context on this case.
-        Context windowManagerContext = (ChromeFeatureList.sFoldableJankFix.isEnabled()
-                                               && VERSION.SDK_INT >= VERSION_CODES.R
-                                               && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
+        Context windowManagerContext =
+                (VERSION.SDK_INT >= VERSION_CODES.R && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
                 ? (display.getWindowContext() != null ? display.getWindowContext() : context)
                 : context;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

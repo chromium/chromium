@@ -2777,11 +2777,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-foldable-jank-fix",
-    "owners": [ "skavuluru", "clank-app-team@google.com" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "enable-follow-IPH-exp-params",
     "owners": [ "sczs", "tinazwang" ],
     "expiry_milestone": 123

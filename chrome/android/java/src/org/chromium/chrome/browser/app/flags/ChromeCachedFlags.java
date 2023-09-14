@@ -15,7 +15,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -125,7 +124,7 @@ public class ChromeCachedFlags {
                 TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                 TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO,
                 TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED,
-                VersionNumberGetter.MIN_SDK_VERSION, ChromeActivity.CONTENT_VIS_DELAY_MS,
+                VersionNumberGetter.MIN_SDK_VERSION,
                 MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                 BackPressManager.TAB_HISTORY_RECOVER);
         // clang-format on

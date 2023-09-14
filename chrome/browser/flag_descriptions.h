@@ -1915,9 +1915,6 @@ extern const char kTabletToolbarReorderingAndroidDescription[];
 extern const char kEmptyStatesAndroidName[];
 extern const char kEmptyStatesAndroidDescription[];
 
-extern const char kFoldableJankFixAndroidName[];
-extern const char kFoldableJankFixAndroidDescription[];
-
 extern const char kTabStripStartupRefactoringName[];
 extern const char kTabStripStartupRefactoringDescription[];
 

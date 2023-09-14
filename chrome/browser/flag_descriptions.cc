@@ -4464,11 +4464,6 @@ const char kEmptyStatesAndroidDescription[] =
     "states to update tab switcher UI, recent tabs, bookmarks, reading list "
     "and history zero states";
 
-const char kFoldableJankFixAndroidName[] = "Fix for jank seen on foldables.";
-const char kFoldableJankFixAndroidDescription[] =
-    "Enables fix for jank seen during fold to unfold transition on foldables "
-    "with Android 12+";
-
 const char kTabStripStartupRefactoringName[] =
     "Refactor for tablet tab strip startup.";
 const char kTabStripStartupRefactoringDescription[] =

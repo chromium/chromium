@@ -245,7 +245,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
-    &kFoldableJankFix,
     &kGridTabSwitcherLandscapeAspectRatioPhones,
     &kHideTabOnTabSwitcher,
     &kImprovedIncognitoScreenshot,
@@ -769,10 +768,6 @@ BASE_FEATURE(kExperimentsForAgsa,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExploreSites, "ExploreSites", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFoldableJankFix,
-             "FoldableJankFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherLandscapeAspectRatioPhones,
              "GridTabSwitcherLandscapeAspectRatioPhones",

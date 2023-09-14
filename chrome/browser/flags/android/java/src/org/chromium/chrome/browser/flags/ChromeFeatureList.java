@@ -270,7 +270,6 @@ public abstract class ChromeFeatureList {
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
             "FocusOmniboxInIncognitoTabIntents";
-    public static final String FOLDABLE_JANK_FIX = "FoldableJankFix";
     public static final String FORCE_DISABLE_EXTENDED_SYNC_PROMOS =
             "ForceDisableExtendedSyncPromos";
     public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
@@ -543,7 +542,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION, false);
     public static final CachedFlag sFriendlierSafeBrowsingSettingsStandardProtection =
             new CachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION, false);
-    public static final CachedFlag sFoldableJankFix = new CachedFlag(FOLDABLE_JANK_FIX, true);
     public static final CachedFlag sGridTabSwitcherLandscapeAspectRatioPhones =
             new CachedFlag(GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
@@ -643,7 +641,6 @@ public abstract class ChromeFeatureList {
         sFeedLoadingPlaceholder,
         sFriendlierSafeBrowsingSettingsEnhancedProtection,
         sFriendlierSafeBrowsingSettingsStandardProtection,
-        sFoldableJankFix,
         sGridTabSwitcherLandscapeAspectRatioPhones,
         sIncognitoReauthenticationForAndroid,
         sInstanceSwitcher,
