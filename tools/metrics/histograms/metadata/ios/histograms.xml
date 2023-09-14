@@ -1966,6 +1966,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PasswordManager.BulkSavePasswordsInAccountCount"
+    units="passwords" expires_after="2024-01-28">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    The number of local passwords the user has moved to their account using the
+    bulk save passwords in account module in password manager settings. This is
+    logged when the user chooses to bulk move their passwords to their account.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PasswordManager.Favicons.Count" units="count"
     expires_after="2023-11-28">
   <owner>veronguyen@google.com</owner>

@@ -34,6 +34,7 @@ source_set("password_settings") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:util",
     "//ios/chrome/browser/signin:signin",
     "//ios/chrome/browser/sync:sync",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",

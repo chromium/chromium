@@ -7,6 +7,7 @@
 #import "base/containers/cxx20_erase_vector.h"
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_manager_features_util.h"
@@ -36,6 +37,11 @@ using password_manager::CredentialUIEntry;
 using password_manager::prefs::kCredentialsEnableService;
 
 namespace {
+
+// The user action for when the bulk move passwords to account section button is
+// clicked.
+constexpr const char* kBulkMovePasswordsToAccountButtonClickedUserAction =
+    "Mobile.PasswordsSettings.BulkSavePasswordsToAccountButtonClicked";
 
 // Returns true if the credential passed is not stored in the account store.
 bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
@@ -182,6 +188,8 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 }
 
 - (void)userDidStartBulkMoveLocalPasswordsToAccountFlow {
+  int localPasswordsCount = [self computeLocalPasswordsCount];
+
   _syncService->TriggerLocalDataMigration(
       syncer::ModelTypeSet{syncer::ModelType::PASSWORDS});
 
@@ -191,6 +199,12 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredForMultiplePasswordsInSettings);
+
+  base::UmaHistogramCounts100(
+      "IOS.PasswordManager.BulkSavePasswordsInAccountCount",
+      localPasswordsCount);
+
+  [self showMovedToAccountSnackbarWithPasswordCount:localPasswordsCount];
 }
 
 - (void)userDidStartExportFlow {
@@ -257,6 +271,9 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 #pragma mark - PasswordSettingsDelegate
 
 - (void)bulkMovePasswordsToAccountButtonClicked {
+  base::RecordAction(base::UserMetricsAction(
+      kBulkMovePasswordsToAccountButtonClickedUserAction));
+
   // Create the confirmation dialog title.
   NSString* alertTitle = l10n_util::GetPluralNSStringF(
       IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_TITLE,
@@ -461,6 +478,15 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   }
 
   return distinctDomains;
+}
+
+// Shows the snackbar indicating to the user that their local passwords have
+// been saved to their account.
+- (void)showMovedToAccountSnackbarWithPasswordCount:(int)count {
+  [self.bulkMovePasswordsToAccountHandler
+      showMovedToAccountSnackbarWithPasswordCount:count
+                                        userEmail:_syncService->GetAccountInfo()
+                                                      .email];
 }
 
 @end

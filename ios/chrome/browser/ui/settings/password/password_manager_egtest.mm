@@ -3145,7 +3145,7 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 }
 
 // Tests that the local password is moved when accepting the confirmation
-// dialog.
+// dialog, and that the corresponding snackbar appears.
 - (void)testSavePasswordsInAccountFlowCompletes {
   SavePasswordForm(@"password1", @"user1", @"https://example1.com");
 
@@ -3172,6 +3172,12 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   // Ensure that the save passwords to account module has disappeared.
   CheckSavePasswordsInAccountSectionHidden();
+
+  // Ensure the correct snackbar appears.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityLabel(
+              @"Password saved in your Google Account, foo1@gmail.com")];
 }
 
 // Tests that the local password is not moved when accepting the confirmation
@@ -3237,16 +3243,17 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 }
 
 // Tests that the local passwords are correctly handled in the save
-// passwords to account flow.
+// passwords to account flow, and the correct snackbar appears.
 - (void)testSavePasswordsInAccountFlowCompletesMovingPasswords {
   SavePasswordForm(@"password1", @"user1", @"https://example1.com");
+  SavePasswordForm(@"password2", @"user1", @"https://example1.com");
+  SavePasswordForm(@"password1", @"user1", @"https://example2.com");
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
   SavePasswordForm(@"password1", @"user1", @"https://example1.com");
-  SavePasswordForm(@"password2", @"user1", @"https://example1.com");
 
   OpenPasswordManager();
   OpenSettingsSubmenu();
@@ -3266,6 +3273,12 @@ void CheckPasswordManagerVisitMetricCount(int count) {
 
   // Ensure that the save passwords to account module has disappeared.
   CheckSavePasswordsInAccountSectionHidden();
+
+  // Ensure the correct snackbar appears.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityLabel(
+              @"Passwords saved in your Google Account, foo1@gmail.com")];
 }
 
 // Checks opening the password manager with a successful reauthentication shows
