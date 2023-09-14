@@ -1085,7 +1085,7 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
   StringView ifc_text_view(ifc_text_content);
   for (wtf_size_t i = 0; i < data.svg_node_data_->character_data_list.size();
        ++i) {
-    const std::pair<unsigned, NGSvgCharacterData>& char_data =
+    const std::pair<unsigned, SvgCharacterData>& char_data =
         data.svg_node_data_->character_data_list[i];
     if (!char_data.second.anchored_chunk)
       continue;
@@ -1994,7 +1994,7 @@ void NGInlineNode::CheckConsistency() const {
 #endif
 }
 
-const Vector<std::pair<unsigned, NGSvgCharacterData>>&
+const Vector<std::pair<unsigned, SvgCharacterData>>&
 NGInlineNode::SvgCharacterDataList() const {
   DCHECK(IsSvgText());
   return Data().svg_node_data_->character_data_list;

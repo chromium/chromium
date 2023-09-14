@@ -83,7 +83,7 @@ class LayoutAttributesIterator final
   float MatchedOrLastRotate() const {
     uint32_t length = rotate_->length();
     if (length == 0)
-      return SVGCharacterData::EmptyValue();
+      return SvgCharacterData::EmptyValue();
     if (consumed_ < length)
       return rotate_->at(consumed_)->Value();
     return rotate_->at(length - 1)->Value();
@@ -138,31 +138,32 @@ class LayoutAttributesStack final {
   float X() const {
     auto it = base::ranges::find_if(base::Reversed(stack_),
                                     &LayoutAttributesIterator::HasX);
-    return it != stack_.rend() ? (*it)->X() : SVGCharacterData::EmptyValue();
+    return it != stack_.rend() ? (*it)->X() : SvgCharacterData::EmptyValue();
   }
   float Y() const {
     auto it = base::ranges::find_if(base::Reversed(stack_),
                                     &LayoutAttributesIterator::HasY);
-    return it != stack_.rend() ? (*it)->Y() : SVGCharacterData::EmptyValue();
+    return it != stack_.rend() ? (*it)->Y() : SvgCharacterData::EmptyValue();
   }
   float Dx() const {
     auto it = base::ranges::find_if(base::Reversed(stack_),
                                     &LayoutAttributesIterator::HasDx);
-    return it != stack_.rend() ? (*it)->Dx() : SVGCharacterData::EmptyValue();
+    return it != stack_.rend() ? (*it)->Dx() : SvgCharacterData::EmptyValue();
   }
   float Dy() const {
     auto it = base::ranges::find_if(base::Reversed(stack_),
                                     &LayoutAttributesIterator::HasDy);
-    return it != stack_.rend() ? (*it)->Dy() : SVGCharacterData::EmptyValue();
+    return it != stack_.rend() ? (*it)->Dy() : SvgCharacterData::EmptyValue();
   }
 
   float MatchedOrLastRotate() const {
     for (const auto& attrs : base::Reversed(stack_)) {
       float rotate = attrs->MatchedOrLastRotate();
-      if (!SVGCharacterData::IsEmptyValue(rotate))
+      if (!SvgCharacterData::IsEmptyValue(rotate)) {
         return rotate;
+      }
     }
-    return SVGCharacterData::EmptyValue();
+    return SvgCharacterData::EmptyValue();
   }
 
   bool ShouldStartAnchoredChunk(bool horizontal) const {
@@ -177,8 +178,8 @@ class LayoutAttributesStack final {
     // <textPath> descendants.
 
     if (!stack_.back()->InTextPath()) {
-      return !SVGCharacterData::IsEmptyValue(X()) ||
-             !SVGCharacterData::IsEmptyValue(Y());
+      return !SvgCharacterData::IsEmptyValue(X()) ||
+             !SvgCharacterData::IsEmptyValue(Y());
     }
 
     for (const auto& attrs : base::Reversed(stack_)) {
@@ -199,7 +200,7 @@ class LayoutAttributesStack final {
   HeapVector<Member<LayoutAttributesIterator>> stack_;
 };
 
-bool HasUpdated(const NGSvgCharacterData& data) {
+bool HasUpdated(const SvgCharacterData& data) {
   return data.HasX() || data.HasY() || data.HasDx() || data.HasDy() ||
          data.HasRotate() || data.anchored_chunk;
 }
@@ -301,7 +302,7 @@ void NGSvgTextLayoutAttributesBuilder::Build(
 
     StringView item_string(ifc_text_content, item.StartOffset(), item.Length());
     for (unsigned i = 0; i < item.Length();) {
-      NGSvgCharacterData data;
+      SvgCharacterData data;
 
       // 2.2. Set the "anchored chunk" flag of result[index] to true.
       // 1.6.1.1. If i < new_check_count, then set the "anchored chunk" flag
@@ -318,7 +319,7 @@ void NGSvgTextLayoutAttributesBuilder::Build(
       // 1.6.1.3. If "in_text_path" flag is true and the "horizontal" flag is
       // false, unset resolve_x[index].
       if (in_text_path && !horizontal)
-        data.x = SVGCharacterData::EmptyValue();
+        data.x = SvgCharacterData::EmptyValue();
       // Not in the specification; Set X of the first character in a
       // <textPath> to 0 in order to:
       //   - Reset dx in AdjustPositionsDxDy().
@@ -333,7 +334,7 @@ void NGSvgTextLayoutAttributesBuilder::Build(
       // 1.6.1.5. If "in_text_path" flag is true and the "horizontal" flag is
       // true, unset resolve_y[index].
       if (in_text_path && horizontal)
-        data.y = SVGCharacterData::EmptyValue();
+        data.y = SvgCharacterData::EmptyValue();
       // Not in the specification; Set Y of the first character in a
       // <textPath> to 0 in order to:
       //   - Reset dy in AdjustPositionsDxDy().

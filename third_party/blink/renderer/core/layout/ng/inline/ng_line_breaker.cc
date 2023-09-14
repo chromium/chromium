@@ -1309,7 +1309,7 @@ bool NGLineBreaker::ShouldCreateNewSvgSegment() const {
         svg_addressable_offset_ <= range.end_index)
       return true;
   }
-  const NGSvgCharacterData& char_data =
+  const SvgCharacterData& char_data =
       svg_resolved_iterator_->AdvanceTo(svg_addressable_offset_);
   return char_data.HasRotate() || char_data.HasX() || char_data.HasY() ||
          char_data.HasDx() || char_data.HasDy();

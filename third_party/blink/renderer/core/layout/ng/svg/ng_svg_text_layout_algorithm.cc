@@ -59,7 +59,7 @@ PhysicalSize NGSvgTextLayoutAlgorithm::Layout(
   ResolvedTextLayoutAttributesIterator iterator(
       inline_node_.SvgCharacterDataList());
   for (wtf_size_t i = 0; i < result_.size(); ++i) {
-    const NGSvgCharacterData& resolve = iterator.AdvanceTo(i);
+    const SvgCharacterData& resolve = iterator.AdvanceTo(i);
     if (resolve.HasRotate())
       result_[i].rotate = resolve.rotate;
     if (resolve.anchored_chunk)
@@ -188,7 +188,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
   ResolvedTextLayoutAttributesIterator iterator(
       inline_node_.SvgCharacterDataList());
   for (wtf_size_t i = 0; i < addressable_count_; ++i) {
-    const NGSvgCharacterData& resolve = iterator.AdvanceTo(i);
+    const SvgCharacterData& resolve = iterator.AdvanceTo(i);
     // https://github.com/w3c/svgwg/issues/846
     if (resolve.HasX())
       shift.set_x(0.0f);
@@ -410,7 +410,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
       inline_node_.SvgCharacterDataList());
   for (wtf_size_t i = 0; i < result_.size(); ++i) {
     const float scaling_factor = ScalingFactorAt(items, i);
-    const NGSvgCharacterData& resolve = iterator.AdvanceTo(i);
+    const SvgCharacterData& resolve = iterator.AdvanceTo(i);
     // 3.1. If resolved_x[index] is set, then let
     // shift.x = resolved_x[index] − result.x[index].
     // https://github.com/w3c/svgwg/issues/845
@@ -837,7 +837,7 @@ bool NGSvgTextLayoutAlgorithm::IsFirstCharacterInTextPath(
     return false;
   // This implementation is O(N) where N is the number of <textPath>s in
   // a <text>. If this function is a performance bottleneck, we should add
-  // |first_in_text_path| flag to NGSvgCharacterData.
+  // |first_in_text_path| flag to SvgCharacterData.
   return base::Contains(inline_node_.SvgTextPathRangeList(), index,
                         &SvgTextContentRange::start_index);
 }

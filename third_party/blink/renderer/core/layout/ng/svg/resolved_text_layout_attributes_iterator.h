@@ -9,39 +9,38 @@
 #include <iterator>
 #include <utility>
 
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 // This class wraps a sparse list, |Vector<std::pair<unsigned,
-// NGSvgCharacterData>>|, so that it looks to have NGSvgCharacterData for
-// any index.
+// SvgCharacterData>>|, so that it looks to have SvgCharacterData for any index.
 //
 // For example, if |resolved| contains the following pairs:
-//     resolved[0]: (0, NGSvgCharacterData)
-//     resolved[1]: (10, NGSvgCharacterData)
-//     resolved[2]: (42, NGSvgCharacterData)
+//     resolved[0]: (0, SvgCharacterData)
+//     resolved[1]: (10, SvgCharacterData)
+//     resolved[2]: (42, SvgCharacterData)
 //
-// AdvanceTo(0) returns the NGSvgCharacterData at [0].
-// AdvanceTo(1 - 9) returns the default NGSvgCharacterData, which has no data.
-// AdvanceTo(10) returns the NGSvgCharacterData at [1].
-// AdvanceTo(11 - 41) returns the default NGSvgCharacterData.
-// AdvanceTo(42) returns the NGSvgCharacterData at [2].
-// AdvanceTo(43 or greater) returns the default NGSvgCharacterData.
+// AdvanceTo(0) returns the SvgCharacterData at [0].
+// AdvanceTo(1 - 9) returns the default SvgCharacterData, which has no data.
+// AdvanceTo(10) returns the SvgCharacterData at [1].
+// AdvanceTo(11 - 41) returns the default SvgCharacterData.
+// AdvanceTo(42) returns the SvgCharacterData at [2].
+// AdvanceTo(43 or greater) returns the default SvgCharacterData.
 class ResolvedTextLayoutAttributesIterator final {
   USING_FAST_MALLOC(ResolvedTextLayoutAttributesIterator);
 
  public:
   explicit ResolvedTextLayoutAttributesIterator(
-      const Vector<std::pair<unsigned, NGSvgCharacterData>>& resolved)
+      const Vector<std::pair<unsigned, SvgCharacterData>>& resolved)
       : resolved_(resolved) {}
   ResolvedTextLayoutAttributesIterator(
       const ResolvedTextLayoutAttributesIterator&) = delete;
   ResolvedTextLayoutAttributesIterator& operator=(
       const ResolvedTextLayoutAttributesIterator&) = delete;
 
-  const NGSvgCharacterData& AdvanceTo(unsigned addressable_index) {
+  const SvgCharacterData& AdvanceTo(unsigned addressable_index) {
     if (index_ >= resolved_.size())
       return default_data_;
     if (addressable_index < resolved_[index_].first)
@@ -57,8 +56,8 @@ class ResolvedTextLayoutAttributesIterator final {
   }
 
  private:
-  const NGSvgCharacterData default_data_;
-  const Vector<std::pair<unsigned, NGSvgCharacterData>>& resolved_;
+  const SvgCharacterData default_data_;
+  const Vector<std::pair<unsigned, SvgCharacterData>>& resolved_;
   wtf_size_t index_ = 0u;
 };
 

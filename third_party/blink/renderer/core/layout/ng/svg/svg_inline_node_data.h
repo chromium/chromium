@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_SVG_INLINE_NODE_DATA_H_
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -42,7 +42,7 @@ struct SvgInlineNodeData final : public GarbageCollected<SvgInlineNodeData> {
     visitor->Trace(text_path_range_list);
     visitor->Trace(chunk_offsets);
   }
-  Vector<std::pair<unsigned, NGSvgCharacterData>> character_data_list;
+  Vector<std::pair<unsigned, SvgCharacterData>> character_data_list;
   HeapVector<SvgTextContentRange> text_length_range_list;
   HeapVector<SvgTextContentRange> text_path_range_list;
   SvgTextChunkOffsets chunk_offsets;

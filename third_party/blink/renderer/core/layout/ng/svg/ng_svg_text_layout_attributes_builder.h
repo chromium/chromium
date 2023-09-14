@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_NG_SVG_TEXT_LAYOUT_ATTRIBUTES_BUILDER_H_
 
-#include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -48,9 +48,9 @@ class NGSvgTextLayoutAttributesBuilder final {
 
   // The result of Build().
   // A list of a pair of addressable character index and an
-  // NGSvgCharacterData. This is named 'resolved' because this is
+  // SvgCharacterData. This is named 'resolved' because this is
   // the outcome of '3. Resolve character positioning'.
-  Vector<std::pair<unsigned, NGSvgCharacterData>> resolved_;
+  Vector<std::pair<unsigned, SvgCharacterData>> resolved_;
 
   // The result of Build().
   // A list of IFC text content offsets for the corresponding addressable
