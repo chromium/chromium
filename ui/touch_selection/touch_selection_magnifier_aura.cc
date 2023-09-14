@@ -119,23 +119,6 @@ gfx::Point GetMagnifierSourceCenter(const gfx::Size& parent_container_size,
   return gfx::ToRoundedPoint(source_bounds.CenterPoint());
 }
 
-// Gets the background offset needed to correctly center the magnifier's zoomed
-// contents. `magnifier_layer_bounds` and `magnifier_source_center` should be in
-// coordinates of the magnifier's parent container.
-gfx::Point GetZoomLayerBackgroundOffset(
-    const gfx::Rect& magnifier_layer_bounds,
-    const gfx::Point& magnifier_source_center) {
-  // Compute the zoom layer center in coordinates of the magnifier's parent
-  // container. Note that this is not exactly the same as the center of the
-  // magnifier layer, since the magnifier layer includes non-uniform shadows
-  // that surround the zoomed contents.
-  const gfx::Point zoom_layer_center =
-      GetZoomLayerBounds().CenterPoint() +
-      magnifier_layer_bounds.OffsetFromOrigin();
-  return gfx::PointAtOffsetFromOrigin(zoom_layer_center -
-                                      magnifier_source_center);
-}
-
 // Gets the color to use for the border based on the default native theme.
 SkColor GetBorderColor() {
   auto* native_theme = NativeTheme::GetInstanceForNativeUi();
@@ -230,17 +213,24 @@ void TouchSelectionMagnifierAura::ShowFocusBound(Layer* parent,
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   }
 
-  // Update magnifier bounds and background offset.
   const gfx::Size magnifier_parent_size =
       magnifier_layer_->parent()->bounds().size();
   const gfx::Rect focus_rect = gfx::BoundingRect(focus_start, focus_end);
   const gfx::Rect magnifier_layer_bounds =
       GetMagnifierLayerBounds(magnifier_parent_size, focus_rect.top_center());
+  magnifier_layer_->SetBounds(magnifier_layer_bounds);
+
+  // Set the background offset to center the zoomed contents on the source
+  // center. Note that the zoom layer center here is not the same as the
+  // magnifier layer center, since the magnifier layer includes non-uniform
+  // shadows that surround the zoomed contents.
   const gfx::Point magnifier_source_center =
       GetMagnifierSourceCenter(magnifier_parent_size, focus_rect.CenterPoint());
-  zoom_layer_->SetBackgroundOffset(GetZoomLayerBackgroundOffset(
-      magnifier_layer_bounds, magnifier_source_center));
-  magnifier_layer_->SetBounds(magnifier_layer_bounds);
+  const gfx::Point zoom_layer_center =
+      zoom_layer_->bounds().CenterPoint() +
+      magnifier_layer_bounds.OffsetFromOrigin();
+  zoom_layer_->SetBackgroundOffset(gfx::PointAtOffsetFromOrigin(
+      zoom_layer_center - magnifier_source_center));
 
   if (!magnifier_layer_->IsVisible()) {
     magnifier_layer_->SetVisible(true);
