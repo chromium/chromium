@@ -1230,7 +1230,10 @@
   {
     "prefix": "third-party-cookie-phaseout-enabled",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js"],
+    "bases": [
+      "external/wpt/cookies/third-party-cookies",
+      "http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js"
+    ],
     "exclusive_tests": "ALL",
     "args": ["--test-third-party-cookie-phaseout",
              "--disable-threaded-compositing", "--disable-threaded-animation"],

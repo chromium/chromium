@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS 1P window: Cookies are accessible via HTTP
+PASS 1P window: Cookies are accessible via DOM
+PASS 1P window: Cookies are accessible via CookieStore
+PASS Cross-site window opened correctly
+PASS 3P fetch: Cookies are not accessible via HTTP
+PASS Cross site window setting HTTP cookies
+PASS 3P embed: Cookies are not accessible via DOM
+PASS 3P embed: Cookies are not accessible via CookieStore
+PASS Cross site embed setting DOM cookies
+PASS Cross site embed setting CookieStore cookies
+Harness: the test ran to completion.
+
