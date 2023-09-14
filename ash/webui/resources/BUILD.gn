@@ -121,12 +121,6 @@ if (!is_official_build) {
   }
 }
 
-ash_generated_grit("scanning_app_resources") {
-  scanning_app_gen_dir = "$root_gen_dir/ash/webui/scanning/resources"
-  source = "$scanning_app_gen_dir/resources.grd"
-  deps = [ "//ash/webui/scanning/resources:build_grd" ]
-}
-
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts
 # that do not come from the app bundle (below).
 grit("help_app_resources") {

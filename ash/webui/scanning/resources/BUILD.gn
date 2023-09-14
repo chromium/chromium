@@ -3,331 +3,80 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_chromeos_ash)
 
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" +
-            rebase_path("$root_gen_dir/mojom-webui/ash/webui/scanning/mojom/",
-                        root_build_dir),
-        "js_module_root=" +
-            rebase_path("$root_gen_dir/mojom-webui/ash/webui/common/mojom/",
-                        root_build_dir),
-      ]
-  deps = [
-    ":action_toolbar",
-    ":color_mode_select",
-    ":file_type_select",
-    ":loading_page",
-    ":mojo_interface_provider",
-    ":multi_page_checkbox",
-    ":multi_page_scan",
-    ":page_size_select",
-    ":resolution_select",
-    ":scan_done_section",
-    ":scan_preview",
-    ":scan_to_select",
-    ":scanner_select",
-    ":scanning_app",
-    ":scanning_app_types",
-    ":scanning_app_util",
-    ":scanning_browser_proxy",
-    ":select_behavior",
-    ":source_select",
+build_webui("build") {
+  static_files = [
+    "index.html",
+    "scanning_app_icon_128.png",
+    "scanning_app_icon_16.png",
+    "scanning_app_icon_192.png",
+    "scanning_app_icon_256.png",
+    "scanning_app_icon_32.png",
+    "scanning_app_icon_48.png",
+    "scanning_app_icon_64.png",
+    "svg/illo_loading_scanner.svg",
+    "svg/illo_no_scanner.svg",
+    "svg/illo_ready_to_scan.svg",
+    "svg/no_scanners_dark.svg",
+    "svg/no_scanners.svg",
+    "svg/ready_to_scan_dark.svg",
+    "svg/ready_to_scan.svg",
+    "svg/remove_page.svg",
+    "svg/rescan_page.svg",
+    "svg/scanners_loading_dark.svg",
+    "svg/scanners_loading.svg",
   ]
-}
 
-js_library("action_toolbar") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  web_component_files = [
+    "action_toolbar.js",
+    "color_mode_select.js",
+    "file_type_select.js",
+    "loading_page.js",
+    "multi_page_checkbox.js",
+    "multi_page_scan.js",
+    "page_size_select.js",
+    "resolution_select.js",
+    "scan_done_section.js",
+    "scanner_select.js",
+    "scanning_app.js",
+    "scanning_fonts_css.js",
+    "scanning_shared_css.js",
+    "scan_preview.js",
+    "scan_settings_section.js",
+    "scan_to_select.js",
+    "source_select.js",
   ]
-}
 
-js_library("color_mode_select") {
-  deps = [
-    ":scanning_app_util",
-    ":select_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  non_web_component_files = [
+    "mojo_interface_provider.js",
+    "scanning_app_types.js",
+    "scanning_app_util.js",
+    "scanning_browser_proxy.js",
+    "select_behavior.js",
   ]
-}
 
-js_library("loading_page") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("file_type_select") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("page_size_select") {
-  deps = [
-    ":scanning_app_util",
-    ":select_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("resolution_select") {
-  deps = [
-    ":select_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("scan_done_section") {
-  deps = [
-    ":scanning_app_types",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("scan_preview") {
-  deps = [
-    ":action_toolbar",
-    ":scanning_app_types",
-    ":scanning_app_util",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("scan_to_select") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("scanner_select") {
-  deps = [
-    ":scanning_app_types",
-    ":scanning_app_util",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("multi_page_checkbox") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("multi_page_scan") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("scanning_app") {
-  deps = [
-    ":color_mode_select",
-    ":file_type_select",
-    ":loading_page",
-    ":mojo_interface_provider",
-    ":multi_page_checkbox",
-    ":multi_page_scan",
-    ":page_size_select",
-    ":resolution_select",
-    ":scan_preview",
-    ":scan_to_select",
-    ":scanner_select",
-    ":scanning_app_types",
-    ":scanning_app_util",
-    ":scanning_browser_proxy",
-    ":source_select",
-    "//ash/webui/common/resources:cr_container_shadow_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js" ]
-}
-
-js_library("scanning_app_types") {
-  deps = [ "//ash/webui/scanning/mojom:mojom_webui_js" ]
-}
-
-js_library("scanning_app_util") {
-}
-
-js_library("select_behavior") {
-}
-
-js_library("source_select") {
-  deps = [
-    ":scanning_app_util",
-    ":select_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("scanning_browser_proxy") {
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:cr_deprecated",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("mojo_interface_provider") {
-  deps = [
-    "//ash/webui/common/mojom:mojom_webui_js",
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-  ]
-}
-
-preprocess_folder = "$target_gen_dir/preprocessed"
-
-static_files = [
-  "index.html",
-  "scanning_app_icon_128.png",
-  "scanning_app_icon_16.png",
-  "scanning_app_icon_192.png",
-  "scanning_app_icon_256.png",
-  "scanning_app_icon_32.png",
-  "scanning_app_icon_48.png",
-  "scanning_app_icon_64.png",
-  "svg/illo_loading_scanner.svg",
-  "svg/illo_no_scanner.svg",
-  "svg/illo_ready_to_scan.svg",
-  "svg/no_scanners_dark.svg",
-  "svg/no_scanners.svg",
-  "svg/ready_to_scan_dark.svg",
-  "svg/ready_to_scan.svg",
-  "svg/remove_page.svg",
-  "svg/rescan_page.svg",
-  "svg/scanners_loading_dark.svg",
-  "svg/scanners_loading.svg",
-]
-
-web_component_files = [
-  "action_toolbar.js",
-  "color_mode_select.js",
-  "file_type_select.js",
-  "loading_page.js",
-  "multi_page_checkbox.js",
-  "multi_page_scan.js",
-  "page_size_select.js",
-  "resolution_select.js",
-  "scan_done_section.js",
-  "scanner_select.js",
-  "scanning_app.js",
-  "scanning_fonts_css.js",
-  "scanning_shared_css.js",
-  "scan_preview.js",
-  "scan_settings_section.js",
-  "scan_to_select.js",
-  "source_select.js",
-]
-
-non_web_component_files = [
-  "mojo_interface_provider.js",
-  "scanning_app_types.js",
-  "scanning_app_util.js",
-  "scanning_browser_proxy.js",
-  "select_behavior.js",
-]
-
-html_files = []
-html_wrapper_files = []
-foreach(f, web_component_files) {
-  file_name = string_replace(f, ".js", ".html")
-  html_files += [ file_name ]
-  html_wrapper_files += [ file_name + ".js" ]
-}
-
-html_to_wrapper("html_wrapper_files") {
-  use_js = true
-  in_files = html_files
-}
-
-copy("copy_webui_mojo") {
-  deps = [
-    "//ash/webui/common/mojom:mojom_webui_js",
-    "//ash/webui/scanning/mojom:mojom_webui_js",
-  ]
-  sources = [
+  mojo_files = [
     "$root_gen_dir/mojom-webui/ash/webui/common/mojom/accessibility_features.mojom-webui.js",
     "$root_gen_dir/mojom-webui/ash/webui/scanning/mojom/scanning.mojom-webui.js",
   ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
 
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  in_files = web_component_files + non_web_component_files
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess.json"
-}
-
-preprocess_if_expr("preprocess_generated_files") {
-  in_folder = target_gen_dir
-  in_files = html_wrapper_files
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess_generated.json"
-  deps = [ ":html_wrapper_files" ]
-}
-
-preprocess_if_expr("preprocess_mojo") {
-  in_folder = target_gen_dir
-  in_files = [
-    "accessibility_features.mojom-webui.js",
-    "scanning.mojom-webui.js",
+  mojo_files_deps = [
+    "//ash/webui/common/mojom:mojom_webui_js",
+    "//ash/webui/scanning/mojom:mojom_webui_js",
   ]
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
-  deps = [ ":copy_webui_mojo" ]
-}
 
-generate_grd("build_grd") {
-  input_files = static_files
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [
-    ":preprocess",
-    ":preprocess_generated_files",
-    ":preprocess_mojo",
-  ]
-  manifest_files = [
-    "$target_gen_dir/manifest_preprocess.json",
-    "$target_gen_dir/manifest_preprocess_generated.json",
-    "$target_gen_dir/manifest_preprocess_mojo.json",
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   grd_prefix = "ash_scanning_app"
-  out_grd = "$target_gen_dir/resources.grd"
+  grit_output_dir = "$root_gen_dir/ash/webui"
 }
