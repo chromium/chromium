@@ -1880,7 +1880,8 @@ _KNOWN_ROBOTS = set(
           for s in ('swarming-tasks',)
   ) | set('%s@fuchsia-infra.iam.gserviceaccount.com' % s
           for s in ('global-integration-try-builder',
-                    'global-integration-ci-builder'))
+                    'global-integration-ci-builder')
+  ) | set('%s@prod.google.com' % s for s in ('chops-security-borg',))
 
 _INVALID_GRD_FILE_LINE = [
         (r'<file lang=.* path=.*', 'Path should come before lang in GRD files.')
