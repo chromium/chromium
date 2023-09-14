@@ -493,7 +493,8 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     bool is_link_preload,
     const absl::optional<float> resource_width,
     const absl::optional<float> resource_height,
-    bool is_potentially_lcp_element) {
+    bool is_potentially_lcp_element,
+    bool is_potentially_lcp_influencer) {
   DCHECK(!resource_request.PriorityHasBeenSet() ||
          type == ResourceType::kImage);
   ResourceLoadPriority priority = TypeToPriority(type);
@@ -596,18 +597,23 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   }
 
   // LCP Critical Path Predictor identified resources get a priority boost.
-  // TODO(crbug.com/1419756): Separate out async script priorities from that of
-  // images.
-  if (is_potentially_lcp_element) {
+  if (is_potentially_lcp_element || is_potentially_lcp_influencer) {
+    features::LcppResourceLoadPriority preferred_priority =
+        is_potentially_lcp_element
+            ? features::kLCPCriticalPathPredictorImageLoadPriority.Get()
+            : features::kLCPCriticalPathPredictorInfluencerScriptLoadPriority
+                  .Get();
+
     ++potentially_lcp_resource_priority_boosts_;
-    switch (features::kLCPCriticalPathPredictorImageLoadPriority.Get()) {
-      case features::LcppImageLoadPriority::kMedium:
+
+    switch (preferred_priority) {
+      case features::LcppResourceLoadPriority::kMedium:
         priority = std::max(priority, ResourceLoadPriority::kMedium);
         break;
-      case features::LcppImageLoadPriority::kHigh:
+      case features::LcppResourceLoadPriority::kHigh:
         priority = std::max(priority, ResourceLoadPriority::kHigh);
         break;
-      case features::LcppImageLoadPriority::kVeryHigh:
+      case features::LcppResourceLoadPriority::kVeryHigh:
         priority = std::max(priority, ResourceLoadPriority::kVeryHigh);
         break;
     }
@@ -1114,7 +1120,7 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
         params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
         params.GetScriptType(), params.IsLinkPreload(),
         params.GetResourceWidth(), params.GetResourceHeight(),
-        params.IsPotentiallyLCPElement());
+        params.IsPotentiallyLCPElement(), params.IsPotentiallyLCPInfluencer());
   }
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);

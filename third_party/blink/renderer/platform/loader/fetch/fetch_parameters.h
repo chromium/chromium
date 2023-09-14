@@ -217,7 +217,15 @@ class PLATFORM_EXPORT FetchParameters {
     is_potentially_lcp_element_ = flag;
   }
 
+  void SetIsPotentiallyLCPInfluencer(bool flag) {
+    is_potentially_lcp_influencer_ = flag;
+  }
+
   bool IsPotentiallyLCPElement() const { return is_potentially_lcp_element_; }
+
+  bool IsPotentiallyLCPInfluencer() const {
+    return is_potentially_lcp_influencer_;
+  }
 
   void SetCountORBBlockAs(mojom::blink::WebFeature feature) {
     count_orb_block_as_ = feature;
@@ -247,6 +255,7 @@ class PLATFORM_EXPORT FetchParameters {
       RenderBlockingBehavior::kUnset;
   base::TimeTicks discovery_time_;
   bool is_potentially_lcp_element_ = false;
+  bool is_potentially_lcp_influencer_ = false;
 
   // Count ORB-blocked responses (optionally), so that we can measure
   // compatibility impact.

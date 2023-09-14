@@ -147,11 +147,19 @@ class CORE_EXPORT PreloadRequest {
     is_potentially_lcp_element_ = flag;
   }
 
+  void SetIsPotentiallyLCPInfluencer(bool flag) {
+    is_potentially_lcp_influencer_ = flag;
+  }
+
   void SetSharedStorageWritable(bool eligible) {
     shared_storage_writable_ = eligible;
   }
 
   bool IsPotentiallyLCPElement() const { return is_potentially_lcp_element_; }
+
+  bool IsPotentiallyLCPInfluencer() const {
+    return is_potentially_lcp_influencer_;
+  }
 
   absl::optional<float> GetResourceWidth() const { return resource_width_; }
   absl::optional<float> GetResourceHeight() const { return resource_height_; }
@@ -203,6 +211,7 @@ class CORE_EXPORT PreloadRequest {
   base::TimeTicks creation_time_ = base::TimeTicks::Now();
   bool is_attribution_reporting_eligible_img_or_script_ = false;
   bool is_potentially_lcp_element_ = false;
+  bool is_potentially_lcp_influencer_ = false;
   bool shared_storage_writable_ = false;
 };
 

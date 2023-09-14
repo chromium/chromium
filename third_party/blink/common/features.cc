@@ -1027,16 +1027,21 @@ const base::FeatureParam<bool> kLCPCriticalPathPredictorDryRun{
 const base::FeatureParam<int> kLCPCriticalPathPredictorMaxElementLocatorLength{
     &kLCPCriticalPathPredictor, "lcpp_max_element_locator_length", 1024};
 
-const base::FeatureParam<LcppImageLoadPriority>::Option
-    lcpp_image_load_priorities[] = {
-        {LcppImageLoadPriority::kMedium, "medium"},
-        {LcppImageLoadPriority::kHigh, "high"},
-        {LcppImageLoadPriority::kVeryHigh, "very_high"},
+const base::FeatureParam<LcppResourceLoadPriority>::Option
+    lcpp_resource_load_priorities[] = {
+        {LcppResourceLoadPriority::kMedium, "medium"},
+        {LcppResourceLoadPriority::kHigh, "high"},
+        {LcppResourceLoadPriority::kVeryHigh, "very_high"},
 };
-const base::FeatureParam<LcppImageLoadPriority>
+const base::FeatureParam<LcppResourceLoadPriority>
     kLCPCriticalPathPredictorImageLoadPriority{
         &kLCPCriticalPathPredictor, "lcpp_image_load_priority",
-        LcppImageLoadPriority::kVeryHigh, &lcpp_image_load_priorities};
+        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
+
+const base::FeatureParam<LcppResourceLoadPriority>
+    kLCPCriticalPathPredictorInfluencerScriptLoadPriority{
+        &kLCPCriticalPathPredictor, "lcpp_script_load_priority",
+        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
 
 BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",

@@ -318,12 +318,13 @@ class PLATFORM_EXPORT ResourceFetcher
       bool is_link_preload,
       const absl::optional<float> resource_width = absl::nullopt,
       const absl::optional<float> resource_height = absl::nullopt,
-      bool is_potentially_lcp_element = false) {
-    return ComputeLoadPriority(type, request, visibility_statue, defer_option,
-                               speculative_preload_type,
-                               render_blocking_behavior, script_type,
-                               is_link_preload, resource_width, resource_height,
-                               is_potentially_lcp_element);
+      bool is_potentially_lcp_element = false,
+      bool is_potentially_lcp_influencer = false) {
+    return ComputeLoadPriority(
+        type, request, visibility_statue, defer_option,
+        speculative_preload_type, render_blocking_behavior, script_type,
+        is_link_preload, resource_width, resource_height,
+        is_potentially_lcp_element, is_potentially_lcp_influencer);
   }
 
   bool ShouldLoadIncrementalForTesting(ResourceType type) {
@@ -392,7 +393,8 @@ class PLATFORM_EXPORT ResourceFetcher
       bool is_link_preload = false,
       const absl::optional<float> resource_width = absl::nullopt,
       const absl::optional<float> resource_height = absl::nullopt,
-      bool is_potentially_lcp_element = false);
+      bool is_potentially_lcp_element = false,
+      bool is_potentially_lcp_influencer = false);
   ResourceLoadPriority AdjustImagePriority(
       ResourceLoadPriority priority_so_far,
       ResourceType type,
@@ -649,7 +651,7 @@ class PLATFORM_EXPORT ResourceFetcher
   // Area (in pixels) below which an image is considered "small"
   uint32_t small_image_max_size_ = 0;
 
-  // Number of images that have had their priority boosted based on LCPP
+  // Number of resources that have had their priority boosted based on LCPP
   // signals.
   uint32_t potentially_lcp_resource_priority_boosts_ = 0;
 };

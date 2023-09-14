@@ -185,7 +185,7 @@ Resource* PreloadRequest::Start(Document* document) {
     if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
       if (LCPCriticalPathPredictor* lcpp = document->GetFrame()->GetLCPP()) {
         if (lcpp->lcp_influencer_scripts().Contains(url)) {
-          is_potentially_lcp_element_ = true;
+          is_potentially_lcp_influencer_ = true;
         }
       }
     }
@@ -193,6 +193,7 @@ Resource* PreloadRequest::Start(Document* document) {
   params.SetRenderBlockingBehavior(render_blocking_behavior_);
 
   params.SetIsPotentiallyLCPElement(is_potentially_lcp_element_);
+  params.SetIsPotentiallyLCPInfluencer(is_potentially_lcp_influencer_);
 
   return PreloadHelper::StartPreload(resource_type_, params, *document);
 }
