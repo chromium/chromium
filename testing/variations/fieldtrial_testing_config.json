@@ -10535,25 +10535,6 @@
             ]
         }
     ],
-    "OmniboxFuzzyUrlSuggestions": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "FuzzyUrlSuggestionsMinInputLength": "5"
-                    },
-                    "enable_features": [
-                        "OmniboxFuzzyUrlSuggestions"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxImplementationChangeIOS": [
         {
             "platforms": [
