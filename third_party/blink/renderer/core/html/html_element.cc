@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
@@ -2428,9 +2429,11 @@ HTMLFormElement* HTMLElement::FindFormAncestor() const {
 
 static inline bool ElementAffectsDirectionality(const Node* node) {
   auto* html_element = DynamicTo<HTMLElement>(node);
-  return html_element && (IsA<HTMLBDIElement>(*html_element) ||
-                          IsValidDirAttribute(html_element->FastGetAttribute(
-                              html_names::kDirAttr)));
+  auto* input_element = DynamicTo<HTMLInputElement>(node);
+  return (html_element && (IsA<HTMLBDIElement>(*html_element) ||
+                           IsValidDirAttribute(html_element->FastGetAttribute(
+                               html_names::kDirAttr)))) ||
+         (input_element && input_element->IsTelephone());
 }
 
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
@@ -2456,7 +2459,7 @@ bool HTMLElement::HasDirectionAuto() const {
   // <bdi> defaults to dir="auto"
   // https://html.spec.whatwg.org/C/#the-bdi-element
   const AtomicString& direction = FastGetAttribute(html_names::kDirAttr);
-  return (IsA<HTMLBDIElement>(*this) && direction == g_null_atom) ||
+  return (IsA<HTMLBDIElement>(*this) && !IsValidDirAttribute(direction)) ||
          EqualIgnoringASCIICase(direction, "auto");
 }
 
@@ -2468,8 +2471,10 @@ absl::optional<TextDirection> HTMLElement::ResolveAutoDirectionality(
     bool& is_deferred,
     Node* stay_within) const {
   is_deferred = false;
-  if (auto* input_element = DynamicTo<HTMLInputElement>(*this)) {
-    return BidiParagraph::BaseDirectionForStringOrLtr(input_element->Value());
+  if (auto* text_element = DynamicTo<TextControlElement>(*this)) {
+    if (text_element->ShouldAutoDirUseValue()) {
+      return BidiParagraph::BaseDirectionForStringOrLtr(text_element->Value());
+    }
   }
 
   // For <textarea>, the heuristic is applied on a per-paragraph level, and
@@ -2658,6 +2663,14 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterShadowRootChanged() {
   } else if (!NeedsInheritDirectionalityFromParent()) {
     UpdateDescendantDirectionality(CachedDirectionality());
   }
+}
+
+void HTMLElement::UpdateDirectionalityAfterInputTypeChange(
+    const AtomicString& old_value,
+    const AtomicString& new_value) {
+  OnDirAttrChanged(
+      AttributeModificationParams(html_names::kDirAttr, old_value, new_value,
+                                  AttributeModificationReason::kDirectly));
 }
 
 void HTMLElement::AdjustCandidateDirectionalityForSlot(

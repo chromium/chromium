@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -986,8 +987,13 @@ String TextControlElement::DirectionForFormData() const {
        element = Traversal<HTMLElement>::FirstAncestor(*element)) {
     const AtomicString& dir_attribute_value =
         element->FastGetAttribute(html_names::kDirAttr);
-    if (dir_attribute_value.IsNull())
+    if (dir_attribute_value.IsNull()) {
+      auto* input_element = DynamicTo<HTMLInputElement>(*this);
+      if (input_element && input_element->IsTelephone()) {
+        break;
+      }
       continue;
+    }
 
     if (EqualIgnoringASCIICase(dir_attribute_value, "rtl") ||
         EqualIgnoringASCIICase(dir_attribute_value, "ltr"))

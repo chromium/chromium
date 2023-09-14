@@ -239,4 +239,8 @@ bool PasswordInputType::SupportsInputModeAttribute() const {
   return true;
 }
 
+bool PasswordInputType::ShouldAutoDirUseValue() const {
+  return false;
+}
+
 }  // namespace blink

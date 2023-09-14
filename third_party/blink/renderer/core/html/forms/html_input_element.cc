@@ -467,8 +467,17 @@ void HTMLInputElement::UpdateType() {
   const bool previously_selectable = input_type_->SupportsSelectionAPI();
 
   input_type_view_->WillBeDestroyed();
+  InputType* old_type = input_type_;
   input_type_ = new_type;
   input_type_view_ = input_type_->CreateView();
+
+  const AtomicString& dir = FastGetAttribute(html_names::kDirAttr);
+  if ((!dir && (old_type->IsTelephoneInputType() || IsTelephone())) ||
+      (EqualIgnoringASCIICase(dir, "auto") &&
+       (old_type->ShouldAutoDirUseValue() || ShouldAutoDirUseValue()))) {
+    const AtomicString& value_dir = AtomicString(DirectionForFormData());
+    UpdateDirectionalityAfterInputTypeChange(dir, value_dir);
+  }
 
   input_type_view_->CreateShadowSubtreeIfNeeded();
 
@@ -1002,6 +1011,14 @@ void HTMLInputElement::ResetImpl() {
 
 bool HTMLInputElement::IsTextField() const {
   return input_type_->IsTextField();
+}
+
+bool HTMLInputElement::IsTelephone() const {
+  return input_type_->IsTelephoneInputType();
+}
+
+bool HTMLInputElement::ShouldAutoDirUseValue() const {
+  return input_type_->ShouldAutoDirUseValue();
 }
 
 bool HTMLInputElement::HasBeenPasswordField() const {

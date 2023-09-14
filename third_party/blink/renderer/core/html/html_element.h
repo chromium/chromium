@@ -213,6 +213,8 @@ class CORE_EXPORT HTMLElement : public Element {
   void UpdateDescendantHasDirAutoAttribute(bool has_dir_auto);
   void UpdateDirectionalityAndDescendant(TextDirection direction);
   void UpdateDescendantDirectionality(TextDirection direction);
+  void UpdateDirectionalityAfterInputTypeChange(const AtomicString& old_value,
+                                                const AtomicString& new_value);
   void AdjustDirectionalityIfNeededAfterShadowRootChanged();
   void ParserDidSetAttributes() override;
 

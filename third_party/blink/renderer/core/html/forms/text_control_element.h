@@ -148,6 +148,9 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   Node* CreatePlaceholderBreakElement() const;
 
   String DirectionForFormData() const;
+  // Check if, when dir=auto, we should use the value to define text direction.
+  // For example, when value contains a bidirectional character.
+  virtual bool ShouldAutoDirUseValue() const = 0;
 
   // Set the value trimmed to the max length of the field and dispatch the input
   // and change events. If |value| is empty, the autofill state is always

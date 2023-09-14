@@ -144,4 +144,8 @@ bool BaseTextInputType::SupportsSelectionAPI() const {
   return true;
 }
 
+bool BaseTextInputType::ShouldAutoDirUseValue() const {
+  return true;
+}
+
 }  // namespace blink

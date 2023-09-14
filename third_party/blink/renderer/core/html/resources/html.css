@@ -522,6 +522,10 @@ input[type="url" i] {
   padding-inline: 2px;
 }
 
+input[type="tel" i] {
+  direction: ltr;
+}
+
 input::-webkit-inner-spin-button {
     appearance: auto;
     display: inline-block;

@@ -145,6 +145,10 @@ bool InputType::IsTextField() const {
   return false;
 }
 
+bool InputType::ShouldAutoDirUseValue() const {
+  return false;
+}
+
 template <typename T>
 bool ValidateInputType(const T& input_type, const String& value) {
   if (!input_type.CanSetStringValue()) {
