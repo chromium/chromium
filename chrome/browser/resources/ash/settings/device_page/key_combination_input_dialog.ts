@@ -86,7 +86,24 @@ export class KeyCombinationInputDialogElement extends
   }
 
   private saveDialogClicked_(): void {
+    this.set(
+        `buttonRemappingList.${this.remappingIndex}`,
+        this.getUpdatedButtonRemapping_());
+    this.dispatchEvent(new CustomEvent('button-remapping-changed', {
+      bubbles: true,
+      composed: true,
+    }));
     this.close();
+  }
+
+  /**
+   * @returns Button remapping with updated remapping action based on
+   * users' key combination input.
+   */
+  private getUpdatedButtonRemapping_(): ButtonRemapping {
+    // TODO(yyhyyh@): Implement updated button remapping based on key
+    // combination input.
+    return this.buttonRemapping_;
   }
 }
 
