@@ -7,6 +7,7 @@ import {
   assertInstanceof,
   assertString,
 } from '../assert.js';
+import {AsyncJobQueue} from '../async_job_queue.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
@@ -406,7 +407,7 @@ export class OperationScheduler {
 
   private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
 
-  private togglePausedEvent: Promise<void>|null = null;
+  private readonly togglePausedEventQueue = new AsyncJobQueue('drop');
 
   constructor(
       private readonly listener: EventListener,
@@ -467,19 +468,17 @@ export class OperationScheduler {
     }
   }
 
-  async toggleVideoRecordingPause(): Promise<void> {
-    if (this.ongoingOperationType !== OperationType.CAPTURE ||
-        this.togglePausedEvent !== null) {
-      return;
-    }
-    try {
-      this.togglePausedEvent = this.capturer.toggleVideoRecordingPause();
-      await this.togglePausedEvent;
-    } catch (e) {
-      error.reportError(ErrorType.RESUME_PAUSE_FAILURE, ErrorLevel.ERROR, e);
-    } finally {
-      this.togglePausedEvent = null;
-    }
+  toggleVideoRecordingPause(): void {
+    void this.togglePausedEventQueue.push(async () => {
+      if (this.ongoingOperationType !== OperationType.CAPTURE) {
+        return;
+      }
+      try {
+        await this.capturer.toggleVideoRecordingPause();
+      } catch (e) {
+        error.reportError(ErrorType.RESUME_PAUSE_FAILURE, ErrorLevel.ERROR, e);
+      }
+    });
   }
 
   private clearPendingReconfigureWaiters() {
@@ -523,13 +522,7 @@ export class OperationScheduler {
     if (this.ongoingOperationType !== OperationType.CAPTURE) {
       return;
     }
-    if (this.togglePausedEvent !== null) {
-      try {
-        await this.togglePausedEvent;
-      } catch (e) {
-        // The error is handled in toggleVideoRecordingPause().
-      }
-    }
+    await this.togglePausedEventQueue.flush();
     await this.capturer.stop();
   }
 
