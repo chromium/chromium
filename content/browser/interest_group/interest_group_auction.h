@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -1134,6 +1135,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // If this is a component auction, the parent Auction. Null, otherwise.
   const raw_ptr<const InterestGroupAuction> parent_;
+
+  // flat_set copy of the interestGroupBuyers from the config, for efficient
+  // finds. This is only populated when encoded_signed_additional_bids_ is.
+  base::flat_set<url::Origin> interest_group_buyers_;
 
   // Base64-encoded signed additional bid entries.
   std::vector<std::string> encoded_signed_additional_bids_;

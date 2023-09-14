@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
@@ -64,6 +65,7 @@ CONTENT_EXPORT base::expected<AdditionalBidDecodeResult, std::string>
 DecodeAdditionalBid(InterestGroupAuction* auction,
                     const base::Value& bid_in,
                     const base::Uuid& auction_nonce,
+                    const base::flat_set<url::Origin>& interest_group_buyers,
                     const url::Origin& seller,
                     base::optional_ref<const url::Origin> top_level_seller);
 

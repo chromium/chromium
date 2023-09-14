@@ -1489,6 +1489,15 @@ bool CopyAdditionalBidsFromIdlToMojo(
     return false;
   }
 
+  if (!input.hasInterestGroupBuyers() || input.interestGroupBuyers().empty()) {
+    exception_state.ThrowTypeError(
+        String::Format("additionalBids specified for AuctionAdConfig with "
+                       "seller '%s' which has no interestGroupBuyers. All "
+                       "additionalBid buyers must be in interestGroupBuyers.",
+                       input.seller().Utf8().c_str()));
+    return false;
+  }
+
   auction_handle->AttachPromiseHandler(
       script_state, input.additionalBids(),
       MakeGarbageCollected<

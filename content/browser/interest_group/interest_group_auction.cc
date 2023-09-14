@@ -19,6 +19,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
@@ -2499,10 +2500,15 @@ void InterestGroupAuction::NotifyAdditionalBidsConfig(
 
   // Enforced by mojo traits and checks on ResolvedAdditionalBids().
   CHECK(config_->non_shared_params.auction_nonce.has_value());
+  CHECK(config_->non_shared_params.interest_group_buyers.has_value());
 
   if (!auction_page_data) {
     return;
   }
+
+  interest_group_buyers_ = base::flat_set<url::Origin>(
+      config_->non_shared_params.interest_group_buyers->begin(),
+      config_->non_shared_params.interest_group_buyers->end());
 
   encoded_signed_additional_bids_ =
       auction_page_data->TakeAuctionAdditionalBidsForOriginAndNonce(
@@ -3576,7 +3582,8 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
   base::expected<AdditionalBidDecodeResult, std::string> maybe_bid =
       DecodeAdditionalBid(
           this, result.value(),
-          config_->non_shared_params.auction_nonce.value(), config_->seller,
+          config_->non_shared_params.auction_nonce.value(),
+          interest_group_buyers_, config_->seller,
           parent_
               ? base::optional_ref<const url::Origin>(parent_->config_->seller)
               : base::optional_ref<const url::Origin>(absl::nullopt));

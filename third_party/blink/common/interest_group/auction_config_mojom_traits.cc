@@ -248,6 +248,12 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     return false;
   }
 
+  if (out->expects_additional_bids &&
+      (!out->non_shared_params.interest_group_buyers.has_value() ||
+       out->non_shared_params.interest_group_buyers->empty())) {
+    return false;
+  }
+
   out->expects_direct_from_seller_signals_header_ad_slot =
       data.expects_direct_from_seller_signals_header_ad_slot();
 
