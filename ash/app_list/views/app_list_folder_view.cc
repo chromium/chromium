@@ -436,6 +436,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
     // Items grid view has to be visible in case an item is being reparented, so
     // only set the opacity here.
     folder_view_->items_grid_view()->layer()->SetOpacity(visible ? 1.0f : 0.0f);
+    SetViewIgnoredForAccessibility(folder_view_->items_grid_view(), !visible);
   }
 
   // Get the bounds of the items in the first page of the opened folder relative
