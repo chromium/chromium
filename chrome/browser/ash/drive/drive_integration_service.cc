@@ -640,6 +640,7 @@ DriveIntegrationService::DriveIntegrationService(
 DriveIntegrationService::~DriveIntegrationService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   network_state_handler_.Reset();
+  registrar_.RemoveAll();
 }
 
 void DriveIntegrationService::Shutdown() {
