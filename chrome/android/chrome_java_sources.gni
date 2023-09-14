@@ -778,6 +778,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java",
   "java/src/org/chromium/chrome/browser/net/nqe/NetworkQualityObserver.java",
   "java/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProvider.java",
+  "java/src/org/chromium/chrome/browser/new_tab_url/DseNewTabUrlManager.java",
   "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
   "java/src/org/chromium/chrome/browser/notifications/NotificationJobServiceImpl.java",
   "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
