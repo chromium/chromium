@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CommerceSubscriptionDatabase"
       summary="Database for Chrome commerce subscriptions."/>
   <variant name="CouponDatabase" summary="Database for coupons in Chrome."/>
+  <variant name="DiscountsDatabase" summary="Database for shopping discounts."/>
   <variant name="DownloadDB" summary="Databases for in-progress download."/>
   <variant name="DownloadService" summary="Databases for download service."/>
   <variant name="FeatureEngagementTrackerAvailabilityStore"

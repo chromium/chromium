@@ -23,6 +23,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
 #include "components/commerce/core/pref_names.h"
@@ -117,7 +118,9 @@ ShoppingService::ShoppingService(
     SessionProtoStorage<
         commerce_subscription_db::CommerceSubscriptionContentProto>*
         subscription_proto_db,
-    power_bookmarks::PowerBookmarkService* power_bookmark_service)
+    power_bookmarks::PowerBookmarkService* power_bookmark_service,
+    SessionProtoStorage<discounts_db::DiscountsContentProto>*
+        discounts_proto_db)
     : country_on_startup_(country_on_startup),
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
@@ -192,6 +195,10 @@ ShoppingService::ShoppingService(
   if (pref_service_ && bookmark_model_ && subscriptions_manager_) {
     scheduled_metrics_manager_ =
         std::make_unique<metrics::ScheduledMetricsManager>(pref_service_, this);
+  }
+
+  if (IsDiscountInfoApiEnabled() && discounts_proto_db) {
+    discounts_storage_ = std::make_unique<DiscountsStorage>(discounts_proto_db);
   }
 }
 

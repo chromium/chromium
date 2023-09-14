@@ -69,6 +69,20 @@ SessionProtoDBFactory<coupon_db::CouponContentProto>::GetInstance() {
   return GetCouponSessionProtoDBFactory();
 }
 
+SessionProtoDBFactory<discounts_db::DiscountsContentProto>*
+GetDiscountsSessionProtoDBFactory() {
+  static base::NoDestructor<
+      SessionProtoDBFactory<discounts_db::DiscountsContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+SessionProtoDBFactory<discounts_db::DiscountsContentProto>*
+SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance() {
+  return GetDiscountsSessionProtoDBFactory();
+}
+
 #else
 SessionProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
 GetMerchantSignalSessionProtoDBFactory() {

@@ -23,6 +23,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #endif
 
 namespace commerce {
@@ -63,6 +64,10 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(SessionProtoDBFactory<
             commerce_subscription_db::CommerceSubscriptionContentProto>::
                 GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
+  DependsOn(SessionProtoDBFactory<
+            discounts_db::DiscountsContentProto>::GetInstance());
+#endif
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
@@ -82,7 +87,14 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
           ->GetForProfile(context),
-      PowerBookmarkServiceFactory::GetForBrowserContext(context));
+      PowerBookmarkServiceFactory::GetForBrowserContext(context),
+#if !BUILDFLAG(IS_ANDROID)
+      SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance()
+          ->GetForProfile(context)
+#else
+      nullptr
+#endif
+  );
 }
 
 bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {
