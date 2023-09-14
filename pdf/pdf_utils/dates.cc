@@ -113,13 +113,13 @@ base::Time ParsePdfDate(base::StringPiece date) {
     return base::Time();
 
   // Month and day default to 1. The rest of the parts of a date default to 0.
-  base::Time::Exploded exploded = {};
-  exploded.year = deserialized_year.value();
-  exploded.month = deserializer.PopDigits(2).value_or(1);
-  exploded.day_of_month = deserializer.PopDigits(2).value_or(1);
-  exploded.hour = deserializer.PopDigits(2).value_or(0);
-  exploded.minute = deserializer.PopDigits(2).value_or(0);
-  exploded.second = deserializer.PopDigits(2).value_or(0);
+  base::Time::Exploded exploded = {
+      .year = deserialized_year.value(),
+      .month = deserializer.PopDigits(2).value_or(1),
+      .day_of_month = deserializer.PopDigits(2).value_or(1),
+      .hour = deserializer.PopDigits(2).value_or(0),
+      .minute = deserializer.PopDigits(2).value_or(0),
+      .second = deserializer.PopDigits(2).value_or(0)};
 
   base::Time parsed;
   if (!base::Time::FromUTCExploded(exploded, &parsed))
