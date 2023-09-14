@@ -294,11 +294,10 @@ std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
     scroll_view->SetBackgroundThemeColorId(
         features::IsChromeRefresh2023() ? ui::kColorSysSurface4
                                         : ui::kColorSubtleEmphasisBackground);
-    if (audio_requested) {
-      // When audio is requested, a separator is added just below the scroll
-      // view, and the overflow indicator becomes redundant,
-      scroll_view->SetDrawOverflowIndicator(false);
-    }
+    // The overflow indicator is disabled to reduce clutter next to the
+    // separator to the audio control when audio is requested or the bottom of
+    // the dialog when audio is not requested.
+    scroll_view->SetDrawOverflowIndicator(false);
     return scroll_view;
   } else {
     return views::ScrollView::CreateScrollViewWithBorder();
