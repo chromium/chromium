@@ -324,6 +324,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(prefs::kIosSafetyCheckManagerLastRunTime,
                              base::Time(), PrefRegistry::LOSSY_PREF);
+  // TODO(crbug.com/1481230): Remove this Pref when Settings Safety Check is
+  // refactored to use the new Safety Check Manager.
+  registry->RegisterTimePref(prefs::kIosSettingsSafetyCheckLastRunTime,
+                             base::Time());
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

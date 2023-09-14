@@ -34,6 +34,7 @@ class PrefService;
 
 // Designated initializer. All the parameters should not be null.
 // `userPrefService`: Preference service to access safe browsing state.
+// `localPrefService`: Preference service from the application context.
 // `passwordCheckManager`: Password check manager to enable use of the password
 // check service.
 // `authService`: Authentication service to check users authentication status.
@@ -41,6 +42,7 @@ class PrefService;
 // `referrer`: Where in the app the Safety Check is being requested from.
 - (instancetype)
     initWithUserPrefService:(PrefService*)userPrefService
+           localPrefService:(PrefService*)localPrefService
        passwordCheckManager:
            (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
                 authService:(AuthenticationService*)authService

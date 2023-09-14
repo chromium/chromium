@@ -253,6 +253,11 @@ const char kIosSafetyCheckManagerSafeBrowsingCheckResult[] =
 const char kIosSaveToPhotosDefaultGaiaId[] =
     "ios.save_to_photos.default_gaia_id";
 
+// Time preference containing the last run time of the Safety Check (via
+// Settings).
+const char kIosSettingsSafetyCheckLastRunTime[] =
+    "ios.settings.safety_check.last_run_time";
+
 // The count of how many times the user has shared the app.
 const char kIosShareChromeCount[] = "ios.share_chrome.count";
 

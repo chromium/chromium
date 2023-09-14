@@ -343,6 +343,22 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
     if (IsSafetyCheckMagicStackEnabled() &&
         !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
+      if (!_prefObserverBridge) {
+        _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+      }
+
+      _prefChangeRegistrar.Init(_localState);
+
+      // TODO(crbug.com/1481230): Stop observing
+      // `kIosSettingsSafetyCheckLastRunTime` changes once the Settings Safety
+      // Check is refactored to use the new Safety Check Manager.
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kIosSettingsSafetyCheckLastRunTime, &_prefChangeRegistrar);
+
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult,
+          &_prefChangeRegistrar);
+
       IOSChromeSafetyCheckManager* safetyCheckManager =
           IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
               browser->GetBrowserState());
@@ -833,13 +849,28 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     state.compromisedPasswordsCount = counts.compromised_count;
   }
 
-  // Last run time.
+  state.lastRunTime = [self latestSafetyCheckRunTimestamp];
+
+  state.runningState = CanRunSafetyCheck(state.lastRunTime)
+                           ? RunningSafetyCheckState::kRunning
+                           : RunningSafetyCheckState::kDefault;
+
+  return state;
+}
+
+// Returns the last run time of the Safety Check, regardless if the check was
+// started from the Safety Check (Magic Stack) module, or the Safety Check
+// Settings UI.
+- (absl::optional<base::Time>)latestSafetyCheckRunTimestamp {
+  IOSChromeSafetyCheckManager* safetyCheckManager =
+      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+
   base::Time lastRunTimeViaModule =
       safetyCheckManager->GetLastSafetyCheckRunTime();
 
   base::Time lastRunTimeViaSettings =
-      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
-          doubleForKey:kTimestampOfLastIssueFoundKey]);
+      _localState->GetTime(prefs::kIosSettingsSafetyCheckLastRunTime);
 
   // Use the most recent Last Run Time—regardless of where the Safety Check was
   // run—to minimize user confusion.
@@ -849,17 +880,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
   base::TimeDelta lastRunAge = base::Time::Now() - lastRunTime;
 
-  // Only display the Last Run Time in the module if the run happened within the
-  // last 24hr.
-  state.lastRunTime = lastRunAge <= kSafetyCheckRunThreshold
-                          ? absl::optional<base::Time>(lastRunTime)
-                          : absl::nullopt;
-
-  state.runningState = CanRunSafetyCheck(state.lastRunTime)
-                           ? RunningSafetyCheckState::kRunning
-                           : RunningSafetyCheckState::kDefault;
-
-  return state;
+  // Only return the Last Run Time if the run happened within the last 24hr.
+  return lastRunAge <= kSafetyCheckRunThreshold
+             ? absl::optional<base::Time>(lastRunTime)
+             : absl::nullopt;
 }
 
 - (void)configureConsumer {
@@ -1446,6 +1470,23 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
       [self hideTabResumption];
     }
+  }
+
+  if (IsSafetyCheckMagicStackEnabled() &&
+      (preferenceName == prefs::kIosSettingsSafetyCheckLastRunTime ||
+       preferenceName ==
+           prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult)) {
+    _safetyCheckState.lastRunTime = [self latestSafetyCheckRunTimestamp];
+
+    _safetyCheckState.safeBrowsingState =
+        SafeBrowsingSafetyCheckStateForName(
+            _localState->GetString(
+                prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult))
+            .value_or(_safetyCheckState.safeBrowsingState);
+
+    // Trigger a module update when the Last Run Time, or Safe Browsing state,
+    // has changed.
+    [self runningStateChanged:_safetyCheckState.runningState];
   }
 }
 
