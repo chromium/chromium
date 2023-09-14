@@ -19164,9 +19164,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_V8",
                     "enable_features": [
-                        "AndroidMetricsAsyncMetricLogging",
                         "WebViewUseMetricsUploadService"
                     ]
                 }
