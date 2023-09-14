@@ -22,10 +22,13 @@
 namespace base {
 namespace {
 
-const Time::Exploded kTestDateTimeExploded = {
-    2011, 4,  6, 30,  // Sat, Apr 30, 2011
-    22,   42, 7, 0    // 22:42:07.000 in UTC = 15:42:07 in US PDT.
-};
+constexpr Time::Exploded kTestDateTimeExploded = {.year = 2011,
+                                                  .month = 4,
+                                                  .day_of_week = 6,
+                                                  .day_of_month = 30,
+                                                  .hour = 22,
+                                                  .minute = 42,
+                                                  .second = 7};
 
 // Returns difference between the local time and GMT formatted as string.
 // This function gets |time| because the difference depends on time,

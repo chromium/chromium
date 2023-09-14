@@ -101,7 +101,8 @@ TEST_F(RegistryOverrideManagerTest, Basic) {
 }
 
 TEST_F(RegistryOverrideManagerTest, DeleteStaleKeys) {
-  base::Time::Exploded kTestTimeExploded = {2013, 11, 1, 4, 0, 0, 0, 0};
+  static constexpr base::Time::Exploded kTestTimeExploded = {
+      .year = 2013, .month = 11, .day_of_week = 1, .day_of_month = 4};
   base::Time kTestTime;
   EXPECT_TRUE(base::Time::FromUTCExploded(kTestTimeExploded, &kTestTime));
 
