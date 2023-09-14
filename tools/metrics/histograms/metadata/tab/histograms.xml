@@ -59,15 +59,6 @@ chromium-metrics-reviews@google.com.
                get real interactable content displayed."/>
 </variants>
 
-<variants name="Tabs_TabUsageIntervalLength">
-  <variant name="_30" summary="30 seconds"/>
-  <variant name="_60" summary="1 minute"/>
-  <variant name="_600" summary="10 minutes"/>
-  <variant name="_3600" summary="1 hour"/>
-  <variant name="_18000" summary="5 hours"/>
-  <variant name="_43200" summary="12 hours"/>
-</variants>
-
 <histogram name="Discarding.DailyDiscards{TabDiscardReason}" units="tabs"
     expires_after="2024-02-22">
   <owner>vovoy@chromium.org</owner>
@@ -2335,21 +2326,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Tabs.UnusedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
-    units="tabs" expires_after="M95">
-  <owner>chrisha@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The number of tabs that haven't been interacted with, visible or audible
-    over a given interval time, but which no longer exist at all at the end of
-    this interval. {Tabs_TabUsageIntervalLength}
-  </summary>
-  <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength"/>
-</histogram>
-
 <histogram name="Tabs.UnusedCountAtStartup" units="tabs"
     expires_after="2024-01-15">
   <owner>pakzhygitov@google.com</owner>
@@ -2358,49 +2334,6 @@ chromium-metrics-reviews@google.com.
     [iOS] The number of old/unused tabs opened at cold launch. Inactive tab is a
     tab that has been not interacted with for more than 7 days.
   </summary>
-</histogram>
-
-<histogram name="Tabs.UnusedInInterval.Count{Tabs_TabUsageIntervalLength}"
-    units="tabs" expires_after="M95">
-  <owner>chrisha@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The number of tabs that haven't been interacted with, visible or audible or
-    visible during a given interval of time and still exist at the end of this
-    interval. {Tabs_TabUsageIntervalLength}
-  </summary>
-  <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength"/>
-</histogram>
-
-<histogram
-    name="Tabs.UsedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
-    units="tabs" expires_after="M95">
-  <owner>chrisha@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The number of tabs that have been interacted with, visible or audible over a
-    given interval of time, but which no longer exist at all at the end of this
-    interval. {Tabs_TabUsageIntervalLength}
-  </summary>
-  <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength"/>
-</histogram>
-
-<histogram name="Tabs.UsedInInterval.Count{Tabs_TabUsageIntervalLength}"
-    units="tabs" expires_after="M95">
-  <owner>chrisha@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The number of tabs that have been interacted with, visible or audible during
-    a given interval of time, includes tabs that don't exist at the end of this
-    interval. {Tabs_TabUsageIntervalLength}
-  </summary>
-  <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength"/>
 </histogram>
 
 <histogram name="Tabs.WindowCount{BatteryState}" units="windows"
