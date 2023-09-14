@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
-#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -108,10 +107,8 @@ int CalculatePosition(FPDF_PAGE page,
 }
 
 ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_buffer) {
-  if (!base::IsValueInRangeForNumericType<int>(pdf_buffer.size()))
-    return nullptr;
-  return ScopedFPDFDocument(
-      FPDF_LoadMemDocument(pdf_buffer.data(), pdf_buffer.size(), nullptr));
+  return ScopedFPDFDocument(FPDF_LoadMemDocument64(
+      pdf_buffer.data(), pdf_buffer.size(), /*password=*/nullptr));
 }
 
 ScopedFPDFDocument CreatePdfDoc(
@@ -152,13 +149,13 @@ int GetRenderFlagsFromSettings(
 base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   int children_count = FPDF_StructElement_CountChildren(struct_elem);
   if (children_count <= 0)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   absl::optional<std::u16string> opt_type =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetType, struct_elem), true);
   if (!opt_type)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   base::Value::Dict result;
   result.Set("type", *opt_type);
@@ -224,9 +221,9 @@ PDFEngineExports* PDFEngineExports::Get() {
   return exports.get();
 }
 
-PDFiumEngineExports::PDFiumEngineExports() {}
+PDFiumEngineExports::PDFiumEngineExports() = default;
 
-PDFiumEngineExports::~PDFiumEngineExports() {}
+PDFiumEngineExports::~PDFiumEngineExports() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
@@ -432,25 +429,25 @@ base::Value PDFiumEngineExports::GetPDFStructTreeForPage(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_index));
   if (!page)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   ScopedFPDFStructTree struct_tree(FPDF_StructTree_GetForPage(page.get()));
   if (!struct_tree)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   // We only expect one child of the struct tree - i.e. a single root node.
   int children = FPDF_StructTree_CountChildren(struct_tree.get());
   if (children != 1)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   FPDF_STRUCTELEMENT struct_root_elem =
       FPDF_StructTree_GetChildAtIndex(struct_tree.get(), 0);
   if (!struct_root_elem)
-    return base::Value(base::Value::Type::NONE);
+    return base::Value();
 
   return RecursiveGetStructTree(struct_root_elem);
 }
