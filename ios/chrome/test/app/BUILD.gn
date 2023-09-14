@@ -86,6 +86,7 @@ source_set("test_support") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/main",

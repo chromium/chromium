@@ -163,6 +163,7 @@ using base::UserMetricsAction;
                                   delegate:self
                                   firstRun:NO
                              showUserEmail:NO
+                                isOptional:YES
                                accessPoint:_accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:

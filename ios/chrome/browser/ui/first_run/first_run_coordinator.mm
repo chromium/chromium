@@ -132,6 +132,7 @@
                                   delegate:self
                                   firstRun:YES
                              showUserEmail:NO
+                                isOptional:YES
                                accessPoint:signin_metrics::AccessPoint::
                                                ACCESS_POINT_START_PAGE];
     case kTangibleSync:

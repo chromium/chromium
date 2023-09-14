@@ -129,9 +129,11 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
       auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForBrowserState(browser_state);
-    HistorySyncSkipReason skip_reason =
-        [HistorySyncCoordinator getHistorySyncOptInSkipReason:sync_service
-                                        authenticationService:auth_service];
+    HistorySyncSkipReason skip_reason = [HistorySyncCoordinator
+        getHistorySyncOptInSkipReason:sync_service
+                authenticationService:auth_service
+                          prefService:browser_state->GetPrefs()
+                isHistorySyncOptional:YES];
     switch (skip_reason) {
       case HistorySyncSkipReason::kNone:
         // Need to show the upgrade promo, to show the history sync opt-in.
@@ -140,6 +142,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
         NOTREACHED_NORETURN();
       case HistorySyncSkipReason::kAlreadyOptedIn:
       case HistorySyncSkipReason::kSyncForbiddenByPolicies:
+      case HistorySyncSkipReason::kDeclinedTooOften:
         return false;
     }
   }

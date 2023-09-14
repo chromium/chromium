@@ -35,6 +35,9 @@
   // should be done for entry points dedicated to history sync instead of
   // sign-in.
   BOOL _signOutIfDeclined;
+  // Whether the History Sync screen is a optional step, that can be skipped
+  // if declined too often.
+  BOOL _isOptional;
   // Access point associated with the history opt-in screen.
   signin_metrics::AccessPoint _accessPoint;
 }
@@ -43,12 +46,14 @@
                                    browser:(Browser*)browser
                              showUserEmail:(BOOL)showUserEmail
                          signOutIfDeclined:(BOOL)signOutIfDeclined
+                                isOptional:(BOOL)isOptional
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _showUserEmail = showUserEmail;
     _signOutIfDeclined = signOutIfDeclined;
+    _isOptional = isOptional;
     _accessPoint = accessPoint;
   }
   return self;
@@ -65,7 +70,9 @@
   // Check if History Sync Opt-In should be skipped.
   HistorySyncSkipReason skipReason = [HistorySyncCoordinator
       getHistorySyncOptInSkipReason:syncService
-              authenticationService:_authenticationService];
+              authenticationService:_authenticationService
+                        prefService:browserState->GetPrefs()
+              isHistorySyncOptional:_isOptional];
   if (skipReason != HistorySyncSkipReason::kNone) {
     [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
                                             accessPoint:_accessPoint];
@@ -85,6 +92,7 @@
                               delegate:self
                               firstRun:NO
                          showUserEmail:_showUserEmail
+                            isOptional:_isOptional
                            accessPoint:_accessPoint];
   [_historySyncCoordinator start];
   [_navigationController setNavigationBarHidden:YES animated:NO];

@@ -1208,6 +1208,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                          browser:self.regularBrowser
                    showUserEmail:!dedicatedSignInDone
                signOutIfDeclined:dedicatedSignInDone
+                      isOptional:NO
                      accessPoint:signin_metrics::AccessPoint::
                                      ACCESS_POINT_RECENT_TABS];
   _historySyncPopupCoordinator.delegate = self;

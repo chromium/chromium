@@ -39,6 +39,9 @@ void ResetUserApprovedAccountListManager();
 // signed-in state.
 void SignInWithoutSync(id<SystemIdentity> identity);
 
+// Resets all preferences related to History Sync Opt-In.
+void ResetHistorySyncPreferencesForTesting();
+
 // Resets all the selected data types to be turned on in the sync engine.
 void ResetSyncSelectedDataTypes();
 

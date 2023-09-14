@@ -186,6 +186,7 @@ enum class SignInHistorySyncStep {
                                  browser:self.browser
                            showUserEmail:NO
                        signOutIfDeclined:NO
+                              isOptional:YES
                              accessPoint:_accessPoint];
       coordinator.delegate = self;
       return coordinator;

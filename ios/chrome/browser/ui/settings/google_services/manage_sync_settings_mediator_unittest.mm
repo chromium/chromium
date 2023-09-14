@@ -107,6 +107,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
                                   browser_state_.get())
         accountManagerService:ChromeAccountManagerServiceFactory::
                                   GetForBrowserState(browser_state_.get())
+                  prefService:browser_state_->GetPrefs()
           initialAccountState:initialAccountState];
     mediator_.syncSetupService = sync_setup_service_mock_;
     mediator_.consumer = consumer_;
