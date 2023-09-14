@@ -89,13 +89,6 @@ BASE_FEATURE(kSingleSortAndCullPass,
              "OmniboxSingleSortAndCullPass",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature to debounce `AutocompleteController::NotifyChanged()`.
-// TODO(manukh): Enabled by default 7/11/23 m117. Clean up feature code 9/12
-//   when m117 reaches stable.
-BASE_FEATURE(kUpdateResultDebounce,
-             "OmniboxUpdateResultDebounce",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
 // OmniboxUIExperimentMaxAutocompleteMatches will be used instead. If present,
@@ -375,8 +368,9 @@ BASE_FEATURE(kSearchReadyOmniboxAllowQueryEdit,
 
 // If enabled, adds a grey square background to search icons, and makes answer
 // icon square instead of round.
-// TODO(manukh): Clean up feature code 9/12 when m117 reaches stable; we're
-//   launching the rest of CR23 in m117.
+// TODO(manukh): Partially launched; still experimenting with
+//  `OmniboxSquareSuggestIconWeather`. Clean up when that param launches and
+//  reaches stable.
 BASE_FEATURE(kSquareSuggestIcons,
              "OmniboxSquareIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);

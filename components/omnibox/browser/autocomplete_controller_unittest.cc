@@ -59,8 +59,8 @@ class AutocompleteControllerTest : public testing::Test {
   }
 
   void set_autocomplete_matches(std::vector<AutocompleteMatch>& matches) {
-    controller_->result_.Reset();
-    controller_->result_.AppendMatches(matches);
+    controller_->internal_result_.Reset();
+    controller_->internal_result_.AppendMatches(matches);
   }
 
  protected:

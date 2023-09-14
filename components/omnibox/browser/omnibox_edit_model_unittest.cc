@@ -11,7 +11,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -683,7 +682,6 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
   OmniboxController* controller() { return view_->controller(); }
 
  protected:
-  base::test::ScopedFeatureList features{omnibox::kUpdateResultDebounce};
   base::test::TaskEnvironment task_environment_;
   TestLocationBarModel location_bar_model_;
   TestingPrefServiceSimple pref_service_;

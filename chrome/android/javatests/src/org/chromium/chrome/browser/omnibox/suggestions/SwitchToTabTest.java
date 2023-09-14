@@ -255,7 +255,6 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"disable-features=OmniboxUpdateResultDebounce"})
     public void testSwitchToTabSuggestion() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -348,7 +347,6 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"disable-features=OmniboxUpdateResultDebounce"})
     public void testSwitchToTabInSearchActivity() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),

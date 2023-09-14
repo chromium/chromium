@@ -208,9 +208,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   OpenTabProvider* open_tab_provider() const { return open_tab_provider_; }
 
   const AutocompleteInput& input() const { return input_; }
-  const AutocompleteResult& result() const;
-  // Groups result_ by search vs URL.
-  // See also AutocompleteResult::GroupSuggestionsBySearchVsURL()
+  const AutocompleteResult& result() const { return published_result_; };
+  // Groups `published_result_` by search vs URL.
+  // See also `AutocompleteResult::GroupSuggestionsBySearchVsURL()`.
   void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
   bool done() const { return done_; }
   bool sync_pass_done() const { return sync_pass_done_; }
@@ -294,7 +294,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   void InitializeAsyncProviders(int provider_types);
   void InitializeSyncProviders(int provider_types);
 
-  // Updates |result_| to reflect the current provider state and fires
+  // Updates |internal_result_| to reflect the current provider state and fires
   // notifications.  If |regenerate_result| then we clear the result
   // so when we incorporate the current provider state we end up
   // implicitly removing all expired matches.  (Normally we allow
@@ -463,14 +463,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   AutocompleteInput input_;
 
   // Data from the autocomplete query.
-  AutocompleteResult result_;
+  AutocompleteResult internal_result_;
 
-  // When debouncing is enabled, `result_` may change without invoking
-  // `NotifyChanged()`. To ensure `result()` is stable between `NotifyChanged()`
-  // calls, `published_result_` snapshots `result_` before invoking
-  // `NotifyChanged()`, and observers only see the stable `published_result_`.
-  // When `kUpdateResultDebounce` is disabled, `published_result_` is always
-  // empty and unused.
+  // A snapshot of `internal_result_` when `NotifyChanged()` is called. Because
+  // it's debounced, `internal_result_` may change without invoking
+  // `NotifyChanged()`. `published_result_` ensures observers get a stable
+  // result.
   AutocompleteResult published_result_;
 
   // Used for logging the changes between updates.
@@ -508,8 +506,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // quick succession. The last call, i.e. when all providers complete and
   // `done_` is set true; and the 1st call, i.e. the sync update, are immune to
   // this restriction. Calls not succeeding a result update (i.e. a call from
-  // closing the popup) bypass the delay as well. Only applies when the
-  // `kUpdateResultDebounce` is enabled.
+  // closing the popup) bypass the delay as well.
   AutocompleteProviderDebouncer notify_changed_debouncer_;
 
   // Tracks if any delayed `DelayedNotifyChanged()` call since the last
@@ -522,9 +519,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   // done and all providers have provided their async updates.
   bool done_ = true;
 
-  // True, if the synchronous pass is done. Used to avoid updating `result_` and
-  // sending notifications until the the synchronous pass is done on all
-  // providers.
+  // True, if the synchronous pass is done. Used to avoid updating
+  // `internal_result_` and sending notifications until the the synchronous pass
+  // is done on all providers.
   bool sync_pass_done_ = true;
 
   // True if this instance of AutocompleteController is owned by the CrOS

@@ -841,18 +841,6 @@ int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
 namespace OmniboxFieldTrial {
 
-// Autocomplete stability.
-
-const base::FeatureParam<bool>
-    kAutocompleteStabilityUpdateResultDebounceFromLastRun(
-        &omnibox::kUpdateResultDebounce,
-        "AutocompleteStabilityUpdateResultDebounceFromLastRun",
-        false);
-const base::FeatureParam<int> kAutocompleteStabilityUpdateResultDebounceDelay(
-    &omnibox::kUpdateResultDebounce,
-    "AutocompleteStabilityUpdateResultDebounceDelay",
-    200);
-
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
 // The maximum number of entries stored by the in-memory zero-suggest cache at

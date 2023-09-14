@@ -361,7 +361,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   match.contents_class = {{0, 0}};
   match.description_class = {{0, 0}};
   matches.push_back(match);
-  controller()->autocomplete_controller()->result_.AppendMatches(matches);
+  controller()->autocomplete_controller()->internal_result_.AppendMatches(
+      matches);
   popup_view()->UpdatePopupAppearance();
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
 
@@ -437,7 +438,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   match.has_tab_match = true;
   match.actions.push_back(base::MakeRefCounted<TabSwitchAction>(GURL()));
   matches.push_back(match);
-  controller()->autocomplete_controller()->result_.AppendMatches(matches);
+  controller()->autocomplete_controller()->internal_result_.AppendMatches(
+      matches);
   controller()->autocomplete_controller()->NotifyChanged();
   popup_view()->UpdatePopupAppearance();
 
@@ -506,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   match.allowed_to_be_default_match = true;
 
   AutocompleteResult& results =
-      controller()->autocomplete_controller()->result_;
+      controller()->autocomplete_controller()->internal_result_;
   ACMatches matches;
   matches.push_back(match);
   results.AppendMatches(matches);

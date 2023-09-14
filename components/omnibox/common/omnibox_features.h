@@ -24,7 +24,6 @@ BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
 BASE_DECLARE_FEATURE(kPreferNonShortcutMatchesWhenDeduping);
 BASE_DECLARE_FEATURE(kPreferTailOverHistoryClusterSuggestions);
 BASE_DECLARE_FEATURE(kSingleSortAndCullPass);
-BASE_DECLARE_FEATURE(kUpdateResultDebounce);
 
 // Features below this line should be sorted alphabetically by their comments.
 

@@ -173,8 +173,8 @@ AutocompleteResult::~AutocompleteResult() {
 void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
                                             AutocompleteResult* old_matches) {
   // Don't transfer matches from done providers. If the match is still
-  // relevant, it'll already be in `result_`, potentially with updated fields
-  // that shouldn't be deduped with the out-of-date match. Otherwise, the
+  // relevant, it'll already be in `internal_result_`, potentially with updated
+  // fields that shouldn't be deduped with the out-of-date match. Otherwise, the
   // irrelevant match shouldn't be re-added. Adding outdated matches is
   // particularly noticeable when the user types the next char before the
   // copied matches are expired leading to outdated matches surviving multiple

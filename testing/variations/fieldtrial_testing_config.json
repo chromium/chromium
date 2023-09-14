@@ -5068,32 +5068,6 @@
             ]
         }
     ],
-    "DesktopOmniboxPostAutocompletionUpdateResultDebounce": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "AutocompleteStabilityUpdateResultDebounceDelay": "200",
-                        "AutocompleteStabilityUpdateResultDebounceFromLastRun": "false"
-                    },
-                    "enable_features": [
-                        "OmniboxUpdateResultDebounce"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxShortcutBoost": [
         {
             "platforms": [

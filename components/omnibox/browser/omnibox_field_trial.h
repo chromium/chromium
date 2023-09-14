@@ -484,16 +484,6 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
 // `FeatureParam`s
 
-// Autocomplete stability and related features.
-// Limit how frequently `AutocompleteController::UpdateResult()` will be
-// invoked. See the comments at `AutocompleteController::update_debouncer_`.
-extern const base::FeatureParam<bool>
-    kAutocompleteStabilityUpdateResultDebounceFromLastRun;
-// See `kAutocompleteStabilityUpdateResultDebounceFromLastRun`. No debouncing
-// if set to 0.
-extern const base::FeatureParam<int>
-    kAutocompleteStabilityUpdateResultDebounceDelay;
-
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 
 // Determines the maximum number of entries stored by the in-memory ZPS cache.

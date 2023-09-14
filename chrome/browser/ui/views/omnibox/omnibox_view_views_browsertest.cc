@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =
       omnibox_view->controller()->autocomplete_controller();
-  AutocompleteResult& results = autocomplete_controller->result_;
+  AutocompleteResult& results = autocomplete_controller->internal_result_;
   ACMatches matches;
   matches.push_back(match);
   AutocompleteInput input(u"e", metrics::OmniboxEventProto::OTHER,
