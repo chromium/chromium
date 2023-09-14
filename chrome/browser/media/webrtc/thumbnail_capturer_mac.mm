@@ -155,6 +155,25 @@ const base::FeatureParam<base::TimeDelta>
                                               "refresh_timer_interval",
                                               base::Milliseconds(250)};
 
+// The sort mode controls the order of the source list that is returned from
+// GetSourceList().
+enum class SortMode {
+  // No extra sorting, same order as returned by SCShareableContent.
+  kNone = 0,
+  // Same order as returned by CGWindowListCopyWindowInfo().
+  kCGWindowList = 1,
+  // Static order where new windows are put last in the list.
+  kNewWindowsLast = 2
+};
+const base::FeatureParam<SortMode>::Option sort_mode_options[] = {
+    {SortMode::kNone, "none"},
+    {SortMode::kCGWindowList, "cg_window_list"},
+    {SortMode::kNewWindowsLast, "new_windows_last"},
+};
+const base::FeatureParam<SortMode> kThumbnailCapturerMacSortMode{
+    &kThumbnailCapturerMac, "sort_mode", SortMode::kCGWindowList,
+    &sort_mode_options};
+
 // The minimum window size that is still considered to be a shareable window.
 // Windows with smaller height or widht are filtered out.
 const base::FeatureParam<int> kThumbnailCapturerMacMinWindowSize{
@@ -170,14 +189,33 @@ bool API_AVAILABLE(macos(12.3))
   return false;
 }
 
-bool API_AVAILABLE(macos(12.3))
-    ContainsWindow(NSArray<SCWindow*>* array, CGWindowID window_id) {
+SCWindow* API_AVAILABLE(macos(12.3))
+    FindWindow(NSArray<SCWindow*>* array, CGWindowID window_id) {
   for (SCWindow* window in array) {
-    if (window.windowID == window_id) {
-      return true;
+    if ([window windowID] == window_id) {
+      return window;
     }
   }
-  return false;
+  return nil;
+}
+
+CGWindowID GetWindowId(CFArrayRef window_array, CFIndex index) {
+  CFDictionaryRef window_ref = reinterpret_cast<CFDictionaryRef>(
+      CFArrayGetValueAtIndex(window_array, index));
+  if (!window_ref) {
+    return kCGNullWindowID;
+  }
+
+  CFNumberRef window_id_ref = reinterpret_cast<CFNumberRef>(
+      CFDictionaryGetValue(window_ref, kCGWindowNumber));
+  if (!window_id_ref) {
+    return kCGNullWindowID;
+  }
+  CGWindowID window_id;
+  if (!CFNumberGetValue(window_id_ref, kCFNumberIntType, &window_id)) {
+    return kCGNullWindowID;
+  }
+  return window_id;
 }
 
 class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
@@ -210,13 +248,26 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
   void UpdateWindowsList();
   void OnRecurrentShareableContent(SCShareableContent* content);
-  void UpdateShareableWindows(SCShareableContent* content);
+
+  void UpdateShareableWindows(NSArray<SCWindow*>* content_windows);
+
+  // Returns the supplied list of windows sorted to have the same order as
+  // returned from CGWindowListCopyWindowInfo.
+  NSArray<SCWindow*>* SortOrderByCGWindowList(
+      NSArray<SCWindow*>* current_windows) const;
+
+  // Returns the supplied list of windows sorted so that new windows (i.e., not
+  // currently in shareable_windows_) are put last in the list.
+  NSArray<SCWindow*>* SortOrderByNewWindowsLast(
+      NSArray<SCWindow*>* current_windows) const;
+
   bool IsShareable(SCWindow* window) const;
   NSArray<SCWindow*>* FilterOutUnshareable(NSArray<SCWindow*>* windows);
-  void RemoveStream(SourceId id);
+  void RemoveInactiveStreams();
   void OnCapturedFrame(CGImageRef image, SourceId source_id);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const SortMode sort_mode_;
   int max_frame_rate_;
   const int minimum_window_size_;
   raw_ptr<Consumer> consumer_;
@@ -234,7 +285,8 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 };
 
 ThumbnailCapturerMac::ThumbnailCapturerMac()
-    : max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
+    : sort_mode_(kThumbnailCapturerMacSortMode.Get()),
+      max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
       minimum_window_size_(kThumbnailCapturerMacMinWindowSize.Get()),
       shareable_windows_([[NSArray<SCWindow*> alloc] init]) {}
 
@@ -319,16 +371,70 @@ void ThumbnailCapturerMac::OnRecurrentShareableContent(
   }
 
   shareable_displays_ = [content displays];
-  UpdateShareableWindows(content);
+  UpdateShareableWindows([content windows]);
 
   // TODO(https://crbug.com/1471931): Only call update if the list is changed:
   // windows opened/closed, order of the list, and title.
   consumer_->OnSourceListUpdated();
 }
 
-void ThumbnailCapturerMac::UpdateShareableWindows(SCShareableContent* content) {
-  // Produce a list of shareable windows.
-  NSArray<SCWindow*>* current_windows = FilterOutUnshareable([content windows]);
+void ThumbnailCapturerMac::UpdateShareableWindows(
+    NSArray<SCWindow*>* content_windows) {
+  // Narrow down the list to shareable windows.
+  content_windows = FilterOutUnshareable(content_windows);
+
+  // Update shareable_streams_ from current_windows.
+  switch (sort_mode_) {
+    case SortMode::kNone:
+      shareable_windows_ = content_windows;
+      break;
+    case SortMode::kCGWindowList:
+      shareable_windows_ = SortOrderByCGWindowList(content_windows);
+      break;
+    case SortMode::kNewWindowsLast:
+      shareable_windows_ = SortOrderByNewWindowsLast(content_windows);
+      break;
+  }
+
+  RemoveInactiveStreams();
+}
+
+NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByCGWindowList(
+    NSArray<SCWindow*>* current_windows) const {
+  CHECK_EQ(sort_mode_, SortMode::kCGWindowList);
+
+  // Only get on screen, non-desktop windows.
+  // According to
+  // https://developer.apple.com/documentation/coregraphics/cgwindowlistoption/1454105-optiononscreenonly
+  // when kCGWindowListOptionOnScreenOnly is used, the order of windows are
+  // in decreasing z-order.
+  CFArrayRef window_array = CGWindowListCopyWindowInfo(
+      kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
+      kCGNullWindowID);
+  if (!window_array) {
+    DVLOG(2) << "Cannot sort list, nothing returned from "
+                "CGWindowListCopyWindowInfo.";
+    return current_windows;
+  }
+
+  // Sort `current_windows` to match the order returned
+  // by CGWindowListCopyWindowInfo.
+  // The windowID is the key matching entries in these containers.
+  NSMutableArray<SCWindow*>* sorted_windows = [[NSMutableArray alloc] init];
+  CFIndex count = CFArrayGetCount(window_array);
+  for (CFIndex i = 0; i < count; i++) {
+    CGWindowID window_id = GetWindowId(window_array, i);
+    SCWindow* window = FindWindow(current_windows, window_id);
+    if (window) {
+      [sorted_windows addObject:window];
+    }
+  }
+  return sorted_windows;
+}
+
+NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByNewWindowsLast(
+    NSArray<SCWindow*>* current_windows) const {
+  CHECK_EQ(sort_mode_, SortMode::kNewWindowsLast);
 
   // Prepare to segment the list of new window as pre-existing / newly-added.
   NSMutableArray<SCWindow*>* existing_windows = [[NSMutableArray alloc] init];
@@ -336,28 +442,24 @@ void ThumbnailCapturerMac::UpdateShareableWindows(SCShareableContent* content) {
 
   // Iterate over the windows from last time and ensure that all of them
   // which are still relevant, are maintained in their original order.
-  //
-  // On the same pass, stop producing thumbnails for any window which was
-  // previously trakced but which is no longer tracked.
   for (SCWindow* window in shareable_windows_) {
-    if (ContainsWindow(current_windows, window.windowID)) {
-      [existing_windows addObject:window];
-    } else {
-      // `window` was in `shareable_windows_` but won't be there now,
-      // so no sense in keeping around an SCStream for it.
-      RemoveStream(window.windowID);
+    SCWindow* current_window = FindWindow(current_windows, window.windowID);
+    if (current_window) {
+      // Please note that current_window may not be equal to the previous window
+      // despite that they have the same WindowID if for example the title has
+      // changed.
+      [existing_windows addObject:current_window];
     }
   }
 
   // All other windows in `current_windows` are new by definition.
   for (SCWindow* window in current_windows) {
-    if (!ContainsWindow(existing_windows, window.windowID)) {
+    if (!FindWindow(existing_windows, window.windowID)) {
       [added_windows addObject:window];
     }
   }
 
-  shareable_windows_ =
-      [existing_windows arrayByAddingObjectsFromArray:added_windows];
+  return [existing_windows arrayByAddingObjectsFromArray:added_windows];
 }
 
 bool ThumbnailCapturerMac::IsShareable(SCWindow* window) const {
@@ -386,10 +488,15 @@ NSArray<SCWindow*>* ThumbnailCapturerMac::FilterOutUnshareable(
   return result;
 }
 
-void ThumbnailCapturerMac::RemoveStream(SourceId id) {
-  auto it = streams_.find(id);
-  if (it != streams_.end()) {
-    streams_.erase(it);
+void ThumbnailCapturerMac::RemoveInactiveStreams() {
+  // Remove all streams for windows that are not active anymore. New streams are
+  // created once the consumer calls SelectSources().
+  for (auto it = streams_.begin(); it != streams_.end();) {
+    if (!FindWindow(shareable_windows_, it->first)) {
+      it = streams_.erase(it);
+    } else {
+      ++it;
+    }
   }
 }
 
@@ -504,7 +611,7 @@ bool ShouldUseThumbnailCapturerMac() {
   return false;
 }
 
-// Creates a ThumbnailCaptureMac object. Must only be called is
+// Creates a ThumbnailCapturerMac object. Must only be called is
 // ShouldUseThumbnailCapturerMac() returns true.
 std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac() {
   CHECK(ShouldUseThumbnailCapturerMac());
