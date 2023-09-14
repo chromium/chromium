@@ -6,6 +6,7 @@ create {
       version: "1.2.7.2"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:alsa-project:alsa"
   }
 
   build {}
