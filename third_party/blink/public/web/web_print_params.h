@@ -58,8 +58,8 @@ struct WebPrintParams {
   // Specifies user selected DPI for printing.
   int printer_dpi = 72;
 
-  // Specifies the scale factor in percent. 100 is 1:1 (default scaling).
-  int scale_factor = 100;
+  // Specifies the scale factor.
+  float scale_factor = 1.0f;
 
   // Specifies whether to print PDFs as image.
   bool rasterize_pdf = false;

@@ -390,8 +390,15 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // The page area (content area) size of the first page, when printing.
   PhysicalSize initial_containing_block_size_for_pagination_;
 
-  // Used to avoid/reduce inline axis overflow, by scaling up the page size for
-  // layout.
+  // The scale factor that is applied to page area sizes. This affects the
+  // initial containing block size for print layout. Used to honor any scaling
+  // set in the print parameters, and to avoid/reduce inline axis overflow, by
+  // scaling up the page size for layout.
+  //
+  // Initial print layout will be generated based on the scaling specified in
+  // the print parameters. If this results in inline overflow, we'll increase
+  // the scale factor and relayout, to fit more content, as an attempt to avoid
+  // inline overflow.
   float page_scale_factor_ = 1.0;
 
   Member<ViewFragmentationContext> fragmentation_context_;

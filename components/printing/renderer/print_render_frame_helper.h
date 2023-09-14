@@ -369,7 +369,6 @@ class PrintRenderFrameHelper
   void PrintPageInternal(const mojom::PrintParams& params,
                          uint32_t page_index,
                          uint32_t page_count,
-                         double scale_factor,
                          blink::WebLocalFrame* frame,
                          MetafileSkia* metafile);
 
