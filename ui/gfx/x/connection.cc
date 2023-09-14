@@ -170,11 +170,11 @@ size_t Connection::MaxRequestSizeInBytes() const {
                               setup_.maximum_request_length);
 }
 
-XlibDisplayWrapper Connection::GetXlibDisplay(XlibDisplayType type) {
+XlibDisplay& Connection::GetXlibDisplay() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!xlib_display_)
     xlib_display_ = base::WrapUnique(new XlibDisplay(display_string_));
-  return XlibDisplayWrapper(xlib_display_->display_, type);
+  return *xlib_display_;
 }
 
 Connection::FutureImpl::FutureImpl(Connection* connection,

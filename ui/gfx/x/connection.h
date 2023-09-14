@@ -108,10 +108,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Obtain an Xlib display that's connected to the same server as |this|.  This
   // is meant to be used only for compatibility with components like GLX,
   // Vulkan, and VAAPI.  The underlying socket is not shared, so synchronization
-  // with |this| may be necessary.  The |type| parameter can be used to achieve
-  // synchronization.  The returned wrapper should not be saved.
-  XlibDisplayWrapper GetXlibDisplay(
-      XlibDisplayType type = XlibDisplayType::kNormal);
+  // with |this| may be necessary.
+  XlibDisplay& GetXlibDisplay();
 
   size_t MaxRequestSizeInBytes() const;
 
