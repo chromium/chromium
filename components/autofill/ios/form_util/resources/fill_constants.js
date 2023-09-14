@@ -7,20 +7,16 @@
  *
  * This variable is from AutofillTable::kMaxDataLength in
  * chromium/src/components/autofill/core/browser/webdata/autofill_table.h
- *
- * @const {number}
  */
-__gCrWeb.fill.MAX_DATA_LENGTH = 1024;
+const MAX_DATA_LENGTH = 1024;
 
 /**
  * The maximum string length supported by Autofill.
  *
  * This variable is from kMaxStringLength in
  * chromium/src/components/autofill/core/common/autofill_constant.h
- *
- * @const {number}
  */
-__gCrWeb.fill.MAX_STRING_LENGTH = 1024;
+const MAX_STRING_LENGTH = 1024;
 
 /**
  * The maximum number of form fields we are willing to parse, due to
@@ -29,12 +25,10 @@ __gCrWeb.fill.MAX_STRING_LENGTH = 1024;
  * (3) router configuration pages; and (4) other configuration pages, e.g. for
  * Google code project settings.
  *
- * This variable is |kMaxExtractableFields| from
+ * This variable is `kMaxExtractableFields` from
  * chromium/src/components/autofill/core/common/autofill_constants.h
- *
- * @const {number}
  */
-__gCrWeb.fill.MAX_EXTRACTABLE_FIELDS = 200;
+const MAX_EXTRACTABLE_FIELDS = 200;
 
 /**
  * A bit field mask to extract data from WebFormControlElement for
@@ -105,3 +99,9 @@ __gCrWeb.fill.RENDERER_ID_NOT_SET = '0';
  * @const {symbol}
  */
 __gCrWeb.fill.ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
+
+export {
+  MAX_DATA_LENGTH,
+  MAX_STRING_LENGTH,
+  MAX_EXTRACTABLE_FIELDS,
+};

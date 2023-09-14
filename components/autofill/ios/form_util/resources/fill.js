@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
-import '//components/autofill/ios/form_util/resources/fill_constants.js';
 import '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import '//components/autofill/ios/form_util/resources/fill_util.js';
+
+import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -97,7 +98,7 @@ function extractFieldsFromControlElements_(
 
     // To avoid overly expensive computation, we impose a maximum number of
     // allowable fields.
-    if (formFields.length > __gCrWeb.fill.MAX_EXTRACTABLE_FIELDS) {
+    if (formFields.length > fillConstants.MAX_EXTRACTABLE_FIELDS) {
       return false;
     }
   }
@@ -304,9 +305,9 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
       currentField['label'] =
           __gCrWeb.fill.inferLabelForElement(controlElement);
     }
-    if (currentField['label'].length > __gCrWeb.fill.MAX_DATA_LENGTH) {
+    if (currentField['label'].length > fillConstants.MAX_DATA_LENGTH) {
       currentField['label'] =
-          currentField['label'].substr(0, __gCrWeb.fill.MAX_DATA_LENGTH);
+          currentField['label'].substr(0, fillConstants.MAX_DATA_LENGTH);
     }
 
     if (controlElement === formControlElement) {
@@ -429,7 +430,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
     field['autocomplete_attribute'] = autocompleteAttribute;
   }
   if (field['autocomplete_attribute'] != null &&
-      field['autocomplete_attribute'].length > __gCrWeb.fill.MAX_DATA_LENGTH) {
+      field['autocomplete_attribute'].length > fillConstants.MAX_DATA_LENGTH) {
     // Discard overly long attribute values to avoid DOS-ing the browser
     // process. However, send over a default string to indicate that the
     // attribute was present.
@@ -497,8 +498,8 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   // which isn't really meaningful here, but we need to follow the same logic to
   // get the same form signature wherever possible (to get the benefits of the
   // existing crowdsourced field detection corpus).
-  if (value.length > __gCrWeb.fill.MAX_DATA_LENGTH) {
-    value = value.substr(0, __gCrWeb.fill.MAX_DATA_LENGTH);
+  if (value.length > fillConstants.MAX_DATA_LENGTH) {
+    value = value.substr(0, fillConstants.MAX_DATA_LENGTH);
   }
   field['value'] = value;
 };

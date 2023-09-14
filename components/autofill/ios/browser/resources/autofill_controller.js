@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MAX_DATA_LENGTH, MAX_EXTRACTABLE_FIELDS} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
  *
@@ -411,7 +413,7 @@ __gCrWeb.autofill.extractNewForms = function(
     }
 
     numFieldsSeen += form['fields'].length;
-    if (numFieldsSeen > __gCrWeb.fill.MAX_EXTRACTABLE_FIELDS) {
+    if (numFieldsSeen > MAX_EXTRACTABLE_FIELDS) {
       break;
     }
 
@@ -435,7 +437,7 @@ __gCrWeb.autofill.extractNewForms = function(
             restrictUnownedFieldsToFormlessCheckout, unownedForm);
     if (hasUnownedForm) {
       numFieldsSeen += unownedForm['fields'].length;
-      if (numFieldsSeen <= __gCrWeb.fill.MAX_EXTRACTABLE_FIELDS) {
+      if (numFieldsSeen <= MAX_EXTRACTABLE_FIELDS) {
         const interesting = isFormInteresting_(
             unownedForm, numEditableUnownedElements, minimumRequiredFields);
         if (interesting) {
@@ -480,7 +482,7 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
       // maxlength value is used.
       let maxLength = data['max_length'];
       if (maxLength < 0) {
-        maxLength = __gCrWeb.fill.MAX_DATA_LENGTH;
+        maxLength = MAX_DATA_LENGTH;
       }
       sanitizedValue = data['value'].substr(0, maxLength);
     }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MAX_STRING_LENGTH} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+
 /**
  * Maps elements using their unique ID
  */
@@ -475,9 +477,9 @@ __gCrWeb.fill.getOptionStringsFromElement = function(selectElement, field) {
   for (let i = 0; i < options.length; ++i) {
     const option = options[i];
     field['option_values'].push(
-        option['value'].substring(0, __gCrWeb.fill.MAX_STRING_LENGTH));
+        option['value'].substring(0, MAX_STRING_LENGTH));
     field['option_contents'].push(
-        option['text'].substring(0, __gCrWeb.fill.MAX_STRING_LENGTH));
+        option['text'].substring(0, MAX_STRING_LENGTH));
   }
 };
 
