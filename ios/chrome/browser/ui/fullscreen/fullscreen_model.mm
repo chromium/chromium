@@ -409,6 +409,7 @@ void FullscreenModel::OnScrollViewContentInsetBroadcasted(
 }
 
 void FullscreenModel::OnContentScrollOffsetBroadcasted(CGFloat offset) {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   SetYContentOffset(offset);
 }
 

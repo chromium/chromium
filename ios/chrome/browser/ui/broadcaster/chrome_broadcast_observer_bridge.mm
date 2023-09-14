@@ -35,6 +35,7 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastContentScrollOffset:(CGFloat)offset {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnContentScrollOffsetBroadcasted(offset);
 }
 
