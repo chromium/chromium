@@ -174,7 +174,7 @@ and **events**.
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in `dpsl` version |
+| Function Name | Definition | Permission needed to access | Released in Chrome version |
 ------------ | ------------- | ------------- | ------------- |
 | getAvailableRoutines | () => Promise<GetAvailableRoutinesResponse\> | `os.diagnostics` | M96 |
 | getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse\> | `os.diagnostics` | M96 |
@@ -492,7 +492,7 @@ and **events**.
 
 ## Functions
 
-| Function Name | Definition | Permission needed to access | Released in `dpsl` version | Description |
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Description |
 ------------ | ------------- | ------------- | ------------- | ------------- |
 | isEventSupported | (category: EventCategory) => Promise<EventSupportStatusInfo\> | `os.events` | M115 | Checks whether an event is supported. The information returned by this method is valid across reboots of the device |
 | startCapturingEvents | (category: EventCategory) => () | `os.events` | M115 | Starts capturing events for `EventCategory`. After calling this method, an extension can expect to be updated about events through invocations of `on<EventCategory>Event`, until either the PWA is closed or `stopCapturingEvents` is called. Note that an extension is only able to subscribe to events if the PWA is currently open |
@@ -500,7 +500,7 @@ and **events**.
 
 ## Events
 
-| Function Name | Definition | Permission needed to access | Released in `dpsl` version | Emitted on |
+| Function Name | Definition | Permission needed to access | Released in Chrome version | Emitted on |
 ------------ | ------------- | ------------- | ------------- | ------------- |
 | onAudioJackEvent | function(AudioJackEventInfo) | `os.events` | M115 | An audio device was plugged in or out |
 | onKeyboardDiagnosticEvent | function(KeyboardDiagnosticEventInfo) | `os.events` | M117 | Informs the extension that a Keyboard diagnostic has been completed in the first party diagnostic tool |
