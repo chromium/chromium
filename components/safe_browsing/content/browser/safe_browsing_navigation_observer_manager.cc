@@ -947,8 +947,10 @@ void SafeBrowsingNavigationObserverManager::MaybeAddToReferrerChain(
   // Update the referrer entry if we got here from a Push notification.
   if (base::Contains(notification_navigation_events_,
                      nav_event->original_request_url) &&
-      nav_event->navigation_initiation ==
-          ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE &&
+      (nav_event->navigation_initiation ==
+           ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE ||
+       nav_event->navigation_initiation ==
+           ReferrerChainEntry::BROWSER_INITIATED) &&
       nav_event->source_url.is_empty()) {
     // The navigation event and the Push notification click should have happened
     // close in time to each other.

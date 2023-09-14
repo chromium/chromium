@@ -495,13 +495,36 @@ TEST_F(SBNavigationObserverTest,
   EXPECT_TRUE(notification_navigation_events()->contains(url_2));
 }
 
-TEST_F(SBNavigationObserverTest, TestAddNotificationOriginToReferrerChain) {
+TEST_F(SBNavigationObserverTest,
+       TestAddDesktopNotificationOriginToReferrerChain) {
   GURL url_0("http://foo/0");
   std::unique_ptr<NavigationEvent> nav_event =
       CreateNavigationEventUniquePtr(url_0, base::Time::Now());
   nav_event->source_url = GURL::EmptyGURL();
   nav_event->navigation_initiation =
       ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
+  navigation_event_list()->RecordNavigationEvent(std::move(nav_event));
+  GURL script_url("https://example.com/script.js");
+  SetEnhancedProtection(/*esb_enabled=*/true);
+  RecordNotificationNavigationEvent(script_url, url_0);
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      url_0, SessionID::InvalidValue(), content::GlobalRenderFrameHostId(), 10,
+      &referrer_chain);
+  EXPECT_EQ(ReferrerChainEntry::NOTIFICATION_INITIATED,
+            referrer_chain[0].navigation_initiation());
+  EXPECT_EQ(script_url.spec(), referrer_chain[0].referrer_url());
+}
+
+TEST_F(SBNavigationObserverTest,
+       TestAddAndroidNotificationOriginToReferrerChain) {
+  GURL url_0("http://foo/0");
+  std::unique_ptr<NavigationEvent> nav_event =
+      CreateNavigationEventUniquePtr(url_0, base::Time::Now());
+  nav_event->source_url = GURL::EmptyGURL();
+  // How the notification navigation is initiated is the sole difference with
+  // desktop.
+  nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(nav_event));
   GURL script_url("https://example.com/script.js");
   SetEnhancedProtection(/*esb_enabled=*/true);
