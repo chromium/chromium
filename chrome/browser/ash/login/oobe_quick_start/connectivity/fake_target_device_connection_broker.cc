@@ -6,8 +6,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
@@ -55,10 +55,10 @@ FakeTargetDeviceConnectionBroker::Factory::CreateInstance(
 FakeTargetDeviceConnectionBroker::FakeTargetDeviceConnectionBroker(
     QuickStartConnectivityService* quick_start_connectivity_service)
     : quick_start_connectivity_service_(quick_start_connectivity_service) {
-  random_session_id_ = RandomSessionId();
+  advertising_id_ = AdvertisingId();
   fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
-  SessionContext session_context(random_session_id_, kSharedSecret,
+  SessionContext session_context(advertising_id_, kSharedSecret,
                                  kSecondarySharedSecret);
 
   connection_ = std::make_unique<FakeConnection>(
@@ -116,8 +116,8 @@ void FakeTargetDeviceConnectionBroker::CloseConnection(
   connection_lifecycle_listener_->OnConnectionClosed(reason);
 }
 
-std::string FakeTargetDeviceConnectionBroker::GetSessionIdDisplayCode() {
-  return random_session_id_.GetDisplayCode();
+std::string FakeTargetDeviceConnectionBroker::GetAdvertisingIdDisplayCode() {
+  return advertising_id_.GetDisplayCode();
 }
 
 std::string FakeTargetDeviceConnectionBroker::GetPinForTests() {

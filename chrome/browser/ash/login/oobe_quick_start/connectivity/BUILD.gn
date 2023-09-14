@@ -28,6 +28,8 @@ source_set("connectivity") {
   sources = [
     "account_transfer_client_data.cc",
     "account_transfer_client_data.h",
+    "advertising_id.cc",
+    "advertising_id.h",
     "connection.cc",
     "connection.h",
     "fast_pair_advertiser.cc",
@@ -38,8 +40,6 @@ source_set("connectivity") {
     "handshake_helpers.h",
     "qr_code.cc",
     "qr_code.h",
-    "random_session_id.cc",
-    "random_session_id.h",
     "session_context.cc",
     "session_context.h",
     "target_device_connection_broker.cc",

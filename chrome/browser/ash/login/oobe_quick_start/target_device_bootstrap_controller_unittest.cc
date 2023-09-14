@@ -601,11 +601,11 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 }
 
 // Ensures that the discoverable name that is shown Chromebook (123) matches
-// the one returned by RandomSessionId
+// the one returned by AdvertisingId
 TEST_F(TargetDeviceBootstrapControllerTest, DiscoverableName) {
   std::string device_type = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
   std::string code =
-      fake_target_device_connection_broker_->GetSessionIdDisplayCode();
+      fake_target_device_connection_broker_->GetAdvertisingIdDisplayCode();
   auto expected_string = device_type + " (" + code + ")";
 
   EXPECT_EQ(bootstrap_controller_->GetDiscoverableName(), expected_string);
@@ -653,8 +653,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, SessionContext) {
   GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
                            GetSessionContext().GetPrepareForUpdateInfo());
 
-  std::string expected_random_session_id =
-      GetSessionContext().random_session_id().ToString();
+  std::string expected_advertising_id =
+      GetSessionContext().advertising_id().ToString();
   SessionContext::SharedSecret expected_shared_secret =
       GetSessionContext().secondary_shared_secret();
 
@@ -663,8 +663,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, SessionContext) {
   CreateBootstrapController();
 
   EXPECT_TRUE(GetSessionContext().is_resume_after_update());
-  EXPECT_EQ(expected_random_session_id,
-            GetSessionContext().random_session_id().ToString());
+  EXPECT_EQ(expected_advertising_id,
+            GetSessionContext().advertising_id().ToString());
   EXPECT_EQ(expected_shared_secret, GetSessionContext().shared_secret());
 }
 

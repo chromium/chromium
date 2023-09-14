@@ -8,7 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 
 namespace ash::quick_start {
 
@@ -100,7 +100,7 @@ void FastPairAdvertiser::AdvertisementReleased(
 void FastPairAdvertiser::StartAdvertising(
     base::OnceCallback<void()> callback,
     base::OnceCallback<void()> error_callback,
-    const RandomSessionId& random_session_id,
+    const AdvertisingId& advertising_id,
     bool use_pin_authentication) {
   DCHECK(adapter_->IsPresent() && adapter_->IsPowered());
   DCHECK(!advertisement_);
@@ -110,7 +110,7 @@ void FastPairAdvertiser::StartAdvertising(
                             : quick_start_metrics::AdvertisingMethod::kQrCode;
   quick_start_metrics::RecordFastPairAdvertisementStarted(advertising_method_);
   RegisterAdvertisement(std::move(callback), std::move(error_callback),
-                        random_session_id);
+                        advertising_id);
 }
 
 void FastPairAdvertiser::StopAdvertising(base::OnceCallback<void()> callback) {
@@ -126,7 +126,7 @@ void FastPairAdvertiser::StopAdvertising(base::OnceCallback<void()> callback) {
 void FastPairAdvertiser::RegisterAdvertisement(
     base::OnceClosure callback,
     base::OnceClosure error_callback,
-    const RandomSessionId& random_session_id) {
+    const AdvertisingId& advertising_id) {
   auto advertisement_data =
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
@@ -143,7 +143,7 @@ void FastPairAdvertiser::RegisterAdvertisement(
 
   device::BluetoothAdvertisement::ManufacturerData manufacturer_data;
   std::vector<uint8_t> manufacturer_metadata =
-      GenerateManufacturerMetadata(random_session_id);
+      GenerateManufacturerMetadata(advertising_id);
   manufacturer_data.insert(
       std::make_pair(kCompanyId, std::move(manufacturer_metadata)));
   advertisement_data->set_manufacturer_data(std::move(manufacturer_data));
@@ -213,9 +213,9 @@ void FastPairAdvertiser::OnUnregisterAdvertisementError(
 }
 
 std::vector<uint8_t> FastPairAdvertiser::GenerateManufacturerMetadata(
-    const RandomSessionId& random_session_id) {
-  base::span<const uint8_t, RandomSessionId::kLength> id =
-      random_session_id.AsBytes();
+    const AdvertisingId& advertising_id) {
+  base::span<const uint8_t, AdvertisingId::kLength> id =
+      advertising_id.AsBytes();
   std::vector<uint8_t> metadata(std::begin(id), std::end(id));
   return metadata;
 }

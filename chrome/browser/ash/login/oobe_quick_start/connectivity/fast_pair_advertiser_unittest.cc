@@ -14,7 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -184,7 +184,7 @@ class FastPairAdvertiserTest : public testing::Test {
                        base::Unretained(this)),
         base::BindOnce(&FastPairAdvertiserTest::OnStartAdvertisingError,
                        base::Unretained(this)),
-        RandomSessionId(), /*use_pin_authentication=*/false);
+        AdvertisingId(), /*use_pin_authentication=*/false);
     auto service_uuid_list =
         std::make_unique<device::BluetoothAdvertisement::UUIDList>();
     service_uuid_list->push_back(kFastPairServiceUuid);
@@ -214,8 +214,8 @@ class FastPairAdvertiserTest : public testing::Test {
   bool called_on_stop_advertising() { return called_on_stop_advertising_; }
 
   std::vector<uint8_t> GetManufacturerMetadata(
-      const RandomSessionId& random_id) {
-    return fast_pair_advertiser_->GenerateManufacturerMetadata(random_id);
+      const AdvertisingId& advertising_id) {
+    return fast_pair_advertiser_->GenerateManufacturerMetadata(advertising_id);
   }
 
   void ResetExpectedErrorBucketCount() { expected_error_bucket_count_ = 0; }
@@ -315,15 +315,15 @@ TEST_F(FastPairAdvertiserTest, TestAdvertisementReleased) {
 }
 
 TEST_F(FastPairAdvertiserTest, TestGenerateManufacturerMetadata) {
-  RandomSessionId random_id;
-  base::span<const uint8_t, RandomSessionId::kLength> random_id_bytes =
-      random_id.AsBytes();
+  AdvertisingId advertising_id;
+  base::span<const uint8_t, AdvertisingId::kLength> advertising_id_bytes =
+      advertising_id.AsBytes();
   std::vector<uint8_t> manufacturer_metadata =
-      GetManufacturerMetadata(random_id);
+      GetManufacturerMetadata(advertising_id);
 
-  EXPECT_EQ(random_id_bytes.size(), manufacturer_metadata.size());
-  for (size_t i = 0; i < random_id_bytes.size(); i++) {
-    EXPECT_EQ(random_id_bytes[i], manufacturer_metadata[i]);
+  EXPECT_EQ(advertising_id_bytes.size(), manufacturer_metadata.size());
+  for (size_t i = 0; i < advertising_id_bytes.size(); i++) {
+    EXPECT_EQ(advertising_id_bytes[i], manufacturer_metadata[i]);
   }
 }
 
@@ -362,7 +362,7 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
   fast_pair_advertiser_->StartAdvertising(
       base::DoNothing(),
       base::BindLambdaForTesting([&]() { fast_pair_advertiser_.reset(); }),
-      RandomSessionId(), /*use_pin_authentication=*/false);
+      AdvertisingId(), /*use_pin_authentication=*/false);
 
   std::move(register_args_->error_callback)
       .Run(device::BluetoothAdvertisement::ErrorCode::

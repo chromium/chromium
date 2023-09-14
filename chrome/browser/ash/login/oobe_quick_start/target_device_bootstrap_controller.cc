@@ -108,8 +108,8 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
   if (use_pin_authentication || session_context_.is_resume_after_update()) {
     status_.step = Step::ADVERTISING_WITHOUT_QR_CODE;
   } else {
-    auto qr_code = std::make_unique<QRCode>(
-        session_context_.random_session_id(), session_context_.shared_secret());
+    auto qr_code = std::make_unique<QRCode>(session_context_.advertising_id(),
+                                            session_context_.shared_secret());
     status_.step = Step::ADVERTISING_WITH_QR_CODE;
     status_.payload.emplace<QRCode::PixelData>(qr_code->pixel_data());
   }
@@ -207,7 +207,7 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
 
 std::string TargetDeviceBootstrapController::GetDiscoverableName() {
   std::string device_type = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
-  std::string code = connection_broker_->GetSessionIdDisplayCode();
+  std::string code = connection_broker_->GetAdvertisingIdDisplayCode();
   return device_type + " (" + code + ")";
 }
 

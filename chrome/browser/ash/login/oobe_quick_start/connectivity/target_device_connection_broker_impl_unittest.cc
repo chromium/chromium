@@ -13,9 +13,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
@@ -40,7 +40,7 @@ constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
 constexpr uint8_t kEndpointInfoVerificationStyle = 5u;
 constexpr uint8_t kEndpointInfoDeviceType = 8u;
 
-constexpr size_t kEndpointInfoRandomSessionIdLength = 10;
+constexpr size_t kEndpointInfoAdvertisingIdLength = 10;
 
 // 32 random bytes to use as the shared secret.
 constexpr std::array<uint8_t, 32> kSharedSecret = {
@@ -162,7 +162,7 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
 
   void StartAdvertising(base::OnceCallback<void()> callback,
                         base::OnceCallback<void()> error_callback,
-                        const RandomSessionId& random_session_id,
+                        const AdvertisingId& advertising_id,
                         bool use_pin_authentication) override {
     ++start_advertising_call_count_;
     if (should_succeed_on_start_) {
@@ -309,10 +309,10 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   void CreateConnectionBroker(bool is_resume_after_update = false) {
     auto connection_factory = std::make_unique<FakeConnection::Factory>();
     connection_factory_ = connection_factory.get();
-    random_session_id_ = RandomSessionId();
+    advertising_id_ = AdvertisingId();
     auto session_context =
-        SessionContext(random_session_id_, kSharedSecret,
-                       kSecondarySharedSecret, is_resume_after_update);
+        SessionContext(advertising_id_, kSharedSecret, kSecondarySharedSecret,
+                       is_resume_after_update);
     connection_broker_ = std::make_unique<TargetDeviceConnectionBrokerImpl>(
         session_context, fake_quick_start_connectivity_service_.get(),
         std::move(connection_factory));
@@ -366,7 +366,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   bool start_advertising_callback_called_ = false;
   bool start_advertising_callback_success_ = false;
   bool stop_advertising_callback_called_ = false;
-  RandomSessionId random_session_id_;
+  AdvertisingId advertising_id_;
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
   std::unique_ptr<FakeQuickStartConnectivityService>
       fake_quick_start_connectivity_service_;
@@ -585,7 +585,7 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   std::string display_name =
       std::string(display_name_bytes.begin(), display_name_bytes.end());
   std::string expected_display_name = GetParam().expected_display_name + " (" +
-                                      random_session_id_.GetDisplayCode() + ")";
+                                      advertising_id_.GetDisplayCode() + ")";
   EXPECT_EQ(expected_display_name, display_name);
   i += j;
 
@@ -604,17 +604,17 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   EXPECT_EQ(kEndpointInfoDeviceType, device_type);
   i++;
 
-  // Parse the RandomSessionId. The field is fixed-width, but contains a
+  // Parse the AdvertisingId. The field is fixed-width, but contains a
   // string that may not occupy the full length, in which case there will be a
   // null terminator.
-  std::string session_id = random_session_id_.ToString();
-  for (size_t k = i; k < i + kEndpointInfoRandomSessionIdLength; k++) {
+  std::string advertising_id = advertising_id_.ToString();
+  for (size_t k = i; k < i + kEndpointInfoAdvertisingIdLength; k++) {
     if (advertising_info[k] == 0) {
       break;
     }
-    EXPECT_EQ(session_id[k - i], advertising_info[k]);
+    EXPECT_EQ(advertising_id[k - i], advertising_info[k]);
   }
-  i += kEndpointInfoRandomSessionIdLength;
+  i += kEndpointInfoAdvertisingIdLength;
 
   uint8_t is_quick_start = advertising_info[i];
   EXPECT_EQ(1u, is_quick_start);

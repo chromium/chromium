@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 
 #include "base/base64url.h"
 #include "base/ranges/algorithm.h"
@@ -13,22 +13,22 @@
 namespace ash::quick_start {
 
 // static
-absl::optional<RandomSessionId> RandomSessionId::ParseFromBase64(
-    const std::string& encoded_random_session_id) {
+absl::optional<AdvertisingId> AdvertisingId::ParseFromBase64(
+    const std::string& encoded_advertising_id) {
   std::string decoded_output;
 
-  if (!base::Base64UrlDecode(encoded_random_session_id,
+  if (!base::Base64UrlDecode(encoded_advertising_id,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &decoded_output)) {
     QS_LOG(ERROR)
-        << "Failed to decode the random session ID. Encoded random session ID: "
-        << encoded_random_session_id;
+        << "Failed to decode the advertising ID. Encoded advertising ID: "
+        << encoded_advertising_id;
     return absl::nullopt;
   }
 
   if (decoded_output.length() != kLength) {
-    QS_LOG(ERROR) << "Decoded random session ID is an unexpected length. "
-                     "Decoded random session ID output: "
+    QS_LOG(ERROR) << "Decoded advertising ID is an unexpected length. "
+                     "Decoded advertising ID output: "
                   << decoded_output;
     return absl::nullopt;
   }
@@ -39,27 +39,27 @@ absl::optional<RandomSessionId> RandomSessionId::ParseFromBase64(
     bytes[i] = uint8_t(decoded_output[i]);
   }
 
-  return RandomSessionId(std::move(bytes));
+  return AdvertisingId(std::move(bytes));
 }
 
-RandomSessionId::RandomSessionId() {
+AdvertisingId::AdvertisingId() {
   crypto::RandBytes(bytes_);
 }
 
-RandomSessionId::RandomSessionId(base::span<const uint8_t, kLength> bytes) {
+AdvertisingId::AdvertisingId(base::span<const uint8_t, kLength> bytes) {
   base::ranges::copy(bytes, bytes_.begin());
 }
 
-std::string RandomSessionId::ToString() const {
-  std::string session_id_bytes(bytes_.begin(), bytes_.end());
-  std::string session_id_base64;
-  base::Base64UrlEncode(session_id_bytes,
+std::string AdvertisingId::ToString() const {
+  std::string advertising_id_bytes(bytes_.begin(), bytes_.end());
+  std::string advertising_id_base64;
+  base::Base64UrlEncode(advertising_id_bytes,
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &session_id_base64);
-  return session_id_base64;
+                        &advertising_id_base64);
+  return advertising_id_base64;
 }
 
-std::string RandomSessionId::GetDisplayCode() const {
+std::string AdvertisingId::GetDisplayCode() const {
   uint32_t high = bytes_[0];
   uint32_t low = bytes_[1];
   uint32_t x = (high << 8) + low;
@@ -67,8 +67,8 @@ std::string RandomSessionId::GetDisplayCode() const {
 }
 
 std::ostream& operator<<(std::ostream& stream,
-                         const RandomSessionId& random_session_id) {
-  return stream << random_session_id.ToString();
+                         const AdvertisingId& advertising_id) {
+  return stream << advertising_id.ToString();
 }
 
 }  // namespace ash::quick_start

@@ -20,6 +20,7 @@ class FakeNearbyConnection;
 
 namespace ash::quick_start {
 
+class AdvertisingId;
 class QuickStartConnectivityService;
 
 class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
@@ -78,7 +79,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     MaybeNotifyFeatureStatus();
   }
 
-  std::string GetSessionIdDisplayCode() override;
+  std::string GetAdvertisingIdDisplayCode() override;
 
   void set_use_pin_authentication(bool use_pin_authentication) {
     use_pin_authentication_ = use_pin_authentication;
@@ -123,7 +124,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<FakeConnection> connection_;
 
-  RandomSessionId random_session_id_;
+  AdvertisingId advertising_id_;
   absl::optional<bool> start_advertising_use_pin_authentication_;
 
   base::WeakPtrFactory<FakeTargetDeviceConnectionBroker> weak_ptr_factory_{

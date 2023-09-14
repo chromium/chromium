@@ -64,10 +64,10 @@ class TargetDeviceConnectionBrokerImpl
                         bool use_pin_authentication,
                         ResultCallback on_start_advertising_callback) override;
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
-  std::string GetSessionIdDisplayCode() override;
+  std::string GetAdvertisingIdDisplayCode() override;
 
  private:
-  // Used to access the |random_session_id_| in tests, and to allow testing
+  // Used to access the |advertising_id_| in tests, and to allow testing
   // |GenerateEndpointInfo()| directly.
   friend class TargetDeviceConnectionBrokerImplTest;
 

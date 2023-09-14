@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_RANDOM_SESSION_ID_H_
-#define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_RANDOM_SESSION_ID_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_ADVERTISING_ID_H_
+#define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_ADVERTISING_ID_H_
 
 #include <array>
 #include <ostream>
@@ -15,22 +15,22 @@ namespace ash::quick_start {
 
 // An immutable, copyable type representing six random bytes, or eight
 // characters when encoded in base64.
-class RandomSessionId {
+class AdvertisingId {
  public:
   // This length is chosen to be 6 bytes in order to match the format used by
   // SmartSetup on Android for interoperability.
   static constexpr size_t kLength = 6;
 
   // Attempts to decode bytes from a Base64-encoded string. If the decoding is
-  // successful, it returns a new RandomSessionId containing those bytes.
-  static absl::optional<RandomSessionId> ParseFromBase64(
-      const std::string& encoded_random_session_id);
+  // successful, it returns a new AdvertisingId containing those bytes.
+  static absl::optional<AdvertisingId> ParseFromBase64(
+      const std::string& encoded_advertising_id);
 
-  RandomSessionId();
-  explicit RandomSessionId(base::span<const uint8_t, kLength> bytes);
-  RandomSessionId(const RandomSessionId&) = default;
-  RandomSessionId& operator=(const RandomSessionId&) = default;
-  ~RandomSessionId() = default;
+  AdvertisingId();
+  explicit AdvertisingId(base::span<const uint8_t, kLength> bytes);
+  AdvertisingId(const AdvertisingId&) = default;
+  AdvertisingId& operator=(const AdvertisingId&) = default;
+  ~AdvertisingId() = default;
 
   base::span<const uint8_t, kLength> AsBytes() const { return bytes_; }
 
@@ -45,10 +45,10 @@ class RandomSessionId {
   std::array<uint8_t, kLength> bytes_;
 };
 
-// Write the RandomSessionId to the ostream in hexadecimal for logging.
+// Write the AdvertisingId to the ostream in hexadecimal for logging.
 std::ostream& operator<<(std::ostream& stream,
-                         const RandomSessionId& random_session_id);
+                         const AdvertisingId& advertising_id);
 
 }  // namespace ash::quick_start
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_RANDOM_SESSION_ID_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_ADVERTISING_ID_H_

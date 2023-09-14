@@ -21,8 +21,8 @@ constexpr char kDeviceTypeQueryParamValue[] = "7";
 
 }  // namespace
 
-QRCode::QRCode(RandomSessionId random_session_id, SharedSecret shared_secret)
-    : random_session_id_(random_session_id), shared_secret_(shared_secret) {
+QRCode::QRCode(AdvertisingId advertising_id, SharedSecret shared_secret)
+    : advertising_id_(advertising_id), shared_secret_(shared_secret) {
   GeneratePixelData();
 }
 
@@ -54,8 +54,8 @@ std::vector<uint8_t> QRCode::GetQRCodeData() {
                           shared_secret_base64.size(),
                           &shared_secret_base64_uriencoded);
 
-  std::string url = "https://signin.google/qs/" +
-                    random_session_id_.ToString() + "?key=" +
+  std::string url = "https://signin.google/qs/" + advertising_id_.ToString() +
+                    "?key=" +
                     std::string(shared_secret_base64_uriencoded.data(),
                                 shared_secret_base64_uriencoded.length()) +
                     "&t=" + std::string(kDeviceTypeQueryParamValue);

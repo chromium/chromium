@@ -17,9 +17,9 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
@@ -75,9 +75,9 @@ constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
     0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
     0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
 
-// 6 random bytes to use as the RandomSessionId.
-constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
-                                                     0x27, 0xbb, 0x28};
+// 6 random bytes to use as the AdvertisingId.
+constexpr std::array<uint8_t, 6> kAdvertisingId = {0x6b, 0xb3, 0x85,
+                                                   0x27, 0xbb, 0x28};
 
 // 12 random bytes to use as the nonce.
 constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
@@ -107,7 +107,7 @@ class ConnectionTest : public testing::Test {
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
     session_context_ = std::make_unique<SessionContext>(
-        session_id_, kSharedSecret, kSecondarySharedSecret);
+        advertising_id_, kSharedSecret, kSecondarySharedSecret);
     connection_ = std::make_unique<Connection>(
         nearby_connection, *session_context_,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
@@ -289,7 +289,7 @@ class ConnectionTest : public testing::Test {
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<Connection> connection_;
   std::unique_ptr<SessionContext> session_context_;
-  RandomSessionId session_id_ = RandomSessionId(kRandomSessionId);
+  AdvertisingId advertising_id_ = AdvertisingId(kAdvertisingId);
   bool ran_assertion_response_callback_ = false;
   bool ran_connection_authenticated_callback_ = false;
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>

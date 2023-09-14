@@ -14,8 +14,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
@@ -70,9 +70,9 @@ constexpr base::TimeDelta kNearbyConnectionsAdvertisementAfterUpdateTimeout =
 // - Be at most 18 bytes
 // - If less than 18 bytes, must be null-terminated
 std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
-    const RandomSessionId& session_id) {
+    const AdvertisingId& advertising_id) {
   std::string display_name = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
-  std::string suffix = " (" + session_id.GetDisplayCode() + ")";
+  std::string suffix = " (" + advertising_id.GetDisplayCode() + ")";
 
   base::TruncateUTF8ToByteSize(
       display_name, kMaxEndpointInfoDisplayNameLength - suffix.size(),
@@ -220,9 +220,9 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
 
 void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
     ResultCallback callback) {
-  QS_LOG(INFO) << "Starting Fast Pair advertising with session id "
-               << session_context_.random_session_id() << " ("
-               << session_context_.random_session_id().GetDisplayCode() << ")";
+  QS_LOG(INFO) << "Starting Fast Pair advertising with advertising id "
+               << session_context_.advertising_id() << " ("
+               << session_context_.advertising_id().GetDisplayCode() << ")";
 
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);
@@ -236,7 +236,7 @@ void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
           weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
-      session_context_.random_session_id(), use_pin_authentication_);
+      session_context_.advertising_id(), use_pin_authentication_);
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess(
@@ -269,8 +269,8 @@ void TargetDeviceConnectionBrokerImpl::StopAdvertising(
       weak_ptr_factory_.GetWeakPtr(), std::move(on_stop_advertising_callback)));
 }
 
-std::string TargetDeviceConnectionBrokerImpl::GetSessionIdDisplayCode() {
-  return session_context_.random_session_id().GetDisplayCode();
+std::string TargetDeviceConnectionBrokerImpl::GetAdvertisingIdDisplayCode() {
+  return session_context_.advertising_id().GetDisplayCode();
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
@@ -286,15 +286,15 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
 // - Advertisement data, 60 bytes, base64 encoded:
 //   - Verification Style, byte[0]
 //   - Device Type, byte[1]
-//   - Advertising Id, byte[2-11], 10 UTF-8 bytes. (See RandomSessionId)
+//   - Advertising Id, byte[2-11], 10 UTF-8 bytes. (See AdvertisingId)
 //   - isQuickStart, byte[12], =1 for Quick Start.
 //   - preferTargetUserVerification, byte[13], =0 for ChromeOS.
 //   - Pad with zeros to 60 bytes. Extra space reserved for futureproofing.
 std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
     const {
-  std::string session_id = session_context_.random_session_id().ToString();
+  std::string advertising_id = session_context_.advertising_id().ToString();
   std::vector<uint8_t> display_name_bytes =
-      GetEndpointInfoDisplayNameBytes(session_context_.random_session_id());
+      GetEndpointInfoDisplayNameBytes(session_context_.advertising_id());
   uint8_t verification_style = use_pin_authentication_
                                    ? kEndpointInfoVerificationStyleDigits
                                    : kEndpointInfoVerificationStyleOutOfBand;
@@ -303,10 +303,10 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
   advertisement_data.reserve(60);
   advertisement_data.push_back(verification_style);
   advertisement_data.push_back(kEndpointInfoDeviceType);
-  advertisement_data.insert(advertisement_data.end(), session_id.begin(),
-                            session_id.end());
-  for (size_t i = 0; i < kEndpointInfoAdvertisingIdLength - session_id.size();
-       i++) {
+  advertisement_data.insert(advertisement_data.end(), advertising_id.begin(),
+                            advertising_id.end());
+  for (size_t i = 0;
+       i < kEndpointInfoAdvertisingIdLength - advertising_id.size(); i++) {
     // Pad out the advertising id to the correct field length using null
     // terminators.
     advertisement_data.push_back(0);

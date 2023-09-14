@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
@@ -69,9 +68,7 @@ class TargetDeviceConnectionBroker {
     virtual void Close(
         TargetDeviceConnectionBroker::ConnectionClosedReason reason) = 0;
 
-    // Request wifi credentials from target Android device. The session_id is
-    // used to identify this QuickStart session and is distinct from the
-    // RandomSessionId.
+    // Request wifi credentials from target Android device.
     virtual void RequestWifiCredentials(
         int64_t session_id,
         RequestWifiCredentialsCallback callback) = 0;
@@ -195,7 +192,7 @@ class TargetDeviceConnectionBroker {
       base::OnceClosure on_stop_advertising_callback) = 0;
 
   // Gets the 3 digits of the discoverable name. e.g.: Chromebook (123)
-  virtual std::string GetSessionIdDisplayCode() = 0;
+  virtual std::string GetAdvertisingIdDisplayCode() = 0;
 
  protected:
   void MaybeNotifyFeatureStatus();
