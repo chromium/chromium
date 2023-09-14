@@ -40,6 +40,8 @@ constexpr char kTestCellularServicePath1[] = "/service/stub/0";
 constexpr char kTestCellularServicePath2[] = "/service/stub/1";
 constexpr char kTestGuid1[] = "1";
 constexpr char kTestGuid2[] = "2";
+constexpr char kTestIccid1[] = "000000000000000000";
+constexpr char kTestIccid2[] = "000000000000000001";
 
 struct NetworkSmsHandlerTestCase {
   std::string test_name;
@@ -133,7 +135,7 @@ class NetworkSmsHandlerTest
         kCellularDevicePath, shill::kDBusObjectProperty,
         base::Value(kCellularDeviceObjectPath1), /*notify_changed=*/false);
     SetupCellularModem(kCellularDeviceObjectPath1, kTestCellularServicePath1,
-                       kTestGuid1);
+                       kTestGuid1, kTestIccid1);
     modem_messaging_test_ = ModemMessagingClient::Get()->GetTestInterface();
 
     // This relies on the stub dbus implementations for ShillManagerClient,
@@ -172,16 +174,19 @@ class NetworkSmsHandlerTest
 
   void SetupCellularModem(const std::string& object_path,
                           const std::string& service_path,
-                          const std::string& guid) {
+                          const std::string& guid,
+                          const std::string& iccid) {
     device_test_->SetDeviceProperty(
         kCellularDevicePath, shill::kDBusObjectProperty,
         base::Value(object_path), /*notify_changed=*/true);
-    device_test_->SetDeviceProperty(
-        kCellularDevicePath, shill::kSelectedServiceProperty,
-        base::Value(service_path), /*notify_changed=*/true);
+    device_test_->SetDeviceProperty(kCellularDevicePath, shill::kIccidProperty,
+                                    base::Value(iccid),
+                                    /*notify_changed=*/true);
     service_test_->AddService(service_path, guid, "", shill::kTypeCellular,
                               shill::kStateOnline,
                               /*visible=*/true);
+    service_test_->SetServiceProperty(service_path, shill::kIccidProperty,
+                                      base::Value(iccid));
   }
 
  protected:
@@ -533,7 +538,7 @@ TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkGuidTest) {
 
   // Switch to a different modem.
   SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
-                     kTestGuid2);
+                     kTestGuid2, kTestIccid2);
 
   base::RunLoop().RunUntilIdle();
   network_sms_handler_->RequestUpdate();

@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/sms_client.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -529,22 +530,26 @@ void NetworkSmsHandler::OnObjectPathChanged(const base::Value& object_path) {
 
 std::string NetworkSmsHandler::GetCurrentNetworkGuid(
     const base::Value::Dict& device_properties) {
-  const std::string* service_path =
-      device_properties.FindString(shill::kSelectedServiceProperty);
-
-  if (!service_path) {
-    NET_LOG(ERROR) << "Device does not have an selected cellular network.";
+  const std::string* iccid =
+      device_properties.FindString(shill::kIccidProperty);
+  if (!iccid) {
+    NET_LOG(ERROR) << "Cannot get the network for a device without an ICCID";
     return std::string();
   }
-
-  const NetworkState* network_state =
-      network_state_handler_->GetNetworkState(*service_path);
-  if (!network_state || network_state->type() != shill::kTypeCellular) {
-    NET_LOG(ERROR) << "Device does not have a valid network state.";
-    return std::string();
+  NetworkStateHandler::NetworkStateList active_networks;
+  // We also look at non-active networks, to account for networks that are
+  // disconnected and may become connected later.
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &active_networks);
+  for (auto* network : active_networks) {
+    if (network->iccid() == *iccid) {
+      return network->guid();
+    }
   }
-
-  return network_state->guid();
+  NET_LOG(ERROR) << "Couldn't get find the matching network for ICCID: "
+                 << *iccid;
+  return std::string();
 }
 
 }  // namespace ash
