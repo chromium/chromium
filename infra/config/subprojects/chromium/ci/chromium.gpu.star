@@ -67,6 +67,7 @@ ci.gpu.linux_builder(
         category = "Android",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.gpu.linux_builder(
@@ -93,6 +94,7 @@ ci.gpu.linux_builder(
         category = "Linux",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
     reclient_bootstrap_env = {
         "RBE_clang_depscan_archive": "true",
     },
@@ -149,6 +151,7 @@ ci.gpu.mac_builder(
         category = "Mac",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.gpu.mac_builder(
@@ -200,6 +203,7 @@ ci.gpu.windows_builder(
         category = "Windows",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -278,6 +282,7 @@ ci.thin_tester(
         category = "Linux",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -330,6 +335,7 @@ ci.thin_tester(
         category = "Mac",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -355,6 +361,7 @@ ci.thin_tester(
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -381,6 +388,7 @@ ci.thin_tester(
         category = "Mac",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -405,6 +413,7 @@ ci.thin_tester(
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -434,4 +443,5 @@ ci.thin_tester(
         category = "Windows",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
 )

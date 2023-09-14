@@ -123,6 +123,7 @@ ci.gpu.linux_builder(
         category = "DEPS|Android|Builder",
         short_name = "arm",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -151,6 +152,7 @@ ci.thin_tester(
         category = "DEPS|Android",
         short_name = "n5x",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -178,6 +180,7 @@ ci.thin_tester(
         category = "DEPS|Android",
         short_name = "p4",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.gpu.linux_builder(
@@ -203,6 +206,7 @@ ci.gpu.linux_builder(
         category = "DEPS|Android",
         short_name = "p6",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -287,6 +291,7 @@ ci.gpu.linux_builder(
         category = "ToT|Linux|TSAN",
         short_name = "x64",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
     # Serially executed tests + TSAN = more than the default timeout needed in
     # order to prevent build timeouts.
     execution_timeout = 6 * time.hour,
@@ -317,6 +322,7 @@ ci.gpu.linux_builder(
         category = "ToT|Android|Builder",
         short_name = "arm",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -346,6 +352,7 @@ ci.thin_tester(
         category = "ToT|Android",
         short_name = "n5x",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -374,6 +381,7 @@ ci.thin_tester(
         category = "ToT|Android",
         short_name = "p4",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.gpu.linux_builder(
@@ -400,6 +408,7 @@ ci.gpu.linux_builder(
         category = "ToT|Android",
         short_name = "p6",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -478,6 +487,7 @@ ci.gpu.mac_builder(
         category = "DEPS|Mac",
         short_name = "arm64",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.gpu.mac_builder(
@@ -506,6 +516,7 @@ ci.gpu.mac_builder(
         category = "ToT|Mac",
         short_name = "arm64",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.gpu.mac_builder(
@@ -753,6 +764,7 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|ASAN|Builder",
         short_name = "x64",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -783,6 +795,7 @@ ci.thin_tester(
         category = "ToT|Windows|ASAN|Intel",
         short_name = "x64",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
@@ -812,6 +825,7 @@ ci.thin_tester(
         category = "ToT|Windows|ASAN|Nvidia",
         short_name = "x64",
     ),
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.gpu.windows_builder(
@@ -1090,6 +1104,7 @@ ci.thin_tester(
         short_name = "x86",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-gpu-infra@google.com",
 )
 
 ci.thin_tester(
