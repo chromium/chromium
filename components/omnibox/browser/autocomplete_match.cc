@@ -1911,9 +1911,13 @@ void AutocompleteMatch::ConvertFromTakeoverAction() {
 
   // Use the pedal text as primary match `contents`.
   contents = takeover_action->GetLabelStrings().hint;
-  contents_class = {{0, ACMatchClassification::NONE}};
+  if (contents.empty()) {
+    contents_class.clear();
+  } else {
+    contents_class = {{0, ACMatchClassification::NONE}};
+  }
   description.clear();
-  description_class = {{0, ACMatchClassification::NONE}};
+  description_class.clear();
 }
 
 #if DCHECK_IS_ON()
