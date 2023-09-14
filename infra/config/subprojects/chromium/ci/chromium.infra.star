@@ -104,7 +104,7 @@ packager_builder(
         category = "packager|android",
         short_name = "androidx",
     ),
-    contact_team_email = "clank-engprod@google.com",
+    contact_team_email = "clank-build@google.com",
     notifies = ["chromium-androidx-packager"],
 )
 
