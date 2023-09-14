@@ -307,17 +307,9 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
     replacements["learnMore"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
     replacements["cookieControlsTitle"] =
-        is_tracking_protection_3pcd_enabled
-            ? l10n_util::GetStringUTF8(
-                  IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE)
-            : l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
     replacements["cookieControlsDescription"] =
-        is_tracking_protection_3pcd_enabled
-            ? l10n_util::GetStringFUTF8(
-                  IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
-                  base::ASCIIToUTF16(chrome::kCookiesSettingsHelpCenterURL))
-            : l10n_util::GetStringUTF8(
-                  IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   }
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
@@ -328,6 +320,14 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   if (is_tracking_protection_3pcd_enabled) {
     replacements["hideBlockCookiesToggle"] = "hidden";
     replacements["hideTooltipIcon"] = "hidden";
+
+    // Overwrite the cookies control title and description if 3pcd enabled.
+    replacements["cookieControlsTitle"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE);
+    replacements["cookieControlsDescription"] = l10n_util::GetStringFUTF8(
+        IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
+        base::ASCIIToUTF16(chrome::kCookiesSettingsHelpCenterURL));
+
   } else {
     replacements["hideBlockCookiesToggle"] = "";
     replacements["hideTooltipIcon"] =
