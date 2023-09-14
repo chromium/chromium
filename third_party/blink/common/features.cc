@@ -1444,6 +1444,10 @@ const base::FeatureParam<int> kProduceCompileHintsOnIdleDelayParam{
 const base::FeatureParam<double> kProduceCompileHintsNoiseLevel{
     &kProduceCompileHints, "noise probability", 0.5};
 
+BASE_FEATURE(kConsumeCompileHints,
+             "ConsumeCompileHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kQueueBlockingGestureScrolls,
              "QueueBlockingGestureScrolls",
              base::FEATURE_DISABLED_BY_DEFAULT);

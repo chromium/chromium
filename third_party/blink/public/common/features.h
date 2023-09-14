@@ -848,6 +848,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kProduceCompileHintsNoiseLevel;
 
+// Load V8_COMPILE_HINTS optimization data from OptimizationGuide and
+// transmit it to V8. See `ProduceCompileHints` for the data producer side of
+// this feature.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCompileHints);
+
 // When enabled, gesture scroll updates that hit a JS touch handlers
 // will be queued normally on CC, enabling coalescing and consistent
 // input handling.

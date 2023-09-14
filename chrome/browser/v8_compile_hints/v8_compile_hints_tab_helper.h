@@ -27,15 +27,6 @@ class WebContents;
 // in chrome.
 namespace v8_compile_hints {
 
-namespace features {
-
-// Load V8_COMPILE_HINTS optimization data from OptimizationGuide and
-// transmit it to V8. See `ProduceCompileHints` in Blink for the data producer
-// side of this feature.
-BASE_DECLARE_FEATURE(kConsumeCompileHints);
-
-}  // namespace features
-
 // Keep in sync with V8CompileHintsModelQuality in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

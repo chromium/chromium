@@ -14,16 +14,9 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace v8_compile_hints {
-
-namespace features {
-
-BASE_FEATURE(kConsumeCompileHints,
-             "ConsumeCompileHints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace features
 
 V8CompileHintsTabHelper::~V8CompileHintsTabHelper() = default;
 
@@ -34,14 +27,14 @@ V8CompileHintsTabHelper::V8CompileHintsTabHelper(
       content::WebContentsUserData<V8CompileHintsTabHelper>(*web_contents),
       optimization_guide_decider_(optimization_guide_decider),
       web_contents_(web_contents) {
-  CHECK(base::FeatureList::IsEnabled(features::kConsumeCompileHints));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints));
   optimization_guide_decider_->RegisterOptimizationTypes(
       {optimization_guide::proto::V8_COMPILE_HINTS});
 }
 
 void V8CompileHintsTabHelper::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(features::kConsumeCompileHints)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints)) {
     return;
   }
 
