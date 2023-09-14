@@ -404,6 +404,7 @@ void FullscreenModel::OnScrollViewContentSizeBroadcasted(CGSize content_size) {
 
 void FullscreenModel::OnScrollViewContentInsetBroadcasted(
     UIEdgeInsets content_inset) {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   SetTopContentInset(content_inset.top);
 }
 

@@ -41,8 +41,6 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
   [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastScrollViewContentSize:)];
   [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastScrollViewContentInset:)];
-  [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastContentScrollOffset:)];
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     [broadcaster_ addObserver:bridge_
@@ -53,6 +51,8 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
                   forSelector:@selector(broadcastScrollViewIsDragging:)];
     [broadcaster_ addObserver:bridge_
                   forSelector:@selector(broadcastScrollViewIsZooming:)];
+    [broadcaster_ addObserver:bridge_
+                  forSelector:@selector(broadcastScrollViewContentInset:)];
   }
   [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
@@ -71,8 +71,6 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
   [broadcaster_ removeObserver:bridge_
                    forSelector:@selector(broadcastScrollViewContentSize:)];
   [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastScrollViewContentInset:)];
-  [broadcaster_ removeObserver:bridge_
                    forSelector:@selector(broadcastContentScrollOffset:)];
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     [broadcaster_ removeObserver:bridge_
@@ -83,6 +81,8 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
                      forSelector:@selector(broadcastScrollViewIsDragging:)];
     [broadcaster_ removeObserver:bridge_
                      forSelector:@selector(broadcastScrollViewIsZooming:)];
+    [broadcaster_ removeObserver:bridge_
+                     forSelector:@selector(broadcastScrollViewContentInset:)];
   }
   [broadcaster_ removeObserver:bridge_
                    forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
