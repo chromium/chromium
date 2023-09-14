@@ -52,6 +52,15 @@
       color: var(--google-grey-900);
     }
   }
+  /* TODO(crbug.com/1474951): These are placeholder colors. Use the UX colors
+     once they're finalized. Also, allow user selection for highlight color. */
+  .current-read-highlight {
+    background-color: var(--google-yellow-400);
+  }
+  .previous-read-highlight {
+    color: var(--google-grey-600);
+    background-color: transparent;
+  }
 </style>
 <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
   <read-anything-toolbar id="toolbar"></read-anything-toolbar>

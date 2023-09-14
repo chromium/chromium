@@ -73,3 +73,8 @@ class ReadAnythingAppReadAloudTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest, ReadAloud_Visible) {
   ASSERT_TRUE(RunTest("read_aloud_visible_with_flag.js"));
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       ReadAloud_HighlightWhileReading) {
+  ASSERT_TRUE(RunTest("read_aloud_highlight_while_reading.js"));
+}

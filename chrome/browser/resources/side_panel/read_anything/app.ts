@@ -51,6 +51,8 @@ const darkThemeSelectionColor = 'var(--google-blue-200)';
 const defaultSelectionColor = 'var(--google-yellow-100)';
 const yellowThemeSelectionColor = 'var(--google-blue-100)';
 
+const previousReadHighlightClass = 'previous-read-highlight';
+
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
 class TwoWayMap extends Map {
@@ -153,6 +155,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateDarkImagePath_: string;
   private emptyStateHeading_: string;
   private emptyStateSubheading_: string;
+
+  private utterancesToSpeak_: SpeechSynthesisUtterance[] = [];
+  private currentUtteranceIndex_: number = 0;
+  private previousHighlight_: HTMLElement|null;
 
   // If the WebUI toolbar should be shown. This happens when the WebUI feature
   // flag is enabled.
@@ -305,6 +311,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         loadTimeData.getString('readAnythingLoadingMessage');
     this.emptyStateSubheading_ = '';
     this.hasContent_ = false;
+    this.synth.cancel();
+    this.onSpeechStopped();
   }
 
   // TODO(crbug.com/1474951): Handle focus changes for speech, including
@@ -374,6 +382,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
+  getUtterancesToSpeak() {
+    return this.utterancesToSpeak_;
+  }
+
   onSpeechRateChange(rate: number) {
     this.rate = rate;
   }
@@ -397,14 +409,33 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     assert(container);
     if (container.textContent) {
       this.paused = false;
-      this.playMessage(container.textContent);
+
+      // Gather all the messages that can be played. We need nodes, rather
+      // than just text because we need to add a span to the current sentence
+      // in order to use css styling to highlight the text as it's spoken.
+      // Since this modifies the nodes, and we can't do that while we're
+      // iterating over the tree, we gather them first, then speak them.
+      // TODO(crbug.com/1474951): Better handle if a sentence is split across
+      // multiple nodes (e.g. if some text is linked). Right now it will just
+      // sound choppy.
+      const treeRoot = container.firstChild;
+      assert(treeRoot);
+      const treeWalker =
+          document.createTreeWalker(treeRoot, NodeFilter.SHOW_TEXT);
+      while (treeWalker.nextNode()) {
+        this.createMessages_(treeWalker.currentNode);
+      }
+
+      // Start by playing the first message.
+      this.playNextMessage();
     }
   }
 
-  // TODO(crbug.com/1474951): Investigate passing an index instead of a string,
-  // as passing substrings of substrings back and forth is not the most
-  // efficient.
-  playMessage(text: string) {
+  private createMessages_(node: Node) {
+    const text = node.textContent;
+    if (!text) {
+      return;
+    }
     // TODO(crbug.com/1474951): 175 characters is set to avoid the issue on
     // Linux where the speech apis are blocked for too-long speech and we don't
     // get too-long text errors. We should investigate a more robust solution.
@@ -413,39 +444,65 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       maxTextLength = text.length;
     }
 
-    // Taking the substring of the text isn't strictly necessary before sending
-    // the text to getNextSentence, but since blocks of text can be very long
-    // and we have a maximum sentence length, taking the substring before
-    // processing the sentence boundaries helps keep things more efficient.
-    // Send a string with a slightly longer length than maxTextLength (if
-    // possible) so indices can be compared to prevent unnecessarily shortening
-    // a complete sentence.
-    const nextSentenceEndIndex = chrome.readingMode.getNextSentence(
-        text.substring(0, maxTextLength + 50), maxTextLength);
-    const sentence = text.substring(0, nextSentenceEndIndex);
+    // Split this node into sentences to help with speech cadence, to reduce
+    // too-long errors, and to highlight speech by sentence.
+    let remainingText = text;
+    let sentenceStart = 0;
+    let nodeToHighlight = node;
+    while (remainingText.length > 0) {
+      // Taking the substring of the text isn't strictly necessary before
+      // sending the text to getNextSentence, but since blocks of text can be
+      // very long and we have a maximum sentence length, taking the substring
+      // before processing the sentence boundaries helps keep things more
+      // efficient. Send a string with a slightly longer length than
+      // maxTextLength (if possible) so indices can be compared to prevent
+      // unnecessarily shortening a complete sentence.
+      const nextSentenceEndIndex = chrome.readingMode.getNextSentence(
+          remainingText.substring(0, maxTextLength + 50), maxTextLength);
+      const sentence = remainingText.substring(0, nextSentenceEndIndex);
+      remainingText = remainingText.substring(nextSentenceEndIndex);
 
-    const message = new SpeechSynthesisUtterance(sentence);
+      const message = new SpeechSynthesisUtterance(sentence);
+
+      // TODO(crbug.com/1474951): Add callbacks for onboundary and onpause.
+      message.onerror = () => {
+        // TODO(crbug.com/1474951): Add more sophisticated error handling.
+        this.synth.cancel();
+      };
+
+      message.onstart = () => {
+        // TODO(crbug.com/1474951): Add toggle to turn off highlight.
+        // TODO(crbug.com/1474951): Handle already selected text.
+        nodeToHighlight = this.highlightCurrentText_(
+            sentenceStart, sentenceStart + nextSentenceEndIndex,
+            nodeToHighlight);
+        sentenceStart += nextSentenceEndIndex;
+      };
+
+      message.onend = () => {
+        // TODO(crbug.com/1474951): Return text to its original style once
+        // the document has finished.
+        if (this.previousHighlight_) {
+          this.previousHighlight_.className = previousReadHighlightClass;
+        }
+        this.currentUtteranceIndex_++;
+        if (this.currentUtteranceIndex_ >= this.utterancesToSpeak_.length) {
+          this.onSpeechStopped();
+        } else {
+          // Continue speaking with the next block of text.
+          this.playNextMessage();
+        }
+      };
+
+      this.utterancesToSpeak_.push(message);
+    }
+  }
+
+  playNextMessage() {
+    const message = this.utterancesToSpeak_[this.currentUtteranceIndex_];
 
     // TODO(crbug.com/1474951): Use correct locale when speaking.
     message.lang = 'en-US';
-
-    // TODO(crbug.com/1474951): Add callbacks for onboundary and onpause.
-    message.onerror = function() {
-      // TODO(crbug.com/1474951): Add more sophisticated error handling.
-      window.speechSynthesis.cancel();
-    };
-
-    message.onend = function() {
-      const readAnythingApp = document.querySelector('read-anything-app');
-      assert(readAnythingApp);
-      if (text.length > maxTextLength) {
-        // Continue speaking with the next block of text.
-        readAnythingApp.playMessage(
-            text.substring(nextSentenceEndIndex, text.length));
-      } else {
-        readAnythingApp?.onSpeechStopped();
-      }
-    };
 
     // TODO(crbug.com/1474951): Allow voice selection.
     // This just selects the default English voice. If no voice is available,
@@ -463,12 +520,65 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     message.rate = this.rate;
 
     this.speechStarted = true;
-    this.synth.cancel();
     this.synth.speak(message);
+  }
+
+  // The following results in
+  // <span>
+  //   <span class="previous-read-highlight"> prefix text </span>
+  //   <span class="current-read-highlight"> highlighted text </span>
+  //   suffix text
+  // </span>
+  // and returns the top-level span node
+  private highlightCurrentText_(
+      toHighlightStart: number, toHighlightEnd: number,
+      currentNode: Node): Node {
+    const parentOfHighlight = document.createElement('span');
+
+    // First pull out any text within this node before the highlighted section.
+    // Since it's already been highlighted, we fade it out.
+    const highlightPrefix =
+        currentNode.textContent!.substring(0, toHighlightStart);
+    if (highlightPrefix.length > 0) {
+      const prefixNode = document.createElement('span');
+      prefixNode.className = previousReadHighlightClass;
+      prefixNode.textContent = highlightPrefix;
+      parentOfHighlight.appendChild(prefixNode);
+    }
+
+    // Then get the section of text to highlight and mark it for
+    // highlighting.
+    const readingHighlight = document.createElement('span');
+    readingHighlight.className = 'current-read-highlight';
+    readingHighlight.textContent =
+        currentNode.textContent!.substring(toHighlightStart, toHighlightEnd);
+    parentOfHighlight.appendChild(readingHighlight);
+
+    // Finally, append the rest of the text for this node that has yet to be
+    // highlighted.
+    const highlightSuffix = currentNode.textContent!.substring(toHighlightEnd);
+    if (highlightSuffix.length > 0) {
+      const suffixNode = document.createTextNode(highlightSuffix);
+      parentOfHighlight.appendChild(suffixNode);
+    }
+
+    // Replace the current node in the tree with the split up version of the
+    // node.
+    this.previousHighlight_ = readingHighlight;
+    if (currentNode.parentNode) {
+      currentNode.parentNode.replaceChild(parentOfHighlight, currentNode);
+    }
+
+    // Automatically scroll the text so the highlight stays roughly centered.
+    readingHighlight.scrollIntoViewIfNeeded();
+    return parentOfHighlight;
   }
 
   private onSpeechStopped() {
     this.speechStarted = false;
+    this.currentUtteranceIndex_ = 0;
+    this.utterancesToSpeak_ = [];
+    this.previousHighlight_ = null;
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const toolbar = shadowRoot.getElementById('toolbar');
