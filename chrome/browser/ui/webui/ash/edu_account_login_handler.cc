@@ -18,8 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chromeos/ash/components/account_manager/account_manager_factory.h"
-#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/base/avatar_icon_util.h"
@@ -192,10 +190,6 @@ void EduAccountLoginHandler::HandleParentSignin(const base::Value::List& args) {
 void EduAccountLoginHandler::FetchFamilyMembers() {
   DCHECK(!list_family_members_fetcher_);
   Profile* profile = Profile::FromWebUI(web_ui());
-  auto* account_manager = g_browser_process->platform_part()
-                              ->GetAccountManagerFactory()
-                              ->GetAccountManager(profile->GetPath().value());
-  DCHECK(account_manager);
 
   list_family_members_fetcher_ = FetchListFamilyMembers(
       *IdentityManagerFactory::GetForProfile(profile),
@@ -247,10 +241,6 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
     const std::string& parent_credential) {
   DCHECK(!gaia_auth_fetcher_);
   Profile* profile = Profile::FromWebUI(web_ui());
-  auto* account_manager = g_browser_process->platform_part()
-                              ->GetAccountManagerFactory()
-                              ->GetAccountManager(profile->GetPath().value());
-  DCHECK(account_manager);
 
   gaia_auth_fetcher_ = std::make_unique<GaiaAuthFetcher>(
       this, gaia::GaiaSource::kChrome, profile->GetURLLoaderFactory());
