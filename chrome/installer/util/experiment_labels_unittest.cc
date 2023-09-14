@@ -70,7 +70,7 @@ TEST(ExperimentLabels, TimeFormatting) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCExploded(kExploded, &time));
 
-  ExperimentLabels label(L"");
+  ExperimentLabels label{std::wstring()};
   label.SetValueForLabel(L"name", L"value", time);
   EXPECT_THAT(label.value(),
               StrEq(L"name=value|Fri, 14 Aug 2015 16:13:03 GMT"));

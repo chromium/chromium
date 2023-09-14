@@ -99,7 +99,7 @@ std::u16string GetFormattedDueTime(const base::Time& due) {
     // NOTE: there is no way to differentiate missing due time vs. explicitly
     // set to 23:59 by user. Though the second case is less likely and
     // rendering it do not bring much value.
-    return u"";
+    return std::u16string();
   }
 
   const bool use_12_hour_clock =
