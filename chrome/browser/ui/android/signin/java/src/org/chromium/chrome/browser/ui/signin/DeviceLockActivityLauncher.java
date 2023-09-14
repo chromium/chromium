@@ -14,6 +14,7 @@ import org.chromium.ui.base.WindowAndroid;
 public interface DeviceLockActivityLauncher {
     /**
      * Launches the {@link DeviceLockActivity} to set a device lock for data privacy.
+     *
      * @param context The context to launch the {@link DeviceLockActivity} with.
      * @param selectedAccount The account that will be used for the reauthentication challenge, or
      *                null if reauthentication is not needed.
@@ -22,4 +23,17 @@ public interface DeviceLockActivityLauncher {
      */
     void launchDeviceLockActivity(Context context, @Nullable String selectedAccount,
             WindowAndroid windowAndroid, WindowAndroid.IntentCallback callback);
+
+    /**
+     * Ensures that the device has a device lock set up to protect the user's data privacy and that
+     * the current user knows those credentials. This may launch the {@link DeviceLockActivity} to
+     * set a new device lock if none exists, otherwise it will ask the user to reauthenticate for
+     * and existing device lock.
+     *
+     * @param context The context to launch the {@link DeviceLockActivity} with.
+     * @param windowAndroid The host activity's {@link WindowAndroid}.
+     * @param callback A callback to run after the {@link DeviceLockActivity} finishes.
+     */
+    void presentDeviceLockChallenge(
+            Context context, WindowAndroid windowAndroid, Runnable callback);
 }

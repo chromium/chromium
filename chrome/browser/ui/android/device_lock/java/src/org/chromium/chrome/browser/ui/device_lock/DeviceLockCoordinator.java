@@ -54,6 +54,10 @@ public class DeviceLockCoordinator {
      * @param activity The activity hosting this page.
      * @param account The account that will be used for the reauthentication challenge, or null
      *                if reauthentication is not needed.
+     *
+     * TODO (crbug.com/1481799)
+     * Refactor to take in a Context instead of an Activity if
+     * AccountManagerFacade#confirmCredentials no longer takes an Activity,
      */
     public DeviceLockCoordinator(Delegate delegate, WindowAndroid windowAndroid, Activity activity,
             @Nullable Account account) {

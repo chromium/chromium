@@ -9,11 +9,14 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Launches autofill settings subpages. */
 public class SettingsLauncherHelper {
@@ -38,15 +41,27 @@ public class SettingsLauncherHelper {
      * Tries showing the settings page for Payments.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
+     * @param windowAndroid The {@link WindowAndroid} required to start the settings page on
+     *        automotive devices. Noop without it.
      * @return True iff the context is valid and `launchSettingsActivity` was called.
      */
-    public static boolean showAutofillCreditCardSettings(@Nullable Context context) {
+    public static boolean showAutofillCreditCardSettings(
+            @Nullable Context context, @Nullable WindowAndroid windowAndroid) {
         if (context == null) {
             return false;
         }
+        if (BuildInfo.getInstance().isAutomotive) {
+            DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
+                    context, windowAndroid, () -> launchSettingsActivity(context));
+        } else {
+            launchSettingsActivity(context);
+        }
+        return true;
+    }
+
+    private static void launchSettingsActivity(Context context) {
         RecordUserAction.record("AutofillCreditCardsViewed");
         getLauncher().launchSettingsActivity(context, AutofillPaymentMethodsFragment.class);
-        return true;
     }
 
     @CalledByNative
@@ -56,7 +71,8 @@ public class SettingsLauncherHelper {
 
     @CalledByNative
     private static void showAutofillCreditCardSettings(WebContents webContents) {
-        showAutofillCreditCardSettings(webContents.getTopLevelNativeWindow().getActivity().get());
+        showAutofillCreditCardSettings(webContents.getTopLevelNativeWindow().getActivity().get(),
+                webContents.getTopLevelNativeWindow());
     }
 
     private static SettingsLauncher getLauncher() {

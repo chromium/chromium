@@ -925,6 +925,10 @@ public class AccountPickerBottomSheetTest {
             mLaunched = true;
         }
 
+        @Override
+        public void presentDeviceLockChallenge(
+                Context context, WindowAndroid windowAndroid, Runnable callback) {}
+
         boolean isLaunched() {
             return mLaunched;
         }
