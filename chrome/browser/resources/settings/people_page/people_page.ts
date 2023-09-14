@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '/shared/settings/controls/settings_toggle_button.js';
+import './page_content_page.js';
 import './sync_account_control.js';
 import '../icons.html.js';
 import '../settings_page/settings_animated_pages.js';

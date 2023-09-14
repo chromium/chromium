@@ -153,6 +153,14 @@ shown on non-ChromeOS platforms -->
         </settings-subpage>
       </template>
 
+      <template is="dom-if" route-path="/syncSetup/pageContent">
+        <settings-subpage page-title="$i18n{pageContentPageTitle}"
+            associated-control="[[$$('#sync-setup')]]">
+          <settings-page-content-page prefs="{{prefs}}">
+          </settings-page-content-page>
+        </settings-subpage>
+      </template>
+
 <if expr="not chromeos_ash">
       <template is="dom-if" route-path="/manageProfile">
         <settings-subpage

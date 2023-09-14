@@ -1342,7 +1342,15 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_ON},
     {"pageContentLinkRowSublabelOff",
      IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_OFF},
+    {"pageContentPageTitle", IDS_SETTINGS_PAGE_CONTENT_PAGE_TITLE},
     {"pageContentToggleLabel", IDS_SETTINGS_PAGE_CONTENT_TOGGLE_LABEL},
+    {"pageContentToggleSublabel", IDS_SETTINGS_PAGE_CONTENT_TOGGLE_SUBLABEL},
+    {"pageContentWhenOnBulletOne",
+     IDS_SETTINGS_PAGE_CONTENT_WHEN_ON_BULLET_ONE},
+    {"pageContentThingsToConsiderBulletOne",
+     IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_ONE},
+    {"pageContentThingsToConsiderBulletTwo",
+     IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

@@ -36,6 +36,7 @@ export interface SettingsRoutes {
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;
   ON_STARTUP: Route;
+  PAGE_CONTENT: Route;
   PASSKEYS: Route;
   PAYMENTS: Route;
   PEOPLE: Route;

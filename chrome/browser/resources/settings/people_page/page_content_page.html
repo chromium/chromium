@@ -1,0 +1,65 @@
+<style include="settings-shared">
+  .description-column {
+    padding: 0 var(--cr-section-padding);
+    width: 50%;
+  }
+
+  .description-header {
+    color: var(--google-blue-600);
+    font-weight: 500;
+  }
+
+  .description-item {
+    column-gap: 16px;
+    display: flex;
+    padding: 16px 0;
+  }
+
+  .description-wrapper {
+    display: flex;
+    padding-top: 4px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .description-header {
+      color: var(--google-blue-300);
+    }
+  }
+</style>
+<settings-toggle-button
+    id="pageContentToggle"
+    pref="{{prefs.page_content_collection.enabled}}"
+    label="$i18n{pageContentToggleLabel}"
+    sub-label="$i18n{pageContentToggleSublabel}">
+</settings-toggle-button>
+<div class="description-wrapper">
+  <div class="description-column">
+    <div class="description-header">
+      $i18n{privacyGuideFeatureDescriptionHeader}
+    </div>
+    <div role="list">
+      <div class="description-item" role="listitem">
+        <iron-icon icon="settings20:astrophotography-mode" aria-hidden="true">
+        </iron-icon>
+        <div class="secondary">$i18n{pageContentWhenOnBulletOne}</div>
+      </div>
+    </div>
+  </div>
+  <div class="description-column">
+    <div class="description-header">
+      $i18n{privacyGuideThingsToConsider}
+    </div>
+    <div role="list">
+      <div class="description-item" role="listitem">
+        <iron-icon icon="settings20:find-in-path" aria-hidden="true">
+        </iron-icon>
+        <div class="secondary">$i18n{pageContentThingsToConsiderBulletOne}</div>
+      </div>
+      <div class="description-item" role="listitem">
+        <iron-icon icon="settings20:google-lens-2" aria-hidden="true">
+        </iron-icon>
+        <div class="secondary">$i18n{pageContentThingsToConsiderBulletTwo}</div>
+      </div>
+    </div>
+  </div>
+</div>
