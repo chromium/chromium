@@ -700,11 +700,12 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterRotated) {
 }
 
 // TODO(crbug.com/1416306): currently do not pass on iOS.
-#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1482558): flaky on Mac.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_ImageRenderSurfaceScaled DISABLED_ImageRenderSurfaceScaled
 #else
 #define MAYBE_ImageRenderSurfaceScaled ImageRenderSurfaceScaled
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
 TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
   // A filter will cause a render surface to be used.  Here we force the
   // render surface on, and scale the result to make sure that we rasterize at
