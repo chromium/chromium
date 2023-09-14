@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
@@ -35,6 +36,29 @@ AppStorageFileHandler::AppStorageFileHandler(const base::FilePath& base_path)
       file_path_(base_path.AppendASCII(kAppServiceDirName)
                      .AppendASCII(kAppStorageFileName)) {}
 
+void AppStorageFileHandler::WriteToFile(std::vector<AppPtr> apps) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  if (apps.empty()) {
+    return;
+  }
+
+  if (!base::CreateDirectory(file_path_.DirName())) {
+    LOG(ERROR) << "Fail to create the directory for " << file_path_;
+    return;
+  }
+
+  std::string json_string;
+  JSONStringValueSerializer serializer(&json_string);
+  serializer.Serialize(ConvertAppsToValue(std::move(apps)));
+
+  if (!base::ImportantFileWriter::WriteFileAtomically(file_path_,
+                                                      json_string)) {
+    LOG(ERROR) << "Fail to write the app info to " << file_path_;
+  }
+}
+
 std::vector<AppPtr> AppStorageFileHandler::ReadFromFile() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -64,6 +88,25 @@ std::vector<AppPtr> AppStorageFileHandler::ReadFromFile() {
 }
 
 AppStorageFileHandler::~AppStorageFileHandler() = default;
+
+base::Value AppStorageFileHandler::ConvertAppsToValue(
+    std::vector<AppPtr> apps) {
+  base::Value::Dict app_info_dict;
+  for (const auto& app : apps) {
+    base::Value::Dict app_details_dict;
+
+    app_details_dict.Set(kTypeKey, static_cast<int>(app->app_type));
+
+    if (app->name.has_value()) {
+      app_details_dict.Set(kNameKey, app->name.value());
+    }
+
+    // TODO(crbug.com/1385932): Add other files in the App structure.
+    app_info_dict.Set(app->app_id, std::move(app_details_dict));
+  }
+
+  return base::Value(std::move(app_info_dict));
+}
 
 std::vector<AppPtr> AppStorageFileHandler::ConvertValueToApps(
     base::Value app_info_value) {

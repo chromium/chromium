@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
         AppStorageFileHandler>::owning_task_runner();
   }
 
+  // Writes `apps` to the AppStorage file. This method must be invoked on a
+  // background task runner `owning_task_runner`.
+  void WriteToFile(std::vector<AppPtr> apps);
+
   // Reads the app info from the AppStorage file. This method must be invoked on
   // a background task runner `owning_task_runner`.
   std::vector<AppPtr> ReadFromFile();
@@ -48,7 +52,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
 
   virtual ~AppStorageFileHandler();
 
-  // Converts base::Value to std::vector<AppPtr>,
+  // Converts std::vector<AppPtr> to base::Value,
   // e.g.:
   // {
   //   "agimnkijcaahngcdmfeangaknmldooml":    // app_id
@@ -65,6 +69,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorageFileHandler
   //     },
   //   ...
   // }
+  base::Value ConvertAppsToValue(std::vector<AppPtr> apps);
+
+  // Converts base::Value to std::vector<AppPtr>,
   std::vector<AppPtr> ConvertValueToApps(base::Value app_info_value);
 
   base::FilePath file_path_;
