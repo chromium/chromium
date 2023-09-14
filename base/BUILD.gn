@@ -4111,7 +4111,10 @@ action("build_date") {
 
 if (enable_nocompile_tests_new) {
   nocompile_source_set("base_nocompile_tests_new") {
-    sources = [ "callback_list_nocompile.nc" ]
+    sources = [
+      "callback_list_nocompile.nc",
+      "no_destructor_nocompile.nc",
+    ]
     deps = [ ":base" ]
   }
 }
@@ -4136,7 +4139,6 @@ if (enable_nocompile_tests) {
       "memory/weak_ptr_unittest.nc",
       "metrics/field_trial_params_unittest.nc",
       "metrics/histogram_unittest.nc",
-      "no_destructor_unittest.nc",
       "observer_list_unittest.nc",
       "sequence_checker_unittest.nc",
       "strings/string_piece_unittest.nc",

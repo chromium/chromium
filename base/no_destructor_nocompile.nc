@@ -7,17 +7,12 @@
 
 #include "base/no_destructor.h"
 
-#include <string>
-
 namespace base {
 
-#if defined(NCTEST_NODESTRUCTOR_REQUIRES_NONTRIVIAL_DESTRUCTOR) // [r"static assertion failed due to requirement '!std::is_trivially_destructible_v<bool>'"]
-
-// Attempt to make a NoDestructor for a type with a trivial destructor.
 void WontCompile() {
-  NoDestructor<bool> nd;
+  // NoDestructor should only be used for non-trivially destructible types;
+  // trivial types can simply be directly declared as globals.
+  static NoDestructor<bool> x;  // expected-error@*:* {{static assertion failed due to requirement '!std::is_trivially_destructible_v<bool>'}}
 }
-
-#endif
 
 }  // namespace base
