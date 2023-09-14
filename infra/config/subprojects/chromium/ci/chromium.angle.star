@@ -92,6 +92,7 @@ ci.thin_tester(
         category = "Android|Nexus5X|Chromium",
         short_name = "arm64",
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 ci.gpu.linux_builder(
@@ -174,6 +175,7 @@ ci.thin_tester(
         category = "Linux|Intel|Chromium",
         short_name = "x64",
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 ci.thin_tester(
@@ -203,6 +205,7 @@ ci.thin_tester(
         category = "Linux|NVIDIA|Chromium",
         short_name = "x64",
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 ci.gpu.mac_builder(
@@ -258,6 +261,7 @@ ci.thin_tester(
         category = "Mac|AMD|Chromium",
         short_name = "x64",
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 ci.thin_tester(
@@ -347,6 +351,7 @@ ci.thin_tester(
         category = "iOS|Intel|ANGLE",
         short_name = "x64",
     ),
+    contact_team_email = "angle-team@google.com",
 )
 
 ci.gpu.windows_builder(
