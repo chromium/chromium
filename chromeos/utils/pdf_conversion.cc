@@ -40,15 +40,10 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
   }
   CHECK(
       SkJpegDecoder::IsJpeg(jpeg_image_data->data(), jpeg_image_data->size()));
-  std::unique_ptr<SkCodec> codec =
-      SkJpegDecoder::Decode(jpeg_image_data, nullptr);
-  if (!codec) {
-    LOG(ERROR) << "Unable to produce codec object from encoded jpeg data.";
-    return false;
-  }
-  auto [image, result] = codec->getImage();
-  if (!image || result != SkCodec::kSuccess) {
-    LOG(ERROR) << "Unable to decode image from encoded jpeg data.";
+  const sk_sp<SkImage> image =
+      SkImages::DeferredFromEncodedData(jpeg_image_data);
+  if (!image) {
+    LOG(ERROR) << "Unable to generate image from encoded image data.";
     return false;
   }
 
@@ -90,6 +85,9 @@ bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
                            bool rotate_alternate_pages,
                            absl::optional<int> dpi) {
   DCHECK(!file_path.empty());
+
+  // Register Jpeg Decoder for use by DeferredFromEncodedData in AddPdfPage.
+  SkCodecs::Register(SkJpegDecoder::Decoder());
 
   SkFILEWStream pdf_outfile(file_path.value().c_str());
   if (!pdf_outfile.isValid()) {
@@ -134,6 +132,9 @@ bool ConvertJpgImagesToPdf(const std::vector<std::vector<uint8_t>>& jpg_images,
   gfx::BufferWStream output_stream;
   sk_sp<SkDocument> pdf_doc = SkPDF::MakeDocument(&output_stream);
   DCHECK(pdf_doc);
+
+  // Register Jpeg Decoder for use by DeferredFromEncodedData in AddPdfPage.
+  SkCodecs::Register(SkJpegDecoder::Decoder());
 
   for (const auto& jpg_image : jpg_images) {
     SkDynamicMemoryWStream img_stream;
