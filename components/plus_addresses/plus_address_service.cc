@@ -163,7 +163,8 @@ bool PlusAddressService::is_enabled() const {
 
 std::unique_ptr<signin::PersistentRepeatingTimer>
 PlusAddressService::CreateTimer(PrefService* pref_service) {
-  if (!is_enabled() || !pref_service) {
+  if (!is_enabled() || !pref_service ||
+      !kSyncWithEnterprisePlusAddressServer.Get()) {
     return nullptr;
   }
   // TODO(b/297366364):
@@ -172,7 +173,7 @@ PlusAddressService::CreateTimer(PrefService* pref_service) {
   //   the structures in this class.
   return std::make_unique<signin::PersistentRepeatingTimer>(
       pref_service, prefs::kPlusAddressLastFetchedTime,
-      /*delay=*/base::Hours(24),
+      /*delay=*/kEnterprisePlusAddressTimerDelay.Get(),
       /*task=*/base::DoNothing());
 }
 }  // namespace plus_addresses

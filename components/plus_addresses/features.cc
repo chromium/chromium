@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/plus_addresses/features.h"
+
 #include "base/feature_list.h"
+#include "base/time/time.h"
 
 namespace plus_addresses {
 // Controls the enabled/disabled state of the experimental feature.
@@ -14,6 +16,8 @@ BASE_FEATURE(kFeature,
 const char kEnterprisePlusAddressLabelOverrideName[] = "suggestion-label";
 const char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
 const char kEnterprisePlusAddressServerUrlName[] = "server-url";
+const char kSyncWithEnterprisePlusAddressServerName[] = "sync-with-server";
+const char kEnterprisePlusAddressTimerDelayName[] = "timer-delay";
 
 const base::FeatureParam<std::string> kEnterprisePlusAddressLabelOverride{
     &kFeature, kEnterprisePlusAddressLabelOverrideName, "Lorem Ipsum"};
@@ -21,5 +25,8 @@ const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope{
     &kFeature, kEnterprisePlusAddressOAuthScopeName, ""};
 const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl{
     &kFeature, kEnterprisePlusAddressServerUrlName, ""};
-
+const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer{
+    &kFeature, kSyncWithEnterprisePlusAddressServerName, false};
+const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
+    &kFeature, kEnterprisePlusAddressTimerDelayName, base::Hours(24)};
 }  // namespace plus_addresses

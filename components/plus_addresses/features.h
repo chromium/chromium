@@ -28,6 +28,17 @@ extern const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope;
 // GURL, such as `https://foo.example/`.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl;
+
+// Used to control whether the PlusAddressService periodically retrieves all
+// plus addresses from an enterprise's remote server.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<bool> kSyncWithEnterprisePlusAddressServer;
+
+// Used to control the cadence at which the PlusAddressService retrieves all
+// plus addresses from an enterprise's remote server.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kEnterprisePlusAddressTimerDelay;
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_
