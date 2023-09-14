@@ -11,7 +11,18 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-class AppServiceInternalsBrowserTest : public InProcessBrowserTest {};
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+class AppServiceInternalsBrowserTest : public InProcessBrowserTest {
+#if BUILDFLAG(IS_WIN)
+ private:
+  // This is used to prevent creating shortcuts in the start menu dir.
+  base::ScopedPathOverride override_start_dir_{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN)
+};
 
 IN_PROC_BROWSER_TEST_F(AppServiceInternalsBrowserTest, LoadsWebUiPage) {
   // Install a Web App, so that the app-service-internals page has at least one
