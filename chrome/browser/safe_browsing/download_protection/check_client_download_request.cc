@@ -328,11 +328,16 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
     return false;
 
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
-  if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
-    return true;
+  if (!profile) {
+    return false;
   }
 
-  if (IsUnderAdvancedProtection(profile)) {
+  if (!AreDeepScansAllowedByPolicy(*profile->GetPrefs())) {
+    return false;
+  }
+
+  if (IsUnderAdvancedProtection(profile) ||
+      IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
     return true;
   }
 

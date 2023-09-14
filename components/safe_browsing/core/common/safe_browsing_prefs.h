@@ -31,6 +31,9 @@ extern const char kSafeBrowsingCsdPingTimestamps[];
 // Browsing settings.
 extern const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[];
 
+// Boolean that is true when deep scanning is allowed.
+extern const char kSafeBrowsingDeepScanningEnabled[];
+
 // Boolean that is true when SafeBrowsing is enabled.
 extern const char kSafeBrowsingEnabled[];
 
@@ -360,6 +363,9 @@ bool IsSafeBrowsingProceedAnywayDisabled(const PrefService& prefs);
 // Returns whether hash-prefix real-time lookups are allowed for the user based
 // on enterprise policy.
 bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs);
+
+// Returns whether deep scanning is allowed based on enterprise policy.
+bool AreDeepScansAllowedByPolicy(const PrefService& prefs);
 
 // Updates UMA metrics about Safe Browsing Extended Reporting states.
 void RecordExtendedReportingMetrics(const PrefService& prefs);

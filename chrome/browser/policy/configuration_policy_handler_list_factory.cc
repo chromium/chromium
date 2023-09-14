@@ -1986,6 +1986,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGoogleSearchSidePanelEnabled,
     prefs::kGoogleSearchSidePanelEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kSafeBrowsingDeepScanningEnabled,
+    prefs::kSafeBrowsingDeepScanningEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   { key::kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
     policy_prefs::kAllowBackForwardCacheForCacheControlNoStorePageEnabled,

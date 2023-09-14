@@ -72,6 +72,8 @@ const char kSafeBrowsingCsdPingTimestamps[] =
     "safebrowsing.csd_ping_timestamps";
 const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[] =
     "safebrowsing.csd_phishing_protection_allowed_by_policy";
+const char kSafeBrowsingDeepScanningEnabled[] =
+    "safebrowsing.deep_scanning_enabled";
 const char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
 const char kSafeBrowsingEnhanced[] = "safebrowsing.enhanced";
 const char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[] =
@@ -240,6 +242,10 @@ bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs) {
   return prefs.GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);
 }
 
+bool AreDeepScansAllowedByPolicy(const PrefService& prefs) {
+  return prefs.GetBoolean(prefs::kSafeBrowsingDeepScanningEnabled);
+}
+
 bool IsSafeBrowsingSurveysEnabled(const PrefService& prefs) {
   return prefs.GetBoolean(prefs::kSafeBrowsingSurveysEnabled);
 }
@@ -331,6 +337,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanningEnabled, true);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
