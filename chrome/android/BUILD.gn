@@ -808,6 +808,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/webid/internal:java",
       "//components/autofill/android:payments_autofill_java",
       "//components/browser_ui/bottomsheet/android/internal:java",
+      "//components/gwp_asan/client/android:gwp_asan_java",
       "//components/messages/android/internal:java",
       "//components/segmentation_platform/internal:internal_java",
     ]

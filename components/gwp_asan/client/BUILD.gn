@@ -23,6 +23,11 @@ source_set("features") {
     "//base",
   ]
   configs += [ ":gwp_asan_implementation" ]
+
+  if (is_android) {
+    sources += [ "feature_map.cc" ]
+    deps += [ "android:gwp_asan_headers" ]
+  }
 }
 
 component("client") {

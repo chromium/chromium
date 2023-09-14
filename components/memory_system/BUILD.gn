@@ -41,6 +41,14 @@ source_set("memory_system") {
     }
   }
 
+  # Regardless of `enable_gwp_asan`, we must depend directly
+  # on the presence of the `base::Feature` that governs it. This is
+  # because WebView depends on it, but support cannot be "compiled out"
+  # hinging on a buildflag.
+  if (is_android) {
+    deps += [ "//components/gwp_asan/client:features" ]
+  }
+
   if (is_chromeos) {
     deps += [ "//build:chromeos_buildflags" ]
   }

@@ -794,6 +794,7 @@ android_library("common_java") {
     "//components/autofill/android:autofill_features_java",
     "//components/embedder_support/android/metrics:java",
     "//components/feature_engagement/public:public_java",
+    "//components/gwp_asan/client/android:gwp_asan_java",
     "//components/metrics:metrics_java",
     "//components/network_session_configurator/android:network_session_configurator_java",
     "//components/permissions/android:core_java",
@@ -811,6 +812,7 @@ android_library("common_java") {
     "//ui/accessibility:accessibility_features_java",
     "//ui/android:ui_android_features_java",
   ]
+
   srcjar_deps = [
     ":common_java_features_srcjar",
     ":common_java_switches_srcjar",
