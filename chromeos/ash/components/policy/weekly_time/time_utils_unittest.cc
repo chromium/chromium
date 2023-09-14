@@ -38,9 +38,14 @@ constexpr int kMinutesInHour = 60;
 constexpr int kMillisecondsInHour = 3600000;
 constexpr base::TimeDelta kMinute = base::Minutes(1);
 constexpr base::TimeDelta kHour = base::Hours(1);
-constexpr base::Time::Exploded kDaylightSavingsTime{2018, 8, 3, 8, 15, 0, 0, 0};
-constexpr base::Time::Exploded kNonDaylightSavingsTime{2018, 1, 0, 28,
-                                                       0,    0, 0, 0};
+constexpr base::Time::Exploded kDaylightSavingsTime = {.year = 2018,
+                                                       .month = 8,
+                                                       .day_of_week = 3,
+                                                       .day_of_month = 8,
+                                                       .hour = 15};
+constexpr base::Time::Exploded kNonDaylightSavingsTime{.year = 2018,
+                                                       .month = 1,
+                                                       .day_of_month = 28};
 
 base::Time TimeFromString(const char* text) {
   base::Time time;
