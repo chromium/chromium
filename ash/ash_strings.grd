@@ -6910,9 +6910,6 @@ New install
       <message name="IDS_GLANCEABLES_DUE_TODAY" desc="Classroom glanceable displays upcoming/missed/completed assignments from Google Classroom. Tasks glanceable displays upcoming/missed assignments from Google Tasks. This text is displayed for tasks and assignments that are due today. In other cases date formatter is used and no translation is needed.">
         Today
       </message>
-      <message name="IDS_GLANCEABLES_WELCOME_LABEL" desc="Personalized greeting / welcome message shown on glanceables surfaces (welcome screen and overview mode).">
-        Welcome back, <ph name="GIVEN_NAME">$1<ex>John</ex></ph>
-      </message>
       <message name="IDS_GLANCEABLES_ITEMS_TURNED_IN_AND_GRADED" desc="The teacher classroom glanceable shows upcoming/missed/completed assignments from Google Classroom. For each assignment item, this text displays the number of submissions turned in along side the total number of sumbissions. Then this text also displays the number of submissions currently graded.">
         <ph name="NUM_TURNED_IN">$1<ex>8</ex></ph>/<ph name="TOTAL_NUM_OF_SUBMISSIONS">$2<ex>22</ex></ph> turned in • <ph name="NUM_GRADED">$3<ex>5</ex></ph> graded
       </message>

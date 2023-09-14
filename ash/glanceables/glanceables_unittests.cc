@@ -8,7 +8,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_view.h"
-#include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -40,10 +39,6 @@ class GlanceablesTest : public AshTestBase {
   views::Widget* GetWidget() { return controller_->widget_.get(); }
 
   GlanceablesView* GetGlanceablesView() { return controller_->view_; }
-
-  GlanceablesWelcomeLabel* GetWelcomeLabel() {
-    return controller_->view_->welcome_label_;
-  }
 
  protected:
   raw_ptr<GlanceablesController, DanglingUntriaged | ExperimentalAsh>
@@ -93,7 +88,6 @@ TEST_F(GlanceablesTest, GlanceablesViewCreatesChildViews) {
 
   GlanceablesView* view = GetGlanceablesView();
   ASSERT_TRUE(view);
-  EXPECT_TRUE(GetWelcomeLabel());
 }
 
 TEST_F(GlanceablesTest, DismissesOnlyOnAppWindowOpen) {

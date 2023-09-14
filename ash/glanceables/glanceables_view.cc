@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/glanceables/glanceables_welcome_label.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -18,8 +17,6 @@ GlanceablesView::GlanceablesView() {
   // to the widget.
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-
-  welcome_label_ = AddChildView(std::make_unique<GlanceablesWelcomeLabel>());
 }
 
 GlanceablesView::~GlanceablesView() = default;

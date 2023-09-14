@@ -15,8 +15,6 @@ class BoxLayout;
 
 namespace ash {
 
-class GlanceablesWelcomeLabel;
-
 // Container view for the "welcome back" glanceables screen shown on login.
 class ASH_EXPORT GlanceablesView : public views::View {
  public:
@@ -32,7 +30,6 @@ class ASH_EXPORT GlanceablesView : public views::View {
   friend class GlanceablesTest;
 
   raw_ptr<views::BoxLayout, ExperimentalAsh> layout_ = nullptr;
-  raw_ptr<GlanceablesWelcomeLabel, ExperimentalAsh> welcome_label_ = nullptr;
 };
 
 }  // namespace ash
