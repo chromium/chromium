@@ -12,6 +12,7 @@ load("./nacl_linux.star", "nacl")
 load("./nasm_linux.star", "nasm")
 load("./proto_linux.star", "proto")
 load("./reproxy.star", "reproxy")
+load("./rust_linux.star", "rust")
 load("./typescript_linux.star", "typescript")
 
 __filegroups = {}
@@ -20,6 +21,7 @@ __filegroups.update(clang.filegroups)
 __filegroups.update(nacl.filegroups)
 __filegroups.update(nasm.filegroups)
 __filegroups.update(proto.filegroups)
+__filegroups.update(rust.filegroups)
 __filegroups.update(typescript.filegroups)
 
 __handlers = {}
@@ -28,6 +30,7 @@ __handlers.update(clang.handlers)
 __handlers.update(nacl.handlers)
 __handlers.update(nasm.handlers)
 __handlers.update(proto.handlers)
+__handlers.update(rust.handlers)
 __handlers.update(typescript.handlers)
 
 def __disable_remote_b289968566(ctx, step_config):
@@ -74,6 +77,7 @@ def __step_config(ctx, step_config):
     step_config = nacl.step_config(ctx, step_config)
     step_config = nasm.step_config(ctx, step_config)
     step_config = proto.step_config(ctx, step_config)
+    step_config = rust.step_config(ctx, step_config)
     step_config = typescript.step_config(ctx, step_config)
 
     return step_config
