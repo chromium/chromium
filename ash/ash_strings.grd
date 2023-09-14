@@ -4060,9 +4060,6 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_DYNAMIC_COLOR" translateable="false" desc="Label for accelerator action - Turn on or off dynamic color.">
         Turn on or off dynamic color
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_GLANCEABLES" translateable="false" desc="Label for accelerator action - Toggle Glanceables.">
-        Toggle Glanceables
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_SHOW_DEBUG_BORDERS" translateable="false" desc="Label for accelerator action - Show debug borders.">
         Show debug borders
       </message>

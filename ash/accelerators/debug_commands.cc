@@ -12,7 +12,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/glanceables/glanceables_controller.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_utils.h"
@@ -179,17 +178,6 @@ void HandleClearKMeansPref() {
       style::mojom::ColorScheme::kTonalSpot, account_id, base::DoNothing());
 }
 
-void HandleToggleGlanceables() {
-  if (!features::AreGlanceablesEnabled())
-    return;
-  auto* controller = Shell::Get()->glanceables_controller();
-  DCHECK(controller);
-  if (controller->IsShowing())
-    controller->DestroyUi();
-  else
-    controller->CreateUi();
-}
-
 void HandleTogglePowerButtonMenu() {
   auto* controller = Shell::Get()->power_button_controller();
   controller->ShowMenuOnDebugAccelerator();
@@ -341,9 +329,6 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugClearUseKMeansPref:
       HandleClearKMeansPref();
-      break;
-    case AcceleratorAction::kDebugToggleGlanceables:
-      HandleToggleGlanceables();
       break;
     case AcceleratorAction::kDebugTogglePowerButtonMenu:
       HandleTogglePowerButtonMenu();

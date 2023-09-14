@@ -145,7 +145,6 @@ enum AcceleratorAction {
   kDebugSystemUiStyleViewer,
   kDebugToggleDarkMode,
   kDebugToggleDynamicColor,
-  kDebugToggleGlanceables,
   kDebugTogglePowerButtonMenu,
   kDebugToggleShowDebugBorders,
   kDebugToggleShowFpsCounter,

@@ -718,7 +718,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
     case AcceleratorAction::kDebugClearUseKMeansPref:
-    case AcceleratorAction::kDebugToggleGlanceables:
     case AcceleratorAction::kDebugTogglePowerButtonMenu:
     case AcceleratorAction::kDebugToggleShowDebugBorders:
     case AcceleratorAction::kDebugToggleShowFpsCounter:
@@ -998,7 +997,6 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
     case AcceleratorAction::kDebugClearUseKMeansPref:
-    case AcceleratorAction::kDebugToggleGlanceables:
     case AcceleratorAction::kDebugTogglePowerButtonMenu:
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
     case AcceleratorAction::kDebugSystemUiStyleViewer:

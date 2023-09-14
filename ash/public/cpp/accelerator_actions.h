@@ -169,7 +169,6 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(DebugSystemUiStyleViewer)                    \
   ACCELERATOR_ACTION_ENTRY(DebugToggleDarkMode)                         \
   ACCELERATOR_ACTION_ENTRY(DebugToggleDynamicColor)                     \
-  ACCELERATOR_ACTION_ENTRY(DebugToggleGlanceables)                      \
   ACCELERATOR_ACTION_ENTRY(DebugTogglePowerButtonMenu)                  \
   ACCELERATOR_ACTION_ENTRY(DebugToggleShowDebugBorders)                 \
   ACCELERATOR_ACTION_ENTRY(DebugToggleShowFpsCounter)                   \

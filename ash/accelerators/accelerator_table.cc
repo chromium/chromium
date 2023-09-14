@@ -92,8 +92,6 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugPrintViewHierarchy},
     {true, ui::VKEY_W, kDebugModifier,
      AcceleratorAction::kDebugPrintWindowHierarchy},
-    {true, ui::VKEY_9, kDebugModifier,
-     AcceleratorAction::kDebugToggleGlanceables},
     {true, ui::VKEY_B, kDebugModifier,
      AcceleratorAction::kDebugToggleShowDebugBorders},
     {true, ui::VKEY_F, kDebugModifier,

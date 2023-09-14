@@ -293,8 +293,6 @@ EnumTraits<mojom_acceleartor_action, ash::AcceleratorAction>::ToMojom(
       return mojom_acceleartor_action::kDebugToggleDarkMode;
     case ash::AcceleratorAction::kDebugToggleDynamicColor:
       return mojom_acceleartor_action::kDebugToggleDynamicColor;
-    case ash::AcceleratorAction::kDebugToggleGlanceables:
-      return mojom_acceleartor_action::kDebugToggleGlanceables;
     case ash::AcceleratorAction::kDebugTogglePowerButtonMenu:
       return mojom_acceleartor_action::kDebugTogglePowerButtonMenu;
     case ash::AcceleratorAction::kDebugToggleShowDebugBorders:
@@ -748,9 +746,6 @@ bool EnumTraits<mojom_acceleartor_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_acceleartor_action::kDebugToggleDynamicColor:
       *out = ash::AcceleratorAction::kDebugToggleDynamicColor;
-      return true;
-    case mojom_acceleartor_action::kDebugToggleGlanceables:
-      *out = ash::AcceleratorAction::kDebugToggleGlanceables;
       return true;
     case mojom_acceleartor_action::kDebugTogglePowerButtonMenu:
       *out = ash::AcceleratorAction::kDebugTogglePowerButtonMenu;
