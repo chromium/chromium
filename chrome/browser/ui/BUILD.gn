@@ -1334,6 +1334,8 @@ static_library("ui") {
       "safety_hub/password_status_check_service.h",
       "safety_hub/password_status_check_service_factory.cc",
       "safety_hub/password_status_check_service_factory.h",
+      "safety_hub/safety_hub_constants.cc",
+      "safety_hub/safety_hub_constants.h",
       "safety_hub/safety_hub_prefs.cc",
       "safety_hub/safety_hub_prefs.h",
       "safety_hub/safety_hub_service.cc",

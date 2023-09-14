@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -43,12 +44,6 @@ namespace {
 constexpr char kExpirationKey[] = "expiration";
 // Key of the lifetime in the |UnusedSitePermissions| object.
 constexpr char kLifetimeKey[] = "lifetime";
-// Key of the header in |CardInfo| object.
-constexpr char kHeader[] = "header";
-// Key of the subheader in |CardInfo| object.
-constexpr char kSubheader[] = "subheader";
-// Key of the state in |CardInfo| object.
-constexpr char kState[] = "state";
 
 // Get values from |UnusedSitePermission| object in
 // safety_hub_browser_proxy.ts.
@@ -111,14 +106,17 @@ SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
   return SafeBrowsingState::kDisabledByUser;
 }
 
-base::Value::Dict GetSafeBrowsingCardData(int header_id,
-                                          int subheader_id,
-                                          SafetyHubCardState card_state) {
+base::Value::Dict GetSafeBrowsingCardData(
+    int header_id,
+    int subheader_id,
+    safety_hub::SafetyHubCardState card_state) {
   base::Value::Dict sb_card_info;
 
-  sb_card_info.Set(kHeader, l10n_util::GetStringUTF16(header_id));
-  sb_card_info.Set(kSubheader, l10n_util::GetStringUTF16(subheader_id));
-  sb_card_info.Set(kState, static_cast<int>(card_state));
+  sb_card_info.Set(safety_hub::kCardHeaderKey,
+                   l10n_util::GetStringUTF16(header_id));
+  sb_card_info.Set(safety_hub::kCardSubheaderKey,
+                   l10n_util::GetStringUTF16(subheader_id));
+  sb_card_info.Set(safety_hub::kCardStateKey, static_cast<int>(card_state));
 
   return sb_card_info;
 }
@@ -395,31 +393,31 @@ void SafetyHubHandler::HandleGetSafeBrowsingCardData(
       sb_card_info = GetSafeBrowsingCardData(
           IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER,
           IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER,
-          SafetyHubCardState::kSafe);
+          safety_hub::SafetyHubCardState::kSafe);
       break;
     case SafeBrowsingState::kEnabledStandard:
       sb_card_info = GetSafeBrowsingCardData(
           IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER,
           IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER,
-          SafetyHubCardState::kSafe);
+          safety_hub::SafetyHubCardState::kSafe);
       break;
     case SafeBrowsingState::kDisabledByAdmin:
       sb_card_info = GetSafeBrowsingCardData(
           IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
           IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER,
-          SafetyHubCardState::kInfo);
+          safety_hub::SafetyHubCardState::kInfo);
       break;
     case SafeBrowsingState::kDisabledByExtension:
       sb_card_info = GetSafeBrowsingCardData(
           IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
           IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER,
-          SafetyHubCardState::kInfo);
+          safety_hub::SafetyHubCardState::kInfo);
       break;
     default:
       sb_card_info =
           GetSafeBrowsingCardData(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
                                   IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER,
-                                  SafetyHubCardState::kWarning);
+                                  safety_hub::SafetyHubCardState::kWarning);
   }
 
   ResolveJavascriptCallback(callback_id, sb_card_info);
@@ -553,45 +551,52 @@ base::Value::Dict SafetyHubHandler::GetPasswordCardData(int compromised_count,
   // TODO(crbug.com/1443466): Handle edge cases: User is signed out, passwords
   // are disabled due to enterprise policy, or no check has yet taken place.
   if (compromised_count > 0) {
-    result.Set(kHeader, l10n_util::GetPluralStringFUTF16(
-                            IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
-                            compromised_count));
-    result.Set(kSubheader,
+    result.Set(safety_hub::kCardHeaderKey,
+               l10n_util::GetPluralStringFUTF16(
+                   IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
+                   compromised_count));
+    result.Set(safety_hub::kCardSubheaderKey,
                l10n_util::GetStringUTF16(
                    IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
-    result.Set(kState, static_cast<int>(SafetyHubCardState::kWarning));
+    result.Set(safety_hub::kCardStateKey,
+               static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
     return result;
   }
 
   if (reused_count > 0) {
-    result.Set(kHeader, l10n_util::GetPluralStringFUTF16(
-                            IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT,
-                            reused_count));
-    result.Set(kSubheader, l10n_util::GetStringUTF16(
-                               IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS));
-    result.Set(kState, static_cast<int>(SafetyHubCardState::kWeak));
+    result.Set(
+        safety_hub::kCardHeaderKey,
+        l10n_util::GetPluralStringFUTF16(
+            IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT, reused_count));
+    result.Set(safety_hub::kCardSubheaderKey,
+               l10n_util::GetStringUTF16(
+                   IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS));
+    result.Set(safety_hub::kCardStateKey,
+               static_cast<int>(safety_hub::SafetyHubCardState::kWeak));
     return result;
   }
 
   if (weak_count > 0) {
-    result.Set(kHeader,
+    result.Set(safety_hub::kCardHeaderKey,
                l10n_util::GetPluralStringFUTF16(
                    IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT, weak_count));
-    result.Set(kSubheader, l10n_util::GetStringUTF16(
-                               IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS));
-    result.Set(kState, static_cast<int>(SafetyHubCardState::kWeak));
+    result.Set(
+        safety_hub::kCardSubheaderKey,
+        l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS));
+    result.Set(safety_hub::kCardStateKey,
+               static_cast<int>(safety_hub::SafetyHubCardState::kWeak));
     return result;
   }
 
   // No issues, the card is in the safe state.
-  result.Set(kHeader,
+  result.Set(safety_hub::kCardHeaderKey,
              l10n_util::GetPluralStringFUTF16(
                  IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT, 0));
   // The subheader string depends on how much time has passed since the last
   // check.
   base::TimeDelta time_delta = base::Time::Now() - last_check;
   if (time_delta < base::Minutes(1)) {
-    result.Set(kSubheader,
+    result.Set(safety_hub::kCardSubheaderKey,
                l10n_util::GetStringUTF16(
                    IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_RECENTLY));
   } else {
@@ -599,12 +604,13 @@ base::Value::Dict SafetyHubHandler::GetPasswordCardData(int compromised_count,
         ui::TimeFormat::Simple(ui::TimeFormat::Format::FORMAT_DURATION,
                                ui::TimeFormat::Length::LENGTH_LONG, time_delta);
     result.Set(
-        kSubheader,
+        safety_hub::kCardSubheaderKey,
         l10n_util::GetStringFUTF16(
             IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_SOME_TIME_AGO,
             last_check_string));
   }
-  result.Set(kState, static_cast<int>(SafetyHubCardState::kSafe));
+  result.Set(safety_hub::kCardStateKey,
+             static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
 
   return result;
 }

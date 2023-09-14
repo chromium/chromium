@@ -25,17 +25,6 @@ enum class SafeBrowsingState {
   kMaxValue = kDisabledByUser,
 };
 
-// State that a top card in the SafetyHub page can be in.
-// Should be kept in sync with the corresponding enum in
-// chrome/browser/resources/settings/safety_hub/safety_hub_browser_proxy.ts
-enum class SafetyHubCardState {
-  kWarning = 0,
-  kWeak = 1,
-  kInfo = 2,
-  kSafe = 3,
-  kMaxValue = kSafe,
-};
-
 /**
  * This handler deals with the permission-related operations on the site
  * settings page.

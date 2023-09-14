@@ -51,7 +51,7 @@ export interface CardInfo {
  * A Safety Hub card has 4 different states as represented below. Depending on
  * the card state, the card will be updated.
  * Should be kept in sync with the corresponding enum in
- * chrome/browser/ui/webui/settings/safety_hub_handler.h.
+ * chrome/browser/ui/safety_hub/safety_hub_constants.h.
  */
 export enum CardState {
   WARNING,
