@@ -4100,6 +4100,7 @@ if (enable_nocompile_tests_new) {
     sources = [
       "callback_list_nocompile.nc",
       "no_destructor_nocompile.nc",
+      "values_nocompile.nc",
     ]
     deps = [ ":base" ]
   }
@@ -4134,7 +4135,6 @@ if (enable_nocompile_tests) {
       "traits_bag_unittest.nc",
       "types/pass_key_unittest.nc",
       "types/variant_util_unittest.nc",
-      "values_unittest.nc",
     ]
 
     deps = [

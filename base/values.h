@@ -400,7 +400,7 @@ class BASE_EXPORT GSL_OWNER Value {
     Value* Set(StringPiece key, Value&& value) &;
     Value* Set(StringPiece key, bool value) &;
     template <typename T>
-    Value* Set(StringPiece, const T*) = delete;
+    Value* Set(StringPiece, const T*) & = delete;
     Value* Set(StringPiece key, int value) &;
     Value* Set(StringPiece key, double value) &;
     Value* Set(StringPiece key, StringPiece value) &;
@@ -704,7 +704,7 @@ class BASE_EXPORT GSL_OWNER Value {
     void Append(Value&& value) &;
     void Append(bool value) &;
     template <typename T>
-    void Append(const T*) = delete;
+    void Append(const T*) & = delete;
     void Append(int value) &;
     void Append(double value) &;
     void Append(StringPiece value) &;
