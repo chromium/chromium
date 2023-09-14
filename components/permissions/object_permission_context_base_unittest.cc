@@ -106,6 +106,23 @@ TEST_F(ObjectPermissionContextBaseTest, GrantAndRevokeObjectPermissions) {
   EXPECT_EQ(0u, objects.size());
 }
 
+TEST_F(ObjectPermissionContextBaseTest, GrantAndRevokeAllObjectPermissions) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(3);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin1_, object2_.Clone());
+  auto objects = context_.GetGrantedObjects(origin1_);
+
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_)).Times(1);
+  context_.RevokeObjectPermissions(origin1_);
+
+  // All permissions have been revoked for the given origin.
+  objects = context_.GetGrantedObjects(origin1_);
+  EXPECT_EQ(0u, objects.size());
+}
+
 TEST_F(ObjectPermissionContextBaseTest, GrantObjectPermissionTwice) {
   MockPermissionObserver mock_observer;
   context_.AddObserver(&mock_observer);

@@ -226,6 +226,19 @@ void ObjectPermissionContextBase::RevokeObjectPermission(
   NotifyPermissionRevoked(origin);
 }
 
+bool ObjectPermissionContextBase::RevokeObjectPermissions(
+    const url::Origin& origin) {
+  auto origin_objects_it = objects().find(origin);
+  if (origin_objects_it == objects().end()) {
+    return false;
+  }
+
+  origin_objects_it->second.clear();
+  ScheduleSaveWebsiteSetting(origin);
+  NotifyPermissionRevoked(origin);
+  return true;
+}
+
 void ObjectPermissionContextBase::FlushScheduledSaveSettingsCalls() {
   // Persist any pending object updates that did not have the chance to be
   // persisted yet.

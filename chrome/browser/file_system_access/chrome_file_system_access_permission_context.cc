@@ -84,6 +84,7 @@ BASE_FEATURE(kFileSystemAccessLocalUNCPathBlock,
 namespace {
 
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
+using GrantStatus = ChromeFileSystemAccessPermissionContext::GrantStatus;
 using GrantType = ChromeFileSystemAccessPermissionContext::GrantType;
 using blink::mojom::PermissionStatus;
 using permissions::PermissionAction;
@@ -1928,6 +1929,30 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
     ScheduleUsageIconUpdate();
   }
 #endif
+}
+
+void ChromeFileSystemAccessPermissionContext::OnDontAllowRestorePrompt(
+    const url::Origin& origin) {
+  // Both denying and dismissing the restore prompt count as a `dismiss`
+  // action, for embargo purposes.
+  PermissionDecisionAutoBlockerFactory::GetForProfile(
+      Profile::FromBrowserContext(profile()))
+      ->RecordDismissAndEmbargo(
+          origin.GetURL(), ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, false);
+  OnRestorePermissionNotAllowed(origin);
+}
+
+void ChromeFileSystemAccessPermissionContext::OnRestorePermissionNotAllowed(
+    const url::Origin& origin) {
+  auto origin_it = active_permissions_map_.find(origin);
+  if (origin_it != active_permissions_map_.end()) {
+    OriginState& origin_state = origin_it->second;
+    origin_state.grant_status = GrantStatus::kCurrent;
+  }
+  // Revoke all of the persistent permissions for the given origin.
+  if (!OriginHasExtendedPermission(origin)) {
+    ObjectPermissionContextBase::RevokeObjectPermissions(origin);
+  }
 }
 
 bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(

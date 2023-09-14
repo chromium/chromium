@@ -151,6 +151,14 @@ class ObjectPermissionContextBase : public KeyedService {
   virtual void RevokeObjectPermission(const url::Origin& origin,
                                       const base::StringPiece key);
 
+  // Revokes a given `origin`'s permissions for access to all of its
+  // corresponding objects.
+  //
+  // This method may be extended by a subclass to revoke permissions to access
+  // objects returned by `GetGrantedObjects` but not stored in the
+  // `host_content_settings_map`.
+  virtual bool RevokeObjectPermissions(const url::Origin& origin);
+
   // Returns a string which is used to uniquely identify this object.
   virtual std::string GetKeyForObject(const base::Value::Dict& object) = 0;
 

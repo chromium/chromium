@@ -15,6 +15,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 
@@ -56,6 +57,22 @@ class ChromeFileSystemAccessPermissionContext
     : public content::FileSystemAccessPermissionContext,
       public permissions::ObjectPermissionContextBase {
  public:
+  // Represents the origin-scoped state for a given origin's permission grants.
+  // The associated `grant_status` value is stored on the `OriginState`, for
+  // the `active_permissions_map`.
+  // TODO(crbug.com/1011533): Update naming of this enum to better reflect
+  // its purpose, and move the definition to `OriginState` if needed.
+  enum class GrantStatus {
+    // Origin state has been loaded, and persisted grants can may represent
+    // Dormant grants if they exist, or Extended grants if Extended permissions
+    // are enabled.
+    kLoaded,
+    // Persisted grants are synced for this session and represent Shadow or
+    // Extended grants.
+    kCurrent,
+    // Persisted grants are in dormant state due to being backgrounded.
+    kBackgrounded
+  };
   enum class GrantType { kRead, kWrite };
 
   explicit ChromeFileSystemAccessPermissionContext(
@@ -136,6 +153,13 @@ class ChromeFileSystemAccessPermissionContext
     extended_permissions_settings_map_[origin] =
         ContentSetting::CONTENT_SETTING_ALLOW;
   }
+  // This method may only be called when the Persistent Permissions feature
+  // flag is enabled.
+  void OnDontAllowRestorePromptForTesting(const url::Origin& origin) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::kFileSystemAccessPersistentPermissions));
+    OnDontAllowRestorePrompt(origin);
+  }
   bool RevokeActiveGrantsForTesting(
       const url::Origin& origin,
       base::FilePath file_path = base::FilePath()) {
@@ -214,23 +238,6 @@ class ChromeFileSystemAccessPermissionContext
  private:
   class PermissionGrantImpl;
 
-  // Represents the origin-scoped state for a given origin's permission grants.
-  // The associated `grant_status` value is stored on the `OriginState`, for
-  // the `active_permissions_map`.
-  // TODO(crbug.com/1011533): Update naming of this enum to better reflect
-  // its purpose, and move the definition to `OriginState` if needed.
-  enum class GrantStatus {
-    // Origin state has been loaded, and persisted grants can may represent
-    // Dormant grants if they exist, or Extended grants if Extended permissions
-    // are enabled.
-    kLoaded,
-    // Persisted grants are synced for this session and represent Shadow or
-    // Extended grants.
-    kCurrent,
-    // Persisted grants are in dormant state due to being backgrounded.
-    kBackgrounded
-  };
-
   // This value should not be stored, and should only be used to check the
   // state of persisted grants, using the `GetPersistedGrantState()` method.
   enum class PersistedGrantState {
@@ -295,6 +302,14 @@ class ChromeFileSystemAccessPermissionContext
   // Checks if any tabs are open for |origin|, and if not revokes all active
   // permissions for that origin.
   void MaybeCleanupActivePermissions(const url::Origin& origin);
+
+  // Called when the restore prompt is dismissed or denied.
+  void OnDontAllowRestorePrompt(const url::Origin& origin);
+
+  // Updates the `grant_status` and / or the persisted grants for a given
+  // origin, in the case that either the restore prompt is denied, dismissed,
+  // or ignored by the user.
+  void OnRestorePermissionNotAllowed(const url::Origin& origin);
 
   bool AncestorHasActivePermission(const url::Origin& origin,
                                    const base::FilePath& path,

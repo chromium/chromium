@@ -26,11 +26,13 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/render_process_host.h"
@@ -1325,6 +1327,80 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   auto permission_request_outcome = future.Get();
   EXPECT_NE(PermissionRequestOutcome::kGrantedByRestorePrompt,
             permission_request_outcome);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest, RejectRestorePrompt) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  grant.reset();
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // Trigger the restore prompt.
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kLoadFromStorage);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+
+  // Persistent grants are cleared as a result of restore prompt
+  // rejection, when Extended Permissions is not enabled.
+  // The origin is not embargoed, when the restore prompt is rejected
+  // one time.
+  permission_context()->OnDontAllowRestorePromptForTesting(kTestOrigin);
+  EXPECT_EQ(0UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
+  auto origin_is_embargoed =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(profile()))
+          ->IsEmbargoed(kTestOrigin.GetURL(),
+                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_FALSE(origin_is_embargoed);
+
+  //  Check that origin is placed under embargo after being ignored
+  // `kDefaultDismissalsBeforeBlock` times.
+  permission_context()->OnDontAllowRestorePromptForTesting(kTestOrigin);
+  // The origin is not embargoed after being ignored 2 times, when the
+  // limit set by `kDefaultDismissalsBeforeBlock` is 3.
+  auto origin_is_embargoed_updated =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(profile()))
+          ->IsEmbargoed(kTestOrigin.GetURL(),
+                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_FALSE(origin_is_embargoed_updated);
+  // The origin is embargoed, after reaching the ignore limit set by
+  // `kDefaultDismissalsBeforeBlock`.
+  permission_context()->OnDontAllowRestorePromptForTesting(kTestOrigin);
+  auto origin_is_embargoed_after_rejection_limit =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          Profile::FromBrowserContext(profile()))
+          ->IsEmbargoed(kTestOrigin.GetURL(),
+                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_TRUE(origin_is_embargoed_after_rejection_limit);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       RejectRestorePrompt_ExtendedPermissionsEnabled) {
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  // TODO(crbug.com/1011533): Update this test to navigate away from the page,
+  // instead of manually resetting the grant.
+  grant.reset();
+  permission_context()->RevokeActiveGrantsForTesting(kTestOrigin);
+
+  // Trigger the restore prompt.
+  grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kLoadFromStorage);
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+
+  // Persisted grants are NOT cleared by restore prompt rejection when Extended
+  // Permissions is enabled, and the origin is not embargoed after only being
+  // rejected one time.
+  permission_context()->OnDontAllowRestorePromptForTesting(kTestOrigin);
+  EXPECT_EQ(1UL, permission_context()->GetGrantedObjects(kTestOrigin).size());
 }
 
 TEST_F(
