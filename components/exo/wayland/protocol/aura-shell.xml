@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="60">
+  <interface name="zaura_shell" version="61">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -189,6 +189,16 @@
       </description>
     </event>
 
+    <!-- Version 61 additions -->
+    <event name="window_corners_radii" since="61">
+      <description summary="sends the radius of each corner the window">
+        Sends the radius of each corner of the window to the clients in dips.
+      </description>
+      <arg name="upper_left_radius" type="uint"/>
+      <arg name="upper_right_radius" type="uint"/>
+      <arg name="lower_right_radius" type="uint"/>
+      <arg name="lower_left_radius" type="uint"/>
+    </event>
   </interface>
 
   <interface name="zaura_surface" version="51">
