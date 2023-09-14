@@ -93,6 +93,11 @@ class FakeDownloadDisplay : public DownloadDisplay {
   void ShowDetails() override { detail_shown_ = true; }
   void HideDetails() override { detail_shown_ = false; }
   bool IsShowingDetails() const override { return detail_shown_; }
+  bool OpenMostSpecificDialog(
+      const offline_items_collection::ContentId& content_id) override {
+    detail_shown_ = true;
+    return true;
+  }
   bool IsFullscreenWithParentViewHidden() const override {
     return is_fullscreen_;
   }

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -27,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -260,7 +262,7 @@ TEST_P(DownloadBubbleContentsViewTest, SwitchPages) {
 
   // Switch back to primary view. The security view should be reset and not
   // crash.
-  contents_view_->ShowPrimaryPage();
+  EXPECT_EQ(nullptr, contents_view_->ShowPrimaryPage());
   EXPECT_EQ(contents_view_->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
   EXPECT_FALSE(contents_view_->security_view_for_testing()->IsInitialized());
@@ -277,7 +279,7 @@ TEST_P(DownloadBubbleContentsViewTest, SwitchPages) {
 
   // Switch back to primary view. The security view should be reset and not
   // crash.
-  contents_view_->ShowPrimaryPage();
+  EXPECT_EQ(nullptr, contents_view_->ShowPrimaryPage());
   EXPECT_EQ(contents_view_->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
   EXPECT_FALSE(contents_view_->security_view_for_testing()->IsInitialized());
@@ -294,6 +296,21 @@ TEST_P(DownloadBubbleContentsViewTest, SwitchPages) {
 
   // Should not crash.
   contents_view_.reset();
+}
+
+TEST_P(DownloadBubbleContentsViewTest, ShowPrimaryPageSpecifyingContentId) {
+  DownloadBubbleRowView* expected_row =
+      contents_view_->GetPrimaryViewRowForTesting(0);
+  EXPECT_EQ(
+      expected_row,
+      contents_view_->ShowPrimaryPage(
+          OfflineItemUtils::GetContentIdForDownload(download_items_[0].get())));
+  EXPECT_EQ(contents_view_->VisiblePage(),
+            DownloadBubbleContentsView::Page::kPrimary);
+  EXPECT_TRUE(contents_view_->primary_view_for_testing()
+                  ->scroll_view_for_testing()
+                  ->GetVisibleRect()
+                  .Contains(expected_row->bounds()));
 }
 
 TEST_P(DownloadBubbleContentsViewTest, ProcessSecuritySubpageButtonPress) {

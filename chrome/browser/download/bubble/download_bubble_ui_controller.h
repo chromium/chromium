@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace offline_items_collection {
+struct ContentId;
+}
+
 // This handles the window-level logic for controlling the download bubble.
 // There is one instance of this class per browser window, and it is owned by
 // the download toolbar button.
@@ -39,7 +43,7 @@ class DownloadBubbleUIController {
   DownloadBubbleUIController(const DownloadBubbleUIController&) = delete;
   DownloadBubbleUIController& operator=(const DownloadBubbleUIController&) =
       delete;
-  ~DownloadBubbleUIController();
+  virtual ~DownloadBubbleUIController();
 
   // These methods are called to notify the UI of new events.
   // |may_show_animation| is whether the window this controller belongs to may
@@ -60,13 +64,15 @@ class DownloadBubbleUIController {
 
   // Get the entries for the main view of the Download Bubble. The main view
   // contains all the recent downloads (finished within the last 24 hours).
-  std::vector<DownloadUIModel::DownloadUIModelPtr> GetMainView();
+  // Virtual for testing.
+  virtual std::vector<DownloadUIModel::DownloadUIModelPtr> GetMainView();
 
   // Get the entries for the partial view of the Download Bubble. The partial
   // view contains in-progress and uninteracted downloads, meant to capture the
   // user's recent tasks. This can only be opened by the browser in the event of
   // new downloads, and user action only creates a main view.
-  std::vector<DownloadUIModel::DownloadUIModelPtr> GetPartialView();
+  // Virtual for testing.
+  virtual std::vector<DownloadUIModel::DownloadUIModelPtr> GetPartialView();
 
   // Process button press on the bubble.
   void ProcessDownloadButtonPress(base::WeakPtr<DownloadUIModel> model,
@@ -75,6 +81,12 @@ class DownloadBubbleUIController {
 
   // Notify when a download toolbar button (in any window) is pressed.
   void HandleButtonPressed();
+
+  // Opens the primary dialog to the item and scrolls to the item, and opens
+  // the security dialog if the item has a security warning. Returns whether
+  // bubble was opened to the requested item.
+  bool OpenMostSpecificDialog(
+      const offline_items_collection::ContentId& content_id);
 
   // Returns whether the incognito icon should be shown for the download.
   bool ShouldShowIncognitoIcon(const DownloadUIModel* model) const;

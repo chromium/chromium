@@ -192,10 +192,10 @@ class DownloadTestBase : public InProcessBrowserTest {
                               const base::FilePath& downloaded_file,
                               const base::FilePath& origin_file);
 
-  content::DownloadTestObserver* CreateInProgressDownloadObserver(
-      size_t download_count);
-
-  download::DownloadItem* CreateSlowTestDownload();
+  // Creates an in-progress download and returns a pointer to its DownloadItem.
+  // Either supply a `browser` or the `browser()` in the test fixture will be
+  // used.
+  download::DownloadItem* CreateSlowTestDownload(Browser* browser = nullptr);
 
   bool RunSizeTest(Browser* browser,
                    SizeTestType type,

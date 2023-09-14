@@ -42,13 +42,6 @@ using WarningSurface = DownloadItemWarningData::WarningSurface;
 using WarningAction = DownloadItemWarningData::WarningAction;
 using WarningActionEvent = DownloadItemWarningData::WarningActionEvent;
 
-class MockDownloadBubbleUIController : public DownloadBubbleUIController {
- public:
-  explicit MockDownloadBubbleUIController(Browser* browser)
-      : DownloadBubbleUIController(browser) {}
-  ~MockDownloadBubbleUIController() = default;
-};
-
 class MockDownloadBubbleNavigationHandler
     : public DownloadBubbleNavigationHandler {
  public:
@@ -148,7 +141,7 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
     bubble_delegate_->GetWidget()->Show();
     bubble_controller_ =
-        std::make_unique<MockDownloadBubbleUIController>(browser_.get());
+        std::make_unique<DownloadBubbleUIController>(browser_.get());
     security_view_ = bubble_delegate_->SetContentsView(
         std::make_unique<DownloadBubbleSecurityView>(
             security_view_delegate_.get(), bubble_navigator_->GetWeakPtr(),
@@ -208,7 +201,7 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
       security_view_delegate_;
   raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
       nullptr;
-  std::unique_ptr<MockDownloadBubbleUIController> bubble_controller_;
+  std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   std::unique_ptr<MockDownloadBubbleNavigationHandler> bubble_navigator_;
   raw_ptr<DownloadBubbleSecurityView, DanglingUntriaged> security_view_ =
       nullptr;

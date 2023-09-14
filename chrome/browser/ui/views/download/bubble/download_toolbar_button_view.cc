@@ -357,13 +357,6 @@ void DownloadToolbarButtonView::OpenSecuritySubpage(
 // we do not show the partial view. If the partial view is already showing,
 // there is nothing to do here, the controller should update the partial view.
 void DownloadToolbarButtonView::ShowDetails() {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  // If we are in immersive fullscreen, reveal the toolbar to show the bubble.
-  if (browser_view && browser_view->immersive_mode_controller()) {
-    immersive_revealed_lock_ =
-        browser_view->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES);
-  }
   if (bubble_delegate_) {
     return;
   }
@@ -372,6 +365,30 @@ void DownloadToolbarButtonView::ShowDetails() {
     auto_close_bubble_timer_.Reset();
   }
   CreateBubbleDialogDelegate();
+}
+
+bool DownloadToolbarButtonView::OpenMostSpecificDialog(
+    const offline_items_collection::ContentId& content_id) {
+  if (!IsShowing()) {
+    Show();
+  }
+
+  if (!bubble_delegate_) {
+    // This should behave similarly to a normal button press on the toolbar
+    // button, so create the main view.
+    is_primary_partial_view_ = false;
+    CreateBubbleDialogDelegate();
+  }
+
+  DownloadBubbleRowView* row = ShowPrimaryDialogRow(content_id);
+
+  // Open the more specific security subpage if it has one.
+  if (row && row->ui_info().HasSubpage()) {
+    // TODO(b:279794441): Add warning action event for this warning being shown
+    // from a notification.
+    OpenSecurityDialog(content_id);
+  }
+  return row != nullptr;
 }
 
 void DownloadToolbarButtonView::HideDetails() {
@@ -467,14 +484,20 @@ DownloadToolbarButtonView::GetPrimaryViewModels() {
 }
 
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
+  ShowPrimaryDialogRow(absl::nullopt);
+}
+
+DownloadBubbleRowView* DownloadToolbarButtonView::ShowPrimaryDialogRow(
+    absl::optional<ContentId> content_id) {
   if (!bubble_delegate_) {
-    return;
+    return nullptr;
   }
-  bubble_contents_->ShowPrimaryPage();
+  DownloadBubbleRowView* row = bubble_contents_->ShowPrimaryPage(content_id);
   bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->set_margins(GetPrimaryViewMargin());
   ResizeDialog();
+  return row;
 }
 
 void DownloadToolbarButtonView::OpenSecurityDialog(
@@ -522,6 +545,15 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   if (primary_view_models.empty()) {
     return;
   }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  // If we are in immersive fullscreen, reveal the toolbar to show the bubble.
+  if (browser_view && browser_view->immersive_mode_controller()) {
+    immersive_revealed_lock_ =
+        browser_view->immersive_mode_controller()->GetRevealedLock(
+            ImmersiveModeController::ANIMATE_REVEAL_YES);
+  }
+
   // If the IPH is showing, close it to avoid showing the download dialog over
   // it.
   browser_->window()->CloseFeaturePromo(
@@ -554,8 +586,9 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
 
   if (!is_primary_partial_view_ && !button_click_time_.is_null()) {
-    // The main view is shown after clicking on the toolbar button.
-    // Record the time from click to shown.
+    // If the main view was shown after clicking on the toolbar button,
+    // record the time from click to shown. (The main view can be shown without
+    // clicking the toolbar button, e.g. from clicking on a notification.)
     bubble_delegate_->GetWidget()
         ->GetCompositor()
         ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
@@ -717,6 +750,11 @@ void DownloadToolbarButtonView::DisableDownloadStartedAnimationForTesting() {
 
 DownloadDisplay::IconState DownloadToolbarButtonView::GetIconState() const {
   return state_;
+}
+
+void DownloadToolbarButtonView::SetBubbleControllerForTesting(
+    std::unique_ptr<DownloadBubbleUIController> bubble_controller) {
+  bubble_controller_ = std::move(bubble_controller);
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)

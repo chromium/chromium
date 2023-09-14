@@ -59,9 +59,13 @@ class DownloadBubbleContentsView : public views::View,
   DownloadBubbleContentsView& operator=(const DownloadBubbleContentsView&) =
       delete;
 
-  // Switches to the requested page by showing the page and hiding all other
-  // pages.
-  void ShowPrimaryPage();
+  // Shows the primary page. If `id` is supplied, looks for the row with the
+  // given id, and if it is found, scrolls the primary view to that row and
+  // returns a pointer to that row. Returns nullptr if the row was not found,
+  // or if no id was supplied.
+  DownloadBubbleRowView* ShowPrimaryPage(
+      absl::optional<offline_items_collection::ContentId> id = absl::nullopt);
+
   // Initializes security page for the download with the given id, and switches
   // to it. `id` must refer to a valid download with a row in the primary view.
   void ShowSecurityPage(const offline_items_collection::ContentId& id);
@@ -85,15 +89,15 @@ class DownloadBubbleContentsView : public views::View,
   // Gets the row view at the given index.
   DownloadBubbleRowView* GetPrimaryViewRowForTesting(size_t index);
 
+  DownloadBubblePrimaryView* primary_view_for_testing() {
+    return primary_view_;
+  }
+
   DownloadBubbleSecurityView* security_view_for_testing() {
     return security_view_;
   }
 
  private:
-  // Switches to the page that should currently be showing.
-  void SwitchToCurrentPage(
-      absl::optional<offline_items_collection::ContentId> id);
-
   void InitializeSecurityView(const offline_items_collection::ContentId& id);
 
   // Gets the model from the row view in the primary view for the download with

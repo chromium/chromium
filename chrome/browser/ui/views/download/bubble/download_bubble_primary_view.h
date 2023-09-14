@@ -45,6 +45,8 @@ class DownloadBubblePrimaryView : public views::FlexLayoutView {
   // Gets the row view at the given index.
   DownloadBubbleRowView* GetRowForTesting(size_t index);
 
+  views::ScrollView* scroll_view_for_testing() { return scroll_view_; }
+
  protected:
   // TODO(crbug.com/1344515): Add support for refreshing the scroll view
   // contents.

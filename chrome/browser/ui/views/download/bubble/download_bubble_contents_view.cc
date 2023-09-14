@@ -57,7 +57,7 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
       download::IsDownloadBubbleV2Enabled(browser->profile())));
 
   // Starts on the primary page.
-  SwitchToCurrentPage(absl::nullopt);
+  ShowPrimaryPage();
 }
 
 DownloadBubbleContentsView::~DownloadBubbleContentsView() {
@@ -69,21 +69,30 @@ DownloadBubbleRowView* DownloadBubbleContentsView::GetPrimaryViewRowForTesting(
   return primary_view_->GetRowForTesting(index);  // IN-TEST
 }
 
-void DownloadBubbleContentsView::ShowPrimaryPage() {
-  if (page_ == Page::kPrimary) {
-    return;
-  }
+DownloadBubbleRowView* DownloadBubbleContentsView::ShowPrimaryPage(
+    absl::optional<offline_items_collection::ContentId> id) {
+  CHECK(!id || *id != ContentId());
+  security_view_->SetVisible(false);
+  security_view_->Reset();
   page_ = Page::kPrimary;
-  SwitchToCurrentPage(absl::nullopt);
+  primary_view_->SetVisible(true);
+  if (!id) {
+    return nullptr;
+  }
+  if (DownloadBubbleRowView* row = primary_view_->GetRow(*id); row) {
+    row->ScrollViewToVisible();
+    return row;
+  }
+  return nullptr;
 }
 
 void DownloadBubbleContentsView::ShowSecurityPage(const ContentId& id) {
   CHECK(id != ContentId());
-  if (page_ == Page::kSecurity && security_view_->content_id() == id) {
-    return;
-  }
+  primary_view_->SetVisible(false);
   page_ = Page::kSecurity;
-  SwitchToCurrentPage(id);
+  InitializeSecurityView(id);
+  security_view_->UpdateAccessibilityTextAndFocus();
+  security_view_->SetVisible(true);
 }
 
 DownloadBubbleContentsView::Page DownloadBubbleContentsView::VisiblePage()
@@ -154,31 +163,6 @@ bool DownloadBubbleContentsView::HasPreviousIncorrectPassword(
   }
 
   return false;
-}
-
-void DownloadBubbleContentsView::SwitchToCurrentPage(
-    absl::optional<ContentId> id) {
-  primary_view_->SetVisible(false);
-  security_view_->SetVisible(false);
-
-  switch (page_) {
-    case Page::kPrimary: {
-      // It is invalid to pass a specific download id to open the primary view.
-      // TODO(chlily): This will become valid when Lacros SysUI integration
-      // makes it possible to open the primary view to a specific download.
-      CHECK(!id);
-      primary_view_->SetVisible(true);
-      security_view_->Reset();
-      break;
-    }
-    case Page::kSecurity: {
-      CHECK(id);
-      InitializeSecurityView(*id);
-      security_view_->UpdateAccessibilityTextAndFocus();
-      security_view_->SetVisible(true);
-      break;
-    }
-  }
 }
 
 DownloadUIModel* DownloadBubbleContentsView::GetDownloadModel(

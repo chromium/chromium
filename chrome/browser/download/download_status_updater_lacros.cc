@@ -8,13 +8,18 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/notreached.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -23,6 +28,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/types/display_constants.h"
 
 namespace {
 
@@ -158,9 +164,73 @@ class DownloadStatusUpdater::Delegate
 
   void ShowInBrowser(const std::string& guid,
                      ShowInBrowserCallback callback) override {
-    // TODO(http://b/279794441): Implement.
-    NOTIMPLEMENTED();
+    // Look up the profile from the download item and find a relevant browser to
+    // display the download bubble in.
+    Profile* profile = nullptr;
+    Browser* browser = nullptr;
+    if (download::DownloadItem* item = GetDownloadItem(guid); item) {
+      content::BrowserContext* browser_context =
+          content::DownloadItemUtils::GetBrowserContext(item);
+      profile = Profile::FromBrowserContext(browser_context);
+      if (profile) {
+        // TODO(chlily): This doesn't work for web app initiated downloads.
+        browser = chrome::FindTabbedBrowser(profile,
+                                            /*match_original_profiles=*/false,
+                                            display::kInvalidDisplayId,
+                                            /*ignore_closing_browsers=*/true);
+      }
+    }
+
+    if (browser) {
+      // If we found an appropriate browser, show the download bubble in it.
+      OnBrowserLocated(guid, std::move(callback), browser);
+      return;
+    } else if (profile) {
+      // Otherwise, attempt to open a new browser window and do the same.
+      // This can happen if the last browser window shuts down while there are
+      // downloads in progress, and the profile is kept alive. (Some downloads
+      // do not block browser shutdown.)
+      profiles::OpenBrowserWindowForProfile(
+          base::BindOnce(&DownloadStatusUpdater::Delegate::OnBrowserLocated,
+                         weak_factory_.GetWeakPtr(), guid, std::move(callback)),
+          /*always_create=*/false,
+          /*is_new_profile=*/false, /*unblock_extensions=*/true, profile);
+      return;
+    }
     std::move(callback).Run(/*handled=*/false);
+  }
+
+  void OnBrowserLocated(const std::string& guid,
+                        ShowInBrowserCallback callback,
+                        Browser* browser) {
+    if (!browser || !browser->window()) {
+      std::move(callback).Run(/*handled=*/false);
+      return;
+    }
+
+    // Activate the browser so that the bubble or chrome://downloads page can be
+    // visible.
+    if (browser->window()->IsMinimized()) {
+      browser->window()->Restore();
+    }
+    browser->window()->Activate();
+
+    bool showed_bubble = false;
+    DownloadBubbleUIController* bubble_controller =
+        browser->window()->GetDownloadBubbleUIController();
+    // Look up the guid again because the item may have been removed in the
+    // meantime.
+    if (download::DownloadItem* item = GetDownloadItem(guid);
+        item && bubble_controller) {
+      offline_items_collection::ContentId content_id =
+          OfflineItemUtils::GetContentIdForDownload(item);
+      showed_bubble = bubble_controller->OpenMostSpecificDialog(content_id);
+    }
+    if (!showed_bubble) {
+      // Fall back to showing chrome://downloads.
+      chrome::ShowDownloads(browser);
+    }
+    std::move(callback).Run(/*handled=*/true);
   }
 
   // The receiver bound to `this` for use by crosapi.
@@ -168,6 +238,8 @@ class DownloadStatusUpdater::Delegate
 
   // Callback allowing the lookup of DownloadItem*s from guids.
   GetDownloadItemCallback get_download_item_callback_;
+
+  base::WeakPtrFactory<DownloadStatusUpdater::Delegate> weak_factory_{this};
 };
 
 // DownloadStatusUpdater -------------------------------------------------------

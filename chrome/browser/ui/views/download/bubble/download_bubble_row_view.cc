@@ -263,6 +263,10 @@ bool DownloadBubbleRowView::StartLoadFileIcon() {
   // IconLoader::SMALL returns 16x16 icon and IconLoader::NORMAL returns 32x32
   // icon. CR2023 resizes NORMAL-sized icons to 20x20.
   IconManager* const im = g_browser_process->icon_manager();
+  // Can be null in tests.
+  if (!im) {
+    return false;
+  }
   const gfx::Image* const image =
       im->LookupIconFromFilepath(file_path, icon_loader_size, current_scale_);
   if (image && !image->IsEmpty()) {

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "components/offline_items_collection/core/offline_item.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -29,6 +30,7 @@ class Browser;
 class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleContentsView;
+class DownloadBubbleRowView;
 class DownloadBubbleUIController;
 
 class DownloadBubbleNavigationHandler {
@@ -83,6 +85,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool ShouldShowExclusiveAccessBubble() const override;
   void OpenSecuritySubpage(
       const offline_items_collection::ContentId& id) override;
+  bool OpenMostSpecificDialog(
+      const offline_items_collection::ContentId& content_id) override;
   IconState GetIconState() const override;
 
   // ToolbarButton:
@@ -122,6 +126,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
     return bubble_contents_;
   }
 
+  void SetBubbleControllerForTesting(
+      std::unique_ptr<DownloadBubbleUIController> bubble_controller);
+
  private:
   // Max download count to show in the badge. Any higher number of downloads
   // results in a placeholder ("9+").
@@ -143,6 +150,11 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void ButtonPressed();
   void CreateBubbleDialogDelegate();
   void OnBubbleClosing();
+
+  // Opens primary dialog and shows the item with given id, if found. Returns
+  // pointer to the row if found, or nullptr if not found.
+  DownloadBubbleRowView* ShowPrimaryDialogRow(
+      absl::optional<offline_items_collection::ContentId> content_id);
 
   // Callback invoked when the partial view is closed.
   void OnPartialViewClosed();
