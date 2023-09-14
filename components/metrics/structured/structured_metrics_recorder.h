@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -88,6 +89,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
 
  protected:
   friend class TestStructuredMetricsProvider;
+  friend class StructuredMetricsMixin;
 
   // Should only be used for tests.
   //
@@ -99,6 +101,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
 
  private:
   friend class Recorder;
+  friend class StructuredMetricsMixin;
   friend class StructuredMetricsProviderTest;
   friend class StructuredMetricsRecorderTest;
   friend class StructuredMetricsRecorderHwidTest;
@@ -136,6 +139,11 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   void WriteNowForTest();
   void SetExternalMetricsDirForTest(const base::FilePath& dir);
   void SetOnReadyToRecord(base::OnceClosure callback);
+
+  // Sets a callback to be made every time an event is recorded. This is exposed
+  // so that tests can check if a specific event is recorded since recording
+  // happens asynchronously.
+  void SetEventRecordCallbackForTest(base::RepeatingClosure callback);
 
   // Records events before |init_state_| is kInitialized.
   void RecordEventBeforeInitialization(const Event& event);
@@ -241,6 +249,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   // A set of projects that are not allowed to be recorded. This is a cache of
   // GetDisabledProjects().
   base::flat_set<uint64_t> disallowed_projects_;
+
+  // Callbacks for tests whenever an event is recorded.
+  base::RepeatingClosure test_callback_on_record_ = base::DoNothing();
 
   // The number of scans of external metrics that occurred since the last
   // upload. This is only incremented if events were added by the scan.

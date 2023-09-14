@@ -265,6 +265,7 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
   RecordEvent(event);
 
   events_->QueueWrite();
+  test_callback_on_record_.Run();
 }
 
 absl::optional<int> StructuredMetricsRecorder::LastKeyRotation(
@@ -337,7 +338,11 @@ void StructuredMetricsRecorder::ProvideSystemProfile(
 }
 
 void StructuredMetricsRecorder::WriteNowForTest() {
-  events_->StartWrite();
+  // The event proto may not be initialized yet. Check that the proto is ready
+  // before attempting to write.
+  if (can_provide_metrics()) {
+    events_->StartWrite();
+  }
 }
 
 void StructuredMetricsRecorder::SetExternalMetricsDirForTest(
@@ -601,6 +606,11 @@ void StructuredMetricsRecorder::UpdateAndCheckInitState() {
     HashUnhashedEventsAndPersist();
     std::move(on_ready_callback_).Run();
   }
+}
+
+void StructuredMetricsRecorder::SetEventRecordCallbackForTest(
+    base::RepeatingClosure callback) {
+  test_callback_on_record_ = std::move(callback);
 }
 
 }  // namespace metrics::structured

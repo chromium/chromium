@@ -30,6 +30,17 @@ TestStructuredMetricsProvider::TestStructuredMetricsProvider() {
   }
 }
 
+TestStructuredMetricsProvider::TestStructuredMetricsProvider(
+    std::unique_ptr<StructuredMetricsRecorder> recorder)
+    : structured_metrics_recorder_(std::move(recorder)) {
+  system_profile_provider_ = std::make_unique<MetricsProvider>();
+  structured_metrics_provider_ =
+      std::unique_ptr<StructuredMetricsProvider>(new StructuredMetricsProvider(
+          /*write_delay=*/base::Seconds(0),
+          structured_metrics_recorder_.get()));
+  Recorder::GetInstance()->AddObserver(this);
+}
+
 TestStructuredMetricsProvider::~TestStructuredMetricsProvider() {
   Recorder::GetInstance()->RemoveObserver(this);
 }

@@ -15,7 +15,6 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
-#include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,71 +47,38 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    structured_metrics_mixin_.GetTestStructuredMetricsProvider()
-        ->EnableRecording();
-  }
-
-  void TearDownOnMainThread() override {
-    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
-
-    // A null callback is needed for when the logout event occurs. If not set,
-    // then the test would fail.
-    EventDelegate delegate;
-    structured_metrics_mixin_.GetTestStructuredMetricsProvider()
-        ->SetOnEventsRecordClosure(delegate);
-  }
-
-  void AddProfile() {
-    structured_metrics_mixin_.GetTestStructuredMetricsProvider()
-        ->AddProfilePath(base::FilePath(FILE_PATH_LITERAL("structured_metrics"))
-                             .Append(FILE_PATH_LITERAL("user_keys")));
-  }
-
-  void WaitUntilInit() {
-    // Wait for keys to be initialized and state to be propagated async.
-    structured_metrics_mixin_.GetTestStructuredMetricsProvider()
-        ->WaitUntilReady();
+    structured_metrics_mixin_.UpdateRecordingState(true);
   }
 
  protected:
   StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
-
- private:
-  base::test::ScopedRunLoopTimeout shortened_timeout_{FROM_HERE,
-                                                      base::Seconds(3)};
 };
 
 IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
                        SendValidEventAndSuccessfullyRecords) {
-  // Add a profile otherwise event will not be hashed. Then wait for
-  // initialization to occur.
-  AddProfile();
-  WaitUntilInit();
+  structured_metrics_mixin_.WaitUntilKeysReady();
 
   events::v2::test_project_one::TestEventOne test_event;
-  test_event.SetTestMetricOne("hash").SetTestMetricTwo(1);
 
-  // Wait for the test messages to have been received.
-  base::RunLoop run_loop;
+  EXPECT_THAT(test_event.project_name(), Eq("TestProjectOne"));
+  EXPECT_THAT(test_event.event_name(), Eq("TestEventOne"));
 
-  base::RepeatingCallback<void(const Event& event)> event_record_callback =
-      base::BindLambdaForTesting([&run_loop, this](const Event& event) {
-        EXPECT_THAT(event.project_name(), Eq("TestProjectOne"));
-        EXPECT_THAT(event.event_name(), Eq("TestEventOne"));
-        const StructuredEventProto* event_result =
-            structured_metrics_mixin_.GetTestStructuredMetricsProvider()
-                ->FindEvent(kProjectOneHash, kEventOneHash)
-                .value();
-        EXPECT_EQ(event_result->metrics_size(), 2);
-        EXPECT_EQ(event_result->metrics(0).name_hash(), kMetricOneHash);
-        EXPECT_EQ(event_result->metrics(1).name_hash(), kMetricTwoHash);
-        EXPECT_EQ(event_result->metrics(1).value_int64(), 1);
-        run_loop.Quit();
-      });
-  structured_metrics_mixin_.GetTestStructuredMetricsProvider()
-      ->SetOnEventsRecordClosure(event_record_callback);
+  int kTestMetricTwoValue = 1;
+
+  test_event.SetTestMetricOne("hash").SetTestMetricTwo(kTestMetricTwoValue);
   test_event.Record();
-  run_loop.Run();
+
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectOneHash,
+                                                   kEventOneHash);
+
+  StructuredEventProto event =
+      structured_metrics_mixin_.FindEvent(kProjectOneHash, kEventOneHash)
+          .value();
+
+  EXPECT_EQ(event.metrics_size(), 2);
+  EXPECT_EQ(event.metrics(0).name_hash(), kMetricOneHash);
+  EXPECT_EQ(event.metrics(1).name_hash(), kMetricTwoHash);
+  EXPECT_EQ(event.metrics(1).value_int64(), kTestMetricTwoValue);
 }
 
 // TODO(jongahn): Add a test that verifies behavior if an invalid event is sent.

@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
@@ -28,38 +30,28 @@
 #include "content/public/test/browser_test_utils.h"
 
 namespace metrics {
+namespace {
+
+// The name hash of "TestProjectOne".
+constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
+
+// The name hash of "TestProjectFive".
+constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
+
+// The name hash of "chrome::TestProjectOne::TestEventOne".
+constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
+
+// The name hash of "chrome::TestProjectFive::TestEventSix".
+constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
+
+}  // namespace
 
 metrics::structured::StructuredMetricsService* GetSMService() {
   return g_browser_process->GetMetricsServicesManager()
       ->GetStructuredMetricsService();
 }
 
-// A helper object for overriding metrics enabled state.
-class MetricsConsentOverride {
- public:
-  explicit MetricsConsentOverride(bool initial_state) : state_(initial_state) {
-    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-        &state_);
-    Update(initial_state);
-  }
-
-  ~MetricsConsentOverride() {
-    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-        nullptr);
-  }
-
-  void Update(bool state) {
-    state_ = state;
-    // Trigger rechecking of metrics state.
-    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
-        /*may_upload=*/true);
-  }
-
- private:
-  bool state_;
-};
-
-class StructuredMetricsServiceTestBase : public InProcessBrowserTest {
+class StructuredMetricsServiceTestBase : public MixinBasedInProcessBrowserTest {
  public:
   StructuredMetricsServiceTestBase() = default;
 
@@ -71,7 +63,11 @@ class StructuredMetricsServiceTestBase : public InProcessBrowserTest {
     return GetSMService()->reporting_service_->log_store()->has_staged_log();
   }
 
-  void Wait() { base::RunLoop().RunUntilIdle(); }
+  void WaitForConsentChanges() { base::RunLoop().RunUntilIdle(); }
+  void WaitUntilKeysReady() { structured_metrics_mixin_.WaitUntilKeysReady(); }
+
+ protected:
+  structured::StructuredMetricsMixin structured_metrics_mixin_{&mixin_host_};
 };
 
 class TestStructuredMetricsService : public StructuredMetricsServiceTestBase {
@@ -101,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, EnabledWithConsent) {
   auto* sm_service = GetSMService();
 
   // Enable consent for profile.
-  MetricsConsentOverride metrics_consent(true);
+  structured_metrics_mixin_.UpdateRecordingState(true);
 
   // Verify that recording and reporting are enabled.
   EXPECT_TRUE(sm_service->recording_enabled());
@@ -112,14 +108,14 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, DisabledWhenRevoked) {
   auto* sm_service = GetSMService();
 
   // Enable consent for profile.
-  MetricsConsentOverride metrics_consent(true);
+  structured_metrics_mixin_.UpdateRecordingState(true);
 
   // Verify that recording and reporting are enabled.
   EXPECT_TRUE(sm_service->recording_enabled());
   EXPECT_TRUE(sm_service->reporting_active());
 
   // Revoke consent.
-  metrics_consent.Update(false);
+  structured_metrics_mixin_.UpdateRecordingState(false);
 
   // Verify that recording and reporting are disabled.
   EXPECT_FALSE(sm_service->recording_enabled());
@@ -132,14 +128,17 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   auto* sm_service = GetSMService();
 
   // Enable consent for profile.
-  MetricsConsentOverride metrics_consent(true);
+  structured_metrics_mixin_.UpdateRecordingState(true);
 
-  // Wait for the consent to propagate.
-  Wait();
+  WaitForConsentChanges();
 
   // Verify that recording and reporting are enabled.
   EXPECT_TRUE(sm_service->recording_enabled());
   EXPECT_TRUE(sm_service->reporting_active());
+
+  // Keys must be ready for events to be recorded actively. Otherwise, they will
+  // be queued to be recorded and the test may fail.
+  WaitUntilKeysReady();
 
   // Record a couple of events and verify that they are recorded.
   structured::events::v2::test_project_one::TestEventOne()
@@ -151,13 +150,15 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
       .SetTestMetricSix("metric six")
       .Record();
 
-  // There should be at least the 2 events recorded above. There could be others
-  // such as login event.
-  EXPECT_THAT(sm_service->recorder()->events()->non_uma_events_size(),
-              testing::Ge(2));
+  // This will timeout and fail the test if events have not been recorded
+  // successfully.
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectOneHash,
+                                                   kEventOneHash);
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectFiveHash,
+                                                   kEventSixHash);
 
   // Change the consent to force a purge.
-  metrics_consent.Update(false);
+  structured_metrics_mixin_.UpdateRecordingState(false);
 
   // There shouldn't be any staged or un-staged logs and no in-memory events.
   EXPECT_FALSE(HasUnsentLogs());
@@ -179,14 +180,17 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   auto* sm_service = GetSMService();
 
   // Enable consent for profile.
-  MetricsConsentOverride metrics_consent(true);
+  structured_metrics_mixin_.UpdateRecordingState(true);
 
-  // Wait for the consent to propagate.
-  Wait();
+  WaitForConsentChanges();
 
   // Verify that recording and reporting are enabled.
   EXPECT_TRUE(sm_service->recording_enabled());
   EXPECT_TRUE(sm_service->reporting_active());
+
+  // Keys must be ready for events to be recorded actively. Otherwise, they will
+  // be queued to be recorded and the test may fail.
+  WaitUntilKeysReady();
 
   // Record a couple of events and verify that they are recorded.
   structured::events::v2::test_project_one::TestEventOne()
@@ -198,16 +202,18 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
       .SetTestMetricSix("metric six")
       .Record();
 
-  // There should be at least the 2 events recorded above. There could be others
-  // such as login event.
-  EXPECT_THAT(sm_service->recorder()->events()->non_uma_events_size(),
-              testing::Ge(2));
+  // This will timeout and fail the test if events have not been recorded
+  // successfully.
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectOneHash,
+                                                   kEventOneHash);
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectFiveHash,
+                                                   kEventSixHash);
 
   // Flush the in-memory events to a staged log.
   sm_service->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 
   // Change the consent to force a purge.
-  metrics_consent.Update(false);
+  structured_metrics_mixin_.UpdateRecordingState(false);
 
   // There shouldn't be any staged or un-staged logs and no in-memory events.
   EXPECT_FALSE(HasUnsentLogs());
@@ -221,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
   auto* sm_service = GetSMService();
 
   // Enable consent for profile.
-  MetricsConsentOverride metrics_consent(true);
+  structured_metrics_mixin_.UpdateRecordingState(true);
 
   // Everything should be null expect the recorder. The recorder is used by
   // StructuredMetricsProvider when the service is disabled; therefore, it

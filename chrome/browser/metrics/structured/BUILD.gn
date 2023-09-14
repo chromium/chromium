@@ -26,6 +26,9 @@ static_library("test_support") {
   ]
   deps = [
     "//chrome/test:test_support",
+    "//components/metrics/structured",
+    "//components/metrics/structured:structured_metrics_features",
     "//components/metrics/structured:test_support",
+    "//components/metrics_services_manager",
   ]
 }

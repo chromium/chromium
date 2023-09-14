@@ -8291,6 +8291,7 @@ test("unit_tests") {
       "//components/arc/common",
       "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
+      "//components/metrics/structured:structured_metrics_features",
       "//components/metrics/structured:test_support",
       "//components/omnibox/browser:vector_icons",
       "//components/services/app_service",

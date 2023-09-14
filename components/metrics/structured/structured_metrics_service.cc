@@ -195,4 +195,9 @@ StructuredMetricsService::GetLogStoreLimits() {
   };
 }
 
+void StructuredMetricsService::SetRecorderForTest(
+    std::unique_ptr<StructuredMetricsRecorder> recorder) {
+  recorder_ = std::move(recorder);
+}
+
 }  // namespace metrics::structured
