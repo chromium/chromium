@@ -430,7 +430,12 @@ TEST_F(ChromiumEnvDBTrackerTest, CheckMemEnv) {
 }
 
 // TODO(crbug.com/1482738): Fix and re-enable this test.
-TEST_F(ChromiumEnvDBTrackerTest, DISABLED_MemoryDumpCreation) {
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MemoryDumpCreation DISABLED_MemoryDumpCreation
+#else
+#define MAYBE_MemoryDumpCreation MemoryDumpCreation
+#endif  // BUILDFLAG(IS_ANDROID)
+TEST_F(ChromiumEnvDBTrackerTest, MAYBE_MemoryDumpCreation) {
   Options options;
   options.create_if_missing = true;
   leveldb::Cache* web_cache = leveldb_chrome::GetSharedWebBlockCache();
