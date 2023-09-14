@@ -4,16 +4,34 @@
 <head>
   <meta charset="utf-8">
   <style>
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: rgb(53, 54, 58);
+      }
+    }
+
+    html,
     body {
+      width: 0%;
+      height: 0%;
       margin: 0;
+      padding: 0;
     }
   </style>
 </head>
 
 <body>
-  <script type="module" src="hats.js"></script>
-  <h1>HaTS</h1>
-  <div id="example-div">This is a sample survey.</div>
+  <div id="surveyWrapper"></div>
 </body>
+
+<script>
+  const script = document.createElement("script");
+  script.src = "./hats.js";
+  script.type = "module";
+  script.onload = function () {
+    window.initializeHats();
+  };
+  document.body.appendChild(script);
+</script>
 
 </html>
