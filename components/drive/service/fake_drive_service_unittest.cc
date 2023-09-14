@@ -1230,7 +1230,13 @@ TEST_F(FakeDriveServiceTest, DownloadFile_Offline) {
 }
 
 TEST_F(FakeDriveServiceTest, CopyResource) {
-  const base::Time::Exploded kModifiedDate = {2012, 7, 0, 19, 15, 59, 13, 123};
+  static constexpr base::Time::Exploded kModifiedDate = {.year = 2012,
+                                                         .month = 7,
+                                                         .day_of_month = 19,
+                                                         .hour = 15,
+                                                         .minute = 59,
+                                                         .second = 13,
+                                                         .millisecond = 123};
 
   ASSERT_TRUE(test_util::SetUpTestEntries(&fake_service_));
 
@@ -1317,8 +1323,21 @@ TEST_F(FakeDriveServiceTest, CopyResource_Offline) {
 }
 
 TEST_F(FakeDriveServiceTest, UpdateResource) {
-  const base::Time::Exploded kModifiedDate = {2012, 7, 0, 19, 15, 59, 13, 123};
-  const base::Time::Exploded kViewedDate = {2013, 8, 1, 20, 16, 00, 14, 234};
+  static constexpr base::Time::Exploded kModifiedDate = {.year = 2012,
+                                                         .month = 7,
+                                                         .day_of_month = 19,
+                                                         .hour = 15,
+                                                         .minute = 59,
+                                                         .second = 13,
+                                                         .millisecond = 123};
+  static constexpr base::Time::Exploded kViewedDate = {.year = 2013,
+                                                       .month = 8,
+                                                       .day_of_week = 1,
+                                                       .day_of_month = 20,
+                                                       .hour = 16,
+                                                       .minute = 0,
+                                                       .second = 14,
+                                                       .millisecond = 234};
 
   ASSERT_TRUE(test_util::SetUpTestEntries(&fake_service_));
 

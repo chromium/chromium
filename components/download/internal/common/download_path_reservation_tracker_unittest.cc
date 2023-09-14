@@ -124,19 +124,16 @@ DownloadPathReservationTrackerTest::CreateDownloadItem(int32_t id) {
       .WillRepeatedly(Return(DownloadItem::IN_PROGRESS));
   EXPECT_CALL(*item, GetURL()).WillRepeatedly(ReturnRefOfCopy(GURL()));
 
-  base::Time::Exploded exploded_reference_time;
-  exploded_reference_time.year = 2019;
-  exploded_reference_time.month = 1;
-  exploded_reference_time.day_of_month = 23;
-  exploded_reference_time.day_of_week = 3;
-  exploded_reference_time.hour = 16;
-  exploded_reference_time.minute = 35;
-  exploded_reference_time.second = 30;
-  exploded_reference_time.millisecond = 20;
-
+  static constexpr base::Time::Exploded kReferenceTime = {.year = 2019,
+                                                          .month = 1,
+                                                          .day_of_week = 3,
+                                                          .day_of_month = 23,
+                                                          .hour = 16,
+                                                          .minute = 35,
+                                                          .second = 30,
+                                                          .millisecond = 20};
   base::Time test_time;
-  EXPECT_TRUE(
-      base::Time::FromLocalExploded(exploded_reference_time, &test_time));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kReferenceTime, &test_time));
 
   EXPECT_CALL(*item, GetStartTime()).WillRepeatedly(Return(test_time));
   return item;

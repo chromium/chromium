@@ -796,15 +796,14 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBadResponse) {
 // This test is affected by an iOS 10 simulator bug: https://crbug.com/782033.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
-  base::Time::Exploded local_exploded = {0};
-  local_exploded.year = 2018;
-  local_exploded.month = 8;
-  local_exploded.day_of_month = 27;
-  local_exploded.hour = 3;
-  local_exploded.minute = 18;
-  local_exploded.second = 54;
+  static constexpr base::Time::Exploded kLocalExploded = {.year = 2018,
+                                                          .month = 8,
+                                                          .day_of_month = 27,
+                                                          .hour = 3,
+                                                          .minute = 18,
+                                                          .second = 54};
   base::Time local_now;
-  EXPECT_TRUE(base::Time::FromLocalExploded(local_exploded, &local_now));
+  EXPECT_TRUE(base::Time::FromLocalExploded(kLocalExploded, &local_now));
 
   base::Time modified_today = local_now + base::Hours(-1);
   base::Time modified_this_year = local_now + base::Days(-8);

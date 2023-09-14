@@ -155,10 +155,8 @@ void RunTest(CastCertError expected_result,
 // base::Time::FromExploded clamping the range to what is supported by mktime
 // and timegm.
 base::Time CreateDate(int year, int month, int day) {
-  base::Time::Exploded time = {0};
-  time.year = year;
-  time.month = month;
-  time.day_of_month = day;
+  const base::Time::Exploded time = {
+      .year = year, .month = month, .day_of_month = day};
   base::Time result;
   EXPECT_TRUE(base::Time::FromUTCExploded(time, &result));
   return result;

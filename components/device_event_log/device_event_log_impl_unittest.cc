@@ -204,11 +204,15 @@ TEST_F(DeviceEventLogTest, TestStringFormat) {
 }
 
 TEST_F(DeviceEventLogTest, TestTimeFormat) {
-  const int hour = 12;
-  const std::string time_str = base::StringPrintf("1 Jan 2020 %d:34:56", hour);
-
+  constexpr int hour = 12;
+  static constexpr base::Time::Exploded kTime = {.year = 2020,
+                                                 .month = 1,
+                                                 .day_of_month = 1,
+                                                 .hour = hour,
+                                                 .minute = 34,
+                                                 .second = 56};
   base::Time time;
-  ASSERT_TRUE(base::Time::FromUTCString(time_str.c_str(), &time));
+  ASSERT_TRUE(base::Time::FromUTCExploded(kTime, &time));
   base::Time::Exploded exploded;
 
   // This gets the offset for the current system time, which is what will be

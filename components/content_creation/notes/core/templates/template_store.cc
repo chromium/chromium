@@ -25,17 +25,8 @@ namespace content_creation {
 namespace {
 
 bool ConvertProtoDateToTime(proto::Date date, base::Time& time_date) {
-  base::Time::Exploded exploded_date = {
-      /*year=*/date.year(),
-      /*month=*/date.month(),
-      /*day_of_week=*/0,
-      /*day_of_month=*/date.day(),
-      /*hour=*/0,
-      /*minute=*/0,
-      /*second=*/0,
-      /*millisecond=*/0,
-  };
-
+  const base::Time::Exploded exploded_date = {
+      .year = date.year(), .month = date.month(), .day_of_month = date.day()};
   return base::Time::FromLocalExploded(exploded_date, &time_date);
 }
 
