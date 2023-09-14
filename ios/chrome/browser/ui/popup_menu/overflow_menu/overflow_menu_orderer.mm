@@ -286,6 +286,10 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   return _destinationCustomizationModel;
 }
 
+- (BOOL)isDestinationCustomizationInProgress {
+  return _destinationCustomizationModel != nil;
+}
+
 #pragma mark - Public
 
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
@@ -465,6 +469,34 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
 - (void)cancelDestinationsUpdate {
   _destinationCustomizationModel = nil;
+}
+
+- (void)customizationUpdateToggledShown:(BOOL)shown
+                    forLinkedActionType:(overflow_menu::ActionType)actionType
+                         actionSubtitle:(NSString*)actionSubtitle {
+  if (!_actionCustomizationModel) {
+    return;
+  }
+
+  OverflowMenuAction* correspondingAction;
+  for (OverflowMenuAction* action in _actionCustomizationModel.actionsGroup
+           .actions) {
+    if (action.actionType == static_cast<int>(actionType)) {
+      correspondingAction = action;
+      break;
+    }
+  }
+
+  if (!correspondingAction) {
+    return;
+  }
+
+  if (shown) {
+    correspondingAction.subtitle = nil;
+  } else {
+    correspondingAction.highlighted = YES;
+    correspondingAction.subtitle = actionSubtitle;
+  }
 }
 
 #pragma mark - Private

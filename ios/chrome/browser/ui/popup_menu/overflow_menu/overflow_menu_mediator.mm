@@ -1057,6 +1057,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                               [weakSelf beginCustomization];
                             }]];
     result.longPressItems = longPressItems;
+
+    __weak __typeof(result) weakResult = result;
+    result.onShownToggleCallback = ^{
+      [weakSelf onShownToggledForDestination:weakResult];
+    };
   }
 
   return result;
@@ -2174,6 +2179,47 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   DCHECK(IsSpotlightDebuggingEnabled());
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showSpotlightDebugger];
+}
+
+// Make any necessary updates for when `destination`'s shown state is toggled.
+- (void)onShownToggledForDestination:(OverflowMenuDestination*)destination {
+  // If customization is not in progress, there's no need to update any UI.
+  if (!self.menuOrderer.isDestinationCustomizationInProgress) {
+    return;
+  }
+
+  overflow_menu::Destination destinationType =
+      static_cast<overflow_menu::Destination>(destination.destination);
+  overflow_menu::ActionType correspondingActionType;
+  NSString* subtitle;
+  switch (destinationType) {
+    case overflow_menu::Destination::History:
+    case overflow_menu::Destination::Passwords:
+    case overflow_menu::Destination::Downloads:
+    case overflow_menu::Destination::RecentTabs:
+    case overflow_menu::Destination::SiteInfo:
+    case overflow_menu::Destination::Settings:
+    case overflow_menu::Destination::WhatsNew:
+    case overflow_menu::Destination::SpotlightDebugger:
+    case overflow_menu::Destination::PriceNotifications:
+      // Most destinations have no corresponding destination and nothing special
+      // to be done when their shown state is toggled.
+      return;
+    case overflow_menu::Destination::Bookmarks:
+      correspondingActionType = overflow_menu::ActionType::Bookmark;
+      subtitle = l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDDEN_BOOKMARKS_SUBTITLE);
+      break;
+    case overflow_menu::Destination::ReadingList:
+      correspondingActionType = overflow_menu::ActionType::ReadingList;
+      subtitle = l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDDEN_READING_LIST_SUBTITLE);
+      break;
+  }
+
+  [self.menuOrderer customizationUpdateToggledShown:destination.shown
+                                forLinkedActionType:correspondingActionType
+                                     actionSubtitle:subtitle];
 }
 
 @end

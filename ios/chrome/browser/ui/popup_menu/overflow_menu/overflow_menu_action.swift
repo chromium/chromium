@@ -16,6 +16,9 @@ import Combine
   /// Whether the action should be highlighted in the UI.
   @Published public var highlighted = false
 
+  /// An optional subtitle to be displayed under the main title.
+  @Published public var subtitle: String? = nil
+
   /// The uniquely-identifying `overflow_menu::ActionType` of the action,
   /// stored as an int because Swift does not yet support C++ enum variables.
   public var actionType = 0

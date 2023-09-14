@@ -4783,6 +4783,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_TITLE" desc="The title of the screen on the overflow menu where users can customize the items in the menu." meaning="[In Title case] [iOS only]">
         Customize Menu
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDDEN_BOOKMARKS_SUBTITLE" desc="The subtitle of the Add to Bookmarks action alerting users that the Bookmark destination is hidden." meaning="[In Title case] [iOS only]">
+        Bookmarks are hidden
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDDEN_READING_LIST_SUBTITLE" desc="The subtitle of the Add to Reading List action alerting users that the Reading List destination is hidden." meaning="[In Title case] [iOS only]">
+        Reading List is hidden
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME" desc="The iOS menu item for opening a share sheet with the URL to the Chrome app in the iOS app store" meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Share Chrome
       </message>

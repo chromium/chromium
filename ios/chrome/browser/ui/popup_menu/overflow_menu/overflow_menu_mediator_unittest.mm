@@ -1026,3 +1026,42 @@ TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
     EXPECT_EQ(destination.longPressItems.count, 2ul);
   }
 }
+
+// Tests that when a destination becomes hidden during customization, the
+// corresponding action gains a subtitle and a highlight.
+TEST_F(OverflowMenuMediatorTest, DestinationHideShowsActionSubtitle) {
+  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // Start customization sessions.
+  DestinationCustomizationModel* destinationModel =
+      orderer_.destinationCustomizationModel;
+  ActionCustomizationModel* actionModel = orderer_.actionCustomizationModel;
+
+  // Find destination in customization model.
+  OverflowMenuDestination* bookmarksDestination;
+  for (OverflowMenuDestination* destination in destinationModel
+           .shownDestinations) {
+    if (destination.accessibilityIdentifier == kToolsMenuBookmarksId) {
+      bookmarksDestination = destination;
+      break;
+    }
+  }
+  bookmarksDestination.shown = NO;
+
+  // Find corresponding action.
+  OverflowMenuAction* addToBookmarksAction;
+  for (OverflowMenuAction* action in actionModel.shownActions) {
+    if (action.accessibilityIdentifier == kToolsMenuAddToBookmarks) {
+      addToBookmarksAction = action;
+      break;
+    }
+  }
+
+  // Make sure that the corresponding action has a subtitle.
+  EXPECT_NE(addToBookmarksAction, nil);
+  EXPECT_TRUE(addToBookmarksAction.highlighted);
+  EXPECT_NE(addToBookmarksAction.subtitle, nil);
+}

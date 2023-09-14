@@ -31,7 +31,14 @@ import SwiftUI
   @Published public var handler: () -> Void
 
   /// Whether the item is shown or hidden in the menu overall.
-  @Published public var shown = true
+  @Published public var shown = true {
+    didSet {
+      onShownToggleCallback()
+    }
+  }
+
+  /// A callback, called whenever `shown` is changed.
+  @Published public var onShownToggleCallback: () -> Void = {}
 
   @Published public var longPressItems: [OverflowMenuLongPressItem] = []
 
