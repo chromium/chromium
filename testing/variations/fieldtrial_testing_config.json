@@ -6600,7 +6600,7 @@
             ],
             "experiments": [
                 {
-                    "name": "LowPriAsyncExec_1_03_ext_20230612",
+                    "name": "LowPriAsyncExec_1_03_20230914",
                     "params": {
                         "low_pri_async_exec_cross_site_only": "true",
                         "low_pri_async_exec_feature_limit": "3s",
@@ -6608,7 +6608,6 @@
                         "low_pri_async_exec_timeout": "1s"
                     },
                     "enable_features": [
-                        "ExtendScriptResourceLifetime",
                         "LowPriorityAsyncScriptExecution"
                     ]
                 }
