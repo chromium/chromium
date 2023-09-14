@@ -403,5 +403,9 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
     }
   }
 
+  if (IsAppServiceShortcut(profile_, app_id)) {
+    is_valid = true;
+  }
+
   return is_valid;
 }

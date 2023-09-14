@@ -37,6 +37,8 @@ TEST_F(ShortcutUpdateTest, StateIsNonNull) {
 
   EXPECT_EQ(u.IconKey(), IconKey(100, 0, 0));
   EXPECT_FALSE(u.IconKeyChanged());
+
+  EXPECT_FALSE(u.ShortcutInitialized());
 }
 
 TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
@@ -58,6 +60,8 @@ TEST_F(ShortcutUpdateTest, DeltaIsNonNull) {
 
   EXPECT_EQ(u.IconKey(), IconKey(100, 0, 0));
   EXPECT_TRUE(u.IconKeyChanged());
+
+  EXPECT_TRUE(u.ShortcutInitialized());
 }
 
 TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
@@ -85,6 +89,8 @@ TEST_F(ShortcutUpdateTest, StateAndDeltaAreNonNull) {
 
   EXPECT_EQ(u.IconKey(), IconKey(101, 1, 1));
   EXPECT_TRUE(u.IconKeyChanged());
+
+  EXPECT_FALSE(u.ShortcutInitialized());
 }
 
 TEST_F(ShortcutUpdateTest, Merge) {

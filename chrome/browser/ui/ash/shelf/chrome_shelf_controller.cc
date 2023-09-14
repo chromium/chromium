@@ -1093,6 +1093,12 @@ void ChromeShelfController::OnPromiseAppRemoved(
 
 void ChromeShelfController::OnShortcutUpdated(
     const apps::ShortcutUpdate& update) {
+  // When shortcut got initialized in the AppService, we update the
+  // pin location from sync.
+  if (update.ShortcutInitialized()) {
+    UpdatePinnedAppsFromSync();
+  }
+
   int index = model_->ItemIndexByAppID(update.ShortcutId().value());
   if (index == kInvalidIndex) {
     return;
@@ -1112,9 +1118,6 @@ void ChromeShelfController::OnShortcutUpdated(
     item.title = title;
     model_->Set(index, item);
   }
-
-  // TODO(crbug.com/1412708): Update pinned apps from sync here, need to update
-  // this code to make it work with shortcut items as well.
 }
 
 void ChromeShelfController::OnShortcutRemoved(const apps::ShortcutId& id) {

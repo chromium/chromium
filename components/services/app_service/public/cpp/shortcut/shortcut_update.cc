@@ -122,6 +122,10 @@ bool ShortcutUpdate::IconKeyChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(icon_key);
 }
 
+bool ShortcutUpdate::ShortcutInitialized() const {
+  return !state_ && delta_;
+}
+
 // For logging and debug purposes.
 COMPONENT_EXPORT(SHORTCUT)
 std::ostream& operator<<(std::ostream& out,

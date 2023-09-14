@@ -42,6 +42,12 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutUpdate {
   absl::optional<apps::IconKey> IconKey() const;
   bool IconKeyChanged() const;
 
+  // Return true if this is a newly registered shortcut in
+  // App Service. This could happen when new shortcut created
+  // or the shortcut got published to the App Service on
+  // start up.
+  bool ShortcutInitialized() const;
+
  private:
   raw_ptr<const Shortcut, DanglingUntriaged> state_ = nullptr;
   raw_ptr<const Shortcut, DanglingUntriaged> delta_ = nullptr;

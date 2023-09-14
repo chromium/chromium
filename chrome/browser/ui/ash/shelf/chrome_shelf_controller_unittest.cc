@@ -6567,6 +6567,35 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   EXPECT_EQ(3, app_stub_icon_loader.NumLoadIconFromIconKeyCalls());
 }
 
+TEST_F(ChromeShelfControllerShortcutTest, PinStatusSynced) {
+  apps::ShortcutPtr shortcut =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->name = "Name";
+  cache()->UpdateShortcut(std::move(shortcut));
+
+  // Create a shelf item for the shortcut.
+  InitShelfController();
+  PinAppWithIDToShelf(shortcut_id.value());
+  EXPECT_TRUE(app_list_syncable_service_->GetPinPosition(shortcut_id.value())
+                  .IsValid());
+
+  // Verify restart the session kept the sync location.
+  syncer::SyncDataList copy_sync_list =
+      app_list_syncable_service_->GetAllSyncDataForTesting();
+
+  ResetShelfController();
+  SendPinChanges(syncer::SyncChangeList(), true);
+  StopAppSyncService();
+
+  EXPECT_EQ(0U, app_list_syncable_service_->sync_items().size());
+
+  StartAppSyncService(copy_sync_list);
+  RecreateShelfController()->Init();
+
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(shortcut_id.value()));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ChromeShelfControllerPlayStoreAvailabilityTest,
                          ::testing::Values(false, true));
