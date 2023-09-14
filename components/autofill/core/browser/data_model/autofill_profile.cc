@@ -253,15 +253,14 @@ AutofillProfile::AutofillProfile()
     : AutofillProfile(Source::kLocalOrSyncable) {}
 
 AutofillProfile::AutofillProfile(const std::string& guid, Source source)
-    : phone_number_(this),
+    : guid_(guid),
+      phone_number_(this),
       record_type_(LOCAL_PROFILE),
       has_converted_(false),
       source_(source),
       initial_creator_id_(kInitialCreatorOrModifierChrome),
       last_modifier_id_(kInitialCreatorOrModifierChrome),
-      token_quality_(this) {
-  set_guid(guid);
-}
+      token_quality_(this) {}
 
 AutofillProfile::AutofillProfile(Source source)
     : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -269,7 +268,8 @@ AutofillProfile::AutofillProfile(Source source)
 
 // TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
-    : phone_number_(this),
+    : guid_(""),  // Server profiles are identified by a `server_id_`.
+      phone_number_(this),
       server_id_(server_id),
       record_type_(type),
       has_converted_(false),

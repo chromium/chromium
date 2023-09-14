@@ -362,6 +362,10 @@ class AutofillProfile : public AutofillDataModel {
   // A globally unique ID for this object. It identifies the profile across
   // browser restarts and is used as the primary key in the database.
   // The `guid_` is unique across profile sources.
+  // TODO(crbug.com/1177366): SERVER_PROFILEs still exist in the data model.
+  // This is a deprecated and essentially unused type of profile, which is
+  // identified by `server_id_` instead of `guid_`. For all practical purposes,
+  // this can be ignored and all relevant profiles are identified by `guid_`.
   std::string guid_;
 
   // Personal information for this profile.

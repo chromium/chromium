@@ -162,15 +162,14 @@ std::u16string CreditCard::GetObfuscatedStringForCardDigits(
 }
 
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
-    : origin_(origin),
+    : guid_(guid),
+      origin_(origin),
       record_type_(RecordType::kLocalCard),
       network_(kGenericCard),
       expiration_month_(0),
       expiration_year_(0),
       card_issuer_(Issuer::kIssuerUnknown),
-      instrument_id_(0) {
-  set_guid(guid);
-}
+      instrument_id_(0) {}
 
 // TODO(crbug.com/1121806): Calling the CreditCard's default constructor
 // initializes the `guid_`. This shouldn't happen for server cards, since they
