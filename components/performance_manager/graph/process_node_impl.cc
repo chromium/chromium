@@ -353,6 +353,18 @@ bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
   return true;
 }
 
+bool ProcessNodeImpl::VisitWorkerNodes(const WorkerNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+  for (auto* worker_impl : worker_nodes_) {
+    const WorkerNode* worker = worker_impl;
+    if (!visitor(worker)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 base::flat_set<const FrameNode*> ProcessNodeImpl::GetFrameNodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return UpcastNodeSet<FrameNode>(frame_nodes());

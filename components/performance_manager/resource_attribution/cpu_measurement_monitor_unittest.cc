@@ -172,6 +172,7 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   using Super = GraphTestHarness;
 
   void SetUp() override {
+    GetGraphFeatures().EnableResourceAttributionRegistries();
     Super::SetUp();
     cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(base::BindRepeating(
         &CPUMeasurementMonitorTest::CPUMeasurementDelegateFactory,
@@ -786,6 +787,388 @@ TEST_F(CPUMeasurementMonitorTest, CPUDistribution) {
               CPUDeltaMatches(page_context, kShortInterval * 0.2));
   EXPECT_THAT(current_measurements_[other_page_context],
               CPUDeltaMatches(other_page_context, kShortInterval * 0.1));
+}
+
+// Tests that CPU usage of processes is correctly distributed between FrameNodes
+// and WorkerNodes that are added and removed between measurements.
+TEST_F(CPUMeasurementMonitorTest, AddRemoveNodes) {
+  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+
+  SetProcessCPUUsage(mock_graph.process.get(), 0.6);
+  SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
+
+  // Advance the clock before monitoring starts, so that the process launch
+  // times can be distinguished from the start of monitoring.
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+
+  StartMonitoring();
+
+  const FrameContext& frame_context = mock_graph.frame->resource_context();
+  const FrameContext& child_frame_context =
+      mock_graph.child_frame->resource_context();
+  const PageContext& page_context = mock_graph.page->resource_context();
+  const ProcessContext& process_context =
+      mock_graph.process->resource_context();
+  const ProcessContext& other_process_context =
+      mock_graph.other_process->resource_context();
+
+  // `new_frame1` and `new_worker1` are added just after a measurement.
+  // `new_frame2` and `new_worker2` are added between measurements.
+  // `new_frame3` and `new_worker3` are added just before a measurement.
+  //
+  // Frames are added to `process` and workers are added to `other_process`, to
+  // test that all processes are measured.
+  //
+  // Frames are part of `page`. Workers don't have clients, so aren't part of
+  // any page.
+  auto new_frame1 =
+      CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
+  auto new_worker1 = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
+  const auto new_frame1_context = new_frame1->resource_context();
+  const auto new_worker1_context = new_worker1->resource_context();
+  const auto node_added_time1 = base::TimeTicks::Now();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  auto new_frame2 =
+      CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
+  auto new_worker2 = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
+  const auto new_frame2_context = new_frame2->resource_context();
+  const auto new_worker2_context = new_worker2->resource_context();
+  const auto node_added_time2 = base::TimeTicks::Now();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  auto new_frame3 =
+      CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
+  auto new_worker3 = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
+  const auto new_frame3_context = new_frame3->resource_context();
+  const auto new_worker3_context = new_worker3->resource_context();
+  const auto node_added_time3 = base::TimeTicks::Now();
+
+  UpdateAndGetCPUMeasurements();
+
+  // For the first half of the period:
+  // * `process` split its 60% CPU usage between 4 nodes:
+  //   * `frame`, `other_frame`, `worker`, `new_frame1`
+  //   * `frame`, `worker` and `new_frame1` are part of `page`
+  // * `other_process` splits its 50% CPU usage between 3 nodes:
+  //   * `child_frame`, `other_worker`, `new_worker1`
+  //
+  // For the last half the split is:
+  // * `process` splits between 5 nodes:
+  //   * `frame`, `other_frame`, `worker`, `new_frame1`, `new_frame2`
+  //   * `frame`, `worker`, `new_frame1` and `new_frame2` are part of `page`
+  // * `other_process` splits between 4 nodes:
+  //   * `child_frame`, `other_worker`, `new_worker1`, `new_worker2`
+  //
+  // `new_frame3` and `new_worker3` were added on the same tick as the
+  // measurement so don't contribute to CPU usage.
+  constexpr base::TimeDelta process_4way_split =
+      kTimeBetweenMeasurements / 2 * 0.6 / 4;
+  constexpr base::TimeDelta process_5way_split =
+      kTimeBetweenMeasurements / 2 * 0.6 / 5;
+  constexpr base::TimeDelta other_process_3way_split =
+      kTimeBetweenMeasurements / 2 * 0.5 / 3;
+  constexpr base::TimeDelta other_process_4way_split =
+      kTimeBetweenMeasurements / 2 * 0.5 / 4;
+
+  constexpr base::TimeDelta expected_page_delta =
+      /*first half, 3 nodes*/ 3 * process_4way_split +
+      /*second half, 4 nodes*/ 4 * process_5way_split;
+
+  EXPECT_THAT(current_measurements_[process_context],
+              CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6));
+  EXPECT_THAT(
+      current_measurements_[frame_context],
+      CPUDeltaMatches(frame_context, process_4way_split + process_5way_split));
+  EXPECT_THAT(current_measurements_[new_frame1_context],
+              AllOf(CPUDeltaMatches(new_frame1_context,
+                                    process_4way_split + process_5way_split),
+                    StartTimeMatches(node_added_time1)));
+  EXPECT_THAT(current_measurements_[new_frame2_context],
+              AllOf(CPUDeltaMatches(new_frame2_context, process_5way_split),
+                    StartTimeMatches(node_added_time2)));
+  EXPECT_FALSE(base::Contains(current_measurements_, new_frame3_context));
+
+  EXPECT_THAT(
+      current_measurements_[other_process_context],
+      CPUDeltaMatches(other_process_context, kTimeBetweenMeasurements * 0.5));
+  EXPECT_THAT(
+      current_measurements_[child_frame_context],
+      CPUDeltaMatches(child_frame_context,
+                      other_process_3way_split + other_process_4way_split));
+  EXPECT_THAT(
+      current_measurements_[new_worker1_context],
+      AllOf(CPUDeltaMatches(new_worker1_context, other_process_3way_split +
+                                                     other_process_4way_split),
+            StartTimeMatches(node_added_time1)));
+  EXPECT_THAT(
+      current_measurements_[new_worker2_context],
+      AllOf(CPUDeltaMatches(new_worker2_context, other_process_4way_split),
+            StartTimeMatches(node_added_time2)));
+  EXPECT_FALSE(base::Contains(current_measurements_, new_worker3_context));
+
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, expected_page_delta));
+
+  new_frame1.reset();
+  new_worker1.reset();
+  const auto node_removed_time1 = base::TimeTicks::Now();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  new_frame2.reset();
+  new_worker2.reset();
+  const auto node_removed_time2 = base::TimeTicks::Now();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  UpdateAndGetCPUMeasurements();
+
+  // `new_frame1` and `new_worker1` were removed on the same tick as the
+  // previous measurement, so don't contribute to CPU usage since then.
+  //
+  // For the first half of this period:
+  // * `process` split its 60% CPU usage between 5 nodes:
+  //   * `frame`, `other_frame`, `worker`, `new_frame2`, `new_frame3`
+  //   * `frame`, `worker`, `new_frame2` and `new_frame3` are part of `page`
+  // * `other_process` splits its 50% CPU usage between 4 nodes:
+  //   * `child_frame`, `other_worker`, `new_worker2`, `new_worker3`
+  //
+  // For the last half the split is:
+  // * `process` splits between 4 nodes:
+  //   * `frame`, `other_frame`, `worker`, `new_frame3`
+  //   * `frame`, `worker` and `new_frame3` are part of `page`
+  // * `other_process` splits between 3 nodes:
+  //   * `child_frame`, `other_worker`, `new_worker3`
+  constexpr base::TimeDelta expected_page_delta2 =
+      /*first half, 4 nodes*/ 4 * process_5way_split +
+      /*second half, 3 nodes*/ 3 * process_4way_split;
+
+  EXPECT_THAT(current_measurements_[process_context],
+              CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6));
+  EXPECT_THAT(
+      current_measurements_[frame_context],
+      CPUDeltaMatches(frame_context, process_5way_split + process_4way_split));
+  EXPECT_THAT(
+      current_measurements_[new_frame1_context],
+      CPUDeltaMatches(new_frame1_context, base::TimeDelta(),
+                      /*expected_measurement_time=*/node_removed_time1));
+  EXPECT_THAT(
+      current_measurements_[new_frame2_context],
+      CPUDeltaMatches(new_frame2_context, process_5way_split,
+                      /*expected_measurement_time=*/node_removed_time2));
+  EXPECT_THAT(current_measurements_[new_frame3_context],
+              AllOf(CPUDeltaMatches(new_frame3_context,
+                                    process_5way_split + process_4way_split),
+                    StartTimeMatches(node_added_time3)));
+
+  EXPECT_THAT(
+      current_measurements_[other_process_context],
+      CPUDeltaMatches(other_process_context, kTimeBetweenMeasurements * 0.5));
+  EXPECT_THAT(
+      current_measurements_[child_frame_context],
+      CPUDeltaMatches(child_frame_context,
+                      other_process_4way_split + other_process_3way_split));
+  EXPECT_THAT(
+      current_measurements_[new_worker1_context],
+      CPUDeltaMatches(new_worker1_context, base::TimeDelta(),
+                      /*expected_measurement_time=*/node_removed_time1));
+  EXPECT_THAT(
+      current_measurements_[new_worker2_context],
+      CPUDeltaMatches(new_worker2_context, other_process_4way_split,
+                      /*expected_measurement_time=*/node_removed_time2));
+  EXPECT_THAT(
+      current_measurements_[new_worker3_context],
+      AllOf(CPUDeltaMatches(new_worker3_context, other_process_4way_split +
+                                                     other_process_3way_split),
+            StartTimeMatches(node_added_time3)));
+
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, expected_page_delta2));
+}
+
+// Tests that WorkerNode CPU usage is correctly distributed to pages as clients
+// are added and removed.
+TEST_F(CPUMeasurementMonitorTest, AddRemoveWorkerClients) {
+  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+
+  SetProcessCPUUsage(mock_graph.process.get(), 0.6);
+  SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
+
+  StartMonitoring();
+
+  const FrameContext& frame_context = mock_graph.frame->resource_context();
+  const FrameContext& child_frame_context =
+      mock_graph.child_frame->resource_context();
+  const PageContext& page_context = mock_graph.page->resource_context();
+  const PageContext& other_page_context =
+      mock_graph.other_page->resource_context();
+
+  auto new_worker1 = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, mock_graph.process.get());
+  const auto new_worker1_context = new_worker1->resource_context();
+  auto new_worker2 = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
+  const auto new_worker2_context = new_worker2->resource_context();
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+
+  // During this interval:
+  // * `process` split its 60% CPU usage between 4 nodes:
+  //   * `frame`, `other_frame`, `worker`, `new_worker1`
+  //   * `frame` and `worker` are part of `page`
+  //   * `other_frame` is part of `other_page`
+  // * `other_process` splits its 50% CPU usage between 3 nodes:
+  //   * `child_frame`, `other_worker`, `new_worker2`
+  //   * `child_frame` and `other_worker` are part of `other_page`
+  constexpr base::TimeDelta process_split = kTimeBetweenMeasurements * 0.6 / 4;
+  constexpr base::TimeDelta other_process_split =
+      kTimeBetweenMeasurements * 0.5 / 3;
+
+  EXPECT_THAT(current_measurements_[frame_context],
+              CPUDeltaMatches(frame_context, process_split));
+  EXPECT_THAT(current_measurements_[new_worker1_context],
+              CPUDeltaMatches(new_worker1_context, process_split));
+
+  EXPECT_THAT(current_measurements_[child_frame_context],
+              CPUDeltaMatches(child_frame_context, other_process_split));
+  EXPECT_THAT(current_measurements_[new_worker2_context],
+              CPUDeltaMatches(new_worker2_context, other_process_split));
+
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, 2 * process_split));
+  EXPECT_THAT(current_measurements_[other_page_context],
+              CPUDeltaMatches(other_page_context,
+                              process_split + 2 * other_process_split));
+
+  // Half-way through the interval, make `frame` a client of `new_worker1` and
+  // `worker` a client of `new_worker2`.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  new_worker1->AddClientFrame(mock_graph.frame.get());
+  new_worker2->AddClientWorker(mock_graph.worker.get());
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  UpdateAndGetCPUMeasurements();
+
+  // The split of CPU between frames and workers should not change. But, during
+  // the second half of the interval, `page` contains 4 contexts:
+  // * `frame`, `worker`, `new_worker1`, `new_worker2`
+  constexpr base::TimeDelta expected_page_delta =
+      /*first half, 2 nodes*/ (2 * process_split) / 2 +
+      /*second half, 4 nodes*/ (3 * process_split + other_process_split) / 2;
+
+  EXPECT_THAT(current_measurements_[frame_context],
+              CPUDeltaMatches(frame_context, process_split));
+  EXPECT_THAT(current_measurements_[new_worker1_context],
+              CPUDeltaMatches(new_worker1_context, process_split));
+
+  EXPECT_THAT(current_measurements_[child_frame_context],
+              CPUDeltaMatches(child_frame_context, other_process_split));
+  EXPECT_THAT(current_measurements_[new_worker2_context],
+              CPUDeltaMatches(new_worker2_context, other_process_split));
+
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, expected_page_delta));
+  EXPECT_THAT(current_measurements_[other_page_context],
+              CPUDeltaMatches(other_page_context,
+                              process_split + 2 * other_process_split));
+
+  // Half-way through the interval, make `other_worker` a client of
+  // `new_worker2` instead of `worker`.
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  new_worker2->RemoveClientWorker(mock_graph.worker.get());
+  new_worker2->AddClientWorker(mock_graph.other_worker.get());
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
+  UpdateAndGetCPUMeasurements();
+
+  // The first half of the interval is unchanged (`page` contains 4 contexts,
+  // `other_page` contains 3).
+  //
+  // During the second half of the interval, `page` contains 3 contexts:
+  // * `frame`, `worker`, `new_worker1` (all in `process`)
+  // And `other_page` contains 4 contexts:
+  // * `other_frame` (in `process), `child_frame`, `other_worker`, `new_worker2`
+  //   (in `other_process`)
+  constexpr base::TimeDelta expected_page_delta2 =
+      /*first half, 4 nodes*/ (3 * process_split + other_process_split) / 2 +
+      /*second half, 3 nodes*/ (3 * process_split) / 2;
+  constexpr base::TimeDelta expected_other_page_delta =
+      /*first half, 3 nodes*/ (process_split + 2 * other_process_split) / 2 +
+      /*second half, 4 nodes*/ (process_split + 3 * other_process_split) / 2;
+
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, expected_page_delta2));
+  EXPECT_THAT(current_measurements_[other_page_context],
+              CPUDeltaMatches(other_page_context, expected_other_page_delta));
+
+  // Test workers with multiple clients, and multiple paths to the same
+  // FrameNode or PageNode.
+  mock_graph.other_worker->AddClientWorker(new_worker1.get());
+  new_worker2->AddClientWorker(new_worker1.get());
+
+  // Now the clients are:
+  //
+  // `new_worker1` -> `frame`
+  // `worker` -> `frame` (see mock_graphs.cc)
+  // `other_worker` -> `child_frame` (see mock_graphs.cc)
+  // `other_worker` -> `new_worker1` -> `frame`
+  // `new_worker2` -> `other_worker` -> `child_frame`
+  // `new_worker2` -> `other_worker` -> `new_worker1` -> `frame`
+  // `new_worker2` -> `new_worker1` -> `frame`
+  //
+  // Now `page` contains 5 contexts (`frame` and all workers with `frame` as a
+  // client:
+  // * `frame`, `new_worker1`, `worker` (in `process`), `other_worker`,
+  //   `new_worker2` (in `other_process`)
+  // And `other_page` contains 4 contexts (`other_frame`, `child_frame`, and all
+  // workers with either of them as a client:
+  // * `other_frame` (in `process), `child_frame`, `other_worker`, `new_worker2`
+  //   (in `other_process`)
+  constexpr base::TimeDelta expected_page_delta3 =
+      3 * process_split + 2 * other_process_split;
+  constexpr base::TimeDelta expected_other_page_delta2 =
+      process_split + 3 * other_process_split;
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, expected_page_delta3));
+  EXPECT_THAT(current_measurements_[other_page_context],
+              CPUDeltaMatches(other_page_context, expected_other_page_delta2));
+
+  // Break the link between `new_worker2` and `new_worker1`. `new_worker2`
+  // should still be in `page` because a path to `frame` still exists:
+  // * `new_worker2` -> `other_worker` -> `new_worker1` -> `frame`
+  new_worker2->RemoveClientWorker(new_worker1.get());
+
+  task_env().FastForwardBy(kTimeBetweenMeasurements);
+  UpdateAndGetCPUMeasurements();
+
+  EXPECT_THAT(current_measurements_[page_context],
+              CPUDeltaMatches(page_context, expected_page_delta3));
+  EXPECT_THAT(current_measurements_[other_page_context],
+              CPUDeltaMatches(other_page_context, expected_other_page_delta2));
+
+  // Need to remove all clients before deleting WorkerNodes
+  auto remove_clients = [](TestNodeWrapper<WorkerNodeImpl>& worker) {
+    for (FrameNodeImpl* client : worker->client_frames()) {
+      worker->RemoveClientFrame(client);
+    }
+    for (WorkerNodeImpl* client : worker->client_workers()) {
+      worker->RemoveClientWorker(client);
+    }
+  };
+  remove_clients(new_worker1);
+  remove_clients(new_worker2);
+
+  // Only remove the clients that were manually added to `worker` and
+  // `other_worker`. The `mock_graph` destructor will remove the others, and
+  // CHECK if they aren't there.
+  mock_graph.other_worker->RemoveClientWorker(new_worker1.get());
 }
 
 // Tests that errors returned from ProcessMetrics are correctly ignored.

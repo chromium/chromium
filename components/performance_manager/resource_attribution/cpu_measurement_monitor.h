@@ -12,13 +12,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/graph/worker_node.h"
+#include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/resource_attribution/graph_change.h"
 
 namespace performance_manager {
 class Graph;
-class PageNode;
-}  // namespace performance_manager
+}
 
 namespace performance_manager::resource_attribution {
 
@@ -55,7 +58,9 @@ struct CPUTimeResult {
 // measurement for a node may not arrive until after it's removed from the
 // graph. So this is not a decorator as defined in
 // components/performance_manager/README.md.
-class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
+class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
+                              public ProcessNode::ObserverDefaultImpl,
+                              public WorkerNode::ObserverDefaultImpl {
  public:
   // A shim to request CPU measurements for a process. A new
   // CPUMeasurementDelegate object will be created for each ProcessNode to be
@@ -97,9 +102,26 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   // all pages containing them.
   std::map<ResourceContext, CPUTimeResult> UpdateAndGetCPUMeasurements();
 
+  // FrameNode::Observer:
+  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+
   // ProcessNode::Observer:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
+
+  // WorkerNode::Observer:
+  void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
+  void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
+  void OnClientFrameAdded(const WorkerNode* worker_node,
+                          const FrameNode* client_frame_node) override;
+  void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
+                                  const FrameNode* client_frame_node) override;
+  void OnClientWorkerAdded(const WorkerNode* worker_node,
+                           const WorkerNode* client_worker_node) override;
+  void OnBeforeClientWorkerRemoved(
+      const WorkerNode* worker_node,
+      const WorkerNode* client_worker_node) override;
 
  private:
   friend class CPUMeasurementMonitorTest;
@@ -126,10 +148,13 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
 
     // Measures the CPU usage of `process_node`, calculates the change in CPU
     // usage over the period (`last_measurement_time_` ... now], and allocates
-    // the results to frames and workers in the process. The new CPU usage in
-    // this measurement is added to `measurement_deltas`.
+    // the results to frames and workers in the process using
+    // SplitResourceAmongFramesAndWorkers(). The new CPU usage in this
+    // measurement is added to `measurement_deltas`.
     void MeasureAndDistributeCPUUsage(
         const ProcessNode* process_node,
+        const NodeSplitSet& extra_nodes,
+        const NodeSplitSet& nodes_to_skip,
         std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
 
    private:
@@ -147,17 +172,26 @@ class CPUMeasurementMonitor : public ProcessNode::ObserverDefaultImpl {
   // `cpu_measurement_map_`.
   void MonitorCPUUsage(const ProcessNode* process_node);
 
-  // Updates the CPU measurements for each ProcessNode being tracked, adding
-  // the estimated CPU usage of each frame and worker in those processes since
-  // the last time UpdateCPUMeasurements() was called to `measurement_results_`.
-  void UpdateCPUMeasurements();
+  // Updates the CPU measurement for all ProcessNodes in `cpu_measurement_map_`.
+  // Adds the estimated CPU usage of each frame and worker since the last time
+  // the process was measured to `measurement_results_`.
+  void UpdateAllCPUMeasurements();
 
-  // Helper to estimate the CPU usage of `page_node` given `measurement_deltas`
-  // containing the change in estimates for all frames and workers. The estimate
-  // is added to `measurement_results_`.
-  void EstimatePageCPUUsage(
-      const PageNode* page_node,
-      const std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
+  // Updates the CPU measurement for `process_node`. Adds the estimated CPU
+  // usage of each frame and worker since the last time the process was measured
+  // to `measurement_results_`. `graph_change` is the event that triggered the
+  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
+  // change.
+  void UpdateCPUMeasurements(const ProcessNode* process_node,
+                             GraphChange graph_change = NoGraphChange());
+
+  // Adds the new measurements in `measurement_deltas` to
+  // `measurement_results_`. `graph_change` is the event that triggered the
+  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
+  // change.
+  void ApplyMeasurementDeltas(
+      const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
+      GraphChange graph_change = NoGraphChange());
 
   SEQUENCE_CHECKER(sequence_checker_);
 

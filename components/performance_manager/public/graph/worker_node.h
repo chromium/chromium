@@ -54,6 +54,7 @@ class InheritClientPriorityVoter;
 // or a service worker is registered to handle their network requests.
 class WorkerNode : public Node {
  public:
+  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
 
   // The different possible worker types.
@@ -97,6 +98,11 @@ class WorkerNode : public Node {
   // Returns the frames that are clients of this worker.
   virtual const base::flat_set<const FrameNode*> GetClientFrames() const = 0;
 
+  // Visits the frames that are clients of this worker. The iteration is halted
+  // if the visitor returns false. Returns true if every call to the visitor
+  // returned true, false otherwise.
+  virtual bool VisitClientFrames(const FrameNodeVisitor& visitor) const = 0;
+
   // Returns the workers that are clients of this worker.
   // There are 2 cases where this is possible:
   // - A dedicated worker can create nested workers. The parent worker becomes
@@ -104,6 +110,11 @@ class WorkerNode : public Node {
   // - A dedicated worker or a shared worker will become a client of the service
   //   worker that handles their network requests.
   virtual const base::flat_set<const WorkerNode*> GetClientWorkers() const = 0;
+
+  // Visits the workers that are clients of this worker. (See GetClientWorkers()
+  // for details.) The iteration is halted if the visitor returns false. Returns
+  // true if every call to the visitor returned true, false otherwise.
+  virtual bool VisitClientWorkers(const WorkerNodeVisitor& visitor) const = 0;
 
   // Returns the child workers of this worker.
   // There are 2 cases where a worker can be the child of another worker:

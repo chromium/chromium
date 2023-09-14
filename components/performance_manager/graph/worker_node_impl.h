@@ -106,7 +106,9 @@ class WorkerNodeImpl
   resource_attribution::WorkerContext GetResourceContext() const override;
   const GURL& GetURL() const override;
   const base::flat_set<const FrameNode*> GetClientFrames() const override;
+  bool VisitClientFrames(const FrameNodeVisitor&) const override;
   const base::flat_set<const WorkerNode*> GetClientWorkers() const override;
+  bool VisitClientWorkers(const WorkerNodeVisitor&) const override;
   const base::flat_set<const WorkerNode*> GetChildWorkers() const override;
   bool VisitChildDedicatedWorkers(const WorkerNodeVisitor&) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;

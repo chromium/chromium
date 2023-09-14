@@ -419,21 +419,30 @@ void UIThreadStorage::OnBrowserProcessNodeAdded(
 void UIThreadStorage::OnRenderProcessNodeAdded(
     const ProcessContext& process_context,
     const RenderProcessHostProxy& rph_proxy) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // In tests, ProcessNode's can be created without valid ID's. Ignore them.
+  const RenderProcessHostId rph_id = rph_proxy.render_process_host_id();
+  if (rph_id.is_null()) {
+    return;
+  }
   CheckProcessContextUnregistered(process_context);
-  process_contexts_by_rph_id_.emplace(rph_proxy.render_process_host_id(),
-                                      process_context);
-  rph_ids_by_process_context_.emplace(process_context,
-                                      rph_proxy.render_process_host_id());
+  process_contexts_by_rph_id_.emplace(rph_id, process_context);
+  rph_ids_by_process_context_.emplace(process_context, rph_id);
 }
 
 void UIThreadStorage::OnBrowserChildProcessNodeAdded(
     const ProcessContext& process_context,
     const BrowserChildProcessHostProxy& bcph_proxy) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // In tests, ProcessNode's can be created without valid ID's. Ignore them.
+  const BrowserChildProcessHostId bcph_id =
+      bcph_proxy.browser_child_process_host_id();
+  if (bcph_id.is_null()) {
+    return;
+  }
   CheckProcessContextUnregistered(process_context);
-  process_contexts_by_bcph_id_.emplace(
-      bcph_proxy.browser_child_process_host_id(), process_context);
-  bcph_ids_by_process_context_.emplace(
-      process_context, bcph_proxy.browser_child_process_host_id());
+  process_contexts_by_bcph_id_.emplace(bcph_id, process_context);
+  bcph_ids_by_process_context_.emplace(process_context, bcph_id);
 }
 
 void UIThreadStorage::OnBrowserProcessNodeRemoved(
@@ -447,16 +456,19 @@ void UIThreadStorage::OnRenderProcessNodeRemoved(
     const ProcessContext& process_context,
     const RenderProcessHostProxy& rph_proxy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  const auto context_it =
-      process_contexts_by_rph_id_.find(rph_proxy.render_process_host_id());
+  // In tests, ProcessNode's can be created without valid ID's. Ignore them.
+  const RenderProcessHostId rph_id = rph_proxy.render_process_host_id();
+  if (rph_id.is_null()) {
+    return;
+  }
+  const auto context_it = process_contexts_by_rph_id_.find(rph_id);
   CHECK(context_it != process_contexts_by_rph_id_.end());
   CHECK_EQ(context_it->second, process_context);
   process_contexts_by_rph_id_.erase(context_it);
 
   const auto rph_it = rph_ids_by_process_context_.find(process_context);
   CHECK(rph_it != rph_ids_by_process_context_.end());
-  CHECK_EQ(rph_it->second, rph_proxy.render_process_host_id());
+  CHECK_EQ(rph_it->second, rph_id);
   rph_ids_by_process_context_.erase(rph_it);
 }
 
@@ -464,16 +476,20 @@ void UIThreadStorage::OnBrowserChildProcessNodeRemoved(
     const ProcessContext& process_context,
     const BrowserChildProcessHostProxy& bcph_proxy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  const auto context_it = process_contexts_by_bcph_id_.find(
-      bcph_proxy.browser_child_process_host_id());
+  // In tests, ProcessNode's can be created without valid ID's. Ignore them.
+  const BrowserChildProcessHostId bcph_id =
+      bcph_proxy.browser_child_process_host_id();
+  if (bcph_id.is_null()) {
+    return;
+  }
+  const auto context_it = process_contexts_by_bcph_id_.find(bcph_id);
   CHECK(context_it != process_contexts_by_bcph_id_.end());
   CHECK_EQ(context_it->second, process_context);
   process_contexts_by_bcph_id_.erase(context_it);
 
   const auto bcph_it = bcph_ids_by_process_context_.find(process_context);
   CHECK(bcph_it != bcph_ids_by_process_context_.end());
-  CHECK_EQ(bcph_it->second, bcph_proxy.browser_child_process_host_id());
+  CHECK_EQ(bcph_it->second, bcph_id);
   bcph_ids_by_process_context_.erase(bcph_it);
 }
 

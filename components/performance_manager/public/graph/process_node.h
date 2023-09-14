@@ -43,6 +43,7 @@ class BrowserChildProcessHostProxy;
 class ProcessNode : public Node {
  public:
   using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
+  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
   using Observer = ProcessNodeObserver;
   class ObserverDefaultImpl;
 
@@ -108,6 +109,11 @@ class ProcessNode : public Node {
   // halted if the visitor returns false. Returns true if every call to the
   // visitor returned true, false otherwise.
   virtual bool VisitFrameNodes(const FrameNodeVisitor& visitor) const = 0;
+
+  // Visits the worker nodes that are hosted in this process. The iteration is
+  // halted if the visitor returns false. Returns true if every call to the
+  // visitor returned true, false otherwise.
+  virtual bool VisitWorkerNodes(const WorkerNodeVisitor& visitor) const = 0;
 
   // Returns the set of frame nodes that are hosted in this process. Note that
   // calling this causes the set of nodes to be generated.

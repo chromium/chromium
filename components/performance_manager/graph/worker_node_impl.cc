@@ -241,6 +241,16 @@ const base::flat_set<const FrameNode*> WorkerNodeImpl::GetClientFrames() const {
   return client_frames;
 }
 
+bool WorkerNodeImpl::VisitClientFrames(const FrameNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (FrameNodeImpl* node : client_frames_) {
+    if (!visitor(node)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetClientWorkers()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -249,6 +259,17 @@ const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetClientWorkers()
     client_workers.insert(static_cast<const WorkerNode*>(client));
   DCHECK_EQ(client_workers.size(), client_workers_.size());
   return client_workers;
+}
+
+bool WorkerNodeImpl::VisitClientWorkers(
+    const WorkerNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (WorkerNodeImpl* node : client_workers_) {
+    if (!visitor(node)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 const base::flat_set<const WorkerNode*> WorkerNodeImpl::GetChildWorkers()

@@ -7,11 +7,14 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
@@ -25,8 +28,12 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
+#include "components/performance_manager/public/resource_attribution/frame_context_registry.h"
+#include "components/performance_manager/public/resource_attribution/worker_context_registry.h"
+#include "components/performance_manager/resource_attribution/graph_change.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/common/process_type.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -146,6 +153,69 @@ void ApplyOverlappingDelta(CPUTimeResult& result, const CPUTimeResult& delta) {
   ValidateCPUTimeResult(result);
 }
 
+// Recursively visits all client workers of `worker_node`, and all client frames
+// of each worker, and adds each frame's PageNode to `client_pages`.
+// `visited_workers` is used to check for loops in the graph of client workers.
+// `graph_change` is a change to the graph topology in progress that may affect
+// the client page set, or NoGraphChange.
+void RecursivelyFindClientPages(const WorkerNode* worker_node,
+                                GraphChange graph_change,
+                                std::set<const PageNode*>& client_pages,
+                                std::set<const WorkerNode*>& visited_workers) {
+  const auto [_, inserted] = visited_workers.insert(worker_node);
+  if (!inserted) {
+    // Already visited, halt recursion.
+    return;
+  }
+  worker_node->VisitClientFrames(
+      [&client_pages, &graph_change, worker_node](const FrameNode* f) {
+        const auto* add_client_frame_change =
+            absl::get_if<GraphChangeAddClientFrameToWorker>(&graph_change);
+        if (add_client_frame_change &&
+            add_client_frame_change->worker_node == worker_node &&
+            add_client_frame_change->client_frame_node == f) {
+          // Skip this client node. The measurement being distributed includes
+          // CPU usage from before it was added.
+          return true;
+        }
+        client_pages.insert(f->GetPageNode());
+        return true;
+      });
+  worker_node->VisitClientWorkers([&client_pages, &visited_workers,
+                                   &graph_change,
+                                   worker_node](const WorkerNode* w) {
+    const auto* add_client_worker_change =
+        absl::get_if<GraphChangeAddClientWorkerToWorker>(&graph_change);
+    if (add_client_worker_change &&
+        add_client_worker_change->worker_node == worker_node &&
+        add_client_worker_change->client_worker_node == w) {
+      // Skip this client node. The measurement being distributed includes CPU
+      // usage from before it was added.
+      return true;
+    }
+
+    RecursivelyFindClientPages(w, graph_change, client_pages, visited_workers);
+    return true;
+  });
+  // Unlike FrameNode, WorkerNode does not update any graph links in
+  // WorkerNodeImpl::OnBeforeLeavingGraph(). So no need to check for
+  // GraphChangeRemoveClient*FromWorker.
+  // TODO(https://crbug.com/1481676): If that changes. handle
+  // `graph_change.client_*_node` as if it was visited by the above visitors.
+}
+
+// Returns the complete set of pages that are clients of `worker_node`.
+// `graph_change` is a change to the graph topology in progress that may affect
+// the client page set, or NoGraphChange.
+std::set<const PageNode*> GetClientPages(const WorkerNode* worker_node,
+                                         GraphChange graph_change) {
+  std::set<const PageNode*> client_pages;
+  std::set<const WorkerNode*> visited_workers;
+  RecursivelyFindClientPages(worker_node, graph_change, client_pages,
+                             visited_workers);
+  return client_pages;
+}
+
 }  // namespace
 
 CPUMeasurementMonitor::CPUMeasurementMonitor()
@@ -176,30 +246,35 @@ void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!graph_);
   graph_ = graph;
+  graph_->AddFrameNodeObserver(this);
   graph_->AddProcessNodeObserver(this);
+  graph_->AddWorkerNodeObserver(this);
 
   // Start monitoring CPU usage for all existing processes. Can't read their CPU
   // usage until they have a pid assigned.
-  for (const ProcessNode* process_node : graph->GetAllProcessNodes()) {
+  graph_->VisitAllProcessNodes([this](const ProcessNode* process_node) {
     if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER &&
         process_node->GetProcessId() != base::kNullProcessId) {
       MonitorCPUUsage(process_node);
     }
-  }
+    return true;
+  });
 }
 
 void CPUMeasurementMonitor::StopMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(graph_);
   cpu_measurement_map_.clear();
+  graph_->RemoveFrameNodeObserver(this);
   graph_->RemoveProcessNodeObserver(this);
+  graph_->RemoveWorkerNodeObserver(this);
   graph_ = nullptr;
 }
 
 std::map<ResourceContext, CPUTimeResult>
 CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdateCPUMeasurements();
+  UpdateAllCPUMeasurements();
   std::map<ResourceContext, CPUTimeResult> results;
   for (const auto& [context, result] : measurement_results_) {
     ValidateCPUTimeResult(result);
@@ -210,6 +285,24 @@ CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
     results.emplace(context, result);
   }
   return results;
+}
+
+void CPUMeasurementMonitor::OnFrameNodeAdded(const FrameNode* frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage *before* this node was added.
+  // This is safe because frames should only be added after their containing
+  // process has started.
+  UpdateCPUMeasurements(frame_node->GetProcessNode(),
+                        GraphChangeAddFrame(frame_node));
+}
+
+void CPUMeasurementMonitor::OnBeforeFrameNodeRemoved(
+    const FrameNode* frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage, including this frame, so that
+  // its final CPU usage is attributed to it before it's removed.
+  UpdateCPUMeasurements(frame_node->GetProcessNode(),
+                        GraphChangeRemoveFrame(frame_node));
 }
 
 void CPUMeasurementMonitor::OnProcessLifetimeChange(
@@ -229,8 +322,7 @@ void CPUMeasurementMonitor::OnProcessLifetimeChange(
   if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
     return;
   }
-  auto it = cpu_measurement_map_.find(process_node);
-  if (it == cpu_measurement_map_.end()) {
+  if (!base::Contains(cpu_measurement_map_, process_node)) {
     // Process isn't being measured yet so it must have been created while
     // measurements were already started.
     MonitorCPUUsage(process_node);
@@ -241,6 +333,72 @@ void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cpu_measurement_map_.erase(process_node);
+}
+
+void CPUMeasurementMonitor::OnWorkerNodeAdded(const WorkerNode* worker_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage *before* this node was added.
+  // This is safe because workers should only be added after their containing
+  // process has started.
+  UpdateCPUMeasurements(worker_node->GetProcessNode(),
+                        GraphChangeAddWorker(worker_node));
+}
+
+void CPUMeasurementMonitor::OnBeforeWorkerNodeRemoved(
+    const WorkerNode* worker_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage, including this node, so that
+  // its final CPU usage is attributed to it before it's removed.
+  UpdateCPUMeasurements(worker_node->GetProcessNode(),
+                        GraphChangeRemoveWorker(worker_node));
+}
+
+void CPUMeasurementMonitor::OnClientFrameAdded(
+    const WorkerNode* worker_node,
+    const FrameNode* client_frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage *before* this worker gained a
+  // client. The CPU measurement will be distributed to pages that were clients
+  // of this worker, not including the new client.
+  UpdateCPUMeasurements(
+      worker_node->GetProcessNode(),
+      GraphChangeAddClientFrameToWorker(worker_node, client_frame_node));
+}
+
+void CPUMeasurementMonitor::OnBeforeClientFrameRemoved(
+    const WorkerNode* worker_node,
+    const FrameNode* client_frame_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage *before* this worker lost a
+  // client. The CPU measurement will be distributed to pages that were
+  // clients of this worker, including the old client.
+  UpdateCPUMeasurements(
+      worker_node->GetProcessNode(),
+      GraphChangeRemoveClientFrameFromWorker(worker_node, client_frame_node));
+}
+
+void CPUMeasurementMonitor::OnClientWorkerAdded(
+    const WorkerNode* worker_node,
+    const WorkerNode* client_worker_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage *before* this worker gained a
+  // client. The CPU measurement will be distributed to pages that were clients
+  // of this worker, not including the new client.
+  UpdateCPUMeasurements(
+      worker_node->GetProcessNode(),
+      GraphChangeAddClientWorkerToWorker(worker_node, client_worker_node));
+}
+
+void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
+    const WorkerNode* worker_node,
+    const WorkerNode* client_worker_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Take a measurement of the process CPU usage *before* this worker lost a
+  // client. The CPU measurement will be distributed to pages that were clients
+  // of this worker, including the old client.
+  UpdateCPUMeasurements(
+      worker_node->GetProcessNode(),
+      GraphChangeRemoveClientWorkerFromWorker(worker_node, client_worker_node));
 }
 
 void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
@@ -255,7 +413,7 @@ void CPUMeasurementMonitor::MonitorCPUUsage(const ProcessNode* process_node) {
   CHECK(was_inserted);
 }
 
-void CPUMeasurementMonitor::UpdateCPUMeasurements() {
+void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must call StartMonitoring() before getting measurements.
   CHECK(graph_);
@@ -263,51 +421,114 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements() {
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
   std::map<ResourceContext, CPUTimeResult> measurement_deltas;
-  for (auto& [process_node, cpu_measurement] : cpu_measurement_map_) {
-    cpu_measurement.MeasureAndDistributeCPUUsage(process_node,
+  for (auto& [node, cpu_measurement] : cpu_measurement_map_) {
+    cpu_measurement.MeasureAndDistributeCPUUsage(node, {}, {},
                                                  measurement_deltas);
   }
-
-  // Add the new process, frame and worker measurements to the existing
-  // measurements.
-  for (const auto& [context, delta] : measurement_deltas) {
-    CHECK(!ContextIs<PageContext>(context));
-    ApplySequentialDelta(measurement_results_[context], delta);
-  }
-
-  // Aggregate new frame and worker measurements to pages.
-  // TODO(crbug.com/1471683): Implement the resource attribution Query API and
-  // keep track of which pages are being measured to avoid extra work here.
-  graph_->VisitAllPageNodes(
-      [this, &measurement_deltas](const PageNode* page_node) {
-        EstimatePageCPUUsage(page_node, measurement_deltas);
-        return true;
-      });
+  ApplyMeasurementDeltas(measurement_deltas);
 }
 
-void CPUMeasurementMonitor::EstimatePageCPUUsage(
-    const PageNode* page_node,
-    const std::map<ResourceContext, CPUTimeResult>& measurement_deltas) {
+void CPUMeasurementMonitor::UpdateCPUMeasurements(
+    const ProcessNode* process_node,
+    GraphChange graph_change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CPUTimeResult& result = measurement_results_[page_node->GetResourceContext()];
-  auto apply_delta_to_page =
-      [&result, &measurement_deltas](const ResourceContext& context) {
-        const auto it = measurement_deltas.find(context);
-        if (it != measurement_deltas.end()) {
-          ApplyOverlappingDelta(result, it->second);
-        }
-      };
-  GraphOperations::VisitFrameTreePreOrder(page_node, [&apply_delta_to_page](
-                                                         const FrameNode* f) {
-    apply_delta_to_page(f->GetResourceContext());
-    // TODO(crbug.com/1410503): Handle non-dedicated workers, which could
-    // appear as children of multiple frames.
-    f->VisitChildDedicatedWorkers([&apply_delta_to_page](const WorkerNode* w) {
-      apply_delta_to_page(w->GetResourceContext());
-      return true;
-    });
-    return true;
-  });
+  // Must call StartMonitoring() before getting measurements.
+  CHECK(graph_);
+  CHECK(process_node);
+
+  // Don't distribute measurements to nodes that are being added to the graph.
+  // The current measurement covers the time before the node was added.
+  NodeSplitSet nodes_to_skip;
+
+  // Include nodes that are being removed from the graph. They may not be
+  // reachable through visitors at this point, but the current measurement
+  // covers the time before they were removed.
+  // TODO(https://crbug.com/1481676): Make the graph state consistent in
+  // OnBefore*NodeRemoved so `extra_nodes` isn't needed.
+  NodeSplitSet extra_nodes;
+
+  absl::visit(base::Overloaded{
+                  [&nodes_to_skip](GraphChangeAddFrame change) {
+                    nodes_to_skip.insert(change.frame_node);
+                  },
+                  [&nodes_to_skip](GraphChangeAddWorker change) {
+                    nodes_to_skip.insert(change.worker_node);
+                  },
+                  [&extra_nodes](GraphChangeRemoveFrame change) {
+                    extra_nodes.insert(change.frame_node);
+                  },
+                  [&extra_nodes](GraphChangeRemoveWorker change) {
+                    extra_nodes.insert(change.worker_node);
+                  },
+                  [](auto change) {
+                    // Do nothing.
+                  },
+              },
+              graph_change);
+
+  // Update CPU metrics, attributing the cumulative CPU of the process to its
+  // frames and workers.
+  std::map<ResourceContext, CPUTimeResult> measurement_deltas;
+  const auto it = cpu_measurement_map_.find(process_node);
+  if (it == cpu_measurement_map_.end()) {
+    // In tests, FrameNode's can be added to mock processes that don't have a
+    // PID so aren't being monitored.
+    return;
+  }
+  it->second.MeasureAndDistributeCPUUsage(it->first, extra_nodes, nodes_to_skip,
+                                          measurement_deltas);
+  ApplyMeasurementDeltas(measurement_deltas, graph_change);
+}
+
+void CPUMeasurementMonitor::ApplyMeasurementDeltas(
+    const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
+    GraphChange graph_change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(graph_);
+  const auto* frame_registry = FrameContextRegistry::GetFromGraph(graph_);
+  CHECK(frame_registry);
+  const auto* worker_registry = WorkerContextRegistry::GetFromGraph(graph_);
+  CHECK(worker_registry);
+  for (const auto& [context, delta] : measurement_deltas) {
+    CHECK(!ContextIs<PageContext>(context));
+
+    // Add the new process, frame and worker measurements to the existing
+    // measurements.
+    ApplySequentialDelta(measurement_results_[context], delta);
+
+    // Aggregate new frame and worker measurements to pages.
+    if (ContextIs<FrameContext>(context)) {
+      // A FrameNode that's being removed` may not be in the registry anymore,
+      // depending on the order OnBeforeFrameNodeRemoved() observers fire.
+      const auto* remove_frame_change =
+          absl::get_if<GraphChangeRemoveFrame>(&graph_change);
+      const FrameNode* frame_node =
+          (remove_frame_change &&
+           remove_frame_change->frame_node->GetResourceContext() == context)
+              ? remove_frame_change->frame_node
+              : frame_registry->GetFrameNodeForContext(context);
+      CHECK(frame_node);
+      ApplyOverlappingDelta(
+          measurement_results_[frame_node->GetPageNode()->GetResourceContext()],
+          delta);
+    } else if (ContextIs<WorkerContext>(context)) {
+      // A WorkerNode that's being removed` may not be in the registry anymore,
+      // depending on the order OnBeforeWorkerNodeRemoved() observers fire.
+      const auto* remove_worker_change =
+          absl::get_if<GraphChangeRemoveWorker>(&graph_change);
+      const WorkerNode* worker_node =
+          (remove_worker_change &&
+           remove_worker_change->worker_node->GetResourceContext() == context)
+              ? remove_worker_change->worker_node
+              : worker_registry->GetWorkerNodeForContext(context);
+      CHECK(worker_node);
+      for (const PageNode* page_node :
+           GetClientPages(worker_node, graph_change)) {
+        ApplyOverlappingDelta(
+            measurement_results_[page_node->GetResourceContext()], delta);
+      }
+    }
+  }
 }
 
 CPUMeasurementMonitor::CPUMeasurement::CPUMeasurement(
@@ -330,6 +551,8 @@ CPUMeasurementMonitor::CPUMeasurement::operator=(
 
 void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
+    const NodeSplitSet& extra_nodes,
+    const NodeSplitSet& nodes_to_skip,
     std::map<ResourceContext, CPUTimeResult>& measurement_deltas) {
   // TODO(crbug.com/1471683): Handle final CPU usage of a process.
   //
@@ -434,6 +657,7 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   const base::TimeTicks measurement_interval_end = base::TimeTicks::Now();
   CHECK(!measurement_interval_start.is_null());
   CHECK(!measurement_interval_end.is_null());
+  CHECK_LE(process_node->GetLaunchTime(), measurement_interval_start);
   if (measurement_interval_start == measurement_interval_end) {
     // No time has passed to measure.
     return;
@@ -458,27 +682,22 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
                                base::TimeDelta cpu_delta) {
     // Each ProcessNode should be updated by one call to
     // MeasureAndDistributeCPUUsage(), and each FrameNode and WorkerNode is in a
-    // single process, so none of these contexts should be in the map yet.
+    // single process, so none of these contexts should be in the map yet. Each
+    // FrameNode or WorkerNode's containing process is measured when the node is
+    // added, so `start_time` will be correctly set to the first time the node
+    // is measured.
     const auto [_, inserted] = measurement_deltas.emplace(
-        context,
-        CPUTimeResult{
-            .metadata = {.measurement_time = measurement_interval_end},
-            // TODO(crbug.com/1471683): `start_time` for a frame or
-            // worker might be different than its parent process, since it
-            // might have been created partway through the current
-            // measurement interval, after the parent is. Handle this by
-            // watching for added/removed FrameNode's and WorkerNode's and
-            // taking an immediate measurement, so that their lifetimes
-            // always correspond with the measurement period.
-            .start_time = measurement_interval_start,
-            .cumulative_cpu = cpu_delta,
-        });
+        context, CPUTimeResult{
+                     .metadata = {.measurement_time = measurement_interval_end},
+                     .start_time = measurement_interval_start,
+                     .cumulative_cpu = cpu_delta,
+                 });
     CHECK(inserted);
   };
 
   record_cpu_deltas(process_node->GetResourceContext(), cumulative_cpu_delta);
   resource_attribution::SplitResourceAmongFramesAndWorkers(
-      cumulative_cpu_delta, process_node,
+      cumulative_cpu_delta, process_node, extra_nodes, nodes_to_skip,
       [&record_cpu_deltas](const FrameNode* f, base::TimeDelta cpu_delta) {
         record_cpu_deltas(f->GetResourceContext(), cpu_delta);
       },

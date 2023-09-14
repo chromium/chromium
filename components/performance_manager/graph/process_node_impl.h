@@ -230,6 +230,7 @@ class ProcessNodeImpl
   absl::optional<int32_t> GetExitStatus() const override;
   const std::string& GetMetricsName() const override;
   bool VisitFrameNodes(const FrameNodeVisitor& visitor) const override;
+  bool VisitWorkerNodes(const WorkerNodeVisitor& visitor) const override;
   base::flat_set<const FrameNode*> GetFrameNodes() const override;
   base::flat_set<const WorkerNode*> GetWorkerNodes() const override;
   bool GetMainThreadTaskLoadIsLow() const override;
