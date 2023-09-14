@@ -23,6 +23,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_view_factory.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/notreached.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
+#include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -48,6 +50,8 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/phonehub/feature_status_provider.h"
+#include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/scalable_iph/buildflags.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
@@ -314,6 +318,23 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile,
   CHECK(synced_printers_manager_);
   synced_printers_manager_observer_.Observe(synced_printers_manager_);
   MaybeNotifyHasSavedPrinters();
+
+  DCHECK(ash::Shell::Get()->system_tray_model()->phone_hub_manager())
+      << "PhoneHubManager is expected to be initialized at a specific timing. "
+         "See a comment in "
+         "PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext. Below "
+         "PhoneHubManagerFactory::GetForProfile will lazy create a "
+         "PhoneHubManager. It should be fine as ScalableIph is also "
+         "initialized at the same timing. But it's ideal if PhoneHubManager is "
+         "created at the intended initialization timing instead of our call, "
+         "i.e. PhoneHubManager should be already created at this point.";
+  phonehub::PhoneHubManager* phone_hub_manager =
+      phonehub::PhoneHubManagerFactory::GetForProfile(profile);
+  CHECK(phone_hub_manager);
+  feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
+  CHECK(feature_status_provider_);
+  feature_status_provider_observer_.Observe(feature_status_provider_);
+  MaybeNotifyPhoneHubOnboardingEligibility();
 }
 
 // Remember NOT to interact with `iph_session` from the destructor. See the
@@ -614,6 +635,29 @@ void ScalableIphDelegateImpl::OnSavedPrintersChanged() {
   MaybeNotifyHasSavedPrinters();
 }
 
+void ScalableIphDelegateImpl::OnFeatureStatusChanged() {
+  CHECK(feature_status_provider_observer_.IsObservingSource(
+      feature_status_provider_));
+
+  SCALABLE_IPH_LOG(GetLogger()) << "Phone hub feature status changed observer "
+                                   "gets called. Going to check the status.";
+  MaybeNotifyPhoneHubOnboardingEligibility();
+}
+
+void ScalableIphDelegateImpl::SetFakeFeatureStatusProviderForTesting(
+    phonehub::FeatureStatusProvider* feature_status_provider) {
+  CHECK(feature_status_provider_observer_.IsObserving())
+      << "feature_status_provider_observer_ should be observing a real object.";
+  CHECK(!feature_status_provider_observer_.IsObservingSource(
+      feature_status_provider))
+      << "feature_status_provider_observer_ is already observing a fake.";
+
+  feature_status_provider_ = feature_status_provider;
+  feature_status_provider_observer_.Reset();
+  feature_status_provider_observer_.Observe(feature_status_provider_);
+  MaybeNotifyPhoneHubOnboardingEligibility();
+}
+
 void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {
   if (has_online_network_ == has_online_network) {
     SCALABLE_IPH_LOG(GetLogger())
@@ -682,6 +726,42 @@ void ScalableIphDelegateImpl::MaybeNotifyHasSavedPrinters() {
 
   for (DelegateObserver& observer : observers_) {
     observer.OnHasSavedPrintersChanged(has_saved_printers_);
+  }
+}
+
+void ScalableIphDelegateImpl::MaybeNotifyPhoneHubOnboardingEligibility() {
+  CHECK(feature_status_provider_);
+  phonehub::FeatureStatus feature_status =
+      feature_status_provider_->GetStatus();
+
+  // `kDisabled` means that a user can enable phone hub via settings. It means
+  // that a user has an eligible phone.
+  const bool phonehub_onboarding_eligible =
+      feature_status == phonehub::FeatureStatus::kEligiblePhoneButNotSetUp ||
+      feature_status == phonehub::FeatureStatus::kDisabled;
+
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Checking phone hub feature status. Feature status: " << feature_status
+      << ". Phone hub onboarding eligible: " << phonehub_onboarding_eligible;
+
+  if (phonehub_onboarding_eligible_ == phonehub_onboarding_eligible) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Do nothing as there is no change in phone hub onboarding eligible. "
+           "Phone hub onboarding eligible: "
+        << phonehub_onboarding_eligible_;
+    return;
+  }
+
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Phone hub onboarding eligible has changed. Notifying observers. "
+         "Phone hub onboarding eligible: from: "
+      << phonehub_onboarding_eligible_
+      << " to: " << phonehub_onboarding_eligible;
+
+  phonehub_onboarding_eligible_ = phonehub_onboarding_eligible;
+
+  for (DelegateObserver& observer : observers_) {
+    observer.OnPhoneHubOnboardingEligibleChanged(phonehub_onboarding_eligible_);
   }
 }
 

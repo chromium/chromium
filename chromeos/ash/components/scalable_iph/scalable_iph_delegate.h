@@ -43,6 +43,12 @@ class ScalableIphDelegate {
     // This method is called only if there is a change in a value. Initial value
     // is expected to be `false`.
     virtual void OnHasSavedPrintersChanged(bool has_saved_printers) {}
+
+    // Called when there is a change in eligibility of phone hub onboarding.
+    // This method is called only if there is a change in a value. Initial value
+    // is expected to be `false`.
+    virtual void OnPhoneHubOnboardingEligibleChanged(
+        bool phonehub_onboarding_eligible) {}
   };
 
   // Have a virtual destructor as we can put `ScalableIphDelegate` in

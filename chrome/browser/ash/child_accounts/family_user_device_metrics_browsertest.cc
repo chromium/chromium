@@ -148,6 +148,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserCount) {
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewChildUser) {
   base::HistogramTester histogram_tester;
 
+  logged_in_user_mixin_.GetLoginManagerMixin()->SkipPostLoginScreens();
   logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewChildUser();
   logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
@@ -173,6 +174,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewChildUser) {
 IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewRegularUser) {
   base::HistogramTester histogram_tester;
 
+  logged_in_user_mixin_.GetLoginManagerMixin()->SkipPostLoginScreens();
   logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
   logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
@@ -200,6 +202,7 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, GuestUser) {
 
   user_manager_->AddGuestUser();
 
+  logged_in_user_mixin_.GetLoginManagerMixin()->SkipPostLoginScreens();
   logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
   logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
@@ -226,6 +229,7 @@ class FamilyUserDeviceMetricsManagedDeviceTest
     : public FamilyUserDeviceMetricsTest {
  protected:
   void LoginAsNewRegularUser() {
+    logged_in_user_mixin_.GetLoginManagerMixin()->SkipPostLoginScreens();
     logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
     logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
   }

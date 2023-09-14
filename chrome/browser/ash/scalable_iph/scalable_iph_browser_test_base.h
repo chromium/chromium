@@ -58,6 +58,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   void TearDownOnMainThread() override;
 
  protected:
+  void SetUpMocks();
+
   // Allow sub-classes to initialize scoped feature list with different values.
   // TODO(b/297565024): Abstract this as we initialize more than just IPH
   //                    configs in this method.
@@ -116,8 +118,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   chromeos::network_config::FakeCrosNetworkConfig fake_cros_network_config_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::CallbackListSubscription subscription_;
-  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
-  raw_ptr<test::MockScalableIphDelegate> mock_delegate_;
+  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_ = nullptr;
+  raw_ptr<test::MockScalableIphDelegate> mock_delegate_ = nullptr;
 };
 
 }  // namespace ash

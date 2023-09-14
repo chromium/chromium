@@ -109,6 +109,8 @@ class ScalableIph : public KeyedService,
   void OnSuspendDoneWithoutLockScreen() override;
   void OnAppListVisibilityChanged(bool shown) override;
   void OnHasSavedPrintersChanged(bool has_saved_printers) override;
+  void OnPhoneHubOnboardingEligibleChanged(
+      bool phonehub_onboarding_eligible) override;
 
   // IphSession::Delegate:
   void PerformActionForIphSession(ActionType action_type) override;
@@ -159,6 +161,7 @@ class ScalableIph : public KeyedService,
   bool CheckNetworkConnection(const base::Feature& feature);
   bool CheckClientAge(const base::Feature& feature);
   bool CheckHasSavedPrinters(const base::Feature& feature);
+  bool CheckPhoneHubOnboardingEligible(const base::Feature& feature);
 
   const std::vector<const base::Feature*>& GetFeatureList() const;
 
@@ -169,6 +172,7 @@ class ScalableIph : public KeyedService,
   ScalableIphDelegate::SessionState session_state_ =
       ScalableIphDelegate::SessionState::kUnknownInitialValue;
   bool has_saved_printers_ = false;
+  bool phonehub_onboarding_eligible_ = false;
   std::unique_ptr<Logger> logger_;
 
   base::RepeatingClosure has_saved_printers_closure_for_testing_;
