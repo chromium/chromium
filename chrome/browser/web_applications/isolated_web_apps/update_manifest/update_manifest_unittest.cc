@@ -4,19 +4,24 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
+#include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 namespace {
 
+using base::test::HasValue;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::IsFalse;
 using testing::IsTrue;
+using testing::Not;
 
 TEST(UpdateManifestTest, FailsToParseManifestWithoutKeys) {
   auto update_manifest = UpdateManifest::CreateFromJson(
@@ -319,8 +324,46 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          UpdateManifestInvalidSrcTest,
                          ::testing::Values("http://example.com",
                                            "foo:123",
-                                           ""
+                                           "file:///test.swbn",
+                                           "about:blank",
+                                           "",
                                            "isolated-app://foo"));
+
+class UpdateManifestSecureOriginAllowlistTest : public ::testing::Test {
+ protected:
+  void TearDown() override {
+    network::SecureOriginAllowlist::GetInstance().ResetForTesting();
+  }
+};
+
+TEST_F(UpdateManifestSecureOriginAllowlistTest, CanSetHttpOriginsAsTrusted) {
+  auto update_manifest_json = base::Value(base::Value::Dict().Set(
+      "versions",
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("version", "1.0.0")
+                                     .Set("src", "http://example.com"))));
+
+  {
+    auto update_manifest = UpdateManifest::CreateFromJson(
+        update_manifest_json, GURL("https://c.de/um.json"));
+    EXPECT_THAT(update_manifest, Not(HasValue()));
+  }
+
+  std::vector<std::string> rejected_patterns;
+  network::SecureOriginAllowlist::GetInstance().SetAuxiliaryAllowlist(
+      "http://example.com", &rejected_patterns);
+  EXPECT_THAT(rejected_patterns, IsEmpty());
+
+  {
+    ASSERT_OK_AND_ASSIGN(
+        auto update_manifest,
+        UpdateManifest::CreateFromJson(update_manifest_json,
+                                       GURL("https://c.de/um.json")));
+    EXPECT_THAT(update_manifest.versions(),
+                ElementsAre(UpdateManifest::VersionEntry{
+                    GURL("http://example.com"), base::Version("1.0.0")}));
+  }
+}
 
 TEST(GetLatestVersionEntryTest, CalculatesLatestVersionCorrectly) {
   auto update_manifest = UpdateManifest::CreateFromJson(

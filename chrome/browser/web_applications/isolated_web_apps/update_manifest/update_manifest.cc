@@ -12,8 +12,7 @@
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
-#include "net/base/url_util.h"
-#include "url/url_constants.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace web_app {
 
@@ -57,13 +56,16 @@ UpdateManifest::CreateFromJson(const base::Value& json,
     CHECK(version.IsValid());
 
     GURL src = update_manifest_url.Resolve(*src_string);
-    if (!src.is_valid()) {
+    if (!src.is_valid() || src == update_manifest_url) {
       continue;
     }
-    if (!src.SchemeIs(url::kHttpsScheme) && !net::IsLocalhost(src)) {
-      // Only https: and localhost URLs are supported as the src URL.
-      // TODO(b/282633777): Re-consider this limitation for managed
-      // environments.
+    if (!src.SchemeIsHTTPOrHTTPS() ||
+        !network::IsUrlPotentiallyTrustworthy(src)) {
+      // Only https: and http: URLs are supported as the src URL. Also, they
+      // need to be "potentially trustworthy", which includes https:, localhost,
+      // and origins configured as trustworthy via enterprise policy. The
+      // separate check for the scheme is crucial, as file:// and some other
+      // URLs are "potentially trustworthy".
       continue;
     }
 
