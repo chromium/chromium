@@ -606,6 +606,22 @@ export class ProgressCenterPanel {
           return;
         }
         delete this.items_[item.id];
+        break;
+
+      case ProgressItemState.SCANNING:
+        // Enterprise Connectors scanning is usually triggered in the beginning
+        // except when DLP files restrictions are enabled as well. In this case,
+        // DLP may pause the IOTask to show a warning and the panel item is
+        // dismissed when the user proceeds or cancels.
+        this.items_[item.id] = item.clone();
+        break;
+
+      default:
+        if (this.items_[item.id] == null) {
+          console.warn(
+              'ProgressCenterItem not updated: ${item.id} state: ${item.state}');
+        }
+        break;
     }
   }
 
