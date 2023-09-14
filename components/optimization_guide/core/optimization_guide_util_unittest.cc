@@ -58,4 +58,25 @@ TEST(OptimizationGuideUtilTest, ParsedAnyMetadataTest) {
   EXPECT_TRUE(parsed_subresource.preconnect_only());
 }
 
+TEST(OptimizationGuideUtilTest, ParsedAnyMetadataTestWithNoPackageName) {
+  proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/LoadingPredictorMetadata");
+  proto::LoadingPredictorMetadata metadata;
+  proto::Resource* subresource = metadata.add_subresources();
+  subresource->set_url("https://example.com/");
+  subresource->set_resource_type(proto::ResourceType::RESOURCE_TYPE_CSS);
+  subresource->set_preconnect_only(true);
+  metadata.SerializeToString(any_metadata.mutable_value());
+
+  absl::optional<proto::LoadingPredictorMetadata> parsed_metadata =
+      ParsedAnyMetadata<proto::LoadingPredictorMetadata>(any_metadata);
+  EXPECT_TRUE(parsed_metadata.has_value());
+  ASSERT_EQ(parsed_metadata->subresources_size(), 1);
+  const proto::Resource& parsed_subresource = parsed_metadata->subresources(0);
+  EXPECT_EQ(parsed_subresource.url(), "https://example.com/");
+  EXPECT_EQ(parsed_subresource.resource_type(),
+            proto::ResourceType::RESOURCE_TYPE_CSS);
+  EXPECT_TRUE(parsed_subresource.preconnect_only());
+}
+
 }  // namespace optimization_guide

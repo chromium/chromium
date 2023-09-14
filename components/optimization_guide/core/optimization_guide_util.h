@@ -47,13 +47,13 @@ absl::optional<T> ParsedAnyMetadata(const proto::Any& any_metadata) {
   // Verify type is the same - the Any type URL should be wrapped as:
   // "type.googleapis.com/com.foo.Name".
   std::vector<std::string> any_type_parts =
-      base::SplitString(any_metadata.type_url(), ".", base::TRIM_WHITESPACE,
+      base::SplitString(any_metadata.type_url(), "./", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
   if (any_type_parts.empty())
     return absl::nullopt;
   T metadata;
   std::vector<std::string> type_parts =
-      base::SplitString(metadata.GetTypeName(), ".", base::TRIM_WHITESPACE,
+      base::SplitString(metadata.GetTypeName(), "./", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
   if (type_parts.empty())
     return absl::nullopt;
