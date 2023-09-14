@@ -202,6 +202,32 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   [self resetToAllItems];
 }
 
+#pragma mark - Subclassing
+
+- (void)disconnect {
+  _browser = nil;
+  _browserState = nil;
+  _consumer = nil;
+  _delegate = nil;
+  _toolbarsMutator = nil;
+  _containedGridToolbarsProvider = nil;
+  _actionWrangler = nil;
+
+  _scopedWebStateListObservation->RemoveAllObservations();
+  _scopedWebStateObservation->RemoveAllObservations();
+  _scopedWebStateObservation.reset();
+  _scopedWebStateListObservation.reset();
+
+  _webStateObserverBridge.reset();
+  _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+  _webStateListObserverBridge.reset();
+  _webStateList = nil;
+}
+
+- (void)configureToolbarsButtons {
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -1062,10 +1088,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return YES;
   }
   return NO;
-}
-
-- (void)configureToolbarsButtons {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 #pragma mark - TabGridPageMutator

@@ -935,9 +935,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_incognitoGridCoordinator stop];
   _incognitoGridCoordinator = nil;
 
-  // Disconnect UI from models they observe.
-  self.regularTabsMediator.browser = nil;
-  self.incognitoTabsMediator.browser = nil;
+  [self.regularTabsMediator disconnect];
+  self.regularTabsMediator = nil;
 
   // TODO(crbug.com/845192) : RecentTabsTableViewController behaves like a
   // coordinator and that should be factored out.

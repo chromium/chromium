@@ -99,6 +99,13 @@
 
 #pragma mark - Parent's function
 
+- (void)disconnect {
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
+  _prefService = nil;
+  [super disconnect];
+}
+
 - (void)configureToolbarsButtons {
   // Start to configure the delegate, so configured buttons will depend on the
   // correct delegate.

@@ -144,6 +144,12 @@
 
 #pragma mark - Parent's function
 
+- (void)disconnect {
+  _closedSessionWindow = nil;
+  _syncedClosedTabsCount = 0;
+  [super disconnect];
+}
+
 - (void)configureToolbarsButtons {
   // Start to configure the delegate, so configured buttons will depend on the
   // correct delegate.
