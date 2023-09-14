@@ -46,6 +46,7 @@
 
 #pragma mark - Private methods
 
+// Creates all views for the Safety Check (Magic Stack) module.
 - (void)createSubviews {
   // Return if the subviews have already been created and added.
   if (!(self.subviews.count == 0)) {

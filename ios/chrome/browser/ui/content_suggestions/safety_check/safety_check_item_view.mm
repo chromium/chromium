@@ -143,6 +143,8 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
   }
 }
 
+// Creates all views for an individual check row in the Safety Check (Magic
+// Stack) module.
 - (void)createSubviews {
   // Return if the subviews have already been created and added.
   if (!(self.subviews.count == 0)) {

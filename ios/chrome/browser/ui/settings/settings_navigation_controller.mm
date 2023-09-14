@@ -219,6 +219,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   return navigationController;
 }
 
+// Creates a new SafetyCheckTableViewController and the chrome
+// around it.
 + (instancetype)
     safetyCheckControllerForBrowser:(Browser*)browser
                            delegate:(id<SettingsNavigationControllerDelegate>)
@@ -771,6 +773,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.manageSyncSettingsCoordinator start];
 }
 
+// Shows the Safety Check page and starts the Safety Check for `referrer`.
 - (void)showSafetyCheckAndStartSafetyCheck:
     (password_manager::PasswordCheckReferrer)referrer {
   if ([self.topViewController isKindOfClass:[SafetyCheckCoordinator class]]) {
@@ -1198,6 +1201,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.clearBrowsingDataCoordinator start];
 }
 
+// Shows the Safety Check page and starts the Safety Check for `referrer`.
+// `showHalfSheet` determines whether the Safety Check will be displayed as a
+// half-sheet, or full-page modal.
 - (void)showAndStartSafetyCheckInHalfSheet:(BOOL)displayAsHalfSheet
                                   referrer:
                                       (password_manager::PasswordCheckReferrer)

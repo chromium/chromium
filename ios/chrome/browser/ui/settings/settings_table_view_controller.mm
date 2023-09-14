@@ -1603,7 +1603,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [_passwordsCoordinator start];
 }
 
-// Shows Safety Check Screen.
+// Shows the Safety Check screen.
 - (void)showSafetyCheck {
   // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
   // low.

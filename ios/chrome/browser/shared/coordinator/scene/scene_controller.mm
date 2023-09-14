@@ -2120,6 +2120,7 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
+// Shows the Password Checkup page for `referrer`.
 - (void)showPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
   if (!password_manager::features::IsPasswordCheckupEnabled()) {
@@ -2156,6 +2157,8 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
+// Opens the Password Issues list displaying compromised, weak or reused
+// credentials for `warningType` and `referrer`.
 - (void)
     showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
                              referrer:(password_manager::PasswordCheckReferrer)

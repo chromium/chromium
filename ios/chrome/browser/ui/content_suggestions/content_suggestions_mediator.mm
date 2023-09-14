@@ -764,6 +764,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 #pragma mark - Private
 
+// Creates the initial `SafetyCheckState` based on the previous check states
+// stored in Prefs, or (for development builds) the overridden check states via
+// Experimental settings.
 - (SafetyCheckState*)initialSafetyCheckState {
   SafetyCheckState* state = [[SafetyCheckState alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
@@ -1218,6 +1221,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 
+// Adds the Safety Check module to `order` based on the current Safety Check
+// state.
 - (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
   CHECK(IsSafetyCheckMagicStackEnabled());
 

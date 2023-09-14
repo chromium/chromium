@@ -136,6 +136,8 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* containerColor) {
 
 #pragma mark - Private
 
+// Creates all views for the icon of a particular check row in the Safety Check
+// (Magic Stack) module.
 - (void)createSubviews {
   // Return if the subviews have already been created and added.
   if (!(self.subviews.count == 0)) {

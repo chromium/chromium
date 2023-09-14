@@ -691,6 +691,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }];
 }
 
+// Shows the Safety Check (Magic Stack) module with `state`.
 - (void)showSafetyCheck:(SafetyCheckState*)state {
   _safetyCheckState = state;
 
@@ -951,6 +952,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [self.audience neverShowModuleType:type];
 }
 
+// Returns the module's subtitle, if any, given the Magic Stack module `type`.
 - (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type {
   if (type == ContentSuggestionsModuleType::kSafetyCheck ||
       type == ContentSuggestionsModuleType::kSafetyCheckMultiRow) {
@@ -1036,6 +1038,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
+// Creates the Safety Check (Magic Stack) module using the Safety Check `state`.
 - (void)createSafetyCheck:(SafetyCheckState*)state {
   self.safetyCheckState = state;
 
@@ -1109,6 +1112,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
+// Creates the Magic Stack module using `_magicStackModuleOrder`. This method
+// loops over any module types listed in `_magicStackModuleOrder` and adds their
+// respective views to the Magic Stack.
 - (void)createMagicStack {
   _magicStackScrollView = [[UIScrollView alloc] init];
   [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];

@@ -239,6 +239,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   return self;
 }
 
+// Returns the module width (CGFloat) given `traitCollection`.
 + (CGFloat)moduleWidthForHorizontalTraitCollection:
     (UITraitCollection*)traitCollection {
   return traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular
@@ -246,6 +247,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
              : kModuleWidthCompact;
 }
 
+// Returns the module's title, if any, given the Magic Stack module `type`.
 + (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type {
   switch (type) {
     case ContentSuggestionsModuleType::kShortcuts:
@@ -275,14 +277,17 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   }
 }
 
+// Returns the font for the module title string.
 + (UIFont*)fontForTitle {
   return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
 }
 
+// Returns the font for the module subtitle string.
 + (UIFont*)fontForSubtitle {
   return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
 }
 
+// Returns the content insets.
 - (NSDirectionalEdgeInsets)contentMargins {
   NSDirectionalEdgeInsets contentMargins =
       NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
@@ -303,6 +308,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   return contentMargins;
 }
 
+// Returns the intrinsic content size.
 - (CGSize)intrinsicContentSize {
   // When the Most Visited Tiles module is not in the Magic Stack or if a module
   // is the only module in the Magic Stack in a wider screen, the module should
@@ -391,6 +397,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   }
 }
 
+// Based on ContentSuggestionsModuleType, returns YES if the module should show
+// a subtitle.
 - (BOOL)shouldShowSubtitle {
   switch (_type) {
     case ContentSuggestionsModuleType::kSafetyCheck:
@@ -401,6 +409,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   }
 }
 
+// Based on ContentSuggestionsModuleType, returns YES if a "See More" button
+// should be displayed in the module.
 - (BOOL)shouldShowSeeMore {
   switch (_type) {
     case ContentSuggestionsModuleType::kCompactedSetUpList:
@@ -411,6 +421,9 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   }
 }
 
+// Based on ContentSuggestionsModuleType, returns YES if a separator should be
+// shown between the module title/subtitle row, and the remaining bottom-half of
+// the module.
 - (BOOL)shouldShowSeparator {
   switch (_type) {
     case ContentSuggestionsModuleType::kSetUpListSync:

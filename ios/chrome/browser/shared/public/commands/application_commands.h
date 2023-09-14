@@ -135,7 +135,7 @@ enum class WarningType;
     (password_manager::PasswordCheckReferrer)referrer;
 
 // Opens the Password Issues list displaying compromised, weak or reused
-// credentials for `referrer`.
+// credentials for `warningType` and `referrer`.
 - (void)
     showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
                              referrer:(password_manager::PasswordCheckReferrer)

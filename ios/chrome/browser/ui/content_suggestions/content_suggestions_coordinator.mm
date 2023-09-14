@@ -415,6 +415,9 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 #pragma mark - SafetyCheckViewDelegate
 
+// Called when a Safety Check item is selected by the user. Depending on the
+// Safety Check item `type`, this method fires a UI command to present the
+// Update Chrome page, Password Checkup, or Safety Check half sheet.
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
   CHECK(IsSafetyCheckMagicStackEnabled());
 

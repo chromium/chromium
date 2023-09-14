@@ -49,6 +49,8 @@ int CheckIssuesCount(SafetyCheckState* state);
 // Returns true if the Safety Check can be run given `last_run_time`.
 bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time);
 
+// Given `last_run_time`, returns a short, human-readable string for the
+// timestamp.
 NSString* FormatElapsedTimeSinceLastSafetyCheck(
     absl::optional<base::Time> last_run_time);
 
