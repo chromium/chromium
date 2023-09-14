@@ -455,6 +455,7 @@ ios_builder(
     mirrors = [
         "ci/ios-simulator-cronet",
     ],
+    cpu = cpu.ARM64,
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
