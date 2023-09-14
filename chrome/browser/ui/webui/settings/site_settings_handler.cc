@@ -2380,6 +2380,14 @@ void SiteSettingsHandler::HandleClearSiteGroupDataAndCookies(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   auto grouping_key = GroupingKey::Deserialize(args[0].GetString());
+  net::SchemefulSite https_top_level_site;
+  if (absl::optional<std::string> etld_plus_one =
+          grouping_key.GetEtldPlusOne()) {
+    https_top_level_site =
+        net::SchemefulSite(ConvertEtldToOrigin(*etld_plus_one, true));
+  } else if (absl::optional<url::Origin> origin = grouping_key.GetOrigin()) {
+    https_top_level_site = net::SchemefulSite(*origin);
+  }
 
   AllowJavascript();
   RemoveMatchingNodes(cookies_tree_model_.get(), absl::nullopt, grouping_key);
@@ -2391,14 +2399,18 @@ void SiteSettingsHandler::HandleClearSiteGroupDataAndCookies(
     // partitioned.
     // TODO(crbug.com/1468277): Call RemovePartitionedBrowsingData() for this
     // case using the {origin, grouping_key} pair.
-    if (origin_is_partitioned.second)
-      continue;
-
-    affected_origins.emplace_back(
-        // A placeholder origin may have been created, in this case the
-        // grouping key itself should be used as the origin, the same as it
-        // would have been for display.
-        ResolveOriginInSiteGroup(grouping_key, origin_is_partitioned.first));
+    if (origin_is_partitioned.second) {
+      // Partitioned entries must be removed from the browsing data model.
+      browsing_data_model_->RemovePartitionedBrowsingData(
+          origin_is_partitioned.first.host(), https_top_level_site,
+          base::DoNothing());
+    } else {
+      affected_origins.emplace_back(
+          // A placeholder origin may have been created, in this case the
+          // grouping key itself should be used as the origin, the same as it
+          // would have been for display.
+          ResolveOriginInSiteGroup(grouping_key, origin_is_partitioned.first));
+    }
   }
 
   // Cookies may have associated with the entry for the grouping url itself.

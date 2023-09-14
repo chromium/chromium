@@ -5436,6 +5436,9 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
   base::Value::List storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(4U, storage_and_cookie_list.size());
   verify_site_group(storage_and_cookie_list[0], "example.com");
+  verify_site_group(storage_and_cookie_list[1], "google.com");
+  verify_site_group(storage_and_cookie_list[2], "google.com.au");
+  verify_site_group(storage_and_cookie_list[3], "ungrouped.com");
 
   base::Value::List args;
   args.Append(GroupingKey::CreateFromEtldPlus1("example.com").Serialize());
@@ -5470,9 +5473,10 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
                      ->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentList();
-  EXPECT_EQ(4U, storage_and_cookie_list.size());
-  verify_site_group(storage_and_cookie_list[0], "example.com");
-  verify_site_group(storage_and_cookie_list[1], "google.com");
+  EXPECT_EQ(3U, storage_and_cookie_list.size());
+  verify_site_group(storage_and_cookie_list[0], "google.com");
+  verify_site_group(storage_and_cookie_list[1], "google.com.au");
+  verify_site_group(storage_and_cookie_list[2], "ungrouped.com");
 
   args.clear();
   args.Append(GroupingKey::CreateFromEtldPlus1("google.com").Serialize());
@@ -5487,6 +5491,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearSiteGroupDataAndCookies) {
   storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(2U, storage_and_cookie_list.size());
   verify_site_group(storage_and_cookie_list[0], "google.com.au");
+  verify_site_group(storage_and_cookie_list[1], "ungrouped.com");
 
   args.clear();
   args.Append(GroupingKey::CreateFromEtldPlus1("google.com.au").Serialize());
