@@ -33,8 +33,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -153,11 +153,11 @@ const AtomicString& HTMLFieldSetElement::FormControlType() const {
 }
 
 LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
-  return MakeGarbageCollected<LayoutNGFieldset>(this);
+  return MakeGarbageCollected<LayoutFieldset>(this);
 }
 
 LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
-  if (const auto* ng_fieldset = DynamicTo<LayoutNGFieldset>(GetLayoutBox())) {
+  if (const auto* ng_fieldset = DynamicTo<LayoutFieldset>(GetLayoutBox())) {
     if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox())
       return content;
   }

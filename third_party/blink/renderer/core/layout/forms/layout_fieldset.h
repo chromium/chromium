@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_FIELDSET_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LAYOUT_NG_FIELDSET_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_FIELDSET_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_FIELDSET_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
-class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutFieldset final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGFieldset(Element*);
+  explicit LayoutFieldset(Element*);
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGFieldset";
+    return "LayoutFieldset";
   }
 
   void AddChild(LayoutObject* new_child,
@@ -60,7 +60,7 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
 };
 
 template <>
-struct DowncastTraits<LayoutNGFieldset> {
+struct DowncastTraits<LayoutFieldset> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsFieldset();
   }

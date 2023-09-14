@@ -42,6 +42,8 @@ blink_core_sources_layout = [
   "flexible_box_algorithm.h",
   "forms/layout_button.cc",
   "forms/layout_button.h",
+  "forms/layout_fieldset.cc",
+  "forms/layout_fieldset.h",
   "fragmentainer_iterator.cc",
   "fragmentainer_iterator.h",
   "fragmentation_context.h",
@@ -349,8 +351,6 @@ blink_core_sources_layout = [
   "ng/layout_ng_block.h",
   "ng/layout_ng_block_flow_mixin.cc",
   "ng/layout_ng_block_flow_mixin.h",
-  "ng/layout_ng_fieldset.cc",
-  "ng/layout_ng_fieldset.h",
   "ng/layout_ng_frame_set.cc",
   "ng/layout_ng_frame_set.h",
   "ng/layout_ng_mixin.cc",
@@ -700,6 +700,7 @@ if (is_fuchsia) {
 
 blink_core_tests_layout = [
   "anchor_position_scroll_data_test.cc",
+  "forms/layout_fieldset_test.cc",
   "geometry/axis_test.cc",
   "geometry/logical_rect_test.cc",
   "geometry/physical_rect_test.cc",
@@ -764,7 +765,6 @@ blink_core_tests_layout = [
   "ng/inline/ng_physical_line_box_fragment_test.cc",
   "ng/inline/ng_score_line_breaker_test.cc",
   "ng/inline/ng_text_auto_space_test.cc",
-  "ng/layout_ng_fieldset_test.cc",
   "ng/layout_ng_frame_set_test.cc",
   "ng/layout_ng_text_control_single_line_test.cc",
   "ng/list/layout_ng_inline_list_item_test.cc",

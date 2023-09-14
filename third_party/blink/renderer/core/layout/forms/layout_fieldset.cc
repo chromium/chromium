@@ -2,33 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 
 namespace blink {
 
-LayoutNGFieldset::LayoutNGFieldset(Element* element)
-    : LayoutNGBlockFlow(element) {
+LayoutFieldset::LayoutFieldset(Element* element) : LayoutNGBlockFlow(element) {
   SetChildrenInline(false);
 }
 
-LayoutBlock* LayoutNGFieldset::FindAnonymousFieldsetContentBox() const {
+LayoutBlock* LayoutFieldset::FindAnonymousFieldsetContentBox() const {
   LayoutObject* first_child = FirstChild();
-  if (!first_child)
+  if (!first_child) {
     return nullptr;
-  if (first_child->IsAnonymous())
+  }
+  if (first_child->IsAnonymous()) {
     return To<LayoutBlock>(first_child);
+  }
   LayoutObject* last_child = first_child->NextSibling();
   DCHECK(!last_child || !last_child->NextSibling());
-  if (last_child && last_child->IsAnonymous())
+  if (last_child && last_child->IsAnonymous()) {
     return To<LayoutBlock>(last_child);
+  }
   return nullptr;
 }
 
-void LayoutNGFieldset::AddChild(LayoutObject* new_child,
-                                LayoutObject* before_child) {
+void LayoutFieldset::AddChild(LayoutObject* new_child,
+                              LayoutObject* before_child) {
   if (!new_child->IsText() && !new_child->IsAnonymous()) {
     // Adding a child LayoutObject always causes reattach of <fieldset>. So
     // |before_child| is always nullptr.
@@ -61,11 +63,12 @@ void LayoutNGFieldset::AddChild(LayoutObject* new_child,
   fieldset_content->AddChild(new_child, before_child);
 }
 
-void LayoutNGFieldset::InsertedIntoTree() {
+void LayoutFieldset::InsertedIntoTree() {
   LayoutNGBlockFlow::InsertedIntoTree();
 
-  if (FindAnonymousFieldsetContentBox())
+  if (FindAnonymousFieldsetContentBox()) {
     return;
+  }
 
   // We wrap everything inside an anonymous child, which will take care of the
   // fieldset contents. This parent will only be responsible for the fieldset
@@ -101,7 +104,7 @@ void LayoutNGFieldset::InsertedIntoTree() {
       fieldset_content->ComputeIsFixedContainer(fieldset_content->Style()));
 }
 
-void LayoutNGFieldset::UpdateAnonymousChildStyle(
+void LayoutFieldset::UpdateAnonymousChildStyle(
     const LayoutObject*,
     ComputedStyleBuilder& child_style_builder) const {
   // Inherit all properties listed here:
@@ -168,11 +171,11 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetScrollStartY(StyleRef().ScrollStartY());
 }
 
-bool LayoutNGFieldset::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectNGFieldset || LayoutNGBlockFlow::IsOfType(type);
+bool LayoutFieldset::IsOfType(LayoutObjectType type) const {
+  return type == kLayoutObjectFieldset || LayoutNGBlockFlow::IsOfType(type);
 }
 
-void LayoutNGFieldset::InvalidatePaint(
+void LayoutFieldset::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   // Fieldset's box decoration painting depends on the legend geometry.
   const LayoutBox* legend_box = FindInFlowLegend();
@@ -183,7 +186,7 @@ void LayoutNGFieldset::InvalidatePaint(
   LayoutNGBlockFlow::InvalidatePaint(context);
 }
 
-bool LayoutNGFieldset::BackgroundIsKnownToBeOpaqueInRect(
+bool LayoutFieldset::BackgroundIsKnownToBeOpaqueInRect(
     const PhysicalRect& local_rect) const {
   // If the field set has a legend, then it probably does not completely fill
   // its background.
@@ -194,20 +197,22 @@ bool LayoutNGFieldset::BackgroundIsKnownToBeOpaqueInRect(
   return LayoutBlockFlow::BackgroundIsKnownToBeOpaqueInRect(local_rect);
 }
 
-LayoutUnit LayoutNGFieldset::ScrollWidth() const {
-  if (const auto* content = FindAnonymousFieldsetContentBox())
+LayoutUnit LayoutFieldset::ScrollWidth() const {
+  if (const auto* content = FindAnonymousFieldsetContentBox()) {
     return content->ScrollWidth();
+  }
   return LayoutNGBlockFlow::ScrollWidth();
 }
 
-LayoutUnit LayoutNGFieldset::ScrollHeight() const {
-  if (const auto* content = FindAnonymousFieldsetContentBox())
+LayoutUnit LayoutFieldset::ScrollHeight() const {
+  if (const auto* content = FindAnonymousFieldsetContentBox()) {
     return content->ScrollHeight();
+  }
   return LayoutNGBlockFlow::ScrollHeight();
 }
 
 // static
-LayoutBox* LayoutNGFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
+LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
   DCHECK(fieldset.IsFieldset());
   for (LayoutObject* legend = fieldset.FirstChild(); legend;
        legend = legend->NextSibling()) {
