@@ -103601,6 +103601,11 @@ would be helpful to identify which type is being sent.
   <int value="100220" label="BrowserColorVariant"/>
   <int value="100221" label="GrayscaleThemeEnabled"/>
   <int value="100222" label="UserColor"/>
+  <int value="100223" label="BlockAll3pcToggleEnabled"/>
+  <int value="100224" label="TrackingProtectionLevel"/>
+  <int value="100225" label="UserSpeakOnMuteDetectionEnabled"/>
+  <int value="100226" label="ShouldShowSpeakOnMuteOptInNudge"/>
+  <int value="100227" label="SpeakOnMuteOptInNudgeShownCount"/>
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
