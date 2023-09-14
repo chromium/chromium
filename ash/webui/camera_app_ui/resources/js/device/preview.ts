@@ -8,6 +8,7 @@ import {
   assertExists,
   assertInstanceof,
 } from '../assert.js';
+import {queuedAsyncCallback} from '../async_job_queue.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import * as expert from '../expert.js';
@@ -114,7 +115,8 @@ export class Preview {
    */
   constructor(private readonly onNewStreamNeeded: () => Promise<void>) {
     expert.addObserver(
-        expert.ExpertOption.SHOW_METADATA, () => this.updateShowMetadata());
+        expert.ExpertOption.SHOW_METADATA,
+        queuedAsyncCallback('keepLatest', () => this.updateShowMetadata()));
   }
 
   getVideo(): PreviewVideo {
@@ -282,12 +284,10 @@ export class Preview {
     this.video.srcObject = null;
     this.video = video;
     video.addEventListener('resize', () => this.onIntrinsicSizeChanged());
-    video.addEventListener(
-        'click',
-        (event) => this.onFocusClicked(assertInstanceof(event, MouseEvent)));
+    video.addEventListener('click', (event) => this.onFocusClicked(event));
     // Disable right click on video which let user show video control.
     video.addEventListener('contextmenu', (event) => event.preventDefault());
-    return this.onIntrinsicSizeChanged();
+    this.onIntrinsicSizeChanged();
   }
 
   private isStreamAlive(): boolean {
@@ -317,14 +317,17 @@ export class Preview {
       await this.setSource(this.streamInternal);
       // Use a watchdog since the stream.onended event is unreliable in the
       // recent version of Chrome. As of 55, the event is still broken.
-      this.watchdog = setInterval(() => {
+      // TODO(pihsun): Check if the comment above is still true.
+      // Using async function in setInterval here should be fine, since only
+      // the last callback will contain asynchronous code.
+      this.watchdog = setInterval(async () => {
         if (!this.isStreamAlive()) {
           this.clearWatchdog();
           const deviceOperator = DeviceOperator.getInstance();
           if (deviceOperator !== null && this.deviceId !== null) {
-            deviceOperator.dropConnection(this.deviceId);
+            await deviceOperator.dropConnection(this.deviceId);
           }
-          this.onNewStreamNeeded();
+          await this.onNewStreamNeeded();
         }
       }, 100);
       this.updateFacing();
@@ -349,14 +352,14 @@ export class Preview {
         }
         this.vidPid = await deviceOperator.getVidPid(deviceId);
       }
-      this.updateShowMetadata();
+      await this.updateShowMetadata();
 
       assert(
           this.onPreviewExpired === null || this.onPreviewExpired.isSignaled());
       this.onPreviewExpired = new WaitableEvent();
       state.set(state.State.STREAMING, true);
     } catch (e) {
-      this.close();
+      await this.close();
       throw e;
     }
     return this.streamInternal;
@@ -365,7 +368,7 @@ export class Preview {
   /**
    * Closes the preview.
    */
-  close(): void {
+  async close(): Promise<void> {
     this.clearWatchdog();
     // Pause video element to avoid black frames during transition.
     this.video.pause();
@@ -376,9 +379,7 @@ export class Preview {
       const {deviceId} = getVideoTrackSettings(track);
       track.stop();
       const deviceOperator = DeviceOperator.getInstance();
-      if (deviceOperator !== null) {
-        deviceOperator.dropConnection(deviceId);
-      }
+      await deviceOperator?.dropConnection(deviceId);
       assert(this.onPreviewExpired !== null);
     }
     this.streamInternal = null;
@@ -392,9 +393,9 @@ export class Preview {
   /**
    * Updates preview whether to show preview metadata or not.
    */
-  private updateShowMetadata() {
+  private async updateShowMetadata() {
     if (expert.isEnabled(expert.ExpertOption.SHOW_METADATA)) {
-      this.enableShowMetadata();
+      await this.enableShowMetadata();
     } else {
       this.disableShowMetadata();
     }
@@ -687,7 +688,17 @@ export class Preview {
     this.cancelFocus();
     const marker = Symbol();
     this.focusMarker = marker;
-    (async () => {
+    // We don't use AsyncJobQueue here since we want to call setPointOfInterest
+    // (applyConstraints) as soon as possible when user click a new focus, and
+    // applyConstraints handles multiple calls internally.
+    // From testing, all parallel applyConstraints calls resolve together when
+    // the last constraint is applied, but it's still faster than calling
+    // multiple applyConstraints sequentially.
+    //
+    // TODO(pihsun): add utility for this kind of "cooperated cancellation" (to
+    // AsyncJobQueue or as separate utility function) if there's some other
+    // place that has similar requirement.
+    void (async () => {
       try {
         // Normalize to square space coordinates by W3C spec.
         const x = event.offsetX / this.video.offsetWidth;

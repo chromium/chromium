@@ -354,7 +354,7 @@ class Reconfigurer {
    */
   private async stopStreams() {
     await this.modes.clear();
-    this.preview.close();
+    await this.preview.close();
   }
 }
 
