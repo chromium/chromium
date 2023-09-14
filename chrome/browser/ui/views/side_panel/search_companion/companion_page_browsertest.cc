@@ -353,14 +353,19 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   // the page to load.
   void ClickUrlInCompanion(const GURL& url,
                            bool wait_for_navigation = true,
-                           bool wait_for_message = false) {
+                           bool wait_for_message = false,
+                           bool click_in_nested_iframe = false) {
     std::string waitForMessage = wait_for_message ? "waitForMessage();" : "";
     std::string script =
         "const link = document.createElement('a');link.target = "
         "\"blank_\";link.href=\"" +
         url.spec() + "\";document.body.appendChild(link);link.click();" +
         waitForMessage;
-    ExecJs(script);
+    if (click_in_nested_iframe) {
+      ExecJsInNestedIframe(script);
+    } else {
+      ExecJs(script);
+    }
     if (wait_for_navigation) {
       content::TestNavigationObserver nav_observer(web_contents());
       nav_observer.Wait();
@@ -400,6 +405,19 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         content::ChildFrameAt(GetCompanionWebContents(browser()), 0);
 
     return content::ExecJs(iframe, code);
+  }
+
+  ::testing::AssertionResult ExecJsInNestedIframe(const std::string& code) {
+    // Create a nested iframe and execute test in it.
+    content::RenderFrameHost* iframe =
+        content::ChildFrameAt(GetCompanionWebContents(browser()), 0);
+    std::string createIframeScript =
+        "const frame = document.createElement('iframe');"
+        "document.body.appendChild(frame);";
+    content::ExecJs(iframe, createIframeScript);
+    content::RenderFrameHost* nested_iframe = content::ChildFrameAt(iframe, 0);
+
+    return content::ExecJs(nested_iframe, code);
   }
 
   // Executes Javascript in the active tab.
@@ -827,6 +845,30 @@ IN_PROC_BROWSER_TEST_F(
   // Go back from page A2. We should return to the initial page.
   PressBackButton();
   EXPECT_EQ(initial_url, web_contents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
+                       LinkClickInNestedIframeOpens) {
+  const GURL initial_url = CreateUrl(kHost, "/initial.html");
+  const GURL clicked_url = CreateUrl(kHost, "/clicked.html");
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
+
+  // Click a URL that appears in a nested iframe
+  ClickUrlInCompanion(clicked_url,
+                      /*wait_for_navigation=*/true,
+                      /*wait_for_message=*/false,
+                      /*click_in_nested_iframe=*/true);
+
+  EXPECT_EQ(3, web_contents()->GetController().GetEntryCount());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,

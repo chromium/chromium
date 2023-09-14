@@ -234,7 +234,8 @@ void CompanionSidePanelController::DidOpenRequestedURL(
     bool renderer_initiated) {
   // Ensure that the navigation is coming from a page we trust before
   // redirecting to main browser.
-  if (!IsSiteTrusted(source_render_frame_host->GetLastCommittedURL())) {
+  if (!IsSiteTrusted(
+          source_render_frame_host->GetLastCommittedOrigin().GetURL())) {
     return;
   }
 
