@@ -146,7 +146,7 @@ TEST(PolicyService, DefaultPolicyValue) {
   managers.push_back(GetDefaultValuesPolicyManager());
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
-  EXPECT_EQ(policy_service->source(), "default");
+  EXPECT_EQ(policy_service->source(), "Default");
 
   PolicyStatus<std::string> version_prefix =
       policy_service->GetTargetVersionPrefix("");
@@ -273,7 +273,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(),
-            "group_policy;device_management;imaginary;default");
+            "group_policy;device_management;imaginary;Default");
 
   PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
       policy_service->GetUpdatesSuppressedTimes();
@@ -337,20 +337,20 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
             "{\n"
-            "  LastCheckPeriod = 270 (default)\n"
+            "  LastCheckPeriod = 270 (Default)\n"
             "  UpdatesSuppressed = "
             "{StartHour: 5, StartMinute: 10, Duration: 30} (group_policy)\n"
             "  DownloadPreference = cacheable (imaginary)\n"
             "  \"app1\": {\n"
-            "    Install = 1 (default)\n"
+            "    Install = 1 (Default)\n"
             "    Update = 3 (device_management)\n"
             "    TargetChannel = channel_gp (group_policy)\n"
-            "    RollbackToTargetVersionAllowed = 0 (default)\n"
+            "    RollbackToTargetVersionAllowed = 0 (Default)\n"
             "  }\n"
             "  \"app2\": {\n"
-            "    Install = 1 (default)\n"
+            "    Install = 1 (Default)\n"
             "    Update = 1 (group_policy)\n"
-            "    RollbackToTargetVersionAllowed = 0 (default)\n"
+            "    RollbackToTargetVersionAllowed = 0 (Default)\n"
             "  }\n"
             "}\n");
 }
@@ -392,7 +392,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
 
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
-  EXPECT_EQ(policy_service->source(), "device_management;imaginary;default");
+  EXPECT_EQ(policy_service->source(), "device_management;imaginary;Default");
 
   PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
       policy_service->GetUpdatesSuppressedTimes();
@@ -437,7 +437,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
   const PolicyStatus<int>::Entry& app2_update_status_policy =
       app2_update_status.effective_policy().value();
-  EXPECT_EQ(app2_update_status_policy.source, "default");
+  EXPECT_EQ(app2_update_status_policy.source, "Default");
   EXPECT_EQ(app2_update_status_policy.policy, 1);
   EXPECT_EQ(app2_update_status.policy(), 1);
 
@@ -454,20 +454,20 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(
       policy_service->GetAllPoliciesAsString(),
       "{\n"
-      "  LastCheckPeriod = 270 (default)\n"
+      "  LastCheckPeriod = 270 (Default)\n"
       "  UpdatesSuppressed = "
       "{StartHour: 5, StartMinute: 10, Duration: 30} (device_management)\n"
       "  DownloadPreference = cacheable (imaginary)\n"
       "  \"app1\": {\n"
-      "    Install = 1 (default)\n"
+      "    Install = 1 (Default)\n"
       "    Update = 3 (device_management)\n"
       "    TargetChannel = channel_dm (device_management)\n"
-      "    RollbackToTargetVersionAllowed = 0 (default)\n"
+      "    RollbackToTargetVersionAllowed = 0 (Default)\n"
       "  }\n"
       "  \"app2\": {\n"
-      "    Install = 1 (default)\n"
-      "    Update = 1 (default)\n"
-      "    RollbackToTargetVersionAllowed = 0 (default)\n"
+      "    Install = 1 (Default)\n"
+      "    Update = 1 (Default)\n"
+      "    RollbackToTargetVersionAllowed = 0 (Default)\n"
       "  }\n"
       "}\n");
 }
@@ -534,9 +534,9 @@ TEST(PolicyService, CreatePolicyManagerVector) {
       CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "GroupPolicy");
-  EXPECT_EQ(managers[2]->source(), "DeviceManagement");
-  EXPECT_EQ(managers[3]->source(), "default");
+  EXPECT_EQ(managers[1]->source(), "Group Policy");
+  EXPECT_EQ(managers[2]->source(), "Device Management");
+  EXPECT_EQ(managers[3]->source(), "Default");
 
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
                         Wow6432(KEY_WRITE));
@@ -546,9 +546,9 @@ TEST(PolicyService, CreatePolicyManagerVector) {
       CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "DeviceManagement");
-  EXPECT_EQ(managers[2]->source(), "GroupPolicy");
-  EXPECT_EQ(managers[3]->source(), "default");
+  EXPECT_EQ(managers[1]->source(), "Device Management");
+  EXPECT_EQ(managers[2]->source(), "Group Policy");
+  EXPECT_EQ(managers[3]->source(), "Default");
 }
 #elif BUILDFLAG(IS_MAC)
 TEST(PolicyService, CreatePolicyManagerVector) {
@@ -560,9 +560,9 @@ TEST(PolicyService, CreatePolicyManagerVector) {
       CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{4});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "DeviceManagement");
-  EXPECT_EQ(managers[2]->source(), "ManagedPreference");
-  EXPECT_EQ(managers[3]->source(), "default");
+  EXPECT_EQ(managers[1]->source(), "Device Management");
+  EXPECT_EQ(managers[2]->source(), "Managed Preferences");
+  EXPECT_EQ(managers[3]->source(), "Default");
 }
 #else
 TEST(PolicyService, CreatePolicyManagerVector) {
@@ -574,8 +574,8 @@ TEST(PolicyService, CreatePolicyManagerVector) {
       CreatePolicyManagerVector(false, CreateExternalConstants(), dm_policy);
   EXPECT_EQ(managers.size(), size_t{3});
   EXPECT_EQ(managers[0]->source(), "DictValuePolicy");
-  EXPECT_EQ(managers[1]->source(), "DeviceManagement");
-  EXPECT_EQ(managers[2]->source(), "default");
+  EXPECT_EQ(managers[1]->source(), "Device Management");
+  EXPECT_EQ(managers[2]->source(), "Default");
 }
 #endif
 

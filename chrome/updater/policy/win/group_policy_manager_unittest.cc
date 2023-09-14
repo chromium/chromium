@@ -56,7 +56,7 @@ TEST_F(GroupPolicyManagerTests, NoPolicySet) {
   auto policy_manager = base::MakeRefCounted<GroupPolicyManager>(true);
   EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
 
-  EXPECT_EQ(policy_manager->source(), "GroupPolicy");
+  EXPECT_EQ(policy_manager->source(), "Group Policy");
   EXPECT_FALSE(policy_manager->CloudPolicyOverridesPlatformPolicy());
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);

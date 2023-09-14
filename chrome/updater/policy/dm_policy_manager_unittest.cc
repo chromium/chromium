@@ -121,7 +121,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
-  EXPECT_EQ(policy_manager->source(), "DeviceManagement");
+  EXPECT_EQ(policy_manager->source(), "Device Management");
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
@@ -199,7 +199,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
-  EXPECT_EQ(policy_manager->source(), "DeviceManagement");
+  EXPECT_EQ(policy_manager->source(), "Device Management");
 
   // Verify global policies
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), base::Minutes(111));
@@ -287,7 +287,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
   EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
-  EXPECT_EQ(policy_manager->source(), "DeviceManagement");
+  EXPECT_EQ(policy_manager->source(), "Device Management");
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
