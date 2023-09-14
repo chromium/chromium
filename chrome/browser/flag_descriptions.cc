@@ -2871,6 +2871,10 @@ const char kPrivacyGuidePreloadDescription[] =
     "Adds the preload card to the Privacy Guide 3 flow. "
     "This requires #privacy-guide-3 to also be enabled.";
 
+const char kPrivacyGuideAndroid3Name[] = "Privacy Guide 3 on Android";
+const char kPrivacyGuideAndroid3Description[] =
+    "Enables updates to the Privacy Guide flow on Android.";
+
 const char kPrivacyGuidePreloadAndroidName[] =
     "Privacy Guide Preload on Android";
 const char kPrivacyGuidePreloadAndroidDescription[] =

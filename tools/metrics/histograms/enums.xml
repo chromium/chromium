@@ -60624,6 +60624,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopPrivacySandbox:enabled"/>
   <int value="-2033225430" label="NTPMostLikelyFaviconsFromServer:disabled"/>
   <int value="-2033136855" label="MessagesForAndroidPasswords:disabled"/>
+  <int value="-2032870269" label="PrivacyGuideAndroid3:disabled"/>
   <int value="-2032292269" label="ImprovedIncognitoScreenshot:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
@@ -64244,6 +64245,7 @@ from previous Chrome versions.
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
   <int value="-254887599" label="google-profile-info"/>
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
+  <int value="-253685023" label="PrivacyGuideAndroid3:enabled"/>
   <int value="-253619457" label="ChromeSharingHubLaunchAdjacent:enabled"/>
   <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
   <int value="-252128826" label="ContextualSearchDelayedIntelligence:enabled"/>

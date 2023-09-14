@@ -6806,6 +6806,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "privacy-guide-android-3",
+    "owners": [
+      "rubindl",
+      "msramek",
+      "chrome-privacy-controls@google.com"],
+    "expiry_milestone": 121
+  },
+  {
     "name": "privacy-guide-preload",
     "owners": [
       "rainhard",
