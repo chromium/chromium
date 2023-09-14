@@ -59,11 +59,9 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
                     << static_cast<int>(buffer_format);
       NOTREACHED_NORETURN();
   }
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // If format is true multiplanar format, we prefer external sampler on
-  // ChromeOS.
-  // TODO(crbug.com/1471111): Add external sampler support for Linux with
-  // Vulkan.
+  // ChromeOS and Linux.
   if (format.is_multi_plane()) {
     format.SetPrefersExternalSampler();
   }
