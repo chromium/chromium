@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2678468611080193228">Попробуйте временно разрешить сторонние файлы cookie. Это снизит вашу защиту, зато функции сайта, скорее всего, будут работать.</translation>
+<translation id="2683434792633810741">Удалить и сбросить?</translation>
 <translation id="2687403674020088961">Блокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2717722538473713889">Адреса электронной почты</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Разрешить определенному сайту сохранять файлы cookie</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
 <translation id="4053720452172726777">Настройка и управление Google Chrome</translation>
+<translation id="4149890623864272035">Вы действительно хотите удалить все локальные данные этого сайта, включая файлы cookie, и сбросить все его разрешения?</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4151930093518524179">Масштаб по умолчанию</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Разрешить использование сторонних файлов cookie</translation>
 <translation id="4428065317363009941">Персонализация рекламы</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
+<translation id="443552056913301231">Это действие удалит все локальные данные сайта <ph name="ORIGIN" />, включая файлы cookie, и сбросит все его разрешения.</translation>
 <translation id="4468959413250150279">Отключить звуки на определенном сайте</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# файл cookie}one{# файл cookie}few{# файла cookie}many{# файлов cookie}other{# файла cookie}}</translation>
 <translation id="4478158430052450698">Упростить изменение масштаба пользователем для разных сайтов</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Отключить микрофон</translation>
 <translation id="4570913071927164677">Подробнее…</translation>
 <translation id="4598549027014564149">В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия на других сайтах, даже связанных. Информация о действиях в браузере не используется для таких целей, как показ персонализированной рекламы. Функции некоторых сайтов могут быть недоступны.</translation>
+<translation id="4644713492825682049">Удалить и сбросить</translation>
 <translation id="4645575059429386691">Управляется вашими родителями</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
 <translation id="5225463052809312700">Включить камеру</translation>
 <translation id="5234764350956374838">Закрыть</translation>
+<translation id="5246825184569358663">Это действие удалит все локальные данные для домена <ph name="DOMAIN" /> и всех связанных с ним сайтов, включая файлы cookie, а также сбросит все разрешения этих сайтов.</translation>
 <translation id="5264323282659631142">Удалить элемент "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="5300589172476337783">Показать</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Исключения</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
+<translation id="6207207788774442484">Удалить данные и сбросить разрешения</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
 <translation id="6231752747840485235">Удалить приложение "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">На основе данных последней использованной вкладки</translation>

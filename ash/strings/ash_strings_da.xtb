@@ -1216,7 +1216,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5961960957587052807">Let</translation>
 <translation id="5965524703725988602">Slå Mørkt tema til/fra. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Skift til et af de efterfølgende vinduer</translation>
-<translation id="5976112937189445008">Tryk på Enter for at optage vinduet</translation>
 <translation id="5978382165065462689">Skærmdeling via Fjernsupport.</translation>
 <translation id="5980301590375426705">Afslut gæst</translation>
 <translation id="5983567367406220847">Hotspottet er blevet deaktiveret på grund af inaktivitet.</translation>
@@ -1438,7 +1437,6 @@ Installeret for nylig</translation>
 <translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Tryk på pil ned for at skifte vindue</translation>
 <translation id="6896758677409633944">Kopiér</translation>
-<translation id="6901883536534621389">Prøv at navigere ved hjælp af bevægelser</translation>
 <translation id="6912841030378044227">Fokuser på adresselinjen</translation>
 <translation id="6912901278692845878">Hurtig rundvisning</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
@@ -1744,7 +1742,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8167567890448493835">Bruger <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Aktivér/deaktiver menuen til justering af størrelse i låst tilstand</translation>
 <translation id="8192202700944119416">Notifikationer er skjult.</translation>
-<translation id="8196787716797768628">Brug bevægelser til hurtigt at skifte mellem apps og bruge din Chromebook i tablettilstand.</translation>
 <translation id="8198456017687137612">Caster fane</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8203795194971602413">Højreklik</translation>
@@ -1903,7 +1900,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8909138438987180327">Batteriet er på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google-assistenten taler ikke dette sprog.</translation>
-<translation id="8924458948354692166">Tryk på Enter for at tage et screenshot af vinduet</translation>
 <translation id="8926951137623668982">Hylden er altid skjult</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}one{# fil}other{# filer}}</translation>
 <translation id="8936501819958976551">deaktiverede</translation>

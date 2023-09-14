@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">ಸ್ಟಾಕ್‌ಗಳು ಮತ್ತು ಬಾಂಡ್‌ಗಳು</translation>
 <translation id="1391625539203220400">ಈ ಸಾಧನಕ್ಕೆ IBAN ಅನ್ನು ಉಳಿಸುವುದೇ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ಯಾವುದೇ ಡೇಟಾ ಕಳುಹಿಸಲಾಗಿಲ್ಲ.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="1405567553485452995">ತಿಳಿ ಹಸಿರು</translation>
 <translation id="1406500794671479665">ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1406812885827747674">ಈ ಬಾರಿ ಅನುಮತಿಸಿ</translation>
@@ -538,6 +539,7 @@
 <translation id="2071692954027939183">ಅಧಿಸೂಚನೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಅವುಗಳನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="2071852865256799872">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ ಮತ್ತು <ph name="PROFILE_DOMAIN" /> ಮೂಲಕ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2072275792380684364">ಫ್ಯಾಷನ್ ಮತ್ತು ಸ್ಟೈಲ್</translation>
+<translation id="2075497153347571252">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="PERMISSION" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="20817612488360358">ಸಿಸ್ಟಂ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಲು ಹೊಂದಿಸಲಾಗಿದೆ ಆದರೆ ಬಹಿರಂಗವಾದ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಸಹ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ರಲ್ಲಿ <ph name="RESULT_NUMBER" /> ಫಲಿತಾಂಶಗಳು</translation>
@@ -644,7 +646,7 @@
 <translation id="2283340219607151381">ವಿಳಾಸಗಳನ್ನು ಉಳಿಸಿ ಮತ್ತು ಭರ್ತಿ ಮಾಡಿ</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2286383991450886080">34 x 44 ಇಂಚು</translation>
-<translation id="2288422996159078444">ನೀವು ಟೈಪ್ ಮಾಡುವ ಯಾವುದೇ ವಿಷಯ, ವೀಕ್ಷಿಸುವ ಯಾವುದೇ ಪುಟಗಳು ಅಥವಾ ವೆಬ್‌ನಲ್ಲಿ ನಡೆಸುವ ಇತರ ಯಾವುದೇ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ನಿಗಾ ಇರಿಸಲಾಗಿದೆ. ಸೈಟ್‌ಗಳಲ್ಲಿನ ವಿಷಯವನ್ನು ನಿಮ್ಮ ಗಮನಕ್ಕೆ ತರದೇ ಬದಲಾಯಿಸಬಹುದು.</translation>
+<translation id="2288422996159078444">ನೀವು ಟೈಪ್ ಮಾಡುವ ಯಾವುದೇ ವಿಷಯ, ವೀಕ್ಷಿಸುವ ಯಾವುದೇ ಪುಟಗಳು ಅಥವಾ ವೆಬ್‌ನಲ್ಲಿ ನಡೆಸುವ ಇತರ ಯಾವುದೇ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ನಿಗಾ ಇರಿಸಲಾಗಿದೆ. ಸೈಟ್‌ಗಳಲ್ಲಿನ ಕಂಟೆಂಟ್‍ ಅನ್ನು ನಿಮ್ಮ ಗಮನಕ್ಕೆ ತರದೇ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="2289385804009217824">ಟ್ರಿಮ್ ಮಾಡಿ</translation>
 <translation id="2292556288342944218">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಆ್ಯಕ್ಸೆಸ್ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2293443924986248631">ಆನ್ ಮಾಡಿದಾಗ, ನಿಮ್ಮನ್ನು ವೆಬ್‌ನಾದ್ಯಂತ ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಕುಕೀಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ. ಕೆಲವು ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿನ ವೈಶಿಷ್ಟ್ಯಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು.</translation>
@@ -1876,6 +1878,7 @@
 <translation id="4885256590493466218">ಚೆಕ್ಔಟ್‌ನಲ್ಲಿ <ph name="CARD_DETAIL" /> ಮೂಲಕ ಪಾವತಿಸಿ</translation>
 <translation id="4887406273302438710">Windows Hello ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಕ್ಷಿಸಿ</translation>
 <translation id="4888600795924685526">ವಿದೇಶಿ ಭಾಷಾ ಅಧ್ಯಯನ</translation>
+<translation id="4890070067176768718">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="PERMISSION" /> ಅನ್ನು ಅನುಮತಿಸಿದ್ದಾರೆ</translation>
 <translation id="4892518386797173871">ಹಿಂಬದಿ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ಒಲಂಪಿಕ್ಸ್</translation>
@@ -2322,6 +2325,7 @@
 <translation id="5830698870816298009">ಕ್ಯಾಮರಾದ ಬಳಕೆ ಮತ್ತು ಚಲನೆ</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5838278095973806738">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ಯಾವುದೇ ಸೂಕ್ಷ್ಮ ಮಾಹಿತಿಯನ್ನು (ಉದಾಹರಣೆಗೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು) ನಮೂದಿಸಬಾರದು, ಏಕೆಂದರೆ ಅದು ದಾಳಿಕೋರರ ಮೂಲಕ ಕಳುವಾಗಬಹುದು.</translation>
+<translation id="5838732667866024867">ದರ ಬದಲಾವಣೆಗಳನ್ನು ಗ್ರಾಫ್‌ನಲ್ಲಿ ಪರಿಶೀಲಿಸಲು ನೀವು ಲೆಫ್ಟ್/ರೈಟ್ ಆ್ಯರೋ ಬಳಸಬಹುದು</translation>
 <translation id="5840318881868981258">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬೇಕೆ?</translation>
 <translation id="5847181246682413476">ವಿದ್ಯುತ್ ಪೂರೈಕೆಗಳು</translation>
@@ -2609,6 +2613,7 @@
 <translation id="6432297414176614592">ಜಾಹೀರಾತು ವಿಷಯಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು</translation>
 <translation id="6432831586648556868">ಮಾರಾಟ ಮತ್ತು ಮಾರ್ಕೆಟಿಂಗ್ ಉದ್ಯೋಗಗಳು</translation>
 <translation id="6433490469411711332">ಸಂಪರ್ಕ ಮಾಹಿತಿ ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="6433501201775827830">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇಂಜಿನ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ಸಂಪರ್ಕಗೊಳ್ಳಲು ನಿರಾಕರಿಸಿದೆ.</translation>
 <translation id="6433797564277305076">ಇನ್ನು ಮುಂದೆ, ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="643917412048333145">ಉಡುಪುಗಳು</translation>
@@ -3966,6 +3971,7 @@
 <translation id="9207861905230894330">ಲೇಖನವನ್ನು ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chromeನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>
+<translation id="9218430445555521422">ಡಿಫಾಲ್ಟ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9222403027701923763">ಪ್ರಾಥಮಿಕ ಮತ್ತು ಫ್ರೌಡ ಶಿಕ್ಷಣ (K-12)</translation>

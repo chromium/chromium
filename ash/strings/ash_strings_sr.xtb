@@ -1217,7 +1217,6 @@
 <translation id="5961960957587052807">Светло</translation>
 <translation id="5965524703725988602">Укључите/искључите тамну тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Кретање кроз прозоре унапред</translation>
-<translation id="5976112937189445008">Притисните Enter да бисте снимили прозор</translation>
 <translation id="5978382165065462689">Делите контролу над екраном преко Даљинске помоћи.</translation>
 <translation id="5980301590375426705">Затвори као гост</translation>
 <translation id="5983567367406220847">Hотспот је искључен због неактивности.</translation>
@@ -1439,7 +1438,6 @@
 <translation id="6886172995547742638">То може негативно да утиче на рад уређаја <ph name="DEVICE_TYPE" />. Користите сертификовани USB-C адаптер од <ph name="PREFERRED_MINIMUM_POWER" /> W или јачи.</translation>
 <translation id="688631446150864480">Притискајте тастер са стрелицом надоле да бисте мењали прозоре</translation>
 <translation id="6896758677409633944">Копирај</translation>
-<translation id="6901883536534621389">Испробајте покрете за кретање</translation>
 <translation id="6912841030378044227">Фокусирање на траку за адресу</translation>
 <translation id="6912901278692845878">Кратак обилазак</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
@@ -1745,7 +1743,6 @@
 <translation id="8167567890448493835">Користи се <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Укључите или искључите мени за промену величине закључаног режима</translation>
 <translation id="8192202700944119416">Обавештења су сакривена.</translation>
-<translation id="8196787716797768628">Користите покрете да бисте брзо прелазили са једне апликације на другу и имали иинтеракцију са Chromebook-ом у режиму таблета.</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8203795194971602413">Десни клик</translation>
@@ -1854,6 +1851,7 @@
 <translation id="8703634754197148428">Започните снимање. Када снимање почне, користите Alt + Shift + L да бисте се кретали до полице и пронашли дугме за заустављање снимања</translation>
 <translation id="8704155109538237473">Фокусирај прозор слике у слици</translation>
 <translation id="870917907284186124">Укључите или искључите диктирање (унос гласом)</translation>
+<translation id="8714138378966541668">Закључао је добављач</translation>
 <translation id="8717459106217102612">Изаберите претходну реч или слово</translation>
 <translation id="8721053961083920564">Укључите/искључите звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Снимање целог екрана</translation>
@@ -1904,7 +1902,6 @@
 <translation id="8909138438987180327">Батерија је на <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google помоћник не говори овај језик.</translation>
-<translation id="8924458948354692166">Притисните Enter да бисте направили снимак екрана прозора</translation>
 <translation id="8926951137623668982">Полица је увек сакривена</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>

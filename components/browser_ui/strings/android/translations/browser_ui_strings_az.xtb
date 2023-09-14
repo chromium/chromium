@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2678468611080193228">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Beləcə, qoruma az olsa da, sayt funksiyalarının işləmə ehtimalı yüksəkdir</translation>
+<translation id="2683434792633810741">Silib, sıfırlansın?</translation>
 <translation id="2687403674020088961">Bütün kukiləri bloklayın (tövsiyə edilmir)</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2717722538473713889">E-poçt ünvanları</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Xüsusi sayt üçün kukilərə icazə verin.</translation>
 <translation id="4046123991198612571">Növbəti trek</translation>
 <translation id="4053720452172726777">Google Chrome'u fərdiləşdirin və nəzarət edin</translation>
+<translation id="4149890623864272035">Kukilər daxil olmaqla bütün lokal datanı silmək və bu veb-sayt üçün icazələri sıfırlamaq istədiyinizə əminsiniz?</translation>
 <translation id="4149994727733219643">İnternet səhifələr üçün sadələşdirilmiş görünüş</translation>
 <translation id="4151930093518524179">Defolt zoom</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
 <translation id="4428065317363009941">Reklam fərdiləşdirməsi</translation>
 <translation id="4434045419905280838">Popap və yönləndirmələr</translation>
+<translation id="443552056913301231">Bu əməliyyat ilə kukilər daxil olmaqla bütün lokal data silinəcək və <ph name="ORIGIN" /> icazələri sıfırlanacaq</translation>
 <translation id="4468959413250150279">Xüsusi saytı səsiz rejimə keçirin.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# kuki}other{# kuki}}</translation>
 <translation id="4478158430052450698">Fərqli saytlar üçün miqyasdəyişməni fərdiləşdirməyi asanlaşdırın</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
 <translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
+<translation id="4644713492825682049">Silin və sıfırlayın</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Son ziyarət bu gün olub</translation>
 <translation id="5225463052809312700">Kameranı aktiv edin</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
+<translation id="5246825184569358663">Bu əməliyyat ilə kukilər daxil olmaqla lokal data silinəcək, <ph name="DOMAIN" /> və ona aid saytlar üzrə icazələr sıfırlanacaq</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" daxiletməsini silin</translation>
 <translation id="528192093759286357">Yuxarıdan sürüşdürün və tam ekrandan çıxmaq üçün geri düyməsinə basın.</translation>
 <translation id="5300589172476337783">Göstərin</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">İstisnalar</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
+<translation id="6207207788774442484">Datanı silin və icazələri sıfırlayın</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Seçimləri</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" sistemdən silinsin?</translation>
 <translation id="6262191102408817757">Son tabınıza əsasən</translation>

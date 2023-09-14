@@ -447,7 +447,6 @@
 <translation id="1347512539447549782">Капацитет на Linux</translation>
 <translation id="1347975661240122359">Ажурирањето ќе започне кога батеријата ќе се наполни до <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Поставки за пристапност за глувче</translation>
-<translation id="1351089605448164407">Од вашиот Drive</translation>
 <translation id="1353275871123211385">За да користите родителски контроли, како што се одобрување апликации и ограничувања на времето поминато на уредот, детето мора да има сметка на Google управувана од родител. Училишна сметка може да се додаде подоцна за алатки како што е Google Classroom.</translation>
 <translation id="135389172849514421">Работи офлајн</translation>
 <translation id="1353980523955420967">Не може да се најде PPD-датотеката. Уверете се дека Chromebook е онлајн и обидете се повторно.</translation>
@@ -2205,7 +2204,6 @@
 <translation id="2710101514844343743">Податоци за користење и дијагностика</translation>
 <translation id="271033894570825754">Ново</translation>
 <translation id="2711073837061989559">Пробни периоди</translation>
-<translation id="2711929077861214979">Безбедносни совети</translation>
 <translation id="2713106313042589954">Исклучи ја камерата</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2714180132046334502">Темна заднина</translation>
@@ -2515,7 +2513,6 @@
 <translation id="2939908794993783865">Дополнителни неактивни сајтови</translation>
 <translation id="2939938020978911855">Покажи достапни уреди со Bluetooth</translation>
 <translation id="2941112035454246133">Низок</translation>
-<translation id="2942279350258725020">Пораки на Android</translation>
 <translation id="2942560570858569904">Се чека…</translation>
 <translation id="2942581856830209953">Приспособете ја страницава</translation>
 <translation id="2942707801577151363">Отворајте, изменувајте и зачувувајте датотеки Word, Excel и PowerPoint. За некои функции можеби ќе треба да се претплатите.</translation>
@@ -4712,7 +4709,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Вклучи звук на сајтот}one{Вклучи звук на сајтовите}other{Вклучи звук на сајтовите}}</translation>
 <translation id="474609389162964566">Пристапувајте до вашиот „Помошник“ со „Ok Google“</translation>
-<translation id="4746351372139058112">Пораки</translation>
 <translation id="4748783296226936791">Сајтовите обично се поврзуваат со HID-уреди за функции што користат невообичаени тастатури, контролери за игри и други уреди</translation>
 <translation id="4749960740855309258">Отворете нова картичка</translation>
 <translation id="4750185073185658673">Одете на телефонот за да прегледате уште неколку дозволи. Проверете дали се вклучени Bluetooth и Wi-Fi на телефонот.</translation>
@@ -4779,7 +4775,6 @@
 <translation id="4807122856660838973">Вклучете „Безбедно прелистување“</translation>
 <translation id="4807514039636325497">Детали за DBus</translation>
 <translation id="4808667324955055115">Блокирани скокачки прозорци:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Рецензирајте <ph name="BEGIN_BOLD" />1 екстензија<ph name="END_BOLD" /> што беше отстранета од „Веб-продавница на Chrome“}one{Рецензирајте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} екстензија<ph name="END_BOLD" /> што беа отстранети од „Веб-продавница на Chrome“}other{Рецензирајте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} екстензии<ph name="END_BOLD" /> што беа отстранети од „Веб-продавница на Chrome“}}</translation>
 <translation id="4809079943450490359">Упатства од администраторот на уредот:</translation>
 <translation id="4809447465126035330">Избриши</translation>
 <translation id="480990236307250886">Отвори ја почетната страница</translation>
@@ -9853,6 +9848,7 @@
 <translation id="8962083179518285172">Скриј детали</translation>
 <translation id="8962863356073277855">Форматот на URL треба да биде https://www.example.com</translation>
 <translation id="8962918469425892674">Сајтов користи сензори за движење или светлина.</translation>
+<translation id="8963117664422609631">Оди на поставките за сајтот</translation>
 <translation id="8965037249707889821">Внеси стара лозинка</translation>
 <translation id="8966809848145604011">Други профили</translation>
 <translation id="8967427617812342790">Додај во списокот за читање</translation>
@@ -10231,7 +10227,6 @@
 <translation id="964286338916298286">Администраторот за информатичка технологија оневозможил Chrome Goodies за вашиот уред.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Апликација}one{Апликации}other{Апликации}}</translation>
 <translation id="964790508619473209">Подредување на екранот</translation>
-<translation id="965211523698323809">Испраќајте и примајте SMS-пораки од вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Пријавете проблем во Google Cast</translation>
 <translation id="966588271015727539">Изберете екран за брајово писмо со Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Затворете го профилов}one{Затворете го профилов (# прозорец)}other{Затворете го профилов (# прозорци)}}</translation>

@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">주식 및 채권</translation>
 <translation id="1391625539203220400">이 기기에 IBAN을 저장하시겠습니까?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
 <translation id="1405567553485452995">연한 녹색</translation>
 <translation id="1406500794671479665">확인 중...</translation>
 <translation id="1406812885827747674">이번에만 허용</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">알림을 평소에 허용하지 않았기 때문에 알림이 자동으로 차단되었습니다.</translation>
 <translation id="2071852865256799872">조직에서 브라우저를 관리하고 <ph name="PROFILE_DOMAIN" />에서 프로필을 관리합니다</translation>
 <translation id="2072275792380684364">패션 및 스타일</translation>
+<translation id="2075497153347571252">관리자가 <ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 차단했습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
@@ -1879,6 +1881,7 @@
 <translation id="4885256590493466218">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="4887406273302438710">Windows Hello로 비밀번호 보호</translation>
 <translation id="4888600795924685526">외국어 학습</translation>
+<translation id="4890070067176768718">관리자가 <ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 허용했습니다.</translation>
 <translation id="4892518386797173871">후면</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">올림픽</translation>
@@ -2325,6 +2328,7 @@
 <translation id="5830698870816298009">카메라 사용 및 이동</translation>
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5838278095973806738">이 사이트에 입력하는 비밀번호나 신용카드 번호 등의 정보가 공격자에 의해 도용될 수 있습니다.</translation>
+<translation id="5838732667866024867">왼쪽/오른쪽 화살표를 사용하여 그래프에서 가격 변경사항을 검토할 수 있습니다.</translation>
 <translation id="5840318881868981258">Google 계정(<ph name="ACCOUNT" />)에서 업데이트합니다.</translation>
 <translation id="5841338463993781099">계정에 저장하시겠습니까?</translation>
 <translation id="5847181246682413476">전원 공급 장치</translation>
@@ -2613,6 +2617,7 @@
 <translation id="6432297414176614592">광고 주제에 관해 자세히 알아보기</translation>
 <translation id="6432831586648556868">영업 및 마케팅직</translation>
 <translation id="6433490469411711332">연락처 정보 수정</translation>
+<translation id="6433501201775827830">검색엔진 선택</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />에서 연결을 거부했습니다.</translation>
 <translation id="6433797564277305076">이제부터 기기 잠금 해제를 사용하여 빠르게 카드를 확인하세요</translation>
 <translation id="643917412048333145">드레스</translation>
@@ -3968,6 +3973,7 @@
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>
 <translation id="9215416866750762878">애플리케이션으로 인해 Chrome이 안전하게 이 사이트에 접속할 수 없음</translation>
+<translation id="9218430445555521422">기본 브라우저로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="9222403027701923763">초중고교(K-12)</translation>

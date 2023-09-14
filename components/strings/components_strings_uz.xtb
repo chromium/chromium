@@ -212,6 +212,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1391289752476847787">Aksiya va obligatsiyalar</translation>
 <translation id="1391625539203220400">IBAN raqami shu qurilmada saqlansinmi?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hech qanday ma’lumot yubormadi.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> orqali qidirish</translation>
 <translation id="1405567553485452995">Och yashil</translation>
 <translation id="1406500794671479665">Tekshirilmoqda...</translation>
 <translation id="1406812885827747674">Bu safar ruxsat berish</translation>
@@ -2607,6 +2608,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6432297414176614592">Reklamadagi mavzular haqida batafsil</translation>
 <translation id="6432831586648556868">Savdo va marketing sohasidagi vakansiyalar</translation>
 <translation id="6433490469411711332">Aloqa ma’lumotini tahrirlash</translation>
+<translation id="6433501201775827830">Qidiruv tizimini tanlang</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> serveri ulanish so‘rovini rad etdi.</translation>
 <translation id="6433797564277305076">Qurilma kaliti bilan kartalarni tezroq tasdiqlang</translation>
 <translation id="643917412048333145">Liboslar</translation>
@@ -3963,6 +3965,7 @@ Batafsil axborot:
 <translation id="9207861905230894330">Maqolani qo‘shib bo‘lmadi.</translation>
 <translation id="9213433120051936369">Dizaynini moslash</translation>
 <translation id="9215416866750762878">Ilova Chromening bu saytga xavfsiz ulanishiga xalaqit qilmoqda</translation>
+<translation id="9218430445555521422">Standart sifatida o‘rnatish</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="922152298093051471">Chromeni moslash</translation>
 <translation id="9222403027701923763">Boshlangʻich va oʻrta taʼlim (K-12)</translation>

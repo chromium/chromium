@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">हलुका</translation>
 <translation id="5965524703725988602">अँध्यारो थिम टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="5975235751479998104">विन्डोहरू सुल्टो क्रमअनुसार पालैपालो हेर्नुहोस्</translation>
-<translation id="5976112937189445008">विन्डो रेकर्ड गर्न इन्टर थिच्नुहोस्</translation>
 <translation id="5978382165065462689">रिमोट सहायता मार्फत तपाईँको स्क्रीन नियन्त्रण साझेदारी गर्दै।</translation>
 <translation id="5980301590375426705">अतिथि सत्रबाट निस्कनु…</translation>
 <translation id="5983567367406220847">कुनै पनि क्रियाकलाप नगरिएको हुनाले हटस्पट अफ गरिएको छ।</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">तपाईंको <ph name="DEVICE_TYPE" /> को कार्यक्षमता घट्न सक्छ। <ph name="PREFERRED_MINIMUM_POWER" />W वा सोभन्दा बढी क्षमताको आधिकारिक USB-C पावर एड्याप्टर प्रयोग गर्नुहोस्।</translation>
 <translation id="688631446150864480">एउटा विन्डोबाट अर्को विन्डोमा जान डाउन एरो की थिच्नुहोस्</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
-<translation id="6901883536534621389">नेभिगेट गर्न जेस्चर प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="6912841030378044227">एड्रेस बारमा फोकस गर्नुहोस्</translation>
 <translation id="6912901278692845878">एप चलाउने तरिकाका बारेमा संक्षिप्त जानकारी</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> प्रयोग गर्दै</translation>
 <translation id="8185090165691050712">लक मोडको आकार बदल्न मेनु टगल गरी अन/अफ गर्नुहोस्</translation>
 <translation id="8192202700944119416">सूचनाहरू लुकाइन्छन्।</translation>
-<translation id="8196787716797768628">एउटा अनुप्रयोगबाट तुरुन्तै अर्को एपमा जान र आफ्नो Chromebook ट्याब्लेट मोडमा प्रयोग गर्न इसाराहरूको प्रयोग गर्नुहोस्।</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8203795194971602413">दायाँ क्लिक गर्नुहोस्</translation>
@@ -1853,6 +1850,7 @@
 <translation id="8703634754197148428">रेकर्ड गर्न थाल्नुहोस्। रेकर्ड हुन थालेपछि सेल्फमा जान Alt + Shift + L थिच्नुहोस् र रेकर्ड गर्न बन्द गर्ने बटन भेट्टाउनुहोस्</translation>
 <translation id="8704155109538237473">Picture-in-Picture विन्डोमा फोकस गर्नुहोस्</translation>
 <translation id="870917907284186124">स्पिच-टु-टेक्स्ट (बोलेरै टाइप गर्ने सुविधा) अन/अफ गर्नुहोस्</translation>
+<translation id="8714138378966541668">प्रदायकले लक गरेको छ</translation>
 <translation id="8717459106217102612">अघिल्लो शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="8721053961083920564">भोल्युम टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्क्रिन क्याप्चर</translation>
@@ -1903,7 +1901,6 @@
 <translation id="8909138438987180327">ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत छ।</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google सहायकले यो भाषा बोल्दैन।</translation>
-<translation id="8924458948354692166">विन्डोको स्क्रिनसट खिच्न इन्टर थिच्नुहोस्</translation>
 <translation id="8926951137623668982">सेल्फ सधैँ लुकेको हुन्छ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>

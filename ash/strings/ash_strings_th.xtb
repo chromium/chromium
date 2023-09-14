@@ -1212,7 +1212,6 @@
 <translation id="5961960957587052807">น้อย</translation>
 <translation id="5965524703725988602">เปิด/ปิดธีมมืด <ph name="STATE_TEXT" /></translation>
 <translation id="5975235751479998104">สลับระหว่างหน้าต่าง (ไปข้างหน้า)</translation>
-<translation id="5976112937189445008">กด Enter เพื่อบันทึกหน้าต่าง</translation>
 <translation id="5978382165065462689">กำลังแชร์การควบคุมหน้าจอผ่านความช่วยเหลือระยะไกล</translation>
 <translation id="5980301590375426705">ออกเซสชันผู้มาเยือน</translation>
 <translation id="5983567367406220847">ปิดฮอตสปอตแล้วเนื่องจากไม่มีการใช้งาน</translation>
@@ -1434,7 +1433,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> อาจมีประสิทธิภาพลดลง ใช้อะแดปเตอร์ USB-C <ph name="PREFERRED_MINIMUM_POWER" /> วัตต์ขึ้นไปที่ได้รับการรับรอง</translation>
 <translation id="688631446150864480">กดปุ่มลูกศรลงเพื่อเปลี่ยนหน้าต่าง</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
-<translation id="6901883536534621389">ลองใช้ท่าทางสัมผัสเพื่อไปยังส่วนต่างๆ</translation>
 <translation id="6912841030378044227">โฟกัสแถบที่อยู่</translation>
 <translation id="6912901278692845878">การแนะนำสั้นๆ</translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
@@ -1740,7 +1738,6 @@
 <translation id="8167567890448493835">กำลังใช้<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">เปิด/ปิดเมนูเพื่อปรับขนาดโหมดล็อก</translation>
 <translation id="8192202700944119416">ซ่อนการแจ้งเตือนไว้</translation>
-<translation id="8196787716797768628">ใช้ท่าทางสัมผัสเพื่อสลับระหว่างแอปต่างๆ และโต้ตอบกับ Chromebook ได้อย่างรวดเร็วในโหมดแท็บเล็ต</translation>
 <translation id="8198456017687137612">กำลังแคสต์แท็บ</translation>
 <translation id="8200772114523450471">ทำต่อ</translation>
 <translation id="8203795194971602413">คลิกขวา</translation>
@@ -1900,7 +1897,6 @@
 <translation id="8909138438987180327">แบตเตอรี่เหลือ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ยังพูดภาษานี้ไม่ได้</translation>
-<translation id="8924458948354692166">กด Enter เพื่อจับภาพหน้าจอทั้งหน้าต่าง</translation>
 <translation id="8926951137623668982">ซ่อนชั้นวางเสมอ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ไฟล์}other{# ไฟล์}}</translation>
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>

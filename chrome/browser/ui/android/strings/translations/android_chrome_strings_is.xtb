@@ -222,6 +222,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2189903024544168260">Áhugasvið fjarlægt</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
 <translation id="2200113223741723867">Stjórna deilingu notkunargagna</translation>
+<translation id="221494669172414749">Ef þú opnar Chrome án þess að nota prófíllás verða vistuð aðgangsorð og greiðslumátar fjarlægð úr bílnum. Notkun prófílláss gætir að öryggi þessara gagna.</translation>
 <translation id="2218567645332692482">Uppfæra flettingar í HTTPS og vara þig við áður en vefsvæðum sem ekki styðja það er hlaðið</translation>
 <translation id="2227444325776770048">Halda áfram sem <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tómur gluggi</translation>
@@ -1013,6 +1014,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6303969859164067831">Skrá út og slökkva á samstillingu</translation>
 <translation id="6312687380483398334">Vefforrit (þögult)</translation>
+<translation id="6315386555979018699">Eyða og halda áfram</translation>
 <translation id="6316139424528454185">Android útgáfa ekki studd</translation>
 <translation id="6324916366299863871">Breyta flýtileið</translation>
 <translation id="6324977638108296054">Ekki er hægt að búa til tengil í merktan texta</translation>
@@ -1575,6 +1577,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8998289560386111590">Ekki í boði í tækinu þínu</translation>
 <translation id="8998729206196772491">Þú ert að skrá þig út af reikningi sem <ph name="MANAGED_DOMAIN" /> stýrir og veitir í leiðinni stjórnanda lénsins umsjón með Chrome gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chrome verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="9012585441087414258">Vernda þig gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Ef grunsamleg virkni greinist á síðu eru vefslóðir og hlutar af innihaldi síðna sendir í örugga vefskoðun Google.</translation>
+<translation id="9019199799064251516">Halda áfram án þess að nota prófíllás bílsins?</translation>
 <translation id="9022774213089566801">Oft skoðað</translation>
 <translation id="9022871169049522985">Vefsvæði og auglýsendur geta mælt árangur auglýsinga sinna</translation>
 <translation id="9035378196785279980">Flytja í\u2026</translation>
@@ -1637,5 +1640,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="983192555821071799">Loka öllum flipum</translation>
 <translation id="987264212798334818">Almennt</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> flipar</translation>
+<translation id="993520549480398880">Hreinsa einnig bókamerki, feril og fleira úr þessum bíl</translation>
 <translation id="996149300115483134">Kortavalmynd straums er lokuð</translation>
 </translationbundle>

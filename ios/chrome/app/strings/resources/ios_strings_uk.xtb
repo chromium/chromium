@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">Захист вимкнено (не рекомендовано)</translation>
 <translation id="2562041823070056534">Надсилання на пристрій <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Зберігати паролі в обліковому записі Google і використовувати їх</translation>
+<translation id="2577522251608256362">Околиці</translation>
 <translation id="2578571896248130439">Надіслати веб-сторінку</translation>
 <translation id="2584132361465095047">Додати обліковий запис…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Немає зламаних паролів}=1{{count} зламаний пароль}one{{count} зламаний пароль}few{{count} зламані паролі}many{{count} зламаних паролів}other{{count} зламаного пароля}}</translation>
@@ -312,6 +313,7 @@
 <translation id="2738375676495545665">Сховати опцію "Що нового"</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
 <translation id="2749231692441336879">Ви підписалися на канал <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Облікові записи на цьому пристрої</translation>
 <translation id="2762000892062317888">щойно</translation>
 <translation id="2772667768515195373">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу збережено у вашому обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Пошук у режимі інкогніто</translation>
@@ -1090,7 +1092,6 @@
 <translation id="6944369514868857500">Вибрати інший обліковий запис</translation>
 <translation id="6944935964236827145">Сховати опцію "Перекласти"</translation>
 <translation id="6945221475159498467">Вибрати</translation>
-<translation id="6955779377310719430">Сховати опцію "Підписатися"</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Диск Google</translation>
@@ -1229,6 +1230,7 @@
 <translation id="778855399387580014">Пошук у новій вкладці Chrome.</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="7807060072011926525">Надано компанією Google</translation>
+<translation id="78146569776629510">Завантаження</translation>
 <translation id="7839985698273989086">Офлайн-сторінка</translation>
 <translation id="7840771868269352570">Вибраний елемент буде видалено.</translation>
 <translation id="7845466610722898">Показати список читання</translation>

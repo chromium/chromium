@@ -446,7 +446,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1347512539447549782">Úložiště systému Linux</translation>
 <translation id="1347975661240122359">Aktualizace bude zahájena, až baterie dosáhne <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1348966090521113558">Nastavení usnadnění přístupu pomocí myši</translation>
-<translation id="1351089605448164407">Z vašeho disku</translation>
 <translation id="1353275871123211385">Pokud chcete používat funkce rodičovské kontroly, jako je schvalování aplikací a omezení času stráveného na zařízení, musí mít dítě účet Google spravovaný rodičem. Později lze přidat školní účet pro použití s nástroji jako Učebna Google.</translation>
 <translation id="135389172849514421">Funguje offline</translation>
 <translation id="1353980523955420967">Soubor PPD nebyl nalezen. Zkontrolujte, zda je Chromebook online, a zkuste to znovu.</translation>
@@ -1982,6 +1981,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Něco se pokazilo a systém <ph name="DEVICE_OS" /> nebylo možné nainstalovat.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Další informace najdete na stránce g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Prodlužuje životnost baterie tím, že ji nechává nabitou asi na 80 %. Baterie se plně nabije těsně před tím, než zařízení obvykle odpojíte z napájení.</translation>
+<translation id="2532146950330687938">Příprava zařízení…</translation>
 <translation id="2532198298278778531">Spravovat zabezpečené DNS v nastavení systému ChromeOS Flex</translation>
 <translation id="2532589005999780174">Režim vysokého kontrastu</translation>
 <translation id="2533649878691950253">Přístup tohoto webu k vaší přesné poloze byl zablokován, protože ho obvykle nepovolujete</translation>
@@ -2191,7 +2191,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2710101514844343743">Údaje o využití a diagnostice</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2711073837061989559">Zkušební funkce</translation>
-<translation id="2711929077861214979">Tipy ohledně bezpečnosti</translation>
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2713444072780614174">Bílá</translation>
 <translation id="2714180132046334502">Tmavé pozadí</translation>
@@ -2501,7 +2500,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2939908794993783865">Další neaktivní weby</translation>
 <translation id="2939938020978911855">Zobrazit dostupná zařízení Bluetooth</translation>
 <translation id="2941112035454246133">Nízká</translation>
-<translation id="2942279350258725020">Zprávy pro Android</translation>
 <translation id="2942560570858569904">Čekání...</translation>
 <translation id="2942581856830209953">Přizpůsobit tuto stránku</translation>
 <translation id="2942707801577151363">Otevírejte, upravujte a ukládejte soubory aplikací Word, Excel a PowerPoint. Některé funkce mohou vyžadovat předplatné.</translation>
@@ -4696,7 +4694,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Zapnout zvuk webu}few{Zapnout zvuk webů}many{Zapnout zvuk webů}other{Zapnout zvuk webů}}</translation>
 <translation id="474609389162964566">Aktivujte Asistenta příkazem „Ok Google“</translation>
-<translation id="4746351372139058112">Zprávy</translation>
 <translation id="4748783296226936791">Weby se k zařízením HID obvykle připojují kvůli funkcím, které používají neobvyklé klávesnice, herní ovladače a jiná zařízení</translation>
 <translation id="4749960740855309258">Otevření nové karty</translation>
 <translation id="4750185073185658673">Přejděte na telefon a zkontrolujte několik dalších oprávnění. Zkontrolujte, zda jsou zapnuté Bluetooth a Wi-Fi.</translation>
@@ -4763,7 +4760,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4807122856660838973">Zapnout Bezpečné prohlížení</translation>
 <translation id="4807514039636325497">Podrobnosti o technologii D-Bus</translation>
 <translation id="4808667324955055115">Byla zablokována vyskakovací okna:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Zkontrolujte <ph name="BEGIN_BOLD" />1 rozšíření<ph name="END_BOLD" />, které bylo odstraněno z Internetového obchodu Chrome}few{Zkontrolujte <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} rozšíření<ph name="END_BOLD" />, která byla odstraněna z Internetového obchodu Chrome}many{Zkontrolujte <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} rozšíření<ph name="END_BOLD" />, která byla odstraněna z Internetového obchodu Chrome}other{Zkontrolujte <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} rozšíření<ph name="END_BOLD" />, která byla odstraněna z Internetového obchodu Chrome}}</translation>
 <translation id="4809079943450490359">Pokyny od správce zařízení:</translation>
 <translation id="4809447465126035330">Smazat</translation>
 <translation id="480990236307250886">Otevřít domovskou stránku</translation>
@@ -5746,6 +5742,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5627086634964711283">Také řídí, která stránka se zobrazí po kliknutí na tlačítko Domovská stránka.</translation>
 <translation id="5627676517703583263">Pohybujte se na internetu chytře pomocí prohlížeče Google Chrome</translation>
 <translation id="5627832140542566187">Orientace displeje</translation>
+<translation id="5628434207686266338">Nastavení hesla zařízení</translation>
 <translation id="562935524653278697">Váš administrátor synchronizaci záložek, historie, hesel a dalších nastavení zakázal.</translation>
 <translation id="5631017369956619646">Využití CPU</translation>
 <translation id="5631272057151918206">Tímto uvolníte až <ph name="OFFLINE_STORAGE_SIZE" /> místa obsazeného offline soubory. Některé soubory budou offline dostupné i nadále. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -9835,6 +9832,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8962083179518285172">Skrýt podrobnosti</translation>
 <translation id="8962863356073277855">Formát adresy URL musí být https://www.example.com</translation>
 <translation id="8962918469425892674">Tento web používá senzory pohybu nebo osvětlení.</translation>
+<translation id="8963117664422609631">Přejít do nastavení webu</translation>
 <translation id="8965037249707889821">Zadat staré heslo</translation>
 <translation id="8966809848145604011">Další profily</translation>
 <translation id="8967427617812342790">Přidat do seznamu četby</translation>
@@ -10213,7 +10211,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="964286338916298286">Váš správce IT pro toto zařízení využití promoakcí Chrome Goodies zakázal.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikace}few{Aplikace}many{Aplikace}other{Aplikace}}</translation>
 <translation id="964790508619473209">Uspořádání obrazovek</translation>
-<translation id="965211523698323809">Odesílejte a přijímejte na zařízení <ph name="DEVICE_TYPE" /> textové zprávy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Nahlásit problém s Google Cast</translation>
 <translation id="966588271015727539">Vyberte hmatový displej Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Zavřít tento profil}few{&amp;Zavřít tento profil (# okna)}many{&amp;Zavřít tento profil (# okna)}other{&amp;Zavřít tento profil (# oken)}}</translation>

@@ -222,6 +222,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2189903024544168260">Kiinnostuksen kohde poistettu</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2200113223741723867">Valitse käyttödatan jakamisasetukset</translation>
+<translation id="221494669172414749">Jos avaat Chromen ilman profiililukkoa, tallennetut salasanat ja maksutavat poistetaan autosta. Profiililukko suojaa tätä dataa.</translation>
 <translation id="2218567645332692482">Siirtymiset päivitetään HTTPS-protokollaan ja saat varoituksen ennen kuin sitä ei-tukevat sivustot ladataan</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tyhjä ikkuna</translation>
@@ -1013,6 +1014,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6303969859164067831">Kirjaudu ulos ja poista synkronointi käytöstä</translation>
 <translation id="6312687380483398334">Verkkosovellukset (hiljainen)</translation>
+<translation id="6315386555979018699">Poista ja jatka</translation>
 <translation id="6316139424528454185">Android-versiota ei tueta</translation>
 <translation id="6324916366299863871">Muokkaa pikanäppäintä</translation>
 <translation id="6324977638108296054">Korostuksen linkittäminen ei onnistu</translation>
@@ -1575,6 +1577,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
 <translation id="8998729206196772491">Olet kirjautumassa sisään verkkotunnuksen <ph name="MANAGED_DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="9012585441087414258">Suojaa vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan. Jos sivu tekee jotakin epäilyttävää, sivun sisällön URL-osoitteet ja bitit lähetetään Googlen selaussuojalle.</translation>
+<translation id="9019199799064251516">Jatketaanko ilman auton profiililukkoa?</translation>
 <translation id="9022774213089566801">Usein avatut</translation>
 <translation id="9022871169049522985">Sivustot ja mainostajat voivat mitata mainostensa tuloksia</translation>
 <translation id="9035378196785279980">Siirrä\u2026</translation>
@@ -1637,5 +1640,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="983192555821071799">Sulje kaikki välilehdet</translation>
 <translation id="987264212798334818">Yleistä</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> välilehteä</translation>
+<translation id="993520549480398880">Poista myös kirjanmerkit, historia ja muuta dataa autosta</translation>
 <translation id="996149300115483134">Fiidikorttien valikko on suljettu</translation>
 </translationbundle>

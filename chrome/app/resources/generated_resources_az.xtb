@@ -442,7 +442,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1347512539447549782">Linux yaddaşı</translation>
 <translation id="1347975661240122359">Batareya <ph name="BATTERY_LEVEL" />% olduqda güncəlləmə başlayacaq.</translation>
 <translation id="1348966090521113558">Maus əlçatımlılıq ayarları</translation>
-<translation id="1351089605448164407">Diskdən</translation>
 <translation id="1353275871123211385">Tətbiq təsdiqi və ekran vaxtı limitləri kimi valideyn nəzarətlərindən istifadə etmək üçün uşağın valideyn tərəfindən idarə edilən Google Hesabı olmalıdır. Google Classroom kimi alətlər üçün daha sonra bir məktəb hesabı əlavə edilə bilər.</translation>
 <translation id="135389172849514421">Oflayn işləyir</translation>
 <translation id="1353980523955420967">PPD tapılmadı. Chromebook'un onlayn olduğuna əmin olun və yenidən cəhd edin.</translation>
@@ -2188,7 +2187,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2710101514844343743">İstifadə və diaqnostika datası</translation>
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2711073837061989559">Sınaqlar</translation>
-<translation id="2711929077861214979">Güvənlik tövsiyələri</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2714180132046334502">Tünd arxa fon</translation>
@@ -2498,7 +2496,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2939908794993783865">Əlavə deaktiv aaytlar</translation>
 <translation id="2939938020978911855">Əlçatan Bluetooth cihazlarını göstərin</translation>
 <translation id="2941112035454246133">Aşağı</translation>
-<translation id="2942279350258725020">Android Mesaj</translation>
 <translation id="2942560570858569904">Gözlənilir...</translation>
 <translation id="2942581856830209953">Bu səhifəni fərdiləşdirin</translation>
 <translation id="2942707801577151363">Word, Excel və PowerPoint fayllarını açın, redaktə edin və yadda saxlayın. Bəzi funksiyalar üçün abunə tələb edilə bilər.</translation>
@@ -4692,7 +4689,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Saytı səssiz rejimdən çıxarın}other{Saytları səssiz rejimdən çıxarın}}</translation>
 <translation id="474609389162964566">"Hey Google" deyərək Assistentə daxil olun</translation>
-<translation id="4746351372139058112">Mesajlar</translation>
 <translation id="4748783296226936791">Saytlar, adətən, geniş yayılmayan klaviaturalar, oyun kontrollerləri və digər cihazlardan istifadə edən xüsusiyyətlər üçün HID cihazlarına qoşulur</translation>
 <translation id="4749960740855309258">Yeni panel açın</translation>
 <translation id="4750185073185658673">Daha bir neçə icazəni nəzərdən keçirmək üçün telefonunuza keçin. Telefonunuzda Bluetooth və Wi-Fi şəbəkəsinin aktiv olduğuna əmin olun.</translation>
@@ -4759,7 +4755,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4807122856660838973">Təhlükəsiz baxışı aktiv edin</translation>
 <translation id="4807514039636325497">DBus detalları</translation>
 <translation id="4808667324955055115">Popaplar blok edildi:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome Veb Dükanından silinən <ph name="BEGIN_BOLD" />1 artırmaya<ph name="END_BOLD" /> nəzər salın}other{Chrome Veb Dükanından silinən <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} artırmaya<ph name="END_BOLD" /> nəzər salın}}</translation>
 <translation id="4809079943450490359">Cihaz adminindən təlimatlar:</translation>
 <translation id="4809447465126035330">Silin</translation>
 <translation id="480990236307250886">Əsas səhifəni açın</translation>
@@ -6323,6 +6318,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6104796831253957966">Printerdə növbə dolub</translation>
 <translation id="6104929924898022309">Axtarış düyməsi vasitəsilə funksiya düymələrinin hərəkətini dəyişin</translation>
 <translation id="6106167152849320869">Diaqnostika və istifadə datasını göndərməyi seçmisinizsə, bu data quraşdırılmış tətbiqlər üçün toplanacaq.</translation>
+<translation id="6111718295497931251">Google Diskə girişi silin</translation>
 <translation id="6111972606040028426">Google Assistenti aktiv edin</translation>
 <translation id="6112294629795967147">Ölçüsünü dəyişmək üçün klikləyin</translation>
 <translation id="6112727384379533756">Bilet əlavə edin</translation>
@@ -9823,6 +9819,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="8962083179518285172">Detalları gizlədin</translation>
 <translation id="8962863356073277855">Keçid formatı belə olmalıdır: https://www.example.com</translation>
 <translation id="8962918469425892674">Bu sayt hərəkət və ya açıq sensorlardan istifadə edir.</translation>
+<translation id="8963117664422609631">Sayt ayarlarına keçin</translation>
 <translation id="8965037249707889821">Köhnə parol daxil edin</translation>
 <translation id="8966809848145604011">Digər profillər</translation>
 <translation id="8967427617812342790">Oxu siyahısına əlavə edin</translation>
@@ -10201,7 +10198,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="964286338916298286">IT administratorunuz cihazda Chrome Goodie'ləri deaktiv etdi.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Tətbiq}other{Tətbiqlər}}</translation>
 <translation id="964790508619473209">Ekran tənzimlənməsi</translation>
-<translation id="965211523698323809"><ph name="DEVICE_TYPE" /> cihazından mətn mesajları göndərin və alın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Yayımla əlaqəli problemi bildirin</translation>
 <translation id="966588271015727539">Bluetooth brayl displeyi seçin</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Bu profili bağlayın}other{&amp;Bu profili bağlayın (# pəncərə)}}</translation>

@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> ला पाठवत आहे…</translation>
 <translation id="2576499762020411840">तुमच्या Google खाते मधील पासवर्ड वापरा आणि त्यामध्ये ते सेव्ह करा</translation>
+<translation id="2577522251608256362">अतिपरिचित क्षेत्र</translation>
 <translation id="2578571896248130439">वेबपेज पाठवा</translation>
 <translation id="2584132361465095047">खाते जोडा...</translation>
 <translation id="2587010742985678408">{count,plural, =0{No Compromised Passwords}=1{{count} धोक्यात असलेला पासवर्ड}other{{count} धोक्यात असलेले पासवर्ड}}</translation>
@@ -1091,7 +1092,6 @@
 <translation id="6944369514868857500">दुसरे खाते निवडा</translation>
 <translation id="6944935964236827145">भाषांतर करा हे लपवा</translation>
 <translation id="6945221475159498467">निवडा</translation>
-<translation id="6955779377310719430">फॉलो करा हे लपवा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6973630695168034713">फोल्डर</translation>
 <translation id="6979158407327259162">Google Drive</translation>

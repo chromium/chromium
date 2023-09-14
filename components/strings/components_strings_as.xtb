@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">ষ্ট’ক আৰু বণ্ড</translation>
 <translation id="1391625539203220400">এই ডিভাইচত IBAN ছেভ কৰিবনে?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />এ কোনো ডেটা পঠিওৱা নাই।</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" />ৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="1405567553485452995">পাতল সেউজীয়া</translation>
 <translation id="1406500794671479665">সত্যাপন কৰি থকা হৈছে…</translation>
 <translation id="1406812885827747674">এইবাৰ অনুমতি দিয়ক</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">জাননীসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে কাৰণ আপুনি সাধাৰণতে সেইসমূহক অনুমতি নিদিয়ে</translation>
 <translation id="2071852865256799872">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰ পৰিচালনা কৰে আৰু আপোনাৰ <ph name="PROFILE_DOMAIN" />এ আপোনাৰ প্ৰ’ফাইল পৰিচালনা কৰে</translation>
 <translation id="2072275792380684364">ফেশ্বন আৰু ষ্টাইল</translation>
+<translation id="2075497153347571252">আপোনাৰ প্ৰশাসকে <ph name="ORIGIN" />ত <ph name="PERMISSION" /> অৱৰোধ কৰিছে</translation>
 <translation id="2079545284768500474">আনডু কৰক</translation>
 <translation id="20817612488360358">ছিষ্টেম প্ৰক্সি ছেটিংসমূহ ব্যৱহাৰ কৰিবলৈ ছেট কৰা হৈছে কিন্তু ক্ষতিকাৰক প্ৰক্সি কনফিগাৰেশ্বনো নির্দিষ্ট কৰা হৈছে।</translation>
 <translation id="2082238445998314030">ফলাফল <ph name="TOTAL_RESULTS" />ৰ ভিতৰত <ph name="RESULT_NUMBER" /></translation>
@@ -1875,6 +1877,7 @@
 <translation id="4885256590493466218">চেকআউট কৰাৰ সময়ত <ph name="CARD_DETAIL" />ৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4887406273302438710">Windows Helloৰ জৰিয়তে পাছৱৰ্ড সুৰক্ষিত কৰক</translation>
 <translation id="4888600795924685526">বিদেশী ভাষাৰ অধ্যয়ন</translation>
+<translation id="4890070067176768718">আপোনাৰ প্ৰশাসকে <ph name="ORIGIN" />ত <ph name="PERMISSION" />ৰ অনুমতি দিছে</translation>
 <translation id="4892518386797173871">পাছফাল</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">অলিম্পিক</translation>
@@ -2321,6 +2324,7 @@
 <translation id="5830698870816298009">কেমেৰাৰ ব্যৱহাৰ আৰু গতিবিধি</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5838278095973806738">আপুনি এই চাইটটোত কোনো সংবেদনশীল তথ্য দিয়াটো উচিত নহয় (উদাহৰণ স্বৰূপে, পাছৱৰ্ড বা ক্ৰেডিট কাৰ্ড) কাৰণ এয়া আক্ৰমণকাৰীয়ে চুৰ কৰিব পাৰে।</translation>
+<translation id="5838732667866024867">আপুনি গ্ৰাফত সালসলনি হোৱা দাম পৰ্যালোচনা কৰিবলৈ বাঁও/সোঁমুৱা কাঁড়চিহ্ন ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5840318881868981258">আপোনাৰ Google একাউণ্ট, <ph name="ACCOUNT" />ত</translation>
 <translation id="5841338463993781099">একাউণ্টত ছেভ কৰিবনে?</translation>
 <translation id="5847181246682413476">পাৱাৰ ছাপ্লাই</translation>
@@ -2608,6 +2612,7 @@
 <translation id="6432297414176614592">বিজ্ঞাপনৰ বিষয়সমূহৰ বিষয়ে অধিক</translation>
 <translation id="6432831586648556868">বিক্ৰী আৰু মাৰ্কেটিং সম্পর্কীয় চাকৰি</translation>
 <translation id="6433490469411711332">সম্পর্কৰ তথ্য সম্পাদনা কৰক</translation>
+<translation id="6433501201775827830">আপোনাৰ সন্ধানৰ ইঞ্জিন বাছনি কৰক</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />এ সংযোগ কৰিবলৈ অস্বীকাৰ কৰিছে।</translation>
 <translation id="6433797564277305076">এতিয়াৰ পৰা ডিভাইচ আনলক কৰাৰ সুবিধাটো ব্যৱহাৰ কৰি আপোনাৰ কাৰ্ডসমূহ দ্ৰুততাৰে নিশ্চিত কৰক</translation>
 <translation id="643917412048333145">পোছাক</translation>
@@ -3964,6 +3969,7 @@
 <translation id="9207861905230894330">লেখা যোগ কৰিব নোৱাৰিলে।</translation>
 <translation id="9213433120051936369">ৰূপ কাষ্টমাইজ কৰক</translation>
 <translation id="9215416866750762878">কোনো এপ্লিকেশ্বনে Chromeক এই ছাইটৰ সৈতে সুৰক্ষিত ভাৱে সংযুক্ত হোৱাত বাধা প্ৰদান কৰি আছে।</translation>
+<translation id="9218430445555521422">ডিফ'ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome কাষ্টমাইজ কৰক</translation>
 <translation id="9222403027701923763">প্ৰাথমিক আৰু উচ্চতৰ স্কুলিং (K-12)</translation>

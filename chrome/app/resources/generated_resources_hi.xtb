@@ -447,7 +447,6 @@
 <translation id="1347512539447549782">Linux मेमोरी</translation>
 <translation id="1347975661240122359">बैटरी <ph name="BATTERY_LEVEL" />% बचते ही अपडेट शुरू हो जाएगा.</translation>
 <translation id="1348966090521113558">माउस से जुड़ी सुलभता सेटिंग</translation>
-<translation id="1351089605448164407">आपकी Drive से</translation>
 <translation id="1353275871123211385">'माता-पिता का कंट्रोल' सुविधा का इस्तेमाल करने के लिए, आपके बच्चे के पास ऐसा Google खाता होना ज़रूरी है जिसे आप मैनेज करते हों. 'माता-पिता का कंट्रोल' सुविधा में, किसी ऐप्लिकेशन को अनुमति देना और किसी डिवाइस के इस्तेमाल की समयसीमा तय करना भी शामिल है. Google Classroom जैसे टूल के लिए, बाद में स्कूल वाला खाता जोड़ा जा सकता है.</translation>
 <translation id="135389172849514421">ऑफ़लाइन उपलब्ध है</translation>
 <translation id="1353980523955420967">PPD नहीं मिला. पक्का करें कि आपका Chromebook ऑनलाइन है और दोबारा आज़माएं.</translation>
@@ -1996,6 +1995,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />किसी गड़बड़ी की वजह से <ph name="DEVICE_OS" /> को इंस्टॉल नहीं किया जा सका.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ज़्यादा जानकारी के लिए, यहां जाएं: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">बैटरी को 80% के आस-पास रखकर, यह सुविधा आपकी बैटरी लाइफ़ बढ़ाती है. आम तौर पर, चार्जिंग से हटाने के पहले, बैटरी पूरी तरह से चार्ज हो जाएगी.</translation>
+<translation id="2532146950330687938">डिवाइस तैयार किया जा रहा है...</translation>
 <translation id="2532198298278778531">ChromeOS Flex की सेटिंग में सुरक्षित डीएनएस को मैनेज करें</translation>
 <translation id="2532589005999780174">उच्च कंट्रास्ट मोड</translation>
 <translation id="2533649878691950253">इस साइट को आपकी जगह की सटीक जानकारी जानने से रोक दिया गया. ऐसा इसलिए किया गया, क्योंकि आप आम तौर पर इसकी अनुमति नहीं देते हैं</translation>
@@ -2205,7 +2205,6 @@
 <translation id="2710101514844343743">इस्तेमाल और निदान से जुड़ा डेटा</translation>
 <translation id="271033894570825754">नया</translation>
 <translation id="2711073837061989559">ट्रायल</translation>
-<translation id="2711929077861214979">सुरक्षा के सुझाव</translation>
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
 <translation id="2714180132046334502">गहरा बैकग्राउंड</translation>
@@ -2515,7 +2514,6 @@
 <translation id="2939908794993783865">ऐसी अन्य साइटें जो चालू नहीं हैं</translation>
 <translation id="2939938020978911855">उपलब्ध ब्लूटूथ डिवाइस दिखाएं</translation>
 <translation id="2941112035454246133">कम</translation>
-<translation id="2942279350258725020">Android मैसेज की सेटिंग</translation>
 <translation id="2942560570858569904">इंतज़ार कर रही है...</translation>
 <translation id="2942581856830209953">यह पेज पसंद के मुताबिक बनाएं</translation>
 <translation id="2942707801577151363">Word, Excel, और PowerPoint फ़ाइलें खोलें, बदलाव करें, और सेव करें. कुछ सुविधाओं का इस्तेमाल करने के लिए सदस्यता लेनी पड़ सकती है.</translation>
@@ -4710,7 +4708,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करें}one{साइटें अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>
 <translation id="474609389162964566">अपनी Assistant को "Ok Google" बोलकर ऐक्सेस करें</translation>
-<translation id="4746351372139058112">मैसेज</translation>
 <translation id="4748783296226936791">आम तौर पर, साइटें उन सुविधाओं के लिए एचआईडी डिवाइसों से कनेक्ट करती हैं जो असामान्य कीबोर्ड, गेम कंट्रोलर, और दूसरे डिवाइस इस्तेमाल करती हैं</translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
 <translation id="4750185073185658673">कुछ और अनुमतियां देखने के लिए अपने फ़ोन के अनुमतियों वाले सेक्शन पर जाएं. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.</translation>
@@ -4777,7 +4774,6 @@
 <translation id="4807122856660838973">सुरक्षित ब्राउज़िंग की सुविधा चालू करें</translation>
 <translation id="4807514039636325497">DBus की जानकारी</translation>
 <translation id="4808667324955055115">पॉप-अप ब्लॉक किए गए हैं:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{उस <ph name="BEGIN_BOLD" />1 एक्सटेंशन<ph name="END_BOLD" /> की समीक्षा करें जिसे Chrome Web Store से हटा दिया गया था}one{उस <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} एक्सटेंशन<ph name="END_BOLD" /> की समीक्षा करें जिसे Chrome Web Store से हटा दिया गया था}other{उन <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} एक्सटेंशन<ph name="END_BOLD" /> की समीक्षा करें जिन्हें Chrome Web Store से हटा दिया गया था}}</translation>
 <translation id="4809079943450490359">आपके डिवाइस के एडमिन से मिले निर्देश:</translation>
 <translation id="4809447465126035330">मिटाएं</translation>
 <translation id="480990236307250886">होम पेज खोलें</translation>
@@ -5762,6 +5758,7 @@
 <translation id="5627086634964711283">इससे यह भी नियंत्रित होता है कि जब आप होम बटन पर क्लिक करते हैं तब कौन सा पेज दिखाया जाए.</translation>
 <translation id="5627676517703583263">Chrome के ज़रिए स्मार्ट तरीके से ब्राउज़ करें</translation>
 <translation id="5627832140542566187">डिसप्ले की दिशा</translation>
+<translation id="5628434207686266338">डिवाइस का पासवर्ड सेट करें</translation>
 <translation id="562935524653278697">आपके व्यवस्थापक ने आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग को सिंक करना अक्षम कर दिया है.</translation>
 <translation id="5631017369956619646">CPU का उपयोग</translation>
 <translation id="5631272057151918206">ऐसा करने से, आपकी ऑफ़लाइन फ़ाइलों के लिए इस्तेमाल किया जा रहा <ph name="OFFLINE_STORAGE_SIZE" /> तक का स्टोरेज स्पेस खाली हो जाएगा. हालांकि, कुछ फ़ाइलें अब भी ऑफ़लाइन उपलब्ध होंगी. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -9848,6 +9845,7 @@
 <translation id="8962083179518285172">विवरण छुपाएं</translation>
 <translation id="8962863356073277855">यूआरएल का फ़ॉर्मैट https://www.example.com होना चाहिए</translation>
 <translation id="8962918469425892674">यह साइट गति या रोशनी के सेंसर का इस्तेमाल कर रही है.</translation>
+<translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>
 <translation id="8965037249707889821">पुराना पासवर्ड डालें</translation>
 <translation id="8966809848145604011">अन्य प्रोफ़ाइलें</translation>
 <translation id="8967427617812342790">रीडिंग लिस्ट में जोड़ें</translation>
@@ -10226,7 +10224,6 @@
 <translation id="964286338916298286">आपके आईटी एडमिन ने आपके डिवाइस के लिए 'Chrome के तोहफ़े' रीडीम करने की सुविधा बंद कर दी है.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ऐप्लिकेशन}one{ऐप्लिकेशन}other{ऐप्लिकेशन}}</translation>
 <translation id="964790508619473209">स्क्रीन की सेटिंग</translation>
-<translation id="965211523698323809">अपने <ph name="DEVICE_TYPE" /> से मैसेज भेजें और पाएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast में आ रही समस्या के बारे में शिकायत करें</translation>
 <translation id="966588271015727539">एक ब्लूटूथ ब्रेल डिसप्ले चुनें</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{इस प्रोफ़ाइल को बंद करें}one{इस प्रोफ़ाइल को बंद करें (# विंडो)}other{इस प्रोफ़ाइल को बंद करें (# विंडो)}}</translation>

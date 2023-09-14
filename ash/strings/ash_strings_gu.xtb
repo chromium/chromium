@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">મામૂલી</translation>
 <translation id="5965524703725988602">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">windows મારફતે આગળની ઍપ પર જવા સાઇકલ ફૉરવર્ડ કરો</translation>
-<translation id="5976112937189445008">વિન્ડો રેકોર્ડ કરવા માટે Enter કી દબાવો</translation>
 <translation id="5978382165065462689">દૂરસ્થ સહાય વડે તમારી સ્ક્રીનનું નિયંત્રણ શેર કરવું.</translation>
 <translation id="5980301590375426705">અતિથિથી બહાર નીકળો</translation>
 <translation id="5983567367406220847">નિષ્ક્રિયતાને કારણે હૉટસ્પૉટની સુવિધા બંધ કરવામાં આવી છે.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">તમારા <ph name="DEVICE_TYPE" />માં નબળું કાર્યપ્રદર્શન થઈ શકે છે. પ્રમાણિત <ph name="PREFERRED_MINIMUM_POWER" />W અથવા તેથી વધુના USB-C પાવર અડૅપ્ટરનો ઉપયોગ કરો.</translation>
 <translation id="688631446150864480">વિન્ડો સ્વિચ કરવા માટે, નીચેની ઍરો કી દબાવો</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
-<translation id="6901883536534621389">નૅવિગેટ કરવા માટે સંકેતો અજમાવી જુઓ</translation>
 <translation id="6912841030378044227">ઍડ્રેસ બાર પર ફોકસ કરો</translation>
 <translation id="6912901278692845878">ઝડપી ટુર</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />નો ઉપયોગ કરી રહ્યા છે</translation>
 <translation id="8185090165691050712">લૉક મોડનું કદ બદલવા માટે મેનૂ ચાલુ/બંધ કરો</translation>
 <translation id="8192202700944119416">નોટિફિકેશન છુપાવેલા છે.</translation>
-<translation id="8196787716797768628">ઍપ વચ્ચે ઝડપથી સ્વિચ કરવા માટે અને તમારી Chromebook સાથે ટૅબ્લેટ મોડમાં ક્રિયાપ્રતિક્રિયા કરવા માટે સંકેતોનો ઉપયોગ કરો.</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8203795194971602413">રાઇટ ક્લિક કરો</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant આ ભાષા બોલતું નથી.</translation>
-<translation id="8924458948354692166">વિન્ડો સ્ક્રીનશૉટ કૅપ્ચર કરવા માટે Enter કી દબાવો</translation>
 <translation id="8926951137623668982">શેલ્ફ હંમેશાં છુપાવવામાં આવે છે</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>

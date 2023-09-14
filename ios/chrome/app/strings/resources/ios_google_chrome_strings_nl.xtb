@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1105362920864247682">Wis browsegegevens in Chrome.</translation>
 <translation id="1143896152279775643">Je wachtwoord wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Blijf de Chrome-gegevens in je Google-account gebruiken.</translation>
 <translation id="1282031177488366470">Help de functies en prestaties van Chrome verbeteren</translation>
@@ -56,6 +57,7 @@ Aandachtspunten:
 <translation id="2736805085127235148">Chrome-meldingen staan momenteel uit in je apparaatinstellingen.</translation>
 <translation id="2767464022270041271">Geen opgeslagen wachtwoorden. Google Wachtwoordmanager kan je wachtwoorden checken als je deze opslaat.</translation>
 <translation id="2840432500933227975">Open de Chrome-instellingen in iOS, tik op Standaard browser-app en selecteer Chrome.</translation>
+<translation id="2868822340714096138">Browsegegevens in Chrome wissen</translation>
 <translation id="2869959624320573933">Inloggen bij Chrome</translation>
 <translation id="2876628302275096482">Meer informatie over <ph name="BEGIN_LINK" />hoe Chrome je gegevens privé houdt<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Selecteer <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
@@ -136,6 +138,7 @@ Aandachtspunten:
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
 <translation id="6412673304250309937">Controleert URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
 <translation id="6427126399757991875">Je organisatie stelt Chrome in…</translation>
+<translation id="6545449117344801102">Chrome neemt adressen waar en gebruikt Google Maps om je routes en lokale informatie te geven.</translation>
 <translation id="6600954340915313787">Gekopieerd naar Chrome</translation>
 <translation id="6634107063912726160">Als je uitlogt, synchroniseert Chrome geen nieuwe gegevens met je Google-account. Eerder gesynchroniseerde gegevens blijven in het account staan.</translation>
 <translation id="6646696210740573446">Stuurt een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Google sturen.</translation>
@@ -158,6 +161,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7165736900384873061">QR-scanner van Google Chrome gebruiken</translation>
 <translation id="7173660919484573146">Chrome gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="7187993566681480880">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
+<translation id="7200524487407690471">Chrome voert elke dag automatisch de Veiligheidscheck uit om je te beschermen tegen onder andere gegevenslekken en onveilige websites. Je vindt meer informatie over de Veiligheidscheck in Instellingen.</translation>
 <translation id="72119412072970160">Je kunt de wachtwoorden die je in Google Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPad.</translation>
 <translation id="7254380941803999489">Chrome instellen als standaardbrowser</translation>
 <translation id="7261678641327190792">Chrome kan je wachtwoorden niet checken</translation>

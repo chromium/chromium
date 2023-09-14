@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="3472200483164753384">Nije podržano u Chromium Canaryju</translation>
 <translation id="3478750326643748149">Sakrij "Iskoristite sve prednosti Chromiuma"</translation>
+<translation id="3554027294407525061">Brisanje podataka o pregledavanju u Chromiumu.</translation>
 <translation id="3567399274263440288">Da biste iskoristili sve prednosti koje vam pruža Chromium, prijavite se u Chromium Google računom.</translation>
 <translation id="3639997914391704523">Chromium može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> upotrebljavao je Chromium i ostavio oznake, zaporke i druge postavke na ovom uređaju.</translation>
@@ -98,6 +99,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="5042011327527167688">Dodirnite "Prikaži putem Google karata u Chromiumu".</translation>
 <translation id="5044871537677053278">Chromium otkriva adrese i upotrebljava Google karte kako bi vam pružio upute i lokalne informacije.</translation>
 <translation id="5048795749726991615">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrijebite Chromium za Automatsko popunjavanje</translation>
+<translation id="5076601183701536878">Brisanje podataka o pregledavanju u Chromiumu</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chromium upotrebljava.</translation>
 <translation id="5171868502429358653">Prijava na Chromium</translation>
 <translation id="5213683223491576284">Otvara Upravitelj zaporki u Chromiumu.</translation>

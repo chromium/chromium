@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1105362920864247682">A Chrome-ban lévő böngészési adatok törlése.</translation>
 <translation id="1143896152279775643">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="1180362651362502943">Továbbra is használhatja a Google-fiókjában lévő Chrome-adatokat.</translation>
 <translation id="1282031177488366470">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
@@ -24,6 +25,7 @@ Megjegyzések:
 
   • Ha szinkronizálja előzményeit Google-fiókjával, akkor a mutatók a felkeresett URL-ekkel kapcsolatos információkat is tartalmazhatnak.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">A Chrome a legerősebb védelmet biztosítja a kártékony webhelyek ellen</translation>
+<translation id="1657395063736185342">Képi elemek keresése a Chrome-ban</translation>
 <translation id="1675955119303651351">A Chrome egyes adatait még nem mentette a rendszer a Google-fiókjába.
         A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="1682483655351012182">Chrome-adatok szinkronizálása</translation>
@@ -55,6 +57,7 @@ Megjegyzések:
 <translation id="2736805085127235148">A Chrome-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>
 <translation id="2767464022270041271">Nincsenek mentett jelszavak. A Google Jelszókezelő képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="2840432500933227975">Nyissa meg a Chrome beállításait iOS rendszeren, majd koppintson az „Alapértelmezett böngészőalkalmazás” elemre, és válassza ki a Chrome-ot.</translation>
+<translation id="2868822340714096138">A Chrome-ban lévő böngészési adatok törlése</translation>
 <translation id="2869959624320573933">Bejelentkezés a Chrome-ba</translation>
 <translation id="2876628302275096482">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chrome<ph name="END_LINK" />.</translation>
 <translation id="2957447865124070833">Válassza ki a <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> böngészőt.</translation>
@@ -150,6 +153,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="6916015246697034114">Hangalapú keresés a Chrome-ban</translation>
 <translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
+<translation id="7004159181872656283">Képi elemek keresésének lehetősége a Chrome-ban.</translation>
 <translation id="7056826488869329999">Megnyitja és futtatja a biztonsági ellenőrzést a Chrome-ban.</translation>
 <translation id="7059914902409643750">Tegye személyessé a Chrome-ot</translation>
 <translation id="7124339256045485976">Chrome böngészője legyen mindig naprakész</translation>

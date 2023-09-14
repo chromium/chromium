@@ -344,7 +344,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2417486498593892439">Meld aan by netwerk</translation>
 <translation id="2426051945783024481">Kamera se raam is outomaties gesentreer</translation>
 <translation id="2427507373259914951">Linksklik</translation>
-<translation id="2429753432712299108">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voor jy aanvaar, bevestig asseblief dat hierdie wagwoordsleutel op daardie toestel gewys word: <ph name="PASSKEY" /></translation>
+<translation id="2429753432712299108">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voor jy aanvaar, bevestig asseblief dat hierdie toegangsleutel op daardie toestel gewys word: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="243878895369688216">Gister oopgemaak</translation>
 <translation id="2440978926514840421">GIF-opname is geneem</translation>
@@ -1217,7 +1217,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5961960957587052807">Lig</translation>
 <translation id="5965524703725988602">Wissel Donkertema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Beweeg vorentoe deur vensters</translation>
-<translation id="5976112937189445008">Druk Enter om venster op te neem</translation>
 <translation id="5978382165065462689">Deel tans beheer oor jou skerm deur afstandbystand.</translation>
 <translation id="5980301590375426705">Verlaat gas-sessie</translation>
 <translation id="5983567367406220847">Warmkol is weens onaktiwiteit afgeskakel.</translation>
@@ -1439,7 +1438,6 @@ Nuwe installasie</translation>
 <translation id="6886172995547742638">Jou <ph name="DEVICE_TYPE" /> kan dalk laer werkverrigting ervaar. Gebruik 'n gesertifiseerde <ph name="PREFERRED_MINIMUM_POWER" />W- of hoër USB-C-kragprop.</translation>
 <translation id="688631446150864480">Druk die afpyl om tussen vensters te wissel</translation>
 <translation id="6896758677409633944">Kopieer</translation>
-<translation id="6901883536534621389">Probeer gebare om te navigeer</translation>
 <translation id="6912841030378044227">Fokus op adresbalk</translation>
 <translation id="6912901278692845878">Vinnige toer</translation>
 <translation id="6919251195245069855">Kon nie jou slimkaart herken nie. Probeer weer.</translation>
@@ -1745,7 +1743,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8167567890448493835">Gebruik tans <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Skakel kieslys aan/af om die grootte van die sluitmodus te verander</translation>
 <translation id="8192202700944119416">Kennisgewings word versteek.</translation>
-<translation id="8196787716797768628">Gebruik gebare om vinnig tussen programme te wissel en met jou Chromebook interaksie te hê in tabletmodus.</translation>
 <translation id="8198456017687137612">Saai tans oortjie uit</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8203795194971602413">Regsklik</translation>
@@ -1904,7 +1901,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8909138438987180327">Battery op <ph name="PERCENTAGE" /> persent.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Die Google Assistent praat nie hierdie taal nie.</translation>
-<translation id="8924458948354692166">Druk Enter om vensterskermskoot vas te vang</translation>
 <translation id="8926951137623668982">Rak is altyd versteek</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 lêer}other{# lêers}}</translation>
 <translation id="8936501819958976551">gedeaktiveer</translation>

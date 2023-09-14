@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">பங்குகள் &amp; பத்திரங்கள்</translation>
 <translation id="1391625539203220400">இந்தச் சாதனத்தில் IBANனைச் சேமிக்கவா?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> எந்தத் தரவையும் அனுப்பவில்லை.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> மூலம் தேடுக</translation>
 <translation id="1405567553485452995">வெளிர் பச்சை</translation>
 <translation id="1406500794671479665">சரிபார்க்கிறது...</translation>
 <translation id="1406812885827747674">இந்த முறை அனுமதி</translation>
@@ -2608,6 +2609,7 @@
 <translation id="6432297414176614592">விளம்பரத் தலைப்புகள் பற்றிய கூடுதல் தகவல்கள்</translation>
 <translation id="6432831586648556868">விற்பனை &amp; மார்க்கெட்டிங் பணிகள்</translation>
 <translation id="6433490469411711332">தொடர்புத் தகவலை மாற்று</translation>
+<translation id="6433501201775827830">தேடல் இன்ஜினைத் தேர்வுசெய்யவும்</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> இணைக்க மறுத்தது.</translation>
 <translation id="6433797564277305076">இனி 'சாதனத்தில் அன்லாக் செய்தல்' அம்சத்தைப் பயன்படுத்தி உங்கள் கார்டுகளை விரைவாக உறுதிப்படுத்தலாம்</translation>
 <translation id="643917412048333145">ஆடைகள்</translation>
@@ -3965,6 +3967,7 @@
 <translation id="9207861905230894330">கட்டுரையைச் சேர்ப்பதில் தோல்வி.</translation>
 <translation id="9213433120051936369">தோற்றத்தைத் தனிப்பயனாக்குங்கள்</translation>
 <translation id="9215416866750762878">இந்தத் தளத்துடன் Chrome பாதுகாப்பாக இணைவதை, ஆப்ஸ் தடுக்கிறது</translation>
+<translation id="9218430445555521422">இயல்பாக அமை</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chromeமைப் பிரத்தியேகப்படுத்து</translation>
 <translation id="9222403027701923763">ஆரம்ப &amp; உயர்நிலைப் படிப்பு (K-12)</translation>

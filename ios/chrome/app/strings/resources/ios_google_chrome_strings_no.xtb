@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1105362920864247682">Slett nettlesingsdata i Chrome.</translation>
 <translation id="1143896152279775643">Passordet blir lagret i Google Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Fortsett å bruke Chrome-dataene i Google-kontoen din.</translation>
 <translation id="1282031177488366470">Bidra til å gjøre Chrome bedre og raskere</translation>
@@ -56,6 +57,7 @@ Du bør tenke på følgende:
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2840432500933227975">Åpne Chrome-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chrome.</translation>
+<translation id="2868822340714096138">Slett nettlesingsdata i Chrome</translation>
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Velg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -136,6 +138,7 @@ Du bør tenke på følgende:
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6427126399757991875">Organisasjonen din konfigurerer Chrome …</translation>
+<translation id="6545449117344801102">Chrome registrerer adresser og bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon.</translation>
 <translation id="6600954340915313787">Kopiert til Chrome</translation>
 <translation id="6634107063912726160">Når du logger av, synkroniserer ikke Chrome nye data med Google-kontoen din. Tidligere synkroniserte data blir værende på kontoen.</translation>
 <translation id="6646696210740573446">Sender en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Google.</translation>

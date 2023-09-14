@@ -274,6 +274,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2556092377360758201">Sen protección (non recomendado)</translation>
 <translation id="2562041823070056534">Enviando pestana a <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Usar e gardar contrasinais da túa Conta de Google</translation>
+<translation id="2577522251608256362">Barrio</translation>
 <translation id="2578571896248130439">Enviar páxina web</translation>
 <translation id="2584132361465095047">Engadir conta...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Ningún contrasinal vulnerado}=1{{count} contrasinal vulnerado}other{{count} contrasinais vulnerados}}</translation>
@@ -1090,7 +1091,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6944369514868857500">Escoller outra conta</translation>
 <translation id="6944935964236827145">Ocultar Traducir</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
-<translation id="6955779377310719430">Ocultar Seguir</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6973630695168034713">Cartafoles</translation>
 <translation id="6979158407327259162">Google Drive</translation>

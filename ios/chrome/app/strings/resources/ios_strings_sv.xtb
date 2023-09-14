@@ -158,6 +158,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1830634592642484976">Den här adressen har sparats i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{Bokmärkena har sparats i ditt Google-konto, {email}}}</translation>
+<translation id="183878838231635348">På det här kortet visas eventuella integritets- eller säkerhetsproblem som automatiskt har identifierats av säkerhetskontrollen.</translation>
 <translation id="1847795903283049083">Du kan även visa och hantera de här objekten i bokmärken, läslistan eller Lösenordshantering.</translation>
 <translation id="1870148520156231997">Visa lösenord</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
@@ -267,11 +268,13 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2523363575747517183">Webbplatsen försöker öppna ett annat program upprepade gånger.</translation>
 <translation id="2529021024822217800">Öppna alla</translation>
 <translation id="2536991091671391962">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Dölj Säkerhetskontroll</translation>
 <translation id="2547458583188611426">Synkroniseringen fungerar inte. Ange din lösenfras för att starta synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofel</translation>
 <translation id="2556092377360758201">Inget skydd (rekommenderas inte)</translation>
 <translation id="2562041823070056534">Skickar till <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2576499762020411840">Använd och spara lösenord i Google-kontot</translation>
+<translation id="2577522251608256362">Stadsdel</translation>
 <translation id="2578571896248130439">Skicka webbsida</translation>
 <translation id="2584132361465095047">Lägg till konto …</translation>
 <translation id="2587010742985678408">{count,plural, =0{Inga utsatta lösenord}=1{{count} utsatt lösenord}other{{count} utsatta lösenord}}</translation>
@@ -695,6 +698,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="488785315393301722">Visa information</translation>
 <translation id="4894963374040315706">Det här gör att du kan söka med hjälp av rösten</translation>
+<translation id="489903206070130262">Din senast öppna flik</translation>
 <translation id="4901778704868714008">Spara …</translation>
 <translation id="4904877109095351937">Markera som läst</translation>
 <translation id="4908869848243824489">Förslag från Google</translation>
@@ -1087,7 +1091,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6944369514868857500">Välj ett annat konto</translation>
 <translation id="6944935964236827145">Dölj Översätt</translation>
 <translation id="6945221475159498467">Välj</translation>
-<translation id="6955779377310719430">Dölj Följ</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mappar</translation>
 <translation id="6979158407327259162">Google Drive</translation>

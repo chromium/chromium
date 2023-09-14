@@ -158,6 +158,7 @@
 <translation id="1830634592642484976">Энэ хаягийг одоогоор Chrome-д хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд <ph name="USER_EMAIL" /> Google Бүртгэлдээ хадгална уу.</translation>
 <translation id="1832848789136765277">Та синк хийсэн өгөгдөлдөө үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="1836891464494477513">{count,plural, =1{Хавчуургыг таны {email} Google Бүртгэлд хадгалсан}other{Хавчуургуудыг таны {email} Google Бүртгэлд хадгалсан}}</translation>
+<translation id="183878838231635348">Энэ карт танд зориулж Аюулгүй байдлын шалгалтын автоматаар илрүүлсэн нууцлал эсвэл аюулгүй байдлын аливаа асуудлыг харуулна.</translation>
 <translation id="1847795903283049083">Та мөн эдгээр зүйлийг хавчуурга, Унших жагсаалт эсвэл нууц үгний менежертээ харах болон удирдах боломжтой.</translation>
 <translation id="1870148520156231997">Нууц үгийг харуулах</translation>
 <translation id="1872096359983322073">Чийдэн</translation>
@@ -267,11 +268,13 @@
 <translation id="2523363575747517183">Энэ вебсайт өөр апп нээхээр удаа дараа оролдож байна.</translation>
 <translation id="2529021024822217800">Бүгдийг нээх</translation>
 <translation id="2536991091671391962">Та дурын төхөөрөмжид хадгалсан нууц үгнүүдийг ашиглах боломжтой. Тэдгээрийг <ph name="EMAIL" />-д зориулж Google Password Manager-т хадгалсан.</translation>
+<translation id="2542268842667970959">"Аюулгүй байдлын шалгалт"-ыг нууна уу</translation>
 <translation id="2547458583188611426">Синк хийх ажиллахгүй байна. Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу.</translation>
 <translation id="2551153019974022505">Бүртгэлийн алдаа</translation>
 <translation id="2556092377360758201">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />-д илгээж байна...</translation>
 <translation id="2576499762020411840">Google Бүртгэлдээ нууц үг ашиглах болон хадгалах</translation>
+<translation id="2577522251608256362">Хөрш</translation>
 <translation id="2578571896248130439">Веб хуудас илгээх</translation>
 <translation id="2584132361465095047">Бүртгэл нэмэх...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Aлдагдсан нууц үг алга}=1{Алдагдсан {count} нууц үг}other{Алдагдсан {count} нууц үг}}</translation>
@@ -1088,7 +1091,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6944369514868857500">Өөр бүртгэл сонгох</translation>
 <translation id="6944935964236827145">Орчуулахыг нуух</translation>
 <translation id="6945221475159498467">Сонгох</translation>
-<translation id="6955779377310719430">Дагахыг нуух</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Хавтас</translation>
 <translation id="6979158407327259162">Google Drive</translation>

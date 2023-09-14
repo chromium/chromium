@@ -447,7 +447,6 @@
 <translation id="1347512539447549782">Сховішча Linux</translation>
 <translation id="1347975661240122359">Абнаўленне пачнецца, калі акумулятар будзе зараджаны на <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Налады спецыяльных магчымасцей для мышы</translation>
-<translation id="1351089605448164407">З вашага Дыска</translation>
 <translation id="1353275871123211385">Выкарыстоўваць функцыі бацькоўскага кантролю (напрыклад, ухваляць праграмы і задаваць абмежаванні часу карыстання прыладамі) можна толькі тады, калі ў дзіцяці ёсць Уліковы запіс Google, якім кіруюць бацькі. Пазней можна дадаць навучальны ўліковы запіс, каб выкарыстоўваць такія інструменты, як Google Клас.</translation>
 <translation id="135389172849514421">Мова даступная па-за сеткай</translation>
 <translation id="1353980523955420967">Не ўдалося знайсці PPD. Упэўніцеся, што Chromebook падключаны да інтэрнэту, і паўтарыце спробу.</translation>
@@ -2190,7 +2189,6 @@
 <translation id="2710101514844343743">Даныя пра выкарыстанне і дыягностыку</translation>
 <translation id="271033894570825754">Новае</translation>
 <translation id="2711073837061989559">Пробныя версіі функцый</translation>
-<translation id="2711929077861214979">Парады па бяспецы</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2714180132046334502">Цёмны фон</translation>
@@ -2500,7 +2498,6 @@
 <translation id="2939908794993783865">Дадатковыя неактыўныя сайты</translation>
 <translation id="2939938020978911855">Паказаць даступныя прылады Bluetooth</translation>
 <translation id="2941112035454246133">Нізкі</translation>
-<translation id="2942279350258725020">Паведамленні Android</translation>
 <translation id="2942560570858569904">Чаканне...</translation>
 <translation id="2942581856830209953">Наладзіць гэту старонку</translation>
 <translation id="2942707801577151363">Вы зможаце адкрываць, рэдагаваць і захоўваць файлы Word, Excel і PowerPoint. Для выкарыстання некаторых функцый патрабуецца падпіска.</translation>
@@ -4694,7 +4691,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Уключыць гук на сайце}one{Уключыць гук на сайтах}few{Уключыць гук на сайтах}many{Уключыць гук на сайтах}other{Уключыць гук на сайтах}}</translation>
 <translation id="474609389162964566">Актывуйце Памочніка галасавой камандай "Ok Google"</translation>
-<translation id="4746351372139058112">Паведамленні</translation>
 <translation id="4748783296226936791">Сайты звычайна падключаюцца да прылад HID для забеспячэння работы функцый, якія выкарыстоўваюць нестандартныя клавіятуры, гульнявыя кантролеры і іншыя прылады</translation>
 <translation id="4749960740855309258">Адкрыць новую ўкладку</translation>
 <translation id="4750185073185658673">Вам трэба даць яшчэ некалькі дазволаў на сваім тэлефоне. Упэўніцеся, што на ім уключаны Bluetooth і Wi-Fi.</translation>
@@ -4761,7 +4757,6 @@
 <translation id="4807122856660838973">Уключыць Бяспечны прагляд</translation>
 <translation id="4807514039636325497">Звесткі DBus</translation>
 <translation id="4808667324955055115">Заблакіраваны выплыўныя вокны:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Праверце <ph name="BEGIN_BOLD" />1 пашырэнне<ph name="END_BOLD" />, якое было выдалена з Вэб-крамы Chrome}one{Праверце <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} пашырэнне<ph name="END_BOLD" />, якое было выдалена з Вэб-крамы Chrome}few{Праверце <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} пашырэнні<ph name="END_BOLD" />, якія былі выдалены з Вэб-крамы Chrome}many{Праверце <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} пашырэнняў<ph name="END_BOLD" />, якія былі выдалены з Вэб-крамы Chrome}other{Праверце <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} пашырэння<ph name="END_BOLD" />, якія былі выдалены з Вэб-крамы Chrome}}</translation>
 <translation id="4809079943450490359">Інструкцыі ад адміністратара прылады:</translation>
 <translation id="4809447465126035330">Выдаліць</translation>
 <translation id="480990236307250886">Адкрыць галоўную старонку</translation>
@@ -9838,6 +9833,7 @@
 <translation id="8962083179518285172">Схаваць падрабязнасці</translation>
 <translation id="8962863356073277855">URL-адрас павінен мець фармат https://www.example.com</translation>
 <translation id="8962918469425892674">Гэты сайт выкарыстоўвае датчыкі руху або святла.</translation>
+<translation id="8963117664422609631">Перайсці ў налады сайта</translation>
 <translation id="8965037249707889821">Увядзіце стары пароль</translation>
 <translation id="8966809848145604011">Іншыя профілі</translation>
 <translation id="8967427617812342790">Дадаць у спіс чытання</translation>
@@ -10213,7 +10209,6 @@
 <translation id="964286338916298286">Адміністратар выключыў перавагі Chrome для вашай прылады.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Праграма}one{Праграмы}few{Праграмы}many{Праграмы}other{Праграмы}}</translation>
 <translation id="964790508619473209">Размяшчэнне экранаў</translation>
-<translation id="965211523698323809">Адпраўляйце і атрымлівайце тэкставыя паведамленні з прылады "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Паскардзіцца на праблему з Google Cast</translation>
 <translation id="966588271015727539">Выбраць дысплэй Брайля з падключэннем праз Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Закрыць профіль}one{&amp;Закрыць профіль (# акно)}few{&amp;Закрыць профіль (# акны)}many{&amp;Закрыць профіль (# акон)}other{&amp;Закрыць профіль (# акна)}}</translation>

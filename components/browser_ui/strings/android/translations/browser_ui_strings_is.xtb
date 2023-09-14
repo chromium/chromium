@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2678468611080193228">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það skilar minni vernd en eykur líkur á að eiginleikar vefsvæðisins virki</translation>
+<translation id="2683434792633810741">Eyða og endurstilla?</translation>
 <translation id="2687403674020088961">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="2713106313042589954">Slökkva á myndavél</translation>
 <translation id="2717722538473713889">Netföng</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Leyfa fótspor fyrir tiltekið vefsvæði.</translation>
 <translation id="4046123991198612571">Næsta lag</translation>
 <translation id="4053720452172726777">Sérsníða og stjórna Google Chrome</translation>
+<translation id="4149890623864272035">Viltu örugglega eyða öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstilla allar heimildir fyrir þetta vefsvæði?</translation>
 <translation id="4149994727733219643">Einfaldað yfirlit fyrir vefsíður</translation>
 <translation id="4151930093518524179">Sjálfgefinn aðdráttur</translation>
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Leyfa fótspor þriðja aðilla</translation>
 <translation id="4428065317363009941">Sérsniðnar auglýsingar</translation>
 <translation id="4434045419905280838">Sprettigluggar og framsendingar</translation>
+<translation id="443552056913301231">Þessi aðgerð eyðir öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstillir allar heimildir fyrir <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Slökkva á hljóði á tilteknu vefsvæði.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# fótspor}one{# fótspor}other{# fótspor}}</translation>
 <translation id="4478158430052450698">Einfaldaðu sérsnið aðdráttar fyrir mismunandi vefsvæði</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Slökkva á hljóðnema</translation>
 <translation id="4570913071927164677">Nánar</translation>
 <translation id="4598549027014564149">Þegar þú ert í huliðsstillingu geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, jafnvel tengdum vefsvæðum. Vafranotkun þín er ekki notuð fyrir hluti á borð við sérsniðnar auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
+<translation id="4644713492825682049">Eyða og endurstilla</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
 <translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Síðast opnað í dag</translation>
 <translation id="5225463052809312700">Kveikja á myndavél</translation>
 <translation id="5234764350956374838">Hunsa</translation>
+<translation id="5246825184569358663">Þessi aðgerð eyðir öllum staðbundnum gögnum, þar á meðal fótsporum, og endurstillir allar heimildir fyrir <ph name="DOMAIN" /> og öll undirvefsvæði þess</translation>
 <translation id="5264323282659631142">Fjarlægja „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Dragðu ofan frá og snertu bakkhnappinn til að hætta birtingu á öllum skjánum.</translation>
 <translation id="5300589172476337783">Sýna</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Undantekningar</translation>
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
 <translation id="6205314730813004066">Persónuvernd auglýsinga</translation>
+<translation id="6207207788774442484">Eyða gögnum og endurstilla heimildir</translation>
 <translation id="6216432067784365534">Valkostir fyrir <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Fjarlægja „<ph name="APP_NAME" />“?</translation>
 <translation id="6262191102408817757">Byggt á síðasta flipa hjá þér</translation>

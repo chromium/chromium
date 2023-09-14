@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1105362920864247682">Brisanje podataka o pregledavanju u Chromeu.</translation>
 <translation id="1143896152279775643">Zaporka će se spremiti u Google upravitelj zaporki za <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Nastavite upotrebljavati podatke iz Chromea na svom Google računu.</translation>
 <translation id="1282031177488366470">Pomozite poboljšati Chromeove značajke i izvedbu</translation>
@@ -56,6 +57,7 @@ Važne napomene:
 <translation id="2736805085127235148">Obavijesti Chromea trenutačno su isključene u postavkama uređaja.</translation>
 <translation id="2767464022270041271">Nema nijedne spremljene zaporke. Google upravitelj zaporki može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="2840432500933227975">Otvorite postavke Chromea na iOS-u, zatim dodirnite "Zadana aplikacija preglednika" i odaberite Chrome.</translation>
+<translation id="2868822340714096138">Brisanje podataka o pregledavanju u Chromeu</translation>
 <translation id="2869959624320573933">Prijava u Chrome</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>

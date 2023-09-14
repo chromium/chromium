@@ -212,6 +212,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1391289752476847787">Hlutabréf og skuldabréf</translation>
 <translation id="1391625539203220400">Vista IBAN í þessu tæki?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> sendi engin gögn.</translation>
+<translation id="1397811292916898096">Leita með <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Ljósgrænn</translation>
 <translation id="1406500794671479665">Staðfestir…</translation>
 <translation id="1406812885827747674">Leyfa í þetta skipti</translation>
@@ -2613,6 +2614,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6432297414176614592">Nánar um umfjöllunarefni auglýsinga</translation>
 <translation id="6432831586648556868">Sölu- og markaðsstörf</translation>
 <translation id="6433490469411711332">Breyta samskiptaupplýsingum</translation>
+<translation id="6433501201775827830">Veldu leitarvélina þína</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> neitaði að koma á tengingu.</translation>
 <translation id="6433797564277305076">Staðfestu kortin þín hraðar með því að nota „Taka tæki úr lás“ héðan í frá</translation>
 <translation id="643917412048333145">Kjólar</translation>
@@ -3969,6 +3971,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9207861905230894330">Ekki tókst að bæta greininni við.</translation>
 <translation id="9213433120051936369">Sérsníða útlit</translation>
 <translation id="9215416866750762878">Forrit kemur í veg fyrir að Chrome geti tengst vefsvæðinu á öruggan máta</translation>
+<translation id="9218430445555521422">Nota sem sjálfgefið</translation>
 <translation id="9219103736887031265">Myndir</translation>
 <translation id="922152298093051471">Sérsníða Chrome</translation>
 <translation id="9222403027701923763">Grunnskóla- og miðskólanám (leikskóli–12. bekkur)</translation>

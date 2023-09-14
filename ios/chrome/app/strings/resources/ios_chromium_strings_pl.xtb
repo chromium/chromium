@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Przeglądarce Chromium nie udało się sprawdzić Twoich haseł. Sprawdź połączenie z internetem.</translation>
 <translation id="3472200483164753384">Nieobsługiwane w Chromium Canary</translation>
 <translation id="3478750326643748149">Ukryj „W pełni wykorzystuj potencjał Chromium”</translation>
+<translation id="3554027294407525061">Wyczyść dane przeglądania w Chromium.</translation>
 <translation id="3567399274263440288">Aby w pełni wykorzystać możliwości Chromium, zaloguj się na konto Google.</translation>
 <translation id="3639997914391704523">Chromium może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="3650632991272923014">Użytkownik <ph name="USER_EMAIL1" /> korzystał z Chromium i zapisał na tym urządzeniu swoje zakładki, hasła i inne ustawienia.</translation>
@@ -98,6 +99,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na s
 <translation id="5042011327527167688">Kliknij „Zobacz w Mapach Google w Chromium”.</translation>
 <translation id="5044871537677053278">Chromium wykrywa adresy i wykorzystuje Mapy Google, aby wyświetlać Ci wskazówki dojazdu i informacje lokalne.</translation>
 <translation id="5048795749726991615">Aby łatwo przywoływać zapisane hasła w innych aplikacjach, użyj autouzupełniania w Chromium</translation>
+<translation id="5076601183701536878">Wyczyść dane przeglądania w Chromium</translation>
 <translation id="5131565040785979529">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, i korzystaniem z Chromium.</translation>
 <translation id="5171868502429358653">Zaloguj się w Chromium</translation>
 <translation id="5213683223491576284">Otwiera Menedżera haseł w Chromium.</translation>

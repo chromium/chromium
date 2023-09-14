@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">സ്റ്റോക്കുകളും ബോണ്ടുകളും</translation>
 <translation id="1391625539203220400">ഈ ഉപകരണത്തിലേക്ക് IBAN സംരക്ഷിക്കണോ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ഡാറ്റയൊന്നും അയച്ചിട്ടില്ല.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="1405567553485452995">ഇളം പച്ച</translation>
 <translation id="1406500794671479665">സ്ഥിരീകരിക്കുന്നു...</translation>
 <translation id="1406812885827747674">ഇത്തവണ അനുവദിക്കുക</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">നിങ്ങൾ സാധാരണയായി അറിയിപ്പുകൾ അനുവദിക്കാത്തതിനാൽ അവ സ്വയമേവ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="2071852865256799872">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ ഓർഗനൈസേഷനും നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_DOMAIN" /> ഡൊമെയ്‌നുമാണ്</translation>
 <translation id="2072275792380684364">ഫാഷനും സ്‌റ്റൈലും</translation>
+<translation id="2075497153347571252">നിങ്ങളുടെ അഡ്മിൻ <ph name="ORIGIN" /> -ൽ <ph name="PERMISSION" /> ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="20817612488360358">സിസ്റ്റം പ്രോക്‌സി ക്രമീകരണം ഉപയോഗിക്കുന്നതിനായി സജ്ജമാക്കി, പക്ഷെ ഒരു സ്‌പഷ്‌ടമായ പ്രോക്‌സി കോൺഫിഗറേഷനും അതോടൊപ്പം നിർദ്ദേശിച്ചിരിക്കുന്നു.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /> ഫലം</translation>
@@ -1878,6 +1880,7 @@
 <translation id="4885256590493466218">ചെക്ക്‌ഔട്ട് ചെയ്യുമ്പോൾ <ph name="CARD_DETAIL" /> ഉപയോഗിച്ച് പണമടയ്‌ക്കുക</translation>
 <translation id="4887406273302438710">Windows Hello ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
 <translation id="4888600795924685526">വിദേശ ഭാഷാ പഠനം</translation>
+<translation id="4890070067176768718">നിങ്ങളുടെ അഡ്മിൻ <ph name="ORIGIN" /> -ൽ <ph name="PERMISSION" /> അനുവദിച്ചു</translation>
 <translation id="4892518386797173871">പിൻഭാഗം</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ഒളിമ്പിക്‌സ്</translation>
@@ -2324,6 +2327,7 @@
 <translation id="5830698870816298009">ക്യാമറയുടെ ഉപയോഗവും ചലനവും</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5838278095973806738">അക്രമകാരികൾ മോഷ്‌ടിക്കാൻ സാധ്യതയുള്ളതിനാൽ ഈ സൈറ്റിൽ നിങ്ങളുടെ രഹസ്യ വിവരങ്ങളൊന്നും (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകളോ ക്രെഡിറ്റ് കാർഡുകളോ പോലുള്ളവ) നൽകരുത്.</translation>
+<translation id="5838732667866024867">ഗ്രാഫിലെ നിരക്ക് മാറ്റങ്ങൾ അവലോകനം ചെയ്യാൻ നിങ്ങൾക്ക് ഇടത്/വലത് അമ്പടയാളം ഉപയോഗിക്കാം</translation>
 <translation id="5840318881868981258">നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google അക്കൗണ്ടിൽ</translation>
 <translation id="5841338463993781099">അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
 <translation id="5847181246682413476">വൈദ്യുതി വിതരണ ഉപകരണങ്ങൾ</translation>
@@ -2612,6 +2616,7 @@
 <translation id="6432297414176614592">പരസ്യ വിഷയങ്ങളെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="6432831586648556868">സെയിൽസ്, മാർക്കറ്റിംഗ് ജോലികൾ</translation>
 <translation id="6433490469411711332">കോൺടാക്‌റ്റ് വിവരം എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="6433501201775827830">നിങ്ങളുടെ തിരയൽ യന്ത്രം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> കണക്‌റ്റുചെയ്യൽ നിരസിച്ചു.</translation>
 <translation id="6433797564277305076">ഇനിമുതൽ ഉപകരണ അൺലോക്ക് ഉപയോഗിച്ച് നിങ്ങളുടെ കാർഡുകൾ കൂടുതൽ വേഗത്തിൽ സ്ഥിരീകരിക്കൂ</translation>
 <translation id="643917412048333145">വസ്‌ത്രങ്ങൾ</translation>
@@ -3966,6 +3971,7 @@
 <translation id="9207861905230894330">ലേഖനം ചേർക്കാനായില്ല.</translation>
 <translation id="9213433120051936369">ദൃശ്യമാകുന്ന രീതി ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9215416866750762878">ഈ സൈറ്റിലേക്ക് സുരക്ഷിതമായി കണക്റ്റ് ചെയ്യുന്നതിൽ നിന്ന് Chrome-നെ ഒരു ആപ്പ് തടയുന്നു</translation>
+<translation id="9218430445555521422">ഡിഫോൾട്ട് ആയി സജ്ജീകരിക്കുക</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9222403027701923763">പ്രാഥമിക, സെക്കൻഡറി സ്‌കൂൾ വിദ്യാഭ്യാസം (K-12)</translation>

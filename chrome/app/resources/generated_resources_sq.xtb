@@ -444,7 +444,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1347512539447549782">Hapësira ruajtëse e Linux</translation>
 <translation id="1347975661240122359">Përditësimi do të fillojë kur bateria të arrijë në <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Cilësimet e qasshmërisë të miut</translation>
-<translation id="1351089605448164407">Nga "Disku" yt</translation>
 <translation id="1353275871123211385">Për të përdorur kontrolle prindërore si miratimin e aplikacioneve dhe kufijtë e kohës para ekranit, një fëmijë duhet të ketë një "Llogari të Google" të menaxhuar nga një prind. Mund të shtohet më vonë një llogari shkolle për vegla si Google Classroom.</translation>
 <translation id="135389172849514421">Funksionon jashtë linje</translation>
 <translation id="1353980523955420967">PPD-ja nuk mund të gjendet. Sigurohu që pajisja jote Chromebook është në linjë dhe provo përsëri.</translation>
@@ -2187,7 +2186,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2710101514844343743">Të dhënat e përdorimit dhe të diagnostikimit</translation>
 <translation id="271033894570825754">E re</translation>
 <translation id="2711073837061989559">Provat</translation>
-<translation id="2711929077861214979">Këshilla sigurie</translation>
 <translation id="2713106313042589954">Çaktivizo kamerën</translation>
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2714180132046334502">Sfondi i errët</translation>
@@ -2497,7 +2495,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2939908794993783865">Sajte të tjera joaktive</translation>
 <translation id="2939938020978911855">Trego pajisjet e disponueshme me "Bluetooth"</translation>
 <translation id="2941112035454246133">E ulët</translation>
-<translation id="2942279350258725020">Mesazhet e Android</translation>
 <translation id="2942560570858569904">Në pritje...</translation>
 <translation id="2942581856830209953">Personalizoje këtë faqe</translation>
 <translation id="2942707801577151363">Hap, redakto dhe ruaj skedarë Word, Excel dhe PowerPoint. Për disa veçori mund të kërkohet një abonim.</translation>
@@ -4693,7 +4690,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Aktivizo zërin e sajtit}other{Aktivizo zërin e sajteve}}</translation>
 <translation id="474609389162964566">Qasu tek "Asistenti" me "Ok Google"</translation>
-<translation id="4746351372139058112">Mesazhet</translation>
 <translation id="4748783296226936791">Sajtet lidhen zakonisht me pajisjet HID për veçoritë që përdorin tastiera jo të zakonshme, kontrollues të lojërave dhe pajisje të tjera</translation>
 <translation id="4749960740855309258">Hap një skedë të re</translation>
 <translation id="4750185073185658673">Shko te telefoni për të shqyrtuar disa leje të tjera. Sigurohu që Bluetooth-i dhe Wi-Fi në telefon të jenë aktive.</translation>
@@ -4760,7 +4756,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4807122856660838973">Aktivizo "Shfletimin e sigurt"</translation>
 <translation id="4807514039636325497">Detajet e DBus</translation>
 <translation id="4808667324955055115">Dritaret kërcyese u bllokuan:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Rishiko <ph name="BEGIN_BOLD" />1 shtesë<ph name="END_BOLD" /> që është hequr nga "Dyqani i uebit i Chrome"}other{Rishiko <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} shtesa<ph name="END_BOLD" /> që janë hequr nga "Dyqani i uebit i Chrome"}}</translation>
 <translation id="4809079943450490359">Udhëzimet nga administratori i pajisjes sate:</translation>
 <translation id="4809447465126035330">Fshi</translation>
 <translation id="480990236307250886">Hap faqen bazë</translation>
@@ -6326,6 +6321,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6104796831253957966">Radha në printer është plot</translation>
 <translation id="6104929924898022309">Përdor tastin e kërkimit për të ndryshuar sjelljen e tasteve të funksioneve</translation>
 <translation id="6106167152849320869">Nëse ke zgjedhur që të dërgosh të dhënat e diagnostikimit dhe të përdorimit në hapin e mëparshëm, këto të dhëna do të mblidhen për aplikacionet e instaluara.</translation>
+<translation id="6111718295497931251">Hiq qasjen te "Disku i Google"</translation>
 <translation id="6111972606040028426">Aktivizo "Asistentin e Google"</translation>
 <translation id="6112294629795967147">Prek për të ndryshuar madhësinë</translation>
 <translation id="6112727384379533756">Shto një biletë</translation>
@@ -9827,6 +9823,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8962083179518285172">Fshih detajet</translation>
 <translation id="8962863356073277855">Formati i URL-së duhet të jetë https://www.example.com</translation>
 <translation id="8962918469425892674">Kjo faqe përdor sensorët e lëvizjes ose të dritës.</translation>
+<translation id="8963117664422609631">Shko te cilësimet e faqes</translation>
 <translation id="8965037249707889821">Fut fjalëkalimin e vjetër</translation>
 <translation id="8966809848145604011">Profilet e tjera</translation>
 <translation id="8967427617812342790">Shto te lista e leximit</translation>
@@ -10205,7 +10202,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="964286338916298286">Administratori i teknologjisë së informacionit ka çaktivizuar "Chrome Goodies" për pajisjen tënde.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacioni}other{Aplikacionet}}</translation>
 <translation id="964790508619473209">Sistemimi i ekranit</translation>
-<translation id="965211523698323809">Dërgo dhe merr mesazhe me tekst nga pajisja jote <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Raporto një problem me Google Cast</translation>
 <translation id="966588271015727539">Zgjidh një ekran breil me Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Mbylle këtë profil}other{&amp;Mbylle këtë profil (# dritare)}}</translation>

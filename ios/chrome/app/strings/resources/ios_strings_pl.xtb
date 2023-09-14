@@ -274,6 +274,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2556092377360758201">Brak ochrony (niezalecane)</translation>
 <translation id="2562041823070056534">Wysyłam na urządzenie <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Używaj haseł na swoim koncie Google i je zapisuj</translation>
+<translation id="2577522251608256362">Dzielnica</translation>
 <translation id="2578571896248130439">Wyślij stronę internetową</translation>
 <translation id="2584132361465095047">Dodaj konto…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Brak przejętych haseł}=1{{count} przejęte hasło}few{{count} przejęte hasła}many{{count} przejętych haseł}other{{count} przejętego hasła}}</translation>
@@ -312,6 +313,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2738375676495545665">Ukryj opcję Co nowego</translation>
 <translation id="2747003861858887689">Poprzednie pole</translation>
 <translation id="2749231692441336879">Obserwujesz: <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Konta na tym urządzeniu</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
 <translation id="2772667768515195373">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres jest zapisany na Twoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Wyszukiwanie incognito</translation>
@@ -1090,7 +1092,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6944369514868857500">Wybierz inne konto</translation>
 <translation id="6944935964236827145">Ukryj opcję Tłumacz</translation>
 <translation id="6945221475159498467">Wybierz</translation>
-<translation id="6955779377310719430">Ukryj opcję Obserwuj</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Foldery</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
@@ -1229,6 +1230,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="778855399387580014">Rozpocznij wyszukiwanie na nowej karcie Chrome.</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7807060072011926525">Udostępniany przez Google</translation>
+<translation id="78146569776629510">Pobrane</translation>
 <translation id="7839985698273989086">Strona offline</translation>
 <translation id="7840771868269352570">Wybrane elementy zostaną usunięte.</translation>
 <translation id="7845466610722898">Pokaż listę Do przeczytania</translation>

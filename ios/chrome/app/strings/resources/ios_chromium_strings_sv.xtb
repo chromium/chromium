@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">Öppnar en ny inkognitoflik i Chromium.</translation>
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
+<translation id="3833326979834193417">Chromium kör automatiskt en säkerhetskontroll varje dag för att skydda dig från dataintrång, osäkra webbplatser med mera. Du hittar mer information om säkerhetskontrollen i inställningarna.</translation>
 <translation id="3886689467633467988">Logga in på den här webbplatsen och i Chromium om du vill få dina bokmärken med mera på alla dina enheter.</translation>
 <translation id="394413318816989199">Betalningsmetoder och adresser omfattas inte av lösenfraskryptering.
 
@@ -84,6 +85,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Öppnar inställningssidan för betalningsmetoder i Chromium.</translation>
 <translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="459080529287102949">Sök efter bilder i Chromium</translation>
 <translation id="4633738821577273991">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="4654936625574199632">Chromium skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
@@ -152,6 +154,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="7055269218854630176">Din organisation, <ph name="DOMAIN" />, hanterar kontot du loggar in på och hur Chromium kan användas. Administratören kan konfigurera eller begränsa vissa funktioner.</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>
+<translation id="7163483974919055112">Sök efter bilder i Chromium.</translation>
 <translation id="7165402419892018581">Välj Chromium för autofyll</translation>
 <translation id="7175400662502680481">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Lösenordshantering att byta lösenord nu.</translation>
 <translation id="7192111075364461693">Chromium-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>

@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">ໜ້ອຍ</translation>
 <translation id="5965524703725988602">ສະຫຼັບຮູບແບບສີສັນມືດ. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">ວົນໄປໜ້າຜ່ານໜ້າຈໍ</translation>
-<translation id="5976112937189445008">ກົດ enter ເພື່ອບັນທຶກໜ້າຈໍ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="5980301590375426705">ອອກຈາກແຂກ</translation>
 <translation id="5983567367406220847">ເນື່ອງຈາກບໍ່ມີການເຄື່ອນໄຫວ, ຮັອດສະປອດຖືກປິດໄວ້ແລ້ວ.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> ຂອງທ່ານອາດຈະປະສົບກັບປະສິດທິພາບຕໍ່າ. ໃຊ້ອະແດັບເຕີ <ph name="PREFERRED_MINIMUM_POWER" />W ທີ່ມີການຮັບຮອງ ຫຼື ອະແດັບເຕີໄຟ USB-C ທີ່ສູງກວ່າ.</translation>
 <translation id="688631446150864480">ກົດປຸ່ມລູກສອນລົງເພື່ອປ່ຽນໜ້າຈໍ</translation>
 <translation id="6896758677409633944">ກັອບປີ້</translation>
-<translation id="6901883536534621389">ລອງໃຊ້ທ່າທາງເພື່ອນຳທາງ</translation>
 <translation id="6912841030378044227">ເນັ້ນໃສ່ແຖບທີ່ຢູ່</translation>
 <translation id="6912901278692845878">ການທົວສັ້ນໆ</translation>
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835">ກຳລັງໃຊ້ <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">ເປີດ/ປິດເມນູເພື່ອປັບຂະໜາດໂໝດລັອກ</translation>
 <translation id="8192202700944119416">ເຊື່ອງການແຈ້ງເຕືອນໄວ້ແລ້ວ.</translation>
-<translation id="8196787716797768628">ໃຊ້ທ່າທາງເພື່ອສະຫຼັບລະຫວ່າງແອັບ ແລະ ໂຕ້ຕອບກັບ Chromebook ຂອງທ່ານໄດ້ຢ່າງວ່ອງໄວໃນໂໝດແທັບເລັດ.</translation>
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>
 <translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>
 <translation id="8203795194971602413">ຄລິກຂວາ</translation>
@@ -1853,6 +1850,7 @@
 <translation id="8703634754197148428">ເລີ່ມການບັນທຶກ. ເມື່ອການບັນທຶກເລີ່ມແລ້ວ ກະລຸນາກົດ Alt + Shift + L ເພື່ອນຳທາງໄປຫາຖ້ານ ແລະ ຊອກຫາປຸ່ມຢຸດການບັນທຶກ</translation>
 <translation id="8704155109538237473">ໂຟກັສຢູ່ໜ້າຈໍການສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="870917907284186124">ເປີດ/ປິດການປ້ອນຂໍ້ມູນດ້ວຍສຽງ (ພິມດ້ວຍສຽງຂອງທ່ານ)</translation>
+<translation id="8714138378966541668">ລັອກໂດຍຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="8717459106217102612">ເລືອກຄຳສັບ ຫຼື ຕົວອັກສອນຕໍ່ໄປ</translation>
 <translation id="8721053961083920564">ເປີດລະດັບສຽງ. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ການຖ່າຍຮູບໜ້າຈໍແບບເຕັມຈໍ</translation>
@@ -1903,7 +1901,6 @@
 <translation id="8909138438987180327">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" /> ເປີເຊັນ.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">ຜູ້ຊ່ວຍ Google ເວົ້າພາສານີ້ບໍ່ໄດ້.</translation>
-<translation id="8924458948354692166">ກົດ enter ເພື່ອບັນທຶກຮູບໜ້າຈໍຂອງໜ້າຈໍ</translation>
 <translation id="8926951137623668982">ເຊື່ອງຊັ້ນວາງທຸກເທື່ອ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ໄຟລ໌}other{# ໄຟລ໌}}</translation>
 <translation id="8936501819958976551">ປິດນຳໃຊ້ແລ້ວ</translation>

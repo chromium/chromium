@@ -1216,7 +1216,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5961960957587052807">Ringan</translation>
 <translation id="5965524703725988602">Tombol Tema gelap. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Berpindah maju melalui jendela</translation>
-<translation id="5976112937189445008">Tekan Enter untuk merekam jendela</translation>
 <translation id="5978382165065462689">Berbagi kontrol layar via Remote Assistance.</translation>
 <translation id="5980301590375426705">Hentikan sesi tamu</translation>
 <translation id="5983567367406220847">Karena tidak ada aktivitas, hotspot telah dinonaktifkan.</translation>
@@ -1438,7 +1437,6 @@ Baru diinstal</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> Anda mungkin mengalami penurunan performa. Gunakan adaptor daya USB-C <ph name="PREFERRED_MINIMUM_POWER" /> W atau lebih tinggi yang tersertifikasi.</translation>
 <translation id="688631446150864480">Tekan tombol Panah bawah untuk beralih jendela</translation>
 <translation id="6896758677409633944">Salin</translation>
-<translation id="6901883536534621389">Coba gestur untuk menavigasi</translation>
 <translation id="6912841030378044227">Fokus ke kolom URL</translation>
 <translation id="6912901278692845878">Tur singkat</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>
@@ -1744,7 +1742,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Aktifkan/nonaktifkan menu untuk mengubah ukuran mode kunci</translation>
 <translation id="8192202700944119416">Notifikasi disembunyikan.</translation>
-<translation id="8196787716797768628">Gunakan gestur untuk berpindah-pindah aplikasi dengan cepat dan berinteraksi dengan Chromebook dalam mode tablet.</translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8203795194971602413">Klik kanan</translation>
@@ -1903,7 +1900,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8909138438987180327">Baterai <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asisten Google tidak berbicara dalam bahasa ini.</translation>
-<translation id="8924458948354692166">Tekan Enter untuk mengambil screenshot jendela</translation>
 <translation id="8926951137623668982">Rak selalu disembunyikan</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>

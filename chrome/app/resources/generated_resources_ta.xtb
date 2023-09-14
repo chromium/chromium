@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux சேமிப்பகம்</translation>
 <translation id="1347975661240122359">பேட்டரி <ph name="BATTERY_LEVEL" />%ஐ அடையும் போது, புதுப்பிக்கத் தொடங்கும்.</translation>
 <translation id="1348966090521113558">மவுஸ் அணுகல்தன்மை அமைப்புகள்</translation>
-<translation id="1351089605448164407">உங்கள் Driveவில் இருந்து பெறப்பட்டவை</translation>
 <translation id="1353275871123211385">ஆப்ஸ் அனுமதி, சாதனத்தைப் பயன்படுத்துவதற்கான நேர வரம்புகள் போன்ற பெற்றோர் கட்டுப்பாடுகளைப் பயன்படுத்த, பெற்றோர் நிர்வகிக்கும் ஒரு Google கணக்கு பிள்ளையிடம் இருக்க வேண்டும். Google Classroom போன்ற கருவிகளைப் பயன்படுத்த பள்ளிக் கணக்கைப் பின்னர் சேர்க்கலாம்.</translation>
 <translation id="135389172849514421">ஆஃப்லைனிலும் பயன்படுத்தலாம்</translation>
 <translation id="1353980523955420967">PPDயைக் கண்டறிய முடியவில்லை. உங்கள் Chromebook ஆன்லைனில் இருப்பதை உறுதிசெய்து, மீண்டும் முயலவும்.</translation>
@@ -2204,7 +2203,6 @@
 <translation id="2710101514844343743">'உபயோகம் மற்றும் பிழை கண்டறிதல்' தொடர்பான தரவு</translation>
 <translation id="271033894570825754">புதிது</translation>
 <translation id="2711073837061989559">சோதனைகள்</translation>
-<translation id="2711929077861214979">பாதுகாப்புக் குறிப்புகள்</translation>
 <translation id="2713106313042589954">கேமராவை முடக்கு</translation>
 <translation id="2713444072780614174">வெள்ளை</translation>
 <translation id="2714180132046334502">அடர்த்தியான பின்புலம்</translation>
@@ -2514,7 +2512,6 @@
 <translation id="2939908794993783865">பட்டியலை முழுவதும் காட்டு</translation>
 <translation id="2939938020978911855">கிடைக்கும் புளூடூத் சாதனங்களைக் காட்டு</translation>
 <translation id="2941112035454246133">குறைவு</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">காத்திருக்கிறது...</translation>
 <translation id="2942581856830209953">இந்தப் பக்கத்தைப் பிரத்தியேகமாக்குக</translation>
 <translation id="2942707801577151363">Word, Excel மற்றும் PowerPoint ஃபைல்களைத் திறக்கலாம் திருத்தலாம் சேமிக்கலாம். சில அம்சங்களைப் பயன்படுத்த சந்தா தேவைப்படலாம்.</translation>
@@ -4711,7 +4708,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{தளத்தின் ஒலியை இயக்கு}other{தளங்களின் ஒலியை இயக்கு}}</translation>
 <translation id="474609389162964566">"Ok Google" எனக் கூறி Assistantடை அணுகுங்கள்</translation>
-<translation id="4746351372139058112">மெசேஜ்கள்</translation>
 <translation id="4748783296226936791">வழக்கத்திற்கு மாறான கீபோர்டுகள், கேம் கண்ட்ரோலர்கள் மற்றும் பிற சாதனங்களைப் பயன்படுத்தும் அம்சங்களுக்காக HID சாதனங்களுடன் தளங்கள் வழக்கமாக இணையும்</translation>
 <translation id="4749960740855309258">புதிய தாவலைத் திறக்கும்</translation>
 <translation id="4750185073185658673">மேலும் சில அனுமதிகளை வழங்க உங்கள் மொபைலைப் பார்க்கவும். மொபைலில் புளூடூத், வைஃபை ஆகியவை இயக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
@@ -4778,7 +4774,6 @@
 <translation id="4807122856660838973">பாதுகாப்பு உலாவலை இயக்கு</translation>
 <translation id="4807514039636325497">DBus விவரங்கள்</translation>
 <translation id="4808667324955055115">பாப்-அப்கள் தடுக்கப்பட்டுள்ளன</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome ஆன்லைன் ஸ்டோரில் இருந்து அகற்றப்பட்ட <ph name="BEGIN_BOLD" />ஒரு நீட்டிப்பைச்<ph name="END_BOLD" /> சரிபார்க்கவும்}other{Chrome ஆன்லைன் ஸ்டோரில் இருந்து அகற்றப்பட்ட <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} நீட்டிப்புகளைச்<ph name="END_BOLD" /> சரிபார்க்கவும்}}</translation>
 <translation id="4809079943450490359">உங்கள் சாதன நிர்வாகியின் வழிகாட்டுதல்கள்:</translation>
 <translation id="4809447465126035330">நீக்கு</translation>
 <translation id="480990236307250886">முகப்புப் பக்கத்தைத் திற</translation>
@@ -9849,6 +9844,7 @@
 <translation id="8962083179518285172">விவரங்களை மறை</translation>
 <translation id="8962863356073277855">https://www.example.com என்ற வடிவத்தில் URL இருக்க வேண்டும்</translation>
 <translation id="8962918469425892674">நகர்வு அல்லது ஒளி சென்சார்களை இந்தத் தளம் பயன்படுத்துகிறது.</translation>
+<translation id="8963117664422609631">தள அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="8965037249707889821">பழைய கடவுச்சொல்லை உள்ளிடு</translation>
 <translation id="8966809848145604011">பிற சுயவிவரங்கள்</translation>
 <translation id="8967427617812342790">வாசிப்புப் பட்டியலில் சேர்</translation>
@@ -10227,7 +10223,6 @@
 <translation id="964286338916298286">உங்கள் சாதனத்திற்கான Chrome சலுகைகளை உங்கள் IT நிர்வாகி முடக்கியுள்ளார்.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{இணங்காத பயன்பாடு}other{இணங்காத ஆப்ஸ்}}</translation>
 <translation id="964790508619473209">திரையை ஒழுங்கமைத்தல்</translation>
-<translation id="965211523698323809"><ph name="DEVICE_TYPE" /> சாதனத்திலிருந்து மெசேஜ்களை அனுப்பலாம் / பெறலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast குறித்த சிக்கலைப் புகாரளி</translation>
 <translation id="966588271015727539">புளூடூத் பிரெய்ல் காட்சியைத் தேர்ந்தெடு</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{இந்தச் சுயவிவரத்தை &amp;மூடுக}other{இந்தச் சுயவிவரத்தை &amp;மூடுக (# சாளரங்கள்)}}</translation>

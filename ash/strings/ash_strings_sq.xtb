@@ -1216,7 +1216,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5961960957587052807">I lehtë</translation>
 <translation id="5965524703725988602">Aktivizo/çaktivizo "Temën e errët". <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Lëviz para përmes dritareve</translation>
-<translation id="5976112937189445008">Shtyp "Enter" për të regjistruar një video për dritaren</translation>
 <translation id="5978382165065462689">Po ndan kontrollin e ekranit përmes "Ndihmës në distancë".</translation>
 <translation id="5980301590375426705">Dil si vizitor</translation>
 <translation id="5983567367406220847">Për shkak të mungesës së aktivitetit, zona e qasjes për internet është çaktivizuar.</translation>
@@ -1438,7 +1437,6 @@ Instalim i ri</translation>
 <translation id="6886172995547742638">Pajisja jote <ph name="DEVICE_TYPE" /> mund të ketë një cilësi funksionimi më të ulët. Përdor një përshtatës elektrik të certifikuar të tipit USB-C me fuqi <ph name="PREFERRED_MINIMUM_POWER" /> W ose më shumë.</translation>
 <translation id="688631446150864480">Shtyp tastin "Shigjeta poshtë" për të ndërruar dritaret</translation>
 <translation id="6896758677409633944">Kopjo</translation>
-<translation id="6901883536534621389">Provo gjestet për të naviguar</translation>
 <translation id="6912841030378044227">Fokusohu te shiriti i adresave</translation>
 <translation id="6912901278692845878">Turneu i shpejtë</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
@@ -1744,7 +1742,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8167567890448493835">Po përdor <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Aktivizo/çaktivizo menynë për të ndryshuar përmasat e modalitetit të kyçjes</translation>
 <translation id="8192202700944119416">Njoftimet janë të fshehura.</translation>
-<translation id="8196787716797768628">Përdor gjestet për të kaluar me shpejtësi mes aplikacioneve dhe bashkëvepro me pajisjen tënde Chromebook në modalitetin e tabletit.</translation>
 <translation id="8198456017687137612">Skeda e transmetimit</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8203795194971602413">Klikimi me butonin djathtas</translation>
@@ -1903,7 +1900,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8909138438987180327">Bateria është në <ph name="PERCENTAGE" /> për qind.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">"Asistenti i Google" nuk e flet këtë gjuhë.</translation>
-<translation id="8924458948354692166">Shtyp "Enter" për të nxjerrë pamjen e ekranit për dritaren</translation>
 <translation id="8926951137623668982">Rafti gjithmonë i fshehur</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skedar}other{# skedarë}}</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>

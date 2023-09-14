@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">စတော့များနှင့် ငွေချေးစာချုပ်များ</translation>
 <translation id="1391625539203220400">ဤစက်တွင် IBAN သိမ်းမလား။</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> သည်မည်သည့် ဒေတာမျှ မပို့ခဲ့ပါ။</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ဖြင့် ရှာပါ</translation>
 <translation id="1405567553485452995">အစိမ်းဖျော့</translation>
 <translation id="1406500794671479665">စိစစ်နေ...</translation>
 <translation id="1406812885827747674">ဤတစ်ကြိမ် ခွင့်ပြုရန်</translation>
@@ -2616,6 +2617,7 @@
 <translation id="6432297414176614592">ကြော်ငြာအကြောင်းအရာများ ပိုမိုသိရှိရန်</translation>
 <translation id="6432831586648556868">အရောင်းနှင့် ဈေးကွက်ရှာဖွေရေး အလုပ်</translation>
 <translation id="6433490469411711332">အဆက်အသွယ်အချက်အလက်ကို တည်းဖြတ်ပါ</translation>
+<translation id="6433501201775827830">သင်၏ ရှာဖွေရေး အင်ဂျင်ကို ရွေးပါ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> သည်ချိတ်ဆက်ရန် ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="6433797564277305076">ယခုမှစ၍ စက်လော့ခ်ဖွင့်ခြင်းကို အသုံးပြု၍ သင့်ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုလိုက်ပါ</translation>
 <translation id="643917412048333145">အမျိုးသမီး ဝတ်စုံ</translation>
@@ -3974,6 +3976,7 @@
 <translation id="9207861905230894330">ဆောင်းပါး ပေါင်းထည့်ခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="9213433120051936369">အသွင်အပြင် စိတ်ကြိုက်ပြုလုပ်ခြင်း</translation>
 <translation id="9215416866750762878">ဤဝဘ်ဆိုက်သို့ လုံခြုံစွာချိတ်ဆက်မှု မပြုလုပ်နိုင်ရန် အပလီကေးရှင်းတစ်ခုက Chrome ကို တားဆီးထားပါသည်</translation>
+<translation id="9218430445555521422">ပုံသေ အဖြစ် သတ်မှတ်ရန</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="9222403027701923763">မူလတန်းနှင့် အလယ်တန်းကျောင်းထားခြင်း (K-12)</translation>

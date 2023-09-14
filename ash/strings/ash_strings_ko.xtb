@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">밝게</translation>
 <translation id="5965524703725988602">어두운 테마를 전환합니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">여러 창 사이에서 앞으로 이동하기</translation>
-<translation id="5976112937189445008">창을 녹화하려면 Enter를 누르세요</translation>
 <translation id="5978382165065462689">원격 지원을 통해 화면 제어 공유</translation>
 <translation id="5980301590375426705">게스트 세션 종료</translation>
 <translation id="5983567367406220847">활동이 없어 핫스팟이 사용 중지되었습니다.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
 <translation id="688631446150864480">창을 전환하려면 아래쪽 화살표 키를 누르세요.</translation>
 <translation id="6896758677409633944">복사</translation>
-<translation id="6901883536534621389">동작으로 이동해 보기</translation>
 <translation id="6912841030378044227">주소 표시줄로 포커스 이동</translation>
 <translation id="6912901278692845878">빠르게 둘러보기</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
 <translation id="8185090165691050712">잠금 모드의 크기를 조절할 수 있는 메뉴 사용 설정/사용 중지</translation>
 <translation id="8192202700944119416">알림이 숨겨져 있음</translation>
-<translation id="8196787716797768628">태블릿 모드에서 동작을 사용하여 앱 간에 빠르게 전환하고 Chromebook과 상호작용하세요.</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8203795194971602413">오른쪽 클릭</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">남은 배터리는 <ph name="PERCENTAGE" />%입니다.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 어시스턴트가 이 언어를 지원하지 않음</translation>
-<translation id="8924458948354692166">창 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="8926951137623668982">앱 표시줄 항상 숨김</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="8936501819958976551">비활성화됨</translation>

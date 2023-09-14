@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">Avaa uuden incognito-välilehden Chromiumissa.</translation>
 <translation id="3805899903892079518">Chromium ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
 <translation id="3827545470516145620">Tällä laitteella on perustason suojaus</translation>
+<translation id="3833326979834193417">Chromium tekee turvatarkistuksen automaattisesti joka päivä suojatakseen sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Asetuksista löytyy lisätietoa turvatarkistuksesta.</translation>
 <translation id="3886689467633467988">Kirjaudu tälle sivustolle ja Chromiumiin, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
 <translation id="394413318816989199">Tunnuslauseella ei salata maksutapoja ja osoitteita.
 
@@ -84,6 +85,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4555020257205549924">Kun tämä ominaisuus on käytössä, Chromium tarjoaa vierailla kielillä kirjoitettujen sivujen käännöksiä Google Kääntäjän kautta. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Avaa maksutapojen asetussivun Chromiumissa.</translation>
 <translation id="4585809515399340748">Voit nyt käyttää Chromiumia aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
+<translation id="459080529287102949">Visuaalinen haku Chromiumissa</translation>
 <translation id="4633738821577273991">Lisää Parannettu selaussuoja myös tälle Chromium-profiilille</translation>
 <translation id="4654936625574199632">Chromium lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ota käyttöön Chromium-lukija</translation>
@@ -94,6 +96,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4996471330284142407">Helppokäyttöisellä, turvallisella ja entistäkin nopeammalla Chromiumilla saat enemmän aikaan.</translation>
 <translation id="4999538639245140991">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chromium-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
 <translation id="5042011327527167688">Valitse "Katso Google Mapsin avulla Chromiumissa".</translation>
+<translation id="5044871537677053278">Chromium tunnistaa osoitteet ja tarjoaa Google Mapsin avulla reittiohjeita ja paikallisia tietoja.</translation>
 <translation id="5048795749726991615">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromiumia automaattiseen täyttöön</translation>
 <translation id="5131565040785979529">Organisaatiosi (<ph name="DOMAIN" />) ylläpitää tiliä, jolla olet kirjautuneena sisään ja sitä, miten Chromiumia käytetään.</translation>
 <translation id="5171868502429358653">Kirjaudu Chromiumiin</translation>
@@ -152,6 +155,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7045244423563602563">Tee Chromiumista näköisesi</translation>
 <translation id="7055269218854630176">Organisaatiosi (<ph name="DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromiumin käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
 <translation id="7099326575020694068">Chromium ei voi käyttää kameraa jaetussa näkymässä.</translation>
+<translation id="7163483974919055112">Hae visuaalisesti Chromiumista.</translation>
 <translation id="7165402419892018581">Chromiumin valinta automaattiseen täyttöön</translation>
 <translation id="7175400662502680481">Salasanasi vaarantui tietosuojaloukkauksessa. Salasanojen ylläpito suosittelee, että vaihdat sen heti.</translation>
 <translation id="7192111075364461693">Chromiumin ilmoitukset ovat tällä hetkellä poissa päältä laiteasetuksissa.</translation>

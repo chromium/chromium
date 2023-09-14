@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">ଲାଇଟ</translation>
 <translation id="5965524703725988602">ଡାର୍କ ଥିମ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="5975235751479998104">ୱିଣ୍ଡୋଗୁଡ଼ିକ ମାଧ୍ୟମରେ ଆଗକୁ ଯାଆନ୍ତୁ</translation>
-<translation id="5976112937189445008">ୱିଣ୍ଡୋକୁ ରେକର୍ଡ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="5978382165065462689">ରିମୋଟ୍‍ ସହାୟତା ମାଧ୍ୟମରେ ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ର ନିୟନ୍ତ୍ରଣ ସେୟାର୍‌ ହେଉଛି।</translation>
 <translation id="5980301590375426705">ଅତିଥିରୁ ବାହାରି ଯାଅ</translation>
 <translation id="5983567367406220847">ନିଷ୍କ୍ରିୟତା ଯୋଗୁଁ ହଟସ୍ପଟକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
@@ -1437,7 +1436,6 @@
 <translation id="6886172995547742638">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ର କାର୍ଯ୍ୟଦକ୍ଷତା କମ୍ ହୋଇପାରେ। ଏକ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ <ph name="PREFERRED_MINIMUM_POWER" />W କିମ୍ବା ଉଚ୍ଚତର USB-C ପାୱାର ଆଡପ୍ଟର୍ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="688631446150864480">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଡାଉନ୍ ତୀର କୀ'କୁ ଦବାନ୍ତୁ</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>
-<translation id="6901883536534621389">ନାଭିଗେଟ କରିବାକୁ ଜେଶ୍ଚର ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6912841030378044227">ଠିକଣା ବାରରେ ଫୋକସ କରନ୍ତୁ</translation>
 <translation id="6912901278692845878">କୁଇକ ଟୁର</translation>
 <translation id="6919251195245069855">ଆପଣଙ୍କର ସ୍ମାର୍ଟ କାର୍ଡକୁ ଚିହ୍ନଟ କରିପାରୁ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -1743,7 +1741,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />କୁ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="8185090165691050712">ଲକ ମୋଡକୁ ରିସାଇଜ କରିବା ପାଇଁ ମେନୁକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8192202700944119416">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁଚାଯାଇଛି।</translation>
-<translation id="8196787716797768628">ଆପଗୁଡ଼ିକ ମଧ୍ୟରେ ଦ୍ରୁତ ଭାବରେ ସ୍ୱିଚ୍ କରିବାକୁ ଏବଂ ଟାବଲେଟ୍ ମୋଡରେ ଆପଣଙ୍କ Chromebook ସହିତ ଇଣ୍ଟରାକ୍ଟ କରିବାକୁ ଜେଶ୍ଚରଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8203795194971602413">ଡାହାଣ କ୍ଲିକ୍</translation>
@@ -1902,7 +1899,6 @@
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> ଶତକଡା ବ୍ୟାଟେରୀ ଅଛି।</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ଆସିଷ୍ଟାଣ୍ଟ ଏହି ଭାଷା କହେ ନାହିଁ।</translation>
-<translation id="8924458948354692166">ୱିଣ୍ଡୋ ସ୍କ୍ରିନସଟ କ୍ୟାପଚର କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="8926951137623668982">ସେଲ୍ଫ ସର୍ବଦା ଲୁଚାଇ ରଖାଯାଇଛି</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1ଟି ଫାଇଲ}other{#ଟି ଫାଇଲ}}</translation>
 <translation id="8936501819958976551">ନିଷ୍କ୍ରିୟ କରାଯାଇଛି</translation>

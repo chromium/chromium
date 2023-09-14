@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">A Chromium nem tudta ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="3478750326643748149">A „Hozza ki a legtöbbet a Chromiumból” kártya elrejtése</translation>
+<translation id="3554027294407525061">A Chromiumban lévő böngészési adatok törlése.</translation>
 <translation id="3567399274263440288">Annak érdekében, hogy a legtöbbet hozhassa ki a Chromiumból, jelentkezzen be Google-fiókjával a Chromiumba.</translation>
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> felhasználó használta Chromiumot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
@@ -85,6 +86,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Megnyitja a Fizetési módok beállítási oldalát a Chromiumban.</translation>
 <translation id="4585809515399340748">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
+<translation id="459080529287102949">Képi elemek keresése a Chromiumban</translation>
 <translation id="4633738821577273991">A Biztonságos Böngészés fokozott védelemmel funkciót kapja ehhez a Chromium-profilhoz is</translation>
 <translation id="4654936625574199632">Az alkalmazás továbbfejlesztése érdekében a Chromium elküldi a használati és az összeomlási adatokat a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
 <translation id="4681781466797808448">Kapcsolja be a Chromium szkennerét</translation>
@@ -97,6 +99,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="5042011327527167688">Koppintson a „Megtekintés a Google Térképpel a Chromiumban” lehetőségre.</translation>
 <translation id="5044871537677053278">A Chromium észleli a címeket, és a Google Térkép használatával útvonalterveket és helyi információkat jelenít meg.</translation>
 <translation id="5048795749726991615">Használja a Chromium Automatikus kitöltés funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz a többi alkalmazásában is</translation>
+<translation id="5076601183701536878">A Chromiumban lévő böngészési adatok törlése</translation>
 <translation id="5131565040785979529">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chromium használatának módját is.</translation>
 <translation id="5171868502429358653">Bejelentkezés a Chromiumba</translation>
 <translation id="5213683223491576284">Megnyitja a Jelszókezelőt a Chromiumban.</translation>
@@ -154,6 +157,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="7045244423563602563">Tegye személyessé a Chromiumot</translation>
 <translation id="7055269218854630176">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chromiumot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>
 <translation id="7099326575020694068">A Chromium Osztott nézet módban nem tudja használni a kamerát</translation>
+<translation id="7163483974919055112">Képi elemek keresésének lehetősége a Chromiumban.</translation>
 <translation id="7165402419892018581">A Chromium kiválasztása az automatikus kitöltéshez</translation>
 <translation id="7175400662502680481">Jelszava adatvédelmi incidens során nyilvánosságra került. A Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="7192111075364461693">A Chromium-értesítések jelenleg ki vannak kapcsolva az eszköz beállításaiban.</translation>

@@ -274,6 +274,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2556092377360758201">Tiada Perlindungan (tidak disyorkan)</translation>
 <translation id="2562041823070056534">Menghantar kepada <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Gunakan dan Simpan Kata Laluan dalam Google Account Anda</translation>
+<translation id="2577522251608256362">Kawasan kejiranan</translation>
 <translation id="2578571896248130439">Hantar Halaman Web</translation>
 <translation id="2584132361465095047">Tambahkan Akaun...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Tiada Kata Laluan yang Terjejas}=1{{count} Kata Laluan yang Terjejas}other{{count} Kata Laluan yang Terjejas}}</translation>
@@ -312,6 +313,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2738375676495545665">Sembunyikan Perkara Baharu</translation>
 <translation id="2747003861858887689">Medan sebelumnya</translation>
 <translation id="2749231692441336879">Mengikuti <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Akaun pada Peranti ini</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
 <translation id="2772667768515195373">Anda boleh menggunakan alamat yang disimpan merentas produk Google. Alamat ini disimpan dalam Google Account anda, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Carian Inkognito</translation>
@@ -1090,7 +1092,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6944369514868857500">Pilih Akaun Lain</translation>
 <translation id="6944935964236827145">Sembunyikan Terjemahkan</translation>
 <translation id="6945221475159498467">Pilih</translation>
-<translation id="6955779377310719430">Sembunyikan Ikut</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Folder</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1229,6 +1230,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="778855399387580014">Mulakan carian dalam tab Chrome baharu.</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
+<translation id="78146569776629510">Muat turun</translation>
 <translation id="7839985698273989086">Halaman Luar Talian</translation>
 <translation id="7840771868269352570">Item yang anda pilih akan dialih keluar.</translation>
 <translation id="7845466610722898">Paparkan Senarai Bacaan</translation>

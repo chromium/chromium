@@ -1217,7 +1217,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5961960957587052807">Enyhe</translation>
 <translation id="5965524703725988602">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Váltás előre az ablakokon keresztül</translation>
-<translation id="5976112937189445008">Nyomja le az Entert az ablak tartalmának rögzítéséhez</translation>
 <translation id="5978382165065462689">A képernyő irányításának megosztása a Távsegítség szolgáltatás keretein belül.</translation>
 <translation id="5980301590375426705">Kilépés vendégként</translation>
 <translation id="5983567367406220847">Tétlenség miatt a hotspot ki lett kapcsolva.</translation>
@@ -1439,7 +1438,6 @@ Frissen telepítve</translation>
 <translation id="6886172995547742638">A(z) <ph name="DEVICE_TYPE" /> eszközön a teljesítmény csökkenése észlelhető. Használjon tanúsítvánnyal rendelkező, <ph name="PREFERRED_MINIMUM_POWER" /> W-os vagy nagyobb teljesítményű USB-C tápcsatlakozót.</translation>
 <translation id="688631446150864480">Ablakváltáshoz nyomja le a lefelé mutató nyilat</translation>
 <translation id="6896758677409633944">Másolás</translation>
-<translation id="6901883536534621389">Kézmozdulatok kipróbálása a navigáláshoz</translation>
 <translation id="6912841030378044227">Fókuszálás a címsávra</translation>
 <translation id="6912901278692845878">Gyors bemutató</translation>
 <translation id="6919251195245069855">A rendszer nem ismerte fel az intelligens kártyáját. Próbálja újra.</translation>
@@ -1745,7 +1743,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> nyelv használata</translation>
 <translation id="8185090165691050712">A zárolt üzemmód átméretezésére szolgáló menü be- vagy kikapcsolása</translation>
 <translation id="8192202700944119416">Az értesítések el vannak rejtve.</translation>
-<translation id="8196787716797768628">Kézmozdulatokkal gyorsan válthat az alkalmazások között, és táblagép módban is használhatja Chromebookját.</translation>
 <translation id="8198456017687137612">Lap átküldése…</translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8203795194971602413">Kattintás jobb egérgombbal</translation>
@@ -1854,6 +1851,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8703634754197148428">Indítsa el a rögzítést. A rögzítés elindítása után nyissa meg az Alt+Shift+L billentyűkombináció segítségével a polcot, és keresse meg a felvétel leállítása gombot.</translation>
 <translation id="8704155109538237473">Fókuszálás a kép a képben ablakra</translation>
 <translation id="870917907284186124">Diktálás be- vagy kikapcsolása (írás beszédhanggal)</translation>
+<translation id="8714138378966541668">Szolgáltató által zárolva</translation>
 <translation id="8717459106217102612">Az előző szó vagy betű kijelölése</translation>
 <translation id="8721053961083920564">Hang ki-, illetve bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Felvétel készítése a teljes képernyőről</translation>
@@ -1904,7 +1902,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8909138438987180327">Az akkumulátor töltöttsége <ph name="PERCENTAGE" /> százalék.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">A Google Segéd nem beszél ezen a nyelven.</translation>
-<translation id="8924458948354692166">Nyomja le az Entert, ha az ablak tartalmáról szeretne képernyőképet készíteni</translation>
 <translation id="8926951137623668982">A polc mindig rejtve lesz</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fájl}other{# fájl}}</translation>
 <translation id="8936501819958976551">deaktiválva</translation>

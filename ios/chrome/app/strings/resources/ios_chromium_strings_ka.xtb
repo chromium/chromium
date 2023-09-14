@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium-მა ვერ შეამოწმა თქვენი პაროლები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="3472200483164753384">მხარდაუჭერელია Chromium Canary-ში</translation>
 <translation id="3478750326643748149">„Chromium-ის შესაძლებლობების მაქსიმალურად გამოყენების“ დამალვა</translation>
+<translation id="3554027294407525061">დათვალიერების მონაცემების გასუფთავება Chromium-ში.</translation>
 <translation id="3567399274263440288">Chromium-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით Chromium-ში თქვენი Google ანგარიშით.</translation>
 <translation id="3639997914391704523">პაროლების Chromium-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> იყენებდა Chromium-ს და ამ მოწყობილობაზე დატოვა სანიშნეები, პაროლები და სხვა პარამეტრები.</translation>
@@ -96,7 +97,9 @@
 <translation id="4996471330284142407">გამარტივებული, დაცული და დაჩქარებული Chromium-ის მეშვეობით კიდევ უფრო მეტს შეძლებთ.</translation>
 <translation id="4999538639245140991">ვინაიდან თქვენ გადიხართ ანგარიშიდან, რომელსაც მართავს <ph name="SIGNOUT_MANAGED_DOMAIN" />, ამ მოწყობილობიდან წაიშლება თქვენი Chromium მონაცემები, თუმცა ისინი შენარჩუნდება თქვენს Google ანგარიშში.</translation>
 <translation id="5042011327527167688">შეხებით აირჩიეთ „Google Maps-ით ნახვა Chromium-ში“.</translation>
+<translation id="5044871537677053278">Chromium აღმოაჩენს მისამართებს და იყენებს Google Maps-ს, რომ შემოგთავაზოთ მიმართულებები და ადგილობრივი ინფორმაცია.</translation>
 <translation id="5048795749726991615">თქვენი შენახული პაროლებით თქვენს სხვა აპებში მარტივად რომ ისარგებლოთ, გამოიყენეთ Chromium ავტომატური შევსებისთვის</translation>
+<translation id="5076601183701536878">დათვალიერების მონაცემების გასუფთავება Chromium-ში</translation>
 <translation id="5131565040785979529">თქვენი ორგანიზაცია, <ph name="DOMAIN" />, მართავს როგორც ანგარიშს, რომელშიც შესული ხართ, ისე Chromium-ის გამოყენების პროცესს.</translation>
 <translation id="5171868502429358653">შედით Chromium-ში</translation>
 <translation id="5213683223491576284">გახსნის პაროლების მმართველს Chromium-ში.</translation>

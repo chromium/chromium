@@ -212,6 +212,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1391289752476847787">Mga stock at bond</translation>
 <translation id="1391625539203220400">I-save ang IBAN sa device na ito?</translation>
 <translation id="139305205187523129">Hindi nagpadala ng anumang data ang <ph name="HOST_NAME" />.</translation>
+<translation id="1397811292916898096">Maghanap gamit ang <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Light Green</translation>
 <translation id="1406500794671479665">Bine-verify...</translation>
 <translation id="1406812885827747674">Payagan sa ngayon</translation>
@@ -2613,6 +2614,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6432297414176614592">Higit pa tungkol sa mga paksa ng ad</translation>
 <translation id="6432831586648556868">Mga Trabaho sa Pagbebenta at Marketing</translation>
 <translation id="6433490469411711332">I-edit ang impormasyon sa pakikipag-ugnayan</translation>
+<translation id="6433501201775827830">Pumili ng iyong search engine</translation>
 <translation id="6433595998831338502">Tumangging kumonekta ang <ph name="HOST_NAME" />.</translation>
 <translation id="6433797564277305076">Kumpirmahin nang mas mabilis ang iyong mga card sa pamamagitan ng paggamit sa pag-unlock ng device mula ngayon</translation>
 <translation id="643917412048333145">Mga Bestida</translation>
@@ -3969,6 +3971,7 @@ Mga karagdagang detalye:
 <translation id="9207861905230894330">Hindi naidagdag ang artikulo.</translation>
 <translation id="9213433120051936369">I-customize ang hitsura</translation>
 <translation id="9215416866750762878">Pinipigilan ng isang application na makakonekta nang ligtas ang Chrome sa site na ito</translation>
+<translation id="9218430445555521422">Itakda bilang default</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="922152298093051471">I-customize ang Chrome</translation>
 <translation id="9222403027701923763">Primarya at Sekondaryang Pag-aaral (K-12)</translation>

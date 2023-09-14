@@ -1216,7 +1216,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5961960957587052807">Lleuger</translation>
 <translation id="5965524703725988602">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Avança per les finestres</translation>
-<translation id="5976112937189445008">Prem Retorn per gravar la finestra</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
 <translation id="5983567367406220847">A causa de la inactivitat, el punt d'accés Wi‐Fi s'ha desactivat.</translation>
@@ -1438,7 +1437,6 @@ Instal·lació nova</translation>
 <translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
 <translation id="688631446150864480">Prem la tecla de fletxa avall per canviar de finestra</translation>
 <translation id="6896758677409633944">Copia</translation>
-<translation id="6901883536534621389">Prova els gestos per navegar</translation>
 <translation id="6912841030378044227">Posa el focus a la barra d'adreces</translation>
 <translation id="6912901278692845878">Visita guiada ràpida</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
@@ -1741,7 +1739,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8167567890448493835">S'està utilitzant <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Activa/Desactiva el menú per canviar la mida del mode de bloqueig</translation>
 <translation id="8192202700944119416">S'han amagat les notificacions.</translation>
-<translation id="8196787716797768628">Utilitza gestos per canviar ràpidament entre aplicacions i interaccionar amb el teu Chromebook en mode de tauleta.</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8203795194971602413">Fes clic amb el botó dret</translation>
@@ -1900,7 +1897,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistent de Google no parla aquest idioma.</translation>
-<translation id="8924458948354692166">Prem Retorn per fer una captura de pantalla de la finestra</translation>
 <translation id="8926951137623668982">El prestatge està sempre amagat</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="8936501819958976551">desactivada</translation>

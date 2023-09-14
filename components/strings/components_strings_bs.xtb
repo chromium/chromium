@@ -212,6 +212,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1391289752476847787">Dionice i obveznice</translation>
 <translation id="1391625539203220400">Sačuvati IBAN na ovaj uređaj?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
+<translation id="1397811292916898096">Pretražite pomoću proizvoda <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Svijetlozelena</translation>
 <translation id="1406500794671479665">Potvrđivanje...</translation>
 <translation id="1406812885827747674">Dozvoli ovaj put</translation>
@@ -2616,6 +2617,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6432297414176614592">Više o temama oglasa</translation>
 <translation id="6432831586648556868">Poslovi u prodaji i marketingu</translation>
 <translation id="6433490469411711332">Uredite kontakt podatke</translation>
+<translation id="6433501201775827830">Odaberite pretraživač</translation>
 <translation id="6433595998831338502">Host računar <ph name="HOST_NAME" /> je odbio povezivanje.</translation>
 <translation id="6433797564277305076">Potvrdite kartice brže koristeći otključavanja uređaja od sada</translation>
 <translation id="643917412048333145">Haljine</translation>
@@ -3972,6 +3974,7 @@ Dodatni detalji:
 <translation id="9207861905230894330">Dodavanje članka nije uspjelo.</translation>
 <translation id="9213433120051936369">Prilagodite izgled</translation>
 <translation id="9215416866750762878">Jedna aplikacija sprečava sigurno povezivanje Chromea na ovu web lokaciju</translation>
+<translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
 <translation id="9222403027701923763">Osnovno i srednje obrazovanje (K-12)</translation>

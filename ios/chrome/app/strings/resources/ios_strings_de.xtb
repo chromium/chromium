@@ -4,6 +4,7 @@
 <translation id="1005230401424685968">JJJJ</translation>
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
+<translation id="1025514696883950875">{COUNT,plural, =1{Passwort im Konto speichern}other{Passwörter im Konto speichern}}</translation>
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1044891598689252897">Websites funktionieren normal</translation>
@@ -72,6 +73,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="132683371494960526">Tippe hier doppelt, um den übergeordneten Ordner zu ändern.</translation>
 <translation id="1332723353863236763">Einige Daten wurden noch nicht gespeichert</translation>
 <translation id="1335348992705722518">Einstellungen verwalten…</translation>
+<translation id="1338381578078138897">{COUNT,plural, =1{{COUNT} Passwort in deinem Google-Konto speichern}other{{COUNT} Passwörter in deinem Google-Konto speichern}}</translation>
 <translation id="1340643665687018190">Menü schließen</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Kopierten Link aufrufen</translation>
@@ -270,6 +272,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2556092377360758201">Kein Schutz (nicht empfohlen)</translation>
 <translation id="2562041823070056534">Wird an <ph name="DEVICE_NAME" /> gesendet…</translation>
 <translation id="2576499762020411840">Passwort im Google-Konto speichern &amp; nutzen</translation>
+<translation id="2577522251608256362">Stadtteil</translation>
 <translation id="2578571896248130439">Webseite senden</translation>
 <translation id="2584132361465095047">Konto hinzufügen...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Keine gehackten Passwörter}=1{{count} gehacktes Passwort}other{{count} gehackte Passwörter}}</translation>
@@ -318,6 +321,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">Der Link kann nicht erstellt werden</translation>
 <translation id="2786701870377699570">In Tabs auf synchro­nisierten Geräten suchen</translation>
+<translation id="2789552044937754463">{COUNT,plural, =1{Passwort in deinem Google-Konto ({EMAIL}) gespeichert}other{Passwörter in deinem Google-Konto ({EMAIL}) gespeichert}}</translation>
 <translation id="2797029671965852011">Verlauf anzeigen</translation>
 <translation id="2800683595868705743">Tab-Wechsler beenden</translation>
 <translation id="2815198996063984598">2. Tippe auf „Standard-Browser-App“</translation>
@@ -658,6 +662,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, nur auf diesem Gerät, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
 <translation id="4766112107778026136">Discover &amp; Mitlesen</translation>
+<translation id="47677902929517676">Um Passwörter in deinem Konto zu speichern, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4778644898150334464">Anderes Passwort verwenden</translation>
 <translation id="478808905805139173">Im Inkognitomodus öffnen?</translation>
@@ -688,6 +693,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="488785315393301722">Details ansehen</translation>
 <translation id="4894963374040315706">Dadurch kannst du per Spracheingabe suchen</translation>
+<translation id="489903206070130262">Zuletzt geöffneter Tab</translation>
 <translation id="4901778704868714008">Wird gespeichert...</translation>
 <translation id="4904877109095351937">Als gelesen markieren</translation>
 <translation id="4908869848243824489">Discover von Google</translation>
@@ -1079,7 +1085,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6944369514868857500">Anderes Konto auswählen</translation>
 <translation id="6944935964236827145">„Übersetzen“ ausblenden</translation>
 <translation id="6945221475159498467">Auswählen</translation>
-<translation id="6955779377310719430">„Folgen“ ausblenden</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6973630695168034713">Ordner</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1133,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7265758999917665941">Für diese Website niemals</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
 <translation id="7291368939935408496">Passwörter werden zum Exportieren vorbereitet…</translation>
+<translation id="7302503784943202842">Passwörter auf allen deinen Geräten verwenden</translation>
 <translation id="730958329302570991">Du kannst Google Passwortmanager jederzeit problemlos Passwörter für Websites hinzufügen.</translation>
 <translation id="7313347584264171202">Hier werden deine Inkognitotabs angezeigt</translation>
 <translation id="7331371412779932885">Du erhältst Vorschläge für Tabs, die auf den Browseraktivitäten auf anderen Geräten in deinem Google-Konto basieren. Deine Geräte müssen dazu im gleichen Google-Konto angemeldet und synchronisiert sein.</translation>
@@ -1484,6 +1490,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="953008885340860025">Von Chrome abgemeldet</translation>
 <translation id="959066944189734975">Du folgst <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Vorgeschlagene Tabs von anderen Geräten anzeigen</translation>
+<translation id="972300586996227526">{COUNT,plural, =1{Du kannst dein Passwort für {DOMAIN_ONE} in deinem Google-Konto ({EMAIL}) speichern}=2{Du kannst deine Passwörter für {DOMAIN_ONE} und {DOMAIN_TWO} in deinem Google-Konto ({EMAIL}) speichern}=3{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domain in deinem Google-Konto {EMAIL} speichern}other{Du kannst deine Passwörter für {DOMAIN_ONE}, {DOMAIN_TWO} und {OTHER_DOMAINS_COUNT} weitere Domains in deinem Google-Konto ({EMAIL}) speichern}}</translation>
 <translation id="97300214378190234">Du kannst Chrome jederzeit nutzen, wenn du in anderen Apps auf Links tippst.</translation>
 <translation id="973493300226275298">Du kannst den Preis eines Produkts in Onlineshops beobachten. Du wirst benachrichtigt, wenn der Preis sinkt.</translation>
 <translation id="981498610235328462">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet.</translation>

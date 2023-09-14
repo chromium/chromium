@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> मा पठाउँदै...</translation>
 <translation id="2576499762020411840">मेरो Google खातामा पासवर्डहरू सेभ गरिऊन् र ती पासवर्डहरू प्रयोग गरिऊन्</translation>
+<translation id="2577522251608256362">छिमेक</translation>
 <translation id="2578571896248130439">वेबपृष्ठ पठाउनुहोस्</translation>
 <translation id="2584132361465095047">खाता थप्नुहोस्...</translation>
 <translation id="2587010742985678408">{count,plural, =0{कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन}=1{{count} वटा पासवर्ड ह्याक वा चोरी भएको छ}other{{count} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
@@ -312,6 +313,7 @@
 <translation id="2738375676495545665">"नयाँ के छ" लुकाइयोस्</translation>
 <translation id="2747003861858887689">अघिल्लो क्षेत्र</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> फलो गरिँदै छ</translation>
+<translation id="2754492786623500387">यो डिभाइसमा लिंक गरिएका खाताहरू</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2772667768515195373">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="USER_EMAIL" />) मा सेभ गरिन्छ।</translation>
 <translation id="2773292004659987824">इन्कोग्निटो खोज</translation>
@@ -1090,7 +1092,6 @@
 <translation id="6944369514868857500">अर्को खाता छनौट गर्नुहोस्‌</translation>
 <translation id="6944935964236827145">अनुवाद लुकाइयोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
-<translation id="6955779377310719430">"फलो गर्नुहोस्" लुकाइयोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6973630695168034713">फोल्डरहरू</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
@@ -1229,6 +1230,7 @@
 <translation id="778855399387580014">Chrome को नयाँ ट्याबमा खोज सुरु गर्नुहोस्।</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7807060072011926525">Google ले प्रदान गरेको</translation>
+<translation id="78146569776629510">डाउनलोड गरिएका सामग्रीहरू</translation>
 <translation id="7839985698273989086">अफलाइन पृष्ठ</translation>
 <translation id="7840771868269352570">तपाईंले चयन गर्नुभएका वस्तुहरू हटाइने छन्।</translation>
 <translation id="7845466610722898">पछि पढ्न सेभ गरिएका वेबपेजको सूची देखाइयोस्</translation>

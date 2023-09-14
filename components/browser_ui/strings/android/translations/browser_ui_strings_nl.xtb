@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2678468611080193228">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder bescherming hebt, maar dat sitefuncties waarschijnlijk wel werken.</translation>
+<translation id="2683434792633810741">Verwijderen en resetten?</translation>
 <translation id="2687403674020088961">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2717722538473713889">E-mailadressen</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Cookies voor een specifieke site toestaan.</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="4053720452172726777">Google Chrome aanpassen en beheren</translation>
+<translation id="4149890623864272035">Weet je zeker dat je alle lokale gegevens (waaronder cookies) wilt verwijderen en alle rechten voor deze website wilt resetten?</translation>
 <translation id="4149994727733219643">Vereenvoudigde weergave voor webpagina's</translation>
 <translation id="4151930093518524179">Standaardzoom</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Cookies van derden toestaan</translation>
 <translation id="4428065317363009941">Advertentiepersonalisatie</translation>
 <translation id="4434045419905280838">Pop-ups en omleidingen</translation>
+<translation id="443552056913301231">Met deze actie worden alle lokale gegevens (waaronder cookies) verwijderd en worden alle rechten voor <ph name="ORIGIN" /> gereset</translation>
 <translation id="4468959413250150279">Geluid uitzetten voor een specifieke site.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Maak het makkelijker om op verschillende sites in te zoomen</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
+<translation id="4644713492825682049">Verwijderen en resetten</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Laatst bezocht: vandaag</translation>
 <translation id="5225463052809312700">Camera aanzetten</translation>
 <translation id="5234764350956374838">Sluiten</translation>
+<translation id="5246825184569358663">Met deze actie worden alle lokale gegevens (waaronder cookies) verwijderd en worden alle rechten voor <ph name="DOMAIN" /> en alle onderliggende sites gereset</translation>
 <translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' verwijderen</translation>
 <translation id="528192093759286357">Sleep vanaf de bovenkant en tik op de knop Terug om het volledige scherm te sluiten.</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Uitzonderingen</translation>
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
+<translation id="6207207788774442484">Gegevens verwijderen en rechten resetten</translation>
 <translation id="6216432067784365534">Opties voor <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" /> verwijderen?</translation>
 <translation id="6262191102408817757">Op basis van je laatste tabblad</translation>

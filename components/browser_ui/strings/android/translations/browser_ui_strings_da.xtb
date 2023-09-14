@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Send</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2678468611080193228">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre beskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer</translation>
+<translation id="2683434792633810741">Vil du slette og gendanne?</translation>
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Tillad cookies for et bestemt website.</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="4053720452172726777">Tilpas Google Chrome</translation>
+<translation id="4149890623864272035">Er du sikker på, at du vil slette alle lokale data, herunder cookies, og nulstille alle tilladelser for dette website?</translation>
 <translation id="4149994727733219643">Enkel visning af websider</translation>
 <translation id="4151930093518524179">Standardzoom</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
 <translation id="4428065317363009941">Personlig tilpasning af annoncer</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
+<translation id="443552056913301231">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Gør det nemmere at tilpasse zoom på forskellige websites</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
 <translation id="4570913071927164677">Info</translation>
 <translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at personligt tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
+<translation id="4644713492825682049">Slet og gendan</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Bevægelses- eller lyssensorer</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Senest besøgt i dag</translation>
 <translation id="5225463052809312700">Slå kamera til</translation>
 <translation id="5234764350956374838">Luk</translation>
+<translation id="5246825184569358663">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="DOMAIN" /> samt alle websites under domænet</translation>
 <translation id="5264323282659631142">Fjern "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Træk fra toppen, og tryk på tilbageknappen igen for at afslutte fuld skærm.</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Undtagelser</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6205314730813004066">Privatliv ved annoncering</translation>
+<translation id="6207207788774442484">Slet data, og nulstil tilladelser</translation>
 <translation id="6216432067784365534">Valgmuligheder for <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vil du afinstallere "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">Baseret på din seneste fane</translation>

@@ -212,6 +212,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1391289752476847787">Hisa na dhamana</translation>
 <translation id="1391625539203220400">Ungependa kuhifadhi IBAN kwenye kifaa hiki?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> haikutuma data yoyote.</translation>
+<translation id="1397811292916898096">Tafuta kwa <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Kijani Isiyokolea</translation>
 <translation id="1406500794671479665">Inathibitisha...</translation>
 <translation id="1406812885827747674">Ruhusu wakati huu</translation>
@@ -539,6 +540,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2071692954027939183">Arifa zimezuiwa kiotomatiki kwa sababu kwa kawaida huziruhusu</translation>
 <translation id="2071852865256799872">Kivinjari chako kinadhibitiwa na shirika lako na wasifu wako unadhibitiwa na <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Mitindo na ubunifu</translation>
+<translation id="2075497153347571252">Msimamizi wako amezuia <ph name="PERMISSION" /> kwenye <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="20817612488360358">Mipangilio ya mfumo ya proksi imewekwa ili kutumiwa lakini usanidi dhahiri wa proksi pia umebainishwa.</translation>
 <translation id="2082238445998314030">Tokeo <ph name="RESULT_NUMBER" /> kati ya <ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1881,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4885256590493466218">Tumia <ph name="CARD_DETAIL" /> wakati wa kulipa</translation>
 <translation id="4887406273302438710">Linda manenosiri ukitumia Windows Hello</translation>
 <translation id="4888600795924685526">Mafunzo ya lugha za kigeni</translation>
+<translation id="4890070067176768718">Msimamizi wako ameruhusu <ph name="PERMISSION" /> kwenye <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Nyuma</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiki</translation>
@@ -2325,6 +2328,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5830698870816298009">utumiaji na usogezaji wa kamera</translation>
 <translation id="583281660410589416">Haijulikani</translation>
 <translation id="5838278095973806738">Hupaswi kuweka maelezo nyeti kwenye tovuti hii (kwa mfano, manenosiri au kadi za mikopo), kwa sababu wavamizi wanaweza kuyaiba.</translation>
+<translation id="5838732667866024867">Unaweza kutumia kishale cha kushoto au kulia ili kukagua mabadiliko ya bei kwenye grafu</translation>
 <translation id="5840318881868981258">Katika Akaunti yako ya Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Je, ungependa kuhifadhi kwenye akaunti?</translation>
 <translation id="5847181246682413476">Vyanzo vya Umeme</translation>
@@ -2613,6 +2617,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6432297414176614592">Maelezo zaidi kuhusu mada za matangazo</translation>
 <translation id="6432831586648556868">Kazi za Mauzo na Masoko</translation>
 <translation id="6433490469411711332">Badilisha maelezo ya mawasiliano</translation>
+<translation id="6433501201775827830">Chagua mtambo wako wa kutafuta</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> imekataa kuunganisha.</translation>
 <translation id="6433797564277305076">Thibitisha kadi zako kwa haraka ukitumia njia ya kufungua wa kifaa kuanzia sasa</translation>
 <translation id="643917412048333145">Marinda</translation>
@@ -3966,6 +3971,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9207861905230894330">Haikufaulu kuongeza makala.</translation>
 <translation id="9213433120051936369">Weka mapendeleo ya mwonekano</translation>
 <translation id="9215416866750762878">Programu kwenye kompyuta yako inazuia Chrome kuunganisha salama kwenye tovuti hii</translation>
+<translation id="9218430445555521422">Weka iwe chaguomsingi</translation>
 <translation id="9219103736887031265">Picha</translation>
 <translation id="922152298093051471">Weka mipangilio ya Chrome upendavyo</translation>
 <translation id="9222403027701923763">Elimu ya Msingi na Sekondari (K-12)</translation>

@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">‏تعذّر على متصفِّح Chromium التحقُّق من كلمات المرور. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="3472200483164753384">‏غير متاح على Chromium Canary</translation>
 <translation id="3478750326643748149">‏إخفاء قائمة "الاستفادة بشكل أفضل من Chromium"</translation>
+<translation id="3554027294407525061">‏يمكنك محو بيانات التصفُّح في Chromium.</translation>
 <translation id="3567399274263440288">‏للاستفادة إلى أقصى حدّ من Chromium، سجِّل الدخول إلى Chromium باستخدام حسابك على Google.</translation>
 <translation id="3639997914391704523">‏يجب تسجيل الدخول إلى حسابك على Google ليتمكّن Chromium من التحقُّق من كلمات المرور.</translation>
 <translation id="3650632991272923014">‏كان <ph name="USER_EMAIL1" /> يستخدم Chromium وتركَ إشارات مرجعية وكلمات مرور وغيرها من الإعدادات مُسجَّلة على هذا الجهاز.</translation>
@@ -96,7 +97,9 @@
 <translation id="4996471330284142407">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Chromium السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="4999538639245140991">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chromium من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
 <translation id="5042011327527167688">‏انقر على "العرض على Chromium باستخدام خرائط Google".</translation>
+<translation id="5044871537677053278">‏يرصد Chromium العناوين ويستخدم "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية.</translation>
 <translation id="5048795749726991615">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، استخدِم Chromium للاستفادة من ميزة "الملء التلقائي".</translation>
+<translation id="5076601183701536878">‏محو بيانات التصفُّح في Chromium</translation>
 <translation id="5131565040785979529">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي سجَّلت الدخول إليه وطريقة استخدامك لمتصفِّح Chromium.</translation>
 <translation id="5171868502429358653">‏تسجيل الدخول إلى Chromium</translation>
 <translation id="5213683223491576284">‏فتح "مدير كلمات المرور" في Chromium</translation>

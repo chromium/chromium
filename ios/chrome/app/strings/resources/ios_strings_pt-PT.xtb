@@ -274,6 +274,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
 <translation id="2562041823070056534">A enviar para o dispositivo <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Usar e guardar palavras-passe na sua Conta Google</translation>
+<translation id="2577522251608256362">Bairro</translation>
 <translation id="2578571896248130439">Envie a página Web</translation>
 <translation id="2584132361465095047">Adicionar conta...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Nenhuma palavra-passe comprometida}=1{{count} palavra-passe comprometida}other{{count} palavras-passe comprometidas}}</translation>
@@ -1091,7 +1092,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6944369514868857500">Selecionar outra conta</translation>
 <translation id="6944935964236827145">Ocultar Traduzir</translation>
 <translation id="6945221475159498467">Selecionar</translation>
-<translation id="6955779377310719430">Ocultar Seguir</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Pastas</translation>
 <translation id="6979158407327259162">Google Drive</translation>

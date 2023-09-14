@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2678468611080193228">Prova de permetre temporalment les galetes de tercers; la protecció serà menor, però és més probable que les funcions del lloc web estiguin disponibles</translation>
+<translation id="2683434792633810741">Vols suprimir les dades i restablir els permisos?</translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="2713106313042589954">Desactiva la càmera</translation>
 <translation id="2717722538473713889">Adreces electròniques</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Permet les galetes d'un lloc web concret.</translation>
 <translation id="4046123991198612571">Pista següent</translation>
 <translation id="4053720452172726777">Personalitza i controla Google Chrome</translation>
+<translation id="4149890623864272035">Confirmes que vols suprimir totes les dades locals, incloses les galetes, i restablir tots els permisos d'aquest lloc web?</translation>
 <translation id="4149994727733219643">Visualització simplificada de pàgines web</translation>
 <translation id="4151930093518524179">Zoom predeterminat</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Permet les galetes de tercers</translation>
 <translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="4434045419905280838">Finestres emergents i redireccions</translation>
+<translation id="443552056913301231">Aquesta acció suprimirà totes les dades locals, incloses les galetes, i restablirà tots els permisos de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Silencia el so d'un lloc web concret.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# galeta}other{# galetes}}</translation>
 <translation id="4478158430052450698">Facilita personalitzar el zoom per a diferents llocs web</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
 <translation id="4598549027014564149">En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en llocs web, ni tan sols en llocs web relacionats. La teva activitat de navegació no s'utilitza per a coses com ara personalitzar anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
+<translation id="4644713492825682049">Suprimeix les dades i restableix els permisos</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
 <translation id="4751476147751820511">Sensors de moviment o de llum</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Darrera visita: avui</translation>
 <translation id="5225463052809312700">Activa la càmera</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5246825184569358663">Aquesta acció suprimirà totes les dades locals, incloses les galetes, i restablirà tots els permisos de <ph name="DOMAIN" /> i de tots els llocs web que conté</translation>
 <translation id="5264323282659631142">Suprimeix <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrossegueu la pantalla des de la part superior i toqueu el botó Enrere per sortir de la pantalla completa.</translation>
 <translation id="5300589172476337783">Mostra</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Excepcions</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
+<translation id="6207207788774442484">Suprimeix les dades i restableix els permisos</translation>
 <translation id="6216432067784365534">Opcions per a <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vols desinstal·lar <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Segons la teva darrera pestanya</translation>

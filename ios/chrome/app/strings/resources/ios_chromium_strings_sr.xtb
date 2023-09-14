@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium није успео да вам провери лозинке. Проверите интернет везу.</translation>
 <translation id="3472200483164753384">Није подржано у верзији Chromium Canary</translation>
 <translation id="3478750326643748149">Сакријте „Искористите Chromium на најбољи начин“</translation>
+<translation id="3554027294407525061">Обришите податке прегледања у Chromium-у.</translation>
 <translation id="3567399274263440288">Да бисте користили Chromium на најбољи начин, пријавите се на Chromium помоћу Google налога.</translation>
 <translation id="3639997914391704523">Chromium може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="3650632991272923014">Корисник <ph name="USER_EMAIL1" /> је користио Chromium и оставио обележиваче, лозинке и друга подешавања на овом уређају.</translation>
@@ -96,7 +97,9 @@
 <translation id="4996471330284142407">Урадите више помоћу још једноставнијег, безбеднијег и бржег Chromium-а.</translation>
 <translation id="4999538639245140991">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chromium податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
 <translation id="5042011327527167688">Додирните Прикажи помоћу Google мапа у Chromium-у.</translation>
+<translation id="5044871537677053278">Chromium открива адресе и користи Google мапе да би вам пружао упутства и локалне информације.</translation>
 <translation id="5048795749726991615">Да бисте лако приступали сачуваним лозинкама у другим апликацијама, користите Chromium за аутоматско попуњавање</translation>
+<translation id="5076601183701536878">Обришите податке прегледања у Chromium-у</translation>
 <translation id="5131565040785979529">Ваша организација, <ph name="DOMAIN" />, управља налогом на који сте пријављени и начином на који се Chromium користи.</translation>
 <translation id="5171868502429358653">Пријавите се у Chromium</translation>
 <translation id="5213683223491576284">Отвара Менаџер лозинки у Chromium-у.</translation>

@@ -85,6 +85,7 @@
 <translation id="4555020257205549924">যখন এই বৈশিষ্ট্যটি চালু করা হয় তখন Chromium, Google অনুবাদ ব্যবহার করে অন্যান্য ভাষায় লিখিত পৃষ্ঠাগুলি অনুবাদ করার অফার করবে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium-এ পেমেন্ট পদ্ধতি সেটিং পৃষ্ঠা খোলে।</translation>
 <translation id="4585809515399340748">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ট্যাপ করে তা সরাসরি Chromium ব্রাউজারে খুলতে পারেন।</translation>
+<translation id="459080529287102949">Chromium-এ ভিজ্যুয়াল সার্চ করুন</translation>
 <translation id="4633738821577273991">এছাড়াও, এই Chromium প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>
 <translation id="4654936625574199632">অ্যাপ উন্নত করতে সাহায্য করার জন্য, Chromium ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium স্ক্যানার চালু করুন</translation>
@@ -153,6 +154,7 @@
 <translation id="7045244423563602563">Chromium-এ সাইন-ইন করুন</translation>
 <translation id="7055269218854630176">আপনার সাইন-ইন করা অ্যাকাউন্ট এবং Chromium কীভাবে ব্যবহার করা হয় তা আপনার প্রতিষ্ঠান, <ph name="DOMAIN" />, ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর নির্দিষ্ট ফিচার সেট-আপ বা সীমিত করতে পারেন।</translation>
 <translation id="7099326575020694068">Chromium আপনার ক্যামেরা বিভক্ত দৃশ্য মোডে ব্যবহার করতে পারবে না</translation>
+<translation id="7163483974919055112">Chromium-এ ভিজ্যুয়াল সার্চ করুন।</translation>
 <translation id="7165402419892018581">অটোফিলের জন্য Chromium বেছে নিন</translation>
 <translation id="7175400662502680481">আপনার পাসওয়ার্ড কোনও হ্যাক হওয়া ডেটাবেসে প্রকাশ করা হয়েছে। পাসওয়ার্ড ম্যানেজার এখনই এটি পরিবর্তন করার সাজেশন দিচ্ছে।</translation>
 <translation id="7192111075364461693">আপনার ডিভাইস সেটিংসে বর্তমানে Chromium বিজ্ঞপ্তিগুলি বন্ধ করা আছে।</translation>

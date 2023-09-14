@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="1105362920864247682">សម្អាតទិន្នន័យរុករកនៅក្នុង Chrome។</translation>
 <translation id="1143896152279775643">ពាក្យសម្ងាត់របស់អ្នកនឹងត្រូវបានរក្សាទុកទៅក្នុងកម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ Google សម្រាប់ <ph name="EMAIL" />។</translation>
 <translation id="1180362651362502943">បន្តប្រើ​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក។</translation>
 <translation id="1282031177488366470">ជួយ​កែលម្អ​មុខងារ និង​ប្រតិបត្តិការ​របស់ Chrome</translation>
@@ -56,6 +57,7 @@
 <translation id="2736805085127235148">បច្ចុប្បន្ន ការជូនដំណឹងនៅលើ Chrome ត្រូវបានបិទនៅក្នុងការកំណត់ឧបករណ៍របស់អ្នក។</translation>
 <translation id="2767464022270041271">មិនមាន​ពាក្យសម្ងាត់ដែលបានរក្សាទុកទេ។ កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់អាចពិនិត្យមើលពាក្យសម្ងាត់របស់អ្នក នៅពេលអ្នករក្សាទុកពាក្យសម្ងាត់ទាំងនោះ។</translation>
 <translation id="2840432500933227975">បើក​ការកំណត់ Chrome នៅក្នុង iOS រួច​ចុចលើ "កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​លំនាំដើម" ហើយ​ជ្រើសរើស Chrome។</translation>
+<translation id="2868822340714096138">សម្អាតទិន្នន័យរុករកនៅក្នុង Chrome</translation>
 <translation id="2869959624320573933">ចូល Chrome</translation>
 <translation id="2876628302275096482">ស្វែងយល់​បន្ថែម​អំពី<ph name="BEGIN_LINK" />របៀបដែល Chrome រក្សាទិន្នន័យ​របស់អ្នក​ជាលក្ខណៈ​ឯកជន<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">ជ្រើសរើស <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>

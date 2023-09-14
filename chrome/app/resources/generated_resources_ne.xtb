@@ -442,7 +442,6 @@
 <translation id="1347512539447549782">Linux भण्डारण</translation>
 <translation id="1347975661240122359">ब्याट्रीको स्तर <ph name="BATTERY_LEVEL" />% पुगेपछि अद्यावधिक सुरु हुनेछ।</translation>
 <translation id="1348966090521113558">माउससम्बन्धी एस्सेसिबिलिटी सेटिङ</translation>
-<translation id="1351089605448164407">तपाईंको ड्राइभबाट</translation>
 <translation id="1353275871123211385">एप अनुमोदन गर्ने तथा यन्त्र चलाएर बिताउने समय सीमा तोक्ने जस्ता अभिभावकीय नियन्त्रण सुविधाहरू प्रयोग गर्न बच्चासँग अनिवार्य रूपमा कुनै अभिभावकले सुपरिवेक्षण गर्ने Google खाता हुनु पर्छ। तपाईं पछि Google Classroom जस्ता संयन्त्र प्रयोग गर्नका निम्ति विद्यालयको खाता थप्न सक्नुहुन्छ।</translation>
 <translation id="135389172849514421">अफलाइन हुँदा पनि प्रयोग गर्न मिल्छ</translation>
 <translation id="1353980523955420967">PPD फेला पार्न सकिएन। आफ्नो Chromebook अनलाइन भएको सुनिश्चित गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -1977,6 +1976,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />केही चिज गडबड भएका कारण <ph name="DEVICE_OS" /> इन्स्टल गर्न सकिएन।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तपाईं यस सम्बन्धमा थप मद्दत प्राप्त गर्न चाहनुहुन्छ भने g.co/flex/InstallErrors मा जानुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">तपाईंको डिभाइसको ब्याट्रीको स्तर ८०% को वरपर राखेर ब्याट्रीको आयु बढाउँछ। तपाईंले सामान्यतया बिजुलीको स्रोतबाट चार्जर झिक्ने समयअघि नै ब्याट्री पूर्ण रूपमा चार्ज हुन्छ।</translation>
+<translation id="2532146950330687938">डिभाइस सेटअप गरिँदै छ...</translation>
 <translation id="2532198298278778531">ChromeOS Flex का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2532589005999780174">उच्च कन्ट्रास्ट मोड:</translation>
 <translation id="2533649878691950253">तपाईं सामान्यतया आफ्नो सटीक लोकेसन प्रयोग गर्ने अनुमति दिनुहुन्न। त्यसैले यो साइटलाई तपाईंको सटीक लोकेसन थाहा पाउनबाट रोक लगाइएको छ</translation>
@@ -2186,7 +2186,6 @@
 <translation id="2710101514844343743">प्रयोग तथा निदानसम्बन्धी डेटा</translation>
 <translation id="271033894570825754">नयाँ</translation>
 <translation id="2711073837061989559">ट्रायलहरू</translation>
-<translation id="2711929077861214979">सुरक्षासम्बन्धी सुझावहरू</translation>
 <translation id="2713106313042589954">क्यामेरा अफ गर्नुहोस्</translation>
 <translation id="2713444072780614174">सेतो</translation>
 <translation id="2714180132046334502">गाढा पृष्ठभूमि</translation>
@@ -2497,7 +2496,6 @@
 <translation id="2939908794993783865">थप निष्क्रिय साइटहरू</translation>
 <translation id="2939938020978911855">उपलब्ध ब्लुटुथ यन्त्रहरू देखाउनुहोस्</translation>
 <translation id="2941112035454246133">निम्न</translation>
-<translation id="2942279350258725020">Android Messages का सेटिङ</translation>
 <translation id="2942560570858569904">प्रतीक्षा गर्दै...</translation>
 <translation id="2942581856830209953">यो पृष्ठ आफू अनुकूल पार्नुहोस्</translation>
 <translation id="2942707801577151363">Word, Excel र PowerPoint फाइलहरू खोल्नुहोस्, सम्पादन गर्नुहोस् र सेभ गर्नुहोस्। केही सुविधाहरू प्रयोग गर्न सदस्यता लिनु पर्ने हुन सक्छ।</translation>
@@ -4692,7 +4690,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्युट गर्नुहोस्}other{साइटहरू अनम्युट गर्नुहोस्}}</translation>
 <translation id="474609389162964566">"Ok Google" भनेर आफ्नो सहायक एक्टिभेट गर्नुहोस्</translation>
-<translation id="4746351372139058112">म्यासेजहरू</translation>
 <translation id="4748783296226936791">साइटहरूले खासै प्रचलनमा नरहेका किबोर्ड, गेम कन्ट्रोलर तथा अन्य यन्त्र चलाइने सुविधाहरू प्रदान गर्न सामान्यतया HID यन्त्रमा कनेक्ट गर्छन्</translation>
 <translation id="4749960740855309258">एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4750185073185658673">तपाईं थप केही अनुमतिको समीक्षा गर्न चाहनुहुन्छ भने आफ्नो फोनमा जानुहोस्। तपाईंको फोनको ब्लुटुथ र Wi-Fi अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -4759,7 +4756,6 @@
 <translation id="4807122856660838973">Safe Browsing अन गर्नुहोस्</translation>
 <translation id="4807514039636325497">D-Bus सम्बन्धी जानकारी</translation>
 <translation id="4808667324955055115">रोक लगाइएका पपअपहरू:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome वेब स्टोरबाट हटाइएको <ph name="BEGIN_BOLD" />एउटा एक्स्टेन्सन<ph name="END_BOLD" />को समीक्षा गर्नुहोस्}other{Chrome वेब स्टोरबाट हटाइएको <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} वटा एक्स्टेन्सन<ph name="END_BOLD" />को समीक्षा गर्नुहोस्}}</translation>
 <translation id="4809079943450490359">तपाईंको डिभाइसको एड्मिनबाट प्राप्त भएका निर्देशनहरू:</translation>
 <translation id="4809447465126035330">मेटाउनुहोस्</translation>
 <translation id="480990236307250886">गृह पृष्ठ खोल्नुहोस्</translation>
@@ -5744,6 +5740,7 @@
 <translation id="5627086634964711283">यसले तपाईंले होम बटनमा क्लिक गर्दा कुन पाना देखाउने भनी नियन्त्रण गर्छ ।</translation>
 <translation id="5627676517703583263">Chrome मार्फत स्मार्ट तरिकाले ब्राउज गर्नुहोस्</translation>
 <translation id="5627832140542566187">डिस्प्लेको झुकाव</translation>
+<translation id="5628434207686266338">डिभाइसको पासवर्ड सेट गर्नुहोस्</translation>
 <translation id="562935524653278697">तपाईंको प्रशासकले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूको सिंक गर्ने सेवालाई असक्षम पार्नुभएको छ।</translation>
 <translation id="5631017369956619646">CPU प्रयोग</translation>
 <translation id="5631272057151918206">तपाईंले यसो गर्नुभयो भने तपाईंका अफलाइन फाइलहरूले ओगटेका बढीमा <ph name="OFFLINE_STORAGE_SIZE" /> ठाउँ खाली गरिने छ। केही फाइलहरू भने अझै पनि अफलाइन उपलब्ध हुने छन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -9827,6 +9824,7 @@
 <translation id="8962083179518285172">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="8962863356073277855">URL को फर्म्याट https://www.example.com हुनु पर्छ</translation>
 <translation id="8962918469425892674">यो साइटले चाल वा प्रकाशसम्बन्धी सेन्सरहरू प्रयोग गर्दै छ।</translation>
+<translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
 <translation id="8965037249707889821">पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="8966809848145604011">अन्य प्रोफाइलहरू</translation>
 <translation id="8967427617812342790">पाठ्य सूचीमा थप्नुहोस्</translation>
@@ -10205,7 +10203,6 @@
 <translation id="964286338916298286">तपाईंको IT एडमिनले तपाईंको डिभाइसमा Chrome Goodies लाई असक्षम पार्नुभएको छ।</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{एप}other{एपहरू}}</translation>
 <translation id="964790508619473209">स्क्रिनका सेटिङ</translation>
-<translation id="965211523698323809">आफ्नो <ph name="DEVICE_TYPE" /> बाट टेक्स्ट म्यासेजहरू सेयर गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast मा भएको कुनै समस्याका बारेमा उजुरी गर्नुहोस्</translation>
 <translation id="966588271015727539">कुनै ब्लुटुथ ब्रेल डिस्प्ले चयन गर्नुहोस्</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{यो प्रोफाइल बन्द गर्नुहोस्}other{यो प्रोफाइल बन्द गर्नुहोस् (# वटा विन्डो)}}</translation>

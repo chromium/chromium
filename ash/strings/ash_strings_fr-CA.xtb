@@ -367,6 +367,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Déverrouiller les fenêtres</translation>
 <translation id="2528111225373402384">Paramètres du point d’accès</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Activer ou désactiver la navigation au clavier</translation>
 <translation id="2531025035050312891">appareil lent</translation>
 <translation id="2531107890083353124">En faisant glisser l'onglet, appuyez sur <ph name="KEY_ONE" /></translation>
@@ -1212,7 +1213,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5961960957587052807">Léger</translation>
 <translation id="5965524703725988602">Activer/désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Faire défiler les fenêtres par l'avant</translation>
-<translation id="5976112937189445008">Appuyez sur Entrée pour enregistrer la fenêtre</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
 <translation id="5983567367406220847">En raison d'inactivité, le point d'accès sans fil a été désactivé.</translation>
@@ -1434,7 +1434,6 @@ Nouvelle installation</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur d'alimentation USB-C de<ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
 <translation id="6896758677409633944">Copier</translation>
-<translation id="6901883536534621389">Essayez les gestes pour naviguer</translation>
 <translation id="6912841030378044227">Mettre la barre d'adresse en évidence</translation>
 <translation id="6912901278692845878">Présentation rapide</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
@@ -1738,7 +1737,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8167567890448493835">Paramètres régionaux utilisés : <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Activer/désactiver le menu pour redimensionner le mode verrouiller</translation>
 <translation id="8192202700944119416">Les notifications sont masquées.</translation>
-<translation id="8196787716797768628">Utilisez des gestes pour passer rapidement d'une application à l'autre et interagir avec votre Chromebook en mode tablette.</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet en cours…</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8203795194971602413">Clic droit</translation>
@@ -1855,6 +1853,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8731487213223706745">Se termine à <ph name="END_TIME" /> le <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Il essaie peut-être de récupérer les touches que vous avez utilisées</translation>
 <translation id="8735678380411481005">Couleur du rétroéclairage du clavier</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" /> : Activation en cours…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Vérifiez votre identité : <ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="875593634123171288">Afficher les paramètres RPV</translation>
@@ -1895,7 +1894,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8909138438987180327">Pile chargée à <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
-<translation id="8924458948354692166">Appuyez sur Entrée pour effectuer une capture d'écran de la fenêtre</translation>
 <translation id="8926951137623668982">L'étagère est toujours masquée</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">désactivée</translation>

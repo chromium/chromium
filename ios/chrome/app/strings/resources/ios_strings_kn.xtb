@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">ಸುರಕ್ಷತೆ ಇಲ್ಲ (ಇದನ್ನು ನಾವು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2576499762020411840">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ ಮತ್ತು ಉಳಿಸಿ</translation>
+<translation id="2577522251608256362">ನೆರೆಹೊರೆ</translation>
 <translation id="2578571896248130439">ವೆಬ್‌ಪುಟವನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="2584132361465095047">ಖಾತೆ ಸೇರಿಸಿ...</translation>
 <translation id="2587010742985678408">{count,plural, =0{ಅಪಾಯಕ್ಕೀಡಾಗಬಹುದಾದ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ}=1{{count} ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{count} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
@@ -312,6 +313,7 @@
 <translation id="2738375676495545665">ಹೊಸತೇನಿದೆ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2747003861858887689">ಹಿಂದಿನ ಕ್ಷೇತ್ರ</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2754492786623500387">ಈ ಸಾಧನದಲ್ಲಿನ ಖಾತೆಗಳು</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
 <translation id="2772667768515195373">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="USER_EMAIL" /> ಉಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="2773292004659987824">ಅಜ್ಞಾತ ಹುಡುಕಾಟ</translation>
@@ -1090,7 +1092,6 @@
 <translation id="6944369514868857500">ಬೇರೊಂದು ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6944935964236827145">ಅನುವಾದಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="6955779377310719430">ಫಾಲೋ ಮಾಡಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
 <translation id="6973630695168034713">ಫೋಲ್ಡರ್‌ಗಳು</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1229,6 +1230,7 @@
 <translation id="778855399387580014">ಹೊಸ Chrome ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="7807060072011926525">Google ಮೂಲಕ ಒದಗಿಸಲಾಗಿದೆ</translation>
+<translation id="78146569776629510">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7839985698273989086">ಆಫ್‌ಲೈನ್ ಪುಟ</translation>
 <translation id="7840771868269352570">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="7845466610722898">ಓದುವ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>

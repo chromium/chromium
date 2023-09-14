@@ -1216,7 +1216,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5961960957587052807">Svetlé</translation>
 <translation id="5965524703725988602">Prepnúť tmavý motív. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Prechádzanie oknami vpred</translation>
-<translation id="5976112937189445008">Okno nahráte stlačením klávesa Enter</translation>
 <translation id="5978382165065462689">Ovládanie obrazovky sa zdieľa prostredníctvom Vzdialenej pomoci.</translation>
 <translation id="5980301590375426705">Ukončiť rel. hosťa</translation>
 <translation id="5983567367406220847">Hotspot bol pre nečinnosť vypnutý.</translation>
@@ -1438,7 +1437,6 @@ Nová inštalácia</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
 <translation id="688631446150864480">Ak chcete prepnúť okná, stlačte kláves so šípkou nadol</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
-<translation id="6901883536534621389">Skúste prechádzanie gestami</translation>
 <translation id="6912841030378044227">Označenie panela s adresou</translation>
 <translation id="6912901278692845878">Rýchla prehliadka</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>
@@ -1744,7 +1742,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8167567890448493835">Práve sa používa <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Zapnutie alebo vypnutie ponuky umožňujúcej zmenu veľkosti zamknutého režimu</translation>
 <translation id="8192202700944119416">Upozornenia sú skryté.</translation>
-<translation id="8196787716797768628">Gestami môžete rýchlo prepínať medzi aplikáciami a používať Chromebook v režime tabletu.</translation>
 <translation id="8198456017687137612">Karta prenosu</translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8203795194971602413">Kliknutie pravým tlačidlom myši</translation>
@@ -1902,7 +1899,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8909138438987180327">Úroveň stavu batérie: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asistent Google nehovorí týmto jazykom.</translation>
-<translation id="8924458948354692166">Snímku obrazovky okna vytvoríte stlačením klávesa Enter</translation>
 <translation id="8926951137623668982">Polička je vždy skrytá</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 súbor}few{# súbory}many{# files}other{# súborov}}</translation>
 <translation id="8936501819958976551">deaktivované</translation>

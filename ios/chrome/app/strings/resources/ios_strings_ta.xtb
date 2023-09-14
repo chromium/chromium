@@ -158,6 +158,7 @@
 <translation id="1830634592642484976">இந்த முகவரி தற்சமயம் Chrome உலாவியில் சேமிக்கப்பட்டுள்ளது. Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்த, உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />) அதைச் சேமிக்கவும்.</translation>
 <translation id="1832848789136765277">நீங்கள் ஒத்திசைத்த தரவை எப்போது வேண்டுமானாலும் அணுக இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="1836891464494477513">{count,plural, =1{உங்கள் Google கணக்கில் ({email}) புக்மார்க் சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் ({email}) புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
+<translation id="183878838231635348">பாதுகாப்புச் சரிபார்ப்பு உங்களுக்காகத் தானாகக் கண்டறிந்த தனியுரிமை மற்றும் பாதுகாப்புச் சிக்கல்கள் இந்தக் கார்டில் காட்டப்படும்.</translation>
 <translation id="1847795903283049083">உங்கள் புக்மார்க்குகள், வாசிப்புப் பட்டியல் அல்லது Password Managerரில் இவற்றை நீங்கள் பார்க்கலாம் நிர்வகிக்கலாம்.</translation>
 <translation id="1870148520156231997">கடவுச்சொல்லைக் காட்டும்</translation>
 <translation id="1872096359983322073">டார்ச்</translation>
@@ -267,11 +268,13 @@
 <translation id="2523363575747517183">இந்த இணையதளம், மற்றொரு பயன்பாட்டைத் திறப்பதற்கு மீண்டும் மீண்டும் முயல்கிறது.</translation>
 <translation id="2529021024822217800">எல்லாவற்றையும் திற</translation>
 <translation id="2536991091671391962">சேமிக்கப்பட்டுள்ள கடவுச்சொற்களை எந்தச் சாதனத்திலும் பயன்படுத்தலாம். <ph name="EMAIL" /> கணக்கிற்கான Google Password Managerரில் அவை சேமிக்கப்படும்.</translation>
+<translation id="2542268842667970959">"பாதுகாப்புச் சரிபார்ப்பை" மறைக்கும்</translation>
 <translation id="2547458583188611426">ஒத்திசைவு இயங்கவில்லை. ஒத்திசைவைத் தொடங்க கடவுச்சொற்றொடரை உள்ளிடவும்.</translation>
 <translation id="2551153019974022505">கணக்குப் பிழை</translation>
 <translation id="2556092377360758201">பாதுகாப்பு அல்லாத பயன்முறை (பரிந்துரைக்கப்படவில்லை)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />க்கு அனுப்புகிறது...</translation>
 <translation id="2576499762020411840">எனது Google கணக்கில் இருந்து கடவுச்சொற்களைப் பயன்படுத்திச் சேமி</translation>
+<translation id="2577522251608256362">அருகிலுள்ள இடம்</translation>
 <translation id="2578571896248130439">இணையப்பக்கத்தை அனுப்புதல்</translation>
 <translation id="2584132361465095047">கணக்கைச் சேர்...</translation>
 <translation id="2587010742985678408">{count,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை}=1{களவாடப்பட்ட கடவுச்சொல்: {count}}other{களவாடப்பட்ட கடவுச்சொற்கள்: {count}}}</translation>
@@ -695,6 +698,7 @@
 <translation id="4881695831933465202">திற</translation>
 <translation id="488785315393301722">விவரங்களைக் காண்பி</translation>
 <translation id="4894963374040315706">இதன் மூலம் உங்கள் குரலைப் பயன்படுத்தித் தேடலாம்</translation>
+<translation id="489903206070130262">நீங்கள் கடைசியாகத் திறந்த பக்கம்</translation>
 <translation id="4901778704868714008">சேமி...</translation>
 <translation id="4904877109095351937">படித்ததாகக் குறி</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
@@ -1087,7 +1091,6 @@
 <translation id="6944369514868857500">மற்றொரு கணக்கைத் தேர்வுசெய்க</translation>
 <translation id="6944935964236827145">‘மொழிபெயர்’ என்பதை மறை</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
-<translation id="6955779377310719430">‘பின்தொடர்’ என்பதை மறை</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6973630695168034713">ஃபோல்டர்கள்</translation>
 <translation id="6979158407327259162">Google Drive</translation>

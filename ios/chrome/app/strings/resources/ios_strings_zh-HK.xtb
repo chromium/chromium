@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">無保護功能 (不建議)</translation>
 <translation id="2562041823070056534">正在傳送至 <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">將密碼儲存至 Google 帳戶中並自動填入</translation>
+<translation id="2577522251608256362">社區</translation>
 <translation id="2578571896248130439">傳送網頁</translation>
 <translation id="2584132361465095047">新增帳戶…</translation>
 <translation id="2587010742985678408">{count,plural, =0{沒有被盜用的密碼}=1{{count} 個被盜用的密碼}other{{count} 個被盜用的密碼}}</translation>
@@ -1088,7 +1089,6 @@
 <translation id="6944369514868857500">選擇其他帳戶</translation>
 <translation id="6944935964236827145">隱藏「翻譯」</translation>
 <translation id="6945221475159498467">選取</translation>
-<translation id="6955779377310719430">隱藏「追蹤」</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6973630695168034713">資料夾</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>

@@ -212,6 +212,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1391289752476847787">Akcije i obveznice</translation>
 <translation id="1391625539203220400">Želite da sačuvate IBAN na ovom uređaju?</translation>
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
+<translation id="1397811292916898096">Pretražite pomoću: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Svetlozelena</translation>
 <translation id="1406500794671479665">Verifikovanje...</translation>
 <translation id="1406812885827747674">Dozvoli ovaj put</translation>
@@ -539,6 +540,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2071692954027939183">Obaveštenja su automatski blokirana jer ih obično ne dozvoljavate</translation>
 <translation id="2071852865256799872">Pregledačem upravlja organizacija, a profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Moda i stil</translation>
+<translation id="2075497153347571252">Administrator je blokirao dozvolu (<ph name="PERMISSION" />) na <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Opozovi</translation>
 <translation id="20817612488360358">Podešeno je da se koriste sistemska podešavanja proksija, ali je navedena eksplicitna konfiguracija proksija.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. od <ph name="TOTAL_RESULTS" /> rezultata</translation>
@@ -1879,6 +1881,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4885256590493466218">Plaćajte pomoću kartice <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Zaštitite lozinke pomoću Windows Hello-a</translation>
 <translation id="4888600795924685526">Studije stranih jezika</translation>
+<translation id="4890070067176768718">Administrator je odobrio dozvolu (<ph name="PERMISSION" />) na <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Zadnji deo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijada</translation>
@@ -2325,6 +2328,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5830698870816298009">korišćenje i kretanje kamere</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5838278095973806738">Nemojte da unosite osetljive informacije na ovom sajtu (na primer, lozinke ili kreditne kartice) jer napadači mogu da ih ukradu.</translation>
+<translation id="5838732667866024867">Promene cena na grafikonu možete da pregledate pomoću strelice nalevo i nadesno</translation>
 <translation id="5840318881868981258">Na Google nalogu, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Želite da sačuvate na nalogu?</translation>
 <translation id="5847181246682413476">Uređaji za napajanje</translation>
@@ -2612,6 +2616,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6432297414176614592">Više o temama oglasa</translation>
 <translation id="6432831586648556868">Poslovi u prodaji i marketingu</translation>
 <translation id="6433490469411711332">Izmenite kontakt informacije</translation>
+<translation id="6433501201775827830">Izaberite pretraživač</translation>
 <translation id="6433595998831338502">Host <ph name="HOST_NAME" /> je odbio povezivanje.</translation>
 <translation id="6433797564277305076">Od sada brže potvrđujte kartice uz otključavanje uređaja</translation>
 <translation id="643917412048333145">Haljine</translation>
@@ -3969,6 +3974,7 @@ Dodatni detalji:
 <translation id="9207861905230894330">Dodavanje članka nije uspelo.</translation>
 <translation id="9213433120051936369">Prilagodite izgled</translation>
 <translation id="9215416866750762878">Aplikacija onemogućava Chrome-u da se bezbedno poveže sa ovim sajtom</translation>
+<translation id="9218430445555521422">Podesi kao podrazumevan</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
 <translation id="9222403027701923763">Osnovno i srednje obrazovanje (K-12)</translation>

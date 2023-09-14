@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">Acțiuni și obligațiuni</translation>
 <translation id="1391625539203220400">Salvezi codul IBAN pe acest dispozitiv?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nu a trimis date.</translation>
+<translation id="1397811292916898096">Caută folosind <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Verde deschis</translation>
 <translation id="1406500794671479665">Se verifică...</translation>
 <translation id="1406812885827747674">Permite de această dată</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
 <translation id="2071852865256799872">Browserul este gestionat de organizația ta, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Modă și stil</translation>
+<translation id="2075497153347571252">Administratorul a blocat permisiunea pentru <ph name="PERMISSION" /> pe <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="20817612488360358">Setările proxy de sistem sunt setate pentru a fi utilizate, dar o configurație explicită pentru proxy este, de asemenea, specificată.</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1881,7 @@
 <translation id="4885256590493466218">Plătești cu <ph name="CARD_DETAIL" /> la finalizarea achiziției</translation>
 <translation id="4887406273302438710">Protejează-ți parolele cu Windows Hello</translation>
 <translation id="4888600795924685526">Studiul limbilor străine</translation>
+<translation id="4890070067176768718">Administratorul a acordat permisiunea pentru <ph name="PERMISSION" /> pe <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Spate</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jocurile Olimpice</translation>
@@ -2325,6 +2328,7 @@
 <translation id="5830698870816298009">folosirea și mișcarea camerei</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5838278095973806738">Nu ar trebui să introduci informații sensibile pe acest site (de exemplu, parole sau carduri de credit), deoarece ar putea fi furate de atacatori.</translation>
+<translation id="5838732667866024867">Poți folosi săgeata spre stânga / dreapta pentru a examina modificările de preț din grafic</translation>
 <translation id="5840318881868981258">În Contul Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Salvezi în cont?</translation>
 <translation id="5847181246682413476">Surse de alimentare cu energie</translation>
@@ -2613,6 +2617,7 @@
 <translation id="6432297414176614592">Mai multe despre subiectele anunțurilor</translation>
 <translation id="6432831586648556868">Locuri de muncă în vânzări și marketing</translation>
 <translation id="6433490469411711332">Editează informațiile de contact</translation>
+<translation id="6433501201775827830">Alege motorul de căutare</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> a refuzat conexiunea.</translation>
 <translation id="6433797564277305076">Confirmă-ți cardurile mai rapid, folosind deblocarea dispozitivului de acum înainte</translation>
 <translation id="643917412048333145">Rochii</translation>
@@ -3970,6 +3975,7 @@ Detalii suplimentare:
 <translation id="9207861905230894330">Articolul nu a fost adăugat.</translation>
 <translation id="9213433120051936369">Personalizează aspectul</translation>
 <translation id="9215416866750762878">O aplicație împiedică browserul Chrome să se conecteze în siguranță la acest site</translation>
+<translation id="9218430445555521422">Setează ca prestabilit</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
 <translation id="9222403027701923763">Școală primară și secundară (grădiniță – clasa a 12-a)</translation>

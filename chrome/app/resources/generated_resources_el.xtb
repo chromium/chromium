@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Αποθηκευτικός χώρος Linux</translation>
 <translation id="1347975661240122359">Η ενημέρωση θα ξεκινήσει μόλις το επίπεδο της μπαταρίας φτάσει στο <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Ρυθμίσεις προσβασιμότητας ποντικιού</translation>
-<translation id="1351089605448164407">Από το Drive σας</translation>
 <translation id="1353275871123211385">Για να χρησιμοποιήσετε τους γονικούς ελέγχους, όπως την έγκριση εφαρμογών και τα όρια χρόνου χρήσης, το παιδί θα πρέπει να διαθέτει έναν Λογαριασμό Google τον οποίο διαχειρίζεται ένας γονέας. Ένας σχολικός λογαριασμός μπορεί να προστεθεί αργότερα για εργαλεία όπως το Google Classroom.</translation>
 <translation id="135389172849514421">Λειτουργεί εκτός σύνδεσης</translation>
 <translation id="1353980523955420967">Δεν είναι δυνατή η εύρεση του PPD. Βεβαιωθείτε ότι το Chromebook είναι συνδεδεμένο και δοκιμάστε ξανά.</translation>
@@ -2204,7 +2203,6 @@
 <translation id="2710101514844343743">Δεδομένα χρήσης και διαγνωστικών</translation>
 <translation id="271033894570825754">Νέο</translation>
 <translation id="2711073837061989559">Δοκιμές</translation>
-<translation id="2711929077861214979">Συμβουλές ασφαλείας</translation>
 <translation id="2713106313042589954">Απενεργοποίηση κάμερας</translation>
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2714180132046334502">Σκούρο φόντο</translation>
@@ -2514,7 +2512,6 @@
 <translation id="2939908794993783865">Επιπλέον ανενεργοί ιστότοποι</translation>
 <translation id="2939938020978911855">Εμφάνιση διαθέσιμων συσκευών Bluetooth</translation>
 <translation id="2941112035454246133">Χαμηλή</translation>
-<translation id="2942279350258725020">Μηνύματα Android</translation>
 <translation id="2942560570858569904">Αναμονή…</translation>
 <translation id="2942581856830209953">Εξατομίκευση αυτής της σελίδας</translation>
 <translation id="2942707801577151363">Ανοίξτε, επεξεργαστείτε και αποθηκεύστε αρχεία Word, Excel και PowerPoint. Μπορεί να απαιτείται συνδρομή για ορισμένες λειτουργίες.</translation>
@@ -4711,7 +4708,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Κατάργηση σίγασης ιστοτόπου}other{Κατάργηση σίγασης ιστοτόπων}}</translation>
 <translation id="474609389162964566">Αποκτήστε πρόσβαση στον Βοηθό με τη φράση "Ok Google"</translation>
-<translation id="4746351372139058112">Μηνύματα</translation>
 <translation id="4748783296226936791">Οι ιστότοποι συνήθως συνδέονται με συσκευές HID για λειτουργίες που χρησιμοποιούν λιγότερο συνηθισμένα πληκτρολόγια, χειριστήρια παιχνιδιών και άλλες συσκευές.</translation>
 <translation id="4749960740855309258">Άνοιγμα νέας καρτέλας</translation>
 <translation id="4750185073185658673">Ελέγξτε μερικές ακόμη άδειες από το τηλέφωνό σας. Βεβαιωθείτε ότι το Bluetooth και το Wi-Fi του τηλεφώνου σας είναι ενεργοποιημένα.</translation>
@@ -4778,7 +4774,6 @@
 <translation id="4807122856660838973">Ενεργοποίηση Ασφαλούς περιήγησης</translation>
 <translation id="4807514039636325497">Λεπτομέρειες DBus</translation>
 <translation id="4808667324955055115">Αναδυόμενα παράθυρα που αποκλείστηκαν:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Ελέγξτε <ph name="BEGIN_BOLD" />1 επέκταση<ph name="END_BOLD" /> που καταργήθηκε από το Chrome Web Store}other{Ελέγξτε <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} επεκτάσεις<ph name="END_BOLD" /> που καταργήθηκαν από το Chrome Web Store}}</translation>
 <translation id="4809079943450490359">Οδηγίες από τον διαχειριστή της συσκευής σας:</translation>
 <translation id="4809447465126035330">Διαγραφή</translation>
 <translation id="480990236307250886">Άνοιγμα της αρχικής σελίδας</translation>
@@ -6345,6 +6340,7 @@
 <translation id="6104796831253957966">Η ουρά του εκτυπωτή είναι πλήρης</translation>
 <translation id="6104929924898022309">Χρησιμοποιήστε το πλήκτρο αναζήτησης για να αλλάξετε τη συμπεριφορά των πλήκτρων λειτουργίας</translation>
 <translation id="6106167152849320869">Εάν στο προηγούμενο βήμα επιλέξατε να αποστέλλονται επίσης διαγνωστικά στοιχεία και δεδομένα χρήσης, αυτά τα δεδομένα θα συλλέγονται για τις εγκατεστημένες εφαρμογές.</translation>
+<translation id="6111718295497931251">Κατάργηση της πρόσβασης στο Google Drive</translation>
 <translation id="6111972606040028426">Ενεργοποίηση Βοηθού Google</translation>
 <translation id="6112294629795967147">Αγγίξτε για αλλαγή μεγέθους</translation>
 <translation id="6112727384379533756">Προσθήκη εισιτηρίου</translation>
@@ -9847,6 +9843,7 @@
 <translation id="8962083179518285172">Απόκρυψη λεπτομερειών</translation>
 <translation id="8962863356073277855">Η μορφή του URL πρέπει να είναι https://www.example.com</translation>
 <translation id="8962918469425892674">Αυτός ο ιστότοπος χρησιμοποιεί αισθητήρες κίνησης και φωτός.</translation>
+<translation id="8963117664422609631">Μετάβαση στις ρυθμίσεις ιστοτόπου</translation>
 <translation id="8965037249707889821">Εισαγάγετε τον προηγούμενο κωδικό πρόσβασης</translation>
 <translation id="8966809848145604011">Άλλα προφίλ</translation>
 <translation id="8967427617812342790">Προσθήκη στη λίστα ανάγνωσης</translation>
@@ -10225,7 +10222,6 @@
 <translation id="964286338916298286">Ο διαχειριστής τεχνολογιών πληροφορικής της συσκευής σας απενεργοποίησε τα Καλούδια Chrome για τη συσκευή σας.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Εφαρμογή}other{Εφαρμογές}}</translation>
 <translation id="964790508619473209">Διάταξη οθόνης</translation>
-<translation id="965211523698323809">Στείλτε και λάβετε μηνύματα κειμένου μέσω της συσκευής <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Αναφορά ζητήματος σχετικά με το Google Cast</translation>
 <translation id="966588271015727539">Επιλέξτε μια συσκευή μπράιγ Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Κλείσιμο αυτού του προφίλ}other{&amp;Κλείσιμο αυτού του προφίλ (# παράθυρα)}}</translation>

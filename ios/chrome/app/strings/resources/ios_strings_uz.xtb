@@ -274,6 +274,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2556092377360758201">Himoyasiz (tavsiya etilmaydi)</translation>
 <translation id="2562041823070056534">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Parollarni Google hisobiga saqlash va ishlatish</translation>
+<translation id="2577522251608256362">Mahalla</translation>
 <translation id="2578571896248130439">Bu sahifani yuborish</translation>
 <translation id="2584132361465095047">Hisob kiritish…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Hech qaysi parolingiz oshkor etilmagan}=1{{count} ta parol oshkor etilgan}other{{count} ta parol oshkor etilgan}}</translation>
@@ -1090,7 +1091,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6944369514868857500">Boshqa hisobni tanlang</translation>
 <translation id="6944935964236827145">Tarjimani berkitish</translation>
 <translation id="6945221475159498467">Tanlash</translation>
-<translation id="6955779377310719430">Kuzatishni berkitish</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Jildlar</translation>
 <translation id="6979158407327259162">Google Drive</translation>

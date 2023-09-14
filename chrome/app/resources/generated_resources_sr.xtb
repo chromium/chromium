@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux меморијски простор</translation>
 <translation id="1347975661240122359">Ажурирање ће почети када ниво напуњености батерије буде <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Подешавања приступачности миша</translation>
-<translation id="1351089605448164407">Са Диска</translation>
 <translation id="1353275871123211385">Да бисте користили родитељски надзор, попут одобрења за апликације и ограничења времена испред екрана, дете мора да има Google налог којим управља родитељ. Касније може да се дода школски налог за алатке попут Google учионице.</translation>
 <translation id="135389172849514421">Ради офлајн</translation>
 <translation id="1353980523955420967">Не можемо да пронађемо PPD. Проверите да ли је Chromebook онлајн и пробајте поново.</translation>
@@ -1978,6 +1977,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Дошло је до грешке и инсталирање система <ph name="DEVICE_OS" /> није успело.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Додатну помоћ потражите на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Продужава трајање батерије јер одржава ниво напуњености батерије око 80%. Батерија ће се напунити до краја пре него што га уобичајено искључите из напајања.</translation>
+<translation id="2532146950330687938">Уређај се припрема...</translation>
 <translation id="2532198298278778531">Управљајте безбедним DNS-ом у Chrome OS Flex подешавањима</translation>
 <translation id="2532589005999780174">Режим високог контраста</translation>
 <translation id="2533649878691950253">Овом сајту је забрањен приступ вашој прецизној локацији јер обично то не дозвољавате</translation>
@@ -2187,7 +2187,6 @@
 <translation id="2710101514844343743">Подаци о коришћењу и дијагностички подаци</translation>
 <translation id="271033894570825754">Ново</translation>
 <translation id="2711073837061989559">Пробе</translation>
-<translation id="2711929077861214979">Безбедносни савети</translation>
 <translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2714180132046334502">Тамна позадина</translation>
@@ -2497,7 +2496,6 @@
 <translation id="2939908794993783865">Додатни неактивни сајтови</translation>
 <translation id="2939938020978911855">Приказуј доступне Bluetooth уређаје</translation>
 <translation id="2941112035454246133">Низак</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">Чека се...</translation>
 <translation id="2942581856830209953">Прилагодите ову страницу</translation>
 <translation id="2942707801577151363">Отварајте, мењајте и чувајте Word, Excel и PowerPoint фајлове. За неке функције је можда потребна претплата.</translation>
@@ -4693,7 +4691,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Укључи звук сајта}one{Укључи звук сајтова}few{Укључи звук сајтова}other{Укључи звук сајтова}}</translation>
 <translation id="474609389162964566">Приступајте Помоћнику фразом „Хеј Google“</translation>
-<translation id="4746351372139058112">Поруке</translation>
 <translation id="4748783296226936791">Сајтови се обично повезују са HID уређајима за потребе функција које користе неуобичајене тастатуре, контролере за игре и друге уређаје</translation>
 <translation id="4749960740855309258">Отворите нову картицу</translation>
 <translation id="4750185073185658673">Идите на телефон да бисте прегледали још неколико дозвола. Уверите се да су Bluetooth и WiFi телефона укључени.</translation>
@@ -4760,7 +4757,6 @@
 <translation id="4807122856660838973">Укључите Безбедно прегледање</translation>
 <translation id="4807514039636325497">DBus детаљи</translation>
 <translation id="4808667324955055115">Искачући прозори су блокирани:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Прегледајте <ph name="BEGIN_BOLD" />1 додатак<ph name="END_BOLD" /> који је уклоњен из Chrome веб-продавнице}one{Прегледајте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} додатак<ph name="END_BOLD" /> који је уклоњен из Chrome веб-продавнице}few{Прегледајте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} додатка<ph name="END_BOLD" /> који су уклоњени из Chrome веб-продавнице}other{Прегледајте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} додатака<ph name="END_BOLD" /> који су уклоњени из Chrome веб-продавнице}}</translation>
 <translation id="4809079943450490359">Упутства администратора уређаја:</translation>
 <translation id="4809447465126035330">Избриши</translation>
 <translation id="480990236307250886">Отвори почетну страницу</translation>
@@ -5745,6 +5741,7 @@
 <translation id="5627086634964711283">Контролише и страницу која се приказује када кликнете на дугме Почетак.</translation>
 <translation id="5627676517703583263">Паметно прегледајте уз Chrome</translation>
 <translation id="5627832140542566187">Положај приказа</translation>
+<translation id="5628434207686266338">Подесите лозинку уређаја</translation>
 <translation id="562935524653278697">Администратор је онемогућио синхронизацију обележивача, историје, лозинки и других подешавања.</translation>
 <translation id="5631017369956619646">Искоришћеност процесора</translation>
 <translation id="5631272057151918206">Ово ће уклонити до <ph name="OFFLINE_STORAGE_SIZE" /> простора који користе офлајн фајлови. Неки фајлови ће и даље бити доступни офлајн. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -6326,6 +6323,7 @@
 <translation id="6104796831253957966">Ред за чекање на штампачу је пун</translation>
 <translation id="6104929924898022309">Користите тастер за претрагу да бисте променили понашање функцијских тастера</translation>
 <translation id="6106167152849320869">Ако сте у претходном кораку одабрали и да шаљете дијагностичке податке и податке о коришћењу, ти подаци ће се прикупљати за инсталиране апликације.</translation>
+<translation id="6111718295497931251">Уклони приступ Google диску</translation>
 <translation id="6111972606040028426">Омогућите Google помоћник</translation>
 <translation id="6112294629795967147">Додирните да бисте променили величину</translation>
 <translation id="6112727384379533756">Додај тикет</translation>
@@ -9836,6 +9834,7 @@
 <translation id="8962083179518285172">Сакриј детаље</translation>
 <translation id="8962863356073277855">Формат URL-а треба да буде https://www.example.com</translation>
 <translation id="8962918469425892674">Овај сајт користи сензоре покрета или светла.</translation>
+<translation id="8963117664422609631">Идите на подешавања сајта</translation>
 <translation id="8965037249707889821">Унесите стару лозинку</translation>
 <translation id="8966809848145604011">Други профили</translation>
 <translation id="8967427617812342790">Додај на листу за читање</translation>
@@ -10214,7 +10213,6 @@
 <translation id="964286338916298286">ИТ администратор је онемогућио Chrome забавне стварчице за уређај.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Апликација}one{Апликације}few{Апликације}other{Апликације}}</translation>
 <translation id="964790508619473209">Распоред на екрану</translation>
-<translation id="965211523698323809">Шаљите и примајте SMS-ове са уређаја <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Пријавите проблем са Google Cast-ом</translation>
 <translation id="966588271015727539">Изаберите Bluetooth Брајев екран</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Затвори овај профил}one{&amp;Затвори овај профил (# прозор)}few{&amp;Затвори овај профил (# прозора)}other{&amp;Затвори овај профил (# прозора)}}</translation>

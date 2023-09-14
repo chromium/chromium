@@ -274,6 +274,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2556092377360758201">Walang Proteksyon (hindi inirerekomenda)</translation>
 <translation id="2562041823070056534">Ipinapadala sa <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Gumamit at Mag-save ng Mga Password sa Iyong Google Account</translation>
+<translation id="2577522251608256362">Kapitbahayan</translation>
 <translation id="2578571896248130439">Magpadala ng Webpage</translation>
 <translation id="2584132361465095047">Magdagdag ng Account…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Walang Nakompromisong Password}=1{{count} Nakompromisong Password}one{{count} Nakompromisong Password}other{{count} na Nakompromisong Password}}</translation>
@@ -312,6 +313,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2738375676495545665">I-hide ang Ano'ng Bago</translation>
 <translation id="2747003861858887689">Nakaraang field</translation>
 <translation id="2749231692441336879">Sinusubaybayan ang <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Mga Account sa Device na ito</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
 <translation id="2772667768515195373">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Naka-save ang address na ito sa iyong Google Account na <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Paghahanap sa Incognito</translation>
@@ -1090,7 +1092,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6944369514868857500">Pumili ng Ibang Account</translation>
 <translation id="6944935964236827145">Itago ang Isalin</translation>
 <translation id="6945221475159498467">Pumili</translation>
-<translation id="6955779377310719430">Itago ang Subaybayan</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mga Folder</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1229,6 +1230,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="778855399387580014">Start a search in a new Chrome tab.</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7807060072011926525">Ibinibigay ng Google</translation>
+<translation id="78146569776629510">Mga Download</translation>
 <translation id="7839985698273989086">Offline na Page</translation>
 <translation id="7840771868269352570">Maaalis ang mga pinili mong item.</translation>
 <translation id="7845466610722898">Ipakita ang Listahan ng Babasahin</translation>

@@ -1216,7 +1216,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5961960957587052807">Hafif</translation>
 <translation id="5965524703725988602">Koyu temayı aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Pencereler arasında ileriye doğru geçiş yapın</translation>
-<translation id="5976112937189445008">Pencereyi kaydetmek için enter tuşuna basın</translation>
 <translation id="5978382165065462689">Ekranınızın kontrolü Uzaktan Yardım kullanılarak paylaşılıyor.</translation>
 <translation id="5980301590375426705">Misafir oturumundan çık</translation>
 <translation id="5983567367406220847">Herhangi bir etkinlik olmadığı için hotspot kapatıldı.</translation>
@@ -1438,7 +1437,6 @@ Yeni yüklenmiş</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> cihazınız daha düşük performans gösterebilir. <ph name="PREFERRED_MINIMUM_POWER" /> W veya daha güçlü ve uyumlu bir USB-C güç adaptörü kullanın.</translation>
 <translation id="688631446150864480">Pencereler arasında geçiş yapmak için Aşağı ok tuşuna basın</translation>
 <translation id="6896758677409633944">Kopyala</translation>
-<translation id="6901883536534621389">Gezinmek için hareketleri kullanmayı deneyin</translation>
 <translation id="6912841030378044227">Adres çubuğuna odaklanın</translation>
 <translation id="6912901278692845878">Hızlı genel bakış</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
@@ -1744,7 +1742,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> kullanılıyor</translation>
 <translation id="8185090165691050712">Kilit modunu yeniden boyutlandırmak için menüyü açın/kapatın</translation>
 <translation id="8192202700944119416">Bildirimler gizlendi.</translation>
-<translation id="8196787716797768628">Uygulamalar arasında hızlı geçiş yapmak ve tablet modunda Chromebook'unuzla etkileşim kurmak için hareketleri kullanın.</translation>
 <translation id="8198456017687137612">Sekme yayınlanıyor</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8203795194971602413">Sağ tıklama</translation>
@@ -1903,7 +1900,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8909138438987180327">Pil yüzde <ph name="PERCENTAGE" /> dolu.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Asistan bu dili konuşmuyor.</translation>
-<translation id="8924458948354692166">Pencere ekran görüntüsü almak için enter tuşuna basın</translation>
 <translation id="8926951137623668982">Raf her zaman gizleniyor</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 dosya}other{# dosya}}</translation>
 <translation id="8936501819958976551">devre dışı</translation>

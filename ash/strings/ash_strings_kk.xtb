@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">Жарық</translation>
 <translation id="5965524703725988602">Қараңғы режимді ауыстыру. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Терезелер арқылы алға айналдыру</translation>
-<translation id="5976112937189445008">Терезені жазу үшін басыңыз</translation>
 <translation id="5978382165065462689">Remote Assistance арқылы экранды бөлісіп басқару.</translation>
 <translation id="5980301590375426705">Қонақты шығару</translation>
 <translation id="5983567367406220847">Әрекетсіздікке байланысты хотспот өшірілді.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> құрылғысы нашар жұмыс істеуі мүмкін. Сертификаты бар <ph name="PREFERRED_MINIMUM_POWER" /> Вт немесе одан жоғары кернеулі USB-C қуат адаптерін пайдаланыңыз.</translation>
 <translation id="688631446150864480">Терезелерді ауыстыру үшін төменге бағыттауыш пернені басыңыз.</translation>
 <translation id="6896758677409633944">Көшіру</translation>
-<translation id="6901883536534621389">Навигация қимылдарын байқап көріңіз</translation>
 <translation id="6912841030378044227">Мекенжай жолағында ерекшелеу</translation>
 <translation id="6912901278692845878">Қысқаша шолу</translation>
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> тілін пайдалану</translation>
 <translation id="8185090165691050712">Өлшем өзгертуді құлыптау режимі мәзірін қосу/өшіру</translation>
 <translation id="8192202700944119416">Хабарландырулар жасырулы.</translation>
-<translation id="8196787716797768628">Қолданбалар арасында жылдам ауысып, Chromebook-ті планшет режимінде қолдану үшін қимылдарды пайдаланыңыз.</translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
 <translation id="8203795194971602413">Тінтуірдің оң жақ түймесін басу</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">Батарея қуаты: <ph name="PERCENTAGE" />.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant бұл тілде жұмыс істемейді.</translation>
-<translation id="8924458948354692166">Терезе скриншотын түсіру үшін "Enter" пернесін басыңыз</translation>
 <translation id="8926951137623668982">Сөре үнемі жасырын тұрады.</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өшірілді</translation>

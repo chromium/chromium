@@ -214,6 +214,7 @@
 <translation id="1391289752476847787">స్టాక్‌లు &amp; బాండ్‌లు</translation>
 <translation id="1391625539203220400">ఈ పరికరంలో IBANను సేవ్ చేయాలా?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> డేటా ఏదీ పంపలేదు.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" />తో వెతకండి</translation>
 <translation id="1405567553485452995">లేత ఆకుపచ్చ రంగు</translation>
 <translation id="1406500794671479665">ధృవీకరిస్తోంది...</translation>
 <translation id="1406812885827747674">ఈ సారికి అనుమతించండి</translation>
@@ -541,6 +542,7 @@
 <translation id="2071692954027939183">మీరు సాధారణంగా వాటిని అనుమతించనందున నోటిఫికేషన్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2071852865256799872">మీ బ్రౌజర్‌ను మీ సంస్థ మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="2072275792380684364">ఫ్యాషన్ &amp; స్టయిల్</translation>
+<translation id="2075497153347571252">మీ అడ్మినిస్ట్రేటర్ <ph name="ORIGIN" /> వెబ్‌సైట్‌లో <ph name="PERMISSION" />ను బ్లాక్ చేశారు</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="20817612488360358">సిస్టమ్ ప్రాక్సీ సెట్టింగ్‌లు ఉపయోగించడానికి సెట్ చేయబడ్డాయి కానీ స్పష్టమైన ప్రాక్సీ కాన్ఫిగరేషన్ కూడా పేర్కొనబడింది.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
@@ -1881,6 +1883,7 @@
 <translation id="4885256590493466218">చెక్అవుట్‌లో <ph name="CARD_DETAIL" />తో పేమెంట్ చేయండి</translation>
 <translation id="4887406273302438710">Windows Helloతో పాస్‌వర్డ్‌లను సురక్షితం చేసుకోండి</translation>
 <translation id="4888600795924685526">విదేశీ భాషా అధ్యయనం</translation>
+<translation id="4890070067176768718">మీ అడ్మినిస్ట్రేటర్ <ph name="ORIGIN" /> వెబ్‌సైట్‌లో <ph name="PERMISSION" />ను అనుమతించారు</translation>
 <translation id="4892518386797173871">వెనుక భాగం</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ఒలింపిక్స్</translation>
@@ -2327,6 +2330,7 @@
 <translation id="5830698870816298009">కెమెరా ఉపయోగం &amp; తరలింపు</translation>
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5838278095973806738">మీరు ఈ సైట్‌లో ఎలాంటి గోప్యమైన సమాచారాన్ని నమోదు చేయకూడదు (ఉదాహరణకు, పాస్‌వర్డ్‌లు లేదా క్రెడిట్ కార్డ్‌లు), దాడికి పాల్పడేవారు ఆ సమాచారం దొంగిలించే అవకాశం ఉంటుంది.</translation>
+<translation id="5838732667866024867">గ్రాఫ్‌లో ధర మార్పులను చూడటానికి మీరు ఎడమ వైపు బాణాన్ని/కుడి వైపు బాణాన్ని ఉపయోగించవచ్చు</translation>
 <translation id="5840318881868981258">మీ Google ఖాతా, <ph name="ACCOUNT" />‌లో</translation>
 <translation id="5841338463993781099">ఖాతాలో సేవ్ చేయాలా?</translation>
 <translation id="5847181246682413476">విద్యుత్ సరఫరాలు</translation>
@@ -2615,6 +2619,7 @@
 <translation id="6432297414176614592">యాడ్ టాపిక్‌ల గురించి మరింత సమాచారం</translation>
 <translation id="6432831586648556868">సేల్స్ &amp; మార్కెటింగ్ ఉద్యోగాలు</translation>
 <translation id="6433490469411711332">సంప్రదింపు సమాచారాన్ని ఎడిట్ చేయండి</translation>
+<translation id="6433501201775827830">మీ సెర్చ్ ఇంజిన్‌ను ఎంచుకోండి</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> కనెక్ట్ కావడానికి నిరాకరించింది.</translation>
 <translation id="6433797564277305076">ఇప్పటి నుండి, పరికర అన్‌లాక్‌ను ఉపయోగించడం ద్వారా మీ కార్డ్‌లను వేగంగా నిర్ధారించండి</translation>
 <translation id="643917412048333145">డ్రసెస్</translation>
@@ -3971,6 +3976,7 @@
 <translation id="9207861905230894330">కథనాన్ని జోడించడంలో విఫలమైంది.</translation>
 <translation id="9213433120051936369">కనిపించే తీరును అనుకూలంగా మార్చండి</translation>
 <translation id="9215416866750762878">ఒక అప్లికేషన్ కారణంగా Chrome ఈ సైట్‌కు సురక్షితంగా కనెక్ట్ కాలేకపోతోంది</translation>
+<translation id="9218430445555521422">ఆటోమేటిక్ ఆప్షన్‌లా సెట్ చేయండి</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
 <translation id="9222403027701923763">ప్రాథమిక &amp; మాధ్యమిక స్కూల్ (K-12)</translation>

@@ -1217,7 +1217,6 @@
 <translation id="5961960957587052807">हल्का धुंधला</translation>
 <translation id="5965524703725988602">गहरे रंग वाली थीम को टॉगल करें. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">विंडो शॉर्टकट की मदद से आगे वाले टैब पर जाएं</translation>
-<translation id="5976112937189445008">विंडो को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
 <translation id="5978382165065462689">आपकी स्‍क्रीन का नियंत्रण दूरस्‍थ सहायका के द्वारा शेयर किया जा रहा है.</translation>
 <translation id="5980301590375426705">मेहमान मोड से निकलें</translation>
 <translation id="5983567367406220847">कोई गतिविधि न होने की वजह से, हॉटस्पॉट बंद कर दिया गया है.</translation>
@@ -1439,7 +1438,6 @@
 <translation id="6886172995547742638">हो सकता है कि <ph name="DEVICE_TYPE" /> का प्रदर्शन कम हो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W या हाइअर USB-C पावर अडैप्टर का इस्तेमाल करें.</translation>
 <translation id="688631446150864480">विंडो स्विच करने के लिए, डाउन ऐरो बटन को दबाएं</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
-<translation id="6901883536534621389">नेविगेट करने के लिए, जेस्चर (हाव-भाव) आज़माएं</translation>
 <translation id="6912841030378044227">पता बार पर फ़ोकस करें</translation>
 <translation id="6912901278692845878">झटपट देखें</translation>
 <translation id="6919251195245069855">आपका स्मार्ट कार्ड पहचाना नहीं जा सका. फिर से कोशिश करें.</translation>
@@ -1745,7 +1743,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="8185090165691050712">मेन्यू को चालू या बंद करने के लिए, ताकि लॉक मोड का साइज़ बदला जा सके</translation>
 <translation id="8192202700944119416">सूचनाएं छिपी हुई हैं.</translation>
-<translation id="8196787716797768628">एक ऐप्लिकेशन से दूसरे ऐप्लिकेशन पर तेज़ी से जाने और अपने Chromebook से टैबलेट मोड में इंटरैक्ट करने के लिए, हाथ के जेस्चर (हाव-भाव) का इस्तेमाल करें.</translation>
 <translation id="8198456017687137612">कास्टिंग टैब</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8203795194971602413">राइट क्लिक करें</translation>
@@ -1854,6 +1851,7 @@
 <translation id="8703634754197148428">रिकॉर्डिंग शुरू करें. रिकॉर्डिंग शुरू होने के बाद, शेल्फ़ पर जाने के लिए Alt + Shift + L का इस्तेमाल करें और रिकॉर्डिंग बंद करने वाले बटन को ढूंढें</translation>
 <translation id="8704155109538237473">पिक्चर में पिक्चर विंडो पर फ़ोकस करें</translation>
 <translation id="870917907284186124">लिखवाने (बोलकर लिखें) की सुविधा चालू या बंद करने के लिए</translation>
+<translation id="8714138378966541668">मोबाइल और इंटरनेट सेवा देने वाली कंपनी ने लॉक किया है</translation>
 <translation id="8717459106217102612">पिछला शब्द या अक्षर चुनें</translation>
 <translation id="8721053961083920564">आवाज़ टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फ़ुल-स्क्रीन कैप्चर</translation>
@@ -1904,7 +1902,6 @@
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> बैटरी बची है.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant सेवा इस भाषा में उपलब्ध नहीं है.</translation>
-<translation id="8924458948354692166">विंडो का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
 <translation id="8926951137623668982">शेल्फ़ को हमेशा के लिए छिपाकर रखा गया है</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="8936501819958976551">बंद की गई</translation>

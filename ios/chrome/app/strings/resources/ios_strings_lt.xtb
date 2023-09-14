@@ -274,6 +274,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2556092377360758201">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="2562041823070056534">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="2576499762020411840">Naudoti ir išsaugoti slaptažodžius „Google“ paskyroje</translation>
+<translation id="2577522251608256362">Kaimynystė</translation>
 <translation id="2578571896248130439">Siųsti tinklalapį</translation>
 <translation id="2584132361465095047">Pridėti paskyrą...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Pažeistų slaptažodžių nėra}=1{{count} pažeistas slaptažodis}one{{count} pažeistas slaptažodis}few{{count} pažeisti slaptažodžiai}many{{count} pažeisto slaptažodžio}other{{count} pažeistų slaptažodžių}}</translation>
@@ -1091,7 +1092,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6944369514868857500">Pasirinkti kitą paskyrą</translation>
 <translation id="6944935964236827145">Slėpti parinktį „Versti“</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
-<translation id="6955779377310719430">Slėpti parinktį „Stebėti“</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6973630695168034713">Aplankai</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>

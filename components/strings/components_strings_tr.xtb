@@ -212,6 +212,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1391289752476847787">Hisse ve tahviller</translation>
 <translation id="1391625539203220400">IBAN bu cihaza kaydedilsin mi?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hiç veri göndermedi.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ile ara</translation>
 <translation id="1405567553485452995">Açık Yeşil</translation>
 <translation id="1406500794671479665">Doğrulanıyor...</translation>
 <translation id="1406812885827747674">Bu defalık izin ver</translation>
@@ -2613,6 +2614,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6432297414176614592">Reklam konuları hakkında daha fazla bilgi</translation>
 <translation id="6432831586648556868">Satış ve Pazarlama İşleri</translation>
 <translation id="6433490469411711332">İletişim bilgilerini düzenle</translation>
+<translation id="6433501201775827830">Arama motorunuzu seçin</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> bağlanmayı reddetti.</translation>
 <translation id="6433797564277305076">Bundan böyle cihazda kilit açma kullanarak kartlarınızı daha hızlı onaylayın</translation>
 <translation id="643917412048333145">Elbise</translation>
@@ -3970,6 +3972,7 @@ Ek ayrıntılar:
 <translation id="9207861905230894330">Makale eklenemedi.</translation>
 <translation id="9213433120051936369">Görünümü özelleştir</translation>
 <translation id="9215416866750762878">Bir uygulama, Chrome'un bu siteye güvenli bir şekilde bağlanmasını engelliyor</translation>
+<translation id="9218430445555521422">Varsayılan olarak ayarla</translation>
 <translation id="9219103736887031265">Resimler</translation>
 <translation id="922152298093051471">Chrome'u özelleştir</translation>
 <translation id="9222403027701923763">İlk ve Ortaöğretim (K-12)</translation>

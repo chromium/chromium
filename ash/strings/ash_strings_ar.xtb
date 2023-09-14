@@ -1218,7 +1218,6 @@
 <translation id="5961960957587052807">تمويه خفيف</translation>
 <translation id="5965524703725988602">إيقاف/تفعيل المظهر الداكن: <ph name="STATE_TEXT" /></translation>
 <translation id="5975235751479998104">الانتقال إلى الأمام في قائمة النوافذ</translation>
-<translation id="5976112937189445008">‏اضغط على المفتاح Enter لتسجيل فيديو للنافذة</translation>
 <translation id="5978382165065462689">مشاركة التحكم في شاشتك عن طريق المساعدة عن بُعد.</translation>
 <translation id="5980301590375426705">إنهاء جلسة الضيف</translation>
 <translation id="5983567367406220847">تم إيقاف نقطة الاتصال بسبب عدم استخدامها.</translation>
@@ -1440,7 +1439,6 @@
 <translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أو محوِّل طاقة USB-C بقدرة أعلى.</translation>
 <translation id="688631446150864480">اضغط على مفتاح السهم المتّجه للأسفل للتبديل بين النوافذ.</translation>
 <translation id="6896758677409633944">نسخ</translation>
-<translation id="6901883536534621389">تجربة الإيماءات للانتقال</translation>
 <translation id="6912841030378044227">التركيز على شريط العناوين</translation>
 <translation id="6912901278692845878">جولة سريعة</translation>
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
@@ -1746,7 +1744,6 @@
 <translation id="8167567890448493835">استخدام <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">قائمة تفعيل/إيقاف وضع القفل لميزة تغيير الحجم</translation>
 <translation id="8192202700944119416">يتم إخفاء الإشعارات.</translation>
-<translation id="8196787716797768628">‏يمكنك استخدام الإيماءات للتبديل بين التطبيقات سريعًا والتفاعل مع جهاز Chromebook في وضع الجهاز اللوحي.</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8203795194971602413">النقر بالزر الأيمن</translation>
@@ -1855,6 +1852,7 @@
 <translation id="8703634754197148428">‏بدأ التسجيل. بعد بدء التسجيل، يمكنك استخدام Alt + Shift + L للانتقال إلى الرف والبحث عن زر إيقاف التسجيل.</translation>
 <translation id="8704155109538237473">التركيز على نافذة ميزة "نافذة ضمن النافذة"</translation>
 <translation id="870917907284186124">تفعيل/إيقاف ميزة "الإملاء" (الكتابة باستخدام الصوت)</translation>
+<translation id="8714138378966541668">مُقفَلة من خلال مشغّل الشبكة</translation>
 <translation id="8717459106217102612">اختيار الكلمة السابقة أو الحرف السابق</translation>
 <translation id="8721053961083920564">تبديل مستوى الصوت. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">تصوير الشاشة بأكملها</translation>
@@ -1905,7 +1903,6 @@
 <translation id="8909138438987180327">مستوى طاقة البطارية عند <ph name="PERCENTAGE" /> في المئة.</translation>
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏لا يتحدث مساعد Google هذه اللغة.</translation>
-<translation id="8924458948354692166">‏اضغط على المفتاح Enter لالتقاط صورة للنافذة بأكملها</translation>
 <translation id="8926951137623668982">إخفاء الرف دائمًا</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>

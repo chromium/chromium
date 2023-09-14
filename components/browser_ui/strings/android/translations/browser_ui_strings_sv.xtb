@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2678468611080193228">Testa att tillfälligt tillåta cookies från tredje part, vilket innebär mindre skydd men större sannolikhet att webbplatsfunktionerna fungerar</translation>
+<translation id="2683434792633810741">Vill du radera och återställa?</translation>
 <translation id="2687403674020088961">Blockera alla cookies (rekommenderas inte)</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Tillåt cookies för en enskild webbplats.</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
 <translation id="4053720452172726777">Anpassa och kontrollera Google Chrome</translation>
+<translation id="4149890623864272035">Vill du radera all lokal data, inklusive cookies, och återställa alla behörigheter för den här webbplatsen?</translation>
 <translation id="4149994727733219643">Förenklad vy för webbsidor</translation>
 <translation id="4151930093518524179">Standardzoom</translation>
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
 <translation id="4428065317363009941">Personliga annonspreferenser</translation>
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
+<translation id="443552056913301231">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="ORIGIN" /> återställs</translation>
 <translation id="4468959413250150279">Stäng av ljudet för en webbplats.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Gör det enklare att anpassa zoomen för olika webbplatser</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Stäng av mikrofonen</translation>
 <translation id="4570913071927164677">Information</translation>
 <translation id="4598549027014564149">I inkognitoläget kan webbplatser inte använda cookies för att se din webbaktivitet på olika webbplatser – inte ens relaterade webbplatser. Din webbaktivitet används inte för sådant som annonsanpassning. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
+<translation id="4644713492825682049">Radera och återställ</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
 <translation id="4670064810192446073">Virtuell verklighet</translation>
 <translation id="4751476147751820511">Rörelse- eller ljussensorer</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Besöktes senast i dag</translation>
 <translation id="5225463052809312700">Slå på kameran</translation>
 <translation id="5234764350956374838">Stäng</translation>
+<translation id="5246825184569358663">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="DOMAIN" /> och alla underordnade webbplatser återställs</translation>
 <translation id="5264323282659631142">Ta bort <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Dra uppifrån och tryck på bakåtknappen för att lämna helskärmsläget.</translation>
 <translation id="5300589172476337783">Visa</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Undantag</translation>
 <translation id="6196640612572343990">Blockera cookies från tredje part</translation>
 <translation id="6205314730813004066">Annonsintegritet</translation>
+<translation id="6207207788774442484">Radera data och återställ behörigheter</translation>
 <translation id="6216432067784365534">Alternativ för <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vill du avinstallera <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Utifrån din senaste flik</translation>

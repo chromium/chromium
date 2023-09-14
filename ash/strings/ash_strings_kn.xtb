@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">ಲೈಟ್</translation>
 <translation id="5965524703725988602">ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">ವಿಂಡೋಸ್ ಮೂಲಕ ಫಾರ್ವರ್ಡ್ ಸೈಕಲ್ ಮಾಡಿ</translation>
-<translation id="5976112937189445008">ವಿಂಡೋವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು Enter ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5978382165065462689">ರಿಮೋಟ್ ಸಹಾಯಕದ ಮೂಲಕ ನಿಮ್ಮ ಪರದೆಯ ಹಂಚಿಕೆಯ ನಿಯಂತ್ರಣ</translation>
 <translation id="5980301590375426705">ಅತಿಥಿ ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="5983567367406220847">ನಿಷ್ಕ್ರಿಯತೆಯಿಂದಾಗಿ, ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಕಾರ್ಯಕ್ಷಮತೆಯು ಕಡಿಮೆಯಾಗಬಹುದು. ಪ್ರಮಾಣೀಕೃತ <ph name="PREFERRED_MINIMUM_POWER" />W ಅಥವಾ ಹೆಚ್ಚುವರಿ USB-C ಪವರ್ ಅಡಾಪ್ಟರ್ ಬಳಸಿ.</translation>
 <translation id="688631446150864480">ವಿಂಡೋಗಳನ್ನು ಬದಲಾಯಿಸಲು ಡೌನ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
-<translation id="6901883536534621389">ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6912841030378044227">ವಿಳಾಸ ಪಟ್ಟಿಯ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಿ</translation>
 <translation id="6912901278692845878">ತ್ವರಿತ ಪ್ರವಾಸ</translation>
 <translation id="6919251195245069855">ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8185090165691050712">ಲಾಕ್ ಮೋಡ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲು ಮೆನುವನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ</translation>
 <translation id="8192202700944119416">ಅಧಿಸೂಚನೆಗಳು ಮರೆಯಾಗಿವೆ.</translation>
-<translation id="8196787716797768628">ಟ್ಯಾಬ್ಲೆಟ್‌‌ ಮೋಡ್‌ನಲ್ಲಿ, ಆ್ಯಪ್‌ಗಳ ನಡುವೆ ತ್ವರಿತವಾಗಿ ಬದಲಿಸಲು ಮತ್ತು ನಿಮ್ಮ Chromebook ಜೊತೆಗೆ ಸಂವಾದ ನಡೆಸಲು ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="8198456017687137612">ಬಿತ್ತರಿಸುವ ಟ್ಯಾಬ್‌</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="8203795194971602413">ಬಲ-ಕ್ಲಿಕ್</translation>
@@ -1853,6 +1850,7 @@
 <translation id="8703634754197148428">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ. ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದ ನಂತರ ಶೆಲ್ಫ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಮತ್ತು ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ ಬಟನ್ ಅನ್ನು ಹುಡುಕಲು Alt + Shift + L ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="8704155109538237473">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರದ ವಿಂಡೋವನ್ನು ಫೋಕಸ್ ಮಾಡಿ</translation>
 <translation id="870917907284186124">ಉಕ್ತಲೇಖನವನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ (ನಿಮ್ಮ ಧ್ವನಿಯ ಮೂಲಕ ಟೈಪ್ ಮಾಡಿ)</translation>
+<translation id="8714138378966541668">ಪೂರೈಕೆದಾರರು ಲಾಕ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="8717459106217102612">ಹಿಂದಿನ ಪದ ಅಥವಾ ಅಕ್ಷರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8721053961083920564">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್</translation>
@@ -1903,7 +1901,6 @@
 <translation id="8909138438987180327">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" /> ಪ್ರತಿಶತ ಇದೆ.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ಸಹಾಯಕವು ಈ ಭಾಷೆಯನ್ನು ಮಾತನಾಡುವುದಿಲ್ಲ.</translation>
-<translation id="8924458948354692166">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಸೆರೆಹಿಡಿಯಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="8926951137623668982">ಶೆಲ್ಫ್ ಯಾವಾಗಲೂ ಮರೆಯಾಗಿದೆ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="8936501819958976551">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>

@@ -274,6 +274,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2556092377360758201">Brez zaščite (ni priporočljivo)</translation>
 <translation id="2562041823070056534">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2576499762020411840">Uporaba in shranjevanje gesel v računu Google</translation>
+<translation id="2577522251608256362">Soseska</translation>
 <translation id="2578571896248130439">Pošlji spletno stran</translation>
 <translation id="2584132361465095047">Dodajanje računa ...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Ni ogroženih gesel}=1{{count} ogroženo geslo}one{{count} ogroženo geslo}two{{count} ogroženi gesli}few{{count} ogrožena gesla}other{{count} ogroženih gesel}}</translation>
@@ -1090,7 +1091,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6944369514868857500">Izberi drug račun</translation>
 <translation id="6944935964236827145">Skrij »Prevedi«</translation>
 <translation id="6945221475159498467">Izberi</translation>
-<translation id="6955779377310719430">Skrij »Spremljanje«</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6973630695168034713">Mape</translation>
 <translation id="6979158407327259162">Google Drive</translation>

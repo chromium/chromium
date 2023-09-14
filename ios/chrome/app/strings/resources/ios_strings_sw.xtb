@@ -158,6 +158,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="1830634592642484976">Anwani hii kwa sasa imehifadhiwa kwenye Chrome. Ili uitumie kwenye bidhaa za Google, ihifadhi kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Ili uhakikishe kwamba unaweza kufikia data yako inayosawazishwa wakati wowote, thibitisha kwamba ni wewe</translation>
 <translation id="1836891464494477513">{count,plural, =1{Alamisho imehifadhiwa kwenye Akaunti ya Google, {email}}other{Alamisho zimehifadhiwa kwenye Akaunti yako ya Google, {email}}}</translation>
+<translation id="183878838231635348">Kadi hii inaonyesha matatizo yoyote ya faragha au ya usalama ambayo kipengele cha Ukaguzi wa Usalama hutambua kiotomatiki kwa niaba yako.</translation>
 <translation id="1847795903283049083">Unaweza pia kuangalia na kudhibiti vipengee hivi kwenye alamisho, Orodha ya Kusoma au kidhibiti chako cha manenosiri.</translation>
 <translation id="1870148520156231997">Fichua Nenosiri</translation>
 <translation id="1872096359983322073">Tochi</translation>
@@ -267,11 +268,13 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2523363575747517183">Tovuti hii inajaribu kufungua programu nyingine mara kwa mara.</translation>
 <translation id="2529021024822217800">Fungua Zote</translation>
 <translation id="2536991091671391962">Unaweza kutumia manenosiri uliyohifadhi kwenye kifaa chochote. Manenosiri hayo huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Ficha "Ukaguzi wa Usalama"</translation>
 <translation id="2547458583188611426">Usawazishaji haufanyi kazi. Ili uanzishe usawazishaji weka kauli yako ya siri.</translation>
 <translation id="2551153019974022505">Hitilafu ya akaunti</translation>
 <translation id="2556092377360758201">Hamna Ulinzi (haipendekezwi)</translation>
 <translation id="2562041823070056534">Inatuma kwenye <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Tumia na Uhifadhi Manenosiri kwenye Akaunti Yako ya Google</translation>
+<translation id="2577522251608256362">Mtaa</translation>
 <translation id="2578571896248130439">Tuma Ukurasa wa Wavuti</translation>
 <translation id="2584132361465095047">Ongeza Akaunti...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Hakuna Manenosiri Yaliyoathiriwa}=1{Nenosiri {count} Lililoathiriwa}other{Manenosiri {count} Yaliyoathiriwa}}</translation>
@@ -1088,7 +1091,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6944369514868857500">Chagua Akaunti Nyingine</translation>
 <translation id="6944935964236827145">Ficha Chaguo la Kutafsiri</translation>
 <translation id="6945221475159498467">Chagua</translation>
-<translation id="6955779377310719430">Ficha Chaguo la Fuatilia</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6973630695168034713">Folda</translation>
 <translation id="6979158407327259162">Hifadhi ya Google</translation>

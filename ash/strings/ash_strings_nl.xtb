@@ -1216,7 +1216,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5961960957587052807">Licht</translation>
 <translation id="5965524703725988602">Donker thema aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Vooruitgaan door vensters</translation>
-<translation id="5976112937189445008">Druk op Enter om het venster op te nemen</translation>
 <translation id="5978382165065462689">De controle over je scherm delen via externe support.</translation>
 <translation id="5980301590375426705">Gastsessie sluiten</translation>
 <translation id="5983567367406220847">De hotspot is uitgezet vanwege inactiviteit.</translation>
@@ -1438,7 +1437,6 @@ Nieuwe installatie</translation>
 <translation id="6886172995547742638">Je <ph name="DEVICE_TYPE" /> kan slechtere prestaties leveren. Gebruik een gecertificeerde USB-C-voedingsadapter van <ph name="PREFERRED_MINIMUM_POWER" /> W of hoger.</translation>
 <translation id="688631446150864480">Druk op de pijl-omlaag om tussen vensters te schakelen</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
-<translation id="6901883536534621389">Gebaren gebruiken om te navigeren</translation>
 <translation id="6912841030378044227">Focus op adresbalk</translation>
 <translation id="6912901278692845878">Korte rondleiding</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
@@ -1741,7 +1739,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> in gebruik</translation>
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
 <translation id="8192202700944119416">Meldingen zijn verborgen.</translation>
-<translation id="8196787716797768628">Met gebaren kun je snel schakelen tussen apps en je Chromebook gebruiken in de tabletmodus.</translation>
 <translation id="8198456017687137612">Tabblad wordt gecast</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8203795194971602413">Klik met rechtermuisknop</translation>
@@ -1850,6 +1847,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8703634754197148428">Opname starten. Nadat de opname is gestart, gebruik je Alt + Shift + L om op de plank naar de knop voor het stoppen van de opname te gaan.</translation>
 <translation id="8704155109538237473">De focus op het scherm-in-scherm-venster zetten</translation>
 <translation id="870917907284186124">Dicteren (typen met je stem) aan-/uitzetten</translation>
+<translation id="8714138378966541668">Vergrendeld door provider</translation>
 <translation id="8717459106217102612">Het vorige woord of de vorige letter selecteren</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volledig scherm opnemen</translation>
@@ -1900,7 +1898,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8909138438987180327">Batterij op <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">De Google Assistent spreekt deze taal niet.</translation>
-<translation id="8924458948354692166">Druk op Enter om een screenshot van het venster te maken</translation>
 <translation id="8926951137623668982">Plank altijd verborgen</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 bestand}other{# bestanden}}</translation>
 <translation id="8936501819958976551">gedeactiveerd</translation>

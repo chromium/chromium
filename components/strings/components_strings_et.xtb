@@ -212,6 +212,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1391289752476847787">Aktsiad ja võlakirjad</translation>
 <translation id="1391625539203220400">Kas salvestada IBAN sellesse seadmesse?</translation>
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> ei saatnud andmeid.</translation>
+<translation id="1397811292916898096">Otsi teenusega <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Heleroheline</translation>
 <translation id="1406500794671479665">Kinnitamine ...</translation>
 <translation id="1406812885827747674">Luba sel korral</translation>
@@ -539,6 +540,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2071692954027939183">Märguanded blokeeriti automaatselt, kuna tavaliselt ei luba te neid kuvada</translation>
 <translation id="2071852865256799872">Teie brauserit haldab teie organisatsioon ja teie profiili haldab <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Mood ja stiil</translation>
+<translation id="2075497153347571252">Teie administraator on blokeerinud loa <ph name="PERMISSION" /> lähtekohas <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="20817612488360358">Kasutamiseks on määratud süsteemi puhverserveri seaded, kuid määratud on ka konkreetne puhverserveri konfigureerimine.</translation>
 <translation id="2082238445998314030">Tulemus <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1881,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4885256590493466218">Makske kassas kaardiga <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Kaitske paroole funktsiooniga Windows Hello</translation>
 <translation id="4888600795924685526">Võõrkeeleõpe</translation>
+<translation id="4890070067176768718">Teie administraator on lubanud loa <ph name="PERMISSION" /> lähtekohas <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Tagumine</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olümpiamängud</translation>
@@ -2325,6 +2328,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5830698870816298009">kaamera kasutamine ja liigutamine</translation>
 <translation id="583281660410589416">Tundmatu</translation>
 <translation id="5838278095973806738">Te ei tohiks sellele saidile sisestada tundlikku teavet (nt paroolid või krediitkaardid), kuna ründajad võivad selle varastada.</translation>
+<translation id="5838732667866024867">Graafikul saate hinnamuudatused üle vaadata vasak-/paremnoole abil</translation>
 <translation id="5840318881868981258">Teie Google’i kontol <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Salvesta kontole?</translation>
 <translation id="5847181246682413476">Toiteallikad</translation>
@@ -2613,6 +2617,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6432297414176614592">Lisateave reklaamiteemade kohta</translation>
 <translation id="6432831586648556868">Müügi- ja turundusvaldkonna töökohad</translation>
 <translation id="6433490469411711332">Kontaktandmete muutmine</translation>
+<translation id="6433501201775827830">Valige oma otsingumootor</translation>
 <translation id="6433595998831338502">Host <ph name="HOST_NAME" /> keeldus ühendamast.</translation>
 <translation id="6433797564277305076">Kinnitage oma kaardid kiiremini, kasutades edaspidi seadmega avamist</translation>
 <translation id="643917412048333145">Kleidid</translation>
@@ -3969,6 +3974,7 @@ Lisateave:
 <translation id="9207861905230894330">Artikli lisamine ebaõnnestus.</translation>
 <translation id="9213433120051936369">Ilme kohandamine</translation>
 <translation id="9215416866750762878">Rakendus ei luba Chrome'il selle saidiga ohutult ühendust luua</translation>
+<translation id="9218430445555521422">Seadista vaikebrauseriks</translation>
 <translation id="9219103736887031265">Pildid</translation>
 <translation id="922152298093051471">Chrome'i kohandamine</translation>
 <translation id="9222403027701923763">Alg- ja keskharidus (12 klassi)</translation>

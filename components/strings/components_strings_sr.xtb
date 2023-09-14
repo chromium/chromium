@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">Акције и обвезнице</translation>
 <translation id="1391625539203220400">Желите да сачувате IBAN на овом уређају?</translation>
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> није послао никакве податке.</translation>
+<translation id="1397811292916898096">Претражите помоћу: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1406500794671479665">Верификовање...</translation>
 <translation id="1406812885827747674">Дозволи овај пут</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">Обавештења су аутоматски блокирана јер их обично не дозвољавате</translation>
 <translation id="2071852865256799872">Прегледачем управља организација, а профилом управља <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Мода и стил</translation>
+<translation id="2075497153347571252">Администратор је блокирао дозволу (<ph name="PERMISSION" />) на <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="20817612488360358">Подешено је да се користе системска подешавања проксија, али је наведена експлицитна конфигурација проксија.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. од <ph name="TOTAL_RESULTS" /> резултата</translation>
@@ -1879,6 +1881,7 @@
 <translation id="4885256590493466218">Плаћајте помоћу картице <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Заштитите лозинке помоћу Windows Hello-а</translation>
 <translation id="4888600795924685526">Студије страних језика</translation>
+<translation id="4890070067176768718">Администратор је одобрио дозволу (<ph name="PERMISSION" />) на <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Задњи део</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпијада</translation>
@@ -2325,6 +2328,7 @@
 <translation id="5830698870816298009">коришћење и кретање камере</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5838278095973806738">Немојте да уносите осетљиве информације на овом сајту (на пример, лозинке или кредитне картице) јер нападачи могу да их украду.</translation>
+<translation id="5838732667866024867">Промене цена на графикону можете да прегледате помоћу стрелице налево и надесно</translation>
 <translation id="5840318881868981258">На Google налогу, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Желите да сачувате на налогу?</translation>
 <translation id="5847181246682413476">Уређаји за напајање</translation>
@@ -2612,6 +2616,7 @@
 <translation id="6432297414176614592">Више о темама огласа</translation>
 <translation id="6432831586648556868">Послови у продаји и маркетингу</translation>
 <translation id="6433490469411711332">Измените контакт информације</translation>
+<translation id="6433501201775827830">Изаберите претраживач</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> је одбио повезивање.</translation>
 <translation id="6433797564277305076">Од сада брже потврђујте картице уз откључавање уређаја</translation>
 <translation id="643917412048333145">Хаљине</translation>
@@ -3969,6 +3974,7 @@
 <translation id="9207861905230894330">Додавање чланка није успело.</translation>
 <translation id="9213433120051936369">Прилагодите изглед</translation>
 <translation id="9215416866750762878">Апликација онемогућава Chrome-у да се безбедно повеже са овим сајтом</translation>
+<translation id="9218430445555521422">Подеси као подразумеван</translation>
 <translation id="9219103736887031265">Слике</translation>
 <translation id="922152298093051471">Прилагодите Chrome</translation>
 <translation id="9222403027701923763">Основно и средње образовање (K-12)</translation>

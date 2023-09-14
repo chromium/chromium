@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Լինուքսի տարածքը</translation>
 <translation id="1347975661240122359">Թարմացումը կսկսվի, երբ մարտկոցը լիցքավորված լինի <ph name="BATTERY_LEVEL" />%:</translation>
 <translation id="1348966090521113558">Մկնիկի հատուկ գործառույթների կարգավորումներ</translation>
-<translation id="1351089605448164407">Ձեր Drive-ից</translation>
 <translation id="1353275871123211385">Որպեսզի կարողանաք օգտագործել ծնողական վերահսկողության գործառույթները (օրինակ՝ հաստատել հավելվածների տեղադրումը և սահմանափակել սարքի օգտագործման ժամանակը), երեխան պետք է ունենա Google հաշիվ, որը դուք եք կառավարում։ Ավելի ուշ կարող եք ավելացնել ուսումնական հաշիվ, որը կարող է օգտագործվել այնպիսի գործիքների հետ, ինչպիսին է Google Classroom-ը։</translation>
 <translation id="135389172849514421">Աշխատում է անցանց ռեժիմում</translation>
 <translation id="1353980523955420967">Չհաջողվեց գտնել PPD ֆայլը: Ստուգեք՝ արդյոք Chromebook-ն առցանց ռեժիմում է, և նորից փորձեք:</translation>
@@ -2189,7 +2188,6 @@
 <translation id="2710101514844343743">Օգտագործման և դիագնոստիկ տվյալներ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">Փորձնական տարբերակներ</translation>
-<translation id="2711929077861214979">Անվտանգությանը վերաբերող խորհուրդներ</translation>
 <translation id="2713106313042589954">Անջատել տեսախցիկը</translation>
 <translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2714180132046334502">Մուգ ֆոն</translation>
@@ -2499,7 +2497,6 @@
 <translation id="2939908794993783865">Լրացուցիչ ոչ ակտիվ կայքեր</translation>
 <translation id="2939938020978911855">Ցուցադրել հասանելի Bluetooth սարքերը</translation>
 <translation id="2941112035454246133">Ցածր</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">Սպասում ենք օգտատիրոջ թույլտվությանը...</translation>
 <translation id="2942581856830209953">Անհատականացնել այս էջը</translation>
 <translation id="2942707801577151363">Բացեք, փոփոխեք և պահեք Word, Excel և PowerPoint ֆայլեր։ Որոշ գործառույթներից օգտվելու համար կարող է բաժանորդագրություն պահանջվել։</translation>
@@ -4695,7 +4692,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Միացնել կայքի ձայնը}one{Միացնել կայքի ձայնը}other{Միացնել կայքերի ձայնը}}</translation>
 <translation id="474609389162964566">Ակտիվացրեք ձեր Օգնականը՝ ասելով «Ok Google»</translation>
-<translation id="4746351372139058112">Հաղորդագրություններ</translation>
 <translation id="4748783296226936791">Կայքերը սովորաբար միանում են HID սարքերին այնպիսի գործառույթների համար, որոնք օգտագործում են ոչ սովորական ստեղնաշարեր, խաղային վահանակներ և նմանատիպ այլ սարքեր</translation>
 <translation id="4749960740855309258">Բացել նոր ներդիր</translation>
 <translation id="4750185073185658673">Կարգավորումն ավարտելու համար հաստատեք ևս մի քանի թույլտվությունների հարցումներ ձեր հեռախոսում։ Համոզվեք, որ ձեր հեռախոսի Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
@@ -4762,7 +4758,6 @@
 <translation id="4807122856660838973">Միացնել Անվտանգ դիտարկումը</translation>
 <translation id="4807514039636325497">D-Bus-ի մանրամասներ</translation>
 <translation id="4808667324955055115">Ելնող պատուհաններն արգելափակված են՝</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Ստուգեք Chrome Web Store-ից հեռացված <ph name="BEGIN_BOLD" />1 ընդլայնում<ph name="END_BOLD" />}one{Ստուգեք Chrome Web Store-ից հեռացված <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} ընդլայնում<ph name="END_BOLD" />}other{Ստուգեք Chrome Web Store-ից հեռացված <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} ընդլայնում<ph name="END_BOLD" />}}</translation>
 <translation id="4809079943450490359">Հրահանգներ ձեր սարքի ադմինիստրատորի կողմից՝</translation>
 <translation id="4809447465126035330">Ջնջել</translation>
 <translation id="480990236307250886">Բացել գլխավոր էջը</translation>
@@ -9832,6 +9827,7 @@
 <translation id="8962083179518285172">Թաքցնել մանրամասները</translation>
 <translation id="8962863356073277855">URL-ն անհրաժեշտ է նշել հետևյալ ձևաչափով՝ https://www.example.com</translation>
 <translation id="8962918469425892674">Այս կայքն օգտագործում է շարժման և լուսավորության տվիչներ:</translation>
+<translation id="8963117664422609631">Անցնել կայքի կարգավորումներ</translation>
 <translation id="8965037249707889821">Մուտքագրեք հին գաղտնաբառը</translation>
 <translation id="8966809848145604011">Այլ պրոֆիլներ</translation>
 <translation id="8967427617812342790">Ավելացնել ընթերցանության ցանկում</translation>
@@ -10208,7 +10204,6 @@
 <translation id="964286338916298286">Ադմինիստրատորն անջատել է Chrome-ի բոնուսները ձեր սարքի համար:</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Հավելված}one{Հավելված}other{Հավելվածներ}}</translation>
 <translation id="964790508619473209">Էկրանի դիրքը</translation>
-<translation id="965211523698323809">Ուղարկել և ստանալ SMS-ներ <ph name="DEVICE_TYPE" />սարքում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Հաղորդել Google Cast-ի հետ կապված խնդրի մասին</translation>
 <translation id="966588271015727539">Ընտրեք Bluetooth-ի միջոցով միացվող բրայլյան էկրան</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Փակել այս պրոֆիլը}one{&amp;Փակել այս պրոֆիլը (# պատուհան)}other{&amp;Փակել այս պրոֆիլը (# պատուհան)}}</translation>

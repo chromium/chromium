@@ -212,6 +212,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1391289752476847787">Ações e títulos</translation>
 <translation id="1391625539203220400">Salvar o IBAN neste dispositivo?</translation>
 <translation id="139305205187523129">Nenhum dado foi enviado por <ph name="HOST_NAME" /></translation>
+<translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Verde-claro</translation>
 <translation id="1406500794671479665">Verificando...</translation>
 <translation id="1406812885827747674">Permitir desta vez</translation>
@@ -539,6 +540,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2071692954027939183">As notificações foram bloqueadas automaticamente porque você não costuma permiti-las</translation>
 <translation id="2071852865256799872">O navegador é gerenciado pela sua organização, e seu perfil é gerenciado por <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Moda e estilo</translation>
+<translation id="2075497153347571252">O administrador bloqueou a permissão <ph name="PERMISSION" /> em <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="20817612488360358">As configurações de proxy do sistema são definidas para serem utilizadas, mas uma configuração explícita de proxy também foi especificada.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1881,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4885256590493466218">Pague com <ph name="CARD_DETAIL" /> na finalização da compra</translation>
 <translation id="4887406273302438710">Proteger senhas com o Windows Hello</translation>
 <translation id="4888600795924685526">Estudo de língua estrangeira</translation>
+<translation id="4890070067176768718">O administrador concedeu a permissão de <ph name="PERMISSION" /> em <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Traseira</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpíadas</translation>
@@ -2325,6 +2328,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5830698870816298009">uso e movimento da câmera</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5838278095973806738">É recomendado não fornecer informações confidenciais a esse site (por exemplo, senhas ou cartões de crédito), porque elas podem ser roubadas por invasores.</translation>
+<translation id="5838732667866024867">Use as setas para a esquerda/direita para analisar as mudanças de preço no gráfico</translation>
 <translation id="5840318881868981258">Na sua Conta do Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Salvar na conta?</translation>
 <translation id="5847181246682413476">Fontes de alimentação</translation>
@@ -2613,6 +2617,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6432297414176614592">Mais informações sobre os temas de anúncios</translation>
 <translation id="6432831586648556868">Vagas de emprego em marketing e vendas</translation>
 <translation id="6433490469411711332">Editar informações de contato</translation>
+<translation id="6433501201775827830">Escolha seu mecanismo de pesquisa</translation>
 <translation id="6433595998831338502">A conexão com <ph name="HOST_NAME" /> foi recusada.</translation>
 <translation id="6433797564277305076">Confirme seus cartões mais rapidamente usando o desbloqueio do dispositivo.</translation>
 <translation id="643917412048333145">Vestidos</translation>
@@ -3971,6 +3976,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9207861905230894330">Falha ao adicionar artigo.</translation>
 <translation id="9213433120051936369">Personalizar aparência</translation>
 <translation id="9215416866750762878">Um aplicativo está impedindo que o Chrome se conecte com segurança a este site</translation>
+<translation id="9218430445555521422">Definir como padrão</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="9222403027701923763">Educação primária e secundária (K-12)</translation>

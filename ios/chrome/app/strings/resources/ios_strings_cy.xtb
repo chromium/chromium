@@ -274,6 +274,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2556092377360758201">Dim Amddiffyniad (ni argymhellir)</translation>
 <translation id="2562041823070056534">Anfon at <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Defnyddio a Chadw Cyfrineiriau yn eich Cyfrif Google</translation>
+<translation id="2577522251608256362">Cymdogaeth</translation>
 <translation id="2578571896248130439">Anfon Tudalen We</translation>
 <translation id="2584132361465095047">Ychwanegu cyfrif…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u darganfod}=1{{count} Cyfrinair sydd wedi'i Ddarganfod}two{{count} Gyfrinair sydd wedi'u Darganfod}few{{count} Cyfrinair sydd wedi'u Darganfod}many{{count} Cyfrinair sydd wedi'u Darganfod}other{{count} Cyfrinair sydd wedi'u Darganfod}}</translation>
@@ -1090,7 +1091,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6944369514868857500">Dewis cyfrif arall</translation>
 <translation id="6944935964236827145">Cuddio Cyfieithu</translation>
 <translation id="6945221475159498467">Dewis</translation>
-<translation id="6955779377310719430">Cuddio Dilyn</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6973630695168034713">Ffolderi</translation>
 <translation id="6979158407327259162">Google Drive</translation>

@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">روشنی</translation>
 <translation id="5965524703725988602">گہری تھیم کو ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="5975235751479998104">ونڈوز کے ذریعے سب سے آگے ایپ پر جائیں</translation>
-<translation id="5976112937189445008">ونڈو ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="5978382165065462689">ریموٹ اسسٹنس کے ذریعے آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="5980301590375426705">مہمان سیشن ختم کریں</translation>
 <translation id="5983567367406220847">غیرفعالیت کی وجہ سے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔</translation>
@@ -1437,7 +1436,6 @@
 <translation id="6886172995547742638">‏آپ کے <ph name="DEVICE_TYPE" /> کی کارکردگی کم ہو سکتی ہے سندیافتہ <ph name="PREFERRED_MINIMUM_POWER" />W یا اعلی USB-C پاور ایڈاپٹر استعمال کریں۔</translation>
 <translation id="688631446150864480">ونڈوز کو سوئچ کرنے کیلئے نیچے تیر کے نشان والی کلید کو دبائیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
-<translation id="6901883536534621389">نیویگیٹ کرنے کے لیے اشاروں کو آزمائیں</translation>
 <translation id="6912841030378044227">ایڈریس بار پر فوکس کریں</translation>
 <translation id="6912901278692845878">مختصر ٹؤر</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
@@ -1743,7 +1741,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> استعمال کر کے</translation>
 <translation id="8185090165691050712">قفل موڈ کا سائز تبدیل کرنے کے لیے مینیو کو آن/آف کریں</translation>
 <translation id="8192202700944119416">اطلاعات پوشیدہ ہیں۔</translation>
-<translation id="8196787716797768628">‏ایپس کے درمیان فوری طور پر سوئچ کرنے کے لیے اشارات کا استعمال کریں اور ٹیبلیٹ وضع میں اپنے Chromebook کے ساتھ تعامل کریں۔</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>
@@ -1902,7 +1899,6 @@
 <translation id="8909138438987180327">بیٹری <ph name="PERCENTAGE" /> فیصد ہے۔</translation>
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏Google اسسٹنٹ یہ زبان نہیں بولتا ہے۔</translation>
-<translation id="8924458948354692166">ونڈو کا اسکرین شاٹ لینے کے لیے اینٹر دبائیں</translation>
 <translation id="8926951137623668982">شیلف ہمیشہ پوشیدہ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 فائل}other{# فائلز}}</translation>
 <translation id="8936501819958976551">غیر فعال</translation>

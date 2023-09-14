@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />লৈ পঠিয়াই থকা হৈছে...</translation>
 <translation id="2576499762020411840">আপোনাৰ Google একাউণ্টত পাছৱৰ্ড ব্যৱহাৰ কৰক আৰু ছেভ কৰক</translation>
+<translation id="2577522251608256362">চুবুৰীয়া অঞ্চল</translation>
 <translation id="2578571896248130439">ৱেবপৃষ্ঠা পঠিয়াওক</translation>
 <translation id="2584132361465095047">একাউণ্ট যোগ দিয়ক…</translation>
 <translation id="2587010742985678408">{count,plural, =0{কোনো হেক কৰা পাছৱৰ্ড নাই}=1{{count} টা হেক কৰা পাছৱৰ্ড}one{{count} টা হেক কৰা পাছৱৰ্ড}other{{count} টা হেক কৰা পাছৱৰ্ড}}</translation>
@@ -1090,7 +1091,6 @@
 <translation id="6944369514868857500">অন্য কোনো একাউণ্ট বাছনি কৰক</translation>
 <translation id="6944935964236827145">অনুবাদ লুকুৱাওক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
-<translation id="6955779377310719430">অনুসৰণ কৰাৰ সুবিধাটো লুকুৱাওক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6973630695168034713">ফ’ল্ডাৰ</translation>
 <translation id="6979158407327259162">Google Drive</translation>

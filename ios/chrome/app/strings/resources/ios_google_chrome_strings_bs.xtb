@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="1105362920864247682">Brisanje podataka o pregledavanju u Chromeu.</translation>
 <translation id="1143896152279775643">Vaša lozinka će se sačuvati u Googleov Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Nastavite koristiti podatke Chromea na Google računu.</translation>
 <translation id="1282031177488366470">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
@@ -24,7 +25,7 @@ Stvari za razmatranje:
 
   • Ako sinhronizirate historiju s Google računom, pokazatelji također mogu uključivati informacije o URL-ovima koje ste posjetili.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Imate najjaču zaštitu Chromea od štetnih web lokacija</translation>
-<translation id="1657395063736185342">Pretraživanje slika u Chromeu</translation>
+<translation id="1657395063736185342">Pretraživanje vizuelnih elemenata u Chromeu</translation>
 <translation id="1675955119303651351">Neki podaci Chromea još nisu sačuvani na vaš Google račun.
         Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
 <translation id="1682483655351012182">Sinhroniziraj Chrome podatke</translation>
@@ -56,6 +57,7 @@ Stvari za razmatranje:
 <translation id="2736805085127235148">Obavještenja Chromea su trenutno isključena u postavkama uređaja.</translation>
 <translation id="2767464022270041271">Nije sačuvana nijedna lozinka. Google upravitelj lozinki može provjeriti vaše lozinke kada ih sačuvate.</translation>
 <translation id="2840432500933227975">Otvorite Postavke Chromea u iOS-u pa dodirnite "Zadani APP za preglednik" i odaberite Chrome.</translation>
+<translation id="2868822340714096138">Brisanje podataka o pregledavanju u Chromeu</translation>
 <translation id="2869959624320573933">Prijavite se na Chrome</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -151,7 +153,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="6916015246697034114">Pretražujte glasom u Chromeu</translation>
 <translation id="6964931465519938134">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6975725306479268850">Odaberite Chrome za automatsko popunjavanje</translation>
-<translation id="7004159181872656283">Pretraživanje slika u Chromeu.</translation>
+<translation id="7004159181872656283">Pretraživanje vizuelnih elemenata u Chromeu.</translation>
 <translation id="7056826488869329999">Otvara i pokreće sigurnosnu provjeru u Chromeu.</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7124339256045485976">Redovno ažurirajte Chrome</translation>
@@ -159,7 +161,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7165736900384873061">Uključite QR skener u Google Chromeu</translation>
 <translation id="7173660919484573146">Chrome koristi Face ID za odobravanje pristupa vašim lozinkama.</translation>
 <translation id="7187993566681480880">Štiti vas u Chromeu i može se koristiti da poboljša vašu sigurnost u drugim Googleovim aplikacijama kada ste prijavljeni.</translation>
-<translation id="7200524487407690471">Chrome automatski pokreće sigurnosnu provjeru svaki dan kako bi vas zaštitio od neovlaštenog pristupa podacima, nesigurnih web-lokacija i drugih opasnosti. Više o sigurnosnoj provjeri možete pronaći u postavkama.</translation>
+<translation id="7200524487407690471">Chrome automatski pokreće sigurnosnu provjeru svakog dana da vas zaštiti od narušavanja podataka, nesigurnih web lokacija i drugog. U Postavkama možete pronaći više informacija o sigurnosnoj provjeri.</translation>
 <translation id="72119412072970160">Možete koristiti lozinke koje ste sačuvali u Googleovom Upravitelju lozinki u drugim aplikacijama na iPadu.</translation>
 <translation id="7254380941803999489">Postavi Chrome kao zadani preglednik</translation>
 <translation id="7261678641327190792">Chrome ne može provjeriti vaše lozinke</translation>

@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux स्टोरेज</translation>
 <translation id="1347975661240122359">बॅटरी <ph name="BATTERY_LEVEL" />% पर्यंत पोहोचल्यावर अपडेट सुरू होईल.</translation>
 <translation id="1348966090521113558">माउसची अ‍ॅक्सेसिबिलिटी सेटिंग्ज</translation>
-<translation id="1351089605448164407">तुमच्या Drive मधून</translation>
 <translation id="1353275871123211385">ॲपला मंजुरी देणे आणि स्क्रीन वेळ मर्यादा यांसारखी पालक नियंत्रणे वापरण्यासाठी, लहान मुलाकडे पालकाद्वारे व्यवस्थापित केलेले Google खाते असणे आवश्यक आहे. Google Classroom सारख्या टूलसाठी नंतर शाळेचे खाते जोडले जाऊ शकते.</translation>
 <translation id="135389172849514421">ऑफलाइन काम करते</translation>
 <translation id="1353980523955420967">PPD सापडत नाही. तुमचे Chromebook ऑनलाइन असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -2203,7 +2202,6 @@
 <translation id="2710101514844343743">वापर आणि निदान डेटा</translation>
 <translation id="271033894570825754">नवीन</translation>
 <translation id="2711073837061989559">चाचण्या</translation>
-<translation id="2711929077861214979">सुरक्षितता सूचना</translation>
 <translation id="2713106313042589954">कॅमेरा बंद करा</translation>
 <translation id="2713444072780614174">पांढरा</translation>
 <translation id="2714180132046334502">गडद बॅकग्राउंड</translation>
@@ -2513,7 +2511,6 @@
 <translation id="2939908794993783865">अतिरिक्त इनॲक्टिव्ह साइट</translation>
 <translation id="2939938020978911855">उपलब्ध असलेले ब्लूटूथ डिव्हाइस दर्शवा</translation>
 <translation id="2941112035454246133">निम्न</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">वाट पाहत आहे…</translation>
 <translation id="2942581856830209953">हे पेज कस्टमाइझ करा</translation>
 <translation id="2942707801577151363">Word, Excel आणि PowerPoint फाइल उघडा, संपादित करा आणि सेव्ह करा. काही वैशिष्ट्यांसाठी सदस्यत्व आवश्यक असू शकते.</translation>
@@ -4708,7 +4705,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करा}other{साइट अनम्यूट करा}}</translation>
 <translation id="474609389162964566">“Ok Google” म्हणून Assistant अ‍ॅक्सेस करा</translation>
-<translation id="4746351372139058112">मेसेज</translation>
 <translation id="4748783296226936791">असामान्य कीबोर्ड, गेम नियंत्रक आणि इतर डिव्हाइसचा वापर करणाऱ्या वैशिष्ट्यांसाठी साइट सामान्यपणे HID डिव्हाइसशी कनेक्ट करतात</translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
 <translation id="4750185073185658673">आणखी परवानग्यांचे पुनरावलोकन करण्यासाठी, तुमच्या फोनवर जा. तुमच्या फोनचे ब्लूटूथ आणि वाय-फाय सुरू केले असल्याची खात्री करा.</translation>
@@ -4775,7 +4771,6 @@
 <translation id="4807122856660838973">सुरक्षित ब्राउझिंग सुरू करा</translation>
 <translation id="4807514039636325497">DBus तपशील</translation>
 <translation id="4808667324955055115">पॉप-अप ब्लॉक केले</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome वेब स्टोअर वरून काढून टाकलेल्या <ph name="BEGIN_BOLD" />१ एक्स्टेंशन<ph name="END_BOLD" /> चे पुनरावलोकन करा}other{Chrome वेब स्टोअर वरून काढून टाकलेल्या <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} एक्स्टेंशन<ph name="END_BOLD" /> चे पुनरावलोकन करा}}</translation>
 <translation id="4809079943450490359">तुमच्या डिव्हाइस अ‍ॅडमिनिस्ट्रेटरकडून सूचना:</translation>
 <translation id="4809447465126035330">हटवा</translation>
 <translation id="480990236307250886">होम पेज उघडा</translation>
@@ -9845,6 +9840,7 @@
 <translation id="8962083179518285172">तपशील लपवा</translation>
 <translation id="8962863356073277855">URL चा फॉरमॅट https://www.example.com असणे आवश्यक आहे</translation>
 <translation id="8962918469425892674">ही साइट गती किंवा प्रकाश सेन्सर वापरत आहे.</translation>
+<translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8965037249707889821">जुना पासवर्ड एंटर करा</translation>
 <translation id="8966809848145604011">इतर प्रोफाइल</translation>
 <translation id="8967427617812342790">वाचन सूचीमध्ये जोडा</translation>
@@ -10223,7 +10219,6 @@
 <translation id="964286338916298286">तुमच्या IT ॲडमिनिस्ट्रेटरने तुमच्या डिव्हाइसाठी Chrome Goodies बंद केले आहे.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ॲप्लिकेशन}other{ॲप्लिकेशन}}</translation>
 <translation id="964790508619473209">स्क्रीन व्यवस्था</translation>
-<translation id="965211523698323809">तुमच्या <ph name="DEVICE_TYPE" /> वरून एसएमएस पाठवा आणि मिळवा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast शी संबंधित समस्येची तक्रार करा</translation>
 <translation id="966588271015727539">ब्लूटूथ ब्रेल डिस्प्ले निवडा</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{ही प्रोफाइल बंद करा}other{ही प्रोफाइल बंद करा (# Windows)}}</translation>

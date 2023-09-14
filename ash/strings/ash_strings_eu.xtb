@@ -1217,7 +1217,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5961960957587052807">Txikia</translation>
 <translation id="5965524703725988602">Aktibatu/Desaktibatu gai iluna. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Egin aurrera leiho batetik bestera</translation>
-<translation id="5976112937189445008">Leihoa grabatzeko, sakatu Sartu</translation>
 <translation id="5978382165065462689">Urruneko laguntzaren bidez pantailaren kontrola partekatzen.</translation>
 <translation id="5980301590375426705">Irten gonb. saiotik</translation>
 <translation id="5983567367406220847">Jarduerarik egon ez denez, wifi-gunea desaktibatu da.</translation>
@@ -1439,7 +1438,6 @@ Berriki instalatu da</translation>
 <translation id="6886172995547742638">Baliteke <ph name="DEVICE_TYPE" /> gailuaren errendimendua txikiagoa izatea. Erabili <ph name="PREFERRED_MINIMUM_POWER" /> W-eko edo gehiagoko USB-C egokigailu bat.</translation>
 <translation id="688631446150864480">Leihoz aldatzeko, sakatu behera egiteko gezi-tekla</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
-<translation id="6901883536534621389">Probatu nabigatzeko keinuak</translation>
 <translation id="6912841030378044227">Fokuratu helbide-barra</translation>
 <translation id="6912901278692845878">Txango bizkorra</translation>
 <translation id="6919251195245069855">Ezin izan da hauteman txartel adimenduna. Saiatu berriro.</translation>
@@ -1744,7 +1742,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> erabiltzen</translation>
 <translation id="8185090165691050712">Aktibatu/Desaktibatu tamaina aldatzeko aukera blokeatuta daukan moduaren menua</translation>
 <translation id="8192202700944119416">Jakinarazpenak ezkutatuta daude.</translation>
-<translation id="8196787716797768628">Erabili keinuak aplikazio batetik bestera joateko eta Chromebook gailua tableta moduan erabiltzeko.</translation>
 <translation id="8198456017687137612">Edukia igortzen ari den fitxa</translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8203795194971602413">Egin klik eskuineko botoiarekin</translation>
@@ -1903,7 +1900,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8909138438987180327">Bateriaren % <ph name="PERCENTAGE" /> geratzen zaizu.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google-ren Laguntzailea zerbitzuak ezin du erabili hizkuntza hori.</translation>
-<translation id="8924458948354692166">Leihoaren pantaila-argazki bat ateratzeko, sakatu Sartu</translation>
 <translation id="8926951137623668982">Apala beti dago ezkutatuta</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxategi}other{# fitxategi}}</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>

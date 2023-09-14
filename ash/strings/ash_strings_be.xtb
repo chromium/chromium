@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">Крыху</translation>
 <translation id="5965524703725988602">Уключыць або выключыць цёмную тэму. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Пераключацца наперад паміж вокнамі</translation>
-<translation id="5976112937189445008">Каб запісаць акно, націсніце Увод</translation>
 <translation id="5978382165065462689">Абагульванне кантролю над экранам праз Аддаленую дапамогу.</translation>
 <translation id="5980301590375426705">Выйсці з гасцявога рэжыму</translation>
 <translation id="5983567367406220847">Хот-спот быў выключаны праз бяздзейнасць.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">Прадукцыйнасць прылады <ph name="DEVICE_TYPE" /> можа знізіцца. Выкарыстоўвайце адаптар сілкавання USB-C з магутнасцю, не меншай за <ph name="PREFERRED_MINIMUM_POWER" /> Вт</translation>
 <translation id="688631446150864480">Для пераключэння паміж вокнамі націскайце на стрэлку ўніз</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
-<translation id="6901883536534621389">Паспрабуйце выкарыстоўваць для навігацыі жэсты</translation>
 <translation id="6912841030378044227">Перайсці ў адрасны радок</translation>
 <translation id="6912901278692845878">Кароткі агляд</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835">Выкарыстоўваецца <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Уключыць або выключыць меню рэжыму блакіроўкі змянення памеру</translation>
 <translation id="8192202700944119416">Апавяшчэнні схаваны.</translation>
-<translation id="8196787716797768628">З дапамогай жэстаў можна хутка пераключацца паміж праграмамі і выкарыстоўваць Chromebook у планшэтным рэжыме.</translation>
 <translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8203795194971602413">Націсканне правай клавішай мышы</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">Узровень зараду: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Памочнік Google не размаўляе на гэтай мове.</translation>
-<translation id="8924458948354692166">Каб зрабіць здымак акна, націсніце Увод</translation>
 <translation id="8926951137623668982">Паліца заўсёды схавана</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="8936501819958976551">выключыла</translation>

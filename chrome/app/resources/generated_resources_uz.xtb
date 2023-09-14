@@ -444,7 +444,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1347512539447549782">Linux xotirasi</translation>
 <translation id="1347975661240122359">Yangilanish batayeraning <ph name="BATTERY_LEVEL" />% quvvatida boshlanadi.</translation>
 <translation id="1348966090521113558">Sichqoncha qulayligi sozlamalari</translation>
-<translation id="1351089605448164407">Drive omboridan</translation>
 <translation id="1353275871123211385">Ilovadan foydalanishga ruxsat va ekran vaqtini cheklash kabi ota-ona nazorati funksiyalari uchun farzand Google hisobi ota-ona boshqaruvida boʻlishi zarur. Google Classroom kabi vositalardan foydalanish uchun maktab hisobini keyinroq kiritish mumkin.</translation>
 <translation id="135389172849514421">Internetsiz ishlaydi</translation>
 <translation id="1353980523955420967">PPD topilmadi. Chromebook internetga ulanganligini tekshiring va qaytadan urining.</translation>
@@ -2191,7 +2190,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2710101514844343743">Foydalanish va diagnostika axboroti</translation>
 <translation id="271033894570825754">Yangi</translation>
 <translation id="2711073837061989559">Sinovlar</translation>
-<translation id="2711929077861214979">Xavfsizlikka oid maslahatlar</translation>
 <translation id="2713106313042589954">Kamerani faolsizlantirish</translation>
 <translation id="2713444072780614174">Oq</translation>
 <translation id="2714180132046334502">Qorong‘i fon</translation>
@@ -2501,7 +2499,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2939908794993783865">Qoʻshimcha nofaol saytlar</translation>
 <translation id="2939938020978911855">Mavjud Bluetooth qurilmalar ko‘rsatilsin</translation>
 <translation id="2941112035454246133">Past</translation>
-<translation id="2942279350258725020">Android Xabarlar</translation>
 <translation id="2942560570858569904">Kutilmoqda...</translation>
 <translation id="2942581856830209953">Bu sahifani sozlash</translation>
 <translation id="2942707801577151363">Word, Excel va PowerPoint fayllarini oʻching, tahrirlang va saqlang. Ayrim funksiyalar uchun obuna talab etilishi mumkin.</translation>
@@ -4698,7 +4695,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Sayt ovozini chiqarish}other{Saytlar ovozini chiqarish}}</translation>
 <translation id="474609389162964566">Asistentdan “Ok Google” deb aytib foydalaning</translation>
-<translation id="4746351372139058112">Xabarlar</translation>
 <translation id="4748783296226936791">Saytlar odatda notanish klaviatura, oʻyin joystiklari va hokazo qurilmalardan foydalanish uchun HID qurilmalarga ulanadi</translation>
 <translation id="4749960740855309258">Yangi varaq ochish</translation>
 <translation id="4750185073185658673">Telefoningizda qoʻshimcha ruxsatlarni tekshiring. Telefonda Bluetooth va Wi-Fi yoqilganini tekshiring.</translation>
@@ -4765,7 +4761,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4807122856660838973">Saytlarni xavfsiz kezish rejimini yoqish</translation>
 <translation id="4807514039636325497">DBus tafsilotlari</translation>
 <translation id="4808667324955055115">Qalqib chiquvchi oynalar taqiqlangan</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome Web Store omboridan oʻchirilgan <ph name="BEGIN_BOLD" />1 ta kengaytmani<ph name="END_BOLD" /> tekshiring}other{Chrome Web Store omboridan oʻchirilgan <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} ta kengaytmani<ph name="END_BOLD" /> tekshiring}}</translation>
 <translation id="4809079943450490359">Administrator korsatmalari:</translation>
 <translation id="4809447465126035330">Oʻchirish</translation>
 <translation id="480990236307250886">Bosh sahifani ochish</translation>
@@ -9832,6 +9827,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8962083179518285172">Tafsilotlarni yopish</translation>
 <translation id="8962863356073277855">URL manzil https://www.example.com formatida boʻlsin</translation>
 <translation id="8962918469425892674">Bu sayt harakat yoki yorug‘lik sensorlaridan foydalanmoqda.</translation>
+<translation id="8963117664422609631">Sayt sozlamalarini ochish</translation>
 <translation id="8965037249707889821">Eski parolni kiriting</translation>
 <translation id="8966809848145604011">Boshqa profillar</translation>
 <translation id="8967427617812342790">Mutolaa ro‘yxatiga qo‘shish</translation>
@@ -10210,7 +10206,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="964286338916298286">IT administratoringiz qurilmangiz uchun Chrome bonuslarini failsizlantirgan.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Ilova}other{Ilovalar}}</translation>
 <translation id="964790508619473209">Ekran joylashuv tartibi</translation>
-<translation id="965211523698323809"><ph name="DEVICE_TYPE" /> orqali SMS yuborish va qabul qilish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast muammosi haqida xabar berish</translation>
 <translation id="966588271015727539">Bluetooth brayl displeyini tanlang</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Bu profilni yopish}other{Bu profilni yopish (# ta oyna)}}</translation>

@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">Акції й облігації</translation>
 <translation id="1391625539203220400">Зберегти номер IBAN на цьому пристрої?</translation>
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> не надіслав дані.</translation>
+<translation id="1397811292916898096">Шукати в <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Світло-зелений</translation>
 <translation id="1406500794671479665">Перевірка...</translation>
 <translation id="1406812885827747674">Дозволити цього разу</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">Сповіщення автоматично заблоковано, оскільки ви зазвичай не дозволяєте їх</translation>
 <translation id="2071852865256799872">Вашим веб-переглядачем керує організація, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Мода та стиль</translation>
+<translation id="2075497153347571252">Ваш адміністратор заблокував дозвіл "<ph name="PERMISSION" />" для сайту <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="20817612488360358">Системні параметри проксі-сервера налаштовано для використання, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1881,7 @@
 <translation id="4885256590493466218">Оплатіть за допомогою <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Захист паролів за допомогою Windows Hello</translation>
 <translation id="4888600795924685526">Вивчення іноземних мов</translation>
+<translation id="4890070067176768718">Адміністратор надав дозвіл "<ph name="PERMISSION" />" для сайту <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Задній</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олімпійські ігри</translation>
@@ -2325,6 +2328,7 @@
 <translation id="5830698870816298009">використання й переміщення камери</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5838278095973806738">Не вводьте конфіденційну інформацію на цьому сайті (як-от паролі й дані кредитних карток). Зловмисники можуть викрасти її.</translation>
+<translation id="5838732667866024867">Щоб переглянути, як змінюються ціни на графіку, натисніть стрілку вліво або вправо</translation>
 <translation id="5840318881868981258">У вашому обліковому записі Google (<ph name="ACCOUNT" />)</translation>
 <translation id="5841338463993781099">Зберегти в обліковому записі?</translation>
 <translation id="5847181246682413476">Джерела живлення</translation>
@@ -2613,6 +2617,7 @@
 <translation id="6432297414176614592">Докладніше про теми оголошень</translation>
 <translation id="6432831586648556868">Вакансії у сфері продажу й маркетингу</translation>
 <translation id="6433490469411711332">Змінити контактні дані</translation>
+<translation id="6433501201775827830">Виберіть пошукову систему</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> відхилив запит на з’єднання.</translation>
 <translation id="6433797564277305076">Відтепер ви можете підтверджувати картки швидше за допомогою функції розблокування пристрою</translation>
 <translation id="643917412048333145">Сукні</translation>
@@ -3970,6 +3975,7 @@
 <translation id="9207861905230894330">Не вдалося додати статтю.</translation>
 <translation id="9213433120051936369">Налаштувати оформлення</translation>
 <translation id="9215416866750762878">Додаток перешкоджає Chrome безпечно під’єднуватися до цього сайту</translation>
+<translation id="9218430445555521422">Установити за умовчанням</translation>
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="9222403027701923763">Початкова й середня освіта (K-12)</translation>

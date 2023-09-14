@@ -1215,7 +1215,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5961960957587052807">Leicht</translation>
 <translation id="5965524703725988602">Dunkles Design aktivieren/deaktivieren. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Vorwärts von Fenster zu Fenster wechseln</translation>
-<translation id="5976112937189445008">Eingabetaste drücken, um Fenster aufzuzeichnen</translation>
 <translation id="5978382165065462689">Du teilst dir die Bildschirmsteuerung per Remote-Unterstützung.</translation>
 <translation id="5980301590375426705">Gastsitzung beenden</translation>
 <translation id="5983567367406220847">Aufgrund von Inaktivität wurde der Hotspot deaktiviert.</translation>
@@ -1437,7 +1436,6 @@ Neuinstallation</translation>
 <translation id="6886172995547742638">Die Leistungsfähigkeit deines <ph name="DEVICE_TYPE" /> kann hierdurch beeinträchtigt werden. Verwende ein zugelassenes USB-C-Netzteil mit einer Leistung von mindestens <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Drücke den Abwärtspfeil, um zwischen Fenstern zu wechseln</translation>
 <translation id="6896758677409633944">Kopieren</translation>
-<translation id="6901883536534621389">Touch-Gesten zum Navigieren ausprobieren</translation>
 <translation id="6912841030378044227">Fokus auf Adressleiste</translation>
 <translation id="6912901278692845878">Kurze Einführung</translation>
 <translation id="6919251195245069855">Deine Smartcard wurde nicht erkannt. Bitte versuche es noch einmal.</translation>
@@ -1743,7 +1741,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
 <translation id="8185090165691050712">Menü für die Größenänderungssperre öffnen/schließen</translation>
 <translation id="8192202700944119416">Benachrichtigungen sind ausgeblendet.</translation>
-<translation id="8196787716797768628">Mit Touch-Gesten kannst du im Tablet-Modus schnell zwischen Apps wechseln und dein Chromebook bedienen.</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8203795194971602413">Rechtsklick</translation>
@@ -1902,7 +1899,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8909138438987180327">Akkustand: <ph name="PERCENTAGE" />.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant spricht diese Sprache nicht.</translation>
-<translation id="8924458948354692166">Eingabetaste drücken, um einen Screenshot eines Fensters aufzunehmen</translation>
 <translation id="8926951137623668982">Ablage immer ausgeblendet</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 Datei}other{# Dateien}}</translation>
 <translation id="8936501819958976551">deaktiviert</translation>

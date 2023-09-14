@@ -158,7 +158,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="1830634592642484976">Adresa je trenutno sačuvana u Chromeu. Da je koristite na Googleovim proizvodima, sačuvajte je na Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Potvrdite svoj identitet da uvijek možete pristupati sinhroniziranim podacima</translation>
 <translation id="1836891464494477513">{count,plural, =1{Oznaka je sačuvana na Google računu {email}}one{Oznake su sačuvane na Google računu {email}}few{Oznake su sačuvane na Google računu {email}}other{Oznake su sačuvane na Google računu {email}}}</translation>
-<translation id="183878838231635348">Na toj se kartici prikazuju problemi s privatnošću ili sigurnošću koje sigurnosna provjera automatski otkrije za vas.</translation>
+<translation id="183878838231635348">Kartica prikazuje probleme s privatnošću ili sigurnošću koje je sigurnosna provjera automatski otkrila za vas.</translation>
 <translation id="1847795903283049083">Također možete pregledati te stavke i upravljati njima u oznakama, na Listi za čitanje ili upravitelju lozinki.</translation>
 <translation id="1870148520156231997">Otkrij lozinku</translation>
 <translation id="1872096359983322073">Svjetiljka</translation>
@@ -268,12 +268,13 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2523363575747517183">Ova web lokacija neprestano pokušava otvoriti drugu aplikaciju.</translation>
 <translation id="2529021024822217800">Otvori sve</translation>
 <translation id="2536991091671391962">Možete koristiti sačuvane lozinke na bilo kojem uređaju. Pohranjuju se na Google upravitelju lozinki za račun <ph name="EMAIL" />.</translation>
-<translation id="2542268842667970959">Sakrij značajku Sigurnosna provjera</translation>
+<translation id="2542268842667970959">Sakrivanje opcije "Sigurnosna provjera"</translation>
 <translation id="2547458583188611426">Sinhronizacija ne funkcionira. Da pokrenete sinhronizaciju, unesite pristupni izraz.</translation>
 <translation id="2551153019974022505">Greška na računu</translation>
 <translation id="2556092377360758201">Bez zaštite (ne preporučuje se)</translation>
 <translation id="2562041823070056534">Slanje na uređaj <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Koristite lozinke s Google računa i pohranjujte ih na njemu</translation>
+<translation id="2577522251608256362">Naselje</translation>
 <translation id="2578571896248130439">Pošalji web stranicu</translation>
 <translation id="2584132361465095047">Dodaj račun…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Nema ugroženih lozinki}=1{{count} ugrožena lozinka}one{{count} ugrožena lozinka}few{{count} ugrožene lozinke}other{{count} ugroženih lozinki}}</translation>
@@ -312,6 +313,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2738375676495545665">Sakrij "Šta je novo"</translation>
 <translation id="2747003861858887689">Prethodno polje</translation>
 <translation id="2749231692441336879">Pratite kanal <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Računi na ovom uređaju</translation>
 <translation id="2762000892062317888">maloprije</translation>
 <translation id="2772667768515195373">Možete koristiti sačuvane adrese na Googleovim proizvodima. Ova adresa je sačuvana na vašem Google računu <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pretraživanje u anonimnom načinu rada</translation>
@@ -697,7 +699,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="488785315393301722">Prikaži detalje</translation>
 <translation id="4894963374040315706">To vam omogućava da brže pretražujete pomoću glasa</translation>
-<translation id="489903206070130262">Vaša posljednja otvorena kartica</translation>
+<translation id="489903206070130262">Posljednja otvorena kartica</translation>
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4904877109095351937">Označi kao pročitano</translation>
 <translation id="4908869848243824489">Googleov Discover</translation>
@@ -1090,7 +1092,6 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6944369514868857500">Odaberite drugi račun</translation>
 <translation id="6944935964236827145">Sakrij prijevod</translation>
 <translation id="6945221475159498467">Odaberi</translation>
-<translation id="6955779377310719430">Sakrij praćenje</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6973630695168034713">Folderi</translation>
 <translation id="6979158407327259162">Google Disk</translation>
@@ -1229,6 +1230,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="778855399387580014">Započni pretraživanje na novoj Chrome kartici.</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
+<translation id="78146569776629510">Preuzimanja</translation>
 <translation id="7839985698273989086">Offline stranica</translation>
 <translation id="7840771868269352570">Stavke koje ste odabrali će biti uklonjene.</translation>
 <translation id="7845466610722898">Prikaz Liste za čitanje</translation>

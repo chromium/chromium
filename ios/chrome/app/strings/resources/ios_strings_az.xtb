@@ -158,6 +158,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="1830634592642484976">Bu ünvan hazırda Chrome-da yadda saxlanır. Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlayın.</translation>
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="1836891464494477513">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{Əlfəcinlər Google Hesabında ({email}) yadda saxlandı}}</translation>
+<translation id="183878838231635348">Bu kart Təhlükəsizlik yoxlanışının avtomatik aşkar etdiyi məxfilik və ya güvənlik problemlərini göstərir.</translation>
 <translation id="1847795903283049083">Əlfəcinlər, Oxu Siyahısı və ya parol menecerində bu elementlərə baxa və onları idarə edə bilərsiniz.</translation>
 <translation id="1870148520156231997">Parolu Göstərin</translation>
 <translation id="1872096359983322073">Fənər</translation>
@@ -267,11 +268,13 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2523363575747517183">Bu veb sayt davamlı olaraq digər tətbiqi açmağa çalışır.</translation>
 <translation id="2529021024822217800">Hamısını açın</translation>
 <translation id="2536991091671391962">Yadda saxlanmış parolları istənilən cihazda istifadə edə bilərsiniz. <ph name="EMAIL" /> üçün Google Parol Menecerində yadda saxlanır.</translation>
+<translation id="2542268842667970959">"Təhlükəsizlik yoxlanışı" seçimini gizlədin</translation>
 <translation id="2547458583188611426">Sinxronlaşdırma işləmir. Sinxronlaşdırmanı başlatmaq üçün parol ifadəsini daxil edin.</translation>
 <translation id="2551153019974022505">Hesab xətası</translation>
 <translation id="2556092377360758201">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> cihazına göndərilir...</translation>
 <translation id="2576499762020411840">Google Hesabında Parolları İstifadə Edin və Yadda Saxlayın</translation>
+<translation id="2577522251608256362">Yaxın yerlər</translation>
 <translation id="2578571896248130439">Veb səhifəni göndərin</translation>
 <translation id="2584132361465095047">Hesab əlavə edin...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Oğurlanmış parol yoxdur}=1{{count} oğurlanmış parol}other{{count} oğurlanmış parol}}</translation>
@@ -695,6 +698,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4881695831933465202">Açın</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
 <translation id="4894963374040315706">Səsinizi istifadə edərək axtarış etməyə icazə verir</translation>
+<translation id="489903206070130262">Son açıq tab</translation>
 <translation id="4901778704868714008">Yadda saxlayın...</translation>
 <translation id="4904877109095351937">Oxunmuş Kimi Qeyd Edin</translation>
 <translation id="4908869848243824489">Google Təkliflər</translation>
@@ -1087,7 +1091,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6944369514868857500">Başqa Hesab Seçin</translation>
 <translation id="6944935964236827145">"Tərcümə edin" seçimini gizlədin</translation>
 <translation id="6945221475159498467">Seçin</translation>
-<translation id="6955779377310719430">"İzləyin" seçimini gizlədin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Qovluqlar</translation>
 <translation id="6979158407327259162">Google Disk</translation>

@@ -212,6 +212,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1391289752476847787">Cổ phiếu và trái phiếu</translation>
 <translation id="1391625539203220400">Lưu IBAN vào thiết bị này?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> không gửi bất kỳ dữ liệu nào.</translation>
+<translation id="1397811292916898096">Tìm kiếm bằng <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Xanh lục nhạt</translation>
 <translation id="1406500794671479665">Đang xác minh...</translation>
 <translation id="1406812885827747674">Cho phép lần này</translation>
@@ -2616,6 +2617,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6432297414176614592">Tìm hiểu thêm về chủ đề quảng cáo</translation>
 <translation id="6432831586648556868">Công việc bán hàng và tiếp thị</translation>
 <translation id="6433490469411711332">Chỉnh sửa thông tin liên hệ</translation>
+<translation id="6433501201775827830">Chọn công cụ tìm kiếm của bạn</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> đã từ chối kết nối.</translation>
 <translation id="6433797564277305076">Từ giờ trở đi, bạn có thể xác nhận thẻ nhanh hơn bằng tính năng mở khoá thiết bị</translation>
 <translation id="643917412048333145">Váy đầm</translation>
@@ -3973,6 +3975,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9207861905230894330">Không thêm được bài viết.</translation>
 <translation id="9213433120051936369">Tùy chỉnh giao diện</translation>
 <translation id="9215416866750762878">Một ứng dụng hiện không cho Chrome kết nối an toàn với trang web này</translation>
+<translation id="9218430445555521422">Đặt làm mặc định</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>
 <translation id="9222403027701923763">Học tiểu học và trung học (K-12)</translation>

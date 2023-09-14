@@ -274,6 +274,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2556092377360758201">Tidak Ada Perlindungan (tidak direkomendasikan)</translation>
 <translation id="2562041823070056534">Mengirim ke <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Simpan dan Gunakan Sandi di Akun Google Anda</translation>
+<translation id="2577522251608256362">Kawasan</translation>
 <translation id="2578571896248130439">Kirim Halaman</translation>
 <translation id="2584132361465095047">Tambahkan Akun…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Tidak Ada Sandi yang Telah Dibobol}=1{{count} Sandi Telah Dibobol}other{{count} Sandi Telah Dibobol}}</translation>
@@ -1090,7 +1091,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6944369514868857500">Pilih Akun Lain</translation>
 <translation id="6944935964236827145">Sembunyikan Terjemahkan</translation>
 <translation id="6945221475159498467">Pilih</translation>
-<translation id="6955779377310719430">Sembunyikan Ikuti</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6973630695168034713">Folder</translation>
 <translation id="6979158407327259162">Google Drive</translation>

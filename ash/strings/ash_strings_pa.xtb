@@ -1217,7 +1217,6 @@
 <translation id="5961960957587052807">ਰੋਸ਼ਨੀ</translation>
 <translation id="5965524703725988602">ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">ਵਿੰਡੋਆਂ ਰਾਹੀਂ ਅੱਗੇ ਜਾਓ</translation>
-<translation id="5976112937189445008">ਵਿੰਡੋ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="5978382165065462689">ਰਿਮੋਟ ਸਹਾਇਤਾ ਰਾਹੀਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦਾ ਨਿਯੰਤਰਣ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5980301590375426705">ਮਹਿਮਾਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="5983567367406220847">ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਦੇ ਕਾਰਨ, ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
@@ -1439,7 +1438,6 @@
 <translation id="6886172995547742638">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਉਮੀਦ ਨਾਲੋਂ ਘੱਟ ਕਾਰਗੁਜ਼ਾਰੀ ਕਰੇ। ਕੋਈ ਪ੍ਰਮਾਣਿਤ <ph name="PREFERRED_MINIMUM_POWER" />W ਜਾਂ ਵੱਧ ਦਾ USB-C ਪਾਵਰ ਅਡਾਪਟਰ ਵਰਤੋ।</translation>
 <translation id="688631446150864480">ਵਿੰਡੋ ਸਵਿੱਚ ਕਰਨ ਲਈ ਹੇਠਾਂ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
-<translation id="6901883536534621389">ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਇਸ਼ਾਰਿਆਂ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="6912841030378044227">ਪਤਾ ਬਾਰ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="6912901278692845878">ਤਤਕਾਲ ਟੂਰ</translation>
 <translation id="6919251195245069855">ਤੁਹਾਡਾ ਸਮਾਰਟ ਕਾਰਡ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -1745,7 +1743,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8185090165691050712">ਲਾਕ ਮੋਡ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਮੀਨੂ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
 <translation id="8192202700944119416">ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ।</translation>
-<translation id="8196787716797768628">ਐਪਾਂ ਵਿਚਾਲੇ ਤੁਰੰਤ ਅਦਲਾ-ਬਦਲੀ ਕਰਨ ਲਈ ਅਤੇ ਟੈਬਲੈੱਟ ਮੋਡ ਵਿੱਚ ਆਪਣੀ Chromebook ਨਾਲ ਅੰਤਰਕਿਰਿਆ ਕਰਨ ਲਈ ਇਸ਼ਾਰਿਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8198456017687137612">ਟੈਬ ਕਾਸਟ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8203795194971602413">ਸੱਜਾ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -1904,7 +1901,6 @@
 <translation id="8909138438987180327">ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਫ਼ੀਸਦ ਹੈ।</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ਇਹ ਭਾਸ਼ਾ ਨਹੀਂ ਬੋਲਦੀ।</translation>
-<translation id="8924458948354692166">ਵਿੰਡੋ ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="8926951137623668982">ਸ਼ੈਲਫ਼ ਹਮੇਸ਼ਾਂ ਲੁਕੀ ਰਹਿੰਦੀ ਹੈ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>

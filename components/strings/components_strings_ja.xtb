@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">株式、債券</translation>
 <translation id="1391625539203220400">IBAN をこのデバイスに保存しますか？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> からデータが送信されませんでした。</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> で検索</translation>
 <translation id="1405567553485452995">ライトグリーン</translation>
 <translation id="1406500794671479665">確認中...</translation>
 <translation id="1406812885827747674">今回は許可</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">普段は通知を許可されないようですので、通知を自動的にブロックしました</translation>
 <translation id="2071852865256799872">お使いのブラウザは組織によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="2072275792380684364">ファッション、スタイル</translation>
+<translation id="2075497153347571252">管理者が <ph name="ORIGIN" /> で <ph name="PERMISSION" /> をブロックしました</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
@@ -1879,6 +1881,7 @@
 <translation id="4885256590493466218">ご購入手続きの際に <ph name="CARD_DETAIL" /> で支払います</translation>
 <translation id="4887406273302438710">Windows Hello でパスワードを保護</translation>
 <translation id="4888600795924685526">外国語学習</translation>
+<translation id="4890070067176768718">管理者が <ph name="ORIGIN" /> で <ph name="PERMISSION" /> を許可しました</translation>
 <translation id="4892518386797173871">背面</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">オリンピック</translation>
@@ -2325,6 +2328,7 @@
 <translation id="5830698870816298009">カメラの使用と移動</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5838278095973806738">このサイトでは機密情報（パスワード、クレジット カードなど）を入力しないでください。悪意のあるユーザーに情報が盗まれる恐れがあります。</translation>
+<translation id="5838732667866024867">左右の矢印を使って、グラフで価格の変動を確認できます</translation>
 <translation id="5840318881868981258">保存先の Google アカウント: <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">アカウントに保存しますか？</translation>
 <translation id="5847181246682413476">電源</translation>
@@ -2613,6 +2617,7 @@
 <translation id="6432297414176614592">広告のトピックの詳細</translation>
 <translation id="6432831586648556868">営業、マーケティング系の求人情報</translation>
 <translation id="6433490469411711332">連絡先情報の編集</translation>
+<translation id="6433501201775827830">検索エンジンを選択</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> で接続が拒否されました。</translation>
 <translation id="6433797564277305076">今後はデバイスのロック解除を使用して、カードの確認をより迅速に行います</translation>
 <translation id="643917412048333145">ドレス</translation>
@@ -3971,6 +3976,7 @@
 <translation id="9207861905230894330">記事を追加できませんでした。</translation>
 <translation id="9213433120051936369">デザインをカスタマイズする</translation>
 <translation id="9215416866750762878">アプリケーションが原因で、Chrome からこのサイトに安全に接続することができません</translation>
+<translation id="9218430445555521422">デフォルトとして設定</translation>
 <translation id="9219103736887031265">画像</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="9222403027701923763">小、中、高等学校</translation>

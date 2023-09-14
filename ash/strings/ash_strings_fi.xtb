@@ -1216,7 +1216,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5961960957587052807">Kevyt</translation>
 <translation id="5965524703725988602">Tumma teema päälle/pois. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Siirry eteenpäin ikkunoiden välillä</translation>
-<translation id="5976112937189445008">Tallenna ikkunaa painamalla Enter</translation>
 <translation id="5978382165065462689">Näyttösi hallinta jaetaan Etätuen kautta.</translation>
 <translation id="5980301590375426705">Sulje vierailijatila</translation>
 <translation id="5983567367406220847">Hotspot on laitettu pois päältä, koska sitä ei ole käytetty.</translation>
@@ -1438,7 +1437,6 @@ Uusi asennus</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> voi toimia huonommin. Käytä sertifioitua USB-C-virtalähdettä, jonka teho on vähintään <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Vaihda ikkunaa painamalla alanuolta</translation>
 <translation id="6896758677409633944">Kopioi</translation>
-<translation id="6901883536534621389">Kokeile navigoida eleillä</translation>
 <translation id="6912841030378044227">Tarkenna osoitepalkkiin</translation>
 <translation id="6912901278692845878">Pikaesittely</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
@@ -1744,7 +1742,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> käytössä</translation>
 <translation id="8185090165691050712">Muuta lukitustilan kokoa laittamalla valikko päälle tai pois päältä</translation>
 <translation id="8192202700944119416">Ilmoitukset on piilotettu.</translation>
-<translation id="8196787716797768628">Eleillä voit siirtyä nopeasti sovelluksesta toiseen ja käyttää Chromebookia tablettitilassa.</translation>
 <translation id="8198456017687137612">Välilehteä striimataan</translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8203795194971602413">Klikkaus kakkospainikkeella</translation>
@@ -1902,7 +1899,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8909138438987180327">Akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ei ole käytettävissä tällä kielellä.</translation>
-<translation id="8924458948354692166">Ota kuvakaappaus ikkunasta painamalla Enter</translation>
 <translation id="8926951137623668982">Hylly piilotetaan aina</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>

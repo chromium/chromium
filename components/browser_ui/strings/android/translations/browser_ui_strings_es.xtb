@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Salir</translation>
 <translation id="2678468611080193228">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección, pero aumentará la probabilidad de que las opciones del sitio funcionen</translation>
+<translation id="2683434792633810741">¿Eliminar y restablecer?</translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Permitir cookies en un sitio específico.</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
 <translation id="4053720452172726777">Personaliza y controla Google Chrome</translation>
+<translation id="4149890623864272035">¿Seguro que quieres eliminar todos los datos locales, incluidas las cookies, y restablecer todos los permisos de este sitio web?</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas web</translation>
 <translation id="4151930093518524179">Zoom predeterminado</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Permitir cookies de terceros</translation>
 <translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="4434045419905280838">Ventanas emergentes y redirecciones</translation>
+<translation id="443552056913301231">Esta acción eliminará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Silencia el sonido de un sitio específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Facilita la personalización del zoom en diferentes sitios</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4598549027014564149">Mientras estás en modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa para personalizar anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>
+<translation id="4644713492825682049">Eliminar y restablecer</translation>
 <translation id="4645575059429386691">Administrado por uno de tus padres</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
 <translation id="4751476147751820511">Sensores de luz o movimiento</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Última visita: hoy</translation>
 <translation id="5225463052809312700">Activar cámara</translation>
 <translation id="5234764350956374838">Cerrar</translation>
+<translation id="5246825184569358663">Esta acción eliminará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="DOMAIN" /> y de todos los sitios que incluya</translation>
 <translation id="5264323282659631142">Quitar "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arrastra el dedo desde la parte superior y toca el botón de retroceso para salir de la pantalla completa.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Excepciones</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6205314730813004066">Privacidad en la publicidad</translation>
+<translation id="6207207788774442484">Eliminar datos y restablecer permisos</translation>
 <translation id="6216432067784365534">Opciones de <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">¿Desinstalar <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Basadas en tu última pestaña</translation>

@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">ਸਟਾਕ ਅਤੇ ਬਾਂਡ</translation>
 <translation id="1391625539203220400">ਕੀ IBAN ਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ਨੇ ਕੋਈ ਵੀ  ਡਾਟਾ  ਨਹੀਂ ਭੇਜਿਆ।</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ਨਾਲ ਖੋਜੋ</translation>
 <translation id="1405567553485452995">ਹਲਕਾ ਹਰਾ</translation>
 <translation id="1406500794671479665">ਪ੍ਰਮਾਣਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1406812885827747674">ਇਸ ਵਾਰੀ ਆਗਿਆ ਦਿਓ</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">ਸੂਚਨਾਵਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਕਿਉਂਕਿ ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਉਹਨਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੇ ਹੋ</translation>
 <translation id="2071852865256799872">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2072275792380684364">ਫੈਸ਼ਨ ਅਤੇ ਸਟਾਈਲ</translation>
+<translation id="2075497153347571252">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="ORIGIN" /> 'ਤੇ <ph name="PERMISSION" /> ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="20817612488360358">ਸਿਸਟਮ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਵਰਤੇ ਜਾਣ ਲਈ ਸੈੱਟ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ ਪਰ ਇੱਕ ਸਪਸ਼ਟ ਪ੍ਰੌਕਸੀ ਸੰਰੂਪਿਤ ਵੀ ਨਿਸ਼ਚਿਤ ਹੈ।</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ਦਾ <ph name="RESULT_NUMBER" /> ਨਤੀਜਾ</translation>
@@ -1876,6 +1878,7 @@
 <translation id="4885256590493466218">ਚੈੱਕਆਊਟ ਕਰਨ ਵੇਲੇ <ph name="CARD_DETAIL" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="4887406273302438710">Windows Hello ਨਾਲ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4888600795924685526">ਵਿਦੇਸ਼ੀ ਭਾਸ਼ਾ ਦਾ ਅਧਿਐਨ</translation>
+<translation id="4890070067176768718">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="ORIGIN" /> ਨੂੰ <ph name="PERMISSION" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="4892518386797173871">ਪਿਛਲਾ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ਓਲੰਪਿਕ</translation>
@@ -2322,6 +2325,7 @@
 <translation id="5830698870816298009">ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਅਤੇ ਹਿਲਜੁਲ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
 <translation id="5838278095973806738">ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਕੋਈ ਵੀ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਲਈ, ਪਾਸਵਰਡਾਂ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡਾਂ) ਨੂੰ ਦਾਖਲ ਨਹੀਂ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ, ਕਿਉਂਕਿ ਹਮਲਾਵਰ ਉਸਨੂੰ ਚੋਰੀ ਕਰ ਸਕਦੇ ਹਨ।</translation>
+<translation id="5838732667866024867">ਤੁਸੀਂ ਗ੍ਰਾਫ਼ 'ਤੇ ਕੀਮਤ ਸੰਬੰਧੀ ਤਬਦੀਲੀਆਂ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਲਈ ਖੱਬਾ/ਸੱਜਾ ਤੀਰ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="5840318881868981258">ਆਪਣੇ Google ਖਾਤੇ <ph name="ACCOUNT" /> ਵਿੱਚ</translation>
 <translation id="5841338463993781099">ਕੀ ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5847181246682413476">ਪਾਵਰ ਸਪਲਾਈਆਂ</translation>
@@ -2609,6 +2613,7 @@
 <translation id="6432297414176614592">ਵਿਗਿਆਪਨ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਹੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="6432831586648556868">ਵਿਕਰੀ ਅਤੇ ਮਾਰਕੀਟਿੰਗ ਖੇਤਰ ਦੀਆਂ ਨੌਕਰੀਆਂ</translation>
 <translation id="6433490469411711332">ਸੰਪਰਕ ਜਾਣਕਾਰੀ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="6433501201775827830">ਆਪਣਾ ਖੋਜ ਇੰਜਣ ਚੁਣੋ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ਨੇ ਕਨੈਕਟ ਹੋਣ ਤੋਂ ਇਨਕਾਰ ਕੀਤਾ।</translation>
 <translation id="6433797564277305076">ਹੁਣ ਤੋਂ ਡੀਵਾਈਸ ਅਣਲਾਕ ਸੁਵਿਧਾ ਨੂੰ ਵਰਤ ਕੇ ਆਪਣੇ ਕਾਰਡਾਂ ਦੀ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="643917412048333145">ਪੁਸ਼ਾਕਾਂ</translation>
@@ -3965,6 +3970,7 @@
 <translation id="9207861905230894330">ਲੇਖ ਜੋੜਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="9213433120051936369">ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="9215416866750762878">ਕੋਈ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਇਸ ਸਾਈਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣ ਤੋਂ ਰੋਕ ਰਹੀ ਹੈ</translation>
+<translation id="9218430445555521422">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਦੇ ਤੌਰ 'ਤੇ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>
 <translation id="922152298093051471">Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="9222403027701923763">ਪ੍ਰਾਇਮਰੀ ਅਤੇ ਸੈਕੰਡਰੀ ਸਕੂਲ (K-12)</translation>

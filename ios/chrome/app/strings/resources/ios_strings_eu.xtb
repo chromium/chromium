@@ -158,6 +158,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="1830634592642484976">Helbide hau Chrome-n gordeta dago une honetan. Google-ren beste produktuetan ere erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="1836891464494477513">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email})}other{Gorde dira laster-markak Google-ko kontuan ({email})}}</translation>
+<translation id="183878838231635348">Segurtasun-egiaztapenak pribatutasun- edo segurtasun-arazoren bat aurkitzen badu automatikoki, txartel honetan agertuko da.</translation>
 <translation id="1847795903283049083">Elementu hauek laster-marketan, irakurketa-zerrendan edo pasahitz-kudeatzailean ere ikusi eta kudea ditzakezu.</translation>
 <translation id="1870148520156231997">Erakutsi pasahitza</translation>
 <translation id="1872096359983322073">Linterna</translation>
@@ -267,11 +268,13 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2523363575747517183">Webgunea behin eta berriz saiatzen ari da beste aplikazio bat irekitzen.</translation>
 <translation id="2529021024822217800">Ireki guztiak</translation>
 <translation id="2536991091671391962">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="EMAIL" /> kontuan saioa hasita zeneukala gorde dituzunak Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira.</translation>
+<translation id="2542268842667970959">Ezkutatu "Segurtasun-egiaztapena"</translation>
 <translation id="2547458583188611426">Sinkronizazioak ez du funtzionatzen. Sinkronizatzen hasteko, idatzi pasaesaldia.</translation>
 <translation id="2551153019974022505">Kontuaren errorea</translation>
 <translation id="2556092377360758201">Babesik gabe (ez da gomendatzen)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> gailura bidaltzen…</translation>
 <translation id="2576499762020411840">Erabili eta gorde pasahitzak Google-ko kontuan</translation>
+<translation id="2577522251608256362">Auzoa</translation>
 <translation id="2578571896248130439">Bidali web-orria</translation>
 <translation id="2584132361465095047">Gehitu kontu bat…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Ez dago pasahitzik arriskuan}=1{{count} pasahitz dago arriskuan}other{{count} pasahitz daude arriskuan}}</translation>
@@ -695,6 +698,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="488785315393301722">Erakutsi xehetasunak</translation>
 <translation id="4894963374040315706">Honi esker, ahotsaren bidez bilatu ahal izango dituzu gauzak</translation>
+<translation id="489903206070130262">Irekitako azken fitxa</translation>
 <translation id="4901778704868714008">Gorde…</translation>
 <translation id="4904877109095351937">Markatu irakurritako gisa</translation>
 <translation id="4908869848243824489">Google-ren Discover</translation>
@@ -1087,7 +1091,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6944369514868857500">Aukeratu beste kontu bat</translation>
 <translation id="6944935964236827145">Ezkutatu "Itzuli"</translation>
 <translation id="6945221475159498467">Hautatu</translation>
-<translation id="6955779377310719430">Ezkutatu "Jarraitu"</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6973630695168034713">Karpetak</translation>
 <translation id="6979158407327259162">Google Drive</translation>

@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">লাইট</translation>
 <translation id="5965524703725988602">ডার্ক থিম টগল করুন। <ph name="STATE_TEXT" />।</translation>
 <translation id="5975235751479998104">উইন্ডোর মাধ্যমে পরের উইন্ডোতে যান</translation>
-<translation id="5976112937189445008">উইন্ডো রেকর্ড করতে Enter প্রেস করুন</translation>
 <translation id="5978382165065462689">রিমোট সহায়কের মাধ্যমে আপনার স্ক্রিন নিয়ন্ত্রণ ভাগ করুন৷</translation>
 <translation id="5980301590375426705">অতিথি থেকে প্রস্থান</translation>
 <translation id="5983567367406220847">ইনঅ্যাক্টিভ থাকার কারণে, হটস্পট বন্ধ করা হয়েছে।</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">আপনার <ph name="DEVICE_TYPE" />-এর পারফর্ম্যান্স আশানুরূপ নাও হতে পারে। একটি <ph name="PREFERRED_MINIMUM_POWER" />W অথবা আরও ভাল USB-C পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
 <translation id="688631446150864480">উইন্ডো পাল্টাতে, 'নিম্নমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
 <translation id="6896758677409633944">কপি</translation>
-<translation id="6901883536534621389">নেভিগেট করতে জেসচার ব্যবহার করে দেখুন</translation>
 <translation id="6912841030378044227">অ্যাড্রেস বারে ফোকাস করুন</translation>
 <translation id="6912901278692845878">দ্রুত ট্যুর</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যবহার করা হচ্ছে</translation>
 <translation id="8185090165691050712">লক মোড ছোট বড় করতে মেনু চালু/বন্ধ করুন</translation>
 <translation id="8192202700944119416">বিজ্ঞপ্তি লুকানো আছে।</translation>
-<translation id="8196787716797768628">একটি অ্যাপ থেকে খুব তাড়াতাড়ি অন্য অ্যাপে যেতে এবং ট্যাবলেট মোডে আপনার Chromebook-এ নেভিগেট করার জন্য জেসচার ফিচার ব্যবহার করুন।</translation>
 <translation id="8198456017687137612">কাস্ট করার ট্যাব</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8203795194971602413">ডানদিকের বোতামে ক্লিক করুন</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google অ্যাসিস্ট্যান্ট এই ভাষায় কথা বলে না।</translation>
-<translation id="8924458948354692166">উইন্ডো স্ক্রিনশট ক্যাপচার করার জন্য Enter প্রেস করুন</translation>
 <translation id="8926951137623668982">শেল্ফ সবসময় লুকানো থাকবে</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="8936501819958976551">বন্ধ আছে</translation>

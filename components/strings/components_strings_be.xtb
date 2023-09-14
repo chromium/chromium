@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">Акцыі і аблігацыі</translation>
 <translation id="1391625539203220400">Захаваць нумар IBAN на гэтай прыладзе?</translation>
 <translation id="139305205187523129">Хост "<ph name="HOST_NAME" />" не адправіў ніякіх даных.</translation>
+<translation id="1397811292916898096">Шукаць з дапамогай <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Светла-зялёны</translation>
 <translation id="1406500794671479665">Ідзе спраўджанне...</translation>
 <translation id="1406812885827747674">Дазволіць толькі ў гэты раз</translation>
@@ -2612,6 +2613,7 @@
 <translation id="6432297414176614592">Падрабязней пра тэмы рэкламы</translation>
 <translation id="6432831586648556868">Вакансіі ў сферы маркетынгу і продажаў</translation>
 <translation id="6433490469411711332">Змена кантактных звестак</translation>
+<translation id="6433501201775827830">Выберыце пошукавую сістэму</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> адмовіўся ад падключэння.</translation>
 <translation id="6433797564277305076">Пацвярджайце карткі хутчэй, выкарыстоўваючы функцыю разблакіроўкі прылады</translation>
 <translation id="643917412048333145">Сукенкі</translation>
@@ -3969,6 +3971,7 @@
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>
 <translation id="9215416866750762878">Нейкая праграма не дае браўзеру Chrome устанавіць бяспечнае падключэнне да гэтага сайта</translation>
+<translation id="9218430445555521422">Зрабіць стандартным</translation>
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="922152298093051471">Наладзіць Chrome</translation>
 <translation id="9222403027701923763">Пачатковая і сярэдняя адукацыя</translation>

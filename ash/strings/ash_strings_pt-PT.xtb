@@ -1216,7 +1216,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5961960957587052807">Leve</translation>
 <translation id="5965524703725988602">Ative/desative o tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Avançar através das janelas</translation>
-<translation id="5976112937189445008">Prima Enter para gravar a janela</translation>
 <translation id="5978382165065462689">A partilhar o controlo do seu ecrã através da Assistência remota.</translation>
 <translation id="5980301590375426705">Sair sess. de conv.</translation>
 <translation id="5983567367406220847">Devido à inatividade, a zona Wi-Fi foi desativada.</translation>
@@ -1438,7 +1437,6 @@ Nova instalação</translation>
 <translation id="6886172995547742638">O dispositivo <ph name="DEVICE_TYPE" /> pode ter um desempenho inferior. Utilize um transformador USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou superior.</translation>
 <translation id="688631446150864480">Prima a seta para baixo para alternar entre janelas.</translation>
 <translation id="6896758677409633944">Copiar</translation>
-<translation id="6901883536534621389">Experimente gestos para navegar</translation>
 <translation id="6912841030378044227">Focar na barra de endereço</translation>
 <translation id="6912901278692845878">Apresentação rápida</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
@@ -1744,7 +1742,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8167567890448493835">A utilizar <ph name="LOCALE_NAME" />...</translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo bloqueio</translation>
 <translation id="8192202700944119416">As notificações estão ocultas.</translation>
-<translation id="8196787716797768628">Utilize gestos para alternar rapidamente entre apps e interagir com o Chromebook no modo de tablet.</translation>
 <translation id="8198456017687137612">A transmitir o separador</translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8203795194971602413">Clicar com o botão direito do rato</translation>
@@ -1904,7 +1901,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8909138438987180327">A bateria está a <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Assistente Google não fala este idioma.</translation>
-<translation id="8924458948354692166">Prima Enter para fazer uma captura de ecrã da janela</translation>
 <translation id="8926951137623668982">Prateleira sempre oculta</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desativada</translation>

@@ -212,6 +212,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1391289752476847787">Delnice in obveznice</translation>
 <translation id="1391625539203220400">Želite shraniti IBAN v tej napravi?</translation>
 <translation id="139305205187523129">Spletno mesto <ph name="HOST_NAME" /> ni poslalo nobenih podatkov.</translation>
+<translation id="1397811292916898096">Iskanje z iskalnikom <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Svetlo zelena</translation>
 <translation id="1406500794671479665">Preverjanje ...</translation>
 <translation id="1406812885827747674">Dovoli tokrat</translation>
@@ -2616,6 +2617,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6432297414176614592">Več o temah oglasov</translation>
 <translation id="6432831586648556868">Zaposlitve na področju prodaje in trženja</translation>
 <translation id="6433490469411711332">Uredi informacije o stiku</translation>
+<translation id="6433501201775827830">Izbira iskalnika</translation>
 <translation id="6433595998831338502">Spletno mesto <ph name="HOST_NAME" /> ni dovolilo povezave.</translation>
 <translation id="6433797564277305076">Od zdaj naprej lahko uporabljate odklepanje naprave in kartice potrjujete hitreje</translation>
 <translation id="643917412048333145">Ženske obleke</translation>
@@ -3972,6 +3974,7 @@ Dodatne podrobnosti:
 <translation id="9207861905230894330">Članka ni bilo mogoče dodati.</translation>
 <translation id="9213433120051936369">Prilagajanje videza</translation>
 <translation id="9215416866750762878">Aplikacija Chromu preprečuje vzpostavitev varne povezave s tem mestom</translation>
+<translation id="9218430445555521422">Nastavi za privzeti brskalnik</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="922152298093051471">Prilagodi Chrome</translation>
 <translation id="9222403027701923763">Osnovno- in srednješolsko izobraževanje (K-12)</translation>

@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />-এ পাঠানো হচ্ছে…</translation>
 <translation id="2576499762020411840">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ব্যবহার করে সেভ করা</translation>
+<translation id="2577522251608256362">খুব পরিচিত ক্ষেত্র</translation>
 <translation id="2578571896248130439">ওয়েবপেজ পাঠান</translation>
 <translation id="2584132361465095047">অ্যাকাউন্ট যোগ করুন...</translation>
 <translation id="2587010742985678408">{count,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}}</translation>
@@ -697,6 +698,7 @@
 <translation id="4881695831933465202">খুলুন</translation>
 <translation id="488785315393301722">বিশদ বিবরণ দেখান</translation>
 <translation id="4894963374040315706">এটি আপনার ভয়েস ব্যবহার করে আরও দ্রুত সার্চ করতে দেয়</translation>
+<translation id="489903206070130262">আপনার শেষ খোলা ট্যাব</translation>
 <translation id="4901778704868714008">সেভ করুন...</translation>
 <translation id="4904877109095351937">পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
@@ -1090,7 +1092,6 @@
 <translation id="6944369514868857500">অন্য অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="6944935964236827145">'অনুবাদ করুন' বিকল্পটি লুকান</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
-<translation id="6955779377310719430">'অনুসরণ করুন' বিকল্পটি লুকান</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6973630695168034713">ফোল্ডারগুলি</translation>
 <translation id="6979158407327259162">Google Drive</translation>

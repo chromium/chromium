@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">Жарык</translation>
 <translation id="5965524703725988602">Караңгы теманы өчүрүү/күйгүзүү. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Кийинки терезеге өтүү</translation>
-<translation id="5976112937189445008">Терезени жаздыруу үчүн "Enter" баскычын басыңыз</translation>
 <translation id="5978382165065462689">Алыскы жардамчы аркылуу экраныңыздын көзөмөлүн бөлүшүүдө.</translation>
 <translation id="5980301590375426705">Конокту чыгаруу</translation>
 <translation id="5983567367406220847">Колдонулбагандыктан, хотспот өчүрүлдү.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> түзмөгүңүз начар иштеши мүмкүн. Тастыкталган <ph name="PREFERRED_MINIMUM_POWER" /> Вт же андан жогору USB-C кубаттагыч адаптерин колдонуңуз.</translation>
 <translation id="688631446150864480">Терезелерди которуштуруу үчүн Ылдый жебени басыңыз</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
-<translation id="6901883536534621389">Өтүү үчүн жаңсап көрүңүз</translation>
 <translation id="6912841030378044227">Дарек тилкесине өтүү</translation>
 <translation id="6912901278692845878">Кыскача маалымат алуу</translation>
 <translation id="6919251195245069855">Акылдуу картаңыз таанылган жок. Кайталап көрүңүз.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> колдонулууда</translation>
 <translation id="8185090165691050712">Кулпулоо режиминин өлчөмүн өзгөртүү үчүн менюну өчүрүү/күйгүзүү</translation>
 <translation id="8192202700944119416">Билдирмелер жашырылды.</translation>
-<translation id="8196787716797768628">Жаңсоо аркылуу колдонмолорду тез которуштуруп, Chromebook'ту планшет режиминде колдонуңуз.</translation>
 <translation id="8198456017687137612">Өтмөктү тышкы экранга чыгаруу</translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8203795194971602413">Оң баскычын чыкылдатуу</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">Батареянын кубаты – <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Жардамчы бул тилде иштебейт.</translation>
-<translation id="8924458948354692166">Терезенин скриншотун тартып алуу үчүн "Enter" баскычын басыңыз</translation>
 <translation id="8926951137623668982">Текче ар дайым жашырылат</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өчүрүлдү</translation>

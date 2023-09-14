@@ -1217,7 +1217,6 @@
 <translation id="5961960957587052807">పాక్షిక బ్లర్</translation>
 <translation id="5965524703725988602">ముదురు రంగు రూపాన్ని టోగుల్ చేయండి. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">విండోల ద్వారా ముందుకు వెళ్లండి</translation>
-<translation id="5976112937189445008">విండోను రికార్డ్ చేయడానికి enterను నొక్కండి</translation>
 <translation id="5978382165065462689">రిమోట్ సహాయం విధానంలో మీ స్క్రీన్ నియంత్రణను షేర్ చేస్తోంది.</translation>
 <translation id="5980301590375426705">అతిథిగా నిష్క్రమించండి</translation>
 <translation id="5983567367406220847">ఇన్‌యాక్టివిటీ కారణంగా, హాట్‌స్పాట్ ఆఫ్ చేయబడింది.</translation>
@@ -1439,7 +1438,6 @@
 <translation id="6886172995547742638">మీ <ph name="DEVICE_TYPE" /> తక్కువ పనితీరుకు లోనవ్వొచ్చు. సర్టిఫై చేయబడిన <ph name="PREFERRED_MINIMUM_POWER" />W లేదా అంతకంటే ఎక్కువ USB-C పవర్ అడాప్టర్‌ను ఉపయోగించండి.</translation>
 <translation id="688631446150864480">విండోలను మధ్య మారడానికి కింది వైపు బాణాన్ని నొక్కండి</translation>
 <translation id="6896758677409633944">కాపీ చేయి</translation>
-<translation id="6901883536534621389">నావిగేట్ చేయడానికి సంజ్ఞలను ట్రై చేయండి</translation>
 <translation id="6912841030378044227">అడ్రస్ బార్ మీద ఫోకస్ చేయండి</translation>
 <translation id="6912901278692845878">క్విక్ టూర్</translation>
 <translation id="6919251195245069855">మీ స్మార్ట్ కార్డ్‌ను గుర్తించడం సాధ్యం కాలేదు. మళ్ళీ ప్రయత్నించండి.</translation>
@@ -1745,7 +1743,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" />ని ఉపయోగిస్తోంది</translation>
 <translation id="8185090165691050712">మెనూను ఆన్/ఆఫ్ చేసి, లాక్ మోడ్ సైజ్ మార్చండి</translation>
 <translation id="8192202700944119416">నోటిఫికేషన్‌లు దాచబడ్డాయి.</translation>
-<translation id="8196787716797768628">టాబ్లెట్ మోడ్‌లో, యాప్‌ల మధ్య త్వరగా మారడానికి, అలాగే మీ Chromebookతో ఇంటరాక్ట్ కావడానికి సంజ్ఞలను ఉపయోగించండి.</translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8203795194971602413">కుడి క్లిక్</translation>
@@ -1904,7 +1901,6 @@
 <translation id="8909138438987180327">బ్యాటరీ ఛార్జ్ <ph name="PERCENTAGE" /> శాతం ఉంది.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google సహాయకం ఈ భాషను మాట్లాడదు.</translation>
-<translation id="8924458948354692166">విండో స్క్రీన్‌షాట్‌ను క్యాప్చర్ చేయడానికి enterను నొక్కండి</translation>
 <translation id="8926951137623668982">అర ఎల్లప్పుడూ దాచబడుతుంది</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైల్‌లు}}</translation>
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>

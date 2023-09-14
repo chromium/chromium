@@ -1216,7 +1216,6 @@ Isaksak ang iyong device.</translation>
 <translation id="5961960957587052807">Liwanag</translation>
 <translation id="5965524703725988602">I-toggle ang Madilim na tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Mag-navigate nang paabante sa mga window</translation>
-<translation id="5976112937189445008">Pindutin ang enter para i-record ang window</translation>
 <translation id="5978382165065462689">Pagbabahagi ng kontrol sa iyong screen sa pamamagitan ng Remote Assistance.</translation>
 <translation id="5980301590375426705">Lumabas</translation>
 <translation id="5983567367406220847">Dahil sa kawalan ng aktibidad, na-off ang hotspot.</translation>
@@ -1438,7 +1437,6 @@ Kaka-install lang</translation>
 <translation id="6886172995547742638">Posibleng makaranas ang iyong <ph name="DEVICE_TYPE" /> ng hindi mahusay na performance. Gumamit ng certified na <ph name="PREFERRED_MINIMUM_POWER" />W o mas mataas na USB-C power adapter.</translation>
 <translation id="688631446150864480">Pindutin ang Pababang arrow key para lumipat ng mga window</translation>
 <translation id="6896758677409633944">Copy</translation>
-<translation id="6901883536534621389">Sumubok ng mga galaw para mag-navigate</translation>
 <translation id="6912841030378044227">Tumuon sa address bar</translation>
 <translation id="6912901278692845878">Quick tour</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
@@ -1743,7 +1741,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8167567890448493835">Gamit ang <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">I-on/i-off ang menu para sa resize lock mode</translation>
 <translation id="8192202700944119416">Nakatago ang mga notification.</translation>
-<translation id="8196787716797768628">Gamitin ang mga galaw para mabilis na magpalipat-lipat sa mga app at magamit ang iyong Chromebook sa tablet mode.</translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8203795194971602413">Mag-right click</translation>
@@ -1852,6 +1849,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8703634754197148428">Simulang mag-record. Kapag nagsimula na ang pag-record, gamitin ang Alt + Shift + L para mag-navigate papunta sa shelf at makita ang button na ihinto ang pag-record</translation>
 <translation id="8704155109538237473">Mag-focus sa picture-in-picture na window</translation>
 <translation id="870917907284186124">I-on/i-off ang dictation (mag-type gamit ang iyong boses)</translation>
+<translation id="8714138378966541668">Ni-lock ng provider</translation>
 <translation id="8717459106217102612">Piliin ang nakaraang salita o titik</translation>
 <translation id="8721053961083920564">I-toggle ang Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
@@ -1901,7 +1899,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8909138438987180327">Nasa <ph name="PERCENTAGE" /> porsyento ang baterya.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Hindi nagsasalita ng ganitong wika ang Google Assistant.</translation>
-<translation id="8924458948354692166">Pindutin ang enter para i-capture ang screenshot ng window</translation>
 <translation id="8926951137623668982">Palaging nakatago ang shelf</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}one{# file}other{# na file}}</translation>
 <translation id="8936501819958976551">na-deactivate</translation>

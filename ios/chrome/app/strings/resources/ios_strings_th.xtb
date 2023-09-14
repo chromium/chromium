@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
 <translation id="2562041823070056534">กำลังส่งไปยัง <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">ใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
+<translation id="2577522251608256362">ย่านใกล้เคียง</translation>
 <translation id="2578571896248130439">ส่งหน้าเว็บ</translation>
 <translation id="2584132361465095047">เพิ่มบัญชี…</translation>
 <translation id="2587010742985678408">{count,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {count} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {count} รายการ}}</translation>
@@ -1091,7 +1092,6 @@
 <translation id="6944369514868857500">เลือกบัญชีอื่น</translation>
 <translation id="6944935964236827145">ซ่อน "แปลภาษา"</translation>
 <translation id="6945221475159498467">เลือก</translation>
-<translation id="6955779377310719430">ซ่อน "ติดตาม"</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6973630695168034713">โฟลเดอร์</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>

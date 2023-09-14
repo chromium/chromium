@@ -444,7 +444,6 @@
 <translation id="1347512539447549782">Linux ストレージ</translation>
 <translation id="1347975661240122359">更新は、<ph name="BATTERY_LEVEL" />% まで充電されたときに開始されます。</translation>
 <translation id="1348966090521113558">マウスのユーザー補助設定</translation>
-<translation id="1351089605448164407">ドライブから</translation>
 <translation id="1353275871123211385">アプリの許可や利用時間の上限など、保護者による使用制限を設定するには、保護者が管理するお子様用の Google アカウントが必要です。Google Classroom などのツールを使用するための学校用アカウントは、後で追加できます。</translation>
 <translation id="135389172849514421">オフラインで利用可能</translation>
 <translation id="1353980523955420967">PPD が見つかりません。Chromebook がオンラインになっていることを確認して、もう一度お試しください。</translation>
@@ -1974,6 +1973,7 @@
 <translation id="2530166226437958497">トラブルシューティング</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />エラーが発生したため、<ph name="DEVICE_OS" /> をインストールできませんでした。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">バッテリーを 80% 前後に保つことでバッテリー寿命を伸ばします。電源から取り外すいつもの頃合いでバッテリーが完全に充電されます。</translation>
+<translation id="2532146950330687938">デバイスを準備しています...</translation>
 <translation id="2532198298278778531">ChromeOS Flex の設定でセキュア DNS を管理する</translation>
 <translation id="2532589005999780174">ハイコントラスト モード</translation>
 <translation id="2533649878691950253">通常、正確な位置情報の共有が許可されていないため、このサイトでも許可されていません</translation>
@@ -2183,7 +2183,6 @@
 <translation id="2710101514844343743">使用状況データと診断データ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">試用版</translation>
-<translation id="2711929077861214979">安全に関する情報</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2714180132046334502">暗い背景</translation>
@@ -2493,7 +2492,6 @@
 <translation id="2939908794993783865">追加の無効なサイト</translation>
 <translation id="2939938020978911855">使用可能な Bluetooth デバイスを表示</translation>
 <translation id="2941112035454246133">低</translation>
-<translation id="2942279350258725020">Android メッセージ</translation>
 <translation id="2942560570858569904">待機しています…</translation>
 <translation id="2942581856830209953">このページをカスタマイズ</translation>
 <translation id="2942707801577151363">Word、Excel、PowerPoint のファイルを開いて、編集、保存できます。機能によってはサブスクリプションが必要な場合があります。</translation>
@@ -4687,7 +4685,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
 <translation id="474609389162964566">「OK Google」と話しかけてアシスタントにアクセス</translation>
-<translation id="4746351372139058112">メッセージ</translation>
 <translation id="4748783296226936791">一般的ではないキーボードや、ゲーム コントローラなどのデバイスを使用する機能に対応するために、多くのサイトは HID デバイスに接続します</translation>
 <translation id="4749960740855309258">新しいタブを開く</translation>
 <translation id="4750185073185658673">スマートフォンでアクセス許可の設定を見直し、スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
@@ -4754,7 +4751,6 @@
 <translation id="4807122856660838973">セーフ ブラウジングをオンにする</translation>
 <translation id="4807514039636325497">DBus の詳細</translation>
 <translation id="4808667324955055115">ポップアップがブロックされました:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome ウェブストアから削除された <ph name="BEGIN_BOLD" />1 件の拡張機能<ph name="END_BOLD" />を確認}other{Chrome ウェブストアから削除された <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} 件の拡張機能<ph name="END_BOLD" />を確認}}</translation>
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
 <translation id="4809447465126035330">削除</translation>
 <translation id="480990236307250886">ホームページを開く</translation>
@@ -5737,6 +5733,7 @@
 <translation id="5627086634964711283">この拡張機能では、ホーム ボタンのクリック時に表示されるページも制御されます。</translation>
 <translation id="5627676517703583263">Chrome で賢くブラウジング</translation>
 <translation id="5627832140542566187">ディスプレイの向き</translation>
+<translation id="5628434207686266338">デバイスのパスワードを設定</translation>
 <translation id="562935524653278697">管理者がブックマーク、履歴、パスワードなどの設定の同期を無効にしました。</translation>
 <translation id="5631017369956619646">CPU 使用状況</translation>
 <translation id="5631272057151918206">オフライン ファイルの使用容量が最大 <ph name="OFFLINE_STORAGE_SIZE" /> 空きます。一部のファイルは引き続きオフラインで使用可能です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -6318,6 +6315,7 @@
 <translation id="6104796831253957966">プリンタのキューに空きがありません</translation>
 <translation id="6104929924898022309">検索キーを使用してファンクション キーの動作を変更する</translation>
 <translation id="6106167152849320869">前の手順で診断データと使用状況データを送信するよう選択した場合、インストール済みのアプリでこれらのデータが収集されます。</translation>
+<translation id="6111718295497931251">Google ドライブへのアクセスを削除</translation>
 <translation id="6111972606040028426">Google アシスタントの有効化</translation>
 <translation id="6112294629795967147">タップしてサイズを変更</translation>
 <translation id="6112727384379533756">チケットを追加</translation>
@@ -9818,6 +9816,7 @@
 <translation id="8962083179518285172">詳細を非表示</translation>
 <translation id="8962863356073277855">URL は https://www.example.com の形式で入力してください</translation>
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
+<translation id="8963117664422609631">サイトの設定に移動します</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
 <translation id="8966809848145604011">他のプロファイル</translation>
 <translation id="8967427617812342790">リーディング リストに追加</translation>
@@ -10196,7 +10195,6 @@
 <translation id="964286338916298286">お使いのデバイスの Chrome 特典は IT 管理者によって無効にされています。</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{アプリケーション}other{アプリケーション}}</translation>
 <translation id="964790508619473209">画面の配置</translation>
-<translation id="965211523698323809"><ph name="DEVICE_TYPE" /> でテキスト メッセージを送受信します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast の問題を報告</translation>
 <translation id="966588271015727539">Bluetooth 点字ディスプレイを選択してください</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{このプロファイルを閉じる(&amp;C)}other{このプロファイルを閉じる（# 個のウィンドウ）(&amp;C)}}</translation>

@@ -447,7 +447,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1347512539447549782">Linux-lagerplads</translation>
 <translation id="1347975661240122359">Opdateringen starter, når batteriniveauet er på <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1348966090521113558">Indstillinger for hjælpefunktioner til mus</translation>
-<translation id="1351089605448164407">Fra Dit drev</translation>
 <translation id="1353275871123211385">Hvis du vil bruge forældreindstillinger såsom godkendelse af apps og grænser for skærmtid, skal barnet have en Google-konto, som administreres af en forælder. Der kan tilføjes en skolekonto senere, som kan bruges til værktøjer som f.eks. Google Classroom.</translation>
 <translation id="135389172849514421">Fungerer offline</translation>
 <translation id="1353980523955420967">PPD-filen kan ikke findes. Sørg for, at din Chromebook er online, og prøv igen.</translation>
@@ -2205,7 +2204,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2710101514844343743">Brugs- og diagnostikdata</translation>
 <translation id="271033894570825754">Nyt</translation>
 <translation id="2711073837061989559">Prøver</translation>
-<translation id="2711929077861214979">Sikkerhedstips</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2713444072780614174">Hvid</translation>
 <translation id="2714180132046334502">Mørk baggrund</translation>
@@ -2515,7 +2513,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2939908794993783865">Yderligere inaktive websites</translation>
 <translation id="2939938020978911855">Vis tilgængelige Bluetooth-enheder</translation>
 <translation id="2941112035454246133">Lav</translation>
-<translation id="2942279350258725020">Beskeder i Android</translation>
 <translation id="2942560570858569904">Venter...</translation>
 <translation id="2942581856830209953">Tilpas denne side</translation>
 <translation id="2942707801577151363">Åbn, rediger og gem Word-, Excel- og PowerPoint-filer. Visse funktioner kræver muligvis abonnement.</translation>
@@ -4712,7 +4709,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Slå lyden til på dette website}one{Slå lyden til på dette website}other{Slå lyden til på disse websites}}</translation>
 <translation id="474609389162964566">Få adgang til Google Assistent med "Hey Google"</translation>
-<translation id="4746351372139058112">Beskeder</translation>
 <translation id="4748783296226936791">Websites opretter normalt forbindelse til HID-enheder i forbindelse med funktioner, der anvender ualmindelige tastaturer, spilcontrollere og andre enheder</translation>
 <translation id="4749960740855309258">Åbn en ny fane</translation>
 <translation id="4750185073185658673">Gennemgå et par tilladelser mere på din telefon. Sørg for, at Bluetooth og Wi-Fi er aktiveret på din telefon.</translation>
@@ -4779,7 +4775,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4807122856660838973">Aktivér Beskyttet browsing</translation>
 <translation id="4807514039636325497">DBus-oplysninger</translation>
 <translation id="4808667324955055115">Pop op-vinduer er blokeret:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Gennemgå <ph name="BEGIN_BOLD" />1 udvidelse<ph name="END_BOLD" />, der er fjernet fra Chrome Webshop}one{Gennemgå <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} udvidelse<ph name="END_BOLD" />, der er fjernet fra Chrome Webshop}other{Gennemgå <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} udvidelser<ph name="END_BOLD" />, der er fjernet fra Chrome Webshop}}</translation>
 <translation id="4809079943450490359">Vejledninger fra din enhedsadministrator:</translation>
 <translation id="4809447465126035330">Slet</translation>
 <translation id="480990236307250886">Åbn startsiden</translation>
@@ -9852,6 +9847,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8962083179518285172">Skjul detaljer</translation>
 <translation id="8962863356073277855">Webadresseformatet skal være https://www.eksempel.com</translation>
 <translation id="8962918469425892674">Dette website anvender bevægelses- og lyssensorer.</translation>
+<translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
 <translation id="8965037249707889821">Angiv den gamle adgangskode</translation>
 <translation id="8966809848145604011">Andre profiler</translation>
 <translation id="8967427617812342790">Føj til læseliste</translation>
@@ -10230,7 +10226,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="964286338916298286">Din it-administrator har deaktiveret Chrome Goodies for din enhed.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{App}one{App}other{Apps}}</translation>
 <translation id="964790508619473209">Skærmopstilling</translation>
-<translation id="965211523698323809">Send og modtag sms-beskeder fra din <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Rapportér et problem med Google Cast</translation>
 <translation id="966588271015727539">Vælg en brailleskærm via Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Luk denne profil}one{&amp;Luk denne profil (# vindue)}other{&amp;Luk denne profil (# vinduer)}}</translation>

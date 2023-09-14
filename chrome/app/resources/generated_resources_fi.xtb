@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux-tallennustila</translation>
 <translation id="1347975661240122359">Päivitys alkaa, kun akun lataustaso on <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1348966090521113558">Hiiren saavutettavuusasetukset</translation>
-<translation id="1351089605448164407">Drivesta</translation>
 <translation id="1353275871123211385">Lapsella on oltava vanhemman ylläpitämä Google-tili, jotta tämä voi käyttää lapsilukkoasetuksia, kuten sovellusten hyväksyntää ja käyttöaikarajoituksia. Koulutili voidaan lisätä myöhemmin Google Classroomin kaltaisten työkalujen käyttöä varten.</translation>
 <translation id="135389172849514421">Toimii offline-tilassa</translation>
 <translation id="1353980523955420967">PPD:tä ei löydy. Varmista, että Chromebook on verkossa, ja yritä uudelleen.</translation>
@@ -2203,7 +2202,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2710101514844343743">Käyttö- ja diagnostiikkadata</translation>
 <translation id="271033894570825754">Uusi</translation>
 <translation id="2711073837061989559">Kokeilut</translation>
-<translation id="2711929077861214979">Turvallisuusvihjeitä</translation>
 <translation id="2713106313042589954">Sammuta kamera</translation>
 <translation id="2713444072780614174">Valkoinen</translation>
 <translation id="2714180132046334502">Tumma tausta</translation>
@@ -2513,7 +2511,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2939908794993783865">Lisää ei-aktiivisia sivustoja</translation>
 <translation id="2939938020978911855">Näytä käytettävissä olevat Bluetooth-laitteet</translation>
 <translation id="2941112035454246133">Matala</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">Odotetaan…</translation>
 <translation id="2942581856830209953">Muokkaa sivua</translation>
 <translation id="2942707801577151363">Avaa, muokkaa ja tallenna Word-, Excel- ja PowerPoint-tiedostoja. Jotkin ominaisuudet saattavat edellyttää tilausta.</translation>
@@ -4707,7 +4704,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Poista sivuston mykistys}other{Poista sivustojen mykistys}}</translation>
 <translation id="474609389162964566">Käytä Assistantia sanomalla "Hey Google"</translation>
-<translation id="4746351372139058112">Viestit</translation>
 <translation id="4748783296226936791">Sivustot yhdistävät yleensä HID-laitteisiin esim. käyttääkseen epätavallisia näppäimistöjä, peliohjaimia tai muita laitteita</translation>
 <translation id="4749960740855309258">Uuden välilehden avaaminen</translation>
 <translation id="4750185073185658673">Voit tarkistaa muutamia muita lupia puhelimellasi. Varmista, että puhelimen Bluetooth ja Wi-Fi ovat päällä.</translation>
@@ -4774,7 +4770,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4807122856660838973">Laita Selaussuoja päälle</translation>
 <translation id="4807514039636325497">DBus-tiedot</translation>
 <translation id="4808667324955055115">Ponnahdusikkunat estetty:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Tarkista <ph name="BEGIN_BOLD" />1 laajennus<ph name="END_BOLD" />, joka poistettiin Chrome Web Storesta}other{Tarkista <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} laajennusta<ph name="END_BOLD" />, jotka poistettiin Chrome Web Storesta}}</translation>
 <translation id="4809079943450490359">Ohjeet laitteen järjestelmänvalvojalta</translation>
 <translation id="4809447465126035330">Poista</translation>
 <translation id="480990236307250886">Avaa oma etusivu</translation>
@@ -6340,6 +6335,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6104796831253957966">Tulostusjono on täynnä</translation>
 <translation id="6104929924898022309">Muuta toimintonäppäinten toimintaa hakunäppäimellä</translation>
 <translation id="6106167152849320869">Jos valitsit edellisessä vaiheessa diagnostiikka- ja käyttödatan lähettämisen, dataa kerätään asennetuista sovelluksista.</translation>
+<translation id="6111718295497931251">Poista pääsy Google Driveen</translation>
 <translation id="6111972606040028426">Ota Google Assistant käyttöön</translation>
 <translation id="6112294629795967147">Muuta kokoa koskettamalla</translation>
 <translation id="6112727384379533756">Lisää tukipyyntö</translation>
@@ -9843,6 +9839,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8962083179518285172">Piilota tiedot</translation>
 <translation id="8962863356073277855">URL-osoitteen muodon pitäisi olla https://www.example.com</translation>
 <translation id="8962918469425892674">Tämä sivusto käyttää liikkeen- tai valontunnistimia.</translation>
+<translation id="8963117664422609631">Avaa sivustoasetukset</translation>
 <translation id="8965037249707889821">Syötä vanha salasana</translation>
 <translation id="8966809848145604011">Muut profiilit</translation>
 <translation id="8967427617812342790">Lisää lukulistalle</translation>
@@ -10221,7 +10218,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="964286338916298286">IT-järjestelmänvalvojasi on poistanut Chrome Goodies ‑tarjoukset käytöstä laitteellasi.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Sovellus}other{Sovellukset}}</translation>
 <translation id="964790508619473209">Näytön asettelu</translation>
-<translation id="965211523698323809"><ph name="DEVICE_TYPE" /> voi lähettää ja vastaanottaa tekstiviestejä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Ilmoita Google Castiin liittyvästä ongelmasta</translation>
 <translation id="966588271015727539">Valitse Bluetooth-pistekirjoitusnäyttö</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Sulje tämä profiili}other{&amp;Sulje tämä profiili (# ikkunaa)}}</translation>

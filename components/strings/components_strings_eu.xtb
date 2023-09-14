@@ -212,6 +212,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1391289752476847787">Akzioak eta bonuak</translation>
 <translation id="1391625539203220400">IBANa gailu honetan gorde nahi duzu?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> webguneak ez du bidali daturik.</translation>
+<translation id="1397811292916898096">Egin bilaketak <ph name="PRODUCT_NAME" /> zerbitzuarekin</translation>
 <translation id="1405567553485452995">Berde argia</translation>
 <translation id="1406500794671479665">Egiaztatzen…</translation>
 <translation id="1406812885827747674">Eman baimena bisita honetan</translation>
@@ -2608,6 +2609,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6432297414176614592">Iragarkien gaiei buruzko informazio gehiago</translation>
 <translation id="6432831586648556868">Salmenta- eta marketin-lanpostuak</translation>
 <translation id="6433490469411711332">Editatu harremanetarako informazioa</translation>
+<translation id="6433501201775827830">Aukeratu bilatzailea</translation>
 <translation id="6433595998831338502">Konexioa baztertu du <ph name="HOST_NAME" /> webguneak.</translation>
 <translation id="6433797564277305076">Aurrerantzean, berretsi txartelak bizkorrago gailu-desblokeoa erabilita</translation>
 <translation id="643917412048333145">Soinekoak</translation>
@@ -3964,6 +3966,7 @@ Xehetasun gehiago:
 <translation id="9207861905230894330">Ezin izan da artikulua gehitu.</translation>
 <translation id="9213433120051936369">Pertsonalizatu itxura</translation>
 <translation id="9215416866750762878">Aplikazio batek ez dio uzten Chrome-ri webgune honetara segurtasunez konektatzen</translation>
+<translation id="9218430445555521422">Ezarri lehenetsi gisa</translation>
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
 <translation id="9222403027701923763">Lehen eta bigarren hezkuntza</translation>

@@ -7,6 +7,7 @@
 <translation id="1333745675627230582">Spēlēt Chrome dinozaura spēli</translation>
 <translation id="1352919863522755794">Google paroļu pārvaldnieks nevarēja pārbaudīt paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="1407843355326180937">Pierakstieties šajā vietnē un pārlūkā Chrome, lai visās savās ierīcēs iegūtu savas grāmatzīmes un citu saturu.</translation>
+<translation id="1436059927646026729">Atvērt manu jaunāko cilni pārlūkā Chrome</translation>
 <translation id="1462727070346936664">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chrome.</translation>
 <translation id="1479202195792305274">Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="1491435845014430217">Ieslēdziet iestatījumu “Bloķēt inkognito cilnes, aizverot pārlūku Chrome”.</translation>
@@ -23,6 +24,7 @@ Svarīga informācija
 
   • Ja sinhronizēsiet vēsturi ar savu Google kontu, metrikā var būt ietverta arī informācija par jūsu apmeklētajiem vietrāžiem URL.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Jūs izmantojat Chrome visaugstāko drošības līmeni pret kaitīgām vietnēm</translation>
+<translation id="1657395063736185342">Sākt vizuālo meklēšanu pārlūkā Chrome</translation>
 <translation id="1675955119303651351">Daži jūsu Chrome dati vēl nav saglabāti jūsu Google kontā.
         Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="1682483655351012182">Sinhronizēt jūsu Chrome datus</translation>
@@ -148,6 +150,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="6916015246697034114">Meklēt ar balsi pārlūkā Chrome</translation>
 <translation id="6964931465519938134">Tagad varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="6975725306479268850">Izvēlieties Chrome automātiskajai aizpildei</translation>
+<translation id="7004159181872656283">Sākt vizuālo meklēšanu pārlūkā Chrome.</translation>
 <translation id="7056826488869329999">Tiek atvērta un veikta drošības pārbaude pārlūkā Chrome.</translation>
 <translation id="7059914902409643750">Pielāgojiet pārlūku Chrome savām vajadzībām</translation>
 <translation id="7124339256045485976">Jaunākās Chrome iespējas</translation>
@@ -155,6 +158,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7165736900384873061">Darba sākšana ar Google Chrome QR skeneri</translation>
 <translation id="7173660919484573146">Chrome izmanto Face ID, lai jūsu parolēm varētu piekļūt tikai pilnvarotas personas.</translation>
 <translation id="7187993566681480880">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chrome. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
+<translation id="7200524487407690471">Pārlūkā Chrome katru dienu tiek automātiski veikta drošības pārbaude, lai pasargātu jūs no datu aizsardzības pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem. Plašāka informācija par drošības pārbaudi ir pieejama sadaļā Iestatījumi.</translation>
 <translation id="72119412072970160">Google paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPad planšetdatora lietotnēs.</translation>
 <translation id="7254380941803999489">Chrome iestatīšana par noklusējuma pārlūku</translation>
 <translation id="7261678641327190792">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles.</translation>
@@ -174,6 +178,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7855730255114109580">Pārlūks Google Chrome ir atjaunināts.</translation>
 <translation id="7897703007638178753">Skatīt pārlūkā Chrome nesen atvērtās cilnes</translation>
 <translation id="7925119591961387184">Atlasiet vienumu Chrome.</translation>
+<translation id="7933491483529363150">Atvērt manu jaunāko cilni pārlūkā Chrome.</translation>
 <translation id="8022947259858476807">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="804638182476029347">Atļaujiet Chrome paziņojumus, lai saņemtu brīdinājumus par cenu kritumu</translation>
 <translation id="81358522153858150">Pārlūkā Chrome tagad tiek atbalstīta lietotāju politiku izmantošana jūsu pārvaldītajos kontos</translation>

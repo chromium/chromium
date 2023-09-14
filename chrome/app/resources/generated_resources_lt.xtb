@@ -449,7 +449,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1347512539447549782">„Linux“ saugykla</translation>
 <translation id="1347975661240122359">Atnaujinimo procesas prasidės, kai akumuliatoriaus įkrovos lygis bus <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1348966090521113558">Pelės pritaikomumo nustatymai</translation>
-<translation id="1351089605448164407">Iš jūsų Disko</translation>
 <translation id="1353275871123211385">Kad būtų galima naudoti tėvų kontrolės funkcijas, pvz., programų patvirtinimo ir įrenginio naudojimo laiko apribojimo funkcijas, vaikas turi turėti vieno iš tėvų valdomą „Google“ paskyrą. Vėliau galima pridėti mokyklos paskyrą, kad būtų galima naudoti tam tikrus įrankius, pvz., „Google Classroom“.</translation>
 <translation id="135389172849514421">Veikia neprisijungus</translation>
 <translation id="1353980523955420967">Nepavyko rasti PPD. Įsitikinkite, kad „Chromebook“ prijungtas, ir bandykite dar kartą.</translation>
@@ -2208,7 +2207,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2710101514844343743">Naudojimo ir diagnostikos duomenys</translation>
 <translation id="271033894570825754">Naujiena</translation>
 <translation id="2711073837061989559">Bandomieji laikotarpiai</translation>
-<translation id="2711929077861214979">Saugumo patarimai</translation>
 <translation id="2713106313042589954">Išjungti fotoaparatą</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2714180132046334502">Tamsus fonas</translation>
@@ -2518,7 +2516,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2939908794993783865">Papildomos neaktyvios svetainės</translation>
 <translation id="2939938020978911855">Rodyti pasiekiamus „Bluetooth“ įrenginius</translation>
 <translation id="2941112035454246133">Žema</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">Laukiama...</translation>
 <translation id="2942581856830209953">Tinkinti šį puslapį</translation>
 <translation id="2942707801577151363">Atidarykite, redaguokite ir išsaugokite „Word“, „Excel“ ir „PowerPoint“ failus. Kai kurioms funkcijoms gali reikėti prenumeratos.</translation>
@@ -4715,7 +4712,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Įjungti svetainės garsą}one{Įjungti svetainių garsą}few{Įjungti svetainių garsą}many{Įjungti svetainių garsą}other{Įjungti svetainių garsą}}</translation>
 <translation id="474609389162964566">Galimybė pasiekti Padėjėją pasakius „Ok Google“</translation>
-<translation id="4746351372139058112">Pranešimai</translation>
 <translation id="4748783296226936791">Paprastai svetainėse prisijungiama prie HID įrenginių vykdant tam tikras funkcijas, kurioms naudojamos neįprastos klaviatūros, žaidimų valdikliai ir kiti įrenginiai</translation>
 <translation id="4749960740855309258">Atidaryti naują skirtuką</translation>
 <translation id="4750185073185658673">Telefone peržiūrėkite dar kelis leidimus. Įsitikinkite, kad telefone įjungtas „Bluetooth“ ir „Wi-Fi“ ryšys.</translation>
@@ -4782,7 +4778,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4807122856660838973">Įjunkite Saugų naršymą</translation>
 <translation id="4807514039636325497">„D-Bus“ išsami informacija</translation>
 <translation id="4808667324955055115">Iššokantieji langai užblokuoti:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Peržiūrėkite <ph name="BEGIN_BOLD" />1 plėtinį<ph name="END_BOLD" />, kuris buvo pašalintas iš „Chrome“ internetinės parduotuvės}one{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} plėtinį<ph name="END_BOLD" />, kuris buvo pašalintas iš „Chrome“ internetinės parduotuvės}few{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} plėtinius<ph name="END_BOLD" />, kurie buvo pašalinti iš „Chrome“ internetinės parduotuvės}many{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} plėtinio<ph name="END_BOLD" />, kurie buvo pašalinti iš „Chrome“ internetinės parduotuvės}other{Peržiūrėkite <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} plėtinių<ph name="END_BOLD" />, kurie buvo pašalinti iš „Chrome“ internetinės parduotuvės}}</translation>
 <translation id="4809079943450490359">Įrenginio administratoriaus instrukcijos:</translation>
 <translation id="4809447465126035330">Ištrinti</translation>
 <translation id="480990236307250886">Atidaryti pagrindinį puslapį</translation>
@@ -9864,6 +9859,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8962083179518285172">Slėpti išsamią informaciją</translation>
 <translation id="8962863356073277855">URL formatas turi būti https://www.example.com</translation>
 <translation id="8962918469425892674">Šioje svetainėje naudojami judesio arba šviesos jutikliai.</translation>
+<translation id="8963117664422609631">Eiti į svetainės nustatymus</translation>
 <translation id="8965037249707889821">Įveskite seną slaptažodį</translation>
 <translation id="8966809848145604011">Kiti profiliai</translation>
 <translation id="8967427617812342790">Prid. prie skait. sąrašo</translation>
@@ -10242,7 +10238,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="964286338916298286">IT administratorius jūsų įrenginyje išjungė naudingas „Chrome“ funkcijas.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Programa}one{Programos}few{Programos}many{Programos}other{Programos}}</translation>
 <translation id="964790508619473209">Ekrano išdėstymas</translation>
-<translation id="965211523698323809">Siųskite ir gaukite teksto pranešimus naudodami „<ph name="DEVICE_TYPE" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Pranešti apie „Google Cast“ problemą</translation>
 <translation id="966588271015727539">Pasirinkti „Bluetooth“ Brailio rašmenų ekraną</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Šio profilio uždarymas}one{&amp;Šio profilio uždarymas (# langas)}few{&amp;Šio profilio uždarymas (# langai)}many{&amp;Šio profilio uždarymas (# lango)}other{&amp;Šio profilio uždarymas (# langų)}}</translation>

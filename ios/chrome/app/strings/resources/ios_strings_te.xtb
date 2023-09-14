@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />కు పంపుతోంది...</translation>
 <translation id="2576499762020411840">మీ Google ఖాతాలో పాస్‌వర్డ్‌లను ఉపయోగించండి, సేవ్ చేయండి</translation>
+<translation id="2577522251608256362">పరిసరాలు</translation>
 <translation id="2578571896248130439">వెబ్‌పేజీని పంపండి</translation>
 <translation id="2584132361465095047">ఖాతాను జోడించండి…</translation>
 <translation id="2587010742985678408">{count,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{{count} చోరీకి గురైన పాస్‌వర్డ్}other{{count} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
@@ -1090,7 +1091,6 @@
 <translation id="6944369514868857500">మరొక ఖాతాను ఎంచుకోండి</translation>
 <translation id="6944935964236827145">అనువాదాన్ని దాచండి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
-<translation id="6955779377310719430">ఫాలో చేయండి ఆప్షన్‌ను దాచండి</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6973630695168034713">ఫోల్డర్‌లు</translation>
 <translation id="6979158407327259162">Google Drive</translation>

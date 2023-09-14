@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">કોઈ સંરક્ષણ નથી (સુઝાવ આપતા નથી)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ...</translation>
 <translation id="2576499762020411840">તમારા Google એકાઉન્ટમાંના પાસવર્ડનો ઉપયોગ કરો અને તેને સાચવો</translation>
+<translation id="2577522251608256362">પડોશ</translation>
 <translation id="2578571896248130439">વેબપેજ મોકલો</translation>
 <translation id="2584132361465095047">એકાઉન્ટ ઉમેરો…</translation>
 <translation id="2587010742985678408">{count,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {count} પાસવર્ડ}one{ચેડાં કરાયેલો {count} પાસવર્ડ}other{ચેડાં કરાયેલા {count} પાસવર્ડ}}</translation>
@@ -697,6 +698,7 @@
 <translation id="4881695831933465202">ખોલો</translation>
 <translation id="488785315393301722">વિગતો બતાવો</translation>
 <translation id="4894963374040315706">આ તમને તમારા વૉઇસનો ઉપયોગ કરીને શોધવા દે છે</translation>
+<translation id="489903206070130262">તમે છેલ્લે ખોલેલું ટૅબ</translation>
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4904877109095351937">વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="4908869848243824489">Googleનું Discover</translation>
@@ -1089,7 +1091,6 @@
 <translation id="6944369514868857500">બીજું એકાઉન્ટ પસંદ કરો</translation>
 <translation id="6944935964236827145">'અનુવાદ' છુપાવો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
-<translation id="6955779377310719430">'ફૉલો કરો' છુપાવો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
 <translation id="6979158407327259162">Google Drive</translation>

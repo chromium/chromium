@@ -158,6 +158,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="1830634592642484976">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
 <translation id="1836891464494477513">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}}other{Järjehoidjad salvestati teie Google'i kontole {email}}}</translation>
+<translation id="183878838231635348">Sellel kaardil kuvatakse kõik privaatsus- või turvaohud, mille ohutuskontroll teie eest automaatselt tuvastab.</translation>
 <translation id="1847795903283049083">Neid üksusi saate vaadata ja hallata ka järjehoidjates, lugemisloendis või paroolihalduris.</translation>
 <translation id="1870148520156231997">Kuva parool</translation>
 <translation id="1872096359983322073">Lamp</translation>
@@ -267,11 +268,13 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2523363575747517183">See veebisait üritab korduvalt avada teist rakendust.</translation>
 <translation id="2529021024822217800">Ava kõik</translation>
 <translation id="2536991091671391962">Saate salvestatud paroole kasutada mis tahes seadmes. Need salvestatakse konto <ph name="EMAIL" /> puhul Google'i paroolihaldurisse.</translation>
+<translation id="2542268842667970959">Peitke funktsioon Ohutuskontroll</translation>
 <translation id="2547458583188611426">Sünkroonimine ei tööta. Sünkroonimise alustamiseks sisestage oma parool.</translation>
 <translation id="2551153019974022505">Konto viga</translation>
 <translation id="2556092377360758201">Kaitseta (ei ole soovitatav)</translation>
 <translation id="2562041823070056534">Saatmine seadmesse <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2576499762020411840">Paroolide kasutamine ja salvestamine Google'i kontol</translation>
+<translation id="2577522251608256362">Naabruskond</translation>
 <translation id="2578571896248130439">Veebilehe saatmine</translation>
 <translation id="2584132361465095047">Lisa konto …</translation>
 <translation id="2587010742985678408">{count,plural, =0{Ohustatud paroole pole}=1{{count} ohustatud parool}other{{count} ohustatud parooli}}</translation>
@@ -695,6 +698,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4881695831933465202">Ava</translation>
 <translation id="488785315393301722">Üksikasjade kuvamine</translation>
 <translation id="4894963374040315706">See võimaldab hääle abil otsida</translation>
+<translation id="489903206070130262">Teie viimane avatud vaheleht</translation>
 <translation id="4901778704868714008">Salvesta …</translation>
 <translation id="4904877109095351937">Märgi loetuks</translation>
 <translation id="4908869848243824489">Discover Google'ilt</translation>
@@ -1087,7 +1091,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6944369514868857500">Valige muu konto</translation>
 <translation id="6944935964236827145">Peida valik Tõlgi</translation>
 <translation id="6945221475159498467">Vali</translation>
-<translation id="6955779377310719430">Peida valik Jälgi</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Kaustad</translation>
 <translation id="6979158407327259162">Google Drive</translation>

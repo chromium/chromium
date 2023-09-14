@@ -444,7 +444,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1347512539447549782">Almacenamiento de Linux</translation>
 <translation id="1347975661240122359">La actualización comenzará cuando tengas un <ph name="BATTERY_LEVEL" />% de batería.</translation>
 <translation id="1348966090521113558">Ajustes de accesibilidad del ratón</translation>
-<translation id="1351089605448164407">De tu unidad</translation>
 <translation id="1353275871123211385">Para usar controles parentales, como la aprobación de aplicaciones y los límites de tiempo de pantalla, el niño debe tener una cuenta de Google gestionada por su padre o madre. Además, se puede añadir una cuenta de centro educativo para usarla en herramientas como Google Classroom.</translation>
 <translation id="135389172849514421">Funciona sin conexión</translation>
 <translation id="1353980523955420967">No se ha podido encontrar el archivo PPD. Comprueba que el Chromebook esté conectado y vuelve a intentarlo.</translation>
@@ -2190,7 +2189,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
-<translation id="2711929077861214979">Consejos de seguridad</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -2500,7 +2498,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2939908794993783865">Más sitios inactivos</translation>
 <translation id="2939938020978911855">Mostrar dispositivos Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Baja</translation>
-<translation id="2942279350258725020">Mensajes Android</translation>
 <translation id="2942560570858569904">Esperando...</translation>
 <translation id="2942581856830209953">Personalizar esta página</translation>
 <translation id="2942707801577151363">Abre, edita y guarda archivos de Word, Excel y PowerPoint. Es posible que se requiera una suscripción para acceder a algunas funciones.</translation>
@@ -4695,7 +4692,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activar sonido del sitio}other{Activar sonido de los sitios}}</translation>
 <translation id="474609389162964566">Accede al Asistente diciendo "Hey Google"</translation>
-<translation id="4746351372139058112">Mensajes</translation>
 <translation id="4748783296226936791">Los sitios se suelen conectar a dispositivos HID para usarlos en funciones que utilizan teclados poco habituales, mandos de juegos y otros dispositivos</translation>
 <translation id="4749960740855309258">Abre una pestaña nueva</translation>
 <translation id="4750185073185658673">Ve a tu teléfono y revisa algunos permisos más. Asegúrate de que el Bluetooth y el Wi‑Fi de tu teléfono estén activados.</translation>
@@ -4762,7 +4758,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4807122856660838973">Activar Navegación segura</translation>
 <translation id="4807514039636325497">Detalles de DBus</translation>
 <translation id="4808667324955055115">Pop-ups bloqueados</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 extensión<ph name="END_BOLD" /> que se ha retirado de Chrome Web Store}other{Revisa <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} extensiones<ph name="END_BOLD" /> que se han retirado de Chrome Web Store}}</translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
 <translation id="4809447465126035330">Eliminar</translation>
 <translation id="480990236307250886">Abrir la página principal</translation>
@@ -9832,6 +9827,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8962083179518285172">Ocultar detalles</translation>
 <translation id="8962863356073277855">El formato de la URL debería ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este sitio web está usando los sensores de luz o movimiento.</translation>
+<translation id="8963117664422609631">Ir a configuración del sitio</translation>
 <translation id="8965037249707889821">Introducir contraseña anterior</translation>
 <translation id="8966809848145604011">Otros perfiles</translation>
 <translation id="8967427617812342790">Añadir a lista de lectura</translation>
@@ -10210,7 +10206,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="964286338916298286">Tu administrador de TI ha inhabilitado el contenido adicional de Chrome para tu dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicación}other{Aplicaciones}}</translation>
 <translation id="964790508619473209">Disposición de la pantalla</translation>
-<translation id="965211523698323809">Envía y recibe mensajes de texto con tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar de un problema con Google Cast</translation>
 <translation id="966588271015727539">Selecciona una pantalla de braille Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Cerrar este perfil}other{&amp;Cerrar este perfil (# ventanas)}}</translation>

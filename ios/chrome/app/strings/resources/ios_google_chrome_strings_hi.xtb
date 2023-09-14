@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1105362920864247682">Chrome में ब्राउज़िंग डेटा मिटाएं.</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" /> के लिए आपके पासवर्ड को Google पासवर्ड मैनेजर में सेव किया जाएगा.</translation>
 <translation id="1180362651362502943">अपने Google खाते में, Chrome के डेटा का इस्तेमाल जारी रखें.</translation>
 <translation id="1282031177488366470">Chrome की सुविधाओं और प्रदर्शन को बेहतर बनाने में मदद करें</translation>
@@ -56,6 +57,7 @@
 <translation id="2736805085127235148">फ़िलहाल, आपके डिवाइस की सेटिंग में, Chrome की सूचनाएं भेजने की सुविधा बंद है.</translation>
 <translation id="2767464022270041271">कोई भी पासवर्ड सेव नहीं किया गया है. पासवर्ड सेव होने पर ही, Google Password Manager आपके पासवर्ड की जांच कर सकता है.</translation>
 <translation id="2840432500933227975">iOS पर Chrome Settings खोलें. इसके बाद, "Browser Default APP" पर टैप करें और Chrome चुनें.</translation>
+<translation id="2868822340714096138">Chrome में ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="2869959624320573933">Chrome में साइन इन करें</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome आपके डेटा को निजी कैसे रखता है<ph name="END_LINK" />, इसके बारे में ज़्यादा जानें</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> को चुनें</translation>

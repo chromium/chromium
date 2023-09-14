@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">ଷ୍ଟକ ଏବଂ ବଣ୍ଡଗୁଡ଼ିକ</translation>
 <translation id="1391625539203220400">ଏହି ଡିଭାଇସରେ IBAN ସେଭ କରିବେ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> କୌଣସି ଡାଟା ପଠାଇନାହିଁ।</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ମାଧ୍ୟମରେ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="1405567553485452995">ହାଲୁକା ସବୁଜ</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
 <translation id="1406812885827747674">ଏହି ଥର ଅନୁମତି ଦିଅନ୍ତୁ</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦେଉନଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତ ଭାବରେ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2071852865256799872">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଆପଣଙ୍କର ବ୍ରାଉଜର ପରିଚାଳିତ ହୋଇଥାଏ ଏବଂ <ph name="PROFILE_DOMAIN" /> ଦ୍ୱାରା ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ପରିଚାଳିତ ହୋଇଥାଏ</translation>
 <translation id="2072275792380684364">ଫେସନ ଏବଂ ଷ୍ଟାଇଲ</translation>
+<translation id="2075497153347571252">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="ORIGIN" />ରେ <ph name="PERMISSION" />କୁ ବ୍ଲକ କରିଛନ୍ତି</translation>
 <translation id="2079545284768500474">ପୂର୍ବବତ୍</translation>
 <translation id="20817612488360358">ସିଷ୍ଟମ୍ ପ୍ରକ୍ସି ସେଟିଂସ୍ ବ୍ୟବହାର କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି କିନ୍ତୁ ଏକ ସୁନିର୍ଦ୍ଦିଷ୍ଟ ପ୍ରକ୍ସି କନ୍‌ଫିଗ୍‌ରେସନ୍ ମଧ୍ୟ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />ର <ph name="RESULT_NUMBER" />ଟି ଫଳାଫଳ</translation>
@@ -1877,6 +1879,7 @@
 <translation id="4885256590493466218">ଚେକଆଉଟ୍ କରିବା ସମୟରେ <ph name="CARD_DETAIL" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4887406273302438710">Windows Hello ମାଧ୍ୟମରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
 <translation id="4888600795924685526">ବିଦେଶୀ ଭାଷା ଅଧ୍ୟୟନ</translation>
+<translation id="4890070067176768718">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="ORIGIN" />ରେ <ph name="PERMISSION" />କୁ ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="4892518386797173871">ପଛଭାଗ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ଅଲମ୍ପିକ୍ସ</translation>
@@ -2323,6 +2326,7 @@
 <translation id="5830698870816298009">କ୍ୟାମେରାର ବ୍ୟବହାର ଓ ଗତିବିଧି</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5838278095973806738">ଏହି ସାଇଟ୍‌ରେ କୌଣସି ସମ୍ବେଦନଶୀଳ ସୂଚନା (ଉଦାହରଣ ସ୍ୱରୂପ, ପାସ୍‌ୱର୍ଡ କିମ୍ବା କ୍ରେଡିଟ୍‌ କାର୍ଡ) ଲେଖିବା ଉଚିତ ନୁହେଁ କାରଣ ଏହା ଆକ୍ରମଣକାରୀମାନଙ୍କ ଦ୍ୱାରା ଚୋରୀ ହୋ‍ଇଯାଇପାରେ।</translation>
+<translation id="5838732667866024867">ଗ୍ରାଫରେ ମୂଲ୍ୟ ପରିବର୍ତ୍ତନର ସମୀକ୍ଷା କରିବା ପାଇଁ ଆପଣ ବାମ/ ଡାହାଣ ତୀର ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="5840318881868981258">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">ଆକାଉଣ୍ଟରେ ସେଭ କରିବେ?</translation>
 <translation id="5847181246682413476">ପାୱାର ସପ୍ଲାଇ</translation>
@@ -2610,6 +2614,7 @@
 <translation id="6432297414176614592">ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ସମ୍ପର୍କରେ ଅଧିକ</translation>
 <translation id="6432831586648556868">ସେଲ୍ସ ଏବଂ ମାର୍କେଟିଂ ଚାକିରି</translation>
 <translation id="6433490469411711332">ଯୋଗାଯୋଗ ସୂଚନା ଏଡିଟ୍‍ କରନ୍ତୁ</translation>
+<translation id="6433501201775827830">ଆପଣଙ୍କର ସନ୍ଧାନ ଇଞ୍ଜିନ୍ ବାଛନ୍ତୁ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ସଂଯୋଗ କରିବାକୁ ଅସ୍ୱୀକାର କରିଛନ୍ତି।</translation>
 <translation id="6433797564277305076">ବର୍ତ୍ତମାନଠାରୁ ଡିଭାଇସ ଅନଲକ ବ୍ୟବହାର କରି ଆପଣଙ୍କ କାର୍ଡଗୁଡ଼ିକୁ ଶୀଘ୍ର ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="643917412048333145">ଡ୍ରେସ</translation>
@@ -3966,6 +3971,7 @@
 <translation id="9207861905230894330">ନିବନ୍ଧ ଯୋଗ କରିହେଲା ନାହିଁ।</translation>
 <translation id="9213433120051936369">ଏପିଏରେନ୍ସ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9215416866750762878">ଏକ ଆପ୍ଲିକେସନ୍ Chromeକୁ ଏହି ସାଇଟ୍ ସହିତ ସୁରକ୍ଷିତ ରୂପେ ସଂଯୋଗ କରିବାକୁ ବାଧା ଦେଉଛି</translation>
+<translation id="9218430445555521422">ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chromeକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9222403027701923763">ପ୍ରାଇମେରୀ ଏବଂ ସେକେଣ୍ଡାରୀ ସ୍କୁଲିଂ (K-12)</translation>

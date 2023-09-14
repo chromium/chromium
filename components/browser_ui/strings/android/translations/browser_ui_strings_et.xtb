@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2678468611080193228">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada. See vähendab kaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega.</translation>
+<translation id="2683434792633810741">Kas kustutada ja lähtestada?</translation>
 <translation id="2687403674020088961">Blokeeri kõik küpsised (ei ole soovitatav)</translation>
 <translation id="2713106313042589954">Lülita kaamera välja</translation>
 <translation id="2717722538473713889">E-posti aadressid</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Lubage konkreetse saidi küpsisefailid.</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
 <translation id="4053720452172726777">Google Chrome'i kohandamine ja juhtimine</translation>
+<translation id="4149890623864272035">Kas olete kindel, et soovite kustutada kõik kohalikud andmed, sh küpsised, ja lähtestada kõik selle veebisaidi õigused?</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
 <translation id="4151930093518524179">Vaikesuum</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Kolmanda osapoole küpsiste lubamine</translation>
 <translation id="4428065317363009941">Reklaamide isikupärastamine</translation>
 <translation id="4434045419905280838">Hüpikaknad ja ümbersuunamised</translation>
+<translation id="443552056913301231">See toiming kustutab kõik kohalikud andmed, sh küpsised, ja lähtestab kõik lähtekoha <ph name="ORIGIN" /> õigused</translation>
 <translation id="4468959413250150279">Konkreetse saidi heli vaigistamine.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# küpsisefail}other{# küpsisefaili}}</translation>
 <translation id="4478158430052450698">Muutke erinevate saitide jaoks suumi kohandamine lihtsamaks</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Vaigista mikrofon</translation>
 <translation id="4570913071927164677">Üksikasjad</translation>
 <translation id="4598549027014564149">Inkognito režiimis ei saa saidid küpsisefailide kaudu teie sirvimistegevusi saitidel (isegi seotud saitidel) jälgida. Teie sirvimistegevusi ei kasutata näiteks reklaamide isikupärastamiseks. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
+<translation id="4644713492825682049">Kustuta ja lähtesta</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
 <translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Viimati külastati täna</translation>
 <translation id="5225463052809312700">Lülita kaamera sisse</translation>
 <translation id="5234764350956374838">Loobu</translation>
+<translation id="5246825184569358663">See toiming kustutab kõik kohalikud andmed, sh küpsised, ning lähtestab kõik domeeni <ph name="DOMAIN" /> ja selle alla kuuluvate saitide õigused.</translation>
 <translation id="5264323282659631142">Eemalda „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Täisekraanilt väljumiseks lohistage ülaservast alla ja puudutage tagasinuppu.</translation>
 <translation id="5300589172476337783">Kuva</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Erandid</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
+<translation id="6207207788774442484">Kustuta andmed ja õigused</translation>
 <translation id="6216432067784365534">Üksuse <ph name="NAME_OF_LIST_ITEM" /> valikud</translation>
 <translation id="6231752747840485235">Kas desinstallida rakendus <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Teie viimase vahelehe põhjal</translation>

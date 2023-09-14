@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">ආලෝකය</translation>
 <translation id="5965524703725988602">අඳුරු තේමාව ටොගල් කරන්න. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">කවුළු හරහා ඉදිරියට කාලක්‍රම කරන්න</translation>
-<translation id="5976112937189445008">කවුළුව පටිගත කිරීමට Enter ඔබන්න</translation>
 <translation id="5978382165065462689">දුරස්ථ සහයක මගින් ඔබේ තිරයේ පාලනය බෙදාගනී.</translation>
 <translation id="5980301590375426705">අමුත්තා පිටවන්න</translation>
 <translation id="5983567367406220847">අක්‍රිය වීම හේතුවෙන්, හොට්ස්පොට් ක්‍රියා විරහිත කර ඇත.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">ඔබගේ <ph name="DEVICE_TYPE" /> අඩු ක්‍රියාකාරිත්වයක් අත්විඳිය හැකිය. සහතික කළ <ph name="PREFERRED_MINIMUM_POWER" />W හෝ වඩා ඉහළ USB-C බල ඇඩැප්ටරයක් භාවිත කරන්න.</translation>
 <translation id="688631446150864480">කවුළු මාරු කිරීමට පහළ ඊතල යතුර ඔබන්න</translation>
 <translation id="6896758677409633944">පිටපත්</translation>
-<translation id="6901883536534621389">සංචාලනය කිරීමට ඉංගිත උත්සාහ කරන්න</translation>
 <translation id="6912841030378044227">ලිපින තීරුව කෙරෙහි අවධානය යොමු කරන්න</translation>
 <translation id="6912901278692845878">ඉක්මන් සංචාරය</translation>
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> භාවිත කිරීම</translation>
 <translation id="8185090165691050712">අගුලු ප්‍රකාරය ප්‍රතිප්‍රමාණ කිරීමට මෙනුව සක්‍රීය/අක්‍රිය කරන්න</translation>
 <translation id="8192202700944119416">දැනුම්දීම් සැඟවී ඇත.</translation>
-<translation id="8196787716797768628">යෙදුම් අතර ක්‍ෂණිකව මාරු වීමටත් ඔබේ Chromebook සමඟ ටැබ්ලට් ප්‍රකාරය තුළ අන්තර්ක්‍රියා කිරීමටත් ඉංගිත භාවිත කරන්න.</translation>
 <translation id="8198456017687137612">විකාශ ටැබය</translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
 <translation id="8203795194971602413">දකුණු ක්ලික් කිරීම</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">බැටරි ප්‍රතිශතය <ph name="PERCENTAGE" /> කි.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google සහායක මෙම භාෂාව කථා කරන්නේ නැත.</translation>
-<translation id="8924458948354692166">කවුළු තිර රුවක් ලබා ගැනීමට Enter ඔබන්න</translation>
 <translation id="8926951137623668982">රාක්කය සැම විට සඟවා ඇත</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ගොනුවක්}one{ගොනු #ක්}other{ගොනු #ක්}}</translation>
 <translation id="8936501819958976551">ක්‍රියා විරහිතයි</translation>

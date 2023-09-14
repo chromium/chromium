@@ -447,7 +447,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1347512539447549782">storage ng Linux</translation>
 <translation id="1347975661240122359">Magsisimula ang pag-update kapag umabot na ang baterya sa <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Mga setting ng accessibility ng mouse</translation>
-<translation id="1351089605448164407">Mula sa Iyong Drive</translation>
 <translation id="1353275871123211385">Para gumamit ng parental controls gaya ng pag-apruba ng app at mga limitasyon sa tagal ng paggamit, dapat ay mayroong Google Account ang bata na pinapamahalaan ng magulang. Puwedeng magdagdag ng pampaaralang account sa ibang pagkakataon para sa mga tool gaya ng Google Classroom.</translation>
 <translation id="135389172849514421">Gumagana offline</translation>
 <translation id="1353980523955420967">Hindi makita ang PPD. Tiyaking online ang iyong Chromebook at subukan ulit.</translation>
@@ -1996,6 +1995,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Nagkaproblema at hindi ma-install ang <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para sa higit pang tulong, bisitahin ang: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Pinapatagal ang baterya sa pamamagitan ng pagpapanatili ng iyong baterya sa humigit kumulang 80%. Ganap na magcha-charge ang baterya bago ka karaniwang magdiskonekta sa kuryente.</translation>
+<translation id="2532146950330687938">Hinahanda ang device...</translation>
 <translation id="2532198298278778531">Pamahalaan ang secure na DNS sa mga setting ng ChromeOS Flex</translation>
 <translation id="2532589005999780174">High contrast mode</translation>
 <translation id="2533649878691950253">Na-block ang site na ito sa pag-alam ng iyong eksaktong lokasyon dahil karaniwang hindi mo ito pinapayagan</translation>
@@ -2205,7 +2205,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2710101514844343743">Data ng paggamit at mga diagnostic</translation>
 <translation id="271033894570825754">Bago</translation>
 <translation id="2711073837061989559">Mga Trial</translation>
-<translation id="2711929077861214979">Mga tip para sa proteksyon</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2713444072780614174">Puti</translation>
 <translation id="2714180132046334502">Madilim na background</translation>
@@ -2515,7 +2514,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2939908794993783865">Mga karagdagang hindi aktibong site</translation>
 <translation id="2939938020978911855">Ipakita ang mga available na Bluetooth device</translation>
 <translation id="2941112035454246133">Mababa</translation>
-<translation id="2942279350258725020">Mga mensahe sa Android</translation>
 <translation id="2942560570858569904">Naghihintay...</translation>
 <translation id="2942581856830209953">I-customize ang page na ito</translation>
 <translation id="2942707801577151363">Magbukas, mag-edit, at mag-save ng mga file sa Word, Excel, at PowerPoint. Posibleng nire-require ang subscription para sa ilang feature.</translation>
@@ -4712,7 +4710,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{I-unmute ang site}one{I-unmute ang mga site}other{I-unmute ang mga site}}</translation>
 <translation id="474609389162964566">I-access ang iyong Assistant gamit ang "Hey Google"</translation>
-<translation id="4746351372139058112">Mga Mensahe</translation>
 <translation id="4748783296226936791">Karaniwang kumokonekta ang mga site sa mga HID device para sa mga feature na gumagamit ng mga hindi pangkaraniwang keyboard, game controller, at iba pang device</translation>
 <translation id="4749960740855309258">Magbukas ng bagong tab</translation>
 <translation id="4750185073185658673">Buksan ang iyong telepono para sumuri ng ilan pang pahintulot. Tiyaking naka-on ang Bluetooth at Wi-Fi ng iyong telepono.</translation>
@@ -4779,7 +4776,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4807122856660838973">I-on ang Ligtas na Pag-browse</translation>
 <translation id="4807514039636325497">Mga Detalye ng DBus</translation>
 <translation id="4808667324955055115">Naka-block ang mga pop-up</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Suriin ang <ph name="BEGIN_BOLD" />1 extension<ph name="END_BOLD" /> na inalis sa Chrome Web Store}one{Suriin ang <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} extension<ph name="END_BOLD" /> na inalis sa Chrome Web Store}other{Suriin ang <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} na extension<ph name="END_BOLD" /> na inalis sa Chrome Web Store}}</translation>
 <translation id="4809079943450490359">Mga tagubilin mula sa administrator ng iyong device:</translation>
 <translation id="4809447465126035330">I-delete</translation>
 <translation id="480990236307250886">Buksan ang home page</translation>
@@ -5764,6 +5760,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5627086634964711283">Kinokontrol din nito kung anong pahina ang ipinapakita kapag na-click mo ang button ng Home.</translation>
 <translation id="5627676517703583263">Mag-browse nang mahusay gamit ang Chrome</translation>
 <translation id="5627832140542566187">Oryentasyon ng display</translation>
+<translation id="5628434207686266338">Itakda ang password ng device</translation>
 <translation id="562935524653278697">Na-disable ng administrator mo ang pag-sync ng iyong mga bookmark, history, password at iba pang mga setting.</translation>
 <translation id="5631017369956619646">Paggamit sa CPU</translation>
 <translation id="5631272057151918206">Aalisin nito ang hanggang <ph name="OFFLINE_STORAGE_SIZE" /> ng space na ginagamit ng iyong mga offline na file. Magiging available pa rin offline ang ilang file. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -9854,6 +9851,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8962083179518285172">Itago ang Mga Detalye</translation>
 <translation id="8962863356073277855">Ang dapat na format ng URL ay https://www.example.com</translation>
 <translation id="8962918469425892674">Gumagamit ang site na ito ng sensor ng paggalaw o liwanag.</translation>
+<translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>
 <translation id="8965037249707889821">Ilagay ang lumang password</translation>
 <translation id="8966809848145604011">Iba pang Profile</translation>
 <translation id="8967427617812342790">Idagdag sa listahan ng babasahin</translation>
@@ -10232,7 +10230,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="964286338916298286">Na-disable ng iyong IT administrator ang Chrome Goodies para sa device mo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}one{Application}other{na Application}}</translation>
 <translation id="964790508619473209">Arrangement ng screen</translation>
-<translation id="965211523698323809">Magpadala at makatanggap ng mga text message mula sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Mag-ulat ng isyu sa Google Cast</translation>
 <translation id="966588271015727539">Pumili ng bluetooth na braille display</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Isara ang Profile na Ito}one{&amp;Isara ang Profile na Ito (# Window)}other{&amp;Isara ang Profile na Ito (# na Window)}}</translation>

@@ -212,6 +212,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1391289752476847787">Dionice i obveznice</translation>
 <translation id="1391625539203220400">Želite li spremiti IBAN na ovaj uređaj?</translation>
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
+<translation id="1397811292916898096">Pretraživanje pomoću usluge <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Svijetlozelena</translation>
 <translation id="1406500794671479665">Potvrda u tijeku...</translation>
 <translation id="1406812885827747674">Dopusti ovaj put</translation>
@@ -2615,6 +2616,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6432297414176614592">Više o temama oglasa</translation>
 <translation id="6432831586648556868">Poslovi u prodaji i marketingu</translation>
 <translation id="6433490469411711332">Uređivanje podataka za kontakt</translation>
+<translation id="6433501201775827830">Odaberite tražilicu</translation>
 <translation id="6433595998831338502">Host <ph name="HOST_NAME" /> odbio je povezivanje.</translation>
 <translation id="6433797564277305076">Odsad koristite otključavanje uređaja kako biste brže potvrdili kartice</translation>
 <translation id="643917412048333145">Haljine</translation>
@@ -3973,6 +3975,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9207861905230894330">Dodavanje članka nije uspjelo.</translation>
 <translation id="9213433120051936369">Prilagodi izgled</translation>
 <translation id="9215416866750762878">Aplikacija sprječava sigurno povezivanje Chromea s ovom web-lokacijom</translation>
+<translation id="9218430445555521422">Postavi kao zadano</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="922152298093051471">Prilagodite Chrome</translation>
 <translation id="9222403027701923763">Osnovno i srednje obrazovanje (K-12)</translation>

@@ -59,6 +59,7 @@
 <translation id="3344973607274501920">Chromiu se nepodařilo zkontrolovat hesla. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="3472200483164753384">V Chromium Canary není podporováno</translation>
 <translation id="3478750326643748149">Skrýt kartu Využití všech funkcí prohlížeče Chromium</translation>
+<translation id="3554027294407525061">Vymazat údaje o prohlížení v Chromiu.</translation>
 <translation id="3567399274263440288">Pokud z prohlížeče Chromium chcete získat maximum, přihlaste se do něj pomocí účtu Google.</translation>
 <translation id="3639997914391704523">Když se přihlásíte pomocí účtu Google, může vám Chromium kontrolovat hesla.</translation>
 <translation id="3650632991272923014">Uživatel <ph name="USER_EMAIL1" /> používal Chromium a ponechal v tomto zařízení záložky, hesla a další nastavení.</translation>
@@ -97,6 +98,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="5042011327527167688">Klepněte na Zobrazit v Mapách Google v prohlížeči Chromium.</translation>
 <translation id="5044871537677053278">Chromium zjišťuje pomocí Map Google adresy, aby vám mohl poskytovat trasy a místní informace.</translation>
 <translation id="5048795749726991615">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, používejte Chromium k automatickému vyplňování</translation>
+<translation id="5076601183701536878">Vymazat údaje o prohlížení v Chromiu</translation>
 <translation id="5131565040785979529">Účet, ke kterému jste přihlášeni, a způsob používání prohlížeče Chromium spravuje doména <ph name="DOMAIN" />.</translation>
 <translation id="5171868502429358653">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="5213683223491576284">Otevře Správce hesel v prohlížeči Chromium.</translation>

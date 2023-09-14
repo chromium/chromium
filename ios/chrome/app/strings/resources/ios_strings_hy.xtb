@@ -158,6 +158,7 @@
 <translation id="1830634592642484976">Այս հասցեն ներկայումս պահված է Chrome-ում։ Պահեք հասցեն ձեր Google հաշվում (<ph name="USER_EMAIL" />), որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում։</translation>
 <translation id="1832848789136765277">Հաստատեք ձեր ինքնությունը, որպեսզի համաժամացված տվյալները միշտ հասանելի լինեն ձեզ</translation>
 <translation id="1836891464494477513">{count,plural, =1{Էջանիշն ավելացվել է ձեր Google հաշվում, {email}}one{Էջանիշն ավելացվել է ձեր Google հաշվում, {email}}other{Էջանիշներն ավելացվել են ձեր Google հաշվում, {email}}}</translation>
+<translation id="183878838231635348">Այս քարտում ցուցադրված են գաղտնիության կամ անվտանգության հետ կապված բոլոր խնդիրները, որոնք ավտոմատ հայտնաբերել է անվտանգության ստուգման գործառույթը։</translation>
 <translation id="1847795903283049083">Դուք նաև կարող եք դիտել և կառավարել այս տարրերը ձեր էջանիշներում, ընթերցանության ցանկում կամ Գաղտնաբառերի կառավարչում։</translation>
 <translation id="1870148520156231997">Ցուցադրել գաղտնաբառը</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
@@ -267,11 +268,13 @@
 <translation id="2523363575747517183">Այս կայքը բազմիցս փորձում է բացել մեկ այլ հավելված։</translation>
 <translation id="2529021024822217800">Բացել բոլորը</translation>
 <translation id="2536991091671391962">Պահված գաղտնաբառերը կարող եք օգտագործել ցանկացած սարքում։ Դրանք պահված են <ph name="EMAIL" /> հաշվի Google գաղտնաբառերի կառավարիչում։</translation>
+<translation id="2542268842667970959">Թաքցնել «Անվտանգության ստուգում» գործառույթը</translation>
 <translation id="2547458583188611426">Համաժամացումը չի աշխատում։ Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը։</translation>
 <translation id="2551153019974022505">Հաշվի սխալ</translation>
 <translation id="2556092377360758201">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
 <translation id="2562041823070056534">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
 <translation id="2576499762020411840">Օգտագործել և պահել գաղտնաբառերը Google հաշվում</translation>
+<translation id="2577522251608256362">Թաղամաս</translation>
 <translation id="2578571896248130439">Կայքէջի ուղարկում</translation>
 <translation id="2584132361465095047">Ավելացնել հաշիվ</translation>
 <translation id="2587010742985678408">{count,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{count} կոտրված գաղտնաբառ}one{{count} կոտրված գաղտնաբառ}other{{count} կոտրված գաղտնաբառ}}</translation>
@@ -695,6 +698,7 @@
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="488785315393301722">Ցույց տալ մանրամասները</translation>
 <translation id="4894963374040315706">Սա անհրաժեշտ է ձայնային որոնումն օգտագործելու համար</translation>
+<translation id="489903206070130262">Ձեր վերջին բաց ներդիրը</translation>
 <translation id="4901778704868714008">Պահել…</translation>
 <translation id="4904877109095351937">Նշել որպես կարդացված</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
@@ -1087,7 +1091,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6944369514868857500">Ընտրել այլ հաշիվ</translation>
 <translation id="6944935964236827145">Թաքցնել «Թարգմանել» գործողությունը</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
-<translation id="6955779377310719430">Թաքցնել «Հետևել» գործողությունը</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6973630695168034713">Պանակներ</translation>
 <translation id="6979158407327259162">Google Drive</translation>

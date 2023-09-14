@@ -1215,7 +1215,6 @@
 <translation id="5961960957587052807">Բաց</translation>
 <translation id="5965524703725988602">Միացնել/անջատել մուգ թեման։ <ph name="STATE_TEXT" />։</translation>
 <translation id="5975235751479998104">Անցնել հաջորդ պատուհանին</translation>
-<translation id="5976112937189445008">Սեղմեք Enter՝ պատուհանի բովանդակությունը տեսագրելու համար</translation>
 <translation id="5978382165065462689">Էկրանի կառավարման համօգտագործում Հեռակա օգնության միջոցով:</translation>
 <translation id="5980301590375426705">Ավարտել հյուրի սեսիան</translation>
 <translation id="5983567367406220847">Անգործուն լինելու պատճառով թեժ կետն անջատվել է։</translation>
@@ -1437,7 +1436,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> սարքի արդյունավետությունը կարող է նվազել։ Օգտագործեք հավաստագրված <ph name="PREFERRED_MINIMUM_POWER" />Վ կամ ավելի բարձր USB-C սնուցման ադապտեր։</translation>
 <translation id="688631446150864480">Մյուս պատուհան անցնելու համար սեղմեք վար սլաքը</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
-<translation id="6901883536534621389">Օգտագործեք ժեստեր նավիգացիայի համար</translation>
 <translation id="6912841030378044227">Անցնել հասցեագոտուն</translation>
 <translation id="6912901278692845878">Հակիրճ տեսաուղեցույց</translation>
 <translation id="6919251195245069855">Չհաջողվեց ճանաչել ձեր խելացի քարտը: Նորից փորձեք։</translation>
@@ -1742,7 +1740,6 @@
 <translation id="8167567890448493835">Օգտագործվում է՝ <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Միացնել/անջատել ընտրացանկը՝ կողպման ռեժիմի չափը փոխելու համար</translation>
 <translation id="8192202700944119416">Ծանուցումները թաքցված են:</translation>
-<translation id="8196787716797768628">Ժեստերի միջոցով արագ անցեք մեկ հավելվածից մյուսը և օգտագործեք Chromebook-ը պլանշետի ռեժիմում։</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8203795194971602413">Աջ սեղմում</translation>
@@ -1901,7 +1898,6 @@
 <translation id="8909138438987180327">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />%</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google օգնականն այս լեզվով չի խոսում:</translation>
-<translation id="8924458948354692166">Սեղմեք Enter՝ պատուհանի բովանդակության սքրինշոթ անելու համար</translation>
 <translation id="8926951137623668982">Դարակը միշտ թաքցված է</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="8936501819958976551">անջատվեց</translation>

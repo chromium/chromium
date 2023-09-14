@@ -212,6 +212,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1391289752476847787">Részvények és kötvények</translation>
 <translation id="1391625539203220400">Menti az IBAN-t erre az eszközre?</translation>
 <translation id="139305205187523129">A(z) <ph name="HOST_NAME" /> nem küldött adatokat.</translation>
+<translation id="1397811292916898096">Keresés a(z) <ph name="PRODUCT_NAME" /> keresőmotorral</translation>
 <translation id="1405567553485452995">Világoszöld</translation>
 <translation id="1406500794671479665">Ellenőrzés...</translation>
 <translation id="1406812885827747674">Egyszeri engedélyezés</translation>
@@ -2614,6 +2615,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6432297414176614592">További információ a hirdetéstémákról</translation>
 <translation id="6432831586648556868">Értékesítési és marketingállások</translation>
 <translation id="6433490469411711332">Kapcsolattartási adatok szerkesztése</translation>
+<translation id="6433501201775827830">Keresőmotor kiválasztása</translation>
 <translation id="6433595998831338502">A(z) <ph name="HOST_NAME" /> visszautasította a csatlakozást.</translation>
 <translation id="6433797564277305076">Mostantól gyorsabban igazolhatja kártyáit az eszköz feloldási módszerének használatával</translation>
 <translation id="643917412048333145">Ruhák</translation>
@@ -3971,6 +3973,7 @@ További részletek:
 <translation id="9207861905230894330">A cikk hozzáadása sikertelen.</translation>
 <translation id="9213433120051936369">Megjelenés személyre szabása</translation>
 <translation id="9215416866750762878">Valamelyik alkalmazás megakadályozza a Chrome-ot abban, hogy biztonságosan csatlakozzon a webhelyhez</translation>
+<translation id="9218430445555521422">Beállítás alapértelmezettként</translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="922152298093051471">A Chrome személyre szabása</translation>
 <translation id="9222403027701923763">Általános iskolai és középiskolai oktatás</translation>

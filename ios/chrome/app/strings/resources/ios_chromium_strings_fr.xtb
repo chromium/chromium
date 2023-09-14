@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">Ouvre un nouvel onglet de navigation privée Chromium.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
 <translation id="3827545470516145620">Vous disposez de la protection standard sur cet appareil</translation>
+<translation id="3833326979834193417">Chromium effectue automatiquement un contrôle de sécurité tous les jours pour vous protéger, entre autres, contre les violations de données et les sites Web dangereux. Vous trouverez plus d'informations sur ce contrôle dans les paramètres.</translation>
 <translation id="3886689467633467988">Connectez-vous à ce site et à Chromium pour accéder sur tous vos appareils à vos favoris et bien plus.</translation>
 <translation id="394413318816989199">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses.
 
@@ -95,6 +96,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="4996471330284142407">Soyez plus efficace grâce à Chromium, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="5042011327527167688">Appuyez sur "Afficher avec Google Maps sur Chromium".</translation>
+<translation id="5044871537677053278">Chromium détecte les adresses et utilise Google Maps pour vous proposer des itinéraires et des informations locales.</translation>
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applis, utilisez Chromium pour la saisie automatique</translation>
 <translation id="5131565040785979529">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chromium est utilisé.</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>

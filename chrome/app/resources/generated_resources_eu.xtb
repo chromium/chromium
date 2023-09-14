@@ -444,7 +444,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1347512539447549782">Linux-en biltegiratzea</translation>
 <translation id="1347975661240122359">Bateriaren gutxienez % <ph name="BATTERY_LEVEL" /> duzunean hasiko da eguneratzen.</translation>
 <translation id="1348966090521113558">Saguaren erabilerraztasun-ezarpenak</translation>
-<translation id="1351089605448164407">Zure Drive-tik</translation>
 <translation id="1353275871123211385">Guraso-murriztapenak erabiltzeko (adibidez, aplikazioak onartzeko aukera eta erabilera-ordutegia), guraso batek kudeatu behar du haurraren Google-ko kontua. Ikastetxeko kontu bat gehi daiteke gero, Google Classroom-en eta antzeko tresnetan erabiltzeko.</translation>
 <translation id="135389172849514421">Interneteko konexiorik gabe funtzionatzen du</translation>
 <translation id="1353980523955420967">Ezin da aurkitu PPD fitxategia. Ziurtatu Chromebook-a Internetera konektatuta dagoela eta saiatu berriro.</translation>
@@ -2189,7 +2188,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2710101514844343743">Erabilera- eta diagnostiko-datuak</translation>
 <translation id="271033894570825754">Berria</translation>
 <translation id="2711073837061989559">Probak</translation>
-<translation id="2711929077861214979">Segurtasun-aholkuak</translation>
 <translation id="2713106313042589954">Desaktibatu kamera</translation>
 <translation id="2713444072780614174">Zuria</translation>
 <translation id="2714180132046334502">Atzeko plano iluna</translation>
@@ -2499,7 +2497,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2939908794993783865">Webgune inaktibo gehigarriak</translation>
 <translation id="2939938020978911855">Erakutsi erabilgarri dauden Bluetooth bidezko gailuak</translation>
 <translation id="2941112035454246133">Txikia</translation>
-<translation id="2942279350258725020">Android-eko mezuak</translation>
 <translation id="2942560570858569904">Zain…</translation>
 <translation id="2942581856830209953">Pertsonalizatu orri hau</translation>
 <translation id="2942707801577151363">Ireki, editatu eta gorde Word, Excel eta PowerPoint-eko fitxategiak. Baliteke harpidetza bat behar izatea eginbide batzuk erabiltzeko.</translation>
@@ -4695,7 +4692,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Aktibatu webguneko audioa}other{Aktibatu webguneetako audioa}}</translation>
 <translation id="474609389162964566">Atzitu Laguntzailea "Hey Google" esanda</translation>
-<translation id="4746351372139058112">Mezuak</translation>
 <translation id="4748783296226936791">Webguneak HID gailuetara konektatu ohi dira ezohikoak diren teklatuek, bideo-jokoen kontrolagailuek eta bestelako gailuek darabilten eginbideak eskaintzeko</translation>
 <translation id="4749960740855309258">Ireki beste fitxa bat</translation>
 <translation id="4750185073185658673">Hartu telefonoa eta berrikusi beste baimen batzuk. Ziurtatu telefonoak Bluetootha eta wifia aktibatuta dauzkala.</translation>
@@ -4762,7 +4758,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4807122856660838973">Aktibatu Arakatze segurua</translation>
 <translation id="4807514039636325497">DBus-i buruzko xehetasunak</translation>
 <translation id="4808667324955055115">Leiho gainerakorrak blokeatuta daude:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Berrikusi Chrome Web Store-tik kendu den <ph name="BEGIN_BOLD" />luzapen bat<ph name="END_BOLD" />}other{Berrikusi Chrome Web Store-tik kendu diren <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} luzapen<ph name="END_BOLD" />}}</translation>
 <translation id="4809079943450490359">Gailuaren administratzailearen argibideak:</translation>
 <translation id="4809447465126035330">Ezabatu</translation>
 <translation id="480990236307250886">Ireki orri nagusia</translation>
@@ -9826,6 +9821,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8962083179518285172">Ezkutatu xehetasunak</translation>
 <translation id="8962863356073277855">URLak https://www.example.com formatuan egon behar du</translation>
 <translation id="8962918469425892674">Mugimenduaren edo argiaren sentsoreak erabiltzen ari da webgune hau.</translation>
+<translation id="8963117664422609631">Joan webgunearen ezarpenetara</translation>
 <translation id="8965037249707889821">Idatzi aurreko pasahitza</translation>
 <translation id="8966809848145604011">Beste profil batzuk</translation>
 <translation id="8967427617812342790">Gehitu zerrendan</translation>
@@ -10204,7 +10200,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="964286338916298286">IKT saileko administratzaileak desgaitu egin ditu zure gailurako osagarriak.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikazioa}other{Aplikazioak}}</translation>
 <translation id="964790508619473209">Pantailaren antolaketa</translation>
-<translation id="965211523698323809">Bidali eta jaso testu-mezuak <ph name="DEVICE_TYPE" /> gailua erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Eman Google Cast-en arazo baten berri</translation>
 <translation id="966588271015727539">Hautatu Bluetooth bidezko braille-pantaila bat</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Itxi profil hau}other{Itxi profil hau (# leiho)}}</translation>

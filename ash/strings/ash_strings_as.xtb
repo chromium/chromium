@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">পাতল</translation>
 <translation id="5965524703725988602">গাঢ় ৰঙৰ থীম ট’গল কৰক। <ph name="STATE_TEXT" />।</translation>
 <translation id="5975235751479998104">ৱিণ্ড’ৰ মাজেৰে আগফাললৈ যাওক</translation>
-<translation id="5976112937189445008">ৱিণ্ড’ ৰেকৰ্ড কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="5978382165065462689">ৰিম’ট সহায়কৰ জৰিয়তে আপোনাৰ স্ক্রীণৰ নিয়ন্ত্ৰণ শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="5980301590375426705">অতিথিৰ পৰা প্ৰস্থান</translation>
 <translation id="5983567367406220847">নিষ্ক্ৰিয়তাৰ বাবে, হটস্পট অফ কৰা হৈছে।</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ কাৰ্যদক্ষতা কমিব পাৰে। এটা প্ৰমাণীকৃত <ph name="PREFERRED_MINIMUM_POWER" /> ৱাট অথবা তাতকৈ উচ্চখাপৰ ইউএছবি-চি পাৱাৰ এডাপ্টৰ ব্যৱহাৰ কৰক।</translation>
 <translation id="688631446150864480">অন্য ৱিণ্ড’ ব্যৱহাৰ কৰিবলৈ ডাউন এৰ' কীটো টিপক</translation>
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
-<translation id="6901883536534621389">নেভিগে’ট কৰিবলৈ আঙুলিৰ স্পৰ্শৰে নিৰ্দেশসমূহ ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="6912841030378044227">ঠিকনা বাৰত ফ’কাছ কৰক</translation>
 <translation id="6912901278692845878">ক্ষিপ্ৰ আভাস</translation>
 <translation id="6919251195245069855">আপোনাৰ স্মার্ট কার্ডখন চিনাক্ত কৰিব পৰা নগ'ল। আকৌ চেষ্টা কৰক।</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যৱহাৰ কৰি থকা হৈছে</translation>
 <translation id="8185090165691050712">লক ম’ডৰ আকাৰ সলনি কৰাৰ মেনু অন/অফ কৰক</translation>
 <translation id="8192202700944119416">জাননীবোৰ লুকুৱাই ৰখা হৈছে।</translation>
-<translation id="8196787716797768628">ক্ষিপ্ৰতাৰে অন্য এপ্ ব্যৱহাৰ কৰিবলৈ আৰু টেবলেট ম'ডত আপোনাৰ Chromebook ব্যৱহাৰ কৰিবলৈ নিৰ্দেশসমূহ ব্যৱহাৰ কৰক।</translation>
 <translation id="8198456017687137612">টেব কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8203795194971602413">সোঁফালে ক্লিক</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">বেটাৰী <ph name="PERCENTAGE" /> শতাংশত আছে।</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistantএ এই ভাষাটো ব্যৱহাৰ নকৰে।</translation>
-<translation id="8924458948354692166">ৱিণ্ড’ৰ স্ক্ৰীনশ্বট ল’বলৈ এণ্টাৰ টিপক</translation>
 <translation id="8926951137623668982">শ্বেল্ফ সদায় লুকাই থাকে</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{১ টা ফাইল}one{# টা ফাইল}other{# টা ফাইল}}</translation>
 <translation id="8936501819958976551">অক্ষম কৰা হৈছে</translation>

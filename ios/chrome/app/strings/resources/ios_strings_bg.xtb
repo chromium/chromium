@@ -158,6 +158,7 @@
 <translation id="1830634592642484976">Понастоящем този адрес е запазен в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
 <translation id="1836891464494477513">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{Отметките са запазени в профила ви в Google {email}}}</translation>
+<translation id="183878838231635348">Тази карта показва всички проблеми, свързани с поверителността и сигурността, които са открити автоматично от функцията за проверка на безопасността.</translation>
 <translation id="1847795903283049083">Можете също да преглеждате и управлявате тези елементи в отметките си, списъка си за четене или Мениджър на пароли.</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
@@ -267,11 +268,13 @@
 <translation id="2523363575747517183">Този уебсайт многократно се опитва да отвори друго приложение.</translation>
 <translation id="2529021024822217800">Отваряне на всички</translation>
 <translation id="2536991091671391962">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в Google Мениджър на пароли за <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Скриване на „Проверка на безопасността“</translation>
 <translation id="2547458583188611426">Синхронизирането не работи. За да стартирате синхронизирането, въведете пропуска си.</translation>
 <translation id="2551153019974022505">Грешка в профила</translation>
 <translation id="2556092377360758201">Без защита (не се препоръчва)</translation>
 <translation id="2562041823070056534">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Използване и запазване на пароли в профила ви в Google</translation>
+<translation id="2577522251608256362">Квартал</translation>
 <translation id="2578571896248130439">Изпращане на уеб страницата</translation>
 <translation id="2584132361465095047">Добавяне на профил…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Няма компрометирани пароли}=1{{count} компрометирана парола}other{{count} компрометирани пароли}}</translation>
@@ -310,6 +313,7 @@
 <translation id="2738375676495545665">Скриване на „Новите неща“</translation>
 <translation id="2747003861858887689">Предишното поле</translation>
 <translation id="2749231692441336879">Следите <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Профили на това устройство</translation>
 <translation id="2762000892062317888">току-що</translation>
 <translation id="2772667768515195373">Можете да използвате запазените адреси в различни продукти на Google. Този адрес е запазен в профила ви в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Търсене в режим „инкогнито“</translation>
@@ -1088,7 +1092,6 @@
 <translation id="6944369514868857500">Избиране на друг профил</translation>
 <translation id="6944935964236827145">Скриване на „Превод“</translation>
 <translation id="6945221475159498467">Избиране</translation>
-<translation id="6955779377310719430">Скриване на „Следване“</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Google Диск</translation>
@@ -1227,6 +1230,7 @@
 <translation id="778855399387580014">Започнете търсене в нов раздел в Chrome.</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7807060072011926525">Предоставено от Google</translation>
+<translation id="78146569776629510">Изтегляния</translation>
 <translation id="7839985698273989086">Офлайн страница</translation>
 <translation id="7840771868269352570">Избраните елементи ще бъдат премахнати.</translation>
 <translation id="7845466610722898">Показване на списъка за четене</translation>

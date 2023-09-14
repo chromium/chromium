@@ -212,6 +212,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1391289752476847787">Osakkeet ja joukkolainat</translation>
 <translation id="1391625539203220400">Tallennetaanko IBAN tälle laitteelle?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ei lähettänyt tietoja.</translation>
+<translation id="1397811292916898096">Hae nimellä <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Vaaleanvihreä</translation>
 <translation id="1406500794671479665">Vahvistetaan...</translation>
 <translation id="1406812885827747674">Salli tällä kertaa</translation>
@@ -539,6 +540,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2071692954027939183">Ilmoitukset on estetty automaattisesti, koska et yleensä salli niitä</translation>
 <translation id="2071852865256799872">Organisaatio ylläpitää selaintasi ja <ph name="PROFILE_DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="2072275792380684364">Muoti ja tyyli</translation>
+<translation id="2075497153347571252">Järjestelmänvalvoja on estänyt luvan (<ph name="PERMISSION" />) täällä: <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="20817612488360358">Järjestelmän välityspalvelinasetukset on määritetty käytettäviksi, mutta erilliset välityspalvelimen asetukset on myös määritetty.</translation>
 <translation id="2082238445998314030">Tulos <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1882,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4885256590493466218">Käytä <ph name="CARD_DETAIL" /> ‑maksutapaa kassalla.</translation>
 <translation id="4887406273302438710">Suojaa salasanat Windows Hellolla</translation>
 <translation id="4888600795924685526">Vieraiden kielten opiskelu</translation>
+<translation id="4890070067176768718">Järjestelmänvalvoja on myöntänyt luvan (<ph name="PERMISSION" />) täällä: <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Takaosa</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympialaiset</translation>
@@ -2326,6 +2329,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5830698870816298009">kameran käyttö ja liike</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5838278095973806738">Älä anna tälle sivustolle salasanoja, luottokorttinumeroita tai muita arkaluonteisia tietoja, sillä hyökkääjät saattavat varastaa ne.</translation>
+<translation id="5838732667866024867">Voit tarkistaa hinnanmuutokset kaaviossa vasemmalla tai oikealla nuolella</translation>
 <translation id="5840318881868981258">Google-tililläsi, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Tallennetaanko osoite tilille?</translation>
 <translation id="5847181246682413476">Virtalaitteet</translation>
@@ -2614,6 +2618,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6432297414176614592">Lue lisää mainosten aiheista</translation>
 <translation id="6432831586648556868">Myynti- ja markkinointityöt</translation>
 <translation id="6433490469411711332">Muokkaa yhteystietoja</translation>
+<translation id="6433501201775827830">Valitse hakukone</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> kieltäytyi muodostamasta yhteyttä.</translation>
 <translation id="6433797564277305076">Vahvista kortit jatkossa nopeammin laitteen lukituksen avaustavalla</translation>
 <translation id="643917412048333145">Mekot</translation>
@@ -3971,6 +3976,7 @@ Lisätietoja:
 <translation id="9207861905230894330">Artikkelin lisääminen epäonnistui.</translation>
 <translation id="9213433120051936369">Muokkaa ulkoasua</translation>
 <translation id="9215416866750762878">Sovellus estää Chromea muodostamasta turvallista yhteyttä tähän sivustoon</translation>
+<translation id="9218430445555521422">Aseta oletusselaimeksi</translation>
 <translation id="9219103736887031265">Kuvat</translation>
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="9222403027701923763">Ensimmäisen ja toisen asteen koulutus</translation>

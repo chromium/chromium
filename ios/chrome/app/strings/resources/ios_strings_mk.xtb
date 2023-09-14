@@ -158,6 +158,7 @@
 <translation id="1830634592642484976">Во моментов, адресава е зачувана на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">За да можете секогаш да пристапувате до податоците од синхронизацијата, потврдете дека сте вие</translation>
 <translation id="1836891464494477513">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google, {email}}one{Обележувачите се зачувани во вашата сметка на Google, {email}}other{Обележувачите се зачувани во вашата сметка на Google, {email}}}</translation>
+<translation id="183878838231635348">Во картичкава се прикажуваат сите проблеми со приватност или безбедност што ги открила „Безбедносната проверка“ автоматски за вас.</translation>
 <translation id="1847795903283049083">Може да ги прегледувате и да управувате со ставкиве и во вашите обележувачи, „Списокот за читање“ или Password Manager.</translation>
 <translation id="1870148520156231997">Прикажете ја лозинката</translation>
 <translation id="1872096359983322073">Светилка</translation>
@@ -267,11 +268,13 @@
 <translation id="2523363575747517183">Веб-сајтов постојано се обидува да отвори друга апликација.</translation>
 <translation id="2529021024822217800">Отвори ги сите</translation>
 <translation id="2536991091671391962">Зачуваните лозинки може да ги користите на кој било уред. Зачувани се во Google Password Manager за <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Скриј „Безбедносна проверка“</translation>
 <translation id="2547458583188611426">Синхронизацијата не функционира. Внесете ја лозинката за да започне синхронизацијата.</translation>
 <translation id="2551153019974022505">Грешка на сметката</translation>
 <translation id="2556092377360758201">Без заштита (не се препорачува)</translation>
 <translation id="2562041823070056534">Се испраќа на <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Користете и зачувувајте лозинки на вашата сметка на Google</translation>
+<translation id="2577522251608256362">Соседство</translation>
 <translation id="2578571896248130439">Испратете веб-страница</translation>
 <translation id="2584132361465095047">Додајте сметка</translation>
 <translation id="2587010742985678408">{count,plural, =0{Нема компромитирани лозинки}=1{{count} компромитирана лозинка}one{{count} компромитирана лозинка}other{{count} компромитирани лозинки}}</translation>
@@ -1088,7 +1091,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6944369514868857500">Изберете друга сметка</translation>
 <translation id="6944935964236827145">Скриј „Преведи“</translation>
 <translation id="6945221475159498467">Избери</translation>
-<translation id="6955779377310719430">Скриј „Следи“</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Google Диск</translation>

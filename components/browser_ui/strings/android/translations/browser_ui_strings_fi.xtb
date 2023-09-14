@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2677748264148917807">Poistu</translation>
 <translation id="2678468611080193228">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin.</translation>
+<translation id="2683434792633810741">Poistetaanko data ja nollataanko luvat?</translation>
 <translation id="2687403674020088961">Estä kaikki evästeet (ei suositella)</translation>
 <translation id="2713106313042589954">Sammuta kamera</translation>
 <translation id="2717722538473713889">Sähköpostiosoitteet</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Salli evästeet tietyllä sivustolla.</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="4053720452172726777">Google Chromen muokkaaminen ja hallinta</translation>
+<translation id="4149890623864272035">Haluatko varmasti poistaa kaiken paikallisen datan, myös evästeet, ja nollata kaikki tämän verkkosivuston luvat?</translation>
 <translation id="4149994727733219643">Yksinkertaisempi sivunäkymä</translation>
 <translation id="4151930093518524179">Zoomauksen oletusarvo</translation>
 <translation id="4165986682804962316">Sivustoasetukset</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Salli kolmannen osapuolen evästeet</translation>
 <translation id="4428065317363009941">Mainosten personointi</translation>
 <translation id="4434045419905280838">Ponn.ikkunat ja uudelleenohjaus</translation>
+<translation id="443552056913301231">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat: <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Mykistä tietyn sivuston äänet.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# eväste}other{# evästettä}}</translation>
 <translation id="4478158430052450698">Helpota zoomauksen muokkausta eri sivustoilla</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Mykistä mikrofoni</translation>
 <translation id="4570913071927164677">Tiedot</translation>
 <translation id="4598549027014564149">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta – eivät edes aiheeseen liittyvillä sivustoilla. Selaustoimintaasi ei käytetä mainosten personointiin tai muuhun vastaavaan. Joidenkin sivustojen ominaisuudet eivät välttämättä toimi.</translation>
+<translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
 <translation id="4751476147751820511">Liike- tai valotunnistimet</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Viimeksi avattu tänään</translation>
 <translation id="5225463052809312700">Käynnistä kamera</translation>
 <translation id="5234764350956374838">Hylkää</translation>
+<translation id="5246825184569358663">Tämä toiminto poistaa kaiken paikallisen datan, myös evästeet, ja nollaa kaikki luvat verkkotunnukselta <ph name="DOMAIN" /> ja kaikilta sen alaisilta sivustoilta</translation>
 <translation id="5264323282659631142">Poista <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Poistu koko näytön tilasta vetämällä näytön yläreunasta ja koskettamalla Takaisin-painiketta.</translation>
 <translation id="5300589172476337783">Näytä</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Poikkeukset</translation>
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
 <translation id="6205314730813004066">Mainosyksityisyys</translation>
+<translation id="6207207788774442484">Poista data ja nollaa luvat</translation>
 <translation id="6216432067784365534">Vaihtoehdot: <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Poistetaanko <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Perustuu viimeisimpään välilehteen</translation>

@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">Δεν παρέχει προστασία (δεν συνιστάται)</translation>
 <translation id="2562041823070056534">Αποστολή σε <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Χρήση και αποθήκευση κωδικών πρόσβασης στον Λογαριασμό σας Google</translation>
+<translation id="2577522251608256362">Γειτονιά</translation>
 <translation id="2578571896248130439">Αποστολή ιστοσελίδας</translation>
 <translation id="2584132361465095047">Προσθήκη λογαριασμού…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Δεν υπ. παραβ. κωδ. πρ.}=1{{count} παραβιασμ. κωδ. πρ.}other{{count} παραβιασμ. κωδ. πρ.}}</translation>
@@ -1091,7 +1092,6 @@
 <translation id="6944369514868857500">Επιλογή άλλου λογαριασμού</translation>
 <translation id="6944935964236827145">Απόκρυψη της επιλογής Μετάφραση</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
-<translation id="6955779377310719430">Απόκρυψη της επιλογής Παρακολούθηση</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
 <translation id="6979158407327259162">Google Drive</translation>

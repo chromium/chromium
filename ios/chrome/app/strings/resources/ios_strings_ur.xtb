@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> پر بھیجا جا رہا ہے…</translation>
 <translation id="2576499762020411840">‏اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کریں اور انہیں محفوظ کریں</translation>
+<translation id="2577522251608256362">نواحی علاقہ</translation>
 <translation id="2578571896248130439">ویب صفحہ بھیجیں</translation>
 <translation id="2584132361465095047">اکاؤنٹ شامل کریں…</translation>
 <translation id="2587010742985678408">{count,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{count} متاثرہ پاس ورڈ}other{{count} متاثرہ پاس ورڈز}}</translation>
@@ -1090,7 +1091,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6944369514868857500">ایک دوسرا اکاؤنٹ منتخب کریں</translation>
 <translation id="6944935964236827145">ترجمہ کریں کو چھپائیں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
-<translation id="6955779377310719430">پیروی کریں کو چھپائیں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6973630695168034713">فولڈرز</translation>
 <translation id="6979158407327259162">Google Drive</translation>

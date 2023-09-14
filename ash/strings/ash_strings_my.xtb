@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">အနည်းငယ်</translation>
 <translation id="5965524703725988602">အမှောင်နောက်ခံ ပြောင်းရန်။ <ph name="STATE_TEXT" />။</translation>
 <translation id="5975235751479998104">ဝင်းဒိုးများကို ရှေ့သို့လည်ပြီး ပြရန်</translation>
-<translation id="5976112937189445008">ဝင်းဒိုးကို မှတ်တမ်းတင်ရန် Enter နှိပ်ပါ</translation>
 <translation id="5978382165065462689">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အားမျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="5980301590375426705">ဧည့်သည် ထွက်ရန်</translation>
 <translation id="5983567367406220847">အသုံးပြုမှုမရှိသဖြင့် ဟော့စပေါ့ကို ပိတ်လိုက်သည်။</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">သင့် <ph name="DEVICE_TYPE" /> သည် စွမ်းဆောင်ရည် နိမ့်နေနိုင်သည်။ အသိအမှတ်ပြုထားသော <ph name="PREFERRED_MINIMUM_POWER" />W သို့မဟုတ် ပိုမြင့်သော USB-C ပါဝါ ကြားခံကိရိယာ အသုံးပြုပါ။</translation>
 <translation id="688631446150864480">ဝင်းဒိုးများပြောင်းရန် 'အောက်ညွှန်မြား' နှိပ်ပါ</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
-<translation id="6901883536534621389">ရွှေ့ရန် လက်ဟန်များ သုံးကြည့်နိုင်သည်</translation>
 <translation id="6912841030378044227">လိပ်စာဘားပေါ် ရွှေ့ရန်</translation>
 <translation id="6912901278692845878">အမြန် ကြည့်ရှုရန်</translation>
 <translation id="6919251195245069855">သင့်အဆင့်မြင့်ကတ်ကို ဖတ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> အသုံးပြုခြင်း</translation>
 <translation id="8185090165691050712">လော့ခ်မုဒ် အရွယ်အစားပြန်ပြုပြင်ရန်အတွက် မီနူးဖွင့်/ပိတ်ရန်</translation>
 <translation id="8192202700944119416">အကြောင်းကြားချက်များကို ဝှက်ထားသည်။</translation>
-<translation id="8196787716797768628">အက်ပ်တစ်ခုနှင့်တစ်ခုအကြား အမြန်ပြောင်းရန်နှင့် သင့် Chromebook ကို တက်ဘလက်မုဒ်ဖြင့် အသုံးပြုနိုင်ရန် လက်ဟန်များကို သုံးပါ။</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8203795194971602413">ညာဘက်ခလုတ်ကို နှိပ်ရန်</translation>
@@ -1904,7 +1901,6 @@
 <translation id="8909138438987180327">ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိပါသည်။</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant သည် ဤဘာသာစကားကို မသိပါ။</translation>
-<translation id="8924458948354692166">ဝင်းဒိုးဖန်သားပြင်ဓာတ်ပုံကို ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
 <translation id="8926951137623668982">စင်ကို အမြဲ ဖျောက်ထားလိုက်ပါပြီ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ဖိုင် ၁ ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="8936501819958976551">ရပ်ထားသည်</translation>

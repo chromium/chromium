@@ -158,6 +158,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="1830634592642484976">Actualment aquesta adreça està desada a Chrome. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Per assegurar-te de poder accedir a les dades sincronitzades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="1836891464494477513">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google, {email}}other{Les adreces d'interès s'han desat al teu Compte de Google, {email}}}</translation>
+<translation id="183878838231635348">Aquesta targeta mostra qualsevol problema de privadesa o de seguretat que la funció Comprovació de seguretat detecta automàticament.</translation>
 <translation id="1847795903283049083">També pots veure i gestionar aquests elements a les adreces d'interès, a la llista de lectura o al gestor de contrasenyes.</translation>
 <translation id="1870148520156231997">Mostra la contrasenya</translation>
 <translation id="1872096359983322073">Llanterna</translation>
@@ -267,11 +268,13 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2523363575747517183">Aquest lloc web està provant d'obrir una altra aplicació repetidament.</translation>
 <translation id="2529021024822217800">Obre-les totes</translation>
 <translation id="2536991091671391962">Pots utilitzar les contrasenyes desades en qualsevol dispositiu. Es desen al gestor de contrasenyes de Google de <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Amaga Comprovació de seguretat</translation>
 <translation id="2547458583188611426">La sincronització no funciona. Per iniciar la sincronització, introdueix la frase de contrasenya.</translation>
 <translation id="2551153019974022505">Error del compte</translation>
 <translation id="2556092377360758201">Sense protecció (opció no recomanada)</translation>
 <translation id="2562041823070056534">S'està enviant a <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Utilitza i desa contrasenyes al teu Compte de Google</translation>
+<translation id="2577522251608256362">Veïnat</translation>
 <translation id="2578571896248130439">Envia la pàgina web</translation>
 <translation id="2584132361465095047">Afegeix un compte…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Cap contrasenya en perill}=1{{count} contrasenya en perill}other{{count} contrasenyes en perill}}</translation>
@@ -1088,7 +1091,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6944369514868857500">Tria un altre compte</translation>
 <translation id="6944935964236827145">Amaga Tradueix</translation>
 <translation id="6945221475159498467">Selecciona</translation>
-<translation id="6955779377310719430">Amaga Segueix</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6973630695168034713">Carpetes</translation>
 <translation id="6979158407327259162">Google Drive</translation>

@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">ღია</translation>
 <translation id="5965524703725988602">მუქი თემის გადართვა. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">წინ გადაადგილება ფანჯრებს შორის</translation>
-<translation id="5976112937189445008">ფანჯრის ჩასაწერად დააჭირეთ Enter-ს</translation>
 <translation id="5978382165065462689">დისტანციური დამხმარეს მეშვეობით თვენი ეკრანის გაზიარების მართვა.</translation>
 <translation id="5980301590375426705">სტუმრის რეჟიმიდან გამოსვლა</translation>
 <translation id="5983567367406220847">უმოქმედობის გამო, უსადენო ქსელი გამოირთო.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">თქვენმა <ph name="DEVICE_TYPE" />-მა შეიძლება უფრო დაბალი წარმადობით იმუშაოს. გამოიყენეთ სერტიფიცირებული <ph name="PREFERRED_MINIMUM_POWER" /> ვტ-იანი ან უფრო მაღალი სიმძლავრის USB-C ელკვების ადაპტერი.</translation>
 <translation id="688631446150864480">ფანჯრებს შორის გადასართავად დააჭირეთ კლავიშს ქვემოთ მიმართული ისრით</translation>
 <translation id="6896758677409633944">კოპირება</translation>
-<translation id="6901883536534621389">ცადეთ ჟესტები ნავიგაციისთვის</translation>
 <translation id="6912841030378044227">მისამართთა ზოლის ფოკუსში მოქცევა</translation>
 <translation id="6912901278692845878">სწრაფი ტური</translation>
 <translation id="6919251195245069855">თქვენი სმარტ-ბარათის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835">გამოიყენება <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">ჩაკეტილი რეჟიმის ზომის შეცვლის მენიუს ჩართვა/გამორთვა</translation>
 <translation id="8192202700944119416">შეტყობინებები დამალულია.</translation>
-<translation id="8196787716797768628">გამოიყენეთ ჟესტები აპებს შორის სწრაფად გადასართავად ან თქვენს Chromebook-თან ტაბლეტის რეჟიმში ურთიერთქმედებისთვის.</translation>
 <translation id="8198456017687137612">მიმდინარეობს ჩანართის ტრანსლირება</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8203795194971602413">მარჯვენა დაწკაპუნება</translation>
@@ -1853,6 +1850,7 @@
 <translation id="8703634754197148428">ჩაწერის დაწყება. ჩაწერის დაწყების შემდეგ თაროზე გადასასვლელად და ჩაწერის შეწყვეტის ღილაკის საპოვნელად გამოიყენეთ კლავიშთა კომბინაცია Alt + Shift + L</translation>
 <translation id="8704155109538237473">რეჟიმის „ეკრანი ეკრანში“ ფანჯრის მოქცევა ფოკუსში</translation>
 <translation id="870917907284186124">კარნახის (ტექსტის ხმით აკრეფის) ჩართვა/გამორთვა</translation>
+<translation id="8714138378966541668">დაბლოკილი პროვაიდერის მიერ</translation>
 <translation id="8717459106217102612">წინა სიტყვის ან ასოს არჩევა</translation>
 <translation id="8721053961083920564">ხმის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">სრული ეკრანის აღბეჭდვა</translation>
@@ -1903,7 +1901,6 @@
 <translation id="8909138438987180327">ბატარეის დონე <ph name="PERCENTAGE" /> პროცენტზეა.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ასისტენტი არ საუბრობს ამ ენაზე.</translation>
-<translation id="8924458948354692166">ფანჯრის ანაბეჭდის აღსაბეჭდად დააჭირეთ Enter-ს</translation>
 <translation id="8926951137623668982">თარო ყოველთვის დამალულია</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ფაილი}other{# ფაილი}}</translation>
 <translation id="8936501819958976551">დეაქტივირებულია</translation>

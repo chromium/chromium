@@ -191,17 +191,6 @@
 <translation id="117059611145966538">外部打印服务器</translation>
 <translation id="117080706484659953">允许在 <ph name="MAC_OS_NAME" /> 上检测政策范围</translation>
 <translation id="1171106901454883937">启用设备版本信息报告功能</translation>
-<translation id="1171785618439752042">通过设置此政策，您可以指定能使用哪些加密类型向 <ph name="MS_AD_NAME" /> 服务器请求 Kerberos 票据。
-
-      如果此政策设为：
-
-      *“所有”，系统将允许使用 AES 加密类型 aes256-cts-hmac-sha1-96 和 aes128-cts-hmac-sha1-96 以及 RC4 加密类型 rc4-hmac。如果服务器同时支持 AES 和 RC4 加密类型，系统将优先使用 AES。
-
-      *“强”或未设置，系统将仅允许使用 AES 类型。
-
-      *“旧版”，系统将仅允许使用 RC4 类型。RC4 不安全，因此应仅在非常特殊的情况下使用。如有可能，请重新配置服务器以支持 AES 加密。
-
-      另请参阅 https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types。</translation>
 <translation id="1173493742686115032">允许在所有网页上使用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="1177567780207290133">通过设置此政策，您可以控制 SafeSites 网址滤除机制，此机制使用 Google Safe Search API 来判断是否将网址归类为色情内容。
 
@@ -781,17 +770,6 @@
 <translation id="165769015320654523">自动授权这些网站连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
 <translation id="1659406551862245683">更改默认的虚拟键盘调整大小行为，以调整布局视口的大小</translation>
 <translation id="166427968280387991">代理服务器</translation>
-<translation id="1669584285557771729">如果设置了此政策，它就会控制启用的放大镜类型。
-
-          如果此政策设为“全屏”，放大镜在登录屏幕上将始终处于启用状态且会设为“全屏放大镜”模式。
-
-          如果此政策设为“停靠”，放大镜在登录屏幕上将始终处于启用状态且会设为“停靠的放大镜”模式。
-
-          如果此政策设为“无”，放大镜在登录屏幕上将始终处于停用状态。
-
-          如果您设置了此政策，用户将无法更改或覆盖它。
-
-          如果此政策未设置，放大镜在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
 <translation id="1673097259557436886">始终告诉网站，没有任何已保存的付款方式</translation>
 <translation id="1674287836076801014">SAML</translation>
 <translation id="1675002386741412210">支持的环境：</translation>
@@ -808,6 +786,7 @@
 <translation id="1690383938831887552">阻止加载通过 Signed HTTP Exchange (SXG) 提供的内容</translation>
 <translation id="1692990221685273468">确定内置证书验证程序是否会强制执行从平台可信存储区加载的信任锚中经过编码的限制条件。</translation>
 <translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
+<translation id="1696501581280568361">建议进行资料分离</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 以光栅化模式打印 PDF 时的打印图片分辨率。
 
       使用“以图片形式打印”选项打印 PDF 时，不妨指定与设备的打印机设置或 PDF 默认值不同的打印分辨率，因为这样做可能会大有裨益。高分辨率会显著增加处理和打印用时，低分辨率则可能会导致图片质量不佳。
@@ -917,9 +896,6 @@
       如果此政策已停用 (False) 或未设置，<ph name="PRODUCT_NAME" /> 将无法收集设备信号。
 
       设备信号的示例包括（但不限于）OS 信息、注册数据库和文件存在状态。</translation>
-<translation id="179694024208061102">如果此政策已启用，<ph name="PRODUCT_NAME" /> 将会尝试在备用浏览器（例如 <ph name="IE_PRODUCT_NAME" />）中打开某些网址。此功能是使用<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />组中的政策设置的。
-
-      如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 将不会尝试在备用浏览器中打开指定的网址。</translation>
 <translation id="1797233582739332495">显示要求用户重新启动浏览器的周期性提示</translation>
 <translation id="1798559516913615713">GPO 缓存期限</translation>
 <translation id="180130467244315277">此政策让管理员能够在 <ph name="PRODUCT_NAME" /> 设置中以列表形式配置首选语言的顺序。
@@ -1153,9 +1129,6 @@
       如果此政策已停用或未设置，系统便不会使用快速切换功能。</translation>
 <translation id="1972134432340252414">屏蔽浏览器进程中的旧版扩展点</translation>
 <translation id="1977581177449752640">如果您设置了此政策，远程访问主机会使用带有指定颁发者 CN 的客户端证书向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 验证身份。若要使用任意可用的客户端证书，请将此政策设为 <ph name="WILDCARD_VALUE" />。如果您未设置此政策或将它留空，系统会停用此功能。</translation>
-<translation id="1980777339173013601">除非已通过其他方式关闭 ARC，否则当此政策设为 True 或未设置时，用户可以使用 ARC。将此政策设为 False 意味着禁止独立用户使用 ARC。
-
-      仅当 ARC 未运行时（例如 Chrome 操作系统启动时），对此政策做出的更改才会生效。</translation>
 <translation id="1984934843478301531">应用启动自动化设置</translation>
 <translation id="1985545260037812875">在用户登录期间显示“显示大小”设置界面</translation>
 <translation id="1985598967415986700">“用户代理字符串缩短”功能将可通过现场试验和源试用进行控制。</translation>
@@ -1372,6 +1345,11 @@
 
       如果此政策设为 False，通过显示隐藏文件并在“我的文件”或“下载内容”下找到 .Trash 目录，用户仍可查看之前位于回收站中的文件。</translation>
 <translation id="2159486052528894673">允许用户级云政策覆盖计算机级云政策。</translation>
+<translation id="2160170953213468208">启用后，此政策会强制找到具有 MIME 类型且通常由<ph name="BASIC_EDITOR_NAME" />处理的所有 Office 文档，以便下载相应文件。
+
+如果此政策被停用，这些文档将改为在<ph name="BASIC_EDITOR_NAME" />中自动打开。
+
+如果未针对普通用户设置此政策，则在功能上等同于已启用此政策（例如系统会下载相应文件）；如果未针对企业用户设置此政策，则在功能上等同于已停用此政策（例如相应文件将在<ph name="BASIC_EDITOR_NAME" />中打开）。</translation>
 <translation id="2160336427036785721">配置在单个 <ph name="PRODUCT_NAME" /> 实例使用的内存量达到多少后浏览器会为节省内存空间而开始舍弃标签页（即：标签页使用的内存将被释放，而且在用户切换到此标签页时它必须重新加载）。
 
       如果设置了此政策，那么当超出该上限后，浏览器将开始舍弃标签页以节省内存空间。不过，我们无法保证浏览器运行时占用的内存量会始终低于该上限。任何小于 1024 的值都会被向上舍入到 1024。
@@ -1599,9 +1577,6 @@
 如果您必须使用此政策，请在 crbug.com 上提交 bug 以说明您的使用情形并抄送 {andrescj, blundell, pmolinalopez, vasilyt}@chromium.org。此政策的预定有效期会一直持续到 <ph name="PRODUCT_NAME" /> 114 版，之后我们将移除旧版实现方案。
 
 注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
-<translation id="2349117476121456297">将此政策设为 True 时，系统会让键盘顶行中的各个键充当功能键命令。按搜索键可将这些键的行为改回媒体键。
-
-      如果此政策设为 False 或未设置，键盘会默认发出媒体键命令。按搜索键可将这些键改为功能键。</translation>
 <translation id="2354439478396602136">在 <ph name="PRODUCT_OS_NAME" /> 启动器中显示推荐的应用</translation>
 <translation id="2355876547176311490">禁止远程访问主机使用中继服务器</translation>
 <translation id="2358176879566587521">此政策已被移除。它与这个版本的 <ph name="PRODUCT_NAME" /> 不兼容。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>
@@ -1927,6 +1902,7 @@
 <translation id="2661628029848851543">允许受管理的账号的所有使用情况</translation>
 <translation id="2664391398878045611">“新标签页”页面将不会显示中间槽通知（即使有）</translation>
 <translation id="2664682171745499686">禁止在特定网域中针对相似域名显示警告</translation>
+<translation id="2665129863304939984">让用户决定是否将现有浏览数据添加到受管理资料名下</translation>
 <translation id="2665422249821137126">在登录屏幕上启用大号光标</translation>
 <translation id="2667894101494585925">启用优化指南提取功能</translation>
 <translation id="2669157090883237118">不更改建议的 <ph name="PRODUCT_OS_NAME" /> 配置。</translation>
@@ -1959,6 +1935,7 @@
 <translation id="2702023190395322609">启用媒体推荐内容</translation>
 <translation id="270582584528242502">在用户尝试退出时不显示警告对话框</translation>
 <translation id="2706708761587205154">仅允许在有 PIN 码的情况下打印</translation>
+<translation id="2707733461906745082">资料分离</translation>
 <translation id="2707873794476722903">“安全浏览”功能会处于开启状态且会在标准模式下运行。</translation>
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="2713977837384407666">始终向 Google 发送指标</translation>
@@ -1984,9 +1961,6 @@
       如果此政策已启用，系统将会安装数据洞见扩展程序并报告指标。
 
       如果此政策未设置或已停用，系统将不会安装数据洞见扩展程序，也不会报告指标。</translation>
-<translation id="2724313944474873275">如果此政策已启用或未设置，<ph name="PRODUCT_OS_NAME" />设备便可使用远程认证（已验证的访问权限）来获取由 <ph name="PRODUCT_OS_NAME" /> CA 颁发的证书，以证明该设备有资格播放受保护内容。此过程涉及向 <ph name="PRODUCT_OS_NAME" /> CA 发送用于唯一标识设备的硬件背书信息。
-
-      如果此政策已停用，设备将不会使用远程认证来保护内容，并且可能无法播放受保护内容。</translation>
 <translation id="2724868837491558133">供您用来设置一个网站网址格式列表，从而指定要让系统自动向哪些网站授予本地字体权限。此设置会扩展网站查看本地字体相关信息的能力。
 
       如需详细了解有效网站网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。允许使用通配符 <ph name="WILDCARD_VALUE" />。此政策只能根据源进行匹配，所以网址格式中的任何路径都会被忽略。
@@ -2069,7 +2043,6 @@
       如果此政策已停用，系统将会关闭提示，而且只有 AudioCaptureAllowedUrls 列表中设置的网址可以使用录音设备。
 
       注意：此政策会影响所有录音设备（而不仅仅是内置麦克风）的音频输入。</translation>
-<translation id="2818869063785105255">确定 <ph name="PRODUCT_OS_NAME" /> 是否要在用户退出账号后保留本地账号数据。如果此政策设为 true，<ph name="PRODUCT_OS_NAME" /> 不会持续保留任何账号，且会在用户退出账号后舍弃用户会话中的所有数据。如果此政策设为 false 或未配置，设备可能会保留（经过加密的）本地用户数据。如果为设备本地账号指定了暂存模式，<ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> 政策可能会覆盖此政策的行为。</translation>
 <translation id="2823870601012066791"><ph name="PRODUCT_OS_NAME" />客户端的 Windows 注册表位置：</translation>
 <translation id="2824715612115726353">启用隐身模式</translation>
 <translation id="282870810415075521">允许 JavaScript 在这些网站上使用 JIT</translation>
@@ -2112,6 +2085,7 @@
 <translation id="2868756546751652023">允许用户使用“即时网络共享”功能</translation>
 <translation id="286898786908566256">允许用户将电话号码从 Chrome 发送到 Android 设备</translation>
 <translation id="2872098849906555324">停用 Google 云端硬盘同步</translation>
+<translation id="2872189563975139803">企业资料分离设置</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2872968825059227580">停用 GIF 支持。</translation>
 <translation id="2874209944580848064">针对支持 Android 应用的 <ph name="PRODUCT_OS_NAME" />设备的注意事项：</translation>
@@ -2266,7 +2240,6 @@
 
       警告：不得将 <ph name="PRODUCT_OS_NAME" />的版本控制权委派给自助服务终端应用，否则这可能会阻止设备获取软件更新和重要的安全修补程序。委派 <ph name="PRODUCT_OS_NAME" /> 版本控制权可能会将用户置于风险之中。</translation>
 <translation id="2989404644164421834">重新加载页面</translation>
-<translation id="299104951237091027">chrome://history/2 中不会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="299446489108785864">以列表形式指定 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 会应用于哪些网址。此政策对用户设定的自动打开值没有任何影响。
 
       如果您设置了此政策，那么仅当文件的网址包含在列表中且文件类型已列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中时，相应文件才会依照此政策自动打开。如果不符合上述任一条件，下载内容便不会依照此政策自动打开。
@@ -2294,6 +2267,7 @@
 
         此政策不会影响已发布的政策。</translation>
 <translation id="3002067315837777719">不允许启用 Phone Hub 通知</translation>
+<translation id="3003490107503207900">强制下载 Office 文档（例如 .docx），而不是在<ph name="BASIC_EDITOR_NAME" />中打开它们</translation>
 <translation id="3010907817113180883">设备活动检测信号收集时间间隔（以毫秒为单位）。</translation>
 <translation id="3017578958356048910">PDF 查看器能在 PDF 文件中添加注释</translation>
 <translation id="3020623128585817424">禁止在启动浏览器时检查是否为默认浏览器</translation>
@@ -2790,9 +2764,6 @@
       如果未设置，系统将会使用音频进程的默认配置。
       此政策只是一种临时措施，旨在让企业能够以更高的优先级运行音频，从而解决与音频捕获有关的特定性能问题。
       日后我们会移除此政策。</translation>
-<translation id="3412937883532015092">如果此政策设为一个数字，则意味着在打开备用浏览器之前，<ph name="PRODUCT_NAME" /> 会先按照与该数字等同的毫秒数显示一条消息。
-
-      如果此政策未设置或设为 0，当用户要前往指定的网址时，系统会立即在备用浏览器中打开相应网页。</translation>
 <translation id="3413763534078822244">此政策已被弃用，请改用 <ph name="USER_BOREALIS_ALLOWED_NAME" />。
 
       控制该设备能否使用 <ph name="BOREALIS_NAME" />。
@@ -3041,7 +3012,6 @@
 <translation id="3625900437628963632">此字段指定是否记住此策略项中设置的 Kerberos 密码值。如果此字段未设置或设为 true，系统会记住密码。如果此字段设为 false，系统不会记住密码。如果未为此账号指定密码字段，系统会忽略该属性。从 ChromeOS 116 版开始，系统支持此字段。</translation>
 <translation id="3627678165642179114">启用或停用拼写检查网络服务</translation>
 <translation id="3628480121685794414">启用单面打印</translation>
-<translation id="3632122147977480546">chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="3634117682099473917">此政策用于指定所需 DNS-over-HTTPS 解析器的 URI 模板。若要指定多个 DNS-over-HTTPS 解析器，请使用空格分隔相应的 URI 模板。此政策与 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 非常相似，并会覆盖后者（若已指定）。与后者不同的是，此政策支持指定身份信息。
 
 如果 <ph name="DOH_MODE_POLICY_NAME" /> 设为 <ph name="SECURE_DNS_MODE_SECURE" />，则必须设置此政策或 <ph name="DOH_TEMPLATES_POLICY_NAME" />，不得将这两者都留空。
@@ -3118,6 +3088,7 @@
 <translation id="3702518095257671450">远程证明</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（我们已弃用并将于日后移除单行字段。请开始使用下面的多行文本框。）</translation>
 <translation id="3711895659073496551">暂停</translation>
+<translation id="3712861436661566358">强制执行资料分离</translation>
 <translation id="3719826155360621982">首页</translation>
 <translation id="372668389978450673">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许从用户管理器中添加新用户。
 
@@ -3283,6 +3254,7 @@
 （自 117 版起）<ph name="PREVENT_CLOSE_FIELD" /> 字段用于指明是否应阻止以任何方式（例如由用户、任务管理器、Web API）关闭 Web 应用的行为。只有在 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 设为“<ph name="RUN_WINDOWED" />”时，才能允许这种行为。如果该应用已经在运行，只有在重启该应用后，此属性才会生效。如果未指定此字段，用户将可以关闭应用。</translation>
 <translation id="3825873934240606959">阻止使用“本地设备发现”功能</translation>
 <translation id="3826475866868158882">已启用 Google 位置信息服务</translation>
+<translation id="3829344785870486923">企业资料分离辅助网域许可名单</translation>
 <translation id="3831376478177535007">启用此设置后，只要赛门铁克公司 (Symantec Corporation) 的旧版公钥基础设施 (PKI) 操作签发的证书已以其他方式成功通过验证并关联至一个公认的 CA 证书，<ph name="PRODUCT_NAME" /> 就会允许信任这些证书。
 
       请注意，此政策有赖于相应操作系统是否仍能识别赛门铁克的旧版基础架构颁发的证书。如果该操作系统的某项更新更改了它对此类证书的处理方式，此政策便不再具有效力。另请注意，此政策只是一种临时解决方法，旨在让企业拥有更多时间来弃用旧版赛门铁克证书。我们将于 2019 年 1 月 1 日当天或前后撤消此政策。
@@ -3586,9 +3558,6 @@
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />，则意味着没有任何可用于查找此搜索服务提供商的关键字。</translation>
 <translation id="4090088362777472639">Ansible Playbook 的 SHA-256 哈希值。</translation>
 <translation id="4091040199847925434">禁止为帮助改进安全浏览功能而报告系统信息和网页内容</translation>
-<translation id="4097556069183835428">将此政策设为 None 会关闭放大镜。
-
-      如果您设置了此政策，用户便无法更改该功能的状态。如果您未设置此政策，放大镜最初会处于关闭状态，但用户可随时开启它。</translation>
 <translation id="4098920079809952737">始终允许打印（无论是否有背景图片）</translation>
 <translation id="410061592404122032">每当网站想获得窗口管理权限时都询问</translation>
 <translation id="410068710490553233">允许登录其他 Google 账号</translation>
@@ -4118,13 +4087,6 @@
 如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。“*”不是此政策可接受的值。
 
 如果此政策未设置，所有源都需要使用以往用户手势才能调用上述 API。</translation>
-<translation id="4587365491100112056">通过设置此政策，您可以指定身份验证数据缓存期限（以小时为单位）。此缓存包含与机器领域所信任的领域（关联领域）相关的数据。因此，身份验证数据缓存有助于加快登录速度。系统不会缓存用户专属数据以及非关联领域的数据。
-
-      如果此政策设为 0，系统会关闭身份验证数据缓存。每当用户登录时，系统都会提取领域专属的数据，因此关闭身份验证数据缓存可能会显著降低用户的登录速度。
-
-      如果您未设置此政策，已缓存的身份验证数据最多可被重复使用 73 小时。
-
-      注意：重启设备会清除缓存。系统会为所有用户（甚至是临时用户）缓存领域数据。关闭缓存可阻止系统跟踪临时用户的领域。</translation>
 <translation id="4591366717022345234">为用户提供 Quick Fix Build</translation>
 <translation id="4593391169954484940">相应文件的 SHA-256 哈希值。</translation>
 <translation id="4594027034164195984">允许第三方图片显示身份验证提示</translation>
@@ -4275,9 +4237,6 @@
 <translation id="4726228171190098009">不允许设备请求执行 Powerwash 操作</translation>
 <translation id="4726895359147376813">从永久性 ID 映射到虚拟机配置</translation>
 <translation id="4733471537137819387">与集成 HTTP 身份验证相关的政策。</translation>
-<translation id="4735099388031364207">如果此政策已启用，系统会允许对设备执行远程认证。系统会自动生成一个证书，并将其上传到设备管理服务器。
-
-      如果此政策已停用或未设置，系统将不会生成任何证书，并且无法调用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" />。</translation>
 <translation id="473613500147803115">拒绝向这些网站授予 MIDI 权限</translation>
 <translation id="473673197014866318">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，包括由现有的与扩展程序相关的政策控制的设置。此政策会取代任何可能已设置的旧版政策。
 
@@ -4329,7 +4288,6 @@
       如果停用此设置，用户将无法选择启用 Phone Hub 功能。
 
       如果未设置此政策，则默认情况下，受企业管理的用户无法选择启用 Phone Hub 功能，但不受管理的用户可以选择启用该功能。</translation>
-<translation id="4774499365794632139">默认情况下，chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="4783415902268741066">允许在浏览器侧边栏中显示默认搜索引擎的最新搜索结果页面</translation>
 <translation id="4786784434769279324">在计算机处于闲置状态时要运行的操作</translation>
 <translation id="4787763197941188108">替换默认打印页面大小。
@@ -4596,6 +4554,7 @@
 
 如果您未为某个网站设置此政策，系统便会将 <ph name="DEFAULT_MIDI_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="5078623750797048009">启用 PDF 注释</translation>
+<translation id="5080300140183363718">资料分离数据迁移设置</translation>
 <translation id="5081204761483900654">受限受管理访客会话</translation>
 <translation id="5082296146261894974">允许用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5082572440690475059">允许在这些网站上通过 File System API 读取内容</translation>
@@ -5316,15 +5275,9 @@
       如果您设置了此政策，用户将无法在 <ph name="PRODUCT_NAME" /> 中更改它。如果您未设置此政策，用户便可选择是否要在外部打开 PDF。</translation>
 <translation id="5705055136345677598">停用后台模式</translation>
 <translation id="5705828032077475554">报告 CRD 会话</translation>
+<translation id="57072195677044908">停用资料分离</translation>
 <translation id="5708969689202733975">配置所允许的“快速解锁”模式</translation>
 <translation id="5714563837055244378">启用 Android 应用至 Web 应用分享功能。</translation>
-<translation id="5715617256528927547">通过设置此政策，您可以指定群组政策对象 (GPO) 缓存期限（以小时为单位），即 GPO 在不必重新下载的情况下可被重复使用的时长上限。只要 GPO 的版本未变，系统便会重复使用已缓存的 GPO，而不是在每次提取政策时都重新下载 GPO。
-
-      如果此政策设为 0，系统会关闭 GPO 缓存。这样设置会增加服务器负载，因为系统在每次提取政策时都要重新下载 GPO，即使版本未变也是如此。
-
-      如果您未设置此政策，已缓存的 GPO 最多可被重复使用 25 小时。
-
-      注意：重启设备和退出账号会清除缓存。</translation>
 <translation id="5715739768416614900">启用自助服务终端问题排查工具。</translation>
 <translation id="5717973246079053225">为受管理个人资料停用云报告功能</translation>
 <translation id="572155275267014074">Android 设置</translation>
@@ -5506,11 +5459,6 @@
 <translation id="5901427587865226597">仅限双面打印</translation>
 <translation id="5905114360004248993">允许这些网站显示弹出式窗口</translation>
 <translation id="5905473632148429217">启用在线 OCSP/CRL 检查</translation>
-<translation id="5907283448020542268">除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策已设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，否则将此政策设为 <ph name="GLS_ENABLED" /> 会在初始设置期间开启 Google 位置信息服务。将此政策设为 <ph name="GLS_DISABLED" /> 或不设置，位置信息服务会在设置期间保持关闭状态。
-
-      如果您将此政策设为 <ph name="BR_UNDER_USER_CONTROL" />，系统会提示用户是否要使用 Google 位置信息服务。如果用户开启了该服务，Android 应用会利用该服务搜索设备位置信息，并向 Google 发送匿名位置数据。
-
-      完成初始设置后，用户可以开启或关闭 Google 位置信息服务。</translation>
 <translation id="5908808391744484238">如果启用或未设置此政策，当用户从上下文菜单中选择“在无痕式窗口中打开链接”时，网址参数过滤功能可能会移除某些参数。
       如果停用此政策，系统不会执行任何过滤操作。
       此政策只是暂时性政策，可能会在未来版本中移除。</translation>
@@ -5596,15 +5544,6 @@
       如果此政策设为 True，网站不仅能发送 WebAssembly 模块，而且能不受限制地跨源发送。
 
       如果此政策设为 False 或未设置，网站只能将 WebAssembly 模块发送到同源的窗口和工作器。</translation>
-<translation id="6009062900206392980">将此政策设为 None 时，系统会在登录屏幕上关闭屏幕放大功能。
-
-       如果您设置了此政策，用户便可暂时开启或关闭放大镜。当登录屏幕重新加载或闲置了 1 分钟后，放大镜就会还原为初始状态。
-
-      如果您未设置此政策，放大镜会在登录屏幕上处于关闭状态。用户可以随时开启该功能，并且它在登录屏幕上的状态对所有用户都一致。
-
-       有效值：• 0 = 关闭 • 1 = 开启 • 2 = 开启停靠的放大镜
-
-          注意：<ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
 <translation id="6011193465932186973">指纹</translation>
 <translation id="6011969832398368671">允许网站请求用户授予对文件和目录的写入权限</translation>
 <translation id="601234435141599215">允许端口转发到 Linux 虚拟机</translation>
@@ -5922,13 +5861,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="627672037430076089">禁止与这台计算机建立远程支持连接</translation>
 <translation id="6277314550042130537">在 HTTP 身份验证期间使用 KDC 政策审批结果</translation>
 <translation id="6278428485366576908">主题</translation>
-<translation id="6279722058145292462">通过设置此政策，您可以指定客户端对其机器账号密码的更改频率（以天为单位）。密码是由客户端随机生成的，不会显示给用户。停用此政策或设置较多的天数可能会对安全性产生不利影响，因为这会让潜在攻击者有更多时间来找出并使用机器账号密码。
-
-      如果您未设置此政策，客户端将会每 30 天更改一次机器账号密码。
-
-      如果此政策设为 0，客户端将无法更改机器账号密码。
-
-      注意：如果客户端在较长时间内一直处于离线状态，那么即使指定的天数已过，密码可能也不会更改。</translation>
 <translation id="628084107912717806">指定能否跨源发送 WebAssembly 模块</translation>
 <translation id="6280973140313576289">在浏览器启动时强制显示个人资料选择器</translation>
 <translation id="6282524907402492171">显示 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
@@ -5980,6 +5912,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果您未设置此政策，屏幕键盘会在登录屏幕上处于关闭状态。用户可以随时开启该键盘，并且它在登录屏幕上的状态对所有用户都一致。
 
       注意：<ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
+<translation id="6315039134652691025">用户无法将现有浏览数据添加到受管理资料名下</translation>
 <translation id="6316885783540658874">此政策旨在控制是否为 Chrome 操作系统上的 <ph name="DM_CRYPT" /> 用户主目录启用“<ph name="AES_KL_NAME" />”实现方案来进行用户存储加密（若支持）。
 
        此政策仅适用于那些使用 <ph name="DM_CRYPT" /> 进行加密的用户主目录。旧版用户主目录（不使用 <ph name="DM_CRYPT" /> 的那些用户主目录）不支持使用“<ph name="AES_KL_NAME" />”，而是默认使用“<ph name="AES_NI_NAME" />”。
@@ -5994,16 +5927,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用或未设置，用户便可以选择是否使用 <ph name="CHROME_SYNC_NAME" />。
 
       注意：如果 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 已启用，请勿开启此政策，因为此功能具有相同的客户端功能。在这种情况下，由 Google 托管的同步服务会完全关闭。</translation>
-<translation id="6320186400425850182">此政策用于控制是否以网页分组的方式显示“Chrome 历史记录”页面。
-
-      如果已启用此政策，chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。
-
-      如果已停用此政策，chrome://history/2 中不会以网页分组的方式显示“Chrome 历史记录”页面。
-
-      如果未设置此政策，默认情况下，chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。
-
-      请注意，如果已停用 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策，但已启用或未设置 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" />，chrome://history/2 中仍然会以网页分组的方式显示“Chrome 历史记录”页面，但与用户的相关程度可能会变低。
-</translation>
 <translation id="6320935916601887506">系统将默认使用新的 offsetParent 行为。</translation>
 <translation id="6327643515544933974">网络 USB 设置</translation>
 <translation id="6330882599388782338">允许网站使用传感器</translation>
@@ -6129,11 +6052,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6412352702230183710">仅允许使用系统级原生消息传递主机</translation>
 <translation id="6416506846917150119">在用户输入内容时停用实体键盘预测性撰写功能</translation>
 <translation id="6417265370957905582">Google 助理</translation>
-<translation id="6422575351619065453">在自助服务终端模式中，用于控制是否显示悬浮无障碍功能菜单。
-
-      如果此政策设为启用，系统将始终显示悬浮无障碍功能菜单。
-
-      如果此政策设为停用或未设置，系统将始终不显示悬浮无障碍功能菜单。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
 <translation id="6424486395812679373">对所有下载的文件执行安全浏览检查</translation>
 <translation id="6433697627431665375">阻止 <ph name="PRODUCT_NAME" /> 数据包含在备份中</translation>
@@ -6143,7 +6061,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 单独的 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 政策可用于豁免特定主机名或主机名格式，使其不会被该功能升级到 HTTPS。
 
 另请参阅 <ph name="HTTPS_ONLY_MODE_POLICY_NAME" /> 政策。</translation>
-<translation id="6438972408080276697">如果您将此政策设为 True，系统便会向 Google 报告由政策触发的主要 Android 应用安装事件。将此政策设为 False 意味着系统不会记录任何事件。</translation>
 <translation id="6440051664870270040">允许网站在导航的同时打开弹出式窗口</translation>
 <translation id="6441781723322254041">允许使用被截断的 Cookie</translation>
 <translation id="6446366416439249472">禁止在连接移动网络的情况下进行 Google 云端硬盘同步</translation>
@@ -6833,11 +6750,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6969332115615661188">停用视频输入</translation>
 <translation id="6972540544240464302">选择任务调度程序配置</translation>
 <translation id="6975533677426693807">始终使用内部 PDF 查看器打开 PDF 文件</translation>
-<translation id="6979739838208297344">将此政策设为 <ph name="BR_ENABLED" /> 意味着 Android 备份和恢复服务最初会处于开启状态。将此政策设为 <ph name="BR_DISABLED" /> 或不设置，备份和恢复服务会在设置过程中保持关闭状态。
-
-      将此政策设为 <ph name="BR_UNDER_USER_CONTROL" /> 意味着系统会提示用户使用备份和恢复服务。如果用户开启了该服务，系统就会将 Android 应用数据上传到 Android 备份服务器，并会在用户重新安装兼容的应用期间恢复这些数据。
-
-      完成初始设置后，用户可以开启或关闭备份和恢复服务。</translation>
 <translation id="6986172482189158664">浏览数据生命周期设置</translation>
 <translation id="6986838929449128437">此政策已被弃用，请改用 <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />。
 
@@ -7504,13 +7416,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果用户的设备为受管理设备，则此功能的可用性还取决于相应的设备政策。
 
       如果用户的设备不是受管理设备，则此功能的可用性还取决于用户是不是设备所有者。</translation>
-<translation id="7570111012674064005">通过设置此政策，您可以指定是否处理计算机群组政策对象 (GPO) 中的用户政策以及如何处理。
-
-      * 如果此政策设为“默认”或未设置，系统会仅从用户 GPO 读取用户政策。计算机 GPO 会被忽略。
-
-      * 如果此政策设为“合并”，用户 GPO 中的用户政策会与计算机 GPO 中的用户政策合并。计算机 GPO 优先。
-
-      * 如果此政策设为“替换”，计算机 GPO 中的用户政策会替换用户 GPO 中的用户政策。用户 GPO 会被忽略。</translation>
 <translation id="7570291542739287032">仅限云端</translation>
 <translation id="7571530187275708765">此政策旨在控制浏览器的登录行为。通过设置此政策，您可以指定用户能否使用其账号登录 <ph name="PRODUCT_NAME" /> 并使用账号相关服务（如 <ph name="PRODUCT_NAME" /> 同步）。
 
@@ -8767,6 +8672,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策已启用，首次运行时系统会从先前的默认浏览器导入已保存的密码，用户也可从“设置”页面中手动导入。
 如果此政策已停用，首次运行时系统不会导入任何已保存的密码，用户也无法从“设置”页面中手动导入。
 如果此政策未设置，首次运行时系统不会导入任何已保存的密码，但用户可以选择从“设置”页面中执行导入操作。</translation>
+<translation id="8697738827698599333">通过设置此政策，您可指定：对于哪些 WebAuthn RP ID，当网站要求安全密钥提供认证证书时，系统不会显示任何提示。系统还会向安全密钥发送信号，表明可能会使用企业认证。如果您未设置此政策，当网站要求安全密钥提供认证证书时，<ph name="PRODUCT_NAME" /> 65 版及更高版本会向用户显示提示。</translation>
 <translation id="8698286761337647563">用于指定提前多少天通知密码快要到期的 SAML 用户</translation>
 <translation id="8699392919012430269">报告设备的蓝牙信息。
 
@@ -8867,6 +8773,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果未设置，此政策会处于开启状态，而且无法被用户关闭。</translation>
 <translation id="8789053142986648624">受管理的账号必须是主账号，而且允许用户在创建它时导入现有数据</translation>
 <translation id="8789338675663014675">配置与扩展程序相关的政策。用户无法安装任何已被屏蔽的扩展程序（除非它们已被加入白名单）。您也可以在 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 中指定某些扩展程序，从而强制 <ph name="PRODUCT_NAME" /> 自动安装这些扩展程序。强制安装的扩展程序均会被安装（无论它们是否包含在屏蔽名单内）。</translation>
+<translation id="878964451356911302">建议用户将其现有数据添加到受管理资料名下，同时为用户提供用于拒绝这样做的选项</translation>
 <translation id="879697755145469671">不检测被遮挡的窗口</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8799492680917278474">如果您设置了此政策，当会话时长达到此政策中指定的分钟数之后，远程访问连接将会自动断开。这不会阻止客户端在达到会话时长上限后重新建立连接。如果您为此政策指定的值不在下限值/上限值范围内，主机可能会因此无法启动。此政策不影响远程支持场景。
@@ -9396,9 +9303,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="989197274317162189">此政策已被弃用且不再受支持，请改用“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策。</translation>
 <translation id="990830704772547092">在 <ph name="PRODUCT_OS_NAME" /> 设备上配置 Bruschetta 虚拟机安装程序</translation>
 <translation id="991560005425213776">向原生打印机发送用户名和文件名</translation>
-<translation id="99202634486128833">如果您将此政策设为 CopyCaCerts，ARC 应用便能使用所有已安装 ONC 且带有 <ph name="WEB_TRUSTED_BIT" /> 的 CA 证书。
-
-       将此政策设为 None 或不设置，ARC 应用将无法使用 <ph name="PRODUCT_OS_NAME" />证书。</translation>
 <translation id="99232017131102456">通过此政策，您可以使用 HTTP 服务器身份验证凭据为每份个人资料配置一个全局性的缓存文件。
 
       如果此政策未设置或已停用，浏览器将会使用跨网站身份验证机制的默认行为（自版本 80 起，该行为将是按顶级网站界定 HTTP 服务器身份验证凭据的适用范围），因此如果两个网站使用的资源是来自同一个要求进行身份验证的网域，则需在这两个网站中分别提供凭据。系统会跨网站重复使用缓存的代理凭据。

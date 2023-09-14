@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">أسهم وسندات</translation>
 <translation id="1391625539203220400">‏هل تريد حفظ رقم الحساب بصيغة IBAN على هذا الجهاز؟</translation>
 <translation id="139305205187523129">لم يرسل <ph name="HOST_NAME" /> أي بيانات.</translation>
+<translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">أخضر فاتح</translation>
 <translation id="1406500794671479665">جارٍ التحقق...</translation>
 <translation id="1406812885827747674">السماح بالاستخدام هذه المرة</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">تم حظر الإشعارات تلقائيًا لأنّك عادةً لا تسمح بظهورها.</translation>
 <translation id="2071852865256799872">تتولّى مؤسستك إدارة متصفِّحك، كما أنّ ملفك الشخصي يخضع لإدارة <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2072275792380684364">موضة وأزياء</translation>
+<translation id="2075497153347571252">حظر المشرف استخدام "<ph name="PERMISSION" />" على <ph name="ORIGIN" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="20817612488360358">تم ضبط إعدادات الخادم الوكيل ليتم استخدامها وتم أيضًا تحديد إعداد صريح للخادم الوكيل.</translation>
 <translation id="2082238445998314030">النتيجة <ph name="RESULT_NUMBER" /> من <ph name="TOTAL_RESULTS" /></translation>
@@ -1883,6 +1885,7 @@
 <translation id="4885256590493466218">الدفع باستخدام <ph name="CARD_DETAIL" />.</translation>
 <translation id="4887406273302438710">‏حماية كلمات المرور باستخدام Windows Hello</translation>
 <translation id="4888600795924685526">دراسة لغات أجنبية</translation>
+<translation id="4890070067176768718">سمح المشرف باستخدام "<ph name="PERMISSION" />" على <ph name="ORIGIN" />.</translation>
 <translation id="4892518386797173871">الجزء الخلفي</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">أولمبياد</translation>
@@ -2329,6 +2332,7 @@
 <translation id="5830698870816298009">استخدام الكاميرا وتحريكها</translation>
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5838278095973806738">يجب عدم إدخال معلومات حسّاسة على هذا الموقع (مثل كلمات المرور أو بطاقات الائتمان) لأنه قد تتم سرقتها من قِبل المهاجمين.</translation>
+<translation id="5838732667866024867">يمكنك استخدام السهم المتّجه لليسار أو لليمين لمراجعة تغييرات السعر على الرسم البياني.</translation>
 <translation id="5840318881868981258">‏سيتم حفظ التعديل في حسابك على Google، <ph name="ACCOUNT" />.</translation>
 <translation id="5841338463993781099">هل تريد الحفظ في الحساب؟</translation>
 <translation id="5847181246682413476">مصادر طاقة</translation>
@@ -2617,6 +2621,7 @@
 <translation id="6432297414176614592">مزيد من المعلومات حول ميزة "مواضيع الإعلانات"</translation>
 <translation id="6432831586648556868">وظائف مبيعات وتسويق</translation>
 <translation id="6433490469411711332">تعديل معلومات الاتصال</translation>
+<translation id="6433501201775827830">اختيار محرك البحث</translation>
 <translation id="6433595998831338502">رفض <ph name="HOST_NAME" /> الاتصال.</translation>
 <translation id="6433797564277305076">التأكُّد من بطاقاتك بشكلٍ أسرع باستخدام فتح قفل الجهاز من الآن فصاعدًا</translation>
 <translation id="643917412048333145">فساتين</translation>
@@ -3976,6 +3981,7 @@
 <translation id="9207861905230894330">تعذّرت إضافة مقالة.</translation>
 <translation id="9213433120051936369">تخصيص المظهر</translation>
 <translation id="9215416866750762878">‏يعمل أحد التطبيقات على منع اتصال Chrome بموقع الويب هذا على نحو آمن</translation>
+<translation id="9218430445555521422">الضبط على الإعداد التلقائي</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="922152298093051471">‏تخصيص Chrome</translation>
 <translation id="9222403027701923763">الدراسة الابتدائية والثانوية (التعليم المدرسي)</translation>

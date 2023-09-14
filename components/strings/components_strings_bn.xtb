@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">স্টক ও বন্ড</translation>
 <translation id="1391625539203220400">এই ডিভাইসে IBAN সেভ করবেন?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> কোনো তথ্য পাঠায়নি।</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> এর সাহায্যে খুঁজুন</translation>
 <translation id="1405567553485452995">হালকা সবুজ</translation>
 <translation id="1406500794671479665">যাচাই করা হচ্ছে...</translation>
 <translation id="1406812885827747674">একবারের জন্য অনুমতি দিন</translation>
@@ -2613,6 +2614,7 @@
 <translation id="6432297414176614592">বিজ্ঞাপনের বিষয় সম্পর্কে আরও অনেক কিছু</translation>
 <translation id="6432831586648556868">সেলস ও মার্কেটিং সংক্রান্ত চাকরি</translation>
 <translation id="6433490469411711332">পরিচিতি তথ্য সম্পাদনা করুন</translation>
+<translation id="6433501201775827830">আপনার সার্চ ইঞ্জিন বেছে নিন</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> সংযোগ করতে প্রত্যাখ্যান করেছে।</translation>
 <translation id="6433797564277305076">এখন থেকে কার্ডগুলি আরও দ্রুত কনফার্ম করতে ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="643917412048333145">পোশাক</translation>
@@ -3969,6 +3971,7 @@
 <translation id="9207861905230894330">নিবন্ধ যোগ করতে ব্যর্থ হয়েছে৷</translation>
 <translation id="9213433120051936369">কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
 <translation id="9215416866750762878">একটি অ্যাপ্লিকেশন Chrome কে এই সাইটের সাথে নিরাপদভাবে সংযুক্ত হতে বাধা দিচ্ছে</translation>
+<translation id="9218430445555521422">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome কাস্টমাইজ করুন</translation>
 <translation id="9222403027701923763">প্রাথমিক ও সেকেন্ডারি স্কুল (K-12)</translation>

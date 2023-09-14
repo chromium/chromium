@@ -444,7 +444,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1347512539447549782">Linux-opslag</translation>
 <translation id="1347975661240122359">De update wordt gestart wanneer de batterij voor <ph name="BATTERY_LEVEL" />% vol is.</translation>
 <translation id="1348966090521113558">Toegankelijkheidsinstellingen voor muis</translation>
-<translation id="1351089605448164407">Vanuit je Drive</translation>
 <translation id="1353275871123211385">Als je opties voor ouderlijk toezicht, zoals app-goedkeuring en schermtijdlimieten, wilt gebruiken, moet je kind een Google-account hebben dat wordt beheerd door een ouder. Je kunt later een schoolaccount toevoegen voor tools zoals Google Classroom.</translation>
 <translation id="135389172849514421">Werkt offline</translation>
 <translation id="1353980523955420967">PPD kan niet worden gevonden. Zorg dat je Chromebook online is en probeer het opnieuw.</translation>
@@ -1980,6 +1979,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Er is iets misgegaan en <ph name="DEVICE_OS" /> kan niet worden geïnstalleerd.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ga naar g.co/flex/InstallErrors voor meer hulp.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Verlengt de batterijduur door de batterijlading rond 80% te houden. De batterij wordt helemaal opgeladen voordat je gewoonlijk de stekker uit het stopcontact haalt.</translation>
+<translation id="2532146950330687938">Het apparaat voorbereiden...</translation>
 <translation id="2532198298278778531">Beveiligde DNS beheren in de instellingen van Chrome OS Flex</translation>
 <translation id="2532589005999780174">Modus voor hoog contrast</translation>
 <translation id="2533649878691950253">Deze site heeft geen toegang tot je exacte locatie omdat je dit gewoonlijk niet toestaat</translation>
@@ -2189,7 +2189,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2710101514844343743">Gebruiks- en diagnostische gegevens</translation>
 <translation id="271033894570825754">Nieuw</translation>
 <translation id="2711073837061989559">Proeven</translation>
-<translation id="2711929077861214979">Veiligheidstips</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2714180132046334502">Donkere achtergrond</translation>
@@ -2499,7 +2498,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2939908794993783865">Meer inactieve sites</translation>
 <translation id="2939938020978911855">Beschikbare Bluetooth-apparaten bekijken</translation>
 <translation id="2941112035454246133">Laag</translation>
-<translation id="2942279350258725020">Android Berichten</translation>
 <translation id="2942560570858569904">Wachten...</translation>
 <translation id="2942581856830209953">Deze pagina aanpassen</translation>
 <translation id="2942707801577151363">Open en bewerk Word-, Excel- en PowerPoint-bestanden en sla ze op. Voor sommige functies heb je misschien een abonnement nodig.</translation>
@@ -4693,7 +4691,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Geluid van site aanzetten}other{Geluid van sites aanzetten}}</translation>
 <translation id="474609389162964566">De Assistent openen met 'Hey Google'</translation>
-<translation id="4746351372139058112">Berichten</translation>
 <translation id="4748783296226936791">Sites maken meestal verbinding met HID-apparaten voor functies die ongebruikelijke toetsenborden, gamecontrollers en andere apparaten gebruiken</translation>
 <translation id="4749960740855309258">Een nieuw tabblad openen</translation>
 <translation id="4750185073185658673">Check nog een paar rechten op je telefoon. Zorg dat bluetooth en wifi op je telefoon aanstaan.</translation>
@@ -4760,7 +4757,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4807122856660838973">Safe Browsing aanzetten</translation>
 <translation id="4807514039636325497">D-Bus-gegevens</translation>
 <translation id="4808667324955055115">Pop-ups geblokkeerd:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Check <ph name="BEGIN_BOLD" />1 extensie<ph name="END_BOLD" /> die uit de Chrome Web Store is verwijderd}other{Check <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} extensies<ph name="END_BOLD" /> die uit de Chrome Web Store zijn verwijderd}}</translation>
 <translation id="4809079943450490359">Instructies van de beheerder van je apparaat:</translation>
 <translation id="4809447465126035330">Verwijderen</translation>
 <translation id="480990236307250886">Open de homepage</translation>
@@ -5743,6 +5739,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5627086634964711283">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je op de Homepage-knop klikt.</translation>
 <translation id="5627676517703583263">Slim browsen met Chrome</translation>
 <translation id="5627832140542566187">Beeldschermstand</translation>
+<translation id="5628434207686266338">Apparaatwachtwoord instellen</translation>
 <translation id="562935524653278697">Je beheerder heeft de synchronisatie van je bookmarks, geschiedenis, wachtwoorden en andere instellingen uitgezet.</translation>
 <translation id="5631017369956619646">CPU-gebruik</translation>
 <translation id="5631272057151918206">Hiermee maak je maximaal <ph name="OFFLINE_STORAGE_SIZE" /> aan ruimte vrij die door je offline bestanden wordt gebruikt. Sommige bestanden zijn nog steeds offline beschikbaar. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -6323,6 +6320,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="6104796831253957966">Printerwachtrij is vol</translation>
 <translation id="6104929924898022309">De zoektoets gebruiken om het gedrag van functietoetsen te wijzigen</translation>
 <translation id="6106167152849320869">Als je er in de vorige stap ook voor hebt gekozen diagnostische en gebruiksgegevens te sturen, worden deze gegevens verzameld voor geïnstalleerde apps.</translation>
+<translation id="6111718295497931251">Toegang tot Google Drive intrekken</translation>
 <translation id="6111972606040028426">De Google Assistent aanzetten</translation>
 <translation id="6112294629795967147">Tikken om het formaat aan te passen</translation>
 <translation id="6112727384379533756">Een ticket toevoegen</translation>
@@ -9823,6 +9821,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8962083179518285172">Details verbergen</translation>
 <translation id="8962863356073277855">URL-indeling moet https://www.example.com zijn.</translation>
 <translation id="8962918469425892674">Deze site gebruikt bewegings- of lichtsensoren.</translation>
+<translation id="8963117664422609631">Naar de site-instellingen</translation>
 <translation id="8965037249707889821">Oud wachtwoord opgeven</translation>
 <translation id="8966809848145604011">Andere profielen</translation>
 <translation id="8967427617812342790">Toevoegen aan leeslijst</translation>
@@ -10201,7 +10200,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="964286338916298286">Je IT-beheerder heeft Chrome-extra's uitgezet voor je apparaat.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{App}other{Apps}}</translation>
 <translation id="964790508619473209">Schermindeling</translation>
-<translation id="965211523698323809">Sms'jes verzenden en ontvangen op je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Een probleem met Google Cast melden</translation>
 <translation id="966588271015727539">Een Bluetooth-brailleleesregel selecteren</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Dit profiel &amp;sluiten}other{Dit profiel &amp;sluiten (# vensters)}}</translation>

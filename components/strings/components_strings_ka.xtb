@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">აქციები და ობლიგაციები</translation>
 <translation id="1391625539203220400">გსურთ, შეინახოთ IBAN ამ მოწყობილობაზე?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />-ს არ გამოუგზავნია მონაცემები.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-ით ძიება</translation>
 <translation id="1405567553485452995">ღია მწვანე</translation>
 <translation id="1406500794671479665">გადამოწმება…</translation>
 <translation id="1406812885827747674">ამჯერად დაშვება</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">შეტყობინებები ავტომატურად დაიბლოკა, რადგან, როგორც წესი, მათ მიღებას კრძალავთ ხოლმე</translation>
 <translation id="2071852865256799872">თქვენს ბრაუზერს მართავს თქვენი ორგანიზაცია, თქვენს პროფილს კი — <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">მოდა და სტილი</translation>
+<translation id="2075497153347571252">თქვენმა ადმინისტრატორმა დაბლოკა <ph name="PERMISSION" /> <ph name="ORIGIN" />-ზე</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="20817612488360358">დაყენებულია სისტემის პროქსის პარამეტრების გამოყენება, მაგრამ ასევე მითითებულია პროქსის აშკარა კონფიგურაცია.</translation>
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
@@ -1879,6 +1881,7 @@
 <translation id="4885256590493466218">ანგარიშსწორებისას გადაიხადეთ <ph name="CARD_DETAIL" />-ით</translation>
 <translation id="4887406273302438710">დაიცავით პაროლები Windows Hello-ს მეშვეობით</translation>
 <translation id="4888600795924685526">უცხო ენების შესწავლა</translation>
+<translation id="4890070067176768718">თქვენმა ადმინისტრატორმა დაუშვა <ph name="PERMISSION" /> <ph name="ORIGIN" />-ზე</translation>
 <translation id="4892518386797173871">უკანა</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ოლიმპიადა</translation>
@@ -2325,6 +2328,7 @@
 <translation id="5830698870816298009">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5838278095973806738">გირჩევთ, არ შეიყვანოთ კონფიდენციალური ინფორმაცია (მაგალითად, პაროლები ან საკრედიტო ბარათების მონაცემები) ამ საიტზე, რადგან თავდამსხმელებს მისი მოპარვა შეუძლიათ.</translation>
+<translation id="5838732667866024867">დიაგრამაში ფასის ცვლილებების შესამოწმებლად შეგიძლიათ გამოიყენოთ მარცხნივ/მარჯვნივ მიმართული ისრები</translation>
 <translation id="5840318881868981258">თქვენს Google ანგარიშში (<ph name="ACCOUNT" />)</translation>
 <translation id="5841338463993781099">გსურთ ანგარიშში შენახვა?</translation>
 <translation id="5847181246682413476">ელექტროენერგიით მომარაგება</translation>
@@ -2613,6 +2617,7 @@
 <translation id="6432297414176614592">ვრცლად სარეკლამო თემების შესახებ</translation>
 <translation id="6432831586648556868">ვაკანსიები გაყიდვებისა და მარკეტინგის სფეროში</translation>
 <translation id="6433490469411711332">საკონტაქტო ინფორმაციის რედაქტირება</translation>
+<translation id="6433501201775827830">აირჩიეთ საძიებო სისტემა</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />-მა უარყო დაკავშირება.</translation>
 <translation id="6433797564277305076">დაადასტურეთ ბარათები უფრო სწრაფად — გამოიყენეთ ამიერიდან მოწყობილობის განბლოკვის მეთოდი</translation>
 <translation id="643917412048333145">კაბები</translation>
@@ -3969,6 +3974,7 @@
 <translation id="9207861905230894330">ვერ მოხერხდა სტატიის დამატება.</translation>
 <translation id="9213433120051936369">მოირგეთ იერსახე</translation>
 <translation id="9215416866750762878">აპლიკაცია ხელს უშლის Chrome-ს ამ საიტთან უსაფრთხოდ დაკავშირებაში</translation>
+<translation id="9218430445555521422">ნაგულისხმევის დაყენება</translation>
 <translation id="9219103736887031265">გამოსახულებები</translation>
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="9222403027701923763">დაწყებითი და საშუალო განათლება (K-12)</translation>

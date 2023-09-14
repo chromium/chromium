@@ -447,7 +447,6 @@
 <translation id="1347512539447549782">Linux ගබඩාව</translation>
 <translation id="1347975661240122359">බැටරි මට්ටම <ph name="BATTERY_LEVEL" />% වූ විට යාවත්කාලීන කිරීම ආරම්භ වනු ඇත.</translation>
 <translation id="1348966090521113558">මුසික ප්‍රවේශ්‍යතා සැකසීම්</translation>
-<translation id="1351089605448164407">ඔබේ Drive වෙතින්</translation>
 <translation id="1353275871123211385">යෙදුම් අනුමත කිරීම සහ තිර කාල සීමා වැනි මාපිය පාලන භාවිත කිරීමට, දරුවෙකුට මාපියන්ගෙන් අයෙකු විසින් කළමනාකරණය කරන Google ගිණුමක් තිබිය යුතුය. Google පන්ති කාමරය වැනි මෙවලම් සඳහා පාසල් ගිණුමක් පසුව එක් කළ හැකිය.</translation>
 <translation id="135389172849514421">නොබැඳිව ක්‍රියාකරයි</translation>
 <translation id="1353980523955420967">PPD සොයා ගත නොහැක. ඔබේ Chromebook සබැඳි බවට සහතික වී නැවත උත්සාහ කරන්න.</translation>
@@ -2193,7 +2192,6 @@
 <translation id="2710101514844343743">භාවිත සහ දෝෂ නිර්ණ දත්ත</translation>
 <translation id="271033894570825754">පුවත්</translation>
 <translation id="2711073837061989559">අත්හදා බැලීම්</translation>
-<translation id="2711929077861214979">සුරක්ෂිතතා ඉඟි</translation>
 <translation id="2713106313042589954">කැමරාව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2713444072780614174">සුදු</translation>
 <translation id="2714180132046334502">අඳුරු පසුබිම</translation>
@@ -2503,7 +2501,6 @@
 <translation id="2939908794993783865">අතිරේක අක්‍රිය අඩවි</translation>
 <translation id="2939938020978911855">තිබෙන බ්ලූටූත් උපාංග පෙන්වන්න</translation>
 <translation id="2941112035454246133">අඩු</translation>
-<translation id="2942279350258725020">Android පණිවුඩ</translation>
 <translation id="2942560570858569904">රැඳෙමින්...</translation>
 <translation id="2942581856830209953">මෙම පිටුව අභිරුචිකරණය කරන්න</translation>
 <translation id="2942707801577151363">Word, Excel, සහ PowerPoint ගොනු විවෘත කරන්න, සංස්කරණය කරන්න, සහ සුරකින්න. සමහර විශේෂාංග සඳහා ග්‍රාහකත්වයක් අවශ්‍ය විය හැක.</translation>
@@ -4700,7 +4697,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{වෙබ් අඩවිය නිහඬ නොකරන්න}one{වෙබ් අඩවි නිහඬ නොකරන්න}other{වෙබ් අඩවි නිහඬ නොකරන්න}}</translation>
 <translation id="474609389162964566">"Hey Google" සමගින් ඔබගේ සහායක වෙත ප්‍රවේශ වන්න</translation>
-<translation id="4746351372139058112">පණිවිඩ</translation>
 <translation id="4748783296226936791">සුලබ නොවූ යතුරු පුවරු, ක්‍රීඩා පාලක සහ වෙනත් උපාංග භාවිත කරන විශේෂාංග සඳහා අඩවි සාමාන්‍යයෙන් HID උපාංගවලට සම්බන්ධ වේ</translation>
 <translation id="4749960740855309258">නව ටැබයක් විවෘත කරන්න</translation>
 <translation id="4750185073185658673">තවත් අවසර කිහිපයක් සමාලෝචනය කිරීමට ඔබගේ දුරකථනයට යන්න. ඔබගේ දුරකථනයේ බ්ලූටූත් සහ Wi-Fi ක්‍රියාත්මක බව සහතික කර ගන්න.</translation>
@@ -4767,7 +4763,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4807122856660838973">ආරක්‍ෂිත බ්‍රවුස් කිරීම සක්‍රීය කරන්න</translation>
 <translation id="4807514039636325497">DBus විස්තර</translation>
 <translation id="4808667324955055115">උත්පතන අවහිරයි:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome Web Store වෙතින් ඉවත් කරන ලද <ph name="BEGIN_BOLD" />1 දිගුවක්<ph name="END_BOLD" /> සමාලෝචනය කරන්න}one{Chrome Web Store වෙතින් ඉවත් කරන ලද <ph name="BEGIN_BOLD" />දිගු {NUM_EXTENSIONS}ක්<ph name="END_BOLD" /> සමාලෝචනය කරන්න}other{Chrome Web Store වෙතින් ඉවත් කරන ලද <ph name="BEGIN_BOLD" />දිගු {NUM_EXTENSIONS}ක්<ph name="END_BOLD" /> සමාලෝචනය කරන්න}}</translation>
 <translation id="4809079943450490359">ඔබේ උපාංග පරිපාලකයාගෙන් ලැබෙන උපදෙස්:</translation>
 <translation id="4809447465126035330">මකන්න</translation>
 <translation id="480990236307250886">මුල් පිටුව විවෘත කරන්න</translation>
@@ -9836,6 +9831,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8962083179518285172">විස්තර සඟවන්න</translation>
 <translation id="8962863356073277855">URL ආකෘතිය https://www.example.com විය යුතු වේ</translation>
 <translation id="8962918469425892674">මෙම අඩවිය චලන හෝ ආලෝක සංවේදක භාවිතා කරයි.</translation>
+<translation id="8963117664422609631">අඩවි සැකසීම් වෙත යන්න</translation>
 <translation id="8965037249707889821">පැරණි රහස් වචනය ඇතුළු කරන්න</translation>
 <translation id="8966809848145604011">වෙනත් පැතිකඩවල්</translation>
 <translation id="8967427617812342790">කියවීම් ලැයිස්තුවට එක් කරන්න</translation>
@@ -10214,7 +10210,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="964286338916298286">ඔබේ තොරතුරු තාක්ෂණ කළමනාකරු ඔබේ උපාංගය සඳහා Chrome Goodies අබල කර ඇත.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{යෙදුම}one{යෙදුම්}other{යෙදුම්}}</translation>
 <translation id="964790508619473209">තිර පිළියෙළ</translation>
-<translation id="965211523698323809">ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් පාඨ පණිවුඩ යවන්න සහ ලබන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast සමගින් වන ගැටලුවක් වාර්තා කරන්න</translation>
 <translation id="966588271015727539">බ්ලූටූත් බ්‍රේල් සංදර්ශකයක් තෝරන්න</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;මෙම පැතිකඩ වසන්න}one{&amp;මෙම පැතිකඩ වසන්න (කවුළු #ක්)}other{&amp;මෙම පැතිකඩ වසන්න (කවුළු #ක්)}}</translation>

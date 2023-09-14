@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">Акциялар және облигациялар</translation>
 <translation id="1391625539203220400">IBAN-ді осы құрылғыға сақтау керек пе?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ешқандай дерек жібермеді.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> арқылы іздеу</translation>
 <translation id="1405567553485452995">Ашық жасыл</translation>
 <translation id="1406500794671479665">Расталуда…</translation>
 <translation id="1406812885827747674">Осы уақытқа рұқсат ету</translation>
@@ -2612,6 +2613,7 @@
 <translation id="6432297414176614592">Жарнама тақырыптары туралы толық ақпарат</translation>
 <translation id="6432831586648556868">Сауда және маркетинг жұмыстары</translation>
 <translation id="6433490469411711332">Байланыс ақпаратын өңдеу</translation>
+<translation id="6433501201775827830">Іздеу жүйесін таңдаңыз</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> байланыстан бас тартты.</translation>
 <translation id="6433797564277305076">Құрылғының құлпын ашу функциясы арқылы карталарды жылдамырақ растаңыз.</translation>
 <translation id="643917412048333145">Көйлектер</translation>
@@ -3968,6 +3970,7 @@
 <translation id="9207861905230894330">Мақала қосу мүмкін болмады.</translation>
 <translation id="9213433120051936369">Көріністі реттеу</translation>
 <translation id="9215416866750762878">Қолданба Chrome браузерінің осы сайтқа қауіпсіз қосылуын тоқтатады</translation>
+<translation id="9218430445555521422">Әдепкі ретінде орнату</translation>
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="922152298093051471">Chrome-ды реттеу</translation>
 <translation id="9222403027701923763">Бастауыш және орта мектеп (K-12)</translation>

@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2678468611080193228">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda daha az korunursunuz ancak site özelliklerinin çalışma olasılığı daha yüksektir</translation>
+<translation id="2683434792633810741">Veriler silinip sıfırlansın mı?</translation>
 <translation id="2687403674020088961">Tüm çerezleri engelle (önerilmez)</translation>
 <translation id="2713106313042589954">Kamerayı kapat</translation>
 <translation id="2717722538473713889">E-posta adresleri</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Belirli bir site için çerezlere izin verin.</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="4053720452172726777">Google Chrome'u özelleştirin ve kontrol edin</translation>
+<translation id="4149890623864272035">Çerezler de dahil tüm yerel verileri silmek ve bu web sitesine ilişkin tüm izinleri sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4151930093518524179">Varsayılan yakınlaştırma</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Üçüncü taraf çerezlerine izin ver</translation>
 <translation id="4428065317363009941">Reklam kişiselleştirme</translation>
 <translation id="4434045419905280838">Pop-up'lar ve yönlendirmeler</translation>
+<translation id="443552056913301231">Bu işlem, çerezler de dahil olmak üzere yerel verilerin tamamını temizler ve tüm <ph name="ORIGIN" /> izinlerini siler</translation>
 <translation id="4468959413250150279">Belirli bir site için sesi kapatın.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# çerez}other{# çerez}}</translation>
 <translation id="4478158430052450698">Yakınlaştırma işlevini farklı siteler için özelleştirmeyi kolay hale getirin</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Mikrofonun sesini kapat</translation>
 <translation id="4570913071927164677">Ayrıntılar</translation>
 <translation id="4598549027014564149">Gizli moddayken siteler, alakalı siteler de dahil olmak üzere farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Tarama etkinliğiniz reklam kişiselleştirme gibi işlemler için kullanılmaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
+<translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
 <translation id="4751476147751820511">Hareket veya ışık sensörleri</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">En son bugün ziyaret edildi</translation>
 <translation id="5225463052809312700">Kamerayı aç</translation>
 <translation id="5234764350956374838">Kapat</translation>
+<translation id="5246825184569358663">Bu işlem, çerezler de dahil olmak üzere yerel verilerin tamamını temizler, ayrıca <ph name="DOMAIN" /> ve altındaki tüm sitelerin izinlerini sıfırlar</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" çipini kaldır</translation>
 <translation id="528192093759286357">Tam ekrandan çıkmak için yukarıdan sürükleyin ve geri düğmesine dokunun.</translation>
 <translation id="5300589172476337783">Göster</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">İstisnalar</translation>
 <translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="6205314730813004066">Reklam gizliliği</translation>
+<translation id="6207207788774442484">Verileri sil ve izinleri sıfırla</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Seçenekleri</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" uygulaması kaldırılsın mı?</translation>
 <translation id="6262191102408817757">Son sekmenize dayalı olarak</translation>

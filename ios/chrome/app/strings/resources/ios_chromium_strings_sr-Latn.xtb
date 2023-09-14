@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium nije uspeo da vam proveri lozinke. Proverite internet vezu.</translation>
 <translation id="3472200483164753384">Nije podržano u verziji Chromium Canary</translation>
 <translation id="3478750326643748149">Sakrijte „Iskoristite Chromium na najbolji način“</translation>
+<translation id="3554027294407525061">Obrišite podatke pregledanja u Chromium-u.</translation>
 <translation id="3567399274263440288">Da biste koristili Chromium na najbolji način, prijavite se na Chromium pomoću Google naloga.</translation>
 <translation id="3639997914391704523">Chromium može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> je koristio Chromium i ostavio obeleživače, lozinke i druga podešavanja na ovom uređaju.</translation>
@@ -96,7 +97,9 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium 
 <translation id="4996471330284142407">Uradite više pomoću još jednostavnijeg, bezbednijeg i bržeg Chromium-a.</translation>
 <translation id="4999538639245140991">Odjavljujete se sa naloga kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, što će izbrisati Chromium podatke sa ovog uređaja. Podaci će ostati na Google nalogu.</translation>
 <translation id="5042011327527167688">Dodirnite Prikaži pomoću Google mapa u Chromium-u.</translation>
+<translation id="5044871537677053278">Chromium otkriva adrese i koristi Google mape da bi vam pružao uputstva i lokalne informacije.</translation>
 <translation id="5048795749726991615">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
+<translation id="5076601183701536878">Obrišite podatke pregledanja u Chromium-u</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji ste prijavljeni i načinom na koji se Chromium koristi.</translation>
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
 <translation id="5213683223491576284">Otvara Menadžer lozinki u Chromium-u.</translation>

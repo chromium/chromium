@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">പരിരക്ഷയില്ല (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് അയയ്‌ക്കുന്നു...</translation>
 <translation id="2576499762020411840">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുകയും അവ ഉപയോഗിക്കുകയും ചെയ്യുക</translation>
+<translation id="2577522251608256362">വിളിപ്പാടരികെയുള്ള സ്ഥലം</translation>
 <translation id="2578571896248130439">വെബ്‌പേജ് അയയ്‌ക്കുക</translation>
 <translation id="2584132361465095047">അക്കൗണ്ട് ചേർക്കുക...</translation>
 <translation id="2587010742985678408">{count,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട {count} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {count} പാസ്‌വേഡുകൾ}}</translation>
@@ -1091,7 +1092,6 @@
 <translation id="6944369514868857500">മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="6944935964236827145">'വിവർത്തനം ചെയ്യുക' മറയ്‌ക്കുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
-<translation id="6955779377310719430">'ഫോളോ ചെയ്യുക' മറയ്ക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6973630695168034713">ഫോൾഡറുകൾ</translation>
 <translation id="6979158407327259162">Google Drive</translation>

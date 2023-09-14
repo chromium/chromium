@@ -1216,7 +1216,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5961960957587052807">Oświetlenie</translation>
 <translation id="5965524703725988602">Przełącz ciemny motyw. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Przełączaj się do przodu między oknami</translation>
-<translation id="5976112937189445008">Aby nagrać okno, naciśnij Enter</translation>
 <translation id="5978382165065462689">Udostępnianie sterowania ekranem przy użyciu pomocy zdalnej.</translation>
 <translation id="5980301590375426705">Zakończ sesję gościa</translation>
 <translation id="5983567367406220847">Z powodu braku aktywności hotspot został wyłączony.</translation>
@@ -1437,7 +1436,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6886172995547742638">Twoje urządzenie <ph name="DEVICE_TYPE" /> może mieć gorszą wydajność. Używaj certyfikowanego zasilacza USB-C o mocy co najmniej <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Aby przełączać okna, naciskaj klawisz strzałki w dół</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
-<translation id="6901883536534621389">Poruszaj się za pomocą gestów</translation>
 <translation id="6912841030378044227">Zaznacz pasek adresu</translation>
 <translation id="6912901278692845878">Krótka prezentacja</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
@@ -1743,7 +1741,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8167567890448493835">W użyciu jest: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Włącz/wyłącz menu, aby zmienić rozmiar trybu blokady</translation>
 <translation id="8192202700944119416">Powiadomienia są ukryte.</translation>
-<translation id="8196787716797768628">Używając gestów, możesz szybko przełączać się między aplikacjami i korzystać z Chromebooka w trybie tabletu.</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8203795194971602413">Kliknięcie prawym przyciskiem</translation>
@@ -1852,6 +1849,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8703634754197148428">Rozpocznij nagrywanie. Po rozpoczęciu nagrywania możesz za pomocą Alt + Shift + L przejść na półkę, na której znajdziesz przycisk zatrzymujący nagrywanie.</translation>
 <translation id="8704155109538237473">Zaznacz okno z obrazem w obrazie</translation>
 <translation id="870917907284186124">Włącz/wyłącz dyktowanie (pisanie głosowe)</translation>
+<translation id="8714138378966541668">Zablokowana przez dostawcę</translation>
 <translation id="8717459106217102612">Zaznacz poprzednie słowo lub znak</translation>
 <translation id="8721053961083920564">Przełącz głośność. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Zrzut całego ekranu</translation>
@@ -1902,7 +1900,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8909138438987180327">Poziom naładowania baterii: <ph name="PERCENTAGE" />.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asystent Google nie mówi w tym języku.</translation>
-<translation id="8924458948354692166">Aby zrobić zrzut ekranu okna, naciśnij Enter</translation>
 <translation id="8926951137623668982">Półka zawsze ukryta</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="8936501819958976551">dezaktywowana</translation>

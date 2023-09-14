@@ -158,6 +158,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1830634592642484976">Denne adresse gemmes i øjeblikket i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{Bogmærket er gemt på din Google-konto, {email}}other{Bogmærkerne er gemt på din Google-konto, {email}}}</translation>
+<translation id="183878838231635348">Dette kort viser eventuelle privatlivs- eller sikkerhedsproblemer, som Sikkerhedstjek automatisk registrerer for dig.</translation>
 <translation id="1847795903283049083">Du kan også se og administrere disse elementer i dine bogmærker, på din læseliste eller via Adgangskodeadministrator.</translation>
 <translation id="1870148520156231997">Vis adgangskode</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
@@ -267,11 +268,13 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2523363575747517183">Dette website forsøger hele tiden at åbne en anden app.</translation>
 <translation id="2529021024822217800">Åbn alle</translation>
 <translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangskodeadministrator for <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Skjul "Sikkerhedstjek"</translation>
 <translation id="2547458583188611426">Synkronisering fungerer ikke. Angiv din adgangssætning for at starte synkroniseringen.</translation>
 <translation id="2551153019974022505">Kontofejl</translation>
 <translation id="2556092377360758201">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="2562041823070056534">Sender til <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Brug og gem adgangskoder på din Google-konto</translation>
+<translation id="2577522251608256362">Lokalområde</translation>
 <translation id="2578571896248130439">Send webside</translation>
 <translation id="2584132361465095047">Tilføj konto...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Ingen kompromitterede adgangskoder}=1{{count} kompromitteret adgangskode}one{{count} kompromitteret adgangskode}other{{count} kompromitterede adgangskoder}}</translation>
@@ -695,6 +698,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="488785315393301722">Se info</translation>
 <translation id="4894963374040315706">Det giver dig mulighed for at søge ved hjælp af stemmen</translation>
+<translation id="489903206070130262">Din seneste åbne fane</translation>
 <translation id="4901778704868714008">Gem...</translation>
 <translation id="4904877109095351937">Markér som læst</translation>
 <translation id="4908869848243824489">Discover fra Google</translation>
@@ -1087,7 +1091,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6944369514868857500">Vælg en anden konto</translation>
 <translation id="6944935964236827145">Skjul Oversæt</translation>
 <translation id="6945221475159498467">Vælg</translation>
-<translation id="6955779377310719430">Skjul Følg</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mapper</translation>
 <translation id="6979158407327259162">Google Drev</translation>

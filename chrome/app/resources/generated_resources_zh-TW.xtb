@@ -444,7 +444,6 @@
 <translation id="1347512539447549782">Linux 儲存空間</translation>
 <translation id="1347975661240122359">電池電量達到 <ph name="BATTERY_LEVEL" />% 後便會開始更新。</translation>
 <translation id="1348966090521113558">滑鼠無障礙設定</translation>
-<translation id="1351089605448164407">你的雲端硬碟</translation>
 <translation id="1353275871123211385">如要使用應用程式核准設定、裝置使用時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
 <translation id="135389172849514421">可離線使用</translation>
 <translation id="1353980523955420967">找不到 PPD。請確認 Chromebook 已連上網路，然後再試一次。</translation>
@@ -2189,7 +2188,6 @@
 <translation id="2710101514844343743">使用狀況與診斷資料</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用</translation>
-<translation id="2711929077861214979">安全提示</translation>
 <translation id="2713106313042589954">關閉攝影機</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -2499,7 +2497,6 @@
 <translation id="2939908794993783865">其他無效網站</translation>
 <translation id="2939938020978911855">顯示可用的藍牙裝置</translation>
 <translation id="2941112035454246133">低</translation>
-<translation id="2942279350258725020">Android 訊息</translation>
 <translation id="2942560570858569904">等待中…</translation>
 <translation id="2942581856830209953">自訂這個頁面</translation>
 <translation id="2942707801577151363">開啟、編輯及儲存 Word、Excel 和 PowerPoint 檔案。你可能要訂閱相關服務，才能使用某些功能。</translation>
@@ -4694,7 +4691,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
-<translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">網站通常會連線至 HID 裝置，是因為有功能需要使用非標準鍵盤、遊戲控制器和其他裝置。</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
 <translation id="4750185073185658673">查看你的手機，檢視其他必須一併啟用的權限。確認手機的藍牙和 Wi-Fi 已開啟。</translation>
@@ -4761,7 +4757,6 @@
 <translation id="4807122856660838973">開啟安全瀏覽功能</translation>
 <translation id="4807514039636325497">DBus 詳細資料</translation>
 <translation id="4808667324955055115">已封鎖彈出式視窗：</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{檢查從 Chrome 線上應用程式商店下架的 <ph name="BEGIN_BOLD" />1 項擴充功能<ph name="END_BOLD" />}other{檢查從 Chrome 線上應用程式商店下架的 <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} 項擴充功能<ph name="END_BOLD" />}}</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4809447465126035330">刪除</translation>
 <translation id="480990236307250886">開啟首頁</translation>
@@ -6323,6 +6318,7 @@
 <translation id="6104796831253957966">印表機佇列已滿</translation>
 <translation id="6104929924898022309">使用搜尋鍵變更功能鍵的行為</translation>
 <translation id="6106167152849320869">如果也在上一個步驟中選擇傳送診斷和使用資料，系統會針對已安裝的應用程式收集這類資料。</translation>
+<translation id="6111718295497931251">移除 Google 雲端硬碟存取權</translation>
 <translation id="6111972606040028426">啟用 Google 助理</translation>
 <translation id="6112294629795967147">輕觸即可調整大小</translation>
 <translation id="6112727384379533756">新增票證</translation>
@@ -9827,6 +9823,7 @@
 <translation id="8962083179518285172">隱藏詳細資料</translation>
 <translation id="8962863356073277855">網址格式必須是 https://www.example.com</translation>
 <translation id="8962918469425892674">這個網站正在使用動作感應器或光源感應器。</translation>
+<translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8965037249707889821">輸入先前的密碼</translation>
 <translation id="8966809848145604011">其他個人資料</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
@@ -10205,7 +10202,6 @@
 <translation id="964286338916298286">你的 IT 管理員已為你的裝置停用 Chrome 好康優惠。</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{應用程式}other{應用程式}}</translation>
 <translation id="964790508619473209">螢幕排列位置</translation>
-<translation id="965211523698323809">透過你的 <ph name="DEVICE_TYPE" /> 收發簡訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">回報 Google Cast 的問題</translation>
 <translation id="966588271015727539">選取藍牙點字顯示器</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{關閉這個設定檔(&amp;C)}other{關閉這個含 # 個視窗的設定檔(&amp;C)}}</translation>

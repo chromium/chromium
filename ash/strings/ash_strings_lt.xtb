@@ -1216,7 +1216,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5961960957587052807">Negausus</translation>
 <translation id="5965524703725988602">Perjungti Tamsiąją temą. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Pereiti pirmyn per langus</translation>
-<translation id="5976112937189445008">Paspauskite „Enter“, kad įrašytumėte langą</translation>
 <translation id="5978382165065462689">Leidžiama valdyti jūsų ekraną naudojant Nuotolinę pagalbą.</translation>
 <translation id="5980301590375426705">Išeiti iš sveč. rež.</translation>
 <translation id="5983567367406220847">Dėl neaktyvumo viešosios interneto prieigos taškas išjungtas.</translation>
@@ -1438,7 +1437,6 @@ Naujas įdiegimas</translation>
 <translation id="6886172995547742638">Gali sumažėti „<ph name="DEVICE_TYPE" />“ įrenginio našumas. Naudokite sertifikuotą <ph name="PREFERRED_MINIMUM_POWER" /> W ar didesnės galios USB-C maitinimo adapterį.</translation>
 <translation id="688631446150864480">Norėdami perjungti langus, paspauskite rodyklę žemyn</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
-<translation id="6901883536534621389">Išbandykite naršymo gestus</translation>
 <translation id="6912841030378044227">Paryškinti adreso juostą</translation>
 <translation id="6912901278692845878">Greita apžvalga</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
@@ -1744,7 +1742,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8167567890448493835">Naudojama: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Įjungti ir (arba) išjungti meniu norint pakeisti užrakinimo režimo dydį</translation>
 <translation id="8192202700944119416">Pranešimai yra paslėpti.</translation>
-<translation id="8196787716797768628">Naudodami gestus greitai perjunkite programas ir naudokite „Chromebook“ planšetinio kompiuterio režimu.</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8203795194971602413">Spustelėti dešiniuoju klavišu</translation>
@@ -1904,7 +1901,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8909138438987180327">Akumuliatoriaus įkrovos lygis <ph name="PERCENTAGE" /> proc.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">„Google“ padėjėjas nekalba šia kalba.</translation>
-<translation id="8924458948354692166">Paspauskite „Enter“, kad užfiksuotumėte lango ekrano kopiją</translation>
 <translation id="8926951137623668982">Lentyna visada slepiama</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Vienas failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
 <translation id="8936501819958976551">išaktyvinta</translation>

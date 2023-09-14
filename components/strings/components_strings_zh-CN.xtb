@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">股票与债券</translation>
 <translation id="1391625539203220400">要将 IBAN 保存到此设备吗？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
+<translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 进行搜索</translation>
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1406500794671479665">正在验证...</translation>
 <translation id="1406812885827747674">仅这次访问时允许</translation>
@@ -2608,6 +2609,7 @@
 <translation id="6432297414176614592">详细了解广告主题</translation>
 <translation id="6432831586648556868">销售和营销职位</translation>
 <translation id="6433490469411711332">修改联系信息</translation>
+<translation id="6433501201775827830">选择您的搜索引擎</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 拒绝了我们的连接请求。</translation>
 <translation id="6433797564277305076">从现在开始，您只需使用设备解锁便能更快速地显示银行卡信息</translation>
 <translation id="643917412048333145">连衣裙</translation>
@@ -2992,6 +2994,7 @@
 <translation id="722454870747268814">打开新的无痕模式标签页</translation>
 <translation id="7226276626900992675">您已允许此网站使用第三方 Cookie。这意味着大部分网站功能应该都能正常运行，但您将采用较低级别的保护措施。</translation>
 <translation id="7227293336683593977">既往价格</translation>
+<translation id="7227747683324411744">您正在尝试访问的网站上的攻击者可能会诱使您安装有害软件，以操纵您的浏览体验，例如，更改您的主页或在您访问的网站上展示广告。</translation>
 <translation id="7233592378249864828">打印确认工作表</translation>
 <translation id="7234638337680728591">油价与汽车燃料</translation>
 <translation id="7236417832106250253">已完成 <ph name="PROGRESS_PERCENT" />% | 预计剩余时间：<ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3192,6 +3195,7 @@
 <translation id="7599089013883397081">下载超时</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">您通常可以安全地连接到此网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">您正在尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。</translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
@@ -3592,6 +3596,7 @@
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">这次可以使用麦克风</translation>
+<translation id="8422228580902424274">您正在尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> - <ph name="SECOND_LABEL" /> - <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 毫米</translation>
 <translation id="8428213095426709021">设置</translation>
@@ -3962,6 +3967,7 @@
 <translation id="9207861905230894330">无法添加文章。</translation>
 <translation id="9213433120051936369">自定义外观</translation>
 <translation id="9215416866750762878">有一款应用正在阻止 Chrome 安全地连接到此网站</translation>
+<translation id="9218430445555521422">设为默认浏览器</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="9222403027701923763">中小学基础教育 (K-12)</translation>

@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">Obre una pestanya d'incògnit nova a Chromium.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
 <translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
+<translation id="3833326979834193417">Chromium executa automàticament la funció Comprovació de seguretat cada dia per protegir-te de violacions de les dades, de llocs web no segurs i més. Pots obtenir més informació sobre Comprovació de seguretat a Configuració.</translation>
 <translation id="3886689467633467988">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves adreces d'interès i més contingut en tots els teus dispositius.</translation>
 <translation id="394413318816989199">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces.
 
@@ -95,6 +96,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="4996471330284142407">Augmenta la teva productivitat amb un Chromium senzill, segur i més ràpid que mai.</translation>
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
 <translation id="5042011327527167688">Toca Mostra amb Google Maps a Chromium.</translation>
+<translation id="5044871537677053278">Chromium detecta les adreces i utilitza Google Maps per oferir-te indicacions i informació local.</translation>
 <translation id="5048795749726991615">Per obtenir fàcilment les contrasenyes desades en altres aplicacions, utilitza Chromium per a Emplenament automàtic</translation>
 <translation id="5131565040785979529">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què tens la sessió iniciada i com s'utilitza Chromium.</translation>
 <translation id="5171868502429358653">Inicia la sessió a Chromium</translation>

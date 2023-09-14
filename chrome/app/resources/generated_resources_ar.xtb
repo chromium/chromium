@@ -448,7 +448,6 @@
 <translation id="1347512539447549782">‏مساحة تخزين نظام التشغيل Linux</translation>
 <translation id="1347975661240122359">سيبدأ التحديث عندما يصل مستوى البطارية إلى <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">إعدادات تسهيل استخدام الماوس</translation>
-<translation id="1351089605448164407">‏من Drive</translation>
 <translation id="1353275871123211385">‏لاستخدام أدوات الرقابة الأبوية، مثل الموافقة على التطبيقات وحدود وقت النظر إلى الشاشة، يجب أن يتوفّر لدى الطفل حساب على Google يديره أحد الوالدَين. يمكن إضافة حساب تديره المؤسسة التعليمية لاحقًا لاستخدامه في أدوات مثل Google Classroom.</translation>
 <translation id="135389172849514421">تعمل بدون اتصال بالإنترنت</translation>
 <translation id="1353980523955420967">‏يتعذّر العثور على ملف PPD. تأكد من اتصال Chromebook بالإنترنت وأعد المحاولة.</translation>
@@ -1983,6 +1982,7 @@
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />حدث خطأ وتعذَّر تثبيت نظام التشغيل <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />للحصول على مزيد من المساعدة، يُرجى الانتقال إلى g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">يمكنك إطالة عمر البطارية عن طريق الإبقاء على مستوى شحن البطارية عند %80 تقريبًا. سيتم شحن البطارية بالكامل قبل فصل الجهاز عادةً عن مصدر الطاقة.</translation>
+<translation id="2532146950330687938">جارٍ تحضير الجهاز…</translation>
 <translation id="2532198298278778531">‏إدارة "نظام أسماء النطاقات" (DNS) الآمن من خلال إعدادات ChromeOS Flex</translation>
 <translation id="2532589005999780174">وضع التباين العالي</translation>
 <translation id="2533649878691950253">تم حظر تعرّف هذا الموقع الإلكتروني على موقعك الجغرافي الدقيق لأنّك عادةً لا تسمح بهذا الإجراء.</translation>
@@ -2193,7 +2193,6 @@
 <translation id="2710101514844343743">بيانات الاستخدام والتشخيص</translation>
 <translation id="271033894570825754">جديد</translation>
 <translation id="2711073837061989559">الإصدارات التجريبية</translation>
-<translation id="2711929077861214979">نصائح حول الأمان</translation>
 <translation id="2713106313042589954">إيقاف الكاميرا</translation>
 <translation id="2713444072780614174">أبيض</translation>
 <translation id="2714180132046334502">خلفية معتمة</translation>
@@ -2503,7 +2502,6 @@
 <translation id="2939908794993783865">المزيد من المواقع الإلكترونية غير النشطة</translation>
 <translation id="2939938020978911855">عرض أجهزة بلوتوث المُتاحة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
-<translation id="2942279350258725020">‏رسائل Android</translation>
 <translation id="2942560570858569904">جارٍ الانتظار...</translation>
 <translation id="2942581856830209953">تخصيص هذه الصفحة</translation>
 <translation id="2942707801577151363">‏بإمكانك فتح ملفات Word وExcel وPowerPoint وتعديلها وحفظها. قد يكون عليك الاشتراك للاستفادة من بعض الميزات.</translation>
@@ -4697,7 +4695,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{إعادة صوت الموقع الإلكتروني}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت الموقعَين الإلكترونيين}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
 <translation id="474609389162964566">‏الوصول إلى "مساعد Google" من خلال قول Ok Google</translation>
-<translation id="4746351372139058112">الرسائل</translation>
 <translation id="4748783296226936791">‏تتّصل المواقع الإلكترونية عادةً بأجهزة HID لتتيح الميزات التي تستخدم لوحات المفاتيح غير العادية ووحدات التحكّم في الألعاب وغيرها من الأجهزة.</translation>
 <translation id="4749960740855309258">فتح علامة تبويب جديدة</translation>
 <translation id="4750185073185658673">‏عليك الانتقال إلى هاتفك لمراجعة بعض الأذونات الإضافية. يُرجى التأكّد من أنّ كل من البلوتوث وWi-Fi مفعّلين على هاتفك.</translation>
@@ -4764,7 +4761,6 @@
 <translation id="4807122856660838973">تفعيل ميزة "التصفُّح الآمن"</translation>
 <translation id="4807514039636325497">‏تفاصيل D-Bus</translation>
 <translation id="4808667324955055115">تمّ حظر النوافذ المنبثقة:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{‏راجِع <ph name="BEGIN_BOLD" />الإضافة الواحدة<ph name="END_BOLD" /> التي تمّت إزالتها من "سوق Chrome الإلكتروني".}zero{‏راجِع <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} إضافة<ph name="END_BOLD" /> تمّت إزالتها من "سوق Chrome الإلكتروني".}two{‏راجِع <ph name="BEGIN_BOLD" />الإضافتَين ({NUM_EXTENSIONS})<ph name="END_BOLD" /> اللتين تمّت إزالتهما من "سوق Chrome الإلكتروني".}few{‏راجِع <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} إضافات<ph name="END_BOLD" /> تمّت إزالتها من "سوق Chrome الإلكتروني".}many{‏راجِع <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} إضافة<ph name="END_BOLD" /> تمّت إزالتها من "سوق Chrome الإلكتروني".}other{‏راجِع <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} إضافة<ph name="END_BOLD" /> تمّت إزالتها من "سوق Chrome الإلكتروني".}}</translation>
 <translation id="4809079943450490359">تعليمات من مشرف الجهاز:</translation>
 <translation id="4809447465126035330">حذف</translation>
 <translation id="480990236307250886">فتح الصفحة الرئيسية</translation>
@@ -5749,6 +5745,7 @@
 <translation id="5627086634964711283">كما أنها تتحكم في الصفحة التي تظهر عند  النقر على زر الصفحة الرئيسية.</translation>
 <translation id="5627676517703583263">‏استمتع بالتصفح الذكي باستخدام Chrome</translation>
 <translation id="5627832140542566187">اتجاه العرض</translation>
+<translation id="5628434207686266338">ضبط كلمة مرور الجهاز</translation>
 <translation id="562935524653278697">لقد أوقف مشرفك مزامنة الإشارات المرجعية والسجل وكلمات المرور والإعدادات الأخرى.</translation>
 <translation id="5631017369956619646">استخدام وحدة المعالجة المركزية</translation>
 <translation id="5631272057151918206">سيؤدي هذا الإجراء إلى إزالة ما يصل إلى <ph name="OFFLINE_STORAGE_SIZE" /> من المساحة التي تستخدمها الملفات المحفوظة على جهازك. وستظل بعض الملفات متاحة على جهازك بدون الحاجة لاتصال الإنترنت. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -6330,6 +6327,7 @@
 <translation id="6104796831253957966">قائمة الانتظار في الطابعة ممتلئة</translation>
 <translation id="6104929924898022309">استخدام مفتاح البحث لتغيير سلوك مفاتيح الوظائف</translation>
 <translation id="6106167152849320869">إذا اخترت في الخطوة السابقة إرسال بيانات الاستخدام والتشخيص أيضًا، سيتم جمع هذه البيانات للتطبيقات المثبّتة.</translation>
+<translation id="6111718295497931251">‏إزالة إمكانية الوصول إلى Google Drive</translation>
 <translation id="6111972606040028426">‏تفعيل "مساعد Google"</translation>
 <translation id="6112294629795967147">اللمس لتغيير الحجم</translation>
 <translation id="6112727384379533756">إضافة تذكرة</translation>
@@ -9847,6 +9845,7 @@
 <translation id="8962083179518285172">إخفاء التفاصيل</translation>
 <translation id="8962863356073277855">‏يجب أن يكون تنسيق عنوان URL كالتالي: https://www.example.com.</translation>
 <translation id="8962918469425892674">تم السماح لهذا الموقع باستخدام أجهزة استشعار الإضاءة أو الحركة.</translation>
+<translation id="8963117664422609631">الانتقال إلى إعدادات الموقع الإلكتروني</translation>
 <translation id="8965037249707889821">إدخال كلمة المرور القديمة</translation>
 <translation id="8966809848145604011">الملفات الشخصية الأخرى</translation>
 <translation id="8967427617812342790">إضافة إلى قائمة القراءة</translation>
@@ -10225,7 +10224,6 @@
 <translation id="964286338916298286">‏أوقف مشرف تقنية المعلومات ميزات Chrome الإضافية لجهازك.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{تطبيق}zero{تطبيقات}two{تطبيقان}few{تطبيقات}many{تطبيقات}other{تطبيقات}}</translation>
 <translation id="964790508619473209">ترتيب موضع الشاشة</translation>
-<translation id="965211523698323809">إرسال رسائل نصية واستلامها من جهاز <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏الإبلاغ عن مشكلة في Google Cast</translation>
 <translation id="966588271015727539">اختيار عرض البلوتوث بلغة برايل</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;إغلاق هذا الملف الشخصي}zero{&amp;إغلاق هذا الملف الشخصي (# نافذة)}two{&amp;إغلاق هذا الملف الشخصي (نافذتان)}few{&amp;إغلاق هذا الملف الشخصي (# نوافذ)}many{&amp;إغلاق هذا الملف الشخصي (# نافذة)}other{&amp;إغلاق هذا الملف الشخصي (# نافذة)}}</translation>

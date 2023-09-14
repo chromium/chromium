@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">ምንም ጥበቃ የለም (አይመከርም)</translation>
 <translation id="2562041823070056534">ወደ <ph name="DEVICE_NAME" /> በመላክ ላይ...</translation>
 <translation id="2576499762020411840">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይጠቀሙ እና ያስቀምጡ</translation>
+<translation id="2577522251608256362">ሰፈር</translation>
 <translation id="2578571896248130439">ድረ-ገፅ ይላኩ</translation>
 <translation id="2584132361465095047">መለያ አክል…</translation>
 <translation id="2587010742985678408">{count,plural, =0{ምንም የተጠለፉ የይለፍ ቃሎች የሉም}=1{{count} የተጠለፈ የይለፍ ቃል}one{{count} የተጠለፈ የይለፍ ቃል}other{{count} የተጠለፉ የይለፍ ቃሎች}}</translation>
@@ -1090,7 +1091,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6944369514868857500">ሌላ መለያ ይምረጡ</translation>
 <translation id="6944935964236827145">መተርጎሚያን ደብቅ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
-<translation id="6955779377310719430">መከተልን ደብቅ</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6973630695168034713">አቃፊዎች</translation>
 <translation id="6979158407327259162">Google Drive</translation>

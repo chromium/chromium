@@ -274,6 +274,7 @@
 <translation id="2556092377360758201">保護なし（推奨されません）</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> にタブを送信しています...</translation>
 <translation id="2576499762020411840">Google アカウントのパスワードの使用と保存</translation>
+<translation id="2577522251608256362">近隣住区（neighborhood）</translation>
 <translation id="2578571896248130439">ウェブページの送信</translation>
 <translation id="2584132361465095047">アカウントを追加...</translation>
 <translation id="2587010742985678408">{count,plural, =0{不正使用されたパスワードはありません}=1{不正使用されたパスワード: {count} 件}other{不正使用されたパスワード: {count} 件}}</translation>
@@ -312,6 +313,7 @@
 <translation id="2738375676495545665">最新情報を非表示</translation>
 <translation id="2747003861858887689">前の項目</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> をフォローしました</translation>
+<translation id="2754492786623500387">このデバイスのアカウント</translation>
 <translation id="2762000892062317888">たった今</translation>
 <translation id="2772667768515195373">この住所は Google アカウント（<ph name="USER_EMAIL" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="2773292004659987824">シークレット検索</translation>
@@ -1090,7 +1092,6 @@
 <translation id="6944369514868857500">別のアカウントを選択</translation>
 <translation id="6944935964236827145">[翻訳] を非表示にする</translation>
 <translation id="6945221475159498467">選択</translation>
-<translation id="6955779377310719430">[フォロー] を非表示にする</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">フォルダ</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
@@ -1229,6 +1230,7 @@
 <translation id="778855399387580014">新しい Chrome タブで検索を開始します。</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7807060072011926525">Google から提供</translation>
+<translation id="78146569776629510">ダウンロード</translation>
 <translation id="7839985698273989086">オフライン ページ</translation>
 <translation id="7840771868269352570">選択したアイテムが削除されます。</translation>
 <translation id="7845466610722898">リーディング リストを表示</translation>

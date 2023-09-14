@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium не вдалося перевірити паролі. Переконайтеся, що є інтернет-з'єднання.</translation>
 <translation id="3472200483164753384">Не підтримується в Chromium Canary</translation>
 <translation id="3478750326643748149">Сховати опцію "Користуватися всіма можливостями Chromium"</translation>
+<translation id="3554027294407525061">Очистити дані веб-перегляду в Chromium.</translation>
 <translation id="3567399274263440288">Щоб користуватися всіма можливостями Chromium, увійдіть в обліковий запис Google у цьому веб-переглядачі.</translation>
 <translation id="3639997914391704523">Chromium зможе перевірити ваші паролі, коли ви ввійдете в обліковий запис Google.</translation>
 <translation id="3650632991272923014">Користувач <ph name="USER_EMAIL1" /> застосовував Chromium і зберіг закладки, паролі й інші налаштування на цьому пристрої.</translation>
@@ -96,7 +97,9 @@
 <translation id="4996471330284142407">Більше можливостей у простому, безпечному та швидкому веб-переглядачі Chromium.</translation>
 <translation id="4999538639245140991">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="SIGNOUT_MANAGED_DOMAIN" />, ваші дані Chromium буде видалено з цього пристрою. Вони залишаться в обліковому записі Google.</translation>
 <translation id="5042011327527167688">Натисніть "Переглянути на Картах Google у Chromium".</translation>
+<translation id="5044871537677053278">Chromium визначає адреси й використовує Карти Google, щоб прокладати маршрути й надавати місцеву інформацію.</translation>
 <translation id="5048795749726991615">Щоб легко використовувати збережені паролі в інших додатках, застосовуйте функцію автозаповнення в Chromium</translation>
+<translation id="5076601183701536878">Очистити дані веб-перегляду в Chromium</translation>
 <translation id="5131565040785979529">Ваша організація (<ph name="DOMAIN" />) керує обліковим записом, у який ви ввійшли, і тим, як використовується Chromium.</translation>
 <translation id="5171868502429358653">Увійдіть у Chromium</translation>
 <translation id="5213683223491576284">Відкриває Менеджер паролів у Chromium.</translation>

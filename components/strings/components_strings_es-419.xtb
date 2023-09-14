@@ -212,6 +212,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1391289752476847787">Acciones y bonos</translation>
 <translation id="1391625539203220400">¿Quieres guardar el IBAN en este dispositivo?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> no envió ningún dato.</translation>
+<translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1406500794671479665">Verificando...</translation>
 <translation id="1406812885827747674">Permitir esta vez</translation>
@@ -2614,6 +2615,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6432297414176614592">Obtén más información sobre los temas de anuncios</translation>
 <translation id="6432831586648556868">Trabajos en el sector de ventas y marketing</translation>
 <translation id="6433490469411711332">Editar la información de contacto</translation>
+<translation id="6433501201775827830">Selecciona el motor de búsqueda</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rechazó la conexión.</translation>
 <translation id="6433797564277305076">A partir de ahora, usa el desbloqueo del dispositivo para confirmar tus tarjetas más rápido.</translation>
 <translation id="643917412048333145">Vestidos</translation>
@@ -3971,6 +3973,7 @@ Detalles adicionales:
 <translation id="9207861905230894330">Error al agregar artículo</translation>
 <translation id="9213433120051936369">Personalizar el aspecto</translation>
 <translation id="9215416866750762878">Una aplicación impide que Chrome se conecte de forma segura a este sitio</translation>
+<translation id="9218430445555521422">Establecer como predeterminado</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="9222403027701923763">Escuela primaria y secundaria (preescolar a bachillerato)</translation>

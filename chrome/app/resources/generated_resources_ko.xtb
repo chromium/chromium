@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux 저장용량</translation>
 <translation id="1347975661240122359">배터리 잔량이 <ph name="BATTERY_LEVEL" />%가 되면 업데이트가 시작됩니다.</translation>
 <translation id="1348966090521113558">마우스 접근성 설정</translation>
-<translation id="1351089605448164407">Drive에서</translation>
 <translation id="1353275871123211385">앱 승인 및 기기 사용 시간 제한과 같은 자녀 보호 기능을 사용하려면 자녀에게 부모가 관리하는 Google 계정이 있어야 합니다. 나중에 학교 계정을 추가하여 Google 클래스룸과 같은 도구를 사용할 수 있습니다.</translation>
 <translation id="135389172849514421">오프라인에서 사용 가능</translation>
 <translation id="1353980523955420967">PPD를 찾을 수 없습니다. Chromebook이 온라인 상태인지 확인하고 다시 시도해 보세요.</translation>
@@ -2206,7 +2205,6 @@
 <translation id="2710101514844343743">사용 및 진단 데이터</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">체험판</translation>
-<translation id="2711929077861214979">안전 도움말</translation>
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2714180132046334502">어두운 배경</translation>
@@ -2516,7 +2514,6 @@
 <translation id="2939908794993783865">추가 비활성 사이트</translation>
 <translation id="2939938020978911855">사용 가능한 블루투스 기기 표시</translation>
 <translation id="2941112035454246133">낮음</translation>
-<translation id="2942279350258725020">Android 메시지</translation>
 <translation id="2942560570858569904">대기 중...</translation>
 <translation id="2942581856830209953">페이지 맞춤설정</translation>
 <translation id="2942707801577151363">Word, Excel, PowerPoint 파일을 열고, 수정하고, 저장하세요. 일부 기능을 이용하려면 구독이 필요할 수 있습니다.</translation>
@@ -4711,7 +4708,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
 <translation id="474609389162964566">"Hey Google"로 어시스턴트에 액세스</translation>
-<translation id="4746351372139058112">메시지</translation>
 <translation id="4748783296226936791">사이트에서는 흔히 사용되지 않는 키보드, 게임 컨트롤러, 기타 기기가 필요한 기능을 지원하기 위해 주로 HID 기기에 연결합니다.</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
 <translation id="4750185073185658673">휴대전화에서 몇 가지 권한을 추가로 검토하세요. 휴대전화의 블루투스 및 Wi-Fi가 켜져 있어야 합니다.</translation>
@@ -4778,7 +4774,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4807122856660838973">세이프 브라우징 사용 설정</translation>
 <translation id="4807514039636325497">DBus 세부정보</translation>
 <translation id="4808667324955055115">팝업 차단됨</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome 웹 스토어에서 게시 중단된 <ph name="BEGIN_BOLD" />확장 프로그램 1개<ph name="END_BOLD" />를 검토하세요.}other{Chrome 웹 스토어에서 게시 중단된 <ph name="BEGIN_BOLD" />확장 프로그램 {NUM_EXTENSIONS}개<ph name="END_BOLD" />를 검토하세요.}}</translation>
 <translation id="4809079943450490359">기기 관리자가 제공하는 지침:</translation>
 <translation id="4809447465126035330">삭제</translation>
 <translation id="480990236307250886">홈페이지 열기</translation>
@@ -6344,6 +6339,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6104796831253957966">프린터 대기열이 가득 참</translation>
 <translation id="6104929924898022309">검색 키를 사용하여 기능 키 동작 변경</translation>
 <translation id="6106167152849320869">이전 단계에서도 진단 및 사용 데이터를 전송하도록 선택한 경우 설치된 앱의 데이터가 수집됩니다.</translation>
+<translation id="6111718295497931251">Google Drive 액세스 권한 삭제</translation>
 <translation id="6111972606040028426">Google 어시스턴트 사용</translation>
 <translation id="6112294629795967147">터치하여 크기 조정</translation>
 <translation id="6112727384379533756">티켓 추가</translation>
@@ -9848,6 +9844,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8962083179518285172">세부정보 숨기기</translation>
 <translation id="8962863356073277855">URL 형식이 https://www.example.com이어야 합니다.</translation>
 <translation id="8962918469425892674">사이트에서 모션 센서 또는 조도 센서를 사용 중입니다.</translation>
+<translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8965037249707889821">이전 비밀번호 입력</translation>
 <translation id="8966809848145604011">기타 프로필</translation>
 <translation id="8967427617812342790">읽기 목록에 추가</translation>
@@ -10226,7 +10223,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="964286338916298286">IT 관리자가 내 기기에서 Chrome Goodies를 이용할 수 없도록 설정했습니다.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{애플리케이션}other{애플리케이션}}</translation>
 <translation id="964790508619473209">화면 배치</translation>
-<translation id="965211523698323809"><ph name="DEVICE_TYPE" />에서 SMS를 보내고 받으세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast 문제 신고</translation>
 <translation id="966588271015727539">블루투스 점자 디스플레이 선택</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{이 프로필 닫기(&amp;C)}other{이 프로필 닫기(창 #개)(&amp;C)}}</translation>

@@ -1216,7 +1216,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5961960957587052807">Létt</translation>
 <translation id="5965524703725988602">Kveikja/slökkva á dökku þema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Fletta áfram í gegnum glugga</translation>
-<translation id="5976112937189445008">Ýttu á Enter til að taka upp glugga</translation>
 <translation id="5978382165065462689">Stjórn yfir skjánum þínum er deilt í gegnum fjaraðstoð.</translation>
 <translation id="5980301590375426705">Loka gestastillingu</translation>
 <translation id="5983567367406220847">Slökkt var á heitum reit vegna aðgerðaleysis.</translation>
@@ -1438,7 +1437,6 @@ Ný uppsetning</translation>
 <translation id="6886172995547742638">Afköst <ph name="DEVICE_TYPE" /> gætu minnkað. Notaðu vottaðan USB-C straumbreyti með <ph name="PREFERRED_MINIMUM_POWER" /> W eða meira.</translation>
 <translation id="688631446150864480">Ýttu á ör niður til að skipta á milli glugga</translation>
 <translation id="6896758677409633944">Afrita</translation>
-<translation id="6901883536534621389">Prófaðu að nota bendingar til að fletta</translation>
 <translation id="6912841030378044227">Fókusa á veffangastiku</translation>
 <translation id="6912901278692845878">Stutt kynning</translation>
 <translation id="6919251195245069855">Ekki var hægt að bera kennsl á snjallkortið þitt. Reyndu aftur.</translation>
@@ -1744,7 +1742,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8167567890448493835">Notar <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Kveikja/slökkva á valmynd til að breyta stærð læsingarstillingar</translation>
 <translation id="8192202700944119416">Tilkynningar eru faldar.</translation>
-<translation id="8196787716797768628">Notaðu bendingar til að skipta hratt á milli forrita og nota Chromebook í spjaldtölvustillingu.</translation>
 <translation id="8198456017687137612">Útsendingarflipi</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8203795194971602413">Hægrismella</translation>
@@ -1903,7 +1900,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8909138438987180327">Rafhlaða í <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google hjálparinn talar ekki þetta tungumál</translation>
-<translation id="8924458948354692166">Ýttu á Enter til að taka skjámynd af glugga</translation>
 <translation id="8926951137623668982">Hilla alltaf falin</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="8936501819958976551">óvirkt</translation>

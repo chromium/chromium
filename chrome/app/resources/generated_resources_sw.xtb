@@ -446,7 +446,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1347512539447549782">Nafasi ya hifadhi ya Linux</translation>
 <translation id="1347975661240122359">Usasishaji utaanza betri itakapofika <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Mipangilio ya ufikivu ya kipanya</translation>
-<translation id="1351089605448164407">Kutoka Kwenye Hifadhi Yako</translation>
 <translation id="1353275871123211385">Ili uweze kutumia vidhibiti vya wazazi kama vile uidhinishaji wa programu na vikomo vya muda wa kutumia vifaa, ni lazima mtoto awe na Akaunti ya Google inayodhibitiwa na mzazi. Akaunti ya shule inaweza kuongezwa baadaye ili itumike kwenye huduma kama vile Google Darasani.</translation>
 <translation id="135389172849514421">Hufanya kazi nje ya mtandao</translation>
 <translation id="1353980523955420967">Imeshindwa kupata PPD. Hakikisha kuwa Chromebook yako iko mtandaoni kisha ujaribu tena.</translation>
@@ -2201,7 +2200,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2710101514844343743">Data ya matumizi na uchanganuzi</translation>
 <translation id="271033894570825754">Mpya</translation>
 <translation id="2711073837061989559">Majaribio</translation>
-<translation id="2711929077861214979">Vidokezo vya usalama</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2713444072780614174">Nyeupe</translation>
 <translation id="2714180132046334502">Mandhari-nyuma meusi</translation>
@@ -2511,7 +2509,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2939908794993783865">Tovuti za ziada zisizotumika</translation>
 <translation id="2939938020978911855">Onyesha vifaa vya Bluetooth vinavyopatikana</translation>
 <translation id="2941112035454246133">Chini</translation>
-<translation id="2942279350258725020">Programu ya Android Messages</translation>
 <translation id="2942560570858569904">Inasubiri...</translation>
 <translation id="2942581856830209953">Badilisha ukurasa huu</translation>
 <translation id="2942707801577151363">Fungua, hariri na uhifadhi faili za Word, Excel na PowerPoint. Huenda utahitaji kujisajili ili uweze kutumia baadhi ya vipengele.</translation>
@@ -4706,7 +4703,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Washa sauti ya tovuti}other{Washa sauti za tovuti}}</translation>
 <translation id="474609389162964566">Fikia programu yako ya Mratibu kwa kusema “Ok Google”</translation>
-<translation id="4746351372139058112">Ujumbe</translation>
 <translation id="4748783296226936791">Tovuti huunganisha kwenye vifaa vya HID kwa ajili ya vipengele vinavyotumia kibodi, vidhibiti vya michezo na vifaa vingine visivyo vya kawaida</translation>
 <translation id="4749960740855309258">Fungua kichupo kipya</translation>
 <translation id="4750185073185658673">Nenda kwenye simu yako uhakiki ruhusa zaidi. Hakikisha Bluetooth na Wi-Fi ya simu yako imewashwa.</translation>
@@ -4773,7 +4769,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4807122856660838973">Washa kipengele cha Kuvinjari kwa Usalama</translation>
 <translation id="4807514039636325497">Maelezo ya DBus</translation>
 <translation id="4808667324955055115">Umezuia madirisha ibukizi:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Kagua <ph name="BEGIN_BOLD" />kiendelezi 1<ph name="END_BOLD" /> kilichoondolewa katika Duka la Chrome kwenye Wavuti}other{Kagua <ph name="BEGIN_BOLD" />viendelezi {NUM_EXTENSIONS}<ph name="END_BOLD" /> vilivyoondolewa katika Duka la Chrome kwenye Wavuti}}</translation>
 <translation id="4809079943450490359">Maagizo kutoka kwa msimamizi wa kifaa chako:</translation>
 <translation id="4809447465126035330">Futa</translation>
 <translation id="480990236307250886">Fungua ukurasa wa kwanza</translation>
@@ -6339,6 +6334,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6104796831253957966">Foleni ya printa imejaa</translation>
 <translation id="6104929924898022309">Tumia kitufe cha utafutaji kubadilisha vitendo vya vitufe vya utendaji</translation>
 <translation id="6106167152849320869">Pia, ukichagua kutuma data ya uchunguzi na matumizi katika hatua iliyotangulia, data hii itakusanywa kwa ajili ya programu ulizosakinisha.</translation>
+<translation id="6111718295497931251">Ondoa idhini ya kufikia Hifadhi ya Google</translation>
 <translation id="6111972606040028426">Washa programu ya Mratibu wa Google</translation>
 <translation id="6112294629795967147">Gusa ili ubadilishe ukubwa</translation>
 <translation id="6112727384379533756">Weka tiketi</translation>
@@ -9844,6 +9840,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8962083179518285172">Ficha Maelezo</translation>
 <translation id="8962863356073277855">Ni lazima muundo wa URL uwe https://www.example.com</translation>
 <translation id="8962918469425892674">Tovuti hii inatumia vitambuzi vya mwangaza au mwendo.</translation>
+<translation id="8963117664422609631">Nenda kwenye mipangilio ya tovuti</translation>
 <translation id="8965037249707889821">Weka nenosiri la zamani</translation>
 <translation id="8966809848145604011">Aina Zingine za Wasifu</translation>
 <translation id="8967427617812342790">Ongeza kwenye orodha ya kusoma</translation>
@@ -10222,7 +10219,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="964286338916298286">Msimamizi wako wa Tehama amezima Zawadi za Chrome kwa kifaa chako.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Programu}other{Programu}}</translation>
 <translation id="964790508619473209">Mpangilio wa skrini</translation>
-<translation id="965211523698323809">Tuma na upokee SMS kupitia <ph name="DEVICE_TYPE" /> yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Ripoti tatizo la Google Cast</translation>
 <translation id="966588271015727539">Chagua onyesho la braille ya bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{Funga Wasifu Huu}other{Funga Wasifu Huu (Madirisha #)}}</translation>

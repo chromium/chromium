@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">फिकट</translation>
 <translation id="5965524703725988602">गडद थीम टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">विंडोदरम्यान पुढे जा</translation>
-<translation id="5976112937189445008">विंडो रेकॉर्ड करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="5978382165065462689">दूरस्थ सहाय्याद्वारे आपल्या स्क्रीनचे नियंत्रण शेअर करत आहे.</translation>
 <translation id="5980301590375426705">अतिथी निर्गमन करा</translation>
 <translation id="5983567367406220847">इनॅक्टिव्हिटीमुळे हॉटस्पॉट बंद करण्यात आला आहे.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">तुमच्या <ph name="DEVICE_TYPE" /> चा परफॉर्मन्स कमी होऊ शकतो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W किंवा त्यावरील USB-C पॉवर अडॅप्टर वापरा.</translation>
 <translation id="688631446150864480">विंडो स्विच करण्यासाठी डाउन अ‍ॅरो की प्रेस करा</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
-<translation id="6901883536534621389">नेव्हिगेट करण्यासाठी जेश्चर वापरून पहा</translation>
 <translation id="6912841030378044227">ॲड्रेस बारवर फोकस करा</translation>
 <translation id="6912901278692845878">झटपट फेरफटका</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
@@ -1744,7 +1742,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> वापरत आहे</translation>
 <translation id="8185090165691050712">लॉक मोडचा आकार बदलण्यासाठी मेनू सुरू/बंद करा</translation>
 <translation id="8192202700944119416">सूचना लपवलेल्या आहेत.</translation>
-<translation id="8196787716797768628">टॅबलेट मोडमध्ये अ‍ॅप्सदरम्यान झटपट स्विच करण्यासाठी आणि तुमच्या Chromebook सोबत परस्परसंवाद साधण्यासाठी जेश्चर वापरा.</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8203795194971602413">राइट क्लिक</translation>
@@ -1903,7 +1900,6 @@
 <translation id="8909138438987180327">बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ही भाषा बोलत नाही.</translation>
-<translation id="8924458948354692166">विंडोचा स्क्रीनशॉट कॅप्चर करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="8926951137623668982">शेल्फ नेहमी लपवलेले आहे</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{१ फाइल}other{# फाइल}}</translation>
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>

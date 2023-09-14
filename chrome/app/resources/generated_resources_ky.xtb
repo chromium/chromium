@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux сактагычы</translation>
 <translation id="1347975661240122359">Батареянын кубаты <ph name="BATTERY_LEVEL" />% жеткенде, өзгөрүлүп баштайт.</translation>
 <translation id="1348966090521113558">Чычкандын атайын мүмкүнчүлүктөрүн тууралоо</translation>
-<translation id="1351089605448164407">Drive кызматыңыздан</translation>
 <translation id="1353275871123211385">Колдонмого уруксат берүү жана түзмөктү колдонуу убакытын чектөө сыяктуу Ата-эненин көзөмөлүн колдонуу үчүн баланын ата-энеси башкарган Google аккаунту болушу керек. Google Класс сыяктуу куралдарды иштетүү үчүн мектептин аккаунтун кийинчерээк кошууга болот.</translation>
 <translation id="135389172849514421">Оффлайн режиминде иштейт</translation>
 <translation id="1353980523955420967">PPD табылбай жатат. Chromebook'уңуз Интернетке туташканын текшерип, кайталап көрүңүз.</translation>
@@ -2204,7 +2203,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2710101514844343743">Колдонулушу жана мүчүлүштүктөрүн аныктоо жөнүндө маалымат</translation>
 <translation id="271033894570825754">Жаңы</translation>
 <translation id="2711073837061989559">Сыноо мезгилдери</translation>
-<translation id="2711929077861214979">Коопсуздук кеңештери</translation>
 <translation id="2713106313042589954">Камераны өчүрүү</translation>
 <translation id="2713444072780614174">Ак</translation>
 <translation id="2714180132046334502">Күңүрт фон</translation>
@@ -2514,7 +2512,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2939908794993783865">Кошумча жигерсиз сайттар</translation>
 <translation id="2939938020978911855">Жеткиликтүү Bluetooth түзмөктөрү көрүнсүн</translation>
 <translation id="2941112035454246133">Төмөн</translation>
-<translation id="2942279350258725020">Android жазышуулары</translation>
 <translation id="2942560570858569904">Күтүп жатат…</translation>
 <translation id="2942581856830209953">Бул баракты ыңгайлаштыруу</translation>
 <translation id="2942707801577151363">Word, Excel жана PowerPoint файлдарын ачыңып, түзөтүп жана сактаңыз. Айрым функциялар үчүн жазылуу талап кылынышы мүмкүн.</translation>
@@ -4711,7 +4708,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайттын үнүн чыгаруу}other{Сайттардын үнүн чыгаруу}}</translation>
 <translation id="474609389162964566">Жардамчыңызга Окей, Google" буйругу аркылуу кайрылуу</translation>
-<translation id="4746351372139058112">Билдирүүлөр</translation>
 <translation id="4748783296226936791">Көп колдонулбаган баскычтопторду, оюн көзөмөлдөгүчтөрүн жана башка түзмөктөрдү колдонуу үчүн сайттар адатта HID түзмөктөрүнө туташат</translation>
 <translation id="4749960740855309258">Жаңы өтмөк ачуу</translation>
 <translation id="4750185073185658673">Телефонуңуздан дагы башка уруксаттарды карап чыгыңыз. Телефонуңуздагы Bluetooth менен Wi-Fi күйгүзүлгөнүн текшериңиз.</translation>
@@ -4778,7 +4774,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4807122856660838973">Коопсуз серептөөнү күйгүзүү</translation>
 <translation id="4807514039636325497">DBus маалыматы</translation>
 <translation id="4808667324955055115">Калкыма терезелер бөгөттөлгөн:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome Интернет дүкөнүнөн өчүрүлгөн <ph name="BEGIN_BOLD" />1 кеңейтүүнү<ph name="END_BOLD" /> карап чыгыңыз}other{Chrome Интернет дүкөнүнөн өчүрүлгөн <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS}<ph name="END_BOLD" /> кеңейтүүнү карап чыгыңыз}}</translation>
 <translation id="4809079943450490359">Түзмөгүңүздүн администратору жөнөткөн нускама:</translation>
 <translation id="4809447465126035330">Өчүрүү</translation>
 <translation id="480990236307250886">Башкы бетти ачуу</translation>
@@ -9846,6 +9841,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8962083179518285172">Чоо-жайды жашыруу</translation>
 <translation id="8962863356073277855">URL форматы https://www.example.com болушу керек</translation>
 <translation id="8962918469425892674">Бул сайт кыймыл же жарык сенсорлорун колдонуп жатат.</translation>
+<translation id="8963117664422609631">Сайттын параметрлерине өтүү</translation>
 <translation id="8965037249707889821">Эски сырсөздү киргизүү</translation>
 <translation id="8966809848145604011">Башка профилдер</translation>
 <translation id="8967427617812342790">Окуу тизмесине кошуу</translation>
@@ -10224,7 +10220,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="964286338916298286">IT администраторуңуз түзмөгүңүз үчүн Chrome Goodies'ти өчүрүп койгон.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Колдонмо}other{Колдонмолор}}</translation>
 <translation id="964790508619473209">Экрандагы нерселерди жайгаштыруу</translation>
-<translation id="965211523698323809">SMS билдирүүлөрүн <ph name="DEVICE_TYPE" /> түзмөгүнөн жөнөтүп, ала аласыз. <ph name="LINK_BEGIN" />Көбүрөөк билүү<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast кызматындагы маселе тууралуу кабарлоо</translation>
 <translation id="966588271015727539">Bluetooth брайль дисплейин тандоо</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Бул профилди жабуу}other{&amp;Бул профилди жабуу (# терезе)}}</translation>

@@ -276,6 +276,7 @@
 <translation id="2556092377360758201">بلا حماية (غير مُستحسَن)</translation>
 <translation id="2562041823070056534">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">‏استخدام كلمات المرور في حساب Google وحفظها</translation>
+<translation id="2577522251608256362">الحي</translation>
 <translation id="2578571896248130439">إرسال صفحة الويب</translation>
 <translation id="2584132361465095047">إضافة حساب...</translation>
 <translation id="2587010742985678408">{count,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{هناك كلمة مرور واحدة ({count}) محتمَل تعرّضها للاختراق}two{هناك كلمتا مرور ({count}) محتمَل تعرّضهما للاختراق}few{هناك {count} كلمات مرور محتمَل تعرّضها للاختراق}many{هناك {count} كلمة مرور محتمَل تعرّضها للاختراق}other{هناك {count} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
@@ -314,6 +315,7 @@
 <translation id="2738375676495545665">إخفاء الميزات الجديدة</translation>
 <translation id="2747003861858887689">الحقل السابق</translation>
 <translation id="2749231692441336879">تتم متابعة <ph name="CHANNEL_NAME" /> حاليًا.</translation>
+<translation id="2754492786623500387">الحسابات على هذا الجهاز</translation>
 <translation id="2762000892062317888">الآن</translation>
 <translation id="2772667768515195373">‏يمكنك استخدام العناوين المحفوظة مع جميع منتجات Google. تم حفظ هذا العنوان في حسابك على Google، <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">البحث في وضع التصفُّح المتخفي</translation>
@@ -1092,7 +1094,6 @@
 <translation id="6944369514868857500">اختيار حساب آخر</translation>
 <translation id="6944935964236827145">إخفاء ميزة "الترجمة"</translation>
 <translation id="6945221475159498467">تحديد</translation>
-<translation id="6955779377310719430">إخفاء ميزة "المتابعة"</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1231,6 +1232,7 @@
 <translation id="778855399387580014">‏يمكنك بدء البحث في علامة تبويب Chrome جديدة.</translation>
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="7807060072011926525">‏خلاصة مقدَّمة من Google</translation>
+<translation id="78146569776629510">عمليات التنزيل</translation>
 <translation id="7839985698273989086">صفحة بلا إنترنت</translation>
 <translation id="7840771868269352570">ستتم إزالة العناصر التي اخترتها.</translation>
 <translation id="7845466610722898">عرض "قائمة القراءة"</translation>

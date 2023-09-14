@@ -446,7 +446,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1347512539447549782">Linuxi salvestusruum</translation>
 <translation id="1347975661240122359">Värskendamine algab, kui akutase jõuab <ph name="BATTERY_LEVEL" />%-ni.</translation>
 <translation id="1348966090521113558">Hiire juurdepääsetavuse seaded</translation>
-<translation id="1351089605448164407">Teie kettalt</translation>
 <translation id="1353275871123211385">Kui soovite kasutada vanemlikku järelevalvet, nt rakenduste heakskiitmist ja ekraaniaja piiranguid, peab lapsel olema vanema hallatav Google'i konto. Koolikonto saab lisada hiljem, et kasutada tööriistu, nagu Google Classroom.</translation>
 <translation id="135389172849514421">Toimib võrguühenduseta</translation>
 <translation id="1353980523955420967">PPD-d ei leita. Veenduge, et teie Chromebook oleks võrguga ühendatud, ja proovige uuesti.</translation>
@@ -2195,7 +2194,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2710101514844343743">Kasutus- ja diagnostikaandmed</translation>
 <translation id="271033894570825754">Uus</translation>
 <translation id="2711073837061989559">Prooviversioonid</translation>
-<translation id="2711929077861214979">Ohutusnõuanded</translation>
 <translation id="2713106313042589954">Lülita kaamera välja</translation>
 <translation id="2713444072780614174">Valge</translation>
 <translation id="2714180132046334502">Tume taust</translation>
@@ -2505,7 +2503,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2939908794993783865">Täiendavad inaktiivsed saidid</translation>
 <translation id="2939938020978911855">Kuva saadaolevad Bluetoothi seadmed</translation>
 <translation id="2941112035454246133">Madal</translation>
-<translation id="2942279350258725020">Androidi sõnumid</translation>
 <translation id="2942560570858569904">Ootamine …</translation>
 <translation id="2942581856830209953">Selle lehe kohandamine</translation>
 <translation id="2942707801577151363">Avage, muutke ja salvestage Wordi, Exceli ja PowerPointi faile. Mõne funktsiooni kasutamiseks võib vaja olla tellimust.</translation>
@@ -4701,7 +4698,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Tühista saidi vaigistus}other{Tühista saitide vaigistus}}</translation>
 <translation id="474609389162964566">Juurdepääs assistendile otsetee sõnaga „Ok Google”</translation>
-<translation id="4746351372139058112">Sõnumid</translation>
 <translation id="4748783296226936791">Saidid loovad HID-seadmetega ühenduse tavaliselt funktsioonide jaoks, mis kasutavad tavapäratuid klaviatuure, mängupulte ja muid seadmeid.</translation>
 <translation id="4749960740855309258">Uue vahelehe avamine</translation>
 <translation id="4750185073185658673">Võtke oma telefon, et vaadata üle veel mõned load. Veenduge, et teie telefoni Bluetooth ja WiFi oleks sisse lülitatud.</translation>
@@ -4768,7 +4764,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4807122856660838973">Google’i ohutu sirvimise sisselülitamine</translation>
 <translation id="4807514039636325497">DBusi üksikasjad</translation>
 <translation id="4808667324955055115">Hüpikaknad on blokeeritud</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Vaadake üle <ph name="BEGIN_BOLD" />1 laiendus<ph name="END_BOLD" />, mis eemaldati Chrome’i veebipoest.}other{Vaadake üle <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} laiendust<ph name="END_BOLD" />, mis eemaldati Chrome’i veebipoest.}}</translation>
 <translation id="4809079943450490359">Juhised seadme administraatorilt:</translation>
 <translation id="4809447465126035330">Kustuta</translation>
 <translation id="480990236307250886">Ava avaleht</translation>
@@ -6334,6 +6329,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6104796831253957966">Printeri järjekord on täis</translation>
 <translation id="6104929924898022309">Otsinguklahvi kasutamine funktsiooniklahvide käitumise muutmiseks</translation>
 <translation id="6106167152849320869">Kui valisite eelmise sammu käigus diagnostika- ja kasutusandmete saatmise, kogutakse installitud rakenduste puhul neid andmeid.</translation>
+<translation id="6111718295497931251">Google Drive’ile juurdepääsu eemaldamine</translation>
 <translation id="6111972606040028426">Google'i assistendi lubamine</translation>
 <translation id="6112294629795967147">Puudutage suuruse muutmiseks</translation>
 <translation id="6112727384379533756">Lisa pilet</translation>
@@ -9838,6 +9834,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="8962083179518285172">Üksikasjade peitmine</translation>
 <translation id="8962863356073277855">URL-i vorming peab olema https://www.example.com</translation>
 <translation id="8962918469425892674">Sait kasutab liikumis- või valgusandureid.</translation>
+<translation id="8963117664422609631">Saidi seadete avamine</translation>
 <translation id="8965037249707889821">Sisestage vana parool</translation>
 <translation id="8966809848145604011">Muud profiilid</translation>
 <translation id="8967427617812342790">Lisa lugemisloendisse</translation>
@@ -10216,7 +10213,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="964286338916298286">IT-administraator on keelanud teie seadmes Chrome'i lisad.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Rakendus}other{Rakendused}}</translation>
 <translation id="964790508619473209">Ekraani paigutus</translation>
-<translation id="965211523698323809">Saatke ja võtke seadmes <ph name="DEVICE_TYPE" /> vastu tekstsõnumeid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Casti probleemist teavitamine</translation>
 <translation id="966588271015727539">Valige Bluetoothiga Braille' ekraan</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Sule see profiil}other{&amp;Sule see profiil (# akent)}}</translation>

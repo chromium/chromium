@@ -446,7 +446,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1347512539447549782">Linux-lagringsplass</translation>
 <translation id="1347975661240122359">Oppdateringen starter når batteriet når <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1348966090521113558">Tilgjengelighetsinnstillinger for mus</translation>
-<translation id="1351089605448164407">Fra Disk</translation>
 <translation id="1353275871123211385">Hvis du vil bruke foreldrekontroller som appgodkjenning og grenser for skjermtid, må barnet ha en Google-konto som administreres av en forelder. Senere kan det legges til en skolekonto for verktøy som Google Classroom.</translation>
 <translation id="135389172849514421">Fungerer uten nett</translation>
 <translation id="1353980523955420967">Finner ikke PPD. Sjekk at Chromebooken din er på nettet, og prøv på nytt.</translation>
@@ -1990,6 +1989,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Noe gikk galt, og <ph name="DEVICE_OS" /> kunne ikke installeres.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />For å få mer hjelp, se g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Forlenger batterilevetiden ved å holde batteriet på rundt 80 %. Batteriet lades helt opp før du vanligvis kobler fra strømmen.</translation>
+<translation id="2532146950330687938">Klargjør enheten …</translation>
 <translation id="2532198298278778531">Administrer sikker DNS i ChromeOS Flex-innstillingene</translation>
 <translation id="2532589005999780174">Høykontrastmodus</translation>
 <translation id="2533649878691950253">Dette nettstedet er blokkert fra å få vite den nøyaktige posisjonen din, siden du vanligvis ikke tillater dette</translation>
@@ -2199,7 +2199,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2710101514844343743">Bruks- og diagnostikkdata</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Prøveprosjekter</translation>
-<translation id="2711929077861214979">Sikkerhetstips</translation>
 <translation id="2713106313042589954">Slå av kameraet</translation>
 <translation id="2713444072780614174">Hvit</translation>
 <translation id="2714180132046334502">Mørk bakgrunn</translation>
@@ -2509,7 +2508,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2939908794993783865">Flere inaktive nettsteder</translation>
 <translation id="2939938020978911855">Vis tilgjengelige Bluetooth-enheter</translation>
 <translation id="2941112035454246133">Lav</translation>
-<translation id="2942279350258725020">Android-meldinger</translation>
 <translation id="2942560570858569904">Venter …</translation>
 <translation id="2942581856830209953">Tilpass denne siden</translation>
 <translation id="2942707801577151363">Åpne, rediger og lagre Word-, Excel- og PowerPoint-filer. Det kan være nødvendig med abonnement for enkelte funksjoner.</translation>
@@ -4703,7 +4701,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Slå på lyden for nettstedet}other{Slå på lyden for nettstedene}}</translation>
 <translation id="474609389162964566">Bruk assistenten med «Hey Google»</translation>
-<translation id="4746351372139058112">Meldinger</translation>
 <translation id="4748783296226936791">Nettsteder kobler vanligvis til HID-enheter for å kunne tilby funksjoner som bruker uvanlige tastaturer, spillkontrollere og andre enheter</translation>
 <translation id="4749960740855309258">Åpne en ny fane</translation>
 <translation id="4750185073185658673">Gå til telefonen din for å gå gjennom noen flere tillatelser. Sørg for at Bluetooth og wifi er påslått på telefonen.</translation>
@@ -4770,7 +4767,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4807122856660838973">Slå på Safe Browsing</translation>
 <translation id="4807514039636325497">DBus-detaljer</translation>
 <translation id="4808667324955055115">Blokkerte forgrunnsvinduer:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Se gjennom <ph name="BEGIN_BOLD" />1 utvidelse<ph name="END_BOLD" /> som er fjernet fra Chrome Nettmarked}other{Se gjennom <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} utvidelser<ph name="END_BOLD" /> som er fjernet fra Chrome Nettmarked}}</translation>
 <translation id="4809079943450490359">Veiledning fra enhetsadministratoren din:</translation>
 <translation id="4809447465126035330">Slett</translation>
 <translation id="480990236307250886">Åpne startsiden</translation>
@@ -5754,6 +5750,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5627086634964711283">Den styrer også hvilken side som vises når du klikker på Startside-knappen.</translation>
 <translation id="5627676517703583263">Surf smart med Chrome</translation>
 <translation id="5627832140542566187">Skjermretning</translation>
+<translation id="5628434207686266338">Angi enhetspassord</translation>
 <translation id="562935524653278697">Administratoren din har slått av synkronisering av bokmerker, logg, passord og andre innstillinger du har.</translation>
 <translation id="5631017369956619646">CPU-bruk</translation>
 <translation id="5631272057151918206">Dette medfører at opptil <ph name="OFFLINE_STORAGE_SIZE" /> lagringsplass som brukes av filene dine utenfor nettet, blir frigjort. Noen filer kommer fremdeles til å være tilgjengelige uten nett. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -6335,6 +6332,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6104796831253957966">Utskriftskøen er full</translation>
 <translation id="6104929924898022309">Bruk søketasten for å endre funksjonstastenes virkemåte</translation>
 <translation id="6106167152849320869">Hvis du også valgte å sende diagnostikk- og bruksdata på det forrige trinnet, blir disse dataene samlet inn for installerte apper.</translation>
+<translation id="6111718295497931251">Fjern Google Disk-tilgangen</translation>
 <translation id="6111972606040028426">Slå på Google-assistenten</translation>
 <translation id="6112294629795967147">Trykk for å endre størrelsen</translation>
 <translation id="6112727384379533756">Legg til en sak</translation>
@@ -9839,6 +9837,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8962083179518285172">Skjul detaljer</translation>
 <translation id="8962863356073277855">Nettadresseformatet skal være https://www.example.com</translation>
 <translation id="8962918469425892674">Dette nettstedet bruker bevegelses- eller lyssensorer.</translation>
+<translation id="8963117664422609631">Gå til nettstedsinnstillingene</translation>
 <translation id="8965037249707889821">Skriv inn det gamle passordet</translation>
 <translation id="8966809848145604011">Andre profiler</translation>
 <translation id="8967427617812342790">Legg til på leselisten</translation>
@@ -10217,7 +10216,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="964286338916298286">IT-administratoren din har deaktivert ekstrafunksjoner for Chrome på enheten din.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Program}other{Programmer}}</translation>
 <translation id="964790508619473209">Skjermoppsett</translation>
-<translation id="965211523698323809">Send og motta SMS-er fra <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Rapportér problemer med Google Cast</translation>
 <translation id="966588271015727539">Velg en Bluetooth-leselist</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Lukk denne profilen}other{&amp;Lukk denne profilen (# vinduer)}}</translation>

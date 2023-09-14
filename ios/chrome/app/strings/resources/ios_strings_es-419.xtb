@@ -158,6 +158,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1830634592642484976">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Para asegurarte de que siempre puedas acceder a tus datos sincronizados, verifica tu identidad.</translation>
 <translation id="1836891464494477513">{count,plural, =1{Se guardó el favorito en tu Cuenta de Google ({email})}other{Se guardaron los favoritos en tu Cuenta de Google ({email})}}</translation>
+<translation id="183878838231635348">En esta tarjeta se muestran los problemas de privacidad o seguridad que la Verificación de seguridad detecta automáticamente.</translation>
 <translation id="1847795903283049083">También puedes ver y administrar estos elementos en tus favoritos, Lista de lectura o administrador de contraseñas.</translation>
 <translation id="1870148520156231997">Mostrar contraseña</translation>
 <translation id="1872096359983322073">Linterna</translation>
@@ -267,11 +268,13 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2523363575747517183">Este sitio web está intentando abrir otra app de forma reiterada.</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
 <translation id="2536991091671391962">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Ocultar "Verificación de seguridad"</translation>
 <translation id="2547458583188611426">La sincronización no funciona. Para iniciarla, ingresa tu frase de contraseña.</translation>
 <translation id="2551153019974022505">Error de cuenta</translation>
 <translation id="2556092377360758201">Sin protección (opción no recomendada)</translation>
 <translation id="2562041823070056534">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Usar y guardar contraseñas en tu Cuenta de Google</translation>
+<translation id="2577522251608256362">Colonia</translation>
 <translation id="2578571896248130439">Enviar página web</translation>
 <translation id="2584132361465095047">Agregar cuenta…</translation>
 <translation id="2587010742985678408">{count,plural, =0{No tienes contraseñas hackeadas}=1{{count} contraseña hackeada}other{{count} contraseñas hackeadas}}</translation>
@@ -695,6 +698,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4894963374040315706">Te permite realizar búsquedas con tu voz</translation>
+<translation id="489903206070130262">La última pestaña que cerraste</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4904877109095351937">Marcar como leídas</translation>
 <translation id="4908869848243824489">Descubre de Google</translation>
@@ -1087,7 +1091,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6944369514868857500">Elegir otra cuenta</translation>
 <translation id="6944935964236827145">Ocultar la opción Traductor</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
-<translation id="6955779377310719430">Ocultar la opción Seguir</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6973630695168034713">Carpetas</translation>
 <translation id="6979158407327259162">Google Drive</translation>

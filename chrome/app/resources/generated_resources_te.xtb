@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux స్టోరేజ్</translation>
 <translation id="1347975661240122359">బ్యాటరీ <ph name="BATTERY_LEVEL" />% ఉన్నప్పుడు అప్‌డేట్ ప్రారంభమవుతుంది.</translation>
 <translation id="1348966090521113558">మౌస్ యాక్సెసిబిలిటీ సెట్టింగ్‌లు</translation>
-<translation id="1351089605448164407">మీ Drive నుండి</translation>
 <translation id="1353275871123211385">యాప్ ఆమోదం, పరికర వినియోగ వ్యవధిపై పరిమితుల వంటి తల్లిదండ్రుల కంట్రోల్స్‌ను ఉపయోగించడానికి, చిన్నారి వద్ద తల్లి/తండ్రి ద్వారా మేనేజ్ చేయబడే Google ఖాతా ఉండాలి. Google Classroom వంటి టూల్స్‌కు స్కూల్ ఖాతాను తర్వాత జోడించవచ్చు.</translation>
 <translation id="135389172849514421">ఆఫ్‌లైన్‌లో పని చేస్తుంది</translation>
 <translation id="1353980523955420967">PPDని కనుగొనడం సాధ్యం కాదు. మీ Chromebook ఇంటర్నెట్‌కు కనెక్ట్ అయ్యి ఉందని నిర్ధారించుకుని, ఆపై మళ్లీ ట్రై చేయండి.</translation>
@@ -2202,7 +2201,6 @@
 <translation id="2710101514844343743">వినియోగం &amp; విశ్లేషణల డేటా</translation>
 <translation id="271033894570825754">కొత్తది</translation>
 <translation id="2711073837061989559">ట్రయల్స్</translation>
-<translation id="2711929077861214979">సురక్షిత చిట్కాలు</translation>
 <translation id="2713106313042589954">కెమెరాను ఆఫ్ చేయి</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
 <translation id="2714180132046334502">ముదురు నేపథ్యం</translation>
@@ -2512,7 +2510,6 @@
 <translation id="2939908794993783865">అదనపు ఇన్‌యాక్టివ్ సైట్‌లు</translation>
 <translation id="2939938020978911855">అందుబాటులో ఉన్న బ్లూటూత్ పరికరాలను చూపు</translation>
 <translation id="2941112035454246133">తక్కువ</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">వేచి ఉంది...</translation>
 <translation id="2942581856830209953">ఈ పేజీని అనుకూలంగా మార్చండి</translation>
 <translation id="2942707801577151363">Word, Excel, అలాగే PowerPoint ఫైల్స్‌ను తెరవండి, ఎడిట్ చేయండి, ఇంకా సేవ్ చేయండి. కొన్ని ఫీచర్‌లకు సబ్‌స్క్రిప్షన్ అవసరం ఉండవచ్చు.</translation>
@@ -4709,7 +4706,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{సైట్‌ను అన్‌మ్యూట్ చేయండి}other{సైట్‌లను అన్‌మ్యూట్ చేయండి}}</translation>
 <translation id="474609389162964566">"Ok Google"తో మీ Assistantను యాక్సెస్ చేయండి</translation>
-<translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">అసాధారణ కీబోర్డ్‌లు, గేమ్ కంట్రోలర్‌లు, అలాగే ఇతర పరికరాలను ఉపయోగించే ఫీచర్‌ల కోసం సైట్‌లు సాధారణంగా HID పరికరాలకు కనెక్ట్ అవుతాయి</translation>
 <translation id="4749960740855309258">కొత్త ట్యాబ్‌ను తెరవండి</translation>
 <translation id="4750185073185658673">మరి కొన్ని అనుమతులను రివ్యూ చేయడానికి మీ ఫోన్ సెట్టింగ్‌లకు వెళ్లండి. మీ ఫోన్‌లో బ్లూటూత్, Wi-Fi ఆన్‌లో ఉన్నాయని నిర్ధారించుకోండి.</translation>
@@ -4776,7 +4772,6 @@
 <translation id="4807122856660838973">సురక్షిత బ్రౌజింగ్‌ను ఆన్ చేయండి</translation>
 <translation id="4807514039636325497">DBus వివరాలు</translation>
 <translation id="4808667324955055115">పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome వెబ్ స్టోర్ నుండి తీసివేసిన <ph name="BEGIN_BOLD" />1 ఎక్స్‌టెన్షన్‌<ph name="END_BOLD" />ను రివ్యూ చేయండి}other{Chrome వెబ్ స్టోర్ నుండి తీసివేసిన <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} ఎక్స్‌టెన్షన్‌ల<ph name="END_BOLD" />ను రివ్యూ చేయండి}}</translation>
 <translation id="4809079943450490359">మీ పరికర అడ్మినిస్ట్రేట‌ర్ నుండి సూచనలు:</translation>
 <translation id="4809447465126035330">తొలగించండి</translation>
 <translation id="480990236307250886">హోమ్ పేజీని తెరువు</translation>
@@ -6342,6 +6337,7 @@
 <translation id="6104796831253957966">ప్రింటర్ క్యూ నిండిపోయింది</translation>
 <translation id="6104929924898022309">సెర్చ్ కీని ఉపయోగించి ఫంక్షన్ కీల ప్రవర్తనను మార్చండి</translation>
 <translation id="6106167152849320869">మునుపటి దశలో సమస్య విశ్లేషణ, వినియోగ డేటాను పంపడానికి కూడా మీరు ఎంచుకున్నట్లయితే, ఇన్‌స్టాల్ చేసిన యాప్‌ల కోసం ఈ డేటాను సేకరించడం జరుగుతుంది.</translation>
+<translation id="6111718295497931251">Google Drive యాక్సెస్‌ను తీసివేయండి</translation>
 <translation id="6111972606040028426">Google Assistantను ఎనేబుల్ చేయండి</translation>
 <translation id="6112294629795967147">సైజ్‌ మార్చడం కోసం తాకండి</translation>
 <translation id="6112727384379533756">టిక్కెట్‌ను జోడించండి</translation>
@@ -9842,6 +9838,7 @@
 <translation id="8962083179518285172">వివరాలను దాచిపెట్టు</translation>
 <translation id="8962863356073277855">URL ఫార్మాట్ https://www.example.com అయ్యి ఉండాలి</translation>
 <translation id="8962918469425892674">ఈ సైట్ మోషన్ లేదా లైట్ సెన్సార్‌లను ఉపయోగిస్తోంది.</translation>
+<translation id="8963117664422609631">సైట్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8965037249707889821">పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="8966809848145604011">ఇతర ప్రొఫైళ్లు</translation>
 <translation id="8967427617812342790">పఠనా లిస్ట్‌కు జోడించండి</translation>
@@ -10220,7 +10217,6 @@
 <translation id="964286338916298286">మీ IT నిర్వాహకుడు మీ పరికరానికి Chrome కానుకలను నిలిపివేసారు.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{అప్లికేషన్}other{అప్లికేషన్‌లు}}</translation>
 <translation id="964790508619473209">స్క్రీన్ అమరిక</translation>
-<translation id="965211523698323809">మీ <ph name="DEVICE_TYPE" /> నుండి వచన మెసేజ్‌లను పంపండి, స్వీకరించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Castతో ఉన్న సమస్యను రిపోర్ట్ చేయండి</translation>
 <translation id="966588271015727539">బ్లూటూత్ బ్రెయిలీ డిస్‌ప్లేని ఎంచుకోండి</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;ఈ ప్రొఫైల్‌ను మూసివేయండి}other{&amp;ఈ ప్రొఫైల్‌ను (# విండోలు) మూసివేయండి}}</translation>

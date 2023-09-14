@@ -1217,7 +1217,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5961960957587052807">Sedikit</translation>
 <translation id="5965524703725988602">Togol tema Gelap. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Kitar ke hadapan melalui tetingkap</translation>
-<translation id="5976112937189445008">Tekan kekunci enter untuk merakam skrin tetingkap</translation>
 <translation id="5978382165065462689">Berkongsi kawalan skrin anda melalui Bantuan Jauh.</translation>
 <translation id="5980301590375426705">Keluar dari tetamu</translation>
 <translation id="5983567367406220847">Tempat liputan telah dimatikan kerana tidak aktif.</translation>
@@ -1439,7 +1438,6 @@ Pemasangan baharu</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
 <translation id="688631446150864480">Tekan kekunci Anak panah ke bawah untuk menukar tetingkap</translation>
 <translation id="6896758677409633944">Salin</translation>
-<translation id="6901883536534621389">Cuba gerak isyarat untuk menavigasi</translation>
 <translation id="6912841030378044227">Fokus pada bar alamat</translation>
 <translation id="6912901278692845878">Lawatan pantas</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
@@ -1745,7 +1743,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Hidupkan/Matikan menu untuk mengubah saiz mod kunci</translation>
 <translation id="8192202700944119416">Pemberitahuan disembunyikan.</translation>
-<translation id="8196787716797768628">Gunakan gerak isyarat untuk bertukar antara apl dengan pantas dan berinteraksi dengan Chromebook anda dalam mod tablet.</translation>
 <translation id="8198456017687137612">Menghantar tab</translation>
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8203795194971602413">Klik kanan</translation>
@@ -1854,6 +1851,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8703634754197148428">Mulakan rakaman. Sebaik sahaja rakaman dimulakan, gunakan Alt + Shift + L untuk menavigasi ke rak dan cari butang hentikan rakaman</translation>
 <translation id="8704155109538237473">Fokuskan pada tetingkap gambar dalam gambar</translation>
 <translation id="870917907284186124">Hidupkan/Matikan pengimlakan (taip menggunakan suara anda)</translation>
+<translation id="8714138378966541668">Dikunci oleh penyedia</translation>
 <translation id="8717459106217102612">Pilih perkataan atau huruf sebelumnya</translation>
 <translation id="8721053961083920564">Togol Kelantangan. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan skrin penuh</translation>
@@ -1904,7 +1902,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8909138438987180327">Kuasa bateri pada tahap <ph name="PERCENTAGE" /> peratus.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant tidak bertutur dalam bahasa ini.</translation>
-<translation id="8924458948354692166">Tekan kekunci enter untuk menangkap tangkapan skrin bagi skrin tetingkap</translation>
 <translation id="8926951137623668982">Rak sentiasa disembunyikan</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fail}other{# fail}}</translation>
 <translation id="8936501819958976551">dinyahaktifkan</translation>

@@ -222,6 +222,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2189903024544168260">Intresset har tagits bort</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2200113223741723867">Hantera delning av data om användning</translation>
+<translation id="221494669172414749">Om du öppnar Chrome utan ett profillås tas dina sparade lösenord och betalningsmetoder bort från bilen. Denna data skyddas om du använder ett profillås.</translation>
 <translation id="2218567645332692482">Uppgradera anslutningar till HTTPS och visa en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Tomt fönster</translation>
@@ -1014,6 +1015,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6303969859164067831">Logga ut och inaktivera synkronisering</translation>
 <translation id="6312687380483398334">Webbappar (tyst)</translation>
+<translation id="6315386555979018699">Radera och fortsätt</translation>
 <translation id="6316139424528454185">Android-versionen stöds inte</translation>
 <translation id="6324916366299863871">Redigera genväg</translation>
 <translation id="6324977638108296054">Det gick inte att skapa en länk till markeringen</translation>
@@ -1576,6 +1578,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
 <translation id="8998729206196772491">Du håller på att logga in med ett konto som hanteras av <ph name="MANAGED_DOMAIN" />, vilket ger administratören kontroll över data i Chrome. Din data kopplas permanent till det här kontot. Om du loggar ut från Chrome raderas all din data från enheten, men den lagras fortfarande i Google-kontot.</translation>
 <translation id="9012585441087414258">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. Om något misstänkt händer på en sida skickas webbadresser och delar av sidinnehållet till Google Säker webbsökning.</translation>
+<translation id="9019199799064251516">Vill du fortsätta utan ett profillås i bilen?</translation>
 <translation id="9022774213089566801">Mest besökta</translation>
 <translation id="9022871169049522985">Webbplatser och annonsörer kan mäta annonsernas resultat</translation>
 <translation id="9035378196785279980">Flytta till\u2026</translation>
@@ -1638,5 +1641,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="983192555821071799">Stäng alla flikar</translation>
 <translation id="987264212798334818">Allmänt</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> flikar</translation>
+<translation id="993520549480398880">Rensa även bokmärken, historik med mera från den här bilen</translation>
 <translation id="996149300115483134">Menyn med flödeskort är stängd</translation>
 </translationbundle>

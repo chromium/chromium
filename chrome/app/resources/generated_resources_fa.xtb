@@ -447,7 +447,6 @@
 <translation id="1347512539447549782">‏فضای ذخیره‌سازی Linux</translation>
 <translation id="1347975661240122359">وقتی شارژ باتری به <ph name="BATTERY_LEVEL" />% رسید، به‌روزرسانی شروع خواهد شد.</translation>
 <translation id="1348966090521113558">تنظیمات دسترس‌پذیری موشواره</translation>
-<translation id="1351089605448164407">‏از Drive شما</translation>
 <translation id="1353275871123211385">‏برای استفاده از کنترل‌های والدین (مثل تأییدیه برنامه و محدودیت‌های مدت تماشای صفحه)، کودک باید یک «حساب Google» تحت مدیریت ولی داشته باشد. می‌توان بعداً حساب محل تحصیلی را برای ابزارهایی مثل Google Classroom اضافه کرد.</translation>
 <translation id="135389172849514421">به‌صورت آفلاین کار می‌کند</translation>
 <translation id="1353980523955420967">‏PPD پیدا نشد. مطمئن شوید Chromebook آنلاین باشد و دوباره امتحان کنید.</translation>
@@ -2201,7 +2200,6 @@
 <translation id="2710101514844343743">داده‌های استفاده و عیب‌یابی</translation>
 <translation id="271033894570825754">جدید</translation>
 <translation id="2711073837061989559">دوره‌های آزمایشی</translation>
-<translation id="2711929077861214979">نکات ایمنی</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">پس‌زمینه تیره</translation>
@@ -2511,7 +2509,6 @@
 <translation id="2939908794993783865">سایت‌های غیرفعال بیشتر</translation>
 <translation id="2939938020978911855">نمایش دستگاه‌های بلوتوث دردسترس</translation>
 <translation id="2941112035454246133">کم</translation>
-<translation id="2942279350258725020">‏پیام‌های Android</translation>
 <translation id="2942560570858569904">درحال انتظار…</translation>
 <translation id="2942581856830209953">سفارشی کردن این صفحه</translation>
 <translation id="2942707801577151363">‏فایل‌های Word،‏ Excel، و PowerPoint را باز، ویرایش، و ذخیره کنید. ممکن است برای برخی ویژگی‌ها اشتراک لازم باشد.</translation>
@@ -4708,7 +4705,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{باصدا کردن سایت}one{باصدا کردن سایت‌ها}other{باصدا کردن سایت‌ها}}</translation>
 <translation id="474609389162964566">‏دسترسی به «دستیار» با «Ok Google»</translation>
-<translation id="4746351372139058112">پیام‌ها</translation>
 <translation id="4748783296226936791">‏سایت‌ها معمولاً برای ارائه ویژگی‌هایی که از صفحه‌کلیدها، کنترل‌کننده‌های بازی، و دیگر دستگاه‌های غیرمتداول استفاده می‌کنند، به دستگاه‌های HID متصل می‌شوند</translation>
 <translation id="4749960740855309258">باز کردن برگه جدید</translation>
 <translation id="4750185073185658673">‏برای مرور چند اجازه دیگر، به تلفن برگردید. مطمئن شوید بلوتوث و Wi-Fi تلفن روشن باشند.</translation>
@@ -4775,7 +4771,6 @@
 <translation id="4807122856660838973">«مرور ایمن» را روشن کنید</translation>
 <translation id="4807514039636325497">‏جزئیات DBus</translation>
 <translation id="4808667324955055115">پنجره‌های بازشو مسدود هستند:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{‏مرور <ph name="BEGIN_BOLD" />یک افزونه<ph name="END_BOLD" /> که از «نت‌بازار Chrome» حذف شده است}one{‏مرور <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} افزونه<ph name="END_BOLD" /> که از «نت‌بازار Chrome» حذف شده است}other{‏مرور <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} افزونه<ph name="END_BOLD" /> که از «نت‌بازار Chrome» حذف شده است}}</translation>
 <translation id="4809079943450490359">دستورالعمل‌ها از سرپرست دستگاهتان:</translation>
 <translation id="4809447465126035330">حذف</translation>
 <translation id="480990236307250886">باز کردن صفحه اصلی</translation>
@@ -6341,6 +6336,7 @@
 <translation id="6104796831253957966">صف چاپگر پر است</translation>
 <translation id="6104929924898022309">برای تغییر عملکرد کلیدهای کار، از کلید جستجو استفاده کنید</translation>
 <translation id="6106167152849320869">اگر در مرحله قبلی ارسال داده‌های استفاده و عیب‌یابی را نیز انتخاب کرده باشید، این داده‌ها برای برنامه‌های نصب‌شده جمع‌آوری خواهد شد.</translation>
+<translation id="6111718295497931251">‏برداشتن دسترسی به Google Drive</translation>
 <translation id="6111972606040028426">‏فعال‌ کردن «دستیار Google»</translation>
 <translation id="6112294629795967147">لمس کردن برای تغییر اندازه</translation>
 <translation id="6112727384379533756">افزودن بلیت</translation>
@@ -9847,6 +9843,7 @@
 <translation id="8962083179518285172">پنهان کردن جزئیات</translation>
 <translation id="8962863356073277855">‏قالب نشانی وب باید به این صورت باشد: https://www.example.com</translation>
 <translation id="8962918469425892674">این سایت از حسگرهای نور یا حرکت استفاده می‌کند.</translation>
+<translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
 <translation id="8965037249707889821">گذرواژه قدیمی را وارد کنید</translation>
 <translation id="8966809848145604011">نمایه‌های دیگر</translation>
 <translation id="8967427617812342790">افزودن به فهرست خواندن</translation>
@@ -10225,7 +10222,6 @@
 <translation id="964286338916298286">‏سرپرست فناوری اطلاعات شما Chrome Goodies را برای دستگاهتان غیرفعال کرده است.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{برنامه}one{برنامه}other{برنامه}}</translation>
 <translation id="964790508619473209">تنظیم صفحه‌نمایش</translation>
-<translation id="965211523698323809">ارسال و دریافت پیامک از <ph name="DEVICE_TYPE" /> شما. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏گزارش مشکل در Google Cast</translation>
 <translation id="966588271015727539">نمایشگر بریل انتخاب کنید</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{بستن این نمایه}one{بستن این نمایه (# پنجره)}other{بستن این نمایه (# پنجره)}}</translation>

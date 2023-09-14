@@ -212,6 +212,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1391289752476847787">Aktier og obligationer</translation>
 <translation id="1391625539203220400">Vil du gemme IBAN-nummeret på denne enhed?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> har ikke sendt nogen data.</translation>
+<translation id="1397811292916898096">Søg med <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Lysegrøn</translation>
 <translation id="1406500794671479665">Verificerer...</translation>
 <translation id="1406812885827747674">Tillad denne gang</translation>
@@ -2613,6 +2614,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6432297414176614592">Mere om annonceemner</translation>
 <translation id="6432831586648556868">Salgs- og marketingjobs</translation>
 <translation id="6433490469411711332">Rediger kontaktoplysninger</translation>
+<translation id="6433501201775827830">Vælg en søgemaskine</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> nægtede at oprette forbindelse.</translation>
 <translation id="6433797564277305076">Bekræft dine kort hurtigere ved hjælp af enhedsoplåsning fra nu af</translation>
 <translation id="643917412048333145">Kjoler</translation>
@@ -3970,6 +3972,7 @@ Yderligere oplysninger:
 <translation id="9207861905230894330">Artiklen kunne ikke tilføjes.</translation>
 <translation id="9213433120051936369">Tilpas udseende</translation>
 <translation id="9215416866750762878">En app forhindrer Chrome i at oprette sikker forbindelse til dette website</translation>
+<translation id="9218430445555521422">Indstil som standard</translation>
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
 <translation id="9222403027701923763">Primær og sekundær skoleuddannelse (K-12)</translation>

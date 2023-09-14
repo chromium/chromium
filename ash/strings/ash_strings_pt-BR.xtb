@@ -1216,7 +1216,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5961960957587052807">Claro</translation>
 <translation id="5965524703725988602">Alternar tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Navegar pelas janelas</translation>
-<translation id="5976112937189445008">Pressione "Enter" para gravar janela</translation>
 <translation id="5978382165065462689">Compartilhando o controle de sua tela por meio da Assistência remota.</translation>
 <translation id="5980301590375426705">Sair sessão visit.</translation>
 <translation id="5983567367406220847">Devido à inatividade, o ponto de acesso foi desativado.</translation>
@@ -1438,7 +1437,6 @@ Nova instalação</translation>
 <translation id="6886172995547742638">Seu <ph name="DEVICE_TYPE" /> pode ter baixo desempenho. Use um adaptador de energia USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou mais.</translation>
 <translation id="688631446150864480">Pressione a seta para baixo para mudar de janela</translation>
 <translation id="6896758677409633944">Copiar</translation>
-<translation id="6901883536534621389">Tente navegar usando gestos</translation>
 <translation id="6912841030378044227">Foco na barra de endereço</translation>
 <translation id="6912901278692845878">Tour rápido</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>
@@ -1744,7 +1742,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8167567890448493835">Usando <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo de bloqueio</translation>
 <translation id="8192202700944119416">As notificações estão ocultas.</translation>
-<translation id="8196787716797768628">Use os gestos para alternar rapidamente entre apps e interagir com o Chromebook no modo tablet.</translation>
 <translation id="8198456017687137612">Transmitindo guia</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8203795194971602413">Clicar com o botão direito</translation>
@@ -1903,7 +1900,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8909138438987180327">Bateria em <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Google Assistente não fala esse idioma.</translation>
-<translation id="8924458948354692166">Pressione "Enter" para fazer uma captura de tela da janela</translation>
 <translation id="8926951137623668982">Estante sempre oculta</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="8936501819958976551">desativado</translation>

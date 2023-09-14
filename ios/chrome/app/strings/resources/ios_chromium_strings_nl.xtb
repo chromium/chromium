@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="3472200483164753384">Niet ondersteund in Chromium Canary</translation>
 <translation id="3478750326643748149">Verberg 'Haal het maximale uit Chromium'</translation>
+<translation id="3554027294407525061">Wis browsegegevens in Chromium.</translation>
 <translation id="3567399274263440288">Log in bij Chromium met je Google-account om het maximale uit Chromium te halen.</translation>
 <translation id="3639997914391704523">Chromium kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> heeft Chromium gebruikt en heeft bookmarks, wachtwoorden en andere instellingen op dit apparaat laten staan.</translation>
@@ -69,6 +70,7 @@
 <translation id="3784369638459513223">Opent een nieuw Chromium-incognitotabblad.</translation>
 <translation id="3805899903892079518">Chromium heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
 <translation id="3827545470516145620">Je krijgt standaardbeveiliging op dit apparaat</translation>
+<translation id="3833326979834193417">Chromium voert elke dag automatisch de Veiligheidscheck uit om je te beschermen tegen onder andere gegevenslekken en onveilige websites. Je vindt meer informatie over de Veiligheidscheck in Instellingen.</translation>
 <translation id="3886689467633467988">Log in op deze site en bij Chromium om onder andere je bookmarks op al je apparaten te gebruiken.</translation>
 <translation id="394413318816989199">Versleuteling van wachtwoordzinnen omvat geen betaalmethoden en adressen.
 
@@ -95,7 +97,9 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium
 <translation id="4996471330284142407">Krijg meer gedaan met Chromium. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
 <translation id="5042011327527167688">Tik op 'Bekijken met Google Maps in Chromium'.</translation>
+<translation id="5044871537677053278">Chromium neemt adressen waar en gebruikt Google Maps om je routes en lokale informatie te geven.</translation>
 <translation id="5048795749726991615">Gebruik Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk te gebruiken in je andere apps</translation>
+<translation id="5076601183701536878">Browsegegevens in Chromium wissen</translation>
 <translation id="5131565040785979529">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je bent ingelogd en hoe Chromium wordt gebruikt.</translation>
 <translation id="5171868502429358653">Inloggen bij Chromium</translation>
 <translation id="5213683223491576284">Opent Wachtwoordmanager in Chromium.</translation>

@@ -1217,7 +1217,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5961960957587052807">Claro</translation>
 <translation id="5965524703725988602">Activar o desactivar el Tema oscuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Desplazarse hacia adelante por las ventanas</translation>
-<translation id="5976112937189445008">Presiona intro para grabar la ventana</translation>
 <translation id="5978382165065462689">Se está compartiendo el control de la pantalla mediante la Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
 <translation id="5983567367406220847">Debido a la inactividad, se desactivó el hotspot.</translation>
@@ -1439,7 +1438,6 @@ Nueva instalación</translation>
 <translation id="6886172995547742638">Es posible que tu dispositivo <ph name="DEVICE_TYPE" /> tenga un rendimiento deficiente. Usa un adaptador de alimentación con conexión USB tipo C de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="688631446150864480">Presiona la tecla de flecha hacia abajo para cambiar de ventana</translation>
 <translation id="6896758677409633944">Copiar</translation>
-<translation id="6901883536534621389">Prueba los gestos para navegar</translation>
 <translation id="6912841030378044227">Enfocar la barra de direcciones</translation>
 <translation id="6912901278692845878">Recorrido rápido</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
@@ -1745,7 +1743,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en uso</translation>
 <translation id="8185090165691050712">Activar o desactivar el menú para cambiar el tamaño del modo bloqueado</translation>
 <translation id="8192202700944119416">Las notificaciones están ocultas.</translation>
-<translation id="8196787716797768628">Usa gestos para cambiar rápidamente de app o interactuar con la Chromebook en el modo tablet.</translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8203795194971602413">Clic con botón derecho</translation>
@@ -1904,7 +1901,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8909138438987180327">Batería al <ph name="PERCENTAGE" />%</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">El Asistente de Google no habla este idioma</translation>
-<translation id="8924458948354692166">Presiona intro para tomar una captura de pantalla de la ventana</translation>
 <translation id="8926951137623668982">Biblioteca siempre oculta</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivada</translation>

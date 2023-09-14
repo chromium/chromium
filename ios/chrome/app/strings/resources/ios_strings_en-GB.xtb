@@ -274,6 +274,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2556092377360758201">No protection (not recommended)</translation>
 <translation id="2562041823070056534">Sending to <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Use and save passwords in Your Google Account</translation>
+<translation id="2577522251608256362">Neighbourhood</translation>
 <translation id="2578571896248130439">Send Web Page</translation>
 <translation id="2584132361465095047">Add Account…</translation>
 <translation id="2587010742985678408">{count,plural, =0{No compromised passwords}=1{{count} compromised password}other{{count} compromised passwords}}</translation>
@@ -1090,7 +1091,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6944369514868857500">Choose Another Account</translation>
 <translation id="6944935964236827145">Hide Translate</translation>
 <translation id="6945221475159498467">Select</translation>
-<translation id="6955779377310719430">Hide Follow</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Folders</translation>
 <translation id="6979158407327259162">Google Drive</translation>

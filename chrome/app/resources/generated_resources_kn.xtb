@@ -447,7 +447,6 @@
 <translation id="1347512539447549782">Linux ಸಂಗ್ರಹಣೆ</translation>
 <translation id="1347975661240122359">ಬ್ಯಾಟರಿ <ph name="BATTERY_LEVEL" />% ಪ್ರಮಾಣ ತಲುಪಿದಾಗ ಅಪ್‌ಡೇಟ್ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</translation>
 <translation id="1348966090521113558">ಮೌಸ್ ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="1351089605448164407">ನಿಮ್ಮ Drive ನಿಂದ</translation>
 <translation id="1353275871123211385">ಆ್ಯಪ್ ಅನುಮೋದನೆ ಮತ್ತು ವೀಕ್ಷಣಾ ಅವಧಿ ಮಿತಿಗಳಂತಹ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಬಳಸಲು, ಮಗುವು ಪೋಷಕರು ನಿರ್ವಹಿಸುವ Google ಖಾತೆಯೊಂದನ್ನು ಹೊಂದಿರಬೇಕು. Google Classroom ನಂತಹ ಪರಿಕರಗಳಿಗಾಗಿ ಶಾಲಾ ಖಾತೆಯನ್ನು ನಂತರ ಸೇರಿಸಬಹುದು.</translation>
 <translation id="135389172849514421">ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ</translation>
 <translation id="1353980523955420967">PPD ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ Chromebook ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಂಡು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1988,6 +1987,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />ಏನೋ ತಪ್ಪಾಗಿದೆ ಹಾಗೂ <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ಹೆಚ್ಚಿನ ಸಹಾಯಕ್ಕಾಗಿ ಇಲ್ಲಿಗೆ ಭೇಟಿ ನೀಡಿ: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯನ್ನು ಸುಮಾರು 80% ಮಟ್ಟದಲ್ಲಿಡುವ ಮೂಲಕ ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ವಿಸ್ತರಿಸುತ್ತದೆ. ನೀವು ವಿದ್ಯುತ್‌ನಿಂದ ಸಾಮಾನ್ಯವಾಗಿ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡುವ ಮೊದಲು ಬ್ಯಾಟರಿ ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗುತ್ತದೆ.</translation>
+<translation id="2532146950330687938">ಸಾಧನವನ್ನು ಸಿದ್ದಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2532198298278778531">ChromeOS Flex ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷಿತ DNS ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2532589005999780174">ಹೆಚ್ಚಿನ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್</translation>
 <translation id="2533649878691950253">ನಿಮ್ಮ ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ತಿಳಿದುಕೊಳ್ಳದಂತೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ, ಏಕೆಂದರೆ ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಇದನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
@@ -2197,7 +2197,6 @@
 <translation id="2710101514844343743">ಬಳಕೆ ಮತ್ತು ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಡೇಟಾ</translation>
 <translation id="271033894570825754">ಹೊಸತು</translation>
 <translation id="2711073837061989559">ಪ್ರಯೋಗಗಳು</translation>
-<translation id="2711929077861214979">ಸುರಕ್ಷತೆಯ ಸಲಹೆಗಳು</translation>
 <translation id="2713106313042589954">ಕ್ಯಾಮರಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2713444072780614174">ಬಿಳಿ</translation>
 <translation id="2714180132046334502">ದಟ್ಟ ಬೆಳಕಿನ ಹಿನ್ನೆಲೆ</translation>
@@ -2507,7 +2506,6 @@
 <translation id="2939908794993783865">ಹೆಚ್ಚುವರಿ ನಿಷ್ಕ್ರಿಯ ಸೈಟ್‌ಗಳು</translation>
 <translation id="2939938020978911855">ಲಭ್ಯವಿರುವ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2941112035454246133">ಕಡಿಮೆ</translation>
-<translation id="2942279350258725020">Android ಸಂದೇಶಗಳು</translation>
 <translation id="2942560570858569904">ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2942581856830209953">ಈ ಪುಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="2942707801577151363">Word, Excel ಮತ್ತು PowerPoint ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ, ಎಡಿಟ್ ಮಾಡಿ ಹಾಗೂ ಸೇವ್ ಮಾಡಿ. ಕೆಲವು ಫೀಚರ್‌ಗಳಿಗೆ ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್‌ನ ಅಗತ್ಯವಿರಬಹುದು.</translation>
@@ -4704,7 +4702,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="474609389162964566">"Ok Google" ಎಂದು ಎಚ್ಚರಿಸುವ ಮೂಲಕ ನಿಮ್ಮ Assistant ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
-<translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">ಅಸಹಜ ಕೀಬೋರ್ಡ್‌ಗಳು, ಗೇಮ್ ಕಂಟ್ರೋಲರ್‌ಗಳು ಮತ್ತು ಇತರ ಸಾಧನಗಳನ್ನು ಬಳಸುವ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ HID ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ</translation>
 <translation id="4749960740855309258">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="4750185073185658673">ಇನ್ನೂ ಕೆಲವು ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಹೋಗಿ. ನಿಮ್ಮ ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಮತ್ತು ವೈ-ಫೈ ಆನ್ ಆಗಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -4771,7 +4768,6 @@
 <translation id="4807122856660838973">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4807514039636325497">DBus ವಿವರಗಳು</translation>
 <translation id="4808667324955055115">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾದ <ph name="BEGIN_BOLD" />1 ವಿಸ್ತರಣೆಯನ್ನು<ph name="END_BOLD" /> ಪರಿಶೀಲಿಸಿ}one{Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾದ <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} ವಿಸ್ತರಣೆಗಳನ್ನು<ph name="END_BOLD" /> ಪರಿಶೀಲಿಸಿ}other{Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾದ <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} ವಿಸ್ತರಣೆಗಳನ್ನು<ph name="END_BOLD" /> ಪರಿಶೀಲಿಸಿ}}</translation>
 <translation id="4809079943450490359">ನಿಮ್ಮ ಸಾಧನದ ನಿರ್ವಾಹಕರಿಂದ ಸೂಚನೆಗಳು</translation>
 <translation id="4809447465126035330">ಅಳಿಸಿ</translation>
 <translation id="480990236307250886">ಹೋಮ್ ತೆರೆಯಿರಿ</translation>
@@ -5758,6 +5754,7 @@
 <translation id="5627086634964711283">ನೀವು ಹೋಮ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="5627676517703583263">Chrome ಮೂಲಕ ಸ್ಮಾರ್ಟ್‌ ಆಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="5627832140542566187">ಡಿಸ್‌ಪ್ಲೇ ಓರಿಯಂಟೇಶನ್</translation>
+<translation id="5628434207686266338">ಸಾಧನದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="562935524653278697">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="5631017369956619646">CPU ಬಳಕೆ</translation>
 <translation id="5631272057151918206">ಇದು ನಿಮ್ಮ ಆಫ್‌ಲೈನ್ ಫೈಲ್‌ಗಳು ಬಳಸಿದ <ph name="OFFLINE_STORAGE_SIZE" /> ರಷ್ಟು ಸ್ಪೇಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಕೆಲವು ಫೈಲ್‌ಗಳು ಈಗಲೂ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -6339,6 +6336,7 @@
 <translation id="6104796831253957966">ಪ್ರಿಂಟರ್‌ ಸರದಿಯು ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="6104929924898022309">ಫಂಕ್ಷನ್ ಕೀಗಳ ವರ್ತನೆಯನ್ನು ಬದಲಾಯಿಸಲು ಹುಡುಕಾಟ ಕೀಯನ್ನು ಬಳಸಿ</translation>
 <translation id="6106167152849320869">ನೀವು ಸಹ ಹಿಂದಿನ ಹಂತದಲ್ಲಿ ಡಯಾಗ್ನೋಸ್ಟಿಕ್ ಮತ್ತು ಬಳಕೆಯ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಲು ಆಯ್ಕೆಮಾಡಿದರೆ, ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ಈ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="6111718295497931251">Google Drive ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6111972606040028426">Google Assistant ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6112294629795967147">ಮರುಗಾತ್ರಗೊಳಿಸಲು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="6112727384379533756">ಟಿಕೆಟ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
@@ -9842,6 +9840,7 @@
 <translation id="8962083179518285172">ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8962863356073277855">URL ನ ಫಾರ್ಮ್ಯಾಟ್ ಹೀಗಿರಬೇಕು https://www.example.com</translation>
 <translation id="8962918469425892674">ಈ ಸೈಟ್ ಚಲನೆ ಅಥವಾ ಲೈಟ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
+<translation id="8963117664422609631">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="8965037249707889821">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="8966809848145604011">ಇತರ ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="8967427617812342790">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
@@ -10221,7 +10220,6 @@
 <translation id="964286338916298286">ನಿಮ್ಮ ಐಟಿ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ Chrome ನ ಗುಡೀಸ್‌ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ಅಪ್ಲಿಕೇಶನ್}one{ಅಪ್ಲಿಕೇಶನ್‌ಗಳು}other{ಅಪ್ಲಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="964790508619473209">ಸ್ಕ್ರೀನ್ ಜೋಡಣೆ</translation>
-<translation id="965211523698323809">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ಪಠ್ಯ ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಿ ಮತ್ತು ಸ್ವೀಕರಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast ನಲ್ಲಿನ ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ</translation>
 <translation id="966588271015727539">ಒಂದು ಬ್ಲೂಟೂತ್ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಚ್ಚಿ}one{&amp;ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಚ್ಚಿ (# Windows)}other{&amp;ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಚ್ಚಿ (# Windows)}}</translation>

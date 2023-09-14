@@ -1216,7 +1216,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5961960957587052807">Yengil</translation>
 <translation id="5965524703725988602">Tungi mavzuni yoqish/oʻchirish <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Oynalar sahifasini oldinga oʻtkazish</translation>
-<translation id="5976112937189445008">Oynani yozib olish uchun Enter tugmasini bosing</translation>
 <translation id="5978382165065462689">Ekraningiz boshqaruvini masofaviy yordamchi orqali ulashish.</translation>
 <translation id="5980301590375426705">Chiqish (mehmon)</translation>
 <translation id="5983567367406220847">Faolsizlik tufayli hotspot faolsizlantirildi.</translation>
@@ -1438,7 +1437,6 @@ yangi oʻrnatilgan</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> ishlashi sekinlashishi mumkin. <ph name="PREFERRED_MINIMUM_POWER" />W sertifikatiga ega yoki kuchliroq USB-C quvvat adapteridan foydalaning.</translation>
 <translation id="688631446150864480">Oynalarni almashtirish uchun pastga strelkani bosing</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
-<translation id="6901883536534621389">Boshqarish uchun ishoralardan foydalaning</translation>
 <translation id="6912841030378044227">Manzillar qatorini fokuslash</translation>
 <translation id="6912901278692845878">Tezkor tanishtiruv</translation>
 <translation id="6919251195245069855">Smart kartangiz aniqlanmadi. Qayta urining.</translation>
@@ -1744,7 +1742,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ishlatilmoqda</translation>
 <translation id="8185090165691050712">Qulflash rejimi oʻlchamini oʻzgartirish uchun menyuni koʻrsatish yoki yashirish</translation>
 <translation id="8192202700944119416">Bildirishnomalar yashirilgan.</translation>
-<translation id="8196787716797768628">Chromebook qurilmangizdagi ilovalarni tez va qulay almashtirish uchun planshet rejimi ishoralaridan foydalaning.</translation>
 <translation id="8198456017687137612">Translatsiya varagʻi</translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8203795194971602413">Oʻng klik</translation>
@@ -1903,7 +1900,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8909138438987180327">Batareya quvvati: <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistent hozircha bu tilda gapirmaydi.</translation>
-<translation id="8924458948354692166">Oynani rasmga olish uchun Enter tugmasini bosing</translation>
 <translation id="8926951137623668982">Javon doim berk</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ta fayl}other{# ta fayl}}</translation>
 <translation id="8936501819958976551">faolsizlantirildi</translation>

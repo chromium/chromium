@@ -24,6 +24,7 @@ Nəzərə alın ki:
 
   • Tarixçə Google Hesabına sinxronlaşdırılsa, göstəricilərdə daxil olduğunuz keçidlər haqqında məlumat ola bilər.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Zərərli vebsaytlara qarşı Chrome'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
+<translation id="1657395063736185342">Chrome-da vizualları axtarın</translation>
 <translation id="1675955119303651351">Müəyyən Chrome datası Google Hesabında yadda saxlanmayıb.
         Çıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, bu data silinəcək.</translation>
 <translation id="1682483655351012182">Chrome Datasını Sinxronizasiya Edin</translation>
@@ -135,6 +136,7 @@ Nəzərə alın ki:
 <translation id="6247557882553405851">Google Parol Meneceri</translation>
 <translation id="6412673304250309937">URL'ləri Chrome'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır. Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chrome səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər.</translation>
 <translation id="6427126399757991875">Təşkilatınız Chrome'u ayarlayır...</translation>
+<translation id="6545449117344801102">Chrome istiqamət və yerli məlumat təqdim etmək üçün ünvanları aşkarlayır və Google Xəritədən istifadə edir.</translation>
 <translation id="6600954340915313787">Chrome'a kopYanlışır</translation>
 <translation id="6634107063912726160">Hesabdan çıxdığınız zaman Chrome heç bir yeni datanı Google Hesabınızla sinxronizasiya edilməyəcək. Daha əvvəl sinxronizasiya edilmiş data hesabda qalır.</translation>
 <translation id="6646696210740573446">IP ünvanını gizlədən məxfilik serveri vasitəsilə URL-in qarışıq bir hissəsini Google-a göndərir. Sayt parolu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyiniz zaman Chrome səhifə kontentindən kiçik nümunələr daxil olmaqla URL-i Google-a göndərə bilər.</translation>
@@ -149,6 +151,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6916015246697034114">Chrome-da səs ilə axtarın</translation>
 <translation id="6964931465519938134">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
 <translation id="6975725306479268850">Avtodoldurma üçün Chrome'u seçin</translation>
+<translation id="7004159181872656283">Chrome-da vizualları axtarın.</translation>
 <translation id="7056826488869329999">Chrome-da təhlükəsizlik yoxlanışını açır və icra edir.</translation>
 <translation id="7059914902409643750">Chrome'u fərdiləşdirin</translation>
 <translation id="7124339256045485976">Chrome'u yeni saxlayın</translation>
@@ -156,6 +159,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7165736900384873061">Google Chrome QR skanerini istifadə etməyə başlayın</translation>
 <translation id="7173660919484573146">Chrome parollara icazəli giriş olduğuna əmin olmaq üçün Üz ID-dən istifadə edir.</translation>
 <translation id="7187993566681480880">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər.</translation>
+<translation id="7200524487407690471">Chrome sizi verilənlərin pozulması, güvənsiz veb-sayt və s. təhlükələrdən qorumaq üçün hər gün avtomatik Təhlükəsizlik yoxlanışı icra edir. Ayarlarda Təhlükəsizlik yoxlanışı haqqında ətraflı məlumat əldə edə bilərsiniz.</translation>
 <translation id="72119412072970160">Google Parol Menecerində saxladığınız parolları iPad'dakı digər tətbiqlərdə istifadə edə bilərsiniz.</translation>
 <translation id="7254380941803999489">Chrome-u defolt brauzer təyin edin</translation>
 <translation id="7261678641327190792">Chrome parollarınızı yoxlaya bilmir</translation>

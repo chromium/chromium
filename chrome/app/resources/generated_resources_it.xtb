@@ -444,7 +444,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1347512539447549782">Spazio di archiviazione Linux</translation>
 <translation id="1347975661240122359">L'aggiornamento inizierà quando la carica della batteria raggiunge il <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Impostazioni di accessibilità del mouse</translation>
-<translation id="1351089605448164407">Dal tuo Drive</translation>
 <translation id="1353275871123211385">Per usare il Controllo genitori, ad esempio l'approvazione delle app e i limiti per il tempo di utilizzo, è necessario che il bambino abbia un Account Google gestito da un genitore. In un secondo momento è possibile aggiungere un account della scuola da usare per strumenti quali Google Classroom.</translation>
 <translation id="135389172849514421">Funziona offline</translation>
 <translation id="1353980523955420967">Impossibile trovare il file PPD. Assicurati che il Chromebook sia online e riprova.</translation>
@@ -1980,6 +1979,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Si è verificato un errore. Impossibile installare <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Per maggiore assistenza, visita la pagina g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Prolunga la durata della batteria mantenendo la carica della batteria all'80% circa. La batteria viene ricaricata completamente prima del momento in cui generalmente ti scolleghi dall'alimentazione.</translation>
+<translation id="2532146950330687938">Preparazione del dispositivo in corso…</translation>
 <translation id="2532198298278778531">Gestisci DNS sicuro nelle impostazioni di ChromeOS Flex</translation>
 <translation id="2532589005999780174">Modalità ad alto contrasto</translation>
 <translation id="2533649878691950253">A questo sito è stato impedito di conoscere la tua posizione precisa perché di solito non lo permetti</translation>
@@ -2189,7 +2189,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2710101514844343743">Dati diagnostici e sull'utilizzo</translation>
 <translation id="271033894570825754">Nuovo</translation>
 <translation id="2711073837061989559">Prove</translation>
-<translation id="2711929077861214979">Consigli di sicurezza</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2714180132046334502">Sfondo scuro</translation>
@@ -2499,7 +2498,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2939908794993783865">Altri siti non attivi</translation>
 <translation id="2939938020978911855">Mostra dispositivi Bluetooth disponibili</translation>
 <translation id="2941112035454246133">Bassa</translation>
-<translation id="2942279350258725020">Android Messaggi</translation>
 <translation id="2942560570858569904">In attesa…</translation>
 <translation id="2942581856830209953">Personalizza questa pagina</translation>
 <translation id="2942707801577151363">Apre, modifica e salva file Word, Excel e PowerPoint. Per alcune funzionalità potrebbe essere necessario un abbonamento.</translation>
@@ -4695,7 +4693,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
 <translation id="474609389162964566">Accedi al tuo assistente con "Hey Google"</translation>
-<translation id="4746351372139058112">Messaggi</translation>
 <translation id="4748783296226936791">Solitamente i siti si connettono ai dispositivi HID per funzionalità che usano tastiere insolite, controller di gioco e altri dispositivi</translation>
 <translation id="4749960740855309258">Apri una nuova scheda</translation>
 <translation id="4750185073185658673">Controlla altre autorizzazioni dal telefono. Assicurati che il Bluetooth e il Wi-Fi del telefono siano attivi.</translation>
@@ -4762,7 +4759,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4807122856660838973">Attiva Navigazione sicura</translation>
 <translation id="4807514039636325497">Dettagli D-Bus</translation>
 <translation id="4808667324955055115">Popup bloccati</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Esamina <ph name="BEGIN_BOLD" />1 estensione<ph name="END_BOLD" /> rimossa dal Chrome Web Store}other{Esamina <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} estensioni<ph name="END_BOLD" /> rimosse dal Chrome Web Store}}</translation>
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
 <translation id="4809447465126035330">Elimina</translation>
 <translation id="480990236307250886">Apri pagina iniziale</translation>
@@ -5745,6 +5741,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5627086634964711283">Controlla anche la pagina visualizzata quando fai clic sul pulsante Pagina iniziale.</translation>
 <translation id="5627676517703583263">Naviga in modo intelligente con Chrome</translation>
 <translation id="5627832140542566187">Orientamento del display</translation>
+<translation id="5628434207686266338">Imposta la password del dispositivo</translation>
 <translation id="562935524653278697">L'amministratore ha disattivato la sincronizzazione dei tuoi preferiti, della cronologia, delle password e di altre impostazioni.</translation>
 <translation id="5631017369956619646">Utilizzo CPU</translation>
 <translation id="5631272057151918206">Questa azione comporterà la rimozione di massimo <ph name="OFFLINE_STORAGE_SIZE" /> di spazio usato dai tuoi file offline. Alcuni file saranno ancora disponibili offline. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
@@ -6325,6 +6322,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6104796831253957966">La coda della stampante è piena</translation>
 <translation id="6104929924898022309">Utilizza il tasto Ricerca per modificare il comportamento dei tasti funzione</translation>
 <translation id="6106167152849320869">Se hai anche scelto di inviare dati diagnostici e sull'utilizzo nel passaggio precedente, questi dati verranno raccolti per le app installate.</translation>
+<translation id="6111718295497931251">Rimuovi l'accesso a Google Drive</translation>
 <translation id="6111972606040028426">Abilitare l'Assistente Google</translation>
 <translation id="6112294629795967147">Tocca per ridimensionare</translation>
 <translation id="6112727384379533756">Aggiungi una richiesta</translation>
@@ -9829,6 +9827,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8962083179518285172">Nascondi dettagli</translation>
 <translation id="8962863356073277855">Il formato dell'URL deve essere https://www.example.com</translation>
 <translation id="8962918469425892674">Questo sito usa sensori di movimento o della luce.</translation>
+<translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
 <translation id="8965037249707889821">Inserisci vecchia password</translation>
 <translation id="8966809848145604011">Altri profili</translation>
 <translation id="8967427617812342790">Aggiungi all'elenco di lettura</translation>
@@ -10207,7 +10206,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="964286338916298286">Il tuo amministratore IT ha disattivato i vantaggi offerti da Chrome per il tuo dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Applicazione}other{Applicazioni}}</translation>
 <translation id="964790508619473209">Disposizione dello schermo</translation>
-<translation id="965211523698323809">Invia e ricevi SMS da <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Segnala un problema con Google Cast</translation>
 <translation id="966588271015727539">Seleziona un display braille Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Chiudi questo profilo}other{&amp;Chiudi questo profilo (# finestre)}}</translation>

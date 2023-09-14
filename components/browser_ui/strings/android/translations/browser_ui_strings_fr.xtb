@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2678468611080193228">Essayez d'autoriser temporairement les cookies tiers. Vous bénéficierez d'une protection réduite, mais les fonctionnalités du site seront plus susceptibles de fonctionner.</translation>
+<translation id="2683434792633810741">Supprimer et réinitialiser ?</translation>
 <translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses e-mail</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">Autorisez les cookies pour un site spécifique.</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
 <translation id="4053720452172726777">Personnaliser et contrôler Google Chrome</translation>
+<translation id="4149890623864272035">Voulez-vous vraiment supprimer toutes les données locales, y compris les cookies, et réinitialiser toutes les autorisations pour ce site Web ?</translation>
 <translation id="4149994727733219643">Vue simplifiée pour les pages Web</translation>
 <translation id="4151930093518524179">Zoom par défaut</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="4434045419905280838">Pop-ups et redirections</translation>
+<translation id="443552056913301231">Cela supprimera toutes les données locales, y compris les cookies, et réinitialisera toutes les autorisations pour <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Coupez le son d'un site spécifique.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Permet de faciliter la personnalisation du zoom en fonction des sites</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">Désactiver le micro</translation>
 <translation id="4570913071927164677">Détails</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des sites, même sur les sites associés. Votre activité de navigation n'est pas utilisée pour personnaliser les annonces, par exemple. Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
+<translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par ton parent</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de lumière</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
 <translation id="5225463052809312700">Activer la caméra</translation>
 <translation id="5234764350956374838">Ignorer</translation>
+<translation id="5246825184569358663">Cela supprimera toutes les données locales, y compris les cookies, et réinitialisera toutes les autorisations pour <ph name="DOMAIN" /> et tous les sites qui en dépendent</translation>
 <translation id="5264323282659631142">Supprimer "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Pour quitter le mode plein écran, faites glisser un doigt du haut vers le bas, puis appuyez sur le bouton Retour.</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">Exceptions</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
+<translation id="6207207788774442484">Supprimer les données et réinitialiser les autorisations</translation>
 <translation id="6216432067784365534">Options pour <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Désinstaller <ph name="APP_NAME" /> ?</translation>
 <translation id="6262191102408817757">D'après votre dernier onglet</translation>

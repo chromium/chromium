@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
 <translation id="3478750326643748149">Nascondi "Ottieni il massimo da Chromium"</translation>
+<translation id="3554027294407525061">Cancella i dati di navigazione in Chromium.</translation>
 <translation id="3567399274263440288">Accedi con il tuo Account Google a Chromium per usare al meglio questo browser.</translation>
 <translation id="3639997914391704523">Chromium può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> stava usando Chromium e ha lasciato preferiti, password e altre impostazioni su questo dispositivo.</translation>
@@ -96,7 +97,9 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="4996471330284142407">Aumenta la tua produttività grazie a Chromium, che ti offre semplicità, sicurezza e velocità senza precedenti.</translation>
 <translation id="4999538639245140991">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chromium verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="5042011327527167688">Tocca l'opzione "Visualizza con Google Maps su Chromium".</translation>
+<translation id="5044871537677053278">Chromium rileva gli indirizzi e utilizza Google Maps per darti indicazioni stradali e informazioni locali.</translation>
 <translation id="5048795749726991615">Usa la funzionalità Compilazione automatica di Chromium per recuperare facilmente le tue password salvate nelle altre app</translation>
+<translation id="5076601183701536878">Cancella i dati di navigazione in Chromium</translation>
 <translation id="5131565040785979529">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui hai eseguito l'accesso e la modalità di utilizzo di Chromium.</translation>
 <translation id="5171868502429358653">Accedi a Chromium</translation>
 <translation id="5213683223491576284">Apre Gestore delle password in Chromium.</translation>

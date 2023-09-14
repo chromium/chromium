@@ -1216,7 +1216,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5961960957587052807">Ukukhanya</translation>
 <translation id="5965524703725988602">Guqula Itimu Emnyama <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Biyela phambili ngamafasitela</translation>
-<translation id="5976112937189445008">Cindezela u-enter ukuze urekhode iwindi</translation>
 <translation id="5978382165065462689">Ukulawula ukwabelana kwesikrini sakho nge-Remote Assistance.</translation>
 <translation id="5980301590375426705">Phuma kusihambeli</translation>
 <translation id="5983567367406220847">Ngenxa yokungasebenzi, i-hotspot ivaliwe.</translation>
@@ -1438,7 +1437,6 @@ Ukufaka okusha</translation>
 <translation id="6886172995547742638">I-<ph name="DEVICE_TYPE" /> yakho ingahlangabezana nokusebenza okuphansi. Sebenzisa I-<ph name="PREFERRED_MINIMUM_POWER" />W noma i-adaptha yamandla ephezulu ye-USB-C.</translation>
 <translation id="688631446150864480">Cindezela ukhiye womcibisholo Waphansi ukushintsha amawindi</translation>
 <translation id="6896758677409633944">Kopisha</translation>
-<translation id="6901883536534621389">Zama ukuthinta ukuze ufune</translation>
 <translation id="6912841030378044227">Gxila kubha yekheli</translation>
 <translation id="6912901278692845878">Uhambo olusheshayo</translation>
 <translation id="6919251195245069855">Ayikwazanga ukubona ikhadi lakho elisebenza ngobuchwepheshe besimanje. Zama futhi.</translation>
@@ -1744,7 +1742,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8167567890448493835">Usebenzisa i-<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Vula/vala imenyu ukuze ushintshe usayizi wemodi yokukhiya</translation>
 <translation id="8192202700944119416">Izaziso zifihlakele.</translation>
-<translation id="8196787716797768628">Sebenzisa ukuthinta ukushintsha ngokushesha phakathi kwezinhlelo zokusebenza futhi usebenzisane ne-Chromebook yakho kwimodi yethebulethi.</translation>
 <translation id="8198456017687137612">Ithebhu yokusakaza</translation>
 <translation id="8200772114523450471">Qala futhi</translation>
 <translation id="8203795194971602413">Ukuchofoza kwesokudla</translation>
@@ -1903,7 +1900,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8909138438987180327">Ibhethri ku-<ph name="PERCENTAGE" /> amaphesenti.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Umsizi we-Google akakhulumi lolu limi.</translation>
-<translation id="8924458948354692166">Cindezela u-enter ukuze uthathe isithombe-skrini sewindi</translation>
 <translation id="8926951137623668982">Ishelufu lihlala lifihliwe</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Ifayela eli-1}one{Amafayela angu-#}other{Amafayela angu-#}}</translation>
 <translation id="8936501819958976551">kwenziwe kwangasebenzi</translation>

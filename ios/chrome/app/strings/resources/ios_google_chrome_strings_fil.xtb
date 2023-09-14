@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1105362920864247682">I-clear ang Data Mula sa Pagba-browse sa Chrome.</translation>
 <translation id="1143896152279775643">Ise-save ang iyong password sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Patuloy na gamitin ang data sa Chrome sa iyong Google Account.</translation>
 <translation id="1282031177488366470">Tumulong sa Pagpapahusay sa Mga Feature at Performance ng Chrome</translation>
@@ -56,6 +57,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2736805085127235148">Kasalukuyang naka-off ang mga notification sa Chrome sa mga setting ng iyong device.</translation>
 <translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="2840432500933227975">Buksan ang Mga Setting ng Chrome sa iOS, pagkatapos ay i-tap ang "Default na APP ng Browser" at piliin ang Chrome.</translation>
+<translation id="2868822340714096138">I-clear ang Data Mula sa Pagba-browse sa Chrome</translation>
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Piliin ang <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>

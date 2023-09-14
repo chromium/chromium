@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">חלש</translation>
 <translation id="5965524703725988602">הפעלה או השבתה של עיצוב כהה. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">מעבר קדימה בין חלונות</translation>
-<translation id="5976112937189445008">‏כדי להקליט את החלון, מקישים על Enter</translation>
 <translation id="5978382165065462689">שיתוף שליטה במסך דרך סיוע מרחוק.</translation>
 <translation id="5980301590375426705">יציאה מהפעלת אורח</translation>
 <translation id="5983567367406220847">הנקודה לשיתוף האינטרנט הושבתה עקב חוסר פעילות.</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. יש להשתמש במתאם מתח מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" /> ואט לפחות, או מסוג USB-C.</translation>
 <translation id="688631446150864480">יש להקיש על מקש החץ למטה כדי לעבור בין חלונות</translation>
 <translation id="6896758677409633944">העתקה</translation>
-<translation id="6901883536534621389">רוצה לנסות לנווט באמצעות תנועות?</translation>
 <translation id="6912841030378044227">התמקדות בסרגל הכתובות</translation>
 <translation id="6912901278692845878">סיור קצר</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
@@ -1746,7 +1744,6 @@
 <translation id="8167567890448493835">המיקום הנוכחי הוא<ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">הפעלה/השבתה של התפריט לשינוי הגודל במצב הנעילה</translation>
 <translation id="8192202700944119416">ההתראות מוסתרות.</translation>
-<translation id="8196787716797768628">‏במצב טאבלט אפשר לעבור במהירות בין אפליקציות ולבצע פעולות שונות ב-Chromebook באמצעות תנועות.</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
@@ -1905,7 +1902,6 @@
 <translation id="8909138438987180327">שיעור הטעינה של הסוללה הוא <ph name="PERCENTAGE" /> אחוזים.</translation>
 <translation id="8921554779039049422">+H</translation>
 <translation id="8921624153894383499">‏Google Assistant לא מדברת בשפה הזאת.</translation>
-<translation id="8924458948354692166">‏כדי לצלם את החלון במסך, מקישים על Enter</translation>
 <translation id="8926951137623668982">המדף תמיד מוסתר</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{קובץ אחד}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="8936501819958976551">מושבתת</translation>

@@ -449,7 +449,6 @@
 <translation id="1347512539447549782">Пам'ять Linux</translation>
 <translation id="1347975661240122359">Оновлення почнеться, коли рівень заряду акумулятора сягне <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Налаштування функцій доступності миші</translation>
-<translation id="1351089605448164407">З вашого Диска</translation>
 <translation id="1353275871123211385">Використовувати функції батьківського контролю (наприклад, схвалювати додатки чи обмежувати час використання пристрою) можна тільки за умови, що дитина має обліковий запис Google, яким керує хтось із батьків. Пізніше можна додати обліковий запис закладу освіти для таких інструментів, як Google Клас.</translation>
 <translation id="135389172849514421">Доступно в режимі офлайн</translation>
 <translation id="1353980523955420967">Не вдається знайти файл PPD. Переконайтеся, що Chromebook під’єднано до Інтернету, і повторіть спробу.</translation>
@@ -1998,6 +1997,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Сталася помилка. Не вдалося встановити <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Подовжує час роботи акумулятора, підтримуючи його заряд на рівні 80%. Акумулятор буде повністю заряджено до того часу, коли ви зазвичай відключаєте пристрій від джерела живлення.</translation>
+<translation id="2532146950330687938">Підготовка пристрою…</translation>
 <translation id="2532198298278778531">Керувати захищеним DNS-сервером у налаштуваннях ОС Chrome Flex</translation>
 <translation id="2532589005999780174">Режим високого контрасту</translation>
 <translation id="2533649878691950253">Цьому сайту заблоковано доступ до даних про ваше точне місцезнаходження, оскільки ви зазвичай вибираєте такі налаштування</translation>
@@ -2207,7 +2207,6 @@
 <translation id="2710101514844343743">Дані про використання й діагностику</translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2711073837061989559">Пробні версії функцій</translation>
-<translation id="2711929077861214979">Поради з безпеки</translation>
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2713444072780614174">Білий</translation>
 <translation id="2714180132046334502">Темний фон</translation>
@@ -2517,7 +2516,6 @@
 <translation id="2939908794993783865">Інші неактивні сайти</translation>
 <translation id="2939938020978911855">Показати доступні пристрої Bluetooth</translation>
 <translation id="2941112035454246133">Низький</translation>
-<translation id="2942279350258725020">Android Повідомлення</translation>
 <translation id="2942560570858569904">Очікується…</translation>
 <translation id="2942581856830209953">Налаштувати цю сторінку</translation>
 <translation id="2942707801577151363">Відкривайте, редагуйте й зберігайте файли Word, Excel і PowerPoint. Для деяких функцій може знадобитися підписка.</translation>
@@ -4714,7 +4712,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Увімкнути звук на сайті}one{Увімкнути звук на сайтах}few{Увімкнути звук на сайтах}many{Увімкнути звук на сайтах}other{Увімкнути звук на сайтах}}</translation>
 <translation id="474609389162964566">Активуйте Асистента командою "Ok Google"</translation>
-<translation id="4746351372139058112">Повідомлення</translation>
 <translation id="4748783296226936791">Сайти зазвичай підключаються до пристроїв HID для роботи функцій, які використовують нестандартні клавіатури, ігрові контролери й інші пристрої</translation>
 <translation id="4749960740855309258">Відкрити нову вкладку</translation>
 <translation id="4750185073185658673">Перейдіть на телефон і перегляньте ще кілька дозволів. Переконайтеся, що на ньому ввімкнено Bluetooth і Wi-Fi.</translation>
@@ -4781,7 +4778,6 @@
 <translation id="4807122856660838973">Увімкнути Безпечний перегляд</translation>
 <translation id="4807514039636325497">Відомості про D-Bus</translation>
 <translation id="4808667324955055115">Спливаючі вікна заблоковано:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Перегляньте <ph name="BEGIN_BOLD" />1 розширення<ph name="END_BOLD" />, вилучене з Веб-магазину Chrome}one{Перегляньте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} розширення<ph name="END_BOLD" />, вилучене з Веб-магазину Chrome}few{Перегляньте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} розширення<ph name="END_BOLD" />, вилучені з Веб-магазину Chrome}many{Перегляньте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} розширень<ph name="END_BOLD" />, вилучених із Веб-магазину Chrome}other{Перегляньте <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} розширення<ph name="END_BOLD" />, вилученого з Веб-магазину Chrome}}</translation>
 <translation id="4809079943450490359">Вказівки адміністратора вашого пристрою:</translation>
 <translation id="4809447465126035330">Видалити</translation>
 <translation id="480990236307250886">Перейти на головну сторінку</translation>
@@ -5764,6 +5760,7 @@
 <translation id="5627086634964711283">Розширення також змінило сторінку, яка відкривається під натискання кнопки "Домашня сторінка".</translation>
 <translation id="5627676517703583263">Розумний перегляд у Chrome</translation>
 <translation id="5627832140542566187">Орієнтація дисплея</translation>
+<translation id="5628434207686266338">Налаштувати пароль пристрою</translation>
 <translation id="562935524653278697">Адміністратор вимкнув синхронізацію закладок, історії, паролів та інших налаштувань.</translation>
 <translation id="5631017369956619646">Використання ЦП</translation>
 <translation id="5631272057151918206">Буде звільнено <ph name="OFFLINE_STORAGE_SIZE" /> пам’яті, що використовується для файлів, збережених офлайн. Деякі файли все ще будуть доступні офлайн. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -6344,6 +6341,7 @@
 <translation id="6104796831253957966">Черга принтера заповнена</translation>
 <translation id="6104929924898022309">Використовувати клавішу пошуку, щоб змінювати призначення функціональних клавіш</translation>
 <translation id="6106167152849320869">Якщо на попередньому кроці ви погодилися надсилати дані про діагностику й використання, ці дані збиратимуться для встановлених додатків.</translation>
+<translation id="6111718295497931251">Скасувати доступ до Google Диска</translation>
 <translation id="6111972606040028426">Увімкнути Google Асистента</translation>
 <translation id="6112294629795967147">Торкніться, щоб змінити розмір</translation>
 <translation id="6112727384379533756">Додати квиток</translation>
@@ -9856,6 +9854,7 @@
 <translation id="8962083179518285172">Сховати деталі</translation>
 <translation id="8962863356073277855">URL-адреса повинна мати такий формат: https://www.example.com</translation>
 <translation id="8962918469425892674">Цей сайт використовує датчики руху чи світла.</translation>
+<translation id="8963117664422609631">Перейти до налаштувань сайту</translation>
 <translation id="8965037249707889821">Введіть старий пароль</translation>
 <translation id="8966809848145604011">Інші профілі</translation>
 <translation id="8967427617812342790">Додати в список читання</translation>
@@ -10234,7 +10233,6 @@
 <translation id="964286338916298286">ІТ-адміністратор вимкнув додаткові можливості Chrome для вашого пристрою.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Додаток}one{Додатки}few{Додатки}many{Додатки}other{Додатки}}</translation>
 <translation id="964790508619473209">Розміщення екрана</translation>
-<translation id="965211523698323809">Обмінюйтеся текстовими повідомленнями за допомогою <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Повідомити про проблему з Google Cast</translation>
 <translation id="966588271015727539">Виберіть брайлівський Bluetooth-дисплей</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Закрити Цей Профіль}one{&amp;Закрити Цей Профіль (# Вікно)}few{&amp;Закрити Цей Профіль (# Вікна)}many{&amp;Закрити Цей Профіль (# Вікон)}other{&amp;Закрити Цей Профіль (# Вікна)}}</translation>

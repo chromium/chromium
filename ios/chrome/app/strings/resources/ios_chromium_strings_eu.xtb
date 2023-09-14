@@ -69,6 +69,7 @@
 <translation id="3784369638459513223">Chromium-en ezkutuko moduko fitxa berri bat irekitzen du.</translation>
 <translation id="3805899903892079518">Chromium-ek ez du argazki eta bideoetarako sarbiderik. Gaitu sarbidea iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="3827545470516145620">Babes estandarra darabilzu gailu honetan</translation>
+<translation id="3833326979834193417">Egunero, Chromium-ek segurtasun-egiaztapena exekutatzen du automatikoki, datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurka babestuta egon zaitezen. Segurtasun-egiaztapenari buruzko informazio gehiago lortzeko, joan ezarpenetara.</translation>
 <translation id="3886689467633467988">Hasi saioa webgune honetan eta Chromium-en, zure laster-markak eta bestelako elementuak gailu guztietan eduki ditzazun.</translation>
 <translation id="394413318816989199">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira ordainketa-metodoak eta helbideak.
 
@@ -84,6 +85,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko dat
 <translation id="4555020257205549924">Eginbide hau aktibatuta dagoenean, Chromium-ek beste hizkuntzetan idatzita dauden orriak Google Translate bidez itzultzea proposatuko dizu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium-eko ordainketa-metodoen ezarpenen orria irekitzen du.</translation>
 <translation id="4585809515399340748">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chromium erabili ahalko duzu.</translation>
+<translation id="459080529287102949">Bilatu irudi bidez Chromium-en</translation>
 <translation id="4633738821577273991">Lortu Arakatze seguru hobetua Chromium-eko profil honetan ere</translation>
 <translation id="4654936625574199632">Aplikazioa hobetzeko, Chromium-ek erabilera-datuak eta hutsegite-txostenak bidaltzen dizkio Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktibatu Chromium-en eskanerra</translation>
@@ -152,6 +154,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7045244423563602563">Pertsonalizatu Chromium</translation>
 <translation id="7055269218854630176"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabiltzen ari zaren kontua eta Chromium erabiltzeko modua. Administratzaileak eginbide batzuk konfiguratu edo muga ditzake.</translation>
 <translation id="7099326575020694068">Chromium-ek ezin du erabili kamera Ikuspegi zatitua moduan</translation>
+<translation id="7163483974919055112">Bilatu irudi bidez Chromium-en.</translation>
 <translation id="7165402419892018581">Aukeratu Chromium betetze automatikorako</translation>
 <translation id="7175400662502680481">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Pasahitz-kudeatzailea eginbideak hura orain aldatzea gomendatzen du.</translation>
 <translation id="7192111075364461693">Chromium-en jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>

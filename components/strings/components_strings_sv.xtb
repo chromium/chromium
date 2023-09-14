@@ -212,6 +212,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1391289752476847787">Aktier och obligationer</translation>
 <translation id="1391625539203220400">Vill du spara IBAN på den här enheten?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> skickade ingen data.</translation>
+<translation id="1397811292916898096">Sök med <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Ljusgrön</translation>
 <translation id="1406500794671479665">Verifierar …</translation>
 <translation id="1406812885827747674">Tillåt den här gången</translation>
@@ -2613,6 +2614,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6432297414176614592">Mer om annonsämnen</translation>
 <translation id="6432831586648556868">Jobb inom försäljning och marknadsföring</translation>
 <translation id="6433490469411711332">Redigera kontaktuppgifter</translation>
+<translation id="6433501201775827830">Välj sökmotor</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> avvisade anslutningen.</translation>
 <translation id="6433797564277305076">Verifiera kreditkort snabbare genom att använda enhetsupplåsning från och med nu</translation>
 <translation id="643917412048333145">Klänningar</translation>
@@ -3970,6 +3972,7 @@ Mer information:
 <translation id="9207861905230894330">Det gick inte att lägga till artikeln.</translation>
 <translation id="9213433120051936369">Anpassa utseendet</translation>
 <translation id="9215416866750762878">Ett program förhindrar att Chrome ansluter till den här webbplatsen på ett säkert sätt</translation>
+<translation id="9218430445555521422">Använd som standard</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="9222403027701923763">Grundskola och gymnasium</translation>

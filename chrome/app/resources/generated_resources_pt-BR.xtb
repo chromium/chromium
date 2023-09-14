@@ -447,7 +447,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1347512539447549782">Armazenamento no Linux</translation>
 <translation id="1347975661240122359">A atualização é iniciada quando a bateria chega a <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1348966090521113558">Configurações de acessibilidade do mouse</translation>
-<translation id="1351089605448164407">Do seu Drive</translation>
 <translation id="1353275871123211385">Para usar o controle dos pais, como a aprovação de apps e os limites de tempo de uso, é necessário que a criança tenha uma Conta do Google gerenciada por familiar responsável. Uma conta escolar pode ser adicionada mais tarde para o uso de ferramentas como o Google Sala de Aula.</translation>
 <translation id="135389172849514421">Funciona off-line</translation>
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Verifique se seu Chromebook está on-line e tente novamente.</translation>
@@ -2205,7 +2204,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2710101514844343743">Dados de uso e diagnóstico</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Testes</translation>
-<translation id="2711929077861214979">Dicas de segurança</translation>
 <translation id="2713106313042589954">Desativar câmera</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Plano de fundo escuro</translation>
@@ -2514,7 +2512,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2939908794993783865">Outros sites inativos</translation>
 <translation id="2939938020978911855">Mostrar dispositivos Bluetooth disponíveis</translation>
 <translation id="2941112035454246133">Baixa</translation>
-<translation id="2942279350258725020">Android Mensagens</translation>
 <translation id="2942560570858569904">Aguardando...</translation>
 <translation id="2942581856830209953">Personalizar esta página</translation>
 <translation id="2942707801577151363">Abra, edite e salve arquivos do Word, Excel e PowerPoint. Uma assinatura pode ser necessária para usar alguns recursos.</translation>
@@ -4712,7 +4709,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
 <translation id="474609389162964566">Acesse o Google Assistente usando o "Ok Google"</translation>
-<translation id="4746351372139058112">Mensagens</translation>
 <translation id="4748783296226936791">Os sites geralmente se conectam a dispositivos HID para recursos que usam teclados diferentes, controles de jogos e outros dispositivos</translation>
 <translation id="4749960740855309258">Abrir uma nova guia</translation>
 <translation id="4750185073185658673">No smartphone, reveja se as permissões estão corretas. Confira se o Bluetooth e o Wi-Fi estão ativados.</translation>
@@ -4779,7 +4775,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4807122856660838973">Ativar a Navegação segura</translation>
 <translation id="4807514039636325497">Detalhes do DBus</translation>
 <translation id="4808667324955055115">Pop-ups bloqueados:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Avalie <ph name="BEGIN_BOLD" />1 extensão<ph name="END_BOLD" /> que foi removida da Chrome Web Store}one{Avalie <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} extensão<ph name="END_BOLD" /> que foi removida da Chrome Web Store}other{Avalie <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} extensões<ph name="END_BOLD" /> que foram removidas da Chrome Web Store}}</translation>
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4809447465126035330">Excluir</translation>
 <translation id="480990236307250886">Abrir a página inicial</translation>
@@ -6346,6 +6341,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6104796831253957966">A fila da impressora está cheia</translation>
 <translation id="6104929924898022309">Usar a tecla de pesquisa para mudar o comportamento das teclas de função</translation>
 <translation id="6106167152849320869">Se você também escolheu enviar dados de uso e diagnóstico na etapa anterior, esses dados serão coletados para os apps instalados.</translation>
+<translation id="6111718295497931251">Remover o acesso ao Google Drive</translation>
 <translation id="6111972606040028426">Ativar o Google Assistente</translation>
 <translation id="6112294629795967147">Toque para redimensionar</translation>
 <translation id="6112727384379533756">Adicionar um tíquete</translation>
@@ -9853,6 +9849,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8962083179518285172">Ocultar detalhes</translation>
 <translation id="8962863356073277855">O formato do URL precisa ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este site está usando sensores de luz ou movimento.</translation>
+<translation id="8963117664422609631">Acessar configurações do site</translation>
 <translation id="8965037249707889821">Digite a senha antiga</translation>
 <translation id="8966809848145604011">Outros perfis</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
@@ -10231,7 +10228,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="964286338916298286">Seu administrador de TI desativou os Goodies do Chrome para seu dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicativo}one{Aplicativo}other{Aplicativos}}</translation>
 <translation id="964790508619473209">Disposição da tela</translation>
-<translation id="965211523698323809">Envie e receba mensagens de texto no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar um problema com o Google Cast</translation>
 <translation id="966588271015727539">Selecione uma linha braille com Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Fechar perfil}one{&amp;Fechar perfil (# janela)}other{&amp;Fechar perfil (# janelas)}}</translation>

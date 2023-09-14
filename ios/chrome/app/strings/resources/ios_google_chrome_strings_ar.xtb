@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1105362920864247682">‏يمكنك محو بيانات التصفُّح في Chrome.</translation>
 <translation id="1143896152279775643">‏سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google لعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">‏يمكنك مواصلة استخدام بيانات Chrome في حسابك على Google.</translation>
 <translation id="1282031177488366470">‏المساعدة على تحسين ميزات Chrome وأدائه</translation>
@@ -56,6 +57,7 @@
 <translation id="2736805085127235148">‏إنّ إشعارات Chrome غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
 <translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
 <translation id="2840432500933227975">‏افتح إعدادات Chrome على جهاز iOS، ثم انقر على Default Browser App (تطبيق المتصفِّح التلقائي) واختَر Chrome.</translation>
+<translation id="2868822340714096138">‏محو بيانات التصفُّح في Chrome</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -136,6 +138,7 @@
 <translation id="6247557882553405851">‏مدير كلمات المرور في Google</translation>
 <translation id="6412673304250309937">‏يعمل على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفّح الآمن".</translation>
 <translation id="6427126399757991875">‏تعمل مؤسستك حاليًا على إعداد Chrome...</translation>
+<translation id="6545449117344801102">‏يرصد Chrome العناوين ويستخدم "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية.</translation>
 <translation id="6600954340915313787">‏تم النسخ إلى Chrome</translation>
 <translation id="6634107063912726160">‏عند تسجيل الخروج، لن تتم مزامنة أي بيانات جديدة في Chrome مع حسابك على Google. وتظلّ البيانات التي تمت مزامنتها سابقًا متوفّرة في حسابك.</translation>
 <translation id="6646696210740573446">‏يتم إرسال جزء مشفّر من عنوان URL إلى Google من خلال خادم لحماية الخصوصية يخفي عنوان IP الخاص بجهازك. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلْت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاءً من محتوى الصفحة إلى Google.</translation>

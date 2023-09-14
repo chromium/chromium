@@ -212,6 +212,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1391289752476847787">Aksionet dhe obligacionet</translation>
 <translation id="1391625539203220400">Të ruhet numri IBAN në këtë pajisje?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nuk dërgoi asnjë të dhënë.</translation>
+<translation id="1397811292916898096">Kërko me <ph name="PRODUCT_NAME" /></translation>
 <translation id="1405567553485452995">Jeshile e çelur</translation>
 <translation id="1406500794671479665">Po verifikon...</translation>
 <translation id="1406812885827747674">Lejo këtë herë</translation>
@@ -539,6 +540,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
 <translation id="2071852865256799872">Shfletuesi yt menaxhohet nga organizata jote dhe profili yt menaxhohet nga <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Moda dhe stili</translation>
+<translation id="2075497153347571252">Administratorit yt e ka bllokuar <ph name="PERMISSION" /> në <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="20817612488360358">Cilësimet e përfaqësuesit të sistemit janë caktuar që të përdoren, por është specifikuar po ashtu një konfigurim i qartë i përfaqësuesit.</translation>
 <translation id="2082238445998314030">Rezultati <ph name="RESULT_NUMBER" /> nga <ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1881,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4885256590493466218">Paguaj me <ph name="CARD_DETAIL" /> në përfundim të blerjes</translation>
 <translation id="4887406273302438710">Mbroji fjalëkalimet me Windows Hello</translation>
 <translation id="4888600795924685526">Studimi i gjuhëve të huaja</translation>
+<translation id="4890070067176768718">Administratori yt e ka lejuar <ph name="PERMISSION" /> në <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Prapa</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Lojërat Olimpike</translation>
@@ -2325,6 +2328,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
+<translation id="5838732667866024867">Mund të përdorësh shigjetën majtas/djathtas për të shqyrtuar ndryshimet e çmimeve në grafik</translation>
 <translation id="5840318881868981258">Në "Llogarinë tënde të Google", <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Të ruhet te llogaria?</translation>
 <translation id="5847181246682413476">Burime energjie</translation>
@@ -2612,6 +2616,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6432297414176614592">Më shumë rreth temave të reklamave</translation>
 <translation id="6432831586648556868">Punë në sektorin e shitjeve dhe të marketingut</translation>
 <translation id="6433490469411711332">Redakto informacionin e kontaktit</translation>
+<translation id="6433501201775827830">Zgjidh motorin e kërkimit</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> e refuzoi lidhjen.</translation>
 <translation id="6433797564277305076">Konfirmo kartat e tua më shpejt duke përdorur shkyçjen e pajisjes nga tani e tutje</translation>
 <translation id="643917412048333145">Fustane</translation>
@@ -3968,6 +3973,7 @@ Detaje shtesë:
 <translation id="9207861905230894330">Dështoi në shtimin e artikullit.</translation>
 <translation id="9213433120051936369">Personalizo pamjen</translation>
 <translation id="9215416866750762878">Një aplikacion e pengon Chrome që të lidhet në mënyrë të sigurt me këtë sajt</translation>
+<translation id="9218430445555521422">Cakto si parazgjedhje</translation>
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="922152298093051471">Personalizo Chrome</translation>
 <translation id="9222403027701923763">Arsimi fillor dhe i mesëm (K-12)</translation>

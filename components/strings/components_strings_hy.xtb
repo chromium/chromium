@@ -216,6 +216,7 @@
 <translation id="1391289752476847787">Բաժնետոմսեր և պարտատոմսեր</translation>
 <translation id="1391625539203220400">Պահե՞լ IBAN-ն այս սարքում</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />-ը տվյալներ չի ուղարկել:</translation>
+<translation id="1397811292916898096">Որոնում <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="1405567553485452995">Բաց կանաչ</translation>
 <translation id="1406500794671479665">Հաստատում…</translation>
 <translation id="1406812885827747674">Թույլատրել այս անգամ</translation>
@@ -2624,6 +2625,7 @@
 <translation id="6432297414176614592">Իմանալ ավելին գովազդի թեմաների մասին</translation>
 <translation id="6432831586648556868">Աշխատանք վաճառքի և մարքեթինգի ոլորտում</translation>
 <translation id="6433490469411711332">Փոփոխեք կոնտակտային տվյալները</translation>
+<translation id="6433501201775827830">Ընտրեք որոնիչը</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />-ը մերժեց կապակցումը:</translation>
 <translation id="6433797564277305076">Այսուհետ ավելի արագ հաստատեք ձեր քարտերը սարքի ապակողպման միջոցով</translation>
 <translation id="643917412048333145">Զգեստներ</translation>
@@ -3980,6 +3982,7 @@
 <translation id="9207861905230894330">Չհաջողվեց ավելացնել հոդվածը:</translation>
 <translation id="9213433120051936369">Անհատականացրեք արտաքին տեսքը</translation>
 <translation id="9215416866750762878">Ծրագրերից մեկը Chrome-ին թույլ չի տալիս անվտանգ միանալ այս կայքին</translation>
+<translation id="9218430445555521422">Օգտագործել որպես կանխադրված դիտարկիչ</translation>
 <translation id="9219103736887031265">Պատկերներ</translation>
 <translation id="922152298093051471">Անհատականացնել Chrome-ը</translation>
 <translation id="9222403027701923763">Տարրական և միջնակարգ կրթություն (K-12)</translation>

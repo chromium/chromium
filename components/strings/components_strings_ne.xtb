@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">सेयर तथा बचतपत्र</translation>
 <translation id="1391625539203220400">यो डिभाइसमा IBAN सेभ गर्ने हो?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ले कुनै पनि डेटा पठाएन।</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
 <translation id="1405567553485452995">हल्का हरियो</translation>
 <translation id="1406500794671479665">रुजू गर्दै...</translation>
 <translation id="1406812885827747674">यस पटक अनुमति दिनुहोस्</translation>
@@ -2614,6 +2615,7 @@
 <translation id="6432297414176614592">"विज्ञापनका विषयहरू" का बारेमा थप जान्नुहोस्</translation>
 <translation id="6432831586648556868">सेल्स तथा मार्केटिङसम्बन्धी जागिरहरू</translation>
 <translation id="6433490469411711332">सम्पर्क सम्बन्धी जानकारीलाई सम्पादन गर्नुहोस्</translation>
+<translation id="6433501201775827830">आफ्नो सर्च इन्जिन छनौट गर्नुहोस्</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ले जडान गर्न अस्वीकार गर्यो।</translation>
 <translation id="6433797564277305076">अबदेखि डिभाइस अनलक प्रयोग गरेर आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्नुहोस्</translation>
 <translation id="643917412048333145">पोसाकहरू</translation>
@@ -3970,6 +3972,7 @@
 <translation id="9207861905230894330">लेख थप्न असफल भयो।</translation>
 <translation id="9213433120051936369">आफूले चाहेअनुसारको रूप बनाउनुहोस्</translation>
 <translation id="9215416866750762878">कुनै अनुप्रयोगले Chrome लाई सुरक्षित रूपमा यो साइटमा जडान हुनबाट रोकिरहेको छ</translation>
+<translation id="9218430445555521422">डिफल्ट रूपमा सेट गर्नुहोस्</translation>
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="922152298093051471">Chrome आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="9222403027701923763">प्राथमिक र माध्यमिक विद्यालय (K-१२)</translation>

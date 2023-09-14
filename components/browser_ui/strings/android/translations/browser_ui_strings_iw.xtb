@@ -100,6 +100,7 @@
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2678468611080193228">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה, אבל סביר יותר שהתכונות באתר יפעלו</translation>
+<translation id="2683434792633810741">למחוק ולאפס?</translation>
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2713106313042589954">השבתת המצלמה</translation>
 <translation id="2717722538473713889">כתובות אימייל</translation>
@@ -179,6 +180,7 @@
 <translation id="4008040567710660924">‏אישור קובצי Cookie של אתר מסוים.</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="4053720452172726777">‏הגדרת Google Chrome בהתאם לרצונך</translation>
+<translation id="4149890623864272035">‏בחרת למחוק את כל הנתונים המקומיים, כולל קובצי cookie, ולאפס את כל ההרשאות של האתר הזה. להמשיך?</translation>
 <translation id="4149994727733219643">תצוגה פשוטה של דפי אינטרנט</translation>
 <translation id="4151930093518524179">ברירת מחדל של מרחק התצוגה</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
@@ -196,6 +198,7 @@
 <translation id="4412992751769744546">‏התר קובצי Cookie של צד שלישי</translation>
 <translation id="4428065317363009941">התאמה אישית של מודעות</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
+<translation id="443552056913301231">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">השתקת צלילים באתר ספציפי.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{‏קובץ cookie אחד}one{‏# קובצי cookie}two{‏# קובצי cookie}other{‏# קובצי cookie}}</translation>
 <translation id="4478158430052450698">אפשרות פשוטה יותר להתאים אישית את מרחק התצוגה באתרים שונים</translation>
@@ -205,6 +208,7 @@
 <translation id="4566417217121906555">השתקת המיקרופון</translation>
 <translation id="4570913071927164677">פרטים</translation>
 <translation id="4598549027014564149">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים, גם לא באתרים קשורים. פעילות הגלישה לא משמשת לפעולות כמו התאמה אישית של מודעות. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
+<translation id="4644713492825682049">מחיקה ואיפוס</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
@@ -235,6 +239,7 @@
 <translation id="5216942107514965959">הכניסה האחרונה בוצעה היום</translation>
 <translation id="5225463052809312700">הפעלת המצלמה</translation>
 <translation id="5234764350956374838">סגירה</translation>
+<translation id="5246825184569358663">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="DOMAIN" /> ושל כל אתרי המשנה שלו</translation>
 <translation id="5264323282659631142">הסרת '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בלחצן 'הקודם'.</translation>
 <translation id="5300589172476337783">הצגה</translation>
@@ -293,6 +298,7 @@
 <translation id="6192792657125177640">יוצאי דופן</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
+<translation id="6207207788774442484">מחיקת הנתונים ואיפוס ההרשאות</translation>
 <translation id="6216432067784365534">אפשרויות של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>

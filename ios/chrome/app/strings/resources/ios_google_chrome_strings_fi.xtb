@@ -24,6 +24,7 @@ Huomioitavaa:
 
 • Jos laitat historian synkronoinnin Google-tilille päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Käytössäsi on Chromen vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
+<translation id="1657395063736185342">Visuaalinen haku Chromessa</translation>
 <translation id="1675955119303651351">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi.
         Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="1682483655351012182">Chrome-datan synkronointi</translation>
@@ -135,6 +136,7 @@ Huomioitavaa:
 <translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6427126399757991875">Organisaatiosi ottaa käyttöön Chromea…</translation>
+<translation id="6545449117344801102">Chrome tunnistaa osoitteet ja tarjoaa Google Mapsin avulla reittiohjeita ja paikallisia tietoja.</translation>
 <translation id="6600954340915313787">Kopioitiin Chromeen.</translation>
 <translation id="6634107063912726160">Kun kirjaudut ulos, Chrome ei synkronoi uutta dataa Google-tilillesi. Aiemmin synkronoitu data säilytetään tilillä.</translation>
 <translation id="6646696210740573446">Lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Googlelle URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
@@ -149,6 +151,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="6916015246697034114">Hae puhumalla Chromesta</translation>
 <translation id="6964931465519938134">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>
+<translation id="7004159181872656283">Hae visuaalisesti Chromessa.</translation>
 <translation id="7056826488869329999">Avaa ja suorittaa turvatarkistuksen Chromessa.</translation>
 <translation id="7059914902409643750">Tee Chromesta näköisesi</translation>
 <translation id="7124339256045485976">Pidä Chrome ajan tasalla</translation>
@@ -156,6 +159,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7165736900384873061">Aloita Google Chromen QR-lukijan käyttö</translation>
 <translation id="7173660919484573146">Chrome varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
 <translation id="7187993566681480880">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
+<translation id="7200524487407690471">Chrome tekee turvatarkistuksen automaattisesti joka päivä suojatakseen sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Asetuksista löytyy lisätietoa turvatarkistuksesta.</translation>
 <translation id="72119412072970160">Voit käyttää Googlen Salasanojen ylläpitoon tallennettuja salasanoja muissa iPadisi sovelluksissa.</translation>
 <translation id="7254380941803999489">Valitse Chrome oletusselaimeksi</translation>
 <translation id="7261678641327190792">Chrome ei voi tarkistaa salasanojasi</translation>

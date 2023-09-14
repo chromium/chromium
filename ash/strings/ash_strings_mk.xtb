@@ -1217,7 +1217,6 @@
 <translation id="5961960957587052807">Делумно</translation>
 <translation id="5965524703725988602">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Движете се нанапред низ прозорците</translation>
-<translation id="5976112937189445008">Притиснете Enter за да го снимите прозорецот</translation>
 <translation id="5978382165065462689">Споделување контрола на вашиот екран преку далечинска помош.</translation>
 <translation id="5980301590375426705">Излези од гостин</translation>
 <translation id="5983567367406220847">Точката на пристап е исклучена поради неактивност.</translation>
@@ -1439,7 +1438,6 @@
 <translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
 <translation id="688631446150864480">Притискајте го копчето со стрелка надолу за да се префрлате меѓу прозорците</translation>
 <translation id="6896758677409633944">Копирај</translation>
-<translation id="6901883536534621389">Обидете се со движења за навигација</translation>
 <translation id="6912841030378044227">Фокусирајте се на лентата за адреси</translation>
 <translation id="6912901278692845878">Кратка разгледница</translation>
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>
@@ -1745,7 +1743,6 @@
 <translation id="8167567890448493835">Се користи <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Вклучете/исклучете го менито во режим на заклучување промени на големината</translation>
 <translation id="8192202700944119416">Известувањата се скриени.</translation>
-<translation id="8196787716797768628">Користете движења за брзо префрлање помеѓу апликациите и за да комуницирате со вашиот Chromebook во режим на таблет.</translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="8203795194971602413">Десен клик</translation>
@@ -1904,7 +1901,6 @@
 <translation id="8909138438987180327">Батеријата е на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">„Помошникот на Google“ не зборува на овој јазик.</translation>
-<translation id="8924458948354692166">Притиснете Enter за да снимите слика од екранот од прозорецот</translation>
 <translation id="8926951137623668982">Полицата е секогаш скриена</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>

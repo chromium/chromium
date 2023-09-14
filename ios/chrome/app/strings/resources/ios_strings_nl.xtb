@@ -158,6 +158,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1830634592642484976">Dit adres is momenteel opgeslagen in Chrome. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Bevestig dat jij het bent zodat je altijd toegang hebt tot je synchronisatiegegevens</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{Bookmarks opgeslagen in je Google-account {email}}}</translation>
+<translation id="183878838231635348">Deze kaart toont eventuele privacy- of beveiligingsproblemen die de Veiligheidscheck automatisch voor je opspoort.</translation>
 <translation id="1847795903283049083">Je kunt deze items ook bekijken en beheren in je bookmarks, leeslijst of wachtwoordmanager.</translation>
 <translation id="1870148520156231997">Wachtwoord bekijken</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
@@ -267,11 +268,13 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2523363575747517183">Deze website probeert herhaaldelijk een andere app te openen.</translation>
 <translation id="2529021024822217800">Alles openen</translation>
 <translation id="2536991091671391962">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Veiligheidscheck verbergen</translation>
 <translation id="2547458583188611426">Synchronisatie werkt niet. Geef je wachtwoordzin op om de synchronisatie te starten.</translation>
 <translation id="2551153019974022505">Accountfout</translation>
 <translation id="2556092377360758201">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="2562041823070056534">Verzenden naar <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Wachtwoorden in je Google-account gebruiken en opslaan</translation>
+<translation id="2577522251608256362">Buurt</translation>
 <translation id="2578571896248130439">Webpagina verzenden</translation>
 <translation id="2584132361465095047">Account toevoegen…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Geen gehackte wachtwoorden}=1{{count} gehackt wachtwoord}other{{count} gehackte wachtwoorden}}</translation>
@@ -310,6 +313,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2738375676495545665">Wat is er nieuw verbergen</translation>
 <translation id="2747003861858887689">Vorig veld</translation>
 <translation id="2749231692441336879">Je volgt <ph name="CHANNEL_NAME" /> nu</translation>
+<translation id="2754492786623500387">Accounts op dit apparaat</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="2772667768515195373">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres is opgeslagen in je Google-account <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Incognito zoeken</translation>
@@ -1088,7 +1092,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6944369514868857500">Een ander account kiezen</translation>
 <translation id="6944935964236827145">Vertalen verbergen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
-<translation id="6955779377310719430">Volgen verbergen</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mappen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1227,6 +1230,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="778855399387580014">Start een zoekopdracht op een nieuw Chrome-tabblad.</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7807060072011926525">Geleverd door Google</translation>
+<translation id="78146569776629510">Downloads</translation>
 <translation id="7839985698273989086">Offline pagina</translation>
 <translation id="7840771868269352570">De geselecteerde items worden verwijderd.</translation>
 <translation id="7845466610722898">Leeslijst tonen</translation>

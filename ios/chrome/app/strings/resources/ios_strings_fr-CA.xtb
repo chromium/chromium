@@ -270,6 +270,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
 <translation id="2562041823070056534">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="2576499762020411840">Utiliser et enregistrer les mots de passe dans votre compte Google</translation>
+<translation id="2577522251608256362">Quartier</translation>
 <translation id="2578571896248130439">Envoyer la page Web</translation>
 <translation id="2584132361465095047">Ajouter un compte…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Aucun mot de passe compromis}=1{{count} mot de passe compromis}one{{count} mot de passe compromis}other{{count} mots de passe compromis}}</translation>
@@ -1083,7 +1084,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6944369514868857500">Choisir un autre compte</translation>
 <translation id="6944935964236827145">Masquer Traduction</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
-<translation id="6955779377310719430">Masquer Suivre</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Dossiers</translation>
 <translation id="6979158407327259162">Google Disque</translation>
@@ -1409,6 +1409,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="8855242995793521265">Ne ralentit pas de manière perceptible votre navigateur ou votre appareil.</translation>
 <translation id="8855781063981781621">Pour désactiver le mode de verrouillage dans Chrome, désactivez-le sur votre iPad.</translation>
 <translation id="8863431381414769983">Obtenez des itinéraires et des informations locales à partir de Google Maps</translation>
+<translation id="8865415417596392024">Données relatives à Chrome dans votre compte</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} onglet}one{{count} onglets}other{{count} onglets}}</translation>
 <translation id="8870413625673593573">Éléments récemment fermés</translation>
 <translation id="8876882697946675716">Synchroniser vos appareils</translation>

@@ -274,6 +274,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2556092377360758201">Asnjë mbrojtje (nuk rekomandohet)</translation>
 <translation id="2562041823070056534">Po dërgohet te <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Përdor dhe ruaj fjalëkalimet në "Llogarinë tënde të Google"</translation>
+<translation id="2577522251608256362">Lagjja</translation>
 <translation id="2578571896248130439">Dërgo faqen e uebit</translation>
 <translation id="2584132361465095047">Shto një llogari…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{count} fjalëkalim i komprometuar}other{{count} fjalëkalime të komprometuara}}</translation>
@@ -1090,7 +1091,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6944369514868857500">Zgjidh llogari tjetër</translation>
 <translation id="6944935964236827145">Fshih "Përkthe"</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
-<translation id="6955779377310719430">Fshih "Ndiq"</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6973630695168034713">Dosjet</translation>
 <translation id="6979158407327259162">Disku i Google</translation>

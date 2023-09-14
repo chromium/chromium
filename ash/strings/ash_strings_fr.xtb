@@ -1215,7 +1215,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5961960957587052807">Léger</translation>
 <translation id="5965524703725988602">Activer/Désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Passer à la fenêtre suivante</translation>
-<translation id="5976112937189445008">Appuyez sur Entrée pour enregistrer la fenêtre</translation>
 <translation id="5978382165065462689">Partager le contrôle de votre écran via l'assistance à distance</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
 <translation id="5983567367406220847">Le point d'accès a été désactivé pour cause d'inactivité.</translation>
@@ -1437,7 +1436,6 @@ Nouvelle installation</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur secteur USB-C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
 <translation id="6896758677409633944">Copier</translation>
-<translation id="6901883536534621389">Essayez les gestes pour la navigation</translation>
 <translation id="6912841030378044227">Placer le curseur sur la barre d'adresse</translation>
 <translation id="6912901278692845878">Visite rapide</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
@@ -1743,7 +1741,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
 <translation id="8185090165691050712">Activer/Désactiver le menu pour redimensionner le mode verrouillé</translation>
 <translation id="8192202700944119416">Les notifications sont masquées.</translation>
-<translation id="8196787716797768628">Utilisez des gestes pour passer rapidement d'une application à l'autre et interagir avec votre Chromebook en mode tablette.</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8203795194971602413">Clic droit</translation>
@@ -1901,7 +1898,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8909138438987180327">Niveau de charge de la batterie : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
-<translation id="8924458948354692166">Appuyez sur Entrée pour faire une capture d'écran de la fenêtre</translation>
 <translation id="8926951137623668982">Étagère toujours masquée</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">a désactivé</translation>

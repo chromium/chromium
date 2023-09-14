@@ -1215,7 +1215,6 @@
 <translation id="5961960957587052807">輕微</translation>
 <translation id="5965524703725988602">切換深色主題背景。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">向前循環切換視窗</translation>
-<translation id="5976112937189445008">㩒 Enter 掣就可以錄視窗畫面</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
 <translation id="5983567367406220847">由於閒置過久，因此熱點已關閉。</translation>
@@ -1436,7 +1435,6 @@
 <translation id="6886172995547742638">您的 <ph name="DEVICE_TYPE" /> 效能或會降低。請使用 <ph name="PREFERRED_MINIMUM_POWER" />W 或以上且符合標準的 USB-C 電源適配器。</translation>
 <translation id="688631446150864480">㩒向下箭咀掣就可以轉換視窗</translation>
 <translation id="6896758677409633944">複製</translation>
-<translation id="6901883536534621389">試用手勢瀏覽功能</translation>
 <translation id="6912841030378044227">聚焦在網址列</translation>
 <translation id="6912901278692845878">快速導覽</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
@@ -1742,7 +1740,6 @@
 <translation id="8167567890448493835">正在使用「<ph name="LOCALE_NAME" />」</translation>
 <translation id="8185090165691050712">開啟/關閉選單即可調整鎖定模式的大小</translation>
 <translation id="8192202700944119416">已隱藏通知。</translation>
-<translation id="8196787716797768628">在平板電腦模式中使用手勢快速切換應用程式，並與 Chromebook 互動。</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8203795194971602413">按一下右鍵</translation>
@@ -1901,7 +1898,6 @@
 <translation id="8909138438987180327">電量剩番 <ph name="PERCENTAGE" />%。</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支援這種語言。</translation>
-<translation id="8924458948354692166">㩒 Enter 掣就可以擷取視窗螢幕截圖</translation>
 <translation id="8926951137623668982">一律隱藏捷徑列</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>

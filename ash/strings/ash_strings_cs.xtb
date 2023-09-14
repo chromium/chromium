@@ -1216,7 +1216,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="5961960957587052807">Mírné</translation>
 <translation id="5965524703725988602">Přepnout tmavý motiv. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Procházet okna vpřed</translation>
-<translation id="5976112937189445008">Stisknutím klávesy Enter spustíte nahrávání okna</translation>
 <translation id="5978382165065462689">Ovládání obrazovky je sdíleno prostřednictvím Vzdálené pomoci.</translation>
 <translation id="5980301590375426705">Odhlásit hosta</translation>
 <translation id="5983567367406220847">Hotspot byl z důvodu nečinnosti vypnut.</translation>
@@ -1438,7 +1437,6 @@ Nová instalace</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
 <translation id="688631446150864480">Okna můžete přepnout pomocí šipky dolů</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
-<translation id="6901883536534621389">Zkuste k procházení použít gesta</translation>
 <translation id="6912841030378044227">Přejít do adresního řádku</translation>
 <translation id="6912901278692845878">Rychlá prohlídka</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
@@ -1743,7 +1741,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8167567890448493835">Používá se <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Zapnout/vypnout nabídku změny velikosti zamknutého režimu</translation>
 <translation id="8192202700944119416">Oznámení jsou skryta.</translation>
-<translation id="8196787716797768628">Rychle přepínejte mezi aplikacemi a pracujte s Chromebookem pomocí gest v režimu tabletu.</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8203795194971602413">Kliknutí pravým tlačítkem</translation>
@@ -1852,6 +1849,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8703634754197148428">Zahájit nahrávání. Po zahájení nahrávání můžete stisknutím kláves Alt + Shift + L přejít na poličku a najít tlačítko Zastavit nahrávání</translation>
 <translation id="8704155109538237473">Vybrat okno obrazu v obraze</translation>
 <translation id="870917907284186124">Zapnout/vypnout diktování (psaní hlasem)</translation>
+<translation id="8714138378966541668">Uzamknuto poskytovatelem</translation>
 <translation id="8717459106217102612">Vybrat předchozí slovo nebo písmeno.</translation>
 <translation id="8721053961083920564">Zapnout či vypnout zvuk. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Záznam celé obrazovky</translation>
@@ -1901,7 +1899,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8909138438987180327">Baterie je nabitá na <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Tímto jazykem Asistent Google nehovoří.</translation>
-<translation id="8924458948354692166">Stisknutím klávesy Enter zachytíte snímek okna</translation>
 <translation id="8926951137623668982">Polička je vždy skrytá</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="8936501819958976551">deaktivovala</translation>

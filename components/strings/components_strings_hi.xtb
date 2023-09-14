@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">स्टॉक और बॉन्ड</translation>
 <translation id="1391625539203220400">क्या आपको इस डिवाइस पर IBAN सेव करना है?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ने कोई डेटा नहीं भेजा.</translation>
+<translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> के ज़रिए खोजें</translation>
 <translation id="1405567553485452995">हल्का हरा</translation>
 <translation id="1406500794671479665">सत्यापन हो रहा है...</translation>
 <translation id="1406812885827747674">अभी के लिए अनुमति दें</translation>
@@ -2616,6 +2617,7 @@
 <translation id="6432297414176614592">विज्ञापन के विषयों के बारे में ज़्यादा जानें</translation>
 <translation id="6432831586648556868">सेल्स और मार्केटिंग सेक्टर की नौकरियां</translation>
 <translation id="6433490469411711332">संपर्क जानकारी में बदलाव करें</translation>
+<translation id="6433501201775827830">अपना सर्च इंजन चुनें</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ने कनेक्ट करने से मना कर दिया है.</translation>
 <translation id="6433797564277305076">अब से, कार्ड को अनलॉक करने की सुविधा का इस्तेमाल करके, अपने कार्ड की पुष्टि जल्दी करें</translation>
 <translation id="643917412048333145">कपड़े</translation>
@@ -3970,6 +3972,7 @@
 <translation id="9207861905230894330">लेख जोड़ने में विफल रहा.</translation>
 <translation id="9213433120051936369">दिखने का तरीका अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="9215416866750762878">एक ऐप्‍लिकेशन Chrome को इस साइट से सुरक्षित तरीके से कनेक्‍ट होने से रोक रहा है</translation>
+<translation id="9218430445555521422">डिफ़ॉल्ट के रूप में सेट करें</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="922152298093051471">Chrome को पसंद के मुताबिक बनाएं</translation>
 <translation id="9222403027701923763">प्राथमिक और माध्यमिक विद्यालय (किंडरगार्टन से बारहवीं कक्षा तक)</translation>

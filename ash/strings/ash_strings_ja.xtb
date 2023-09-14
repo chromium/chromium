@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">低</translation>
 <translation id="5965524703725988602">ダークモードのオンとオフを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">ウィンドウ間を順方向に移動する</translation>
-<translation id="5976112937189445008">ウィンドウを録画するには Enter キーを押してください</translation>
 <translation id="5978382165065462689">リモート サポート経由で画面の制御を共有しています。</translation>
 <translation id="5980301590375426705">ゲストを終了</translation>
 <translation id="5983567367406220847">アクティビティがないため、アクセス ポイントはオフになっています。</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> のパフォーマンスが低下する可能性があります。正規の <ph name="PREFERRED_MINIMUM_POWER" /> W 以上の USB-C 電源アダプターを使用してください。</translation>
 <translation id="688631446150864480">ウィンドウを切り替えるには、下矢印キーを押します</translation>
 <translation id="6896758677409633944">コピー</translation>
-<translation id="6901883536534621389">ジェスチャー操作をお試しください</translation>
 <translation id="6912841030378044227">アドレスバーにフォーカスする</translation>
 <translation id="6912901278692845878">クイックツアー</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
@@ -1745,7 +1743,6 @@
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> を使用しています</translation>
 <translation id="8185090165691050712">ロックモードのサイズ変更メニューのオンとオフを切り替えます</translation>
 <translation id="8192202700944119416">通知は非表示になっています。</translation>
-<translation id="8196787716797768628">タブレット モードで、ジェスチャーを使用してアプリを切り替えたり、Chromebook を操作したりできます。</translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8203795194971602413">右クリック</translation>
@@ -1854,6 +1851,7 @@
 <translation id="8703634754197148428">録画を開始します。録画を開始した後、シェルフにある [録画を停止] ボタンに移動するには、Alt+Shift+L キーを使用してください</translation>
 <translation id="8704155109538237473">ピクチャー イン ピクチャー ウィンドウにフォーカスする</translation>
 <translation id="870917907284186124">音声入力をオンまたはオフにします</translation>
+<translation id="8714138378966541668">プロバイダによってロックされています</translation>
 <translation id="8717459106217102612">前の単語または文字を選択する</translation>
 <translation id="8721053961083920564">音量を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全画面キャプチャ</translation>
@@ -1903,7 +1901,6 @@
 <translation id="8909138438987180327">電池残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google アシスタントはこの言語に対応していません。</translation>
-<translation id="8924458948354692166">ウィンドウのスクリーンショットを撮影するには Enter キーを押してください</translation>
 <translation id="8926951137623668982">シェルフは常に非表示です</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 件のファイル}other{# 件のファイル}}</translation>
 <translation id="8936501819958976551">無効</translation>

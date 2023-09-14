@@ -1217,7 +1217,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5961960957587052807">Suave</translation>
 <translation id="5965524703725988602">Activar/desactivar o tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Avanzar polas ventás</translation>
-<translation id="5976112937189445008">Premer Introducir para gravar a ventá</translation>
 <translation id="5978382165065462689">Control compartido da túa pantalla a través de Asistencia remota.</translation>
 <translation id="5980301590375426705">Pechar sesión invit.</translation>
 <translation id="5983567367406220847">Debido á inactividade, desactivouse a zona wifi.</translation>
@@ -1439,7 +1438,6 @@ Nova instalación</translation>
 <translation id="6886172995547742638">O rendemento do dispositivo (<ph name="DEVICE_TYPE" />) pode empeorar. Usa un adaptador de corrente USB‑C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou máis.</translation>
 <translation id="688631446150864480">Premer frecha abaixo para cambiar de ventá</translation>
 <translation id="6896758677409633944">Copiar</translation>
-<translation id="6901883536534621389">Proba a navegar con xestos</translation>
 <translation id="6912841030378044227">Enfocar barra de enderezos</translation>
 <translation id="6912901278692845878">Visita rápida</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
@@ -1745,7 +1743,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8167567890448493835">Usando: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Activa ou desactiva o menú para cambiar o tamaño do modo de bloqueo</translation>
 <translation id="8192202700944119416">As notificacións están ocultas.</translation>
-<translation id="8196787716797768628">Utiliza xestos para cambiar de aplicación rapidamente e interactuar co teu Chromebook no modo de tableta.</translation>
 <translation id="8198456017687137612">Recibindo emisión de pestana</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8203795194971602413">Clic co botón dereito</translation>
@@ -1904,7 +1901,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8909138438987180327">Nivel de batería: <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Asistente de Google non fala este idioma.</translation>
-<translation id="8924458948354692166">Premer Introducir para facer captura de pantalla da ventá</translation>
 <translation id="8926951137623668982">O estante ocúltase sempre</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desactivou</translation>

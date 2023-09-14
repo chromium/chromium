@@ -158,6 +158,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1836891464494477513">{count,plural, =1{Favori enregistré dans votre compte Google ({email})}one{Favori enregistré dans votre compte Google ({email})}other{Favoris enregistrés dans votre compte Google ({email})}}</translation>
+<translation id="183878838231635348">Cette fiche présente les problèmes de confidentialité ou de sécurité que le contrôle de sécurité détecte automatiquement pour vous.</translation>
 <translation id="1847795903283049083">Vous pouvez également afficher et gérer ces éléments dans les favoris, la liste de lecture ou le gestionnaire de mots de passe.</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
@@ -267,11 +268,13 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2523363575747517183">Ce site Web a tenté à plusieurs reprises d'ouvrir une autre application.</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Masquer "Contrôle de sécurité"</translation>
 <translation id="2547458583188611426">La synchronisation ne fonctionne pas. Pour la lancer, saisissez votre phrase secrète.</translation>
 <translation id="2551153019974022505">Erreur de compte</translation>
 <translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
 <translation id="2562041823070056534">Envoi à <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Utiliser et enregistrer les mots de passe dans votre compte Google</translation>
+<translation id="2577522251608256362">Quartier</translation>
 <translation id="2578571896248130439">Envoyer la page Web</translation>
 <translation id="2584132361465095047">Ajouter un compte…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Aucun mot de passe compromis}=1{{count} mot de passe compromis}one{{count} mot de passe compromis}other{{count} mots de passe compromis}}</translation>
@@ -1088,7 +1091,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6944369514868857500">Sélectionner un autre compte</translation>
 <translation id="6944935964236827145">Masquer "Traduire"</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
-<translation id="6955779377310719430">Masquer "Suivre"</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Dossiers</translation>
 <translation id="6979158407327259162">Google Drive</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1105362920864247682">Obrišite podatke pregledanja u Chrome-u.</translation>
 <translation id="1143896152279775643">Lozika se čuva u Google menadžeru lozinki za <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Nastavite da koristite Chrome podatke na Google nalogu.</translation>
 <translation id="1282031177488366470">Pomozite nam da poboljšamo Chrome-ove funkcije i učinak</translation>
@@ -56,6 +57,7 @@
 <translation id="2736805085127235148">Chrome obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
 <translation id="2767464022270041271">Nema sačuvanih lozinki. Google menadžer lozinki može da vam proverava lozinke kada ih sačuvate.</translation>
 <translation id="2840432500933227975">Otvorite podešavanja Chrome-a u iOS-u, pa dodirnite Podrazumevana aplikacija pregledača i izaberite Chrome.</translation>
+<translation id="2868822340714096138">Obrišite podatke pregledanja u Chrome-u</translation>
 <translation id="2869959624320573933">Prijavite se u Chrome</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost podataka<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Izaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -136,6 +138,7 @@
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
 <translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="6427126399757991875">Vaša organizacija podešava Chrome...</translation>
+<translation id="6545449117344801102">Chrome otkriva adrese i koristi Google mape da bi vam pružao uputstva i lokalne informacije.</translation>
 <translation id="6600954340915313787">Kopirana u Chrome</translation>
 <translation id="6634107063912726160">Kada se odjavite, Chrome ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="6646696210740573446">Šalje maskirani deo URL-a Google-u preko servera za privatnost koji krije IP adresu. Chrome može da pošalje URL-ove Google-u, uključujući delove sadržaja stranice, i ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetni fajl.</translation>

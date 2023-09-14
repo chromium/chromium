@@ -1216,7 +1216,6 @@ Connect your device to power.</translation>
 <translation id="5961960957587052807">Light</translation>
 <translation id="5965524703725988602">Toggle Dark theme. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Cycle forward through windows</translation>
-<translation id="5976112937189445008">Press enter to record window</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
 <translation id="5980301590375426705">Exit guest</translation>
 <translation id="5983567367406220847">Due to inactivity, hotspot has been turned off.</translation>
@@ -1438,7 +1437,6 @@ New install</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>
 <translation id="6896758677409633944">Copy</translation>
-<translation id="6901883536534621389">Try gestures to navigate</translation>
 <translation id="6912841030378044227">Focus on address bar</translation>
 <translation id="6912901278692845878">Quick tour</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
@@ -1744,7 +1742,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8167567890448493835">Using <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Turn on/off menu to resize lock mode</translation>
 <translation id="8192202700944119416">Notifications are hidden.</translation>
-<translation id="8196787716797768628">Use gestures to quickly switch between apps and interact with your Chromebook in tablet mode.</translation>
 <translation id="8198456017687137612">Casting tab</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8203795194971602413">Right click</translation>
@@ -1903,7 +1900,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">The Google Assistant doesn’t speak this language.</translation>
-<translation id="8924458948354692166">Press enter to capture window screenshot</translation>
 <translation id="8926951137623668982">Shelf always hidden</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# files}}</translation>
 <translation id="8936501819958976551">deactivated</translation>

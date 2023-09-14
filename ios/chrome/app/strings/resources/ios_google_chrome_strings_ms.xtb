@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1105362920864247682">Kosongkan Data Semakan Imbas dalam Chrome.</translation>
 <translation id="1143896152279775643">Kata laluan anda akan disimpan pada Pengurus Kata Laluan Google untuk <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Kekal menggunakan data Chrome dalam Google Account anda.</translation>
 <translation id="1282031177488366470">Bantu Tingkatkan Ciri dan Prestasi Chrome</translation>
@@ -56,6 +57,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="2736805085127235148">Pemberitahuan Chrome dimatikan dalam tetapan peranti anda pada masa ini.</translation>
 <translation id="2767464022270041271">Tiada kata laluan yang disimpan. Google Password Manager boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="2840432500933227975">Buka Tetapan Chromium dalam iOS, kemudian ketik pada "Penyemak Imbas Lalai APP" dan pilih Chrome.</translation>
+<translation id="2868822340714096138">Kosongkan Data Semakan Imbas dalam Chrome</translation>
 <translation id="2869959624320573933">Log Masuk ke Chrome</translation>
 <translation id="2876628302275096482">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chrome mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>

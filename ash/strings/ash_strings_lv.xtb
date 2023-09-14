@@ -1216,7 +1216,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5961960957587052807">Gaišs</translation>
 <translation id="5965524703725988602">Pārslēgt tumšo motīvu. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Pārvietoties uz priekšu pa logiem</translation>
-<translation id="5976112937189445008">Lai ierakstītu loga saturu, nospiediet taustiņu Enter</translation>
 <translation id="5978382165065462689">Ekrāna pārvaldības koplietošana, izmantojot attālo palīdzību.</translation>
 <translation id="5980301590375426705">Aizvērt viesa sesiju</translation>
 <translation id="5983567367406220847">Tīklājs tika izslēgts neaktivitātes dēļ.</translation>
@@ -1438,7 +1437,6 @@ Jauna instalācija</translation>
 <translation id="6886172995547742638">Ierīces <ph name="DEVICE_TYPE" /> veiktspēja var pasliktināties. Izmantojiet sertificētu USB-C strāvas adapteri, kura jauda ir vismaz <ph name="PREFERRED_MINIMUM_POWER" /> vatu.</translation>
 <translation id="688631446150864480">Lai pārslēgtu logus, nospiediet lejupvērsto bultiņu.</translation>
 <translation id="6896758677409633944">Kopēt</translation>
-<translation id="6901883536534621389">Pārvietošanās žestu izmēģināšana</translation>
 <translation id="6912841030378044227">Izcelt adreses joslu</translation>
 <translation id="6912901278692845878">Īss ceļvedis</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
@@ -1744,7 +1742,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8167567890448493835">Izmantotā valoda: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Ieslēgt/izslēgt bloķēšanas režīma lieluma maiņas izvēlni</translation>
 <translation id="8192202700944119416">Paziņojumi ir paslēpti.</translation>
-<translation id="8196787716797768628">Izmantojiet žestus, lai ātri pārslēgtu lietotnes un mijiedarbotos ar Chromebook datoru planšetdatora režīmā.</translation>
 <translation id="8198456017687137612">Apraides cilne</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8203795194971602413">Noklikšķināt ar peles labo pogu</translation>
@@ -1903,7 +1900,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8909138438987180327">Akumulatora uzlādes līmenis:<ph name="PERCENTAGE" />.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google asistents nav pieejams šajā valodā.</translation>
-<translation id="8924458948354692166">Lai uzņemtu loga ekrānuzņēmumu, nospiediet taustiņu Enter</translation>
 <translation id="8926951137623668982">Plaukts vienmēr tiek paslēpts</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="8936501819958976551">deaktivizēta</translation>

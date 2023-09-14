@@ -1216,7 +1216,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="5961960957587052807">Hơi mờ</translation>
 <translation id="5965524703725988602">Bật/tắt Giao diện tối. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Di chuyển tiến lên qua các cửa sổ</translation>
-<translation id="5976112937189445008">Nhấn phím Enter để ghi màn hình trong cửa sổ</translation>
 <translation id="5978382165065462689">Chia sẻ quyền kiểm soát màn hình của bạn qua Trợ giúp từ xa.</translation>
 <translation id="5980301590375426705">Thoát phiên khách</translation>
 <translation id="5983567367406220847">Điểm phát sóng đã tắt do không hoạt động.</translation>
@@ -1438,7 +1437,6 @@ Mới cài đặt</translation>
 <translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
 <translation id="688631446150864480">Nhấn phím Mũi tên xuống để chuyển đổi giữa các cửa sổ</translation>
 <translation id="6896758677409633944">Sao chép</translation>
-<translation id="6901883536534621389">Thử một số cử chỉ để thao tác</translation>
 <translation id="6912841030378044227">Tập trung vào thanh địa chỉ</translation>
 <translation id="6912901278692845878">Tìm hiểu nhanh</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
@@ -1744,7 +1742,6 @@ Mới cài đặt</translation>
 <translation id="8167567890448493835">Đang dùng <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Bật/tắt trình đơn thay đổi kích thước chế độ khoá</translation>
 <translation id="8192202700944119416">Đã ẩn thông báo.</translation>
-<translation id="8196787716797768628">Dùng cử chỉ để chuyển đổi nhanh giữa các ứng dụng và tương tác với Chromebook ở chế độ máy tính bảng.</translation>
 <translation id="8198456017687137612">Đang truyền thẻ</translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8203795194971602413">Nhấp chuột phải</translation>
@@ -1903,7 +1900,6 @@ Mới cài đặt</translation>
 <translation id="8909138438987180327">Pin ở mức <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Trợ lý Google không hỗ trợ ngôn ngữ này.</translation>
-<translation id="8924458948354692166">Nhấn phím Enter để chụp ảnh màn hình trong cửa sổ</translation>
 <translation id="8926951137623668982">Giá luôn ẩn</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tệp}other{# tệp}}</translation>
 <translation id="8936501819958976551">đã tắt</translation>

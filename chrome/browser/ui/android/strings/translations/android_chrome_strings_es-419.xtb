@@ -222,6 +222,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2189903024544168260">Se quitó el interés.</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2200113223741723867">Administrar cómo se comparten los datos de uso</translation>
+<translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se quitarán del automóvil las contraseñas y las formas de pago guardadas. El uso de un bloqueo de perfil mantiene estos datos seguros.</translation>
 <translation id="2218567645332692482">Adopta la extensión HTTPS para la navegación y muestra una advertencia antes de cargar sitios que no sean compatibles con la comunicación segura.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Ventana vacía</translation>
@@ -1013,6 +1014,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6303969859164067831">Salir y desactivar la sincronización</translation>
 <translation id="6312687380483398334">Aplicaciones web (discretas)</translation>
+<translation id="6315386555979018699">Borrar y continuar</translation>
 <translation id="6316139424528454185">Versión Android no compatible</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
 <translation id="6324977638108296054">No se puede crear el vínculo al texto destacado</translation>
@@ -1575,6 +1577,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="8998729206196772491">Estás accediendo con una cuenta administrada por <ph name="MANAGED_DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>
 <translation id="9012585441087414258">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Si una página realiza alguna acción sospechosa, las URLs y los bits del contenido de la página se envían a la Navegación segura de Google.</translation>
+<translation id="9019199799064251516">¿Quieres continuar sin un bloqueo de perfil en el automóvil?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9022871169049522985">Los sitios y los anunciantes pueden medir el rendimiento de sus anuncios</translation>
 <translation id="9035378196785279980">Mover a\u2026</translation>
@@ -1637,5 +1640,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestañas</translation>
+<translation id="993520549480398880">Borrar también los favoritos, el historial y otros datos de este automóvil</translation>
 <translation id="996149300115483134">Se cerró el menú de la tarjeta de feed</translation>
 </translationbundle>

@@ -158,6 +158,7 @@
 <translation id="1830634592642484976">Учурда бул дарек Chrome'го сакталды. Аны Google кызматтарында колдонуу үчүн Google аккаунтуңузга (<ph name="USER_EMAIL" />) сактаңыз.</translation>
 <translation id="1832848789136765277">Шайкештирилген маалыматыңызга каалаган убакта кирүү үчүн өзүңүздү ырастаңыз</translation>
 <translation id="1836891464494477513">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды}other{Кыстармалар Google аккаунтуңузга ({email}) сакталды}}</translation>
+<translation id="183878838231635348">Бул карта Коопсуздукту текшерүү функциясы сиз үчүн автоматтык түрдө аныктаган бардык купуялык же коопсуздук маселелерин көрсөтөт.</translation>
 <translation id="1847795903283049083">Ошондой эле бул нерселерди кыстармаларыңызда, Окуу тизмесинде же Сырсөздөрдү башкаргычта көрүп, тескей аласыз.</translation>
 <translation id="1870148520156231997">Сырсөздү көрсөтүү</translation>
 <translation id="1872096359983322073">Колчырак</translation>
@@ -267,11 +268,13 @@
 <translation id="2523363575747517183">Бул вебсайт башка колдонмону ачууга бир нече жолу аракет кылууда.</translation>
 <translation id="2529021024822217800">Баарын ачуу</translation>
 <translation id="2536991091671391962">Cакталган сырсөздөрдү каалаган түзмөктө колдоно аласыз. Алар <ph name="EMAIL" /> аккаунту үчүн Сырсөздөрдү башкаргычка сакталат.</translation>
+<translation id="2542268842667970959">"Коопсуздукту текшерүү" функциясын жашыруу</translation>
 <translation id="2547458583188611426">Шайкештирилген жок. Шайкештирүүнү баштоо үчүн сыр сүйлөмүңүздү киргизиңиз.</translation>
 <translation id="2551153019974022505">Аккаунттун катасы</translation>
 <translation id="2556092377360758201">Корголбойт (сунушталбайт)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө…</translation>
 <translation id="2576499762020411840">Google аккаунтуңуздагы сырсөздөрдү колдонуп жана сактоо</translation>
+<translation id="2577522251608256362">Район</translation>
 <translation id="2578571896248130439">Веб-баракчаны жөнөтүңүз</translation>
 <translation id="2584132361465095047">Аккаунт кошуу…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Уурдалган сырсөздөр жок}=1{{count} уурдалган сырсөз бар}other{{count} уурдалган сырсөз бар}}</translation>
@@ -695,6 +698,7 @@
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="488785315393301722">Чоо-жайын көрсөтүү</translation>
 <translation id="4894963374040315706">Бул үнүңүз менен издөөгө жол ачат</translation>
+<translation id="489903206070130262">Акыркы жолу ачкан өтмөгүңүз</translation>
 <translation id="4901778704868714008">Сактоо…</translation>
 <translation id="4904877109095351937">Окулган деп белгилөө</translation>
 <translation id="4908869848243824489">Google сунуштары</translation>
@@ -1087,7 +1091,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6944369514868857500">Башка аккаунтту тандоо</translation>
 <translation id="6944935964236827145">Котормочуну жашыруу</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
-<translation id="6955779377310719430">"Жазылуу" дегенди жашыруу</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Куржундар</translation>
 <translation id="6979158407327259162">Google Drive</translation>

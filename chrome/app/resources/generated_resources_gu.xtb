@@ -445,7 +445,6 @@
 <translation id="1347512539447549782">Linux સ્ટોરેજ</translation>
 <translation id="1347975661240122359">જ્યારે બૅટરી <ph name="BATTERY_LEVEL" />% પર પહોંચી જાય ત્યારે અપડેટ શરૂ થશે.</translation>
 <translation id="1348966090521113558">માઉસના ઍક્સેસિબિલિટી સેટિંગ</translation>
-<translation id="1351089605448164407">તમારી ડ્રાઇવમાંથી</translation>
 <translation id="1353275871123211385">ઍપની મંજૂરી અને સ્ક્રીન સમયની મર્યાદાઓ જેવા માતાપિતાના યોગ્ય નિયંત્રણોનો ઉપયોગ કરવા માટે, બાળકનું માતાપિતા દ્વારા મેનેજ કરવામાં આવતું હોય એવું Google એકાઉન્ટ હોવું આવશ્યક છે. Google Classroom જેવા સાધનો માટે પછીથી સ્કૂલનું એકાઉન્ટ ઉમેરી શકાશે.</translation>
 <translation id="135389172849514421">ઑફલાઇન કાર્ય કરે છે</translation>
 <translation id="1353980523955420967">PPD શોધી શકતાં નથી. ખાતરી કરશો કે તમારી Chromebook ઑનલાઇન છે અને ફરી પ્રયાસ કરો.</translation>
@@ -2187,7 +2186,6 @@
 <translation id="2710101514844343743">વપરાશ અને નિદાનનો ડેટા</translation>
 <translation id="271033894570825754">નવું</translation>
 <translation id="2711073837061989559">અજમાયશો</translation>
-<translation id="2711929077861214979">સુરક્ષા માટે સુઝાવ</translation>
 <translation id="2713106313042589954">કૅમેરા બંધ કરો</translation>
 <translation id="2713444072780614174">શ્વેત</translation>
 <translation id="2714180132046334502">ઘાટું બૅકગ્રાઉન્ડ</translation>
@@ -2497,7 +2495,6 @@
 <translation id="2939908794993783865">વધારાની નિષ્ક્રિય સાઇટ</translation>
 <translation id="2939938020978911855">ઉપલબ્ધ Bluetooth ડિવાઇસ બતાવો</translation>
 <translation id="2941112035454246133">નીચું</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="2942581856830209953">આ પેજને કસ્ટમાઇઝ કરો</translation>
 <translation id="2942707801577151363">Word, Excel અને PowerPoint ફાઇલો ખોલો, તેમાં ફેરફાર કરો અને સાચવો. કેટલીક સુવિધાઓ માટે સબ્સ્ક્રિપ્શન જરૂરી હોઈ શકે છે.</translation>
@@ -4693,7 +4690,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{સાઇટને અનમ્યૂટ કરો}one{સાઇટને અનમ્યૂટ કરો}other{સાઇટને અનમ્યૂટ કરો}}</translation>
 <translation id="474609389162964566">“Ok Google” બોલીને તમારા Assistantને ઍક્સેસ કરો</translation>
-<translation id="4746351372139058112">મેસેજ</translation>
 <translation id="4748783296226936791">અસામાન્ય કીબોર્ડ, ગેમ કન્ટ્રોલર અને અન્ય ડિવાઇસનો ઉપયોગ કરતી સુવિધાઓ માટે સાઇટ સામાન્ય રીતે HID ડિવાઇસ સાથે કનેક્ટ કરે છે</translation>
 <translation id="4749960740855309258">એક નવું ટૅબ ખોલો</translation>
 <translation id="4750185073185658673">હજી થોડી વધુ પરવાનગીઓનો રિવ્યૂ કરવા માટે, તમારા ફોન પર જાઓ. તમારા ફોનનું બ્લૂટૂથ અને વાઇ-ફાઇ ચાલુ હોય એ વાતની ખાતરી કરો.</translation>
@@ -4760,7 +4756,6 @@
 <translation id="4807122856660838973">Safe Browsing ચાલુ કરો</translation>
 <translation id="4807514039636325497">D-Busની વિગતો</translation>
 <translation id="4808667324955055115">પૉપ-અપ બ્લૉક કરેલ છે:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{<ph name="BEGIN_BOLD" />1 એક્સ્ટેન્શન<ph name="END_BOLD" />નો રિવ્યૂ કરો જે Chrome વેબ સ્ટોરમાંથી કાઢી લેવામાં આવ્યું હતું}one{<ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} એક્સ્ટેન્શન<ph name="END_BOLD" />નો રિવ્યૂ કરો જે Chrome વેબ સ્ટોરમાંથી કાઢી લેવામાં આવ્યું હતું}other{<ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} એક્સ્ટેન્શન<ph name="END_BOLD" />નો રિવ્યૂ કરો જે Chrome વેબ સ્ટોરમાંથી કાઢી લેવામાં આવ્યા હતા}}</translation>
 <translation id="4809079943450490359">તમારા ડિવાઇસ વ્યવસ્થાપક તરફથી સૂચનાઓ</translation>
 <translation id="4809447465126035330">ડિલીટ કરો</translation>
 <translation id="480990236307250886">હોમ પેજ ખોલો</translation>
@@ -9829,6 +9824,7 @@ USB ડિવાઇસ</translation>
 <translation id="8962083179518285172">વિગતો છુપાવો</translation>
 <translation id="8962863356073277855">URLનું ફૉર્મેટ https://www.example.com હોવું જોઈએ</translation>
 <translation id="8962918469425892674">આ સાઇટ મોશન અથવા લાઇટ સેન્સરનો ઉપયોગ કરી રહી છે.</translation>
+<translation id="8963117664422609631">સાઇટ સેટિંગ પર જાઓ</translation>
 <translation id="8965037249707889821">જૂનો પાસવર્ડ દાખલ કરો</translation>
 <translation id="8966809848145604011">અન્ય પ્રોફાઇલ</translation>
 <translation id="8967427617812342790">વાંચન સૂચિમાં ઉમેરો</translation>
@@ -10207,7 +10203,6 @@ USB ડિવાઇસ</translation>
 <translation id="964286338916298286">તમારા IT વ્યવસ્થાપકે તમારા ઉપકરણ માટે Chrome ઑફરો બંધ કરેલી છે.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ઍપ્લિકેશન}one{ઍપ્લિકેશનો}other{ઍપ્લિકેશનો}}</translation>
 <translation id="964790508619473209">સ્ક્રીનની ગોઠવણી</translation>
-<translation id="965211523698323809">તમારી <ph name="DEVICE_TYPE" />માંથી ટેક્સ્ટ મેસેજ મોકલો અને મેળવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Castમાં આવતી સમસ્યાની જાણ કરો</translation>
 <translation id="966588271015727539">બ્લૂટૂથનું બ્રેઇલ પ્રદર્શન પસંદ કરો</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{આ પ્રોફાઇલ બંધ કરો}one{આ પ્રોફાઇલ બંધ કરો (# વિન્ડો)}other{આ પ્રોફાઇલ બંધ કરો (# વિન્ડો)}}</translation>

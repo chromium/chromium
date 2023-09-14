@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">បន្តិចបន្តួច</translation>
 <translation id="5965524703725988602">បិទ/បើក​ទម្រង់រចនាងងឹត។ <ph name="STATE_TEXT" />។</translation>
 <translation id="5975235751479998104">រុករក​ទៅមុខលើគ្រប់វិនដូ</translation>
-<translation id="5976112937189445008">ចុច enter ដើម្បីថតវិនដូ</translation>
 <translation id="5978382165065462689">ចែករំលែកការបញ្ជាអេក្រង់របស់អ្នកតាមរយៈជំនួយការពីចម្ងាយ។</translation>
 <translation id="5980301590375426705">ចាកចេញពីរបៀបភ្ញៀវ</translation>
 <translation id="5983567367406220847">ដោយសារ​ភាពអសកម្ម ហតស្ប៉ត​ត្រូវ​បាន​បិទ។</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> របស់អ្នកអាចដំណើរការយឺតជាងមុន។ សូមប្រើឆ្នាំងសាក USB-C កម្រិត <ph name="PREFERRED_MINIMUM_POWER" />W ឬខ្ពស់ជាងនេះដែលមានការទទួលស្គាល់។</translation>
 <translation id="688631446150864480">ចុច​គ្រាប់ចុច​ព្រួញចុះក្រោម ដើម្បីប្ដូរវិនដូ</translation>
 <translation id="6896758677409633944">ចម្លង</translation>
-<translation id="6901883536534621389">សាកល្បងប្រើចលនា ដើម្បីរុករក</translation>
 <translation id="6912841030378044227">ផ្ដោតលើ​របារ​អាសយដ្ឋាន</translation>
 <translation id="6912901278692845878">ណែនាំ​បង្ហាញ​ត្រួសៗ</translation>
 <translation id="6919251195245069855">មិន​ស្គាល់​កាត​ឆ្លាតវៃរបស់អ្នកទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
@@ -1743,7 +1741,6 @@
 <translation id="8167567890448493835">កំពុង​ប្រើ <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">បិទ/បើក​ម៉ឺនុយសម្រាប់ប្ដូរ​ទំហំ​មុខងារ​ចាក់សោ</translation>
 <translation id="8192202700944119416">ការជូនដំណឹងត្រូវបាន​លាក់។</translation>
-<translation id="8196787716797768628">ប្រើចលនា​ ដើម្បី​ប្ដូររវាង​កម្មវិធីនានា និង​ធ្វើអន្តរកម្ម​ជាមួយ Chromebook របស់អ្នក​នៅក្នុង​មុខងារ​ថេប្លេត​បានយ៉ាងរហ័ស។</translation>
 <translation id="8198456017687137612">កំពុងបញ្ជូនផ្ទាំង</translation>
 <translation id="8200772114523450471">បន្ត</translation>
 <translation id="8203795194971602413">ចុចកណ្ដុរខាងស្ដាំ</translation>
@@ -1852,6 +1849,7 @@
 <translation id="8703634754197148428">ចាប់​ផ្តើម​ថត។ នៅពេលការថតបានចាប់ផ្ដើម សូមប្រើ Alt + Shift + L ដើម្បីចូលទៅកាន់ធ្នើរ ហើយរកមើលប៊ូតុងឈប់ថត</translation>
 <translation id="8704155109538237473">ផ្ដោតលើវិនដូ​រូបក្នុងរូប</translation>
 <translation id="870917907284186124">បិទ/បើក​ការសរសេរ​តាមអាន (​បញ្ចូល​ដោយ​ប្រើ​សំឡេង​របស់​អ្នក)</translation>
+<translation id="8714138378966541668">ក្រុមហ៊ុនផ្ដល់សេវាបានចាក់សោ</translation>
 <translation id="8717459106217102612">ជ្រើសរើស​ពាក្យ ឬ​អក្សរពីមុន</translation>
 <translation id="8721053961083920564">បិទ/បើកកម្រិតសំឡេង។ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ថតពេញអេក្រង់</translation>
@@ -1902,7 +1900,6 @@
 <translation id="8909138438987180327">ថ្ម​មានកម្រិត <ph name="PERCENTAGE" /> ភាគរយ។</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ជំនួយការមិននិយាយភាសានេះទេ។</translation>
-<translation id="8924458948354692166">ចុច enter ដើម្បីថតរូប​អេក្រង់នៃវិនដូ</translation>
 <translation id="8926951137623668982">លាក់​ធ្នើ​ជានិច្ច</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ឯកសារ 1}other{ឯកសារ #}}</translation>
 <translation id="8936501819958976551">បាន​បិទដំណើរការ</translation>

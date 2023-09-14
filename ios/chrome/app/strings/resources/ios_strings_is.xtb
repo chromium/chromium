@@ -158,6 +158,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1830634592642484976">Þetta heimilisfang er vistað á Chrome eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="USER_EMAIL" />.</translation>
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
 <translation id="1836891464494477513">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum: {email}}one{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}other{Bókamerki voru vistuð á Google-reikningnum þínum: {email}}}</translation>
+<translation id="183878838231635348">Þetta spjald sýnir persónuverndar- og öryggisvandamál sem öryggisathugun greinir sjálfkrafa.</translation>
 <translation id="1847795903283049083">Þú getur einnig skoðað og stjórnað þessum atriðum í bókamerkjum, á leslista eða í aðgangsorðastjórnun.</translation>
 <translation id="1870148520156231997">Sýna aðgangsorð</translation>
 <translation id="1872096359983322073">Ljós</translation>
@@ -267,11 +268,13 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2523363575747517183">Þetta vefsvæði reynir ítrekað að opna annað forrit.</translation>
 <translation id="2529021024822217800">Opna allt</translation>
 <translation id="2536991091671391962">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í Google-aðgangsorðastjórnun fyrir <ph name="EMAIL" />.</translation>
+<translation id="2542268842667970959">Fela „Öryggisathugun“</translation>
 <translation id="2547458583188611426">Samstilling virkar ekki. Sláðu inn aðgangsorðið þitt til að hefja samstillingu.</translation>
 <translation id="2551153019974022505">Villa á reikningi</translation>
 <translation id="2556092377360758201">Engin vörn (ekki mælt með)</translation>
 <translation id="2562041823070056534">Sendir í <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Nota og vista aðgangsorð á Google-reikningnum þínum</translation>
+<translation id="2577522251608256362">Hverfi</translation>
 <translation id="2578571896248130439">Senda vefsíðu</translation>
 <translation id="2584132361465095047">Bæta við reikningi…</translation>
 <translation id="2587010742985678408">{count,plural, =0{Engin aðgangsorð í hættu}=1{{count} aðgangsorð í hættu}one{{count} aðgangsorð í hættu}other{{count} aðgangsorð í hættu}}</translation>
@@ -695,6 +698,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4881695831933465202">Opna</translation>
 <translation id="488785315393301722">Sýna upplýsingar</translation>
 <translation id="4894963374040315706">Með þessu móti geturðu notað röddina til að leita</translation>
+<translation id="489903206070130262">Síðasti opni flipi</translation>
 <translation id="4901778704868714008">Vista...</translation>
 <translation id="4904877109095351937">Merkja sem lesið</translation>
 <translation id="4908869848243824489">Tillögur frá Google</translation>
@@ -1087,7 +1091,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6944369514868857500">Velja annan reikning</translation>
 <translation id="6944935964236827145">Fela „Þýða“</translation>
 <translation id="6945221475159498467">Velja</translation>
-<translation id="6955779377310719430">Fela „Fylgir“</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6973630695168034713">Möppur</translation>
 <translation id="6979158407327259162">Google Drive</translation>

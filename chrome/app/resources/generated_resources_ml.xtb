@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux സ്‌റ്റോറേജ്</translation>
 <translation id="1347975661240122359">ബാറ്ററി ചാർജ് <ph name="BATTERY_LEVEL" /> ശതമാനമാകുമ്പോൾ അപ്‌ഡേറ്റ് ആരംഭിക്കും.</translation>
 <translation id="1348966090521113558">കൂടുതൽ ഉപയോഗസഹായി ക്രമീകരണം</translation>
-<translation id="1351089605448164407">നിങ്ങളുടെ Drive-ൽ നിന്ന്</translation>
 <translation id="1353275871123211385">ആപ്പ് അനുമതി, സ്ക്രീൻ സമയ പരിധികൾ എന്നിവ പോലുള്ള രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ ഉപയോഗിക്കാൻ, രക്ഷിതാവ് മാനേജ് ചെയ്യുന്ന ഒരു Google Account കുട്ടിക്ക് ഉണ്ടായിരിക്കണം. Google Classroom പോലുള്ള ടൂളുകൾക്ക് ഒരു സ്‌കൂൾ അക്കൗണ്ട് പിന്നീട് ചേർക്കാനാകും.</translation>
 <translation id="135389172849514421">ഓഫ്‌ലൈനിൽ പ്രവർത്തിക്കുന്നു</translation>
 <translation id="1353980523955420967">PPD കണ്ടെത്താനാവുന്നില്ല. നിങ്ങളുടെ Chromebook ഓൺലൈനിലാണോ എന്നുറപ്പാക്കുക, വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -2189,7 +2188,6 @@
 <translation id="2710101514844343743">ഉപയോഗവും പ്രശ്‌നനിർണ്ണയവുമായും ബന്ധപ്പെട്ട ഡാറ്റ</translation>
 <translation id="271033894570825754">പുതിയത്</translation>
 <translation id="2711073837061989559">ട്രയലുകൾ</translation>
-<translation id="2711929077861214979">സുരക്ഷാ നുറുങ്ങുകൾ</translation>
 <translation id="2713106313042589954">ക്യാമറ ഓഫാക്കുക</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2714180132046334502">ഇരുണ്ട പശ്ചാത്തലം</translation>
@@ -2499,7 +2497,6 @@
 <translation id="2939908794993783865">നിഷ്ക്രിയമായ കൂടുതൽ സൈറ്റുകൾ</translation>
 <translation id="2939938020978911855">ലഭ്യമായ Bluetooth ഉപകരണങ്ങൾ കാണിക്കുക</translation>
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">കാത്തിരിക്കുന്നു...</translation>
 <translation id="2942581856830209953">ഈ പേജ് ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="2942707801577151363">Word, Excel, PowerPoint ഫയലുകൾ തുറക്കുക, എഡിറ്റ് ചെയ്യുക, സംരക്ഷിക്കുക. ചില ഫീച്ചറുകൾക്ക് സബ്‌സ്‌ക്രിപ്‌ഷൻ ആവശ്യമായി വന്നേക്കാം.</translation>
@@ -4694,7 +4691,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{സൈറ്റ് അൺമ്യൂട്ട് ചെയ്യുക}other{സൈറ്റുകൾ അൺമ്യൂട്ട് ചെയ്യുക}}</translation>
 <translation id="474609389162964566">"Ok Google" എന്ന് പറഞ്ഞ് നിങ്ങളുടെ Assistant ആക്‌സസ് ചെയ്യുക</translation>
-<translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">അസാധാരണമായ കീബോർഡുകൾ, ഗെയിം കൺട്രോളറുകൾ, മറ്റ് ഉപകരണങ്ങൾ എന്നിവ ഉപയോഗിക്കുന്ന ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി HID ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാറുണ്ട്</translation>
 <translation id="4749960740855309258">പുതിയൊരു ടാബ് തുറക്കുക</translation>
 <translation id="4750185073185658673">കുറച്ച് അനുമതികൾ കൂടി അവലോകനം ചെയ്യാൻ നിങ്ങളുടെ ഫോണിലേക്ക് പോകുക. നിങ്ങളുടെ ഫോണിന്റെ Bluetooth-ഉം വൈഫൈയും ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.</translation>
@@ -4761,7 +4757,6 @@
 <translation id="4807122856660838973">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാക്കുക</translation>
 <translation id="4807514039636325497">DBus വിശദാംശങ്ങൾ</translation>
 <translation id="4808667324955055115">പോപ്-അപ്പുകൾ ബ്ലോക്ക് ചെയ്തു</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome വെബ് സ്റ്റോറിൽ നിന്ന് നീക്കം ചെയ്ത <ph name="BEGIN_BOLD" />ഒരു വിപുലീകരണം<ph name="END_BOLD" /> അവലോകനം ചെയ്യുക}other{Chrome വെബ് സ്റ്റോറിൽ നിന്ന് നീക്കം ചെയ്ത <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} വിപുലീകരണങ്ങൾ<ph name="END_BOLD" /> അവലോകനം ചെയ്യുക}}</translation>
 <translation id="4809079943450490359">നിങ്ങളുടെ ഉപകരണ അഡ്‌മിന്റെ നിർദ്ദേശങ്ങൾ:</translation>
 <translation id="4809447465126035330">ഇല്ലാതാക്കുക</translation>
 <translation id="480990236307250886">ഹോംപേജ് തുറക്കുക</translation>
@@ -6330,6 +6325,7 @@
 <translation id="6104796831253957966">പ്രിന്ററിലെ ക്യൂ നിറഞ്ഞിരിക്കുന്നു</translation>
 <translation id="6104929924898022309">ഫംഗ്ഷൻ കീകളുടെ സ്വഭാവം മാറ്റാൻ തിരയൽ കീ ഉപയോഗിക്കുക</translation>
 <translation id="6106167152849320869">മുമ്പത്തെ ഘട്ടത്തിൽ ഡയഗ്‌നോസ്‌റ്റിക്‌സും ഉപയോഗവുമായി ബന്ധപ്പെട്ട ഡാറ്റയും അയയ്‌ക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തിട്ടുണ്ടെങ്കിൽ, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പുകൾക്കായി ഈ ഡാറ്റ ശേഖരിക്കും.</translation>
+<translation id="6111718295497931251">Google Drive ആക്‌സസ് നീക്കം ചെയ്യുക</translation>
 <translation id="6111972606040028426">Google Assistant പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6112294629795967147">വലുപ്പം മാറ്റാൻ സ്പർശിക്കുക</translation>
 <translation id="6112727384379533756">ഒരു ടിക്കറ്റ് ചേർക്കുക</translation>
@@ -9832,6 +9828,7 @@
 <translation id="8962083179518285172">വിശദാംശങ്ങൾ മറയ്ക്കുക</translation>
 <translation id="8962863356073277855">https://www.example.com എന്ന ഫോർമാറ്റിലായിരിക്കണം URL</translation>
 <translation id="8962918469425892674">ഈ സൈറ്റ് ചലന സെൻസർ അല്ലെങ്കിൽ വെളിച്ച സെൻസർ ‌ഉപയോഗിക്കുന്നു.</translation>
+<translation id="8963117664422609631">സൈറ്റിന്റെ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="8965037249707889821">പഴയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="8966809848145604011">മറ്റ് പ്രൊഫൈലുകൾ</translation>
 <translation id="8967427617812342790">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
@@ -10210,7 +10207,6 @@
 <translation id="964286338916298286">ഐടി അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണത്തിനായുള്ള Chrome ഗുഡി പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ആപ്പ്}other{ആപ്പുകൾ}}</translation>
 <translation id="964790508619473209">സ്ക്രീൻ ക്രമീകരണം</translation>
-<translation id="965211523698323809">നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ൽ നിന്ന് ടെക്‌സ്‌റ്റ് മെസേജുകൾ അയയ്‌ക്കുകയും സ്വീകരിക്കുകയും ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast-മായി ബന്ധപ്പെട്ട് ഒരു പ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="966588271015727539">ഒരു Bluetooth ബ്രെയ്‌ലി ഡിസ്‌പ്ലേ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;ഈ പ്രൊഫൈൽ അടയ്‌ക്കുക}other{&amp;ഈ പ്രൊഫൈൽ അടയ്‌ക്കുക (# വിൻഡോകൾ)}}</translation>

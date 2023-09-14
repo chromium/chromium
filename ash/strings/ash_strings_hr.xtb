@@ -1215,7 +1215,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5961960957587052807">Blago</translation>
 <translation id="5965524703725988602">Prebacite tamnu temu. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Kruženje unaprijed od prozora do prozora</translation>
-<translation id="5976112937189445008">Pritisnite Enter za snimanje prozora</translation>
 <translation id="5978382165065462689">Dijelite kontrolu nad zaslonom putem Daljinske pomoći.</translation>
 <translation id="5980301590375426705">Zatvori sesiju gosta</translation>
 <translation id="5983567367406220847">Žarišna točka je isključena zbog neaktivnosti.</translation>
@@ -1437,7 +1436,6 @@ Novo instaliranje</translation>
 <translation id="6886172995547742638">Uređaj <ph name="DEVICE_TYPE" /> može pokazati slabiju izvedbu. Upotrebljavajte certificirani pretvarač napona USB-C od najmanje <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Pritisnite tipku strelice prema dolje da biste prešli na drugi prozor</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
-<translation id="6901883536534621389">Isprobajte pokrete za kretanje</translation>
 <translation id="6912841030378044227">Fokusiranje na adresnu traku</translation>
 <translation id="6912901278692845878">Kratki obilazak</translation>
 <translation id="6919251195245069855">Nismo prepoznali vašu pametnu karticu. Pokušajte ponovo.</translation>
@@ -1743,7 +1741,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8167567890448493835">Upotrebljava se <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Uključivanje/isključivanje izbornika za promjenu veličine načina zaključavanja</translation>
 <translation id="8192202700944119416">Obavijesti su skrivene.</translation>
-<translation id="8196787716797768628">Pokretima brzo prelazite s jedne aplikacije na drugu i koristite Chromebook u načinu rada tableta.</translation>
 <translation id="8198456017687137612">Emitiranje kartice</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8203795194971602413">Desni klik</translation>
@@ -1852,6 +1849,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8703634754197148428">Početak snimanja. Kad snimanje započne, pomoću Alt + Shift + L možete se pomaknuti do police i pronaći gumb za zaustavljanje snimanja</translation>
 <translation id="8704155109538237473">Fokusiranje prozora slike u slici</translation>
 <translation id="870917907284186124">Uključivanje/isključivanje diktiranja (glasovni unos)</translation>
+<translation id="8714138378966541668">Zaključao davatelj usluga</translation>
 <translation id="8717459106217102612">Odabir prethodne riječi ili slova</translation>
 <translation id="8721053961083920564">Uključivanje ili isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Snimka cijelog zaslona</translation>
@@ -1902,7 +1900,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8909138438987180327">Baterija je na <ph name="PERCENTAGE" /> posto.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google asistent ne govori taj jezik.</translation>
-<translation id="8924458948354692166">Pritisnite Enter za snimanje prozora</translation>
 <translation id="8926951137623668982">Polica je uvijek skrivena</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>

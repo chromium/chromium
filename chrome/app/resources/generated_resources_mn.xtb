@@ -446,7 +446,6 @@
 <translation id="1347512539447549782">Linux-н хадгалах сан</translation>
 <translation id="1347975661240122359">Батерейны түвшин <ph name="BATTERY_LEVEL" />% болох үед шинэчлэлтийг эхлүүлнэ.</translation>
 <translation id="1348966090521113558">Хулганын хандалтын тохиргоо</translation>
-<translation id="1351089605448164407">Таны Драйваас</translation>
 <translation id="1353275871123211385">Аппын зөвшөөрөл болон дэлгэцийн цагийн хязгаар зэрэг эцэг эхийн хяналтыг ашиглахын тулд хүүхэд эцэг эхийн удирддаг Google Бүртгэлтэй байх ёстой. Google Анги зэрэг хэрэгсэлд зориулж сургуулийн бүртгэлийг дараа нь нэмэх боломжтой.</translation>
 <translation id="135389172849514421">Офлайн үед ажиллана</translation>
 <translation id="1353980523955420967">PPD-г олж чадсангүй. Chromebook-ээ онлайн эсэхийг шалгаад дахин оролдоно уу.</translation>
@@ -2200,7 +2199,6 @@
 <translation id="2710101514844343743">Ашиглалт болон оношилгооны өгөгдөл</translation>
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2711073837061989559">Туршилтын хугацаа</translation>
-<translation id="2711929077861214979">Аюулгүйн зөвлөгөө</translation>
 <translation id="2713106313042589954">Камерыг унтраах</translation>
 <translation id="2713444072780614174">Цагаан</translation>
 <translation id="2714180132046334502">Бараан дэвсгэр</translation>
@@ -2510,7 +2508,6 @@
 <translation id="2939908794993783865">Бусад идэвхгүй сайт</translation>
 <translation id="2939938020978911855">Боломжтой Bluetooth төхөөрөмжийг харуулна уу</translation>
 <translation id="2941112035454246133">Бага</translation>
-<translation id="2942279350258725020">Андройд мессеж</translation>
 <translation id="2942560570858569904">Хүлээж байна...</translation>
 <translation id="2942581856830209953">Энэ хуудсыг тохируулах</translation>
 <translation id="2942707801577151363">Word, Excel болон PowerPoint файлуудыг нээх, засах болон хадгална уу. Зарим онцлогт захиалга шаардлагатай байж магадгүй.</translation>
@@ -4706,7 +4703,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайтын дууг нээх}other{Сайтуудын дууг нээх}}</translation>
 <translation id="474609389162964566">Туслахдаа “Ok Google”-р хандаарай</translation>
-<translation id="4746351372139058112">Мессежүүд</translation>
 <translation id="4748783296226936791">Сайтууд ихэвчлэн нийтлэг бус гар, тоглоомын гар болон бусад төхөөрөмжийг ашигладаг онцлогуудад зориулж HID төхөөрөмжүүдэд холбогддог</translation>
 <translation id="4749960740855309258">Шинэ таб нээх</translation>
 <translation id="4750185073185658673">Бусад цөөн хэдэн зөвшөөрлийг шалгахын тулд утас руугаа очно уу. Таын утасны Bluetooth болон Wi-Fi асаалттай эсэхийг шалгана уу.</translation>
@@ -4773,7 +4769,6 @@
 <translation id="4807122856660838973">Аюулгүй үзэхийг асаах</translation>
 <translation id="4807514039636325497">DBus-н дэлгэрэнгүй</translation>
 <translation id="4808667324955055115">Попапыг хориглосон.</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome Веб Дэлгүүрээс татан буулгасан <ph name="BEGIN_BOLD" />1 өргөтгөлийг<ph name="END_BOLD" /> шалгана уу}other{Chrome Веб Дэлгүүрээс татан буулгасан <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} өргөтгөлийг<ph name="END_BOLD" /> шалгана уу}}</translation>
 <translation id="4809079943450490359">Таны төхөөрөмжийн администраторын зааварчилгаа:</translation>
 <translation id="4809447465126035330">Устгах</translation>
 <translation id="480990236307250886">Нүүр хуудсыг нээх</translation>
@@ -6339,6 +6334,7 @@
 <translation id="6104796831253957966">Хэвлэгчийн дараалал дүүрсэн байна</translation>
 <translation id="6104929924898022309">Функцийн түлхүүрүүдийн ажиллах төлөвийг өөрчлөхийн тулд хайлтын товчийг ашиглана уу</translation>
 <translation id="6106167152849320869">Хэрэв та мөн оношилгоо болон ашиглалтын өгөгдлөө өмнөх алхамд илгээхээр сонгосон бол энэ өгөгдлийг суулгасан аппуудад зориулж цуглуулна.</translation>
+<translation id="6111718295497931251">Google Драйвын хандалтыг хасах</translation>
 <translation id="6111972606040028426">Google Туслахыг идэвхжүүлэх</translation>
 <translation id="6112294629795967147">Хэмжээг өөрчлөхийн тулд товших</translation>
 <translation id="6112727384379533756">Тасалбар нэмэх</translation>
@@ -9837,6 +9833,7 @@
 <translation id="8962083179518285172">Дэлгэрэнгүй мэдээллийг нуух</translation>
 <translation id="8962863356073277855">URL-н формат нь https://www.example.com байх ёстой</translation>
 <translation id="8962918469425892674">Энэ сайт хөдөлгөөн болон гэрлийн мэдрэгч ашиглаж байна.</translation>
+<translation id="8963117664422609631">Сайтын тохиргоо руу очих</translation>
 <translation id="8965037249707889821">Хуучин нууц үгийг оруулна уу</translation>
 <translation id="8966809848145604011">Бусад профайл</translation>
 <translation id="8967427617812342790">Унших жагсаалтад нэмэх</translation>
@@ -10215,7 +10212,6 @@
 <translation id="964286338916298286">Таны IT (МТ) админ таны төхөөрөмжийн Chrome Goodies-г идэвхгүй болгосон байна.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Апп}other{Аппууд}}</translation>
 <translation id="964790508619473209">Дэлгэцийн зохион байгуулалт</translation>
-<translation id="965211523698323809"><ph name="DEVICE_TYPE" />-с мессеж илгээх, хүлээн авах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast-тай холбоотой асуудал мэдээлэх</translation>
 <translation id="966588271015727539">Bluetooth брайл дэлгэцийг сонгох</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Энэ профайлыг хаах}other{&amp;Энэ профайлыг хаах (# цонх)}}</translation>

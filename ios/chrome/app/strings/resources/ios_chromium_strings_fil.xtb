@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Hindi masuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="3472200483164753384">Hindi sinusuportahan sa Chromium Canary</translation>
 <translation id="3478750326643748149">I-hide ang “Sulitin ang Chromium”</translation>
+<translation id="3554027294407525061">I-clear ang Data Mula sa Pagba-browse sa Chromium.</translation>
 <translation id="3567399274263440288">Para masulit ang Chromium, mag-sign in sa Chromium gamit ang iyong Google Account.</translation>
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="3650632991272923014">Ginamit ni <ph name="USER_EMAIL1" /> ang Chromium at nag-iwan siya ng mga bookmark, password, at iba pang mga setting sa device na ito.</translation>
@@ -97,6 +98,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="4999538639245140991">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chromium sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
 <translation id="5042011327527167688">I-tap ang “Tingnan gamit ang Google Maps sa Chromium.”</translation>
 <translation id="5048795749726991615">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chromium para sa AutoFill</translation>
+<translation id="5076601183701536878">I-clear ang Data Mula sa Pagba-browse sa Chromium</translation>
 <translation id="5131565040785979529">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chromium.</translation>
 <translation id="5171868502429358653">Mag-sign In sa Chromium</translation>
 <translation id="5213683223491576284">Mabubuksan ang Password Manager sa Chromium.</translation>

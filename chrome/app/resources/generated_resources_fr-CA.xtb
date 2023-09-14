@@ -443,7 +443,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1347512539447549782">Espace de stockage de Linux</translation>
 <translation id="1347975661240122359">La mise à jour commencera lorsque la pile atteindra <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1348966090521113558">Paramètres d'accessibilité de la souris</translation>
-<translation id="1351089605448164407">À partir de votre lecteur</translation>
 <translation id="1353275871123211385">Pour que vous puissiez utiliser des contrôles parentaux comme l'approbation d'applications et les limites de temps d'utilisation des écrans, votre enfant doit posséder un compte Google géré par un parent. Un compte scolaire peut être ajouté par la suite pour des outils comme Google Classroom.</translation>
 <translation id="135389172849514421">Fonctionne hors ligne</translation>
 <translation id="1353980523955420967">Impossible de trouver le PPD. Vérifiez que votre Chromebook est en ligne, puis réessayez.</translation>
@@ -2188,7 +2187,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2710101514844343743">Données d'utilisation et de diagnostics</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
-<translation id="2711929077861214979">Conseils de sécurité</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2714180132046334502">Arrière-plan foncé</translation>
@@ -2496,7 +2494,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2939908794993783865">Sites inactifs supplémentaires</translation>
 <translation id="2939938020978911855">Afficher les appareils Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Faible</translation>
-<translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">En attente…</translation>
 <translation id="2942581856830209953">Personnaliser cette page</translation>
 <translation id="2942707801577151363">Ouvrez, modifiez et enregistrez des fichiers Word, Excel et PowerPoint. Un abonnement peut être requis pour accéder à certaines fonctionnalités.</translation>
@@ -4690,7 +4687,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Réactiver le son sur le site}one{Réactiver le son sur le site}other{Réactiver le son sur les sites}}</translation>
 <translation id="474609389162964566">Accédez à votre Assistant avec la commande rapide « Ok Google »</translation>
-<translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">Les sites se connectent généralement aux appareils HID pour accéder aux fonctionnalités permettant d'utiliser des claviers peu courants, des manettes de jeu et d'autres appareils</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
 <translation id="4750185073185658673">Accédez à votre téléphone pour passer en revue quelques autorisations supplémentaires. Assurez-vous que le Bluetooth et le Wi-Fi de votre téléphone sont activés.</translation>
@@ -4757,7 +4753,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4807122856660838973">Activer la navigation sécurisée</translation>
 <translation id="4807514039636325497">Détails du D-Bus</translation>
 <translation id="4808667324955055115">Fenêtres contextuelles bloquées :</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Examinez <ph name="BEGIN_BOLD" />1 extension<ph name="END_BOLD" /> qui a été retirée de la boutique en ligne Chrome Web Store}one{Examinez <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} extension<ph name="END_BOLD" /> qui a été retirée de la boutique en ligne Chrome Web Store}other{Examinez <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} extensions<ph name="END_BOLD" /> qui ont été retirées de la boutique en ligne Chrome Web Store}}</translation>
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4809447465126035330">Supprimer</translation>
 <translation id="480990236307250886">Ouvrir la page d'accueil</translation>
@@ -4779,6 +4774,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4820236583224459650">Enregistrer comme ticket actif</translation>
 <translation id="4820795723433418303">Utilisez les touches de fonction comme touches de la rangée supérieure</translation>
 <translation id="4821935166599369261">&amp;Profilage activé</translation>
+<translation id="4823193082697477185">Accédez aux fichiers, dossiers ou lecteurs partagés sur un réseau local. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Lire et modifier les paramètres de l’utilisateur et de l'appareil</translation>
 <translation id="4824037980212326045">Sauvegarder et restaurer le contenu Linux</translation>
 <translation id="4824958205181053313">Annuler la synchronisation?</translation>
@@ -9819,6 +9815,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8962083179518285172">Masquer les détails</translation>
 <translation id="8962863356073277855">L'URL doit respecter le format https://www.example.com</translation>
 <translation id="8962918469425892674">Ce site utilise des capteurs de mouvement ou de luminosité.</translation>
+<translation id="8963117664422609631">Accéder aux paramètres du site</translation>
 <translation id="8965037249707889821">Entrez l'ancien mot de passe</translation>
 <translation id="8966809848145604011">Autres profils</translation>
 <translation id="8967427617812342790">Ajouter à liste lecture</translation>
@@ -10197,7 +10194,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="964286338916298286">Votre administrateur informatique a désactivé les bonus Chrome pour votre appareil.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}one{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Position des écrans</translation>
-<translation id="965211523698323809">Envoyez et recevez des messages texte à partir de votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Signaler un problème avec Google Cast</translation>
 <translation id="966588271015727539">Sélectionnez un afficheur braille Bluetooth</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{&amp;Fermer ce profil}one{&amp;Fermer ce profil (# fenêtre)}other{&amp;Fermer ce profil (# fenêtres)}}</translation>

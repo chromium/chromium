@@ -1216,7 +1216,6 @@
 <translation id="5961960957587052807">轻微</translation>
 <translation id="5965524703725988602">开启/关闭深色主题。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">正向浏览各个窗口</translation>
-<translation id="5976112937189445008">按 Enter 键即可录制窗口</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
 <translation id="5983567367406220847">由于闲置过久，热点已关闭。</translation>
@@ -1438,7 +1437,6 @@
 <translation id="6886172995547742638">这可能会导致您的 <ph name="DEVICE_TYPE" /> 性能低下。请使用已获认证的不低于 <ph name="PREFERRED_MINIMUM_POWER" />W 的 USB-C 型电源适配器。</translation>
 <translation id="688631446150864480">按向下键即可切换窗口</translation>
 <translation id="6896758677409633944">复制</translation>
-<translation id="6901883536534621389">尝试使用手势导航</translation>
 <translation id="6912841030378044227">聚焦于地址栏</translation>
 <translation id="6912901278692845878">快速导览</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
@@ -1741,7 +1739,6 @@
 <translation id="8167567890448493835">目前使用的是“<ph name="LOCALE_NAME" />”</translation>
 <translation id="8185090165691050712">开启/关闭菜单即可调整锁定模式的范围</translation>
 <translation id="8192202700944119416">已隐藏通知。</translation>
-<translation id="8196787716797768628">在平板电脑模式下，使用手势快速切换应用以及与 Chromebook 互动。</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>
@@ -1900,7 +1897,6 @@
 <translation id="8909138438987180327">剩余的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支持此语言。</translation>
-<translation id="8924458948354692166">按 Enter 键即可截取窗口</translation>
 <translation id="8926951137623668982">任务栏始终处于隐藏状态</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="8936501819958976551">已停用</translation>

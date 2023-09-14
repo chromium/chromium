@@ -212,6 +212,7 @@
 <translation id="1391289752476847787">股票和債券</translation>
 <translation id="1391625539203220400">要將 IBAN 儲存至此裝置嗎？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 沒有傳送任何資料。</translation>
+<translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋內容</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406500794671479665">驗證中…</translation>
 <translation id="1406812885827747674">此次允許</translation>
@@ -539,6 +540,7 @@
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2071852865256799872">你的瀏覽器由機構管理，個人檔案則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2072275792380684364">流行和時尚</translation>
+<translation id="2075497153347571252">系統管理員已封鎖 <ph name="ORIGIN" /> 的<ph name="PERMISSION" />權限</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="20817612488360358">雖然系統 Proxy 設定已設為使用，不過也指定了明確的 Proxy 設定。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 項結果 (共 <ph name="TOTAL_RESULTS" /> 項)</translation>
@@ -1878,6 +1880,7 @@
 <translation id="4885256590493466218">使用 <ph name="CARD_DETAIL" /> 結帳付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保護密碼</translation>
 <translation id="4888600795924685526">外語學習</translation>
+<translation id="4890070067176768718">管理員已允許 <ph name="ORIGIN" /> 的<ph name="PERMISSION" />權限</translation>
 <translation id="4892518386797173871">後方</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奧運會</translation>
@@ -2324,6 +2327,7 @@
 <translation id="5830698870816298009">使用及調整攝錄機</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5838278095973806738">您不應在此網站上輸入任何敏感資料 (例如密碼或信用卡資料)，因為攻擊者可能會竊取這些資料。</translation>
+<translation id="5838732667866024867">你可以使用向左/向右鍵查看圖表上的價格異動</translation>
 <translation id="5840318881868981258">更新 Google 帳戶 (<ph name="ACCOUNT" />) 中的密碼</translation>
 <translation id="5841338463993781099">要儲存在帳戶中嗎？</translation>
 <translation id="5847181246682413476">電力供應</translation>
@@ -2612,6 +2616,7 @@
 <translation id="6432297414176614592">進一步瞭解廣告主題</translation>
 <translation id="6432831586648556868">銷售/市場推廣職位</translation>
 <translation id="6433490469411711332">編輯聯絡人資料</translation>
+<translation id="6433501201775827830">選取您的搜尋引擎</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 已拒絕連線。</translation>
 <translation id="6433797564277305076">現在就開始使用裝置解鎖功能，加快確認付款卡</translation>
 <translation id="643917412048333145">裙</translation>
@@ -3968,6 +3973,7 @@
 <translation id="9207861905230894330">無法新增文章。</translation>
 <translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9215416866750762878">有應用程式令 Chrome 無法安全地連接至此網站</translation>
+<translation id="9218430445555521422">設定為預設瀏覽器</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="9222403027701923763">小學和中學</translation>

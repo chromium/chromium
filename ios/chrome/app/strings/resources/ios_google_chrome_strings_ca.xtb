@@ -136,6 +136,7 @@ Aspectes que cal tenir en compte:
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="6427126399757991875">La teva organització està configurant Chrome...</translation>
+<translation id="6545449117344801102">Chrome detecta les adreces i utilitza Google Maps per oferir-te indicacions i informació local.</translation>
 <translation id="6600954340915313787">Copiada de Chrome</translation>
 <translation id="6634107063912726160">Quan tanquis la sessió, Chrome no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
 <translation id="6646696210740573446">Envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Google.</translation>
@@ -158,6 +159,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7165736900384873061">Comença a utilitzar l'escàner QR de Google Chrome</translation>
 <translation id="7173660919484573146">Chrome utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
 <translation id="7187993566681480880">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
+<translation id="7200524487407690471">Chrome executa automàticament la funció Comprovació de seguretat cada dia per protegir-te de violacions de les dades, de llocs web no segurs i més. Pots obtenir més informació sobre Comprovació de seguretat a Configuració.</translation>
 <translation id="72119412072970160">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes de Google en altres aplicacions de l'iPad.</translation>
 <translation id="7254380941803999489">Estableix Chrome com a navegador predeterminat</translation>
 <translation id="7261678641327190792">Chrome no pot comprovar les teves contrasenyes</translation>

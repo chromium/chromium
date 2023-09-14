@@ -447,7 +447,6 @@
 <translation id="1347512539447549782">Linuxৰ ষ্ট’ৰেজ</translation>
 <translation id="1347975661240122359">বেটাৰী <ph name="BATTERY_LEVEL" />% হ’লে আপডে’ট প্ৰক্ৰিয়া আৰম্ভ হ’ব।</translation>
 <translation id="1348966090521113558">মাউছৰ সাধ্য সুবিধাৰ ছেটিং</translation>
-<translation id="1351089605448164407">আপোনাৰ ড্ৰাইভৰ পৰা</translation>
 <translation id="1353275871123211385">এপৰ অনুমোদন আৰু ডিভাইচত অতিবাহিত কৰা সময়সীমাৰ দৰে অভিভাৱকীয় নিয়ন্ত্ৰণ ব্যৱহাৰ কৰিবলৈ এগৰাকী শিশুৰ কোনো অভিভাৱকে তদাৰক কৰা এটা Google একাউণ্ট থাকিবই লাগিব। Google Classroomৰ দৰে সঁজুলিৰ বাবে পাছত এটা বিদ্যালয়ৰ একাউণ্ট যোগ দিব পাৰি।</translation>
 <translation id="135389172849514421">অফলাইনত কাম কৰে</translation>
 <translation id="1353980523955420967">PPD বিচাৰি পোৱা নগ’ল। আপোনাৰ Chromebook অনলাইন হৈ থকাটো সুনিশ্চিত কৰি আকৌ চেষ্টা কৰক।</translation>
@@ -2202,7 +2201,6 @@
 <translation id="2710101514844343743">ব্যৱহাৰ আৰু ডায়েগন’ষ্টিক ডেটা</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2711073837061989559">ট্ৰায়েল</translation>
-<translation id="2711929077861214979">সুৰক্ষা সম্পৰ্কীয় পৰামৰ্শ</translation>
 <translation id="2713106313042589954">কেমেৰা অফ কৰক</translation>
 <translation id="2713444072780614174">বগা</translation>
 <translation id="2714180132046334502">নেপথ্য ৰং গাঢ়</translation>
@@ -2512,7 +2510,6 @@
 <translation id="2939908794993783865">নিষ্ক্ৰিয় হৈ থকা অতিৰিক্ত ছাইট</translation>
 <translation id="2939938020978911855">উপলব্ধ ব্লুটুথ ডিভাইচসমূহ দেখুৱাওক</translation>
 <translation id="2941112035454246133">কম</translation>
-<translation id="2942279350258725020">Android বাৰ্তাসমূহ</translation>
 <translation id="2942560570858569904">অপেক্ষাৰত...</translation>
 <translation id="2942581856830209953">এই পৃষ্ঠাটো কাষ্টমাইজ কৰক</translation>
 <translation id="2942707801577151363">Word, Excel আৰু PowerPoint ফাইলসমূহ খোলক, সম্পাদনা কৰক আৰু ছেভ কৰক। কিছুমান সুবিধাৰ বাবে এটা ছাবস্ক্ৰিপশ্বনৰ প্ৰয়োজন হ’ব পাৰে।</translation>
@@ -4708,7 +4705,6 @@
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ছাইট আনমিউট কৰক}one{ছাইটসমূহ আনমিউট কৰক}other{ছাইটসমূহ আনমিউট কৰক}}</translation>
 <translation id="474609389162964566">"Hey Google" বুলি কৈ আপোনাৰ Assistant এক্সেছ কৰক</translation>
-<translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">ছাইটে সচৰাচৰ অগতানুগতিক কীব’ৰ্ড, গে’ম নিয়ন্ত্ৰক আৰু অন্য ডিভাইচ ব্যৱহাৰ কৰা সুবিধাসমূহৰ বাবে HID ডিভাইচৰ সৈতে সংযোগ কৰে</translation>
 <translation id="4749960740855309258">এটা নতুন টেব খোলক</translation>
 <translation id="4750185073185658673">অন্য কেইটামান অনুমতি পৰ্যালোচনা কৰিবলৈ আপোনাৰ ফ’নলৈ যাওক। আপোনাৰ ফ’নত ব্লুটুথ আৰু ৱাই-ফাই অন হৈ থকাটো নিশ্চিত কৰক।</translation>
@@ -4775,7 +4771,6 @@
 <translation id="4807122856660838973">সুৰক্ষিত ব্ৰাউজিং অন কৰক</translation>
 <translation id="4807514039636325497">DBusৰ সবিশেষ</translation>
 <translation id="4808667324955055115">পপ-আপ অৱৰোধ কৰা হৈছে:</translation>
-<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Chrome Web Storeৰ পৰা আঁতৰোৱা <ph name="BEGIN_BOLD" />১ টা এক্সটেনশ্বন<ph name="END_BOLD" /> পৰ্যালোচনা কৰক}one{Chrome Web Storeৰ পৰা আঁতৰোৱা <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} টা এক্সটেনশ্বন<ph name="END_BOLD" /> পৰ্যালোচনা কৰক}other{Chrome Web Storeৰ পৰা আঁতৰোৱা <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} টা এক্সটেনশ্বন<ph name="END_BOLD" /> পৰ্যালোচনা কৰক}}</translation>
 <translation id="4809079943450490359">আপোনাৰ ডিভাইচ প্ৰশাসকৰ নিৰ্দেশাৱলী:</translation>
 <translation id="4809447465126035330">মচক</translation>
 <translation id="480990236307250886">গৃহ পৃষ্ঠাটো খোলক</translation>
@@ -6341,6 +6336,7 @@
 <translation id="6104796831253957966">প্ৰিণ্টাৰৰ শাৰী ভৰ্তি হৈ আছে</translation>
 <translation id="6104929924898022309">ফাংশ্বন কীসমূহৰ আচৰণ সলনি কৰিবলৈ সন্ধানৰ কীটো ব্যৱহাৰ কৰক</translation>
 <translation id="6106167152849320869">যদি আপুনি পূৰ্বৱৰ্তী পদক্ষেপটোত ডায়গন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিওৱাৰো সিদ্ধান্ত লৈছে, এই ডেটা ইনষ্টল কৰা এপৰ বাবে সংগ্ৰহ কৰা হ’ব।</translation>
+<translation id="6111718295497931251">Google Driveৰ এক্সেছ আঁতৰাওক</translation>
 <translation id="6111972606040028426">Google Assistant সক্ষম কৰক</translation>
 <translation id="6112294629795967147">আকাৰ সলনি কৰিবলৈ স্পর্শ কৰক</translation>
 <translation id="6112727384379533756">এটা টিকেট যোগ কৰক</translation>
@@ -9846,6 +9842,7 @@
 <translation id="8962083179518285172">সবিশেষ লুকুৱাওক</translation>
 <translation id="8962863356073277855">URLৰ ফৰ্মেটটো https://www.example.comৰ দৰে হ’ব লাগে</translation>
 <translation id="8962918469425892674">এই ছাইটটোৱে ম‘শ্বন বা লাইট ছেন্সৰ ব্যৱহাৰ কৰিছে।</translation>
+<translation id="8963117664422609631">ছাইটৰ ছেটিঙলৈ যাওক</translation>
 <translation id="8965037249707889821">পুৰণি পাছৱৰ্ড দিয়ক</translation>
 <translation id="8966809848145604011">অন্য প্ৰ’ফাইল</translation>
 <translation id="8967427617812342790">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
@@ -10224,7 +10221,6 @@
 <translation id="964286338916298286">আইটি প্ৰশাসকে আপোনাৰ ডিভাইচত Chrome Goodies অক্ষম কৰিছে।</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{এপ্লিকেশ্বন}one{এপ্লিকেশ্বন}other{এপ্লিকেশ্বন}}</translation>
 <translation id="964790508619473209">স্ক্ৰীনৰ ব্যৱস্থাপনা</translation>
-<translation id="965211523698323809">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পৰা পাঠ বাৰ্তা পঠিয়াওক আৰু গ্ৰহণ কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Castত হোৱা সমস্যাৰ অভিযোগ দিয়ক</translation>
 <translation id="966588271015727539">কোনো ব্লুটুথ ব্ৰেইল ডিছপ্লে’ বাছনি কৰক</translation>
 <translation id="966624321292940409">{NUM_PROFILES,plural, =1{এই প্ৰ’ফাইলটো &amp;বন্ধ কৰক}one{এই প্ৰ’ফাইলটো &amp;বন্ধ কৰক (# খন ৱিণ্ড’)}other{এই প্ৰ’ফাইলটো &amp;বন্ধ কৰক (# খন ৱিণ্ড’)}}</translation>

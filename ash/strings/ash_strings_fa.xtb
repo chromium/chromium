@@ -1215,7 +1215,6 @@
 <translation id="5961960957587052807">روشن</translation>
 <translation id="5965524703725988602">روشن/خاموش کردن «زمینه تیره». <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">چرخش روبه جلو میان پنجره‌ها</translation>
-<translation id="5976112937189445008">برای ضبط پنجره، کلید «ورود» را فشار دهید</translation>
 <translation id="5978382165065462689">هم‌رسانی کنترل صفحه‌تان از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="5980301590375426705">خروج از مهمان</translation>
 <translation id="5983567367406220847">نقطه اتصال به‌دلیل عدم فعالیت خاموش شد.</translation>
@@ -1437,7 +1436,6 @@
 <translation id="6886172995547742638">‏ممکن است <ph name="DEVICE_TYPE" /> شما عملکرد ضعیف‌تری را تجربه کند. از آداپتور برق USB-C بالاتر یا <ph name="PREFERRED_MINIMUM_POWER" /> وات تأییدشده‌ای استفاده کنید.</translation>
 <translation id="688631446150864480">برای جابه‌جایی بین پنجره‌ها، کلید جهت‌نمای پایین را فشار دهید</translation>
 <translation id="6896758677409633944">کپی</translation>
-<translation id="6901883536534621389">استفاده از اشاره‌ها برای پیمایش</translation>
 <translation id="6912841030378044227">تمرکز در نوار نشانی</translation>
 <translation id="6912901278692845878">گشت سریع</translation>
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
@@ -1743,7 +1741,6 @@
 <translation id="8167567890448493835">درحال استفاده از <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">روشن/ خاموش کردن منو برای تغییر اندازه ‏حالت قفل</translation>
 <translation id="8192202700944119416">اعلان‌ها پنهان شده است.</translation>
-<translation id="8196787716797768628">‏از اشاره‌ها برای جابه‌جایی سریع بین برنامه‌ها و تعامل با Chromebook خود در حالت رایانه لوحی استفاده کنید.</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8203795194971602413">کلیک راست</translation>
@@ -1901,7 +1898,6 @@
 <translation id="8909138438987180327">شارژ باتری <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏«دستیار Google» به این زبان صحبت نمی‌کند.</translation>
-<translation id="8924458948354692166">برای ضبط نماگرفت از پنجره، کلید «ورود» را فشار دهید</translation>
 <translation id="8926951137623668982">قفسه همیشه پنهان می‌شود</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="8936501819958976551">غیرفعال</translation>

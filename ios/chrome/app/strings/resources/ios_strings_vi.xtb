@@ -274,6 +274,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2556092377360758201">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="2562041823070056534">Đang gửi đến <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Sử dụng và lưu mật khẩu trong Tài khoản Google của bạn</translation>
+<translation id="2577522251608256362">Vùng lân cận</translation>
 <translation id="2578571896248130439">Gửi trang web</translation>
 <translation id="2584132361465095047">Thêm tài khoản...</translation>
 <translation id="2587010742985678408">{count,plural, =0{Không có mật khẩu nào bị lộ}=1{{count} mật khẩu bị lộ}other{{count} mật khẩu bị lộ}}</translation>
@@ -1090,7 +1091,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6944369514868857500">Chọn một tài khoản khác</translation>
 <translation id="6944935964236827145">Ẩn tuỳ chọn Dịch</translation>
 <translation id="6945221475159498467">Chọn</translation>
-<translation id="6955779377310719430">Ẩn tuỳ chọn Theo dõi</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Thư mục</translation>
 <translation id="6979158407327259162">Google Drive</translation>

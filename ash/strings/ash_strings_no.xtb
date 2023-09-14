@@ -1216,7 +1216,6 @@ Koble enheten til strøm.</translation>
 <translation id="5961960957587052807">Lett</translation>
 <translation id="5965524703725988602">Slå av/på mørkt tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Gå fremover gjennom vinduer</translation>
-<translation id="5976112937189445008">Trykk på Enter for å ta opp vinduet</translation>
 <translation id="5978382165065462689">Deler kontroll av skjermen via fjernhjelp.</translation>
 <translation id="5980301590375426705">Avslutt gjesteøkten</translation>
 <translation id="5983567367406220847">Wifi-sonen er slått av på grunn av inaktivitet.</translation>
@@ -1438,7 +1437,6 @@ Nylig installert</translation>
 <translation id="6886172995547742638">Ytelsen til <ph name="DEVICE_TYPE" /> kan svekkes. Bruk en sertifisert USB-C-strømadapter på <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Trykk på nedoverpiltasten for å bytte vindu</translation>
 <translation id="6896758677409633944">Kopiér</translation>
-<translation id="6901883536534621389">Prøv å navigere med bevegelser</translation>
 <translation id="6912841030378044227">Fokuser på adressefeltet</translation>
 <translation id="6912901278692845878">Hurtiginnføring</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
@@ -1744,7 +1742,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8167567890448493835">Bruker <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Slå menyen på/av for å endre størrelsen på låsemodusen</translation>
 <translation id="8192202700944119416">Varsler er skjult.</translation>
-<translation id="8196787716797768628">Bruk bevegelser til å bytte raskt mellom apper og samhandle med Chromebook i nettbrettmodus.</translation>
 <translation id="8198456017687137612">Casting-fanen</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8203795194971602413">Høyreklikk</translation>
@@ -1853,6 +1850,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8703634754197148428">Start opptak. Når opptaket har startet, kan du bruke Alt + Shift + L for å navigere til hyllen og finne knappen for å stoppe opptaket</translation>
 <translation id="8704155109538237473">Fokuser på bilde-i-bilde-vinduet</translation>
 <translation id="870917907284186124">Slå diktering på/av (skriv med stemmen)</translation>
+<translation id="8714138378966541668">Låst av leverandøren</translation>
 <translation id="8717459106217102612">Velg forrige ord eller bokstav</translation>
 <translation id="8721053961083920564">Slå lyden av/på. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Skjermdump av hele skjermen</translation>
@@ -1903,7 +1901,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8909138438987180327">Batteriet er <ph name="PERCENTAGE" /> % fullt.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google-assistenten kan ikke dette språket.</translation>
-<translation id="8924458948354692166">Trykk på Enter for å ta en skjermdump av vinduet</translation>
 <translation id="8926951137623668982">Hyllen skjules alltid</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">deaktivert</translation>

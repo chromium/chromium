@@ -1216,7 +1216,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5961960957587052807">Mwangaza</translation>
 <translation id="5965524703725988602">Zima au uwashe Mandhari meusi. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Songa mbele kupitia madirisha uliyofungua</translation>
-<translation id="5976112937189445008">Bonyeza enter ili urekodi dirisha</translation>
 <translation id="5978382165065462689">Kushiriki udhibiti wa skrini yako kupitia Usaidizi wa Mbali.</translation>
 <translation id="5980301590375426705">Funga kipindi - mgeni</translation>
 <translation id="5983567367406220847">Kwa sababu hakuna shughuli, mtandao pepe umezimwa.</translation>
@@ -1438,7 +1437,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6886172995547742638">Huenda <ph name="DEVICE_TYPE" /> yako ikafanya kazi polepole. Tumia adapta ya nishati ya USB-C ya Wati <ph name="PREFERRED_MINIMUM_POWER" /> au zaidi.</translation>
 <translation id="688631446150864480">Bonyeza kitufe cha kishale cha Chini ili ubadilishe madirisha</translation>
 <translation id="6896758677409633944">Nakili</translation>
-<translation id="6901883536534621389">Jaribu ishara ili usogeze</translation>
 <translation id="6912841030378044227">Angazia kwenye sehemu ya anwani</translation>
 <translation id="6912901278692845878">Ziara ya haraka</translation>
 <translation id="6919251195245069855">Imeshindwa kutambua kadi yako mahiri. Jaribu tena.</translation>
@@ -1745,7 +1743,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8167567890448493835">Unatumia <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Zima au uwashe menyu ili ubadilishe ukubwa wa hali ya kufunga</translation>
 <translation id="8192202700944119416">Arifa zimefichwa.</translation>
-<translation id="8196787716797768628">Tumia ishara kubadili haraka kati ya programu na utumie Chromebook katika hali ya kompyuta kibao.</translation>
 <translation id="8198456017687137612">Inatuma maudhui ya kichupo</translation>
 <translation id="8200772114523450471">Endelea</translation>
 <translation id="8203795194971602413">Mbofyo wa kulia</translation>
@@ -1904,7 +1901,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8909138438987180327">Chaji ya betri imefika <ph name="PERCENTAGE" />.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Programu ya Mratibu wa Google haina huduma ya lugha hii.</translation>
-<translation id="8924458948354692166">Bonyeza enter ili upige picha ya skrini ya dirisha</translation>
 <translation id="8926951137623668982">Rafu inafichwa kila wakati</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Faili 1}other{Faili #}}</translation>
 <translation id="8936501819958976551">kimezimwa</translation>

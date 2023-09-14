@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="3472200483164753384">Støttes ikke i Chromium Canary</translation>
 <translation id="3478750326643748149">Skjul «Få mest mulig ut av Chromium»</translation>
+<translation id="3554027294407525061">Slett nettlesingsdata i Chromium.</translation>
 <translation id="3567399274263440288">For å få mest mulig ut av Chromium, logg på Chromium med Google-kontoen din.</translation>
 <translation id="3639997914391704523">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> har brukt Chromium og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
@@ -96,7 +97,9 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="4996471330284142407">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
 <translation id="5042011327527167688">Trykk på «Se med Google Maps i Chromium».</translation>
+<translation id="5044871537677053278">Chromium registrerer adresser og bruker Google Maps for å gi deg veibeskrivelser og lokal informasjon.</translation>
 <translation id="5048795749726991615">Bruk Chromium for autofyll for å enkelt få tilgang til de lagrede passordene dine i de andre appene dine.</translation>
+<translation id="5076601183701536878">Slett nettlesingsdata i Chromium</translation>
 <translation id="5131565040785979529">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du er logget på, og hvordan Chromium brukes.</translation>
 <translation id="5171868502429358653">Logg på Chromium</translation>
 <translation id="5213683223491576284">Åpner Passordlagring i Chromium.</translation>
