@@ -1020,7 +1020,13 @@ config("compiler") {
   # TODO(https://crbug.com/702997): Move this back to the `runtime_library`
   # config when NaCl is removed.
   if (use_safe_libcxx) {
-    defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
+    # TODO(https://crbug.com/1465186): Switch saigo to hardened mode once
+    # it's rolled in.
+    if (is_nacl_saigo) {
+      defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
+    } else {
+      defines += [ "_LIBCPP_ENABLE_SAFE_MODE=1" ]
+    }
   }
 }
 

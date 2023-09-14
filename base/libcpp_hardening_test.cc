@@ -10,9 +10,11 @@
 
 namespace {
 
-#if !_LIBCPP_ENABLE_ASSERTIONS
+// TODO(thakis): Remove _LIBCPP_ENABLE_ASSERTIONS here once
+// pnacl-saigo's libc++ is new enough.
+#if !_LIBCPP_ENABLE_ASSERTIONS && !_LIBCPP_ENABLE_SAFE_MODE
 #error \
-    "Define _LIBCPP_ENABLE_ASSERTIONS to 1 in \
+    "Define _LIBCPP_ENABLE_SAFE_MODE to 1 in \
 buildtools/third_party/libc++/__config_site"
 
 #endif
