@@ -11,6 +11,7 @@
 #include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class Canvas;
@@ -28,6 +29,7 @@ struct SharingHubAction;
 class SharingHubBubbleViewImpl : public SharingHubBubbleView,
                                  public LocationBarBubbleDelegateView {
  public:
+  METADATA_HEADER(SharingHubBubbleViewImpl);
   // Bubble will be anchored to |anchor_view|.
   SharingHubBubbleViewImpl(views::View* anchor_view,
                            share::ShareAttempt attempt,

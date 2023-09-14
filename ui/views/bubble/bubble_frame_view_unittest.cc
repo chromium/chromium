@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -958,6 +960,7 @@ namespace {
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(TestBubbleDialogDelegateView);
   TestBubbleDialogDelegateView()
       : BubbleDialogDelegateView(nullptr, BubbleBorder::NONE) {
     set_shadow(BubbleBorder::NO_SHADOW);
@@ -1011,6 +1014,9 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   std::u16string subtitle_;
   bool should_show_close_ = false;
 };
+
+BEGIN_METADATA(TestBubbleDialogDelegateView, views::BubbleDialogDelegateView)
+END_METADATA
 
 class TestAnchor {
  public:

@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -46,6 +48,7 @@ constexpr gfx::Size kContentSize = gfx::Size(200, 200);
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(TestBubbleDialogDelegateView);
   explicit TestBubbleDialogDelegateView(View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {
     view_->SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -104,14 +107,21 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   bool should_show_window_title_ = true;
 };
 
+BEGIN_METADATA(TestBubbleDialogDelegateView, views::BubbleDialogDelegateView)
+END_METADATA
+
 class TestAlertBubbleDialogDelegateView : public TestBubbleDialogDelegateView {
  public:
+  METADATA_HEADER(TestAlertBubbleDialogDelegateView);
   explicit TestAlertBubbleDialogDelegateView(View* anchor_view)
       : TestBubbleDialogDelegateView(anchor_view) {
     SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
   }
   ~TestAlertBubbleDialogDelegateView() override = default;
 };
+
+BEGIN_METADATA(TestAlertBubbleDialogDelegateView, TestBubbleDialogDelegateView)
+END_METADATA
 
 // A Widget that returns something other than null as its ThemeProvider.  This
 // allows us to see whether the theme provider returned by some object came from

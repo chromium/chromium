@@ -25,6 +25,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
@@ -327,6 +329,7 @@ namespace {
 // WebContents for another.
 class WebBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(WebBubbleView);
   ~WebBubbleView() override = default;
 
   // Creates a bubble with a WebView and loads `url` in the view.
@@ -366,6 +369,9 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<views::WebView> web_view_;
   std::unique_ptr<content::WebContents> owned_web_contents_;
 };
+
+BEGIN_METADATA(WebBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace
 

@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -35,6 +36,7 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
                                   public views::ViewObserver,
                                   public wm::ActivationChangeObserver {
  public:
+  METADATA_HEADER(ArcSplashScreenDialogView);
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
    public:

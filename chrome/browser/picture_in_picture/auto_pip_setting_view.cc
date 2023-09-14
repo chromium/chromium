@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 // Represents the bubble top border offset, with respect to the
 // Picture-in-Picture window tittle bar. Used to allow the Bubble to overlap the
@@ -172,3 +173,6 @@ gfx::Rect AutoPipSettingView::GetAnchorRect() const {
                 old_size.width(), old_size.height());
   return new_anchor_rect;
 }
+
+BEGIN_METADATA(AutoPipSettingView, views::BubbleDialogDelegateView)
+END_METADATA

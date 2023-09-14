@@ -13,6 +13,7 @@
 #include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -149,5 +150,9 @@ gfx::Rect LensRegionSearchInstructionsView::GetBubbleBounds() {
                         DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
   return bubble_rect;
 }
+
+BEGIN_METADATA(LensRegionSearchInstructionsView,
+               views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace lens

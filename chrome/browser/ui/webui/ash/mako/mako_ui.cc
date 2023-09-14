@@ -21,6 +21,8 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
@@ -36,6 +38,7 @@ constexpr int kMakoHeightThreshold = 400;
 
 class MakoDialogView : public WebUIBubbleDialogView {
  public:
+  METADATA_HEADER(MakoDialogView);
   MakoDialogView(std::unique_ptr<BubbleContentsWrapper> contents_wrapper,
                  const gfx::Rect& caret_bounds)
       : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
@@ -68,6 +71,9 @@ class MakoDialogView : public WebUIBubbleDialogView {
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
   gfx::Rect caret_bounds_;
 };
+
+BEGIN_METADATA(MakoDialogView, WebUIBubbleDialogView)
+END_METADATA
 
 }  // namespace
 

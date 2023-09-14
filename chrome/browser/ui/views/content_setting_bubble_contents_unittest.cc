@@ -9,6 +9,8 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class ContentSettingBubbleContentsTest : public ChromeViewsTestBase {
@@ -30,6 +32,7 @@ class TestContentSettingBubbleModel : public ContentSettingBubbleModel {
 
 class TestContentSettingBubbleContents : public ContentSettingBubbleContents {
  public:
+  METADATA_HEADER(TestContentSettingBubbleContents);
   TestContentSettingBubbleContents(content::WebContents* web_contents,
                                    gfx::NativeView parent_window)
       : ContentSettingBubbleContents(
@@ -46,6 +49,9 @@ class TestContentSettingBubbleContents : public ContentSettingBubbleContents {
     params->ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   }
 };
+
+BEGIN_METADATA(TestContentSettingBubbleContents, ContentSettingBubbleContents)
+END_METADATA
 
 // Regression test for http://crbug.com/1050801 .
 TEST_F(ContentSettingBubbleContentsTest, NullDeref) {

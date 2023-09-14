@@ -1116,3 +1116,6 @@ void TranslateBubbleView::RevertOrDeclineTranslation() {
   }
   GetWidget()->Close();
 }
+
+BEGIN_METADATA(TranslateBubbleView, LocationBarBubbleDelegateView)
+END_METADATA

@@ -21,6 +21,7 @@
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -40,6 +41,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
                                    public ui::SimpleMenuModel::Delegate,
                                    public views::TabbedPaneListener {
  public:
+  METADATA_HEADER(PartialTranslateBubbleView);
   // Item IDs for the option button's menu.
   enum OptionsMenuItem { CHANGE_TARGET_LANGUAGE, CHANGE_SOURCE_LANGUAGE };
 

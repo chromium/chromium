@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PIP_SETTING_VIEW_H_
 
 #include "base/functional/callback.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 // Creates and manages the content setting |BubbleDialogDelegateView| for
@@ -13,6 +14,7 @@
 // user.
 class AutoPipSettingView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(AutoPipSettingView);
   enum class UiResult {
     // User selected 'Allow this time'.
     kAllowOnce,

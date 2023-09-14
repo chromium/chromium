@@ -1165,3 +1165,6 @@ void PartialTranslateBubbleView::SetTextAlignmentForLocaleTextDirection(
         gfx::HorizontalAlignment::ALIGN_RIGHT);
   }
 }
+
+BEGIN_METADATA(PartialTranslateBubbleView, LocationBarBubbleDelegateView)
+END_METADATA

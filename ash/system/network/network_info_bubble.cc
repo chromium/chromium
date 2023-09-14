@@ -16,6 +16,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -214,5 +215,8 @@ std::u16string NetworkInfoBubble::ComputeInfoText() {
 
   return info_text;
 }
+
+BEGIN_METADATA(NetworkInfoBubble, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace ash

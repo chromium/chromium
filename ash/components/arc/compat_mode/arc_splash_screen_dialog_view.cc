@@ -26,6 +26,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -411,5 +412,8 @@ void ArcSplashScreenDialogView::Show(aura::Window* parent,
   }
   views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
+
+BEGIN_METADATA(ArcSplashScreenDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace arc
