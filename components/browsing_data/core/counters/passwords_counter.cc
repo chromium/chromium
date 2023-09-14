@@ -248,7 +248,6 @@ void PasswordsCounter::OnPasswordsFetchDone() {
 
 std::unique_ptr<PasswordsCounter::PasswordsResult>
 PasswordsCounter::MakeResult() {
-  DCHECK(!(is_sync_active() && num_account_passwords() > 0));
   return std::make_unique<PasswordsCounter::PasswordsResult>(
       this, num_passwords(), num_account_passwords(), is_sync_active(),
       domain_examples(), account_domain_examples());
