@@ -511,6 +511,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctIntentFeatureOverrides =
             new CachedFlag(CCT_INTENT_FEATURE_OVERRIDES, true);
     public static final CachedFlag sCctMinimized = new CachedFlag(CCT_MINIMIZED, false);
+    public static final CachedFlag sCctPageInsightsHub =
+            new CachedFlag(CCT_PAGE_INSIGHTS_HUB, false);
     public static final CachedFlag sCctRemoveRemoteViewIds =
             new CachedFlag(CCT_REMOVE_REMOTE_VIEW_IDS, true);
     public static final CachedFlag sCctResizable90MaximumHeight =
@@ -626,6 +628,7 @@ public abstract class ChromeFeatureList {
         sCctIncognitoAvailableToThirdParty,
         sCctIntentFeatureOverrides,
         sCctMinimized,
+        sCctPageInsightsHub,
         sCctRemoveRemoteViewIds,
         sCctResizable90MaximumHeight,
         sCctResizableForThirdParties,

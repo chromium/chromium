@@ -12,13 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -180,6 +183,13 @@ public class CustomTabToolbarColorController {
     }
 
     private @ColorInt int computeColor(Tab tab, @ToolbarColorType int toolbarColorType) {
+        // TODO(b/300419189): Pass the CCT Top Bar Color in AGSA intent after the Chrome side LE for
+        // Page Insights Hub
+        if (PageInsightsCoordinator.isFeatureEnabled()
+                && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(
+                        mIntentDataProvider)) {
+            return mActivity.getColor(R.color.gm3_baseline_surface_container);
+        }
         switch (toolbarColorType) {
             case ToolbarColorType.THEME_COLOR:
                 return mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor());
