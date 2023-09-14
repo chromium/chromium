@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 
 namespace ash {
 
@@ -23,6 +24,7 @@ class QuickStartScreen
       public quick_start::TargetDeviceBootstrapController::Observer {
  public:
   using TView = QuickStartView;
+  using ScreenName = ash::quick_start::quick_start_metrics::ScreenName;
 
   // State of the flow when the screen is shown.
   enum class FlowState {

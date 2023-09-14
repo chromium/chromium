@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -29,6 +31,7 @@ constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kWifiConnectedButton[] = "wifiConnected";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
+constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr test::UIPath kQuickStartButtonPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartButton};
 constexpr test::UIPath kCancelButtonLoadingDialog = {
@@ -115,6 +118,10 @@ IN_PROC_BROWSER_TEST_F(QuickStartNotDeterminedBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::quick_start_metrics::ScreenName::kSetUpAndroidPhone, 0);
   test::WaitForWelcomeScreen();
   test::OobeJS().ExpectVisiblePath(kQuickStartButtonPath);
 
@@ -130,6 +137,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
       "canvasSize_", {QuickStartView::kScreenId.name});
   EXPECT_GE(canvas_size, 185);
   EXPECT_LE(canvas_size, 265);
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::quick_start_metrics::ScreenName::kSetUpAndroidPhone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
@@ -196,7 +206,18 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEnd) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::quick_start_metrics::ScreenName::kSetUpAndroidPhone, 0);
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::quick_start_metrics::ScreenName::kConnectingToWifi, 0);
+
   EnterQuickStartFlowFromWelcomeScreen();
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::quick_start_metrics::ScreenName::kSetUpAndroidPhone, 1);
 
   // Advertise, Initiate Connection, Authenticate, Transfer WiFi
   connection_broker()->on_start_advertising_callback().Run(true);
@@ -206,6 +227,10 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEnd) {
   connection->VerifyUser(ash::quick_start::mojom::UserVerificationResponse(
       ash::quick_start::mojom::UserVerificationResult::kUserVerified,
       /*is_first_user_verification=*/true));
+  histogram_tester.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::quick_start_metrics::ScreenName::kConnectingToWifi, 1);
+
   auto security = ash::quick_start::mojom::WifiSecurityType::kPSK;
   connection->SendWifiCredentials(ash::quick_start::mojom::WifiCredentials(
       "TestSSID", security, /*is_hidden=*/false, "TestPassword"));

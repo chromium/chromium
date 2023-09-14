@@ -57,6 +57,7 @@ constexpr const char kGaiaTransferResultName[] =
     "QuickStart.GaiaTransferResult";
 constexpr const char kGaiaTransferResultFailureReasonName[] =
     "QuickStart.GaiaTransferResult.FailureReason";
+constexpr const char kScreenOpened[] = "QuickStart.ScreenOpened";
 
 std::string MapMessageTypeToMetric(MessageType message_type) {
   switch (message_type) {
@@ -77,18 +78,16 @@ std::string MapMessageTypeToMetric(MessageType message_type) {
 
 }  // namespace
 
-void RecordScreenOpened(Screen screen,
-                        int32_t session_id,
-                        base::Time timestamp,
-                        ExitReason exit_reason,
-                        int32_t view_duration) {
-  // TODO(280306867): Add metric for screen duration.
+void RecordScreenOpened(ScreenName screen) {
+  // TODO(b/298042953): Add metric for previous screen.
+  base::UmaHistogramEnumeration(kScreenOpened, screen);
 }
-void RecordScreenClosed(Screen screen,
+
+void RecordScreenClosed(ScreenName screen,
                         int32_t session_id,
                         base::Time timestamp,
-                        absl::optional<Screen> previous_screen) {
-  // TODO(280306867): Add metric for screen duration.
+                        absl::optional<ScreenName> previous_screen) {
+  // TODO(b/298042953): Add metric for screen duration.
 }
 
 void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method) {

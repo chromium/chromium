@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
@@ -131,11 +132,15 @@ void QuickStartScreen::OnStatusChanged(
         qr_code_list.Append(base::Value(static_cast<bool>(it & 1)));
       }
       view_->SetQRCode(std::move(qr_code_list));
+      quick_start::quick_start_metrics::RecordScreenOpened(
+          ScreenName::kSetUpAndroidPhone);
       return;
     }
     case Step::PIN_VERIFICATION: {
       CHECK(status.pin.length() == 4);
       view_->SetPIN(status.pin);
+      quick_start::quick_start_metrics::RecordScreenOpened(
+          ScreenName::kSetUpAndroidPhone);
       return;
     }
     case Step::ERROR:
@@ -143,6 +148,8 @@ void QuickStartScreen::OnStatusChanged(
       return;
     case Step::CONNECTING_TO_WIFI:
       view_->ShowConnectingToWifi();
+      quick_start::quick_start_metrics::RecordScreenOpened(
+          ScreenName::kConnectingToWifi);
       return;
     case Step::CONNECTED_TO_WIFI:
       view_->ShowConnectedToWifi(status.ssid, status.password);
@@ -154,6 +161,8 @@ void QuickStartScreen::OnStatusChanged(
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
       // Intermediate state. Nothing to do.
       CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
+      // TODO(b/298042953): Record Gaia Transfer screen shown once UI is
+      // implemented.
       break;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
       CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);

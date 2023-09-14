@@ -241,6 +241,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.ScreenOpened" enum="QuickStartScreenName"
+    expires_after="2023-12-01">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The screen a user views as they go through the Quick Start flow. This
+    includes all major Quick Start screens as well as all other OOBE screens
+    that occur in the middle of the Quick Start flow. Recorded when the screen
+    is shown.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.WifiTransferResult" enum="BooleanSuccess"
     expires_after="2023-12-01">
   <owner>bhartmire@google.com</owner>

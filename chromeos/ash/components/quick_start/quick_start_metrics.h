@@ -11,19 +11,32 @@
 
 namespace ash::quick_start::quick_start_metrics {
 
-enum class Screen {
-  kSetUpAndroidPhone,
-  kConnectingToWifi,
-  kConnectToNetwork,
-  kCheckingForUpdate,
-  kDownloadingLatestUpdate,
-  kConnectingToAndroidPhone,
-  kDeterminingDeviceConfiguration,
-  kGettingGoogleAccountInfo,
-  kSigningIn,
-  kAskParentForPermission,
-  kReviewTermsAndControls,
-  kUnifiedSetup,
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other). Entries should be never modified
+// or deleted. Only additions possible.
+enum class ScreenName {
+  kOther = 0,  // We don't expect this value to ever be emitted.
+  kNone = 1,   // There is no previous screen when automatically resuming after
+               // an update.
+  kWelcomeScreen = 2,  // Quick Start entry point 1.
+  kNetworkScreen = 3,  // Quick Start entry point 2, or in the middle of Quick
+                       // Start when the host device is not connected to wifi.
+  kGaiaScreen = 4,     // Quick Start entry point 3.
+  kSetUpAndroidPhone = 5,  // Beginning of Quick Start flow.
+  kConnectingToWifi = 6,   // Transferring wifi with Quick Start.
+  kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,
+  kChooseChromebookSetup = 8,
+  kInstallingLatestUpdate = 9,
+  kResumingConnectionAfterUpdate = 10,
+  kGettingGoogleAccountInfo = 11,
+  kQuickStartComplete = 12,
+  kSetupDevicePIN = 13,          // After Quick Start flow is complete.
+  kAskForParentPermission = 14,  // Only for Unicorn accounts.
+  kReviewPrivacyAndTerms = 15,   // Only for Unicorn accounts.
+  kUnifiedSetup =
+      16,  // After Quick Start flow is complete, connect host phone to account.
+  kMaxValue = kUnifiedSetup
 };
 
 enum class ExitReason {
@@ -152,16 +165,12 @@ enum class EntryPoint {
   kGaia,
 };
 
-void RecordScreenOpened(Screen screen,
-                        int32_t session_id,
-                        base::Time timestamp,
-                        ExitReason exit_reason,
-                        int view_duration);
+void RecordScreenOpened(ScreenName screen);
 
-void RecordScreenClosed(Screen screen,
+void RecordScreenClosed(ScreenName screen,
                         int32_t session_id,
                         base::Time timestamp,
-                        absl::optional<Screen> previous_screen);
+                        absl::optional<ScreenName> previous_screen);
 
 void RecordCapturePortalEncountered(int32_t session_id);
 
