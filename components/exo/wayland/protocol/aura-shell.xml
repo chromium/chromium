@@ -1324,7 +1324,7 @@
     </request>
 
     <!-- Version 60 additions -->
-    <request name="set_window_corner_radii" since="5">
+    <request name="set_window_corner_radii" since="60">
       <description summary="Request to apply rounded corners to the window of the surface.">
         The client specifies the radius of each corner to be applied to the
         window in DPs (device independent pixels).
