@@ -212,9 +212,9 @@ class CC_PAINT_EXPORT PaintCanvas {
 
   // Used for printing
   enum class AnnotationType {
-    URL,
-    NAMED_DESTINATION,
-    LINK_TO_DESTINATION,
+    kUrl,
+    kNameDestination,
+    kLinkToDestination,
   };
   virtual void Annotate(AnnotationType type,
                         const SkRect& rect,

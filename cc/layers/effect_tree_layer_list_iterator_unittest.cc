@@ -61,16 +61,17 @@ class EffectTreeLayerListIteratorTest : public LayerTreeImplTestBase,
     ResetCounts();
     int count = 0;
     for (EffectTreeLayerListIterator it(host_impl()->active_tree());
-         it.state() != EffectTreeLayerListIterator::State::END; ++it, ++count) {
+         it.state() != EffectTreeLayerListIterator::State::kEnd;
+         ++it, ++count) {
       switch (it.state()) {
-        case EffectTreeLayerListIterator::State::LAYER:
+        case EffectTreeLayerListIterator::State::kLayer:
           static_cast<TestLayerImpl*>(it.current_layer())->count_ = count;
           break;
-        case EffectTreeLayerListIterator::State::TARGET_SURFACE:
+        case EffectTreeLayerListIterator::State::kTargetSurface:
           target_surface_count_[it.target_render_surface()->EffectTreeIndex()] =
               count;
           break;
-        case EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE:
+        case EffectTreeLayerListIterator::State::kContributingSurface:
           contributing_surface_count_[it.current_render_surface()
                                           ->EffectTreeIndex()] = count;
           break;

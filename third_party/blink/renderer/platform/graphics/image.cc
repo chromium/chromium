@@ -342,8 +342,8 @@ scoped_refptr<Image> Image::ImageForDefaultFrame() {
 }
 
 PaintImageBuilder Image::CreatePaintImageBuilder() {
-  auto animation_type = MaybeAnimated() ? PaintImage::AnimationType::ANIMATED
-                                        : PaintImage::AnimationType::STATIC;
+  auto animation_type = MaybeAnimated() ? PaintImage::AnimationType::kAnimated
+                                        : PaintImage::AnimationType::kStatic;
   return PaintImageBuilder::WithDefault()
       .set_id(stable_image_id_)
       .set_animation_type(animation_type)

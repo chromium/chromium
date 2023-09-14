@@ -187,7 +187,7 @@ TEST_F(TextPainterBaseTest, CachedTextBlob) {
   ASSERT_TRUE(item);
   auto* op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
-  ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
+  ASSERT_EQ(cc::PaintOpType::kDrawtextblob, op->GetType());
   cc::PaintFlags flags = op->flags;
   sk_sp<SkTextBlob> blob = op->blob;
 
@@ -199,7 +199,7 @@ TEST_F(TextPainterBaseTest, CachedTextBlob) {
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
-  ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
+  ASSERT_EQ(cc::PaintOpType::kDrawtextblob, op->GetType());
   EXPECT_FALSE(flags.EqualsForTesting(op->flags));
   flags = op->flags;
   EXPECT_EQ(blob, op->blob);
@@ -213,7 +213,7 @@ TEST_F(TextPainterBaseTest, CachedTextBlob) {
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
-  ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
+  ASSERT_EQ(cc::PaintOpType::kDrawtextblob, op->GetType());
   EXPECT_TRUE(flags.EqualsForTesting(op->flags));
   EXPECT_NE(blob, op->blob);
   blob = op->blob;
@@ -226,7 +226,7 @@ TEST_F(TextPainterBaseTest, CachedTextBlob) {
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
-  ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
+  ASSERT_EQ(cc::PaintOpType::kDrawtextblob, op->GetType());
   EXPECT_TRUE(flags.EqualsForTesting(op->flags));
   EXPECT_NE(blob, op->blob);
 
@@ -238,7 +238,7 @@ TEST_F(TextPainterBaseTest, CachedTextBlob) {
   ASSERT_TRUE(item);
   op = static_cast<const cc::DrawTextBlobOp*>(
       &item->GetPaintRecord().GetFirstOp());
-  ASSERT_EQ(cc::PaintOpType::DrawTextBlob, op->GetType());
+  ASSERT_EQ(cc::PaintOpType::kDrawtextblob, op->GetType());
   EXPECT_FALSE(flags.EqualsForTesting(op->flags));
 }
 

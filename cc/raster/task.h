@@ -19,24 +19,24 @@ class Task;
 
 // This class provides states to manage life cycle of a task and given below is
 // how it is used by TaskGraphWorkQueue to process life cycle of a task.
-// Task is in NEW state when it is created. When task is added to
-// |ready_to_run_tasks| then its state is changed to SCHEDULED. Task can be
-// canceled from NEW state (not yet scheduled to run) or from SCHEDULED state,
-// when new ScheduleTasks() is triggered and its state is changed to CANCELED.
+// Task is in kNew state when it is created. When task is added to
+// |ready_to_run_tasks| then its state is changed to kScheduled. Task can be
+// canceled from kNew state (not yet scheduled to run) or from kScheduled state,
+// when new ScheduleTasks() is triggered and its state is changed to kCanceled.
 // When task is about to run it is added |running_tasks| and its state is
-// changed to RUNNING. Once task finishes running, its state is changed to
-// FINISHED. Both CANCELED and FINISHED tasks are added to |completed_tasks|.
+// changed to kRunning. Once task finishes running, its state is changed to
+// kFinished. Both kCanceled and kFinished tasks are added to |completed_tasks|.
 //                ╔═════╗
-//         +------║ NEW ║------+
+//         +------║ kNew║------+
 //         |      ╚═════╝      |
 //         v                   v
 //   ┌───────────┐        ╔══════════╗
-//   │ SCHEDULED │------> ║ CANCELED ║
+//   │ kScheduled│------> ║ kCanceled║
 //   └───────────┘        ╚══════════╝
 //         |
 //         v
 //    ┌─────────┐         ╔══════════╗
-//    │ RUNNING │-------> ║ FINISHED ║
+//    │ kRunning│-------> ║ kFinished║
 //    └─────────┘         ╚══════════╝
 class CC_EXPORT TaskState {
  public:
@@ -50,7 +50,7 @@ class CC_EXPORT TaskState {
   // only from TaskGraphWorkQueue where the life cycle of a task is decided or
   // from tests. These functions are not thread-safe. Caller is responsible for
   // thread safety.
-  void Reset();  // Sets state to NEW.
+  void Reset();  // Sets state to kNew.
   void DidSchedule();
   void DidStart();
   void DidFinish();
@@ -65,7 +65,13 @@ class CC_EXPORT TaskState {
   TaskState();
   ~TaskState();
 
-  enum class Value : uint16_t { NEW, SCHEDULED, RUNNING, FINISHED, CANCELED };
+  enum class Value : uint16_t {
+    kNew,
+    kScheduled,
+    kRunning,
+    kFinished,
+    kCanceled
+  };
 
   Value value_;
 };

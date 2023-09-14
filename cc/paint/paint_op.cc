@@ -141,7 +141,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(TranslateOp)
 
 static constexpr size_t kNumOpTypes =
-    static_cast<size_t>(PaintOpType::LastPaintOpType) + 1;
+    static_cast<size_t>(PaintOpType::kLastpaintoptype) + 1;
 
 // Verify that every op is in the TYPES macro.
 #define M(T) +1
@@ -325,65 +325,65 @@ const SkRect PaintOp::kUnsetRect = {SK_ScalarInfinity, 0, 0, 0};
 
 std::string PaintOpTypeToString(PaintOpType type) {
   switch (type) {
-    case PaintOpType::Annotate:
+    case PaintOpType::kAnnotate:
       return "Annotate";
-    case PaintOpType::ClipPath:
+    case PaintOpType::kClippath:
       return "ClipPath";
-    case PaintOpType::ClipRect:
+    case PaintOpType::kCliprect:
       return "ClipRect";
-    case PaintOpType::ClipRRect:
+    case PaintOpType::kCliprrect:
       return "ClipRRect";
-    case PaintOpType::Concat:
+    case PaintOpType::kConcat:
       return "Concat";
-    case PaintOpType::CustomData:
+    case PaintOpType::kCustomdata:
       return "CustomData";
-    case PaintOpType::DrawColor:
+    case PaintOpType::kDrawcolor:
       return "DrawColor";
-    case PaintOpType::DrawDRRect:
+    case PaintOpType::kDrawdrrect:
       return "DrawDRRect";
-    case PaintOpType::DrawImage:
+    case PaintOpType::kDrawimage:
       return "DrawImage";
-    case PaintOpType::DrawImageRect:
+    case PaintOpType::kDrawimagerect:
       return "DrawImageRect";
-    case PaintOpType::DrawIRect:
+    case PaintOpType::kDrawirect:
       return "DrawIRect";
-    case PaintOpType::DrawLine:
+    case PaintOpType::kDrawline:
       return "DrawLine";
-    case PaintOpType::DrawOval:
+    case PaintOpType::kDrawoval:
       return "DrawOval";
-    case PaintOpType::DrawPath:
+    case PaintOpType::kDrawpath:
       return "DrawPath";
-    case PaintOpType::DrawRecord:
+    case PaintOpType::kDrawrecord:
       return "DrawRecord";
-    case PaintOpType::DrawRect:
+    case PaintOpType::kDrawrect:
       return "DrawRect";
-    case PaintOpType::DrawRRect:
+    case PaintOpType::kDrawrrect:
       return "DrawRRect";
-    case PaintOpType::DrawSkottie:
+    case PaintOpType::kDrawskottie:
       return "DrawSkottie";
-    case PaintOpType::DrawSlug:
+    case PaintOpType::kDrawslug:
       return "DrawSlug";
-    case PaintOpType::DrawTextBlob:
+    case PaintOpType::kDrawtextblob:
       return "DrawTextBlob";
-    case PaintOpType::Noop:
+    case PaintOpType::kNoop:
       return "Noop";
-    case PaintOpType::Restore:
+    case PaintOpType::kRestore:
       return "Restore";
-    case PaintOpType::Rotate:
+    case PaintOpType::kRotate:
       return "Rotate";
-    case PaintOpType::Save:
+    case PaintOpType::kSave:
       return "Save";
-    case PaintOpType::SaveLayer:
+    case PaintOpType::kSavelayer:
       return "SaveLayer";
-    case PaintOpType::SaveLayerAlpha:
+    case PaintOpType::kSavelayeralpha:
       return "SaveLayerAlpha";
-    case PaintOpType::Scale:
+    case PaintOpType::kScale:
       return "Scale";
-    case PaintOpType::SetMatrix:
+    case PaintOpType::kSetmatrix:
       return "SetMatrix";
-    case PaintOpType::SetNodeId:
+    case PaintOpType::kSetnodeid:
       return "SetNodeId";
-    case PaintOpType::Translate:
+    case PaintOpType::kTranslate:
       return "Translate";
   }
   return "UNKNOWN";
@@ -1051,13 +1051,13 @@ void AnnotateOp::Raster(const AnnotateOp* op,
                         SkCanvas* canvas,
                         const PlaybackParams& params) {
   switch (op->annotation_type) {
-    case PaintCanvas::AnnotationType::URL:
+    case PaintCanvas::AnnotationType::kUrl:
       SkAnnotateRectWithURL(canvas, op->rect, op->data.get());
       break;
-    case PaintCanvas::AnnotationType::LINK_TO_DESTINATION:
+    case PaintCanvas::AnnotationType::kLinkToDestination:
       SkAnnotateLinkToDestination(canvas, op->rect, op->data.get());
       break;
-    case PaintCanvas::AnnotationType::NAMED_DESTINATION: {
+    case PaintCanvas::AnnotationType::kNameDestination: {
       SkPoint point = SkPoint::Make(op->rect.x(), op->rect.y());
       SkAnnotateNamedDestination(canvas, point, op->data.get());
       break;
@@ -1342,7 +1342,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     SkSamplingOptions& sampling_out) const {
   auto images_iter = images.find(asset_id);
   if (images_iter == images.end())
-    return SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+    return SkottieWrapper::FrameDataFetchResult::kNoUpdate;
 
   const SkottieFrameData& frame_data = images_iter->second;
   if (!frame_data.image) {
@@ -1369,7 +1369,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
   }
   sampling_out =
       PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality);
-  return SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE;
+  return SkottieWrapper::FrameDataFetchResult::kNewDataAvailable;
 }
 
 void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
@@ -1692,8 +1692,8 @@ size_t PaintOp::Serialize(void* memory,
                               original_ctm);
 
   // Convert DrawTextBlobOp to DrawSlugOp.
-  if (GetType() == PaintOpType::DrawTextBlob) {
-    return writer.FinishOp(static_cast<uint8_t>(PaintOpType::DrawSlug));
+  if (GetType() == PaintOpType::kDrawtextblob) {
+    return writer.FinishOp(static_cast<uint8_t>(PaintOpType::kDrawslug));
   }
   return writer.FinishOp(type);
 }
@@ -1746,78 +1746,78 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
   DCHECK(op.IsDrawOp());
 
   switch (op.GetType()) {
-    case PaintOpType::DrawColor:
+    case PaintOpType::kDrawcolor:
       return false;
-    case PaintOpType::DrawDRRect: {
+    case PaintOpType::kDrawdrrect: {
       const auto& rect_op = static_cast<const DrawDRRectOp&>(op);
       *rect = rect_op.outer.getBounds();
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawImage: {
+    case PaintOpType::kDrawimage: {
       const auto& image_op = static_cast<const DrawImageOp&>(op);
       *rect = SkRect::MakeXYWH(image_op.left, image_op.top,
                                image_op.image.width(), image_op.image.height());
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawImageRect: {
+    case PaintOpType::kDrawimagerect: {
       const auto& image_rect_op = static_cast<const DrawImageRectOp&>(op);
       *rect = image_rect_op.dst;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawIRect: {
+    case PaintOpType::kDrawirect: {
       const auto& rect_op = static_cast<const DrawIRectOp&>(op);
       *rect = SkRect::Make(rect_op.rect);
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawLine: {
+    case PaintOpType::kDrawline: {
       const auto& line_op = static_cast<const DrawLineOp&>(op);
       rect->setLTRB(line_op.x0, line_op.y0, line_op.x1, line_op.y1);
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawOval: {
+    case PaintOpType::kDrawoval: {
       const auto& oval_op = static_cast<const DrawOvalOp&>(op);
       *rect = oval_op.oval;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawPath: {
+    case PaintOpType::kDrawpath: {
       const auto& path_op = static_cast<const DrawPathOp&>(op);
       *rect = path_op.path.getBounds();
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawRect: {
+    case PaintOpType::kDrawrect: {
       const auto& rect_op = static_cast<const DrawRectOp&>(op);
       *rect = rect_op.rect;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawRRect: {
+    case PaintOpType::kDrawrrect: {
       const auto& rect_op = static_cast<const DrawRRectOp&>(op);
       *rect = rect_op.rrect.rect();
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawRecord:
+    case PaintOpType::kDrawrecord:
       return false;
-    case PaintOpType::DrawSkottie: {
+    case PaintOpType::kDrawskottie: {
       const auto& skottie_op = static_cast<const DrawSkottieOp&>(op);
       *rect = skottie_op.dst;
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawTextBlob: {
+    case PaintOpType::kDrawtextblob: {
       const auto& text_op = static_cast<const DrawTextBlobOp&>(op);
       *rect = text_op.blob->bounds().makeOffset(text_op.x, text_op.y);
       rect->sort();
       return true;
     }
-    case PaintOpType::DrawSlug: {
+    case PaintOpType::kDrawslug: {
       const auto& slug_op = static_cast<const DrawSlugOp&>(op);
       *rect = slug_op.slug->sourceBoundsWithOrigin();
       rect->sort();
@@ -1909,16 +1909,16 @@ bool PaintOp::OpHasDiscardableImages(const PaintOp& op) {
     return true;
   }
 
-  if (op.GetType() == PaintOpType::DrawImage &&
+  if (op.GetType() == PaintOpType::kDrawimage &&
       static_cast<const DrawImageOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::DrawImageRect &&
+  } else if (op.GetType() == PaintOpType::kDrawimagerect &&
              static_cast<const DrawImageRectOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::DrawRecord &&
+  } else if (op.GetType() == PaintOpType::kDrawrecord &&
              static_cast<const DrawRecordOp&>(op).HasDiscardableImages()) {
     return true;
-  } else if (op.GetType() == PaintOpType::DrawSkottie &&
+  } else if (op.GetType() == PaintOpType::kDrawskottie &&
              static_cast<const DrawSkottieOp&>(op).HasDiscardableImages()) {
     return true;
   }

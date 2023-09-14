@@ -43,7 +43,7 @@ class FrameDataStub {
     asset_to_frame_data_[HashSkottieResourceId(asset_id)] =
         std::move(current_frame_data);
     asset_to_result_[HashSkottieResourceId(asset_id)] =
-        SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE;
+        SkottieWrapper::FrameDataFetchResult::kNewDataAvailable;
   }
 
   void SetAssetResult(base::StringPiece asset_id,
@@ -62,7 +62,7 @@ class FrameDataStub {
     }
     return asset_to_result_.contains(asset_id)
                ? asset_to_result_.at(asset_id)
-               : SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+               : SkottieWrapper::FrameDataFetchResult::kNoUpdate;
   }
 
  private:
@@ -102,7 +102,7 @@ TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {
   EXPECT_THAT(asset->getFrameData(/*t=*/0).image, Eq(image_1.GetSwSkImage()));
   // The same image should be re-used for the next timestamp.
   frame_data_stub_.SetAssetResult(
-      "test-resource-id", SkottieWrapper::FrameDataFetchResult::NO_UPDATE);
+      "test-resource-id", SkottieWrapper::FrameDataFetchResult::kNoUpdate);
   EXPECT_THAT(asset->getFrameData(/*t=*/0.1).image, Eq(image_1.GetSwSkImage()));
   // Now the new image should be used.
   PaintImage image_2 = CreateBitmapImage(gfx::Size(20, 20));

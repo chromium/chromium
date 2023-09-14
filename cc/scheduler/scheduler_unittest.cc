@@ -1674,7 +1674,7 @@ TEST_F(SchedulerTest, MainFrameNotSkippedAfterLateBeginMainFrameAbort) {
   // After aborting the frame, make sure we don't skip the
   // next BeginMainFrame.
   client_->Reset();
-  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
   EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
   scheduler_->SetNeedsBeginMainFrame();
   EXPECT_FALSE(scheduler_->MainThreadMissedLastDeadline());
@@ -3348,7 +3348,7 @@ TEST_F(SchedulerTest, NoLayerTreeFrameSinkCreationWhileCommitPending) {
   client_->Reset();
   scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
   scheduler_->BeginMainFrameAborted(
-      CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
+      CommitEarlyOutReason::kAbortedDeferredCommit);
   EXPECT_ACTIONS("ScheduledActionBeginLayerTreeFrameSinkCreation");
 }
 
@@ -3405,7 +3405,7 @@ TEST_F(SchedulerTest, AbortedCommitsTriggerImplSideInvalidations) {
   client_->Reset();
   scheduler_->SetNeedsBeginMainFrame();
   scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
-  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
   EXPECT_ACTIONS("ScheduledActionPerformImplSideInvalidation");
 }
 
@@ -3995,7 +3995,7 @@ TEST_F(SchedulerTest, SendEarlyDidNotProduceFrameIfIdle) {
   // Request a new commit before finishing the current one to simulate behavior
   // seen in certain OOPIF renderers.
   scheduler_->SetNeedsBeginMainFrame();
-  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
   EXPECT_EQ(client_->last_begin_frame_ack().frame_id.sequence_number,
             begin_main_frame_args.frame_id.sequence_number);
 }

@@ -242,7 +242,7 @@ bool PlaceholderImage::CurrentFrameKnownToBeOpaque() {
 
 PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   auto builder = CreatePaintImageBuilder().set_completion_state(
-      PaintImage::CompletionState::DONE);
+      PaintImage::CompletionState::kDone);
 
   const gfx::Rect dest_rect(size_);
   if (paint_record_for_current_frame_) {

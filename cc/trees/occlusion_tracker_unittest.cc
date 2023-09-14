@@ -230,14 +230,14 @@ class OcclusionTrackerTest : public testing::Test {
   ASSERT_EQ(a, b) << " ids: " << (a)->id() << " vs " << (b)->id()
 
   void EnterLayer(LayerImpl* layer, OcclusionTracker* occlusion) {
-    ASSERT_EQ(EffectTreeLayerListIterator::State::LAYER,
+    ASSERT_EQ(EffectTreeLayerListIterator::State::kLayer,
               layer_iterator_->state());
     ASSERT_EQ_WITH_IDS(layer, layer_iterator_->current_layer());
     occlusion->EnterLayer(*layer_iterator_);
   }
 
   void LeaveLayer(LayerImpl* layer, OcclusionTracker* occlusion) {
-    ASSERT_EQ(EffectTreeLayerListIterator::State::LAYER,
+    ASSERT_EQ(EffectTreeLayerListIterator::State::kLayer,
               layer_iterator_->state());
     ASSERT_EQ_WITH_IDS(layer, layer_iterator_->current_layer());
     occlusion->LeaveLayer(*layer_iterator_);
@@ -250,20 +250,20 @@ class OcclusionTrackerTest : public testing::Test {
   }
 
   void EnterContributingSurface(LayerImpl* layer, OcclusionTracker* occlusion) {
-    ASSERT_EQ(EffectTreeLayerListIterator::State::TARGET_SURFACE,
+    ASSERT_EQ(EffectTreeLayerListIterator::State::kTargetSurface,
               layer_iterator_->state());
     ASSERT_EQ_WITH_IDS(GetRenderSurface(layer),
                        layer_iterator_->target_render_surface());
     occlusion->EnterLayer(*layer_iterator_);
     occlusion->LeaveLayer(*layer_iterator_);
     ++(*layer_iterator_);
-    ASSERT_EQ(EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE,
+    ASSERT_EQ(EffectTreeLayerListIterator::State::kContributingSurface,
               layer_iterator_->state());
     occlusion->EnterLayer(*layer_iterator_);
   }
 
   void LeaveContributingSurface(LayerImpl* layer, OcclusionTracker* occlusion) {
-    ASSERT_EQ(EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE,
+    ASSERT_EQ(EffectTreeLayerListIterator::State::kContributingSurface,
               layer_iterator_->state());
     ASSERT_EQ_WITH_IDS(GetRenderSurface(layer),
                        layer_iterator_->current_render_surface());

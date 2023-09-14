@@ -437,8 +437,8 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
 
   builder.set_completion_state(
       load_state_ == LoadState::kLoadCompleted
-          ? PaintImage::CompletionState::DONE
-          : PaintImage::CompletionState::PARTIALLY_DONE);
+          ? PaintImage::CompletionState::kDone
+          : PaintImage::CompletionState::kPartiallyDone);
 }
 
 bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,

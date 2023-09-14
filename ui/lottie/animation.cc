@@ -411,8 +411,8 @@ cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
   all_frame_data.emplace(asset_id,
                          image_asset.GetFrameData(t, canvas->image_scale()));
   // Since this callback is only used for Seek() and not rendering, the output
-  // arguments can be ignored and NO_UPDATE can be returned.
-  return cc::SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+  // arguments can be ignored and kNoUpdate can be returned.
+  return cc::SkottieWrapper::FrameDataFetchResult::kNoUpdate;
 }
 
 void Animation::InitTimer(const base::TimeTicks& timestamp) {

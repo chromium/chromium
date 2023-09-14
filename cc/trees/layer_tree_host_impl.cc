@@ -570,8 +570,8 @@ void LayerTreeHostImpl::BeginMainFrameAborted(
     const viz::BeginFrameArgs& args,
     bool next_bmf,
     bool scroll_and_viewport_changes_synced) {
-  if (reason == CommitEarlyOutReason::ABORTED_NOT_VISIBLE ||
-      reason == CommitEarlyOutReason::FINISHED_NO_UPDATES) {
+  if (reason == CommitEarlyOutReason::kAbortedNotVisible ||
+      reason == CommitEarlyOutReason::kFinishedNoUpdates) {
     frame_trackers_.NotifyMainFrameCausedNoDamage(args, true);
   } else {
     frame_trackers_.NotifyMainFrameProcessed(args);
@@ -1327,14 +1327,14 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   if (settings_.enable_compositing_based_throttling)
     throttle_decider_.Prepare();
   for (EffectTreeLayerListIterator it(active_tree());
-       it.state() != EffectTreeLayerListIterator::State::END; ++it) {
+       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
     auto target_render_pass_id = it.target_render_surface()->render_pass_id();
     viz::CompositorRenderPass* target_render_pass =
         FindRenderPassById(frame->render_passes, target_render_pass_id);
 
     AppendQuadsData append_quads_data;
 
-    if (it.state() == EffectTreeLayerListIterator::State::TARGET_SURFACE) {
+    if (it.state() == EffectTreeLayerListIterator::State::kTargetSurface) {
       RenderSurfaceImpl* render_surface = it.target_render_surface();
       if (render_surface->HasCopyRequest()) {
         active_tree()
@@ -1347,13 +1347,13 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
       if (settings_.enable_compositing_based_throttling && target_render_pass)
         throttle_decider_.ProcessRenderPass(*target_render_pass);
     } else if (it.state() ==
-               EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE) {
+               EffectTreeLayerListIterator::State::kContributingSurface) {
       RenderSurfaceImpl* render_surface = it.current_render_surface();
       if (render_surface->contributes_to_drawn_surface()) {
         render_surface->AppendQuads(draw_mode, target_render_pass,
                                     &append_quads_data);
       }
-    } else if (it.state() == EffectTreeLayerListIterator::State::LAYER) {
+    } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
       LayerImpl* layer = it.current_layer();
       if (layer->WillDraw(draw_mode, &resource_provider_)) {
         DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());

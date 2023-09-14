@@ -204,11 +204,11 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
                  PaintOp::QuickRejectDraw(op, canvas);
   // Skip text ops if there is no SkStrikeServer.
   skip_op |=
-      op.GetType() == PaintOpType::DrawTextBlob && !options_.strike_server;
+      op.GetType() == PaintOpType::kDrawtextblob && !options_.strike_server;
   if (skip_op)
     return true;
 
-  if (op.GetType() == PaintOpType::DrawRecord) {
+  if (op.GetType() == PaintOpType::kDrawrecord) {
     int save_count = canvas->getSaveCount();
     Save(canvas, params);
     SerializeBuffer(
@@ -217,7 +217,7 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
     return true;
   }
 
-  if (op.GetType() == PaintOpType::DrawImageRect &&
+  if (op.GetType() == PaintOpType::kDrawimagerect &&
       static_cast<const DrawImageRectOp&>(op).image.IsPaintWorklet()) {
     DCHECK(options_.image_provider);
     const DrawImageRectOp& draw_op = static_cast<const DrawImageRectOp&>(op);
@@ -334,10 +334,12 @@ void PaintOpBufferSerializer::PlaybackOnAnalysisCanvas(
   //    we need the correct ctm at which text and images will be rasterized, and
   //    the clip rect so we can skip sending data for ops which will not be
   //    rasterized.
-  // 2) DrawTextBlob ops since they need to be analyzed by the cache diff canvas
+  // 2) kDrawtextblob ops since they need to be analyzed by the cache diff
+  // canvas
   //    to serialize/lock the requisite glyphs for this op.
-  if (op.IsDrawOp() && op.GetType() != PaintOpType::DrawTextBlob)
+  if (op.IsDrawOp() && op.GetType() != PaintOpType::kDrawtextblob) {
     return;
+  }
 
   if (op.IsPaintOpWithFlags() && flags_to_serialize) {
     static_cast<const PaintOpWithFlags&>(op).RasterWithFlags(

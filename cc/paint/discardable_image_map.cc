@@ -137,13 +137,13 @@ class DiscardableImageGenerator {
       }
 
       PaintOpType op_type = static_cast<PaintOpType>(op.type);
-      if (op_type == PaintOpType::DrawImage) {
+      if (op_type == PaintOpType::kDrawimage) {
         const auto& image_op = static_cast<const DrawImageOp&>(op);
         AddImage(
             image_op.image, image_op.flags.useDarkModeForImage(),
             SkRect::MakeIWH(image_op.image.width(), image_op.image.height()),
             op_rect, ctm, image_op.flags.getFilterQuality());
-      } else if (op_type == PaintOpType::DrawImageRect) {
+      } else if (op_type == PaintOpType::kDrawimagerect) {
         const auto& image_rect_op = static_cast<const DrawImageRectOp&>(op);
         // TODO(crbug.com/1155544): Make a RectToRect method that uses SkM44s
         // in MathUtil.
@@ -152,7 +152,7 @@ class DiscardableImageGenerator {
         AddImage(image_rect_op.image, image_rect_op.flags.useDarkModeForImage(),
                  image_rect_op.src, op_rect, matrix,
                  image_rect_op.flags.getFilterQuality());
-      } else if (op_type == PaintOpType::DrawSkottie) {
+      } else if (op_type == PaintOpType::kDrawskottie) {
         const auto& skottie_op = static_cast<const DrawSkottieOp&>(op);
         for (const auto& image_pair : skottie_op.images) {
           const SkottieFrameData& frame_data = image_pair.second;
@@ -188,7 +188,7 @@ class DiscardableImageGenerator {
                    std::move(image_src_rect), std::move(dst_rect), matrix,
                    frame_data.quality);
         }
-      } else if (op_type == PaintOpType::DrawRecord) {
+      } else if (op_type == PaintOpType::kDrawrecord) {
         GatherDiscardableImages(
             static_cast<const DrawRecordOp&>(op).record.buffer(),
             top_level_op_rect, canvas);

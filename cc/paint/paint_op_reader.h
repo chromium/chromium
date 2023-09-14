@@ -98,7 +98,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
     ReadEnum<PaintCanvas::AnnotationType,
-             PaintCanvas::AnnotationType::LINK_TO_DESTINATION>(type);
+             PaintCanvas::AnnotationType::kLinkToDestination>(type);
   }
   void Read(SkCanvas::SrcRectConstraint* constraint) {
     ReadEnum<SkCanvas::SrcRectConstraint, SkCanvas::kFast_SrcRectConstraint>(

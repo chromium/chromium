@@ -199,8 +199,9 @@ void CompositorFrameReportingController::BeginMainFrameAborted(
   DCHECK_EQ(reporter->frame_id(), id);
   reporter->OnAbortBeginMainFrame(Now());
 
-  if (reason == CommitEarlyOutReason::FINISHED_NO_UPDATES)
+  if (reason == CommitEarlyOutReason::kFinishedNoUpdates) {
     DidNotProduceFrame(id, FrameSkippedReason::kNoDamage);
+  }
 }
 
 void CompositorFrameReportingController::WillCommit() {

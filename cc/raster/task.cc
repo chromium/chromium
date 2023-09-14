@@ -13,51 +13,51 @@
 
 namespace cc {
 
-TaskState::TaskState() : value_(Value::NEW) {}
+TaskState::TaskState() : value_(Value::kNew) {}
 
 TaskState::~TaskState() {
-  DCHECK(value_ != Value::RUNNING)
+  DCHECK(value_ != Value::kRunning)
       << "Running task should never get destroyed.";
-  DCHECK(value_ == Value::FINISHED || value_ == Value::CANCELED)
+  DCHECK(value_ == Value::kFinished || value_ == Value::kCanceled)
       << "Task, if scheduled, should get concluded either in FINISHED or "
          "CANCELED state.";
 }
 
 bool TaskState::IsNew() const {
-  return value_ == Value::NEW;
+  return value_ == Value::kNew;
 }
 
 bool TaskState::IsScheduled() const {
-  return value_ == Value::SCHEDULED;
+  return value_ == Value::kScheduled;
 }
 
 bool TaskState::IsRunning() const {
-  return value_ == Value::RUNNING;
+  return value_ == Value::kRunning;
 }
 
 bool TaskState::IsFinished() const {
-  return value_ == Value::FINISHED;
+  return value_ == Value::kFinished;
 }
 
 bool TaskState::IsCanceled() const {
-  return value_ == Value::CANCELED;
+  return value_ == Value::kCanceled;
 }
 
 void TaskState::Reset() {
-  value_ = Value::NEW;
+  value_ = Value::kNew;
 }
 
 std::string TaskState::ToString() const {
   switch (value_) {
-    case Value::NEW:
+    case Value::kNew:
       return "NEW";
-    case Value::SCHEDULED:
+    case Value::kScheduled:
       return "SCHEDULED";
-    case Value::RUNNING:
+    case Value::kRunning:
       return "RUNNING";
-    case Value::FINISHED:
+    case Value::kFinished:
       return "FINISHED";
-    case Value::CANCELED:
+    case Value::kCanceled:
       return "CANCELED";
   }
   NOTREACHED();
@@ -65,28 +65,28 @@ std::string TaskState::ToString() const {
 }
 
 void TaskState::DidSchedule() {
-  DCHECK(value_ == Value::NEW)
+  DCHECK(value_ == Value::kNew)
       << "Task should be in NEW state to get scheduled.";
-  value_ = Value::SCHEDULED;
+  value_ = Value::kScheduled;
 }
 
 void TaskState::DidStart() {
-  DCHECK(value_ == Value::SCHEDULED)
+  DCHECK(value_ == Value::kScheduled)
       << "Task should be only in SCHEDULED state to start, that is it should "
          "not be started or finished.";
-  value_ = Value::RUNNING;
+  value_ = Value::kRunning;
 }
 
 void TaskState::DidFinish() {
-  DCHECK(value_ == Value::RUNNING)
+  DCHECK(value_ == Value::kRunning)
       << "Task should be running and not finished earlier.";
-  value_ = Value::FINISHED;
+  value_ = Value::kFinished;
 }
 
 void TaskState::DidCancel() {
-  DCHECK(value_ == Value::NEW || value_ == Value::SCHEDULED)
+  DCHECK(value_ == Value::kNew || value_ == Value::kScheduled)
       << "Task should be either new or scheduled to get canceled.";
-  value_ = Value::CANCELED;
+  value_ = Value::kCanceled;
 }
 
 Task::Task() = default;

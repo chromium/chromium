@@ -21,22 +21,22 @@ class LayerTreeImpl;
 // is, in reverse-draw-order). Only layers that draw content to some render
 // surface are visited. A render surface is visited immediately after all
 // layers and surfaces that contribute content to that surface are visited.
-// Surfaces are first visited in state TARGET_SURFACE. Immediately after that,
+// Surfaces are first visited in state kTargetSurface. Immediately after that,
 // every surface other than the root surface is visited in state
-// CONTRIBUTING_SURFACE, as it contributes to the next target surface.
+// kContributingSurface, as it contributes to the next target surface.
 //
 // The iterator takes on the following states:
-// 1. LAYER: The iterator is visiting layer |current_layer()| that contributes
+// 1. kLayer: The iterator is visiting layer |current_layer()| that contributes
 //    to surface |target_render_surface()|.
-// 2. TARGET_SURFACE: The iterator is visiting render surface
+// 2. kTargetSurface: The iterator is visiting render surface
 //    |target_render_surface()|.
-// 3. CONTRIBUTING_SURFACE: The iterator is visiting render surface
+// 3. kContributingSurface: The iterator is visiting render surface
 //    |current_render_surface()| that contributes to surface
 //    |target_render_surface()|.
-// 4. END: All layers and render surfaces have already been visited.
+// 4. kEnd: All layers and render surfaces have already been visited.
 class CC_EXPORT EffectTreeLayerListIterator {
  public:
-  enum class State { LAYER, TARGET_SURFACE, CONTRIBUTING_SURFACE, END };
+  enum class State { kLayer, kTargetSurface, kContributingSurface, kEnd };
 
   explicit EffectTreeLayerListIterator(LayerTreeImpl* layer_tree_impl);
   EffectTreeLayerListIterator(const EffectTreeLayerListIterator& iterator);
@@ -47,26 +47,26 @@ class CC_EXPORT EffectTreeLayerListIterator {
   State state() { return state_; }
 
   LayerImpl* current_layer() const {
-    DCHECK(state_ == State::LAYER);
+    DCHECK(state_ == State::kLayer);
     return *layer_list_iterator_;
   }
 
   RenderSurfaceImpl* current_render_surface() const {
-    DCHECK(state_ == State::CONTRIBUTING_SURFACE);
+    DCHECK(state_ == State::kContributingSurface);
     return effect_tree_->GetRenderSurface(current_effect_tree_index_);
   }
 
   RenderSurfaceImpl* target_render_surface() const {
     switch (state_) {
-      case State::LAYER:
-      case State::TARGET_SURFACE:
+      case State::kLayer:
+      case State::kTargetSurface:
         return effect_tree_->GetRenderSurface(current_effect_tree_index_);
-      case State::CONTRIBUTING_SURFACE: {
+      case State::kContributingSurface: {
         int target_node_id =
             effect_tree_->Node(current_effect_tree_index_)->target_id;
         return effect_tree_->GetRenderSurface(target_node_id);
       }
-      case State::END:
+      case State::kEnd:
         NOTREACHED();
     }
     NOTREACHED();
@@ -74,7 +74,7 @@ class CC_EXPORT EffectTreeLayerListIterator {
   }
 
   struct Position {
-    State state = State::END;
+    State state = State::kEnd;
     raw_ptr<LayerImpl> current_layer = nullptr;
     raw_ptr<RenderSurfaceImpl> current_render_surface = nullptr;
     raw_ptr<RenderSurfaceImpl> target_render_surface = nullptr;
@@ -82,15 +82,17 @@ class CC_EXPORT EffectTreeLayerListIterator {
 
   operator const Position() const {
     Position position;
-    if (state_ == State::END)
+    if (state_ == State::kEnd) {
       return position;
+    }
 
     position.state = state_;
     position.target_render_surface = target_render_surface();
-    if (state_ == State::LAYER)
+    if (state_ == State::kLayer) {
       position.current_layer = current_layer();
-    else if (state_ == State::CONTRIBUTING_SURFACE)
+    } else if (state_ == State::kContributingSurface) {
       position.current_render_surface = current_render_surface();
+    }
 
     return position;
   }
@@ -98,12 +100,12 @@ class CC_EXPORT EffectTreeLayerListIterator {
  private:
   State state_;
 
-  // When in state LAYER, this is the layer that's currently being visited.
+  // When in state kLayer, this is the layer that's currently being visited.
   // Otherwise, this is the layer that will be visited the next time we're in
-  // state LAYER.
+  // state kLayer.
   LayerTreeImpl::const_reverse_iterator layer_list_iterator_;
 
-  // When in state LAYER, this is the render target effect tree index for the
+  // When in state kLayer, this is the render target effect tree index for the
   // currently visited layer. Otherwise, this is the the effect tree index of
   // the currently visited render surface.
   int current_effect_tree_index_;

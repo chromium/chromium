@@ -375,13 +375,13 @@ void SkiaPaintCanvas::Annotate(AnnotationType type,
                                const SkRect& rect,
                                sk_sp<SkData> data) {
   switch (type) {
-    case AnnotationType::URL:
+    case AnnotationType::kUrl:
       SkAnnotateRectWithURL(canvas_, rect, data.get());
       break;
-    case AnnotationType::LINK_TO_DESTINATION:
+    case AnnotationType::kLinkToDestination:
       SkAnnotateLinkToDestination(canvas_, rect, data.get());
       break;
-    case AnnotationType::NAMED_DESTINATION: {
+    case AnnotationType::kNameDestination: {
       SkPoint point = SkPoint::Make(rect.x(), rect.y());
       SkAnnotateNamedDestination(canvas_, point, data.get());
       break;

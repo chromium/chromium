@@ -528,7 +528,7 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameCausedNoDamage) {
   reporting_controller_.WillBeginImplFrame(args_1);
   reporting_controller_.WillBeginMainFrame(args_1);
   reporting_controller_.BeginMainFrameAborted(
-      current_id_1, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+      current_id_1, CommitEarlyOutReason::kFinishedNoUpdates);
   reporting_controller_.OnFinishImplFrame(current_id_1);
   reporting_controller_.DidNotProduceFrame(current_id_1,
                                            FrameSkippedReason::kNoDamage);
@@ -537,7 +537,7 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameCausedNoDamage) {
   reporting_controller_.WillBeginMainFrame(args_2);
   reporting_controller_.OnFinishImplFrame(current_id_2);
   reporting_controller_.BeginMainFrameAborted(
-      current_id_2, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+      current_id_2, CommitEarlyOutReason::kFinishedNoUpdates);
   reporting_controller_.DidNotProduceFrame(current_id_2,
                                            FrameSkippedReason::kNoDamage);
 
@@ -672,7 +672,7 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted) {
   reporting_controller_.WillBeginImplFrame(args_);
   reporting_controller_.WillBeginMainFrame(args_);
   reporting_controller_.BeginMainFrameAborted(
-      current_id_, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+      current_id_, CommitEarlyOutReason::kFinishedNoUpdates);
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidSubmitCompositorFrame(
       1, AdvanceNowByMs(10), current_id_, last_activated_id_, {},
@@ -731,7 +731,7 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
   reporting_controller_.WillBeginMainFrame(args_2);
   reporting_controller_.OnFinishImplFrame(current_id_2);
   reporting_controller_.BeginMainFrameAborted(
-      current_id_2, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+      current_id_2, CommitEarlyOutReason::kFinishedNoUpdates);
   reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
                                                  current_id_2, current_id_1, {},
                                                  /*has_missing_content=*/false);
@@ -1871,7 +1871,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, dropped_counter_.total_frames());
 
   reporting_controller_.BeginMainFrameAborted(
-      args_1.frame_id, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+      args_1.frame_id, CommitEarlyOutReason::kFinishedNoUpdates);
   reporting_controller_.DidNotProduceFrame(args_1.frame_id,
                                            FrameSkippedReason::kNoDamage);
   EXPECT_EQ(0u, dropped_counter_.total_dropped());
@@ -1976,7 +1976,7 @@ TEST_F(CompositorFrameReportingControllerTest,
     SimulateBeginMainFrame();
     reporting_controller_.OnFinishImplFrame(current_id_);
     reporting_controller_.BeginMainFrameAborted(
-        current_id_, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+        current_id_, CommitEarlyOutReason::kFinishedNoUpdates);
   }
   EXPECT_EQ(0u, dropped_counter_.total_dropped());
 
@@ -1986,7 +1986,7 @@ TEST_F(CompositorFrameReportingControllerTest,
     SimulateBeginMainFrame();
     reporting_controller_.OnFinishImplFrame(current_id_);
     reporting_controller_.BeginMainFrameAborted(
-        current_id_, CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
+        current_id_, CommitEarlyOutReason::kAbortedDeferredCommit);
     SimulateSubmitCompositorFrame({});
   }
   SimulatePresentCompositorFrame();
@@ -2250,7 +2250,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   // R2main is aborted with no updates desired.
   reporting_controller_.BeginMainFrameAborted(
-      bf2_id, CommitEarlyOutReason::FINISHED_NO_UPDATES);  // AbMF2
+      bf2_id, CommitEarlyOutReason::kFinishedNoUpdates);  // AbMF2
 
   SimulateBeginImplFrame();  // BF3
   reporting_controller_.OnFinishImplFrame(current_id_);

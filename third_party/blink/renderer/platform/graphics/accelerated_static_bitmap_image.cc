@@ -281,7 +281,7 @@ PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
 
   return CreatePaintImageBuilder()
       .set_texture_backing(texture_backing_, paint_image_content_id_)
-      .set_completion_state(PaintImage::CompletionState::DONE)
+      .set_completion_state(PaintImage::CompletionState::kDone)
       .TakePaintImage();
 }
 

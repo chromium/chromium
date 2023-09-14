@@ -215,7 +215,7 @@ PaintImage CreateAnimatedImage(const gfx::Size& size,
       .set_paint_image_generator(sk_make_sp<FakePaintImageGenerator>(
           SkImageInfo::MakeN32Premul(size.width(), size.height()),
           std::move(frames)))
-      .set_animation_type(PaintImage::AnimationType::ANIMATED)
+      .set_animation_type(PaintImage::AnimationType::kAnimated)
       .set_repetition_count(repetition_count)
       .TakePaintImage();
 }

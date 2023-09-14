@@ -105,7 +105,7 @@ bool PaintOpReader::ReadAndValidateOpHeader(uint8_t* type,
   if (*serialized_size % BufferAlignment() != 0) {
     return false;
   }
-  if (*type > static_cast<uint8_t>(PaintOpType::LastPaintOpType)) {
+  if (*type > static_cast<uint8_t>(PaintOpType::kLastpaintoptype)) {
     return false;
   }
   return true;

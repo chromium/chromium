@@ -127,8 +127,8 @@ PaintImage BitmapImage::CreatePaintImage() {
     return PaintImage();
 
   auto completion_state = all_data_received_
-                              ? PaintImage::CompletionState::DONE
-                              : PaintImage::CompletionState::PARTIALLY_DONE;
+                              ? PaintImage::CompletionState::kDone
+                              : PaintImage::CompletionState::kPartiallyDone;
   auto builder =
       CreatePaintImageBuilder()
           .set_paint_image_generator(std::move(generator))

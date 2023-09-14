@@ -8597,7 +8597,7 @@ class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
         PaintImageBuilder::WithDefault()
             .set_id(PaintImage::GetNextId())
             .set_paint_image_generator(generator_)
-            .set_animation_type(PaintImage::AnimationType::ANIMATED)
+            .set_animation_type(PaintImage::AnimationType::kAnimated)
             .set_repetition_count(kAnimationLoopOnce)
             .TakePaintImage();
     AddImageOp(image);
@@ -9553,7 +9553,7 @@ class LayerTreeHostTestKeepEventsMetricsForVisibility
       LayerTreeHostImpl* impl,
       CommitEarlyOutReason reason,
       bool /* did_sync_scroll_and_viewport */) override {
-    EXPECT_EQ(reason, CommitEarlyOutReason::ABORTED_NOT_VISIBLE);
+    EXPECT_EQ(reason, CommitEarlyOutReason::kAbortedNotVisible);
 
     // Since the main frame is aborted due to invisibility, events metrics
     // should be discarded.
@@ -9623,7 +9623,7 @@ class LayerTreeHostTestKeepEventsMetricsForDeferredMainFrameUpdate
       LayerTreeHostImpl* impl,
       CommitEarlyOutReason reason,
       bool /* did_sync_scroll_and_viewport */) override {
-    EXPECT_EQ(reason, CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE);
+    EXPECT_EQ(reason, CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate);
 
     // Since the main frame is aborted due to deferred main frame updates,
     // events metrics should not have been thrown away.
@@ -9706,7 +9706,7 @@ class LayerTreeHostTestKeepEventsMetricsForDeferredCommit
       LayerTreeHostImpl* impl,
       CommitEarlyOutReason reason,
       bool /* did_sync_scroll_and_viewport */) override {
-    EXPECT_EQ(reason, CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
+    EXPECT_EQ(reason, CommitEarlyOutReason::kAbortedDeferredCommit);
 
     // Since the main frame is aborted due to deferred commits, events metrics
     // should not have been thrown away.
@@ -9785,7 +9785,7 @@ class LayerTreeHostTestIgnoreEventsMetricsForNoUpdate
       LayerTreeHostImpl* impl,
       CommitEarlyOutReason reason,
       bool /* did_sync_scroll_and_viewport */) override {
-    EXPECT_EQ(reason, CommitEarlyOutReason::FINISHED_NO_UPDATES);
+    EXPECT_EQ(reason, CommitEarlyOutReason::kFinishedNoUpdates);
 
     // We should reach here only for the second frame.
     EXPECT_EQ(state_, State::kReceivedSecondFrameBeginImpl);

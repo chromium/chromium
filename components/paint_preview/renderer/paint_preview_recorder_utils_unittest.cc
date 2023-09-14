@@ -57,7 +57,7 @@ namespace {
 cc::PaintRecord AddLink(const std::string& link, const SkRect& rect) {
   cc::PaintRecorder link_recorder;
   cc::PaintCanvas* link_canvas = link_recorder.beginRecording();
-  link_canvas->Annotate(cc::PaintCanvas::AnnotationType::URL, rect,
+  link_canvas->Annotate(cc::PaintCanvas::AnnotationType::kUrl, rect,
                         SkData::MakeWithCString(link.c_str()));
   return link_recorder.finishRecordingAsPicture();
 }

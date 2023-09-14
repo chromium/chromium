@@ -1625,10 +1625,10 @@ bool LayerTreeImpl::UpdateDrawProperties(
       settings().minimum_occlusion_tracking_size);
 
   for (EffectTreeLayerListIterator it(this);
-       it.state() != EffectTreeLayerListIterator::State::END; ++it) {
+       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
     occlusion_tracker.EnterLayer(it);
 
-    if (it.state() == EffectTreeLayerListIterator::State::LAYER) {
+    if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
       LayerImpl* layer = it.current_layer();
       layer->draw_properties().occlusion_in_content_space =
           occlusion_tracker.GetCurrentOcclusionForLayer(layer->DrawTransform());
@@ -1637,7 +1637,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
     // TODO(khushalsagar) : Skip computing occlusion for shared elements. See
     // crbug.com/1258058.
     if (it.state() ==
-        EffectTreeLayerListIterator::State::CONTRIBUTING_SURFACE) {
+        EffectTreeLayerListIterator::State::kContributingSurface) {
       const RenderSurfaceImpl* occlusion_surface =
           occlusion_tracker.OcclusionSurfaceForContributingSurface();
       gfx::Transform draw_transform;

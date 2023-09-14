@@ -15,7 +15,7 @@ namespace cc {
 namespace {
 
 TEST(PaintOpHelper, AnnotateToString) {
-  AnnotateOp op(PaintCanvas::AnnotationType::URL, SkRect::MakeXYWH(1, 2, 3, 4),
+  AnnotateOp op(PaintCanvas::AnnotationType::kUrl, SkRect::MakeXYWH(1, 2, 3, 4),
                 nullptr);
   std::string str = PaintOpHelper::ToString(op);
   EXPECT_EQ(str,

@@ -123,7 +123,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator
     op_offset_ = target_offset;
 
     DCHECK(!*this || (*this)->type <=
-                         static_cast<uint32_t>(PaintOpType::LastPaintOpType));
+                         static_cast<uint32_t>(PaintOpType::kLastpaintoptype));
     return *this;
   }
   OffsetIterator operator++(int) {

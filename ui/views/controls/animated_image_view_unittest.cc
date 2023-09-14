@@ -34,7 +34,7 @@ const T* FindPaintOp(const cc::PaintRecord& paint_record,
     if (op.GetType() == paint_op_type)
       return static_cast<const T*>(&op);
 
-    if (op.GetType() == cc::PaintOpType::DrawRecord) {
+    if (op.GetType() == cc::PaintOpType::kDrawrecord) {
       const T* record_op_result = FindPaintOp<T>(
           static_cast<const cc::DrawRecordOp&>(op).record, paint_op_type);
       if (record_op_result)
@@ -104,7 +104,7 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   // Default should be no extra translation.
   cc::PaintRecord paint_record = Paint(view_->bounds());
   const cc::TranslateOp* translate_op =
-      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin));
@@ -112,7 +112,7 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   view_->SetAdditionalTranslation(gfx::Vector2d(5, 5));
   paint_record = Paint(view_->bounds());
   translate_op =
-      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin + 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin + 5));
@@ -120,7 +120,7 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   view_->SetAdditionalTranslation(gfx::Vector2d(5, -5));
   paint_record = Paint(view_->bounds());
   translate_op =
-      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin + 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin - 5));
@@ -128,7 +128,7 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   view_->SetAdditionalTranslation(gfx::Vector2d(-5, 5));
   paint_record = Paint(view_->bounds());
   translate_op =
-      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin - 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin + 5));
@@ -136,7 +136,7 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   view_->SetAdditionalTranslation(gfx::Vector2d(-5, -5));
   paint_record = Paint(view_->bounds());
   translate_op =
-      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::Translate);
+      FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin - 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin - 5));

@@ -1959,8 +1959,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
   auto paint_image_builder =
       cc::PaintImageBuilder::WithDefault()
           .set_id(renderer_stable_id_)
-          .set_animation_type(cc::PaintImage::AnimationType::VIDEO)
-          .set_completion_state(cc::PaintImage::CompletionState::DONE);
+          .set_animation_type(cc::PaintImage::AnimationType::kVideo)
+          .set_completion_state(cc::PaintImage::CompletionState::kDone);
 
   // Generate a new image.
   // Note: Skia will hold onto |video_frame| via |video_generator| only when

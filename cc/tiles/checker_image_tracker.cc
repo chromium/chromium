@@ -55,11 +55,11 @@ CheckerImagingDecision GetAnimationDecision(const PaintImage& image) {
     return CheckerImagingDecision::kVetoedMultipartImage;
 
   switch (image.animation_type()) {
-    case PaintImage::AnimationType::ANIMATED:
+    case PaintImage::AnimationType::kAnimated:
       return CheckerImagingDecision::kVetoedAnimatedImage;
-    case PaintImage::AnimationType::VIDEO:
+    case PaintImage::AnimationType::kVideo:
       return CheckerImagingDecision::kVetoedVideoFrame;
-    case PaintImage::AnimationType::STATIC:
+    case PaintImage::AnimationType::kStatic:
       return CheckerImagingDecision::kCanChecker;
   }
 
@@ -69,9 +69,9 @@ CheckerImagingDecision GetAnimationDecision(const PaintImage& image) {
 
 CheckerImagingDecision GetLoadDecision(const PaintImage& image) {
   switch (image.completion_state()) {
-    case PaintImage::CompletionState::DONE:
+    case PaintImage::CompletionState::kDone:
       return CheckerImagingDecision::kCanChecker;
-    case PaintImage::CompletionState::PARTIALLY_DONE:
+    case PaintImage::CompletionState::kPartiallyDone:
       return CheckerImagingDecision::kVetoedPartiallyLoadedImage;
   }
 

@@ -24,14 +24,14 @@ namespace {
 void ExtractLinks(const PaintRecord& record,
                   std::vector<std::pair<GURL, SkRect>>* links) {
   for (const cc::PaintOp& op : record) {
-    if (op.GetType() == cc::PaintOpType::Annotate) {
+    if (op.GetType() == cc::PaintOpType::kAnnotate) {
       const auto& annotate_op = static_cast<const cc::AnnotateOp&>(op);
       links->push_back(std::make_pair(
           GURL(std::string(
               reinterpret_cast<const char*>(annotate_op.data->data()),
               annotate_op.data->size())),
           annotate_op.rect));
-    } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       ExtractLinks(record_op.record, links);
     }
@@ -41,17 +41,17 @@ void ExtractLinks(const PaintRecord& record,
 size_t CountImagesOfType(const PaintRecord& record, cc::ImageType image_type) {
   size_t count = 0;
   for (const cc::PaintOp& op : record) {
-    if (op.GetType() == cc::PaintOpType::DrawImage) {
+    if (op.GetType() == cc::PaintOpType::kDrawimage) {
       const auto& image_op = static_cast<const cc::DrawImageOp&>(op);
       if (image_op.image.GetImageHeaderMetadata()->image_type == image_type) {
         ++count;
       }
-    } else if (op.GetType() == cc::PaintOpType::DrawImageRect) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawimagerect) {
       const auto& image_op = static_cast<const cc::DrawImageRectOp&>(op);
       if (image_op.image.GetImageHeaderMetadata()->image_type == image_type) {
         ++count;
       }
-    } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       count += CountImagesOfType(record_op.record, image_type);
     }

@@ -84,14 +84,14 @@ class CC_PAINT_EXPORT SkottieWrapper
   enum class FrameDataFetchResult {
     // A new image is available for the given asset, and the callback's output
     // parameters have been filled with the new frame data.
-    NEW_DATA_AVAILABLE,
+    kNewDataAvailable,
     // The callback's output parameters have not been filled and will be
     // ignored by SkottieWrapper. In this case, SkottieWrapper will reuse the
     // frame data that was most recently provided for the given asset (it caches
     // this internally). Note it is acceptable to set |image_out| to a null
     // SkImage; Skottie will simply skip the image asset while rendering the
     // rest of the frame.
-    NO_UPDATE,
+    kNoUpdate,
   };
   // The callback's implementation must synchronously fill the output
   // arguments. |asset_id| is guaranteed to be a valid asset that's present

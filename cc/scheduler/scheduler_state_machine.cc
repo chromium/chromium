@@ -1548,10 +1548,10 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
     main_thread_missed_last_deadline_ = false;
 
     switch (reason) {
-      case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
-      case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
-      case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
-        // TODO(rendering-core) For ABORTED_DEFERRED_COMMIT we may wish to do
+      case CommitEarlyOutReason::kAbortedNotVisible:
+      case CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate:
+      case CommitEarlyOutReason::kAbortedDeferredCommit:
+        // TODO(rendering-core) For kAbortedDeferredCommit we may wish to do
         // something different because we have updated the main frame, but we
         // have not committed it. So we do not necessarily need a begin main
         // frame but we do need a commit for the frame we deferred. In practice
@@ -1560,7 +1560,7 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
         begin_main_frame_state_ = BeginMainFrameState::IDLE;
         SetNeedsBeginMainFrame();
         break;
-      case CommitEarlyOutReason::FINISHED_NO_UPDATES:
+      case CommitEarlyOutReason::kFinishedNoUpdates:
         WillCommit(/*commit_had_no_updates=*/true);
         break;
     }
@@ -1570,12 +1570,12 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
     DCHECK_EQ(begin_main_frame_state_, BeginMainFrameState::READY_TO_COMMIT);
     next_begin_main_frame_state_ = BeginMainFrameState::IDLE;
     switch (reason) {
-      case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
-      case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
-      case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
+      case CommitEarlyOutReason::kAbortedNotVisible:
+      case CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate:
+      case CommitEarlyOutReason::kAbortedDeferredCommit:
         SetNeedsBeginMainFrame();
         break;
-      case CommitEarlyOutReason::FINISHED_NO_UPDATES:
+      case CommitEarlyOutReason::kFinishedNoUpdates:
         commit_count_++;
         break;
     }

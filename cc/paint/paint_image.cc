@@ -269,7 +269,7 @@ bool PaintImage::DecodeFromSkImage(SkPixmap pixmap,
 }
 
 bool PaintImage::ShouldAnimate() const {
-  return animation_type_ == AnimationType::ANIMATED &&
+  return animation_type_ == AnimationType::kAnimated &&
          repetition_count_ != kAnimationNone && FrameCount() > 1;
 }
 
@@ -369,7 +369,7 @@ bool PaintImage::IsYuv(
 }
 
 const std::vector<FrameMetadata>& PaintImage::GetFrameMetadata() const {
-  DCHECK_EQ(animation_type_, AnimationType::ANIMATED);
+  DCHECK_EQ(animation_type_, AnimationType::kAnimated);
   DCHECK(paint_image_generator_);
 
   return paint_image_generator_->GetFrameMetadata();

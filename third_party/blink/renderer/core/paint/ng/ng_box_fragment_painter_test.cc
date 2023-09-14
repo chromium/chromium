@@ -22,12 +22,12 @@ namespace {
 
 void ExtractLinks(const PaintRecord& record, std::vector<GURL>* links) {
   for (const cc::PaintOp& op : record) {
-    if (op.GetType() == cc::PaintOpType::Annotate) {
+    if (op.GetType() == cc::PaintOpType::kAnnotate) {
       const auto& annotate_op = static_cast<const cc::AnnotateOp&>(op);
       links->push_back(GURL(
           std::string(reinterpret_cast<const char*>(annotate_op.data->data()),
                       annotate_op.data->size())));
-    } else if (op.GetType() == cc::PaintOpType::DrawRecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       ExtractLinks(record_op.record, links);
     }

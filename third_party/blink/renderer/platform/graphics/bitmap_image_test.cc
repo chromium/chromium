@@ -651,7 +651,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   ASSERT_TRUE(image);
   EXPECT_EQ(image.FrameCount(), frame_count_);
   EXPECT_EQ(image.completion_state(),
-            PaintImage::CompletionState::PARTIALLY_DONE);
+            PaintImage::CompletionState::kPartiallyDone);
   EXPECT_EQ(image.repetition_count(), repetition_count_);
   for (size_t i = 0; i < image.GetFrameMetadata().size(); ++i) {
     const auto& data = image.GetFrameMetadata()[i];
@@ -672,7 +672,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   image = image_->PaintImageForCurrentFrame();
   ASSERT_TRUE(image);
   EXPECT_EQ(image.FrameCount(), frame_count_);
-  EXPECT_EQ(image.completion_state(), PaintImage::CompletionState::DONE);
+  EXPECT_EQ(image.completion_state(), PaintImage::CompletionState::kDone);
   EXPECT_EQ(image.repetition_count(), repetition_count_);
   for (size_t i = 0; i < image.GetFrameMetadata().size(); ++i) {
     const auto& data = image.GetFrameMetadata()[i];

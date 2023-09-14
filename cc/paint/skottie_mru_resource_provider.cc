@@ -80,10 +80,10 @@ class ImageAssetImpl : public skresources::ImageAsset {
     SkottieWrapper::FrameDataFetchResult result = frame_data_cb_.Run(
         asset_id_, t, new_frame_data.image, new_frame_data.sampling);
     switch (result) {
-      case SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE:
+      case SkottieWrapper::FrameDataFetchResult::kNewDataAvailable:
         current_frame_data_ = std::move(new_frame_data);
         break;
-      case SkottieWrapper::FrameDataFetchResult::NO_UPDATE:
+      case SkottieWrapper::FrameDataFetchResult::kNoUpdate:
         break;
     }
     return current_frame_data_;

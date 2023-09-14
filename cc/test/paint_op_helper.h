@@ -46,14 +46,14 @@ class PaintOpHelper {
     std::ostringstream str;
     str << std::boolalpha;
     switch (base_op.GetType()) {
-      case PaintOpType::Annotate: {
+      case PaintOpType::kAnnotate: {
         const auto& op = static_cast<const AnnotateOp&>(base_op);
         str << "AnnotateOp(type=" << ToString(op.annotation_type)
             << ", rect=" << ToString(op.rect) << ", data=" << ToString(op.data)
             << ")";
         break;
       }
-      case PaintOpType::ClipPath: {
+      case PaintOpType::kClippath: {
         const auto& op = static_cast<const ClipPathOp&>(base_op);
         str << "ClipPathOp(path=" << ToString(op.path)
             << ", op=" << ToString(op.op) << ", antialias=" << op.antialias
@@ -61,51 +61,51 @@ class PaintOpHelper {
             << ")";
         break;
       }
-      case PaintOpType::ClipRect: {
+      case PaintOpType::kCliprect: {
         const auto& op = static_cast<const ClipRectOp&>(base_op);
         str << "ClipRectOp(rect=" << ToString(op.rect)
             << ", op=" << ToString(op.op) << ", antialias=" << op.antialias
             << ")";
         break;
       }
-      case PaintOpType::ClipRRect: {
+      case PaintOpType::kCliprrect: {
         const auto& op = static_cast<const ClipRRectOp&>(base_op);
         str << "ClipRRectOp(rrect=" << ToString(op.rrect)
             << ", op=" << ToString(op.op) << ", antialias=" << op.antialias
             << ")";
         break;
       }
-      case PaintOpType::Concat: {
+      case PaintOpType::kConcat: {
         const auto& op = static_cast<const ConcatOp&>(base_op);
         str << "ConcatOp(matrix=" << ToString(op.matrix) << ")";
         break;
       }
-      case PaintOpType::CustomData: {
+      case PaintOpType::kCustomdata: {
         const auto& op = static_cast<const CustomDataOp&>(base_op);
         str << "CustomDataOp(id=" << ToString(op.id) << ")";
         break;
       }
-      case PaintOpType::DrawColor: {
+      case PaintOpType::kDrawcolor: {
         const auto& op = static_cast<const DrawColorOp&>(base_op);
         str << "DrawColorOp(color=" << ToString(op.color)
             << ", mode=" << ToString(op.mode) << ")";
         break;
       }
-      case PaintOpType::DrawDRRect: {
+      case PaintOpType::kDrawdrrect: {
         const auto& op = static_cast<const DrawDRRectOp&>(base_op);
         str << "DrawDRRectOp(outer=" << ToString(op.outer)
             << ", inner=" << ToString(op.inner)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawImage: {
+      case PaintOpType::kDrawimage: {
         const auto& op = static_cast<const DrawImageOp&>(base_op);
         str << "DrawImageOp(image=" << ToString(op.image)
             << ", left=" << ToString(op.left) << ", top=" << ToString(op.top)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawImageRect: {
+      case PaintOpType::kDrawimagerect: {
         const auto& op = static_cast<const DrawImageRectOp&>(base_op);
         str << "DrawImageRectOp(image=" << ToString(op.image)
             << ", src=" << ToString(op.src) << ", dst=" << ToString(op.dst)
@@ -113,26 +113,26 @@ class PaintOpHelper {
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawIRect: {
+      case PaintOpType::kDrawirect: {
         const auto& op = static_cast<const DrawIRectOp&>(base_op);
         str << "DrawIRectOp(rect=" << ToString(op.rect)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawLine: {
+      case PaintOpType::kDrawline: {
         const auto& op = static_cast<const DrawLineOp&>(base_op);
         str << "DrawLineOp(x0=" << ToString(op.x0) << ", y0=" << ToString(op.y0)
             << ", x1=" << ToString(op.x1) << ", y1=" << ToString(op.y1)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawOval: {
+      case PaintOpType::kDrawoval: {
         const auto& op = static_cast<const DrawOvalOp&>(base_op);
         str << "DrawOvalOp(oval=" << ToString(op.oval)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawPath: {
+      case PaintOpType::kDrawpath: {
         const auto& op = static_cast<const DrawPathOp&>(base_op);
         str << "DrawPathOp(path=" << ToString(op.path)
             << ", flags=" << ToString(op.flags)
@@ -140,89 +140,89 @@ class PaintOpHelper {
             << ")";
         break;
       }
-      case PaintOpType::DrawRecord: {
+      case PaintOpType::kDrawrecord: {
         const auto& op = static_cast<const DrawRecordOp&>(base_op);
         str << "DrawRecordOp(record=" << ToString(op.record) << ")";
         break;
       }
-      case PaintOpType::DrawRect: {
+      case PaintOpType::kDrawrect: {
         const auto& op = static_cast<const DrawRectOp&>(base_op);
         str << "DrawRectOp(rect=" << ToString(op.rect)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawRRect: {
+      case PaintOpType::kDrawrrect: {
         const auto& op = static_cast<const DrawRRectOp&>(base_op);
         str << "DrawRRectOp(rrect=" << ToString(op.rrect)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawSkottie: {
+      case PaintOpType::kDrawskottie: {
         const auto& op = static_cast<const DrawSkottieOp&>(base_op);
         str << "DrawSkottieOp("
             << "skottie=" << ToString(op.skottie)
             << ", dst=" << ToString(op.dst) << ", t=" << op.t << ")";
         break;
       }
-      case PaintOpType::DrawTextBlob: {
+      case PaintOpType::kDrawtextblob: {
         const auto& op = static_cast<const DrawTextBlobOp&>(base_op);
         str << "DrawTextBlobOp(blob=" << ToString(op.blob)
             << ", x=" << ToString(op.x) << ", y=" << ToString(op.y)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::DrawSlug: {
+      case PaintOpType::kDrawslug: {
         const auto& op = static_cast<const DrawSlugOp&>(base_op);
         str << "DrawSlugOp(flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::Noop: {
+      case PaintOpType::kNoop: {
         str << "NoopOp()";
         break;
       }
-      case PaintOpType::Restore: {
+      case PaintOpType::kRestore: {
         str << "RestoreOp()";
         break;
       }
-      case PaintOpType::Rotate: {
+      case PaintOpType::kRotate: {
         const auto& op = static_cast<const RotateOp&>(base_op);
         str << "RotateOp(degrees=" << ToString(op.degrees) << ")";
         break;
       }
-      case PaintOpType::Save: {
+      case PaintOpType::kSave: {
         str << "SaveOp()";
         break;
       }
-      case PaintOpType::SaveLayer: {
+      case PaintOpType::kSavelayer: {
         const auto& op = static_cast<const SaveLayerOp&>(base_op);
         str << "SaveLayerOp(bounds=" << ToString(op.bounds)
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
-      case PaintOpType::SaveLayerAlpha: {
+      case PaintOpType::kSavelayeralpha: {
         const auto& op = static_cast<const SaveLayerAlphaOp&>(base_op);
         str << "SaveLayerAlphaOp(bounds=" << ToString(op.bounds)
             << ", alpha=" << ToString(op.alpha) << ")";
         break;
       }
-      case PaintOpType::Scale: {
+      case PaintOpType::kScale: {
         const auto& op = static_cast<const ScaleOp&>(base_op);
         str << "ScaleOp(sx=" << ToString(op.sx) << ", sy=" << ToString(op.sy)
             << ")";
         break;
       }
-      case PaintOpType::SetMatrix: {
+      case PaintOpType::kSetmatrix: {
         const auto& op = static_cast<const SetMatrixOp&>(base_op);
         str << "SetMatrixOp(matrix=" << ToString(op.matrix) << ")";
         break;
       }
-      case PaintOpType::Translate: {
+      case PaintOpType::kTranslate: {
         const auto& op = static_cast<const TranslateOp&>(base_op);
         str << "TranslateOp(dx=" << ToString(op.dx)
             << ", dy=" << ToString(op.dy) << ")";
         break;
       }
-      case PaintOpType::SetNodeId: {
+      case PaintOpType::kSetnodeid: {
         const auto& op = static_cast<const SetNodeIdOp&>(base_op);
         str << "SetNodeIdOp(id=" << op.node_id << ")";
         break;
@@ -518,11 +518,11 @@ class PaintOpHelper {
     switch (type) {
       default:
         break;
-      case PaintCanvas::AnnotationType::URL:
+      case PaintCanvas::AnnotationType::kUrl:
         return "URL";
-      case PaintCanvas::AnnotationType::NAMED_DESTINATION:
+      case PaintCanvas::AnnotationType::kNameDestination:
         return "NAMED_DESTINATION";
-      case PaintCanvas::AnnotationType::LINK_TO_DESTINATION:
+      case PaintCanvas::AnnotationType::kLinkToDestination:
         return "LINK_TO_DESTINATION";
     }
     return "<unknown AnnotationType>";

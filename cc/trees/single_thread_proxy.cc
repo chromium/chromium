@@ -1029,7 +1029,7 @@ void SingleThreadProxy::BeginMainFrame(
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferBeginMainFrame",
                          TRACE_EVENT_SCOPE_THREAD);
     BeginMainFrameAbortedOnImplThread(
-        CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE);
+        CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate);
     return;
   }
 
@@ -1042,8 +1042,7 @@ void SingleThreadProxy::BeginMainFrame(
     // Discard event metrics.
     layer_tree_host_->ClearEventsMetrics();
 
-    BeginMainFrameAbortedOnImplThread(
-        CommitEarlyOutReason::ABORTED_NOT_VISIBLE);
+    BeginMainFrameAbortedOnImplThread(CommitEarlyOutReason::kAbortedNotVisible);
     return;
   }
 
@@ -1071,7 +1070,7 @@ void SingleThreadProxy::BeginMainFrame(
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit_InsideBeginMainFrame",
                          TRACE_EVENT_SCOPE_THREAD);
     BeginMainFrameAbortedOnImplThread(
-        CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
+        CommitEarlyOutReason::kAbortedDeferredCommit);
     layer_tree_host_->RecordEndOfFrameMetrics(frame_start_time,
                                               /* trackers */ 0u);
     layer_tree_host_->DidBeginMainFrame();

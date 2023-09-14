@@ -267,7 +267,7 @@ bool ImageAnimationController::AnimationState::ShouldAnimate(
   // If we don't have all data for this image, we can not trust the frame count
   // and loop back to the first frame.
   size_t last_frame_index = frames_.size() - 1;
-  if (completion_state_ != PaintImage::CompletionState::DONE &&
+  if (completion_state_ != PaintImage::CompletionState::kDone &&
       pending_index == last_frame_index) {
     return false;
   }
@@ -457,8 +457,8 @@ void ImageAnimationController::AnimationState::UpdateMetadata(
   frames_ = data.frames;
   DCHECK_GT(frames_.size(), 1u);
 
-  DCHECK(completion_state_ != PaintImage::CompletionState::DONE ||
-         data.completion_state == PaintImage::CompletionState::DONE)
+  DCHECK(completion_state_ != PaintImage::CompletionState::kDone ||
+         data.completion_state == PaintImage::CompletionState::kDone)
       << "If the image was marked complete before, it can not be incomplete in "
          "a new update";
   completion_state_ = data.completion_state;

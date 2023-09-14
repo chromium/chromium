@@ -169,7 +169,7 @@ void ProxyMain::BeginMainFrame(
     TRACE_EVENT_WITH_FLOW1(
         "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
         TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "reason", "ABORTED_NOT_VISIBLE");
+        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kAbortedNotVisible");
     // Since the commit is deferred due to the page becoming invisible, the
     // metrics are not meaningful anymore (as the page might become visible in
     // any arbitrary time in the future and cause an arbitrarily large latency).
@@ -180,7 +180,7 @@ void ProxyMain::BeginMainFrame(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
                        base::Unretained(proxy_impl_.get()),
-                       CommitEarlyOutReason::ABORTED_NOT_VISIBLE,
+                       CommitEarlyOutReason::kAbortedNotVisible,
                        begin_main_frame_start_time,
                        std::move(empty_swap_promises),
                        false /* scroll_and_viewport_changes_synced */));
@@ -196,11 +196,10 @@ void ProxyMain::BeginMainFrame(
   if (defer_main_frame_update_ || pause_rendering_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
                          TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_WITH_FLOW1("viz,benchmark",
-                           "MainFrame.BeginMainFrameAbortedOnMain",
-                           TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN, "reason",
-                           "ABORTED_DEFERRED_MAIN_FRAME_UPDATE");
+    TRACE_EVENT_WITH_FLOW1(
+        "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
+        TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
+        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kAbortedDeferredMainFrameUpdate");
     // In this case, since the commit is deferred to a later time, gathered
     // events metrics are not discarded so that they can be reported if the
     // commit happens in the future.
@@ -209,7 +208,7 @@ void ProxyMain::BeginMainFrame(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
                        base::Unretained(proxy_impl_.get()),
-                       CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE,
+                       CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate,
                        begin_main_frame_start_time,
                        std::move(empty_swap_promises),
                        false /* scroll_and_viewport_changes_synced */));
@@ -302,7 +301,7 @@ void ProxyMain::BeginMainFrame(
     TRACE_EVENT_WITH_FLOW1(
         "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
         TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "reason", "ABORTED_DEFERRED_COMMIT");
+        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kAbortedDeferredCommit");
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
@@ -314,7 +313,7 @@ void ProxyMain::BeginMainFrame(
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
                                   base::Unretained(proxy_impl_.get()),
-                                  CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT,
+                                  CommitEarlyOutReason::kAbortedDeferredCommit,
                                   begin_main_frame_start_time,
                                   std::move(empty_swap_promises),
                                   scroll_and_viewport_changes_synced));
@@ -390,7 +389,7 @@ void ProxyMain::BeginMainFrame(
     TRACE_EVENT_WITH_FLOW1(
         "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
         TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "reason", "FINISHED_NO_UPDATES");
+        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kFinishedNoUpdates");
     std::vector<std::unique_ptr<SwapPromise>> swap_promises =
         layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises();
 
@@ -405,7 +404,7 @@ void ProxyMain::BeginMainFrame(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
                        base::Unretained(proxy_impl_.get()),
-                       CommitEarlyOutReason::FINISHED_NO_UPDATES,
+                       CommitEarlyOutReason::kFinishedNoUpdates,
                        begin_main_frame_start_time, std::move(swap_promises),
                        true /* scroll_and_viewport_changes_synced */));
 

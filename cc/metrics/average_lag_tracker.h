@@ -17,7 +17,7 @@ namespace cc {
 // https://docs.google.com/document/d/1e8NuzPblIv2B9bz01oSj40rmlse7_PHq5oFS3lqz6N4/
 class CC_EXPORT AverageLagTracker {
  public:
-  enum class EventType { ScrollBegin, ScrollUpdate };
+  enum class EventType { kScrollbegin, kScrollupdate };
 
   struct EventInfo {
     EventInfo(float event_scroll_delta,

@@ -30,7 +30,7 @@ class FakeCompositorFrameReportingController
   void BeginMainFrameAborted(
       const viz::BeginFrameId& id,
       CommitEarlyOutReason reason =
-          CommitEarlyOutReason::ABORTED_NOT_VISIBLE) override;
+          CommitEarlyOutReason::kAbortedNotVisible) override;
   void WillCommit() override;
   void DidCommit() override;
   void WillActivate() override;

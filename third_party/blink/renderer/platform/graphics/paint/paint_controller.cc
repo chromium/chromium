@@ -214,7 +214,7 @@ sk_sp<SkTextBlob> PaintController::CachedTextBlob() const {
     return nullptr;
   }
   const cc::PaintOp& op = record.GetFirstOp();
-  if (op.GetType() != cc::PaintOpType::DrawTextBlob) {
+  if (op.GetType() != cc::PaintOpType::kDrawtextblob) {
     return nullptr;
   }
   return static_cast<const cc::DrawTextBlobOp&>(op).blob;
