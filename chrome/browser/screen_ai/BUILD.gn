@@ -18,6 +18,20 @@ if (is_chromeos_ash) {
       "//components/services/screen_ai/public/cpp:utilities",
     ]
   }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "screen_ai_dlc_installer_unittest.cc" ]
+    deps = [
+      ":screen_ai_dlc_installer",
+      "//base/test:test_support",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//chromeos/ash/components/dbus/dlcservice",
+      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }
 
 source_set("screen_ai_install_state") {

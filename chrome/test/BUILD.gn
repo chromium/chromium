@@ -8204,6 +8204,7 @@ test("unit_tests") {
       "//chrome/browser/nearby_sharing/public/cpp",
       "//chrome/browser/policy:onc",
       "//chrome/browser/policy:unit_tests",
+      "//chrome/browser/screen_ai:unit_tests",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/views/editor_menu:utils",
