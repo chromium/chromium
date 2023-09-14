@@ -13,6 +13,8 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class HostContentSettingsMap;
@@ -24,7 +26,8 @@ class CookieSettings;
 
 namespace privacy_sandbox {
 
-class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
+class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
+                                   public TrackingProtectionSettingsObserver {
  public:
   // Ideally the only external locations that call this constructor are the
   // factory, and dedicated tests.
@@ -35,6 +38,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       std::unique_ptr<Delegate> delegate,
       HostContentSettingsMap* host_content_settings_map,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
+      TrackingProtectionSettings* tracking_protection_settings,
       PrefService* pref_service);
   ~PrivacySandboxSettingsImpl() override;
 
@@ -188,14 +192,22 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   // `interest_group_api_operation` is `kJoin`.
   bool IsFledgeJoiningAllowed(const url::Origin& top_frame_origin) const;
 
+  // From TrackingProtectionSettingsObserver.
+  void OnBlockAllThirdPartyCookiesChanged() override;
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<Delegate> delegate_;
   raw_ptr<HostContentSettingsMap, AcrossTasksDanglingUntriaged>
       host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  raw_ptr<TrackingProtectionSettings> tracking_protection_settings_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+
+  base::ScopedObservation<TrackingProtectionSettings,
+                          TrackingProtectionSettingsObserver>
+      tracking_protection_settings_observation_{this};
 
   // Which topics are disabled by Finch; This is set and read by
   // GetFinchDisabledTopics.

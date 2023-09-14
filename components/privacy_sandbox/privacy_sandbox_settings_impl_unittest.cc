@@ -22,6 +22,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -172,6 +174,9 @@ class PrivacySandboxSettingsTest : public testing::Test {
         false /* restore_session */, false /* should_record_metrics */);
     cookie_settings_ = new content_settings::CookieSettings(
         host_content_settings_map_.get(), &prefs_, false, "chrome-extension");
+    tracking_protection_settings_ =
+        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(&prefs_,
+                                                                      nullptr);
   }
   ~PrivacySandboxSettingsTest() override {
     host_content_settings_map()->ShutdownOnUIThread();
@@ -188,7 +193,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettingsImpl>(
         std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
-        prefs());
+        tracking_protection_settings_.get(), prefs());
   }
 
   virtual void InitializePrefsBeforeStart() {}
@@ -249,6 +254,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
   ScopedPrivacySandboxAttestations scoped_attestations_;
 
   std::unique_ptr<PrivacySandboxSettingsImpl> privacy_sandbox_settings_;
@@ -970,7 +977,7 @@ TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged) {
   // OnFirstPartySetsEnabledChanged() should only call observers when the
   // base::Feature is enabled and the pref changes.
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitWithFeatures({features::kFirstPartySets}, {});
+  feature_list_.InitAndEnableFeature(features::kFirstPartySets);
   privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/true));
@@ -988,6 +995,25 @@ TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged) {
 
   prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, true);
   prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+}
+
+TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged3pcd) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(features::kFirstPartySets);
+  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
+  privacy_sandbox_settings()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/false));
+  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/true));
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/false));
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed) {

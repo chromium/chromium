@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_delegate.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -41,6 +42,7 @@ PrivacySandboxSettingsFactory::PrivacySandboxSettingsFactory()
   // holds a raw ptr).
   // TODO (crbug.com/1400663): Unwind these "reasons" and improve this so that
   // the services can be explicitly depended on.
+  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -51,5 +53,7 @@ PrivacySandboxSettingsFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
       std::make_unique<PrivacySandboxSettingsDelegate>(profile),
       HostContentSettingsMapFactory::GetForProfile(profile),
-      CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs());
+      CookieSettingsFactory::GetForProfile(profile),
+      TrackingProtectionSettingsFactory::GetForProfile(profile),
+      profile->GetPrefs());
 }

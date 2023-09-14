@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 
 namespace privacy_sandbox {
 
@@ -123,11 +124,13 @@ void TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged() {
   }
 }
 
-void TrackingProtectionSettings::AddObserver(Observer* observer) {
+void TrackingProtectionSettings::AddObserver(
+    TrackingProtectionSettingsObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void TrackingProtectionSettings::RemoveObserver(Observer* observer) {
+void TrackingProtectionSettings::RemoveObserver(
+    TrackingProtectionSettingsObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 

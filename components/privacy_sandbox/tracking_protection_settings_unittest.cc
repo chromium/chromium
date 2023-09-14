@@ -8,6 +8,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +17,7 @@ namespace privacy_sandbox {
 namespace {
 
 class MockTrackingProtectionSettingsObserver
-    : public TrackingProtectionSettings::Observer {
+    : public TrackingProtectionSettingsObserver {
  public:
   MOCK_METHOD(void, OnDoNotTrackEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));

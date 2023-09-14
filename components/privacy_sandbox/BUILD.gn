@@ -37,6 +37,7 @@ source_set("privacy_sandbox_settings_headers") {
   ]
 
   deps = [
+    ":tracking_protection_settings",
     "//components/browsing_topics/common:common",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
@@ -58,6 +59,7 @@ source_set("privacy_sandbox") {
 
   deps = [
     ":privacy_sandbox_prefs",
+    ":tracking_protection_settings",
     "//components/browsing_topics/common:common",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
@@ -99,6 +101,7 @@ source_set("tracking_protection_settings") {
   sources = [
     "tracking_protection_settings.cc",
     "tracking_protection_settings.h",
+    "tracking_protection_settings_observer.h",
   ]
 
   deps = [

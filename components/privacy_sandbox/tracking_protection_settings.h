@@ -15,27 +15,21 @@ class PrefService;
 
 namespace privacy_sandbox {
 
+class TrackingProtectionSettingsObserver;
+
 // A service which provides an interface for observing and reading tracking
 // protection settings.
-class TrackingProtectionSettings : TrackingProtectionOnboarding::Observer,
-                                   public KeyedService {
+class TrackingProtectionSettings
+    : public TrackingProtectionOnboarding::Observer,
+      public KeyedService {
  public:
-  class Observer {
-   public:
-    // For observation of DNT.
-    virtual void OnDoNotTrackEnabledChanged() {}
-
-    // For observation of block all 3PC.
-    virtual void OnBlockAllThirdPartyCookiesChanged() {}
-  };
-
   explicit TrackingProtectionSettings(
       PrefService* pref_service,
       TrackingProtectionOnboarding* onboarding_service);
   ~TrackingProtectionSettings() override;
 
-  virtual void AddObserver(Observer* observer);
-  virtual void RemoveObserver(Observer* observer);
+  virtual void AddObserver(TrackingProtectionSettingsObserver* observer);
+  virtual void RemoveObserver(TrackingProtectionSettingsObserver* observer);
 
   // Wrapper functions for kTrackingProtectionLevel pref.
   tracking_protection::TrackingProtectionLevel GetTrackingProtectionLevel()
@@ -62,7 +56,7 @@ class TrackingProtectionSettings : TrackingProtectionOnboarding::Observer,
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
