@@ -1167,7 +1167,7 @@ void AutocompleteController::AttachActions() {
       (OmniboxFieldTrial::kActionsUISimplificationIncludeRealbox.Get() ||
        input_.current_page_classification() !=
            metrics::OmniboxEventProto::NTP_REALBOX)) {
-    internal_result_.SplitActionsToSuggestions(input_);
+    internal_result_.SplitActionsToSuggestions();
   }
 }
 

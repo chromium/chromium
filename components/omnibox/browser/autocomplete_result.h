@@ -151,9 +151,7 @@ class AutocompleteResult {
   void TrimOmniboxActions(bool is_zero_suggest);
 
   // Split some `actions` on matches out to become their own matches.
-  // The autocomplete `input` is used to trim the last matches if new
-  // matches are created and the result limit is exceeded.
-  void SplitActionsToSuggestions(const AutocompleteInput& input);
+  void SplitActionsToSuggestions();
 
   // Sets |action| in matches that have Pedal-triggering text.
   void AttachPedalsToMatches(const AutocompleteInput& input,

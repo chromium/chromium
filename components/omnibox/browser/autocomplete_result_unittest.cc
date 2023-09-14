@@ -2898,7 +2898,7 @@ TEST_F(AutocompleteResultTest, SplitActionsToSuggestions) {
   EXPECT_EQ(result.size(), 4u);
 
   // Then pedals are split out to dedicated suggestions with takeover action.
-  result.SplitActionsToSuggestions(input);
+  result.SplitActionsToSuggestions();
   EXPECT_TRUE(result.begin()->actions.empty());
   EXPECT_NE(nullptr, result.match_at(1)->takeover_action);
   EXPECT_EQ(result.size(), 5u);
@@ -2919,7 +2919,7 @@ TEST_F(AutocompleteResultTest, SplitActionsToSuggestions) {
   // We have three actions: pedal, tab-switch, pedal. Split and ensure
   // both pedals became dedicated suggestions. The first one from above
   // is still there and is not affected by splitting again.
-  result.SplitActionsToSuggestions(input);
+  result.SplitActionsToSuggestions();
   EXPECT_EQ(result.match_at(0)->actions.size(), 1u);
   EXPECT_EQ(result.match_at(0)->GetActionAt(0u)->ActionId(),
             OmniboxActionId::TAB_SWITCH);
