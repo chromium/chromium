@@ -30,6 +30,8 @@ import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomiz
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Unit test suite for partner homepage.
@@ -49,7 +51,7 @@ public class PartnerHomepageUnitTest {
 
     public static final String TAG = "PartnerHomepageUnitTest";
 
-    private static final String TEST_CUSTOM_HOMEPAGE_URI = "http://chrome.com";
+    private static final GURL TEST_CUSTOM_HOMEPAGE_GURL = JUnitTestGURLs.EXAMPLE_URL;
 
     private HomepageManager mHomepageManager;
     private PartnerBrowserCustomizations mPartnerBrowserCustomizations;
@@ -63,8 +65,8 @@ public class PartnerHomepageUnitTest {
 
         Assert.assertNotNull(mHomepageManager);
 
-        Assert.assertNotSame(
-                TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI, TEST_CUSTOM_HOMEPAGE_URI);
+        Assert.assertNotSame(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
+                TEST_CUSTOM_HOMEPAGE_GURL.getSpec());
         CustomizationProviderDelegateUpstreamImpl.ignoreBrowserProviderSystemPackageCheckForTesting(
                 true);
     }
@@ -91,7 +93,7 @@ public class PartnerHomepageUnitTest {
     public void testProviderNotFromSystemPackage() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHomepageManager.setPrefHomepageEnabled(true);
-            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
+            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
         });
 
         // Note that unlike other tests in this file, we test if Chrome ignores a customizations
@@ -124,7 +126,7 @@ public class PartnerHomepageUnitTest {
     public void testNoProvider() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHomepageManager.setPrefHomepageEnabled(true);
-            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
+            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
         });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -153,7 +155,7 @@ public class PartnerHomepageUnitTest {
     public void testHomepageDisabled() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHomepageManager.setPrefHomepageEnabled(false);
-            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
+            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
         });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -185,7 +187,7 @@ public class PartnerHomepageUnitTest {
     public void testCustomHomepage() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHomepageManager.setPrefHomepageEnabled(true);
-            mHomepageManager.setHomepagePreferences(false, false, TEST_CUSTOM_HOMEPAGE_URI);
+            mHomepageManager.setHomepagePreferences(false, false, TEST_CUSTOM_HOMEPAGE_GURL);
         });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -204,7 +206,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        Assert.assertEquals(TEST_CUSTOM_HOMEPAGE_URI, HomepageManager.getHomepageUri());
+        Assert.assertEquals(TEST_CUSTOM_HOMEPAGE_GURL.getSpec(), HomepageManager.getHomepageUri());
     }
 
     /**
@@ -218,7 +220,7 @@ public class PartnerHomepageUnitTest {
     public void testHomepageProviderTimeout() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHomepageManager.setPrefHomepageEnabled(true);
-            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
+            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
         });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -259,7 +261,7 @@ public class PartnerHomepageUnitTest {
     public void testHomepageProviderDelayed() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHomepageManager.setPrefHomepageEnabled(true);
-            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
+            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
         });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
@@ -302,7 +304,7 @@ public class PartnerHomepageUnitTest {
     public void testReadHomepageProvider() throws InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHomepageManager.setPrefHomepageEnabled(true);
-            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_URI);
+            mHomepageManager.setHomepagePreferences(false, true, TEST_CUSTOM_HOMEPAGE_GURL);
         });
 
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(

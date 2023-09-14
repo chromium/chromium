@@ -270,7 +270,8 @@ class PartnerCustomizationsUma {
                         ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null)
                        != null)
                 || (sharedPreferencesManager.readString(
-                            ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, null)
+                            ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
+                            null)
                         != null);
     }
 

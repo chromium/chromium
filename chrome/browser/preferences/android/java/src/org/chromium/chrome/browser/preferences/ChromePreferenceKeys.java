@@ -370,14 +370,15 @@ public final class ChromePreferenceKeys {
     public static final String HISTORY_SHOW_HISTORY_INFO = "history_home_show_info";
 
     /** Keys used to save settings related to homepage. */
-    public static final String HOMEPAGE_CUSTOM_URI = "homepage_custom_uri";
-    public static final String HOMEPAGE_ENABLED = "homepage";
-    public static final String HOMEPAGE_USE_CHROME_NTP = "Chrome.Homepage.UseNTP";
-    public static final String HOMEPAGE_USE_DEFAULT_URI = "homepage_partner_enabled";
-    public static final String HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI =
+    public static final String DEPRECATED_HOMEPAGE_CUSTOM_URI = "homepage_custom_uri";
+    public static final String DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI =
             "Chrome.Homepage.PartnerCustomizedDefaultUri";
+    public static final String HOMEPAGE_CUSTOM_GURL = "Chrome.Homepage.CustomGurl";
+    public static final String HOMEPAGE_ENABLED = "homepage";
     public static final String HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL =
             "Chrome.Homepage.PartnerCustomizedDefaultGurl";
+    public static final String HOMEPAGE_USE_CHROME_NTP = "Chrome.Homepage.UseNTP";
+    public static final String HOMEPAGE_USE_DEFAULT_URI = "homepage_partner_enabled";
 
     /**
      * Key used to save homepage location set by enterprise policy
@@ -1017,6 +1018,8 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
                 DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
+                DEPRECATED_HOMEPAGE_LOCATION_POLICY,
+                DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
                 DEVICE_LOCK_PAGE_HAS_BEEN_PASSED,
@@ -1033,10 +1036,9 @@ public final class ChromePreferenceKeys {
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 FLAGS_SAFE_MODE_ENABLED,
                 FLAGS_SAFE_MODE_RUNS_LEFT,
-                DEPRECATED_HOMEPAGE_LOCATION_POLICY,
+                HOMEPAGE_CUSTOM_GURL,
                 HOMEPAGE_LOCATION_POLICY_GURL,
                 HOMEPAGE_USE_CHROME_NTP,
-                HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,

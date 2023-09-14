@@ -15,6 +15,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
@@ -150,7 +151,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     public static @Nullable String getHomepageUri() {
         if (!isHomepageEnabled()) return null;
 
-        String homepageUri = getInstance().getHomepageUriIgnoringEnabledState();
+        String homepageUri = getInstance().getHomepageUriIgnoringEnabledState().getSpec();
         if (TextUtils.isEmpty(homepageUri)) {
             homepageUri = UrlConstants.NTP_URL;
         }
@@ -167,25 +168,32 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * @return The default homepage URI if the homepage is partner provided or the new tab page
      *         if the homepage button is force enabled via flag.
      */
-    public static String getDefaultHomepageUri() {
+    public static GURL getDefaultHomepageUri() {
         if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
-            return PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec();
+            return PartnerBrowserCustomizations.getInstance().getHomePageUrl();
         }
 
-        String homepagePartnerDefaultUri;
         String homepagePartnerDefaultGurlSerialized =
                 SharedPreferencesManager.getInstance().readString(
                         ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         if (!homepagePartnerDefaultGurlSerialized.equals("")) {
-            homepagePartnerDefaultUri =
-                    GURL.deserialize(homepagePartnerDefaultGurlSerialized).getSpec();
-        } else {
-            homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
-                    ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
+            GURL homepagePartnerDefaultGurl =
+                    GURL.deserialize(homepagePartnerDefaultGurlSerialized);
+            if (!homepagePartnerDefaultGurl.isEmpty()) {
+                return homepagePartnerDefaultGurl;
+            }
         }
-        if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
 
-        return UrlConstants.NTP_URL;
+        String homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
+        if (!homepagePartnerDefaultUri.equals("")) {
+            GURL homepagePartnerDefaultGurl = new GURL(homepagePartnerDefaultUri);
+            if (homepagePartnerDefaultGurl.isValid()) {
+                return homepagePartnerDefaultGurl;
+            }
+        }
+
+        return ChromeUrlConstants.nativeNtpGurl();
     }
 
     /**
@@ -217,12 +225,12 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * Get homepage URI without checking if the homepage is enabled.
      * @return Homepage URI based on policy and shared preference settings.
      */
-    private @NonNull String getHomepageUriIgnoringEnabledState() {
+    private @NonNull GURL getHomepageUriIgnoringEnabledState() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return HomepagePolicyManager.getHomepageUrl().getSpec();
+            return HomepagePolicyManager.getHomepageUrl();
         }
         if (getPrefHomepageUseChromeNTP()) {
-            return UrlConstants.NTP_URL;
+            return ChromeUrlConstants.nativeNtpGurl();
         }
         if (getPrefHomepageUseDefaultUri()) {
             return getDefaultHomepageUri();
@@ -251,8 +259,23 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     /**
      * @return User specified homepage custom URI string.
      */
-    public String getPrefHomepageCustomUri() {
-        return mSharedPreferencesManager.readString(ChromePreferenceKeys.HOMEPAGE_CUSTOM_URI, "");
+    public GURL getPrefHomepageCustomUri() {
+        String homepageCustomGurlSerialized =
+                mSharedPreferencesManager.readString(ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, "");
+        if (!homepageCustomGurlSerialized.equals("")) {
+            return GURL.deserialize(homepageCustomGurlSerialized);
+        }
+
+        String homepageCustomUri = mSharedPreferencesManager.readString(
+                ChromePreferenceKeys.DEPRECATED_HOMEPAGE_CUSTOM_URI, "");
+        if (!homepageCustomUri.equals("")) {
+            GURL homepageCustomGurl = new GURL(homepageCustomUri);
+            if (homepageCustomGurl.isValid()) {
+                return homepageCustomGurl;
+            }
+        }
+
+        return GURL.emptyGURL();
     }
 
     /**
@@ -289,10 +312,10 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      * @see #getHomepageUri()
      */
     public void setHomepagePreferences(
-            boolean useChromeNtp, boolean useDefaultUri, String customUri) {
+            boolean useChromeNtp, boolean useDefaultUri, GURL customUri) {
         boolean wasUseChromeNTP = getPrefHomepageUseChromeNTP();
         boolean wasUseDefaultUri = getPrefHomepageUseDefaultUri();
-        String oldCustomUri = getPrefHomepageCustomUri();
+        GURL oldCustomUri = getPrefHomepageCustomUri();
 
         if (useChromeNtp == wasUseChromeNTP && useDefaultUri == wasUseDefaultUri
                 && oldCustomUri.equals(customUri)) {
@@ -311,7 +334,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
 
         if (!oldCustomUri.equals(customUri)) {
             mSharedPreferencesManager.writeString(
-                    ChromePreferenceKeys.HOMEPAGE_CUSTOM_URI, customUri);
+                    ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, customUri.serialize());
         }
 
         RecordUserAction.record("Settings.Homepage.LocationChanged_V2");

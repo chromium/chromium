@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.homepage.settings;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
@@ -22,6 +21,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.url.GURL;
 
 /**
  * Fragment that allows the user to configure homepage related preferences.
@@ -107,7 +107,10 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) return;
 
         boolean setToUseNTP = newValue.getCheckedOption() == HomepageOption.ENTRY_CHROME_NTP;
-        String newHomepage = UrlFormatter.fixupUrl(newValue.getCustomURI()).getValidSpecOrEmpty();
+        GURL newHomepage = UrlFormatter.fixupUrl(newValue.getCustomURI());
+        if (!newHomepage.isValid()) {
+            newHomepage = GURL.emptyGURL();
+        }
         boolean useDefaultUri = HomepageManager.getDefaultHomepageUri().equals(newHomepage);
 
         mHomepageManager.setHomepagePreferences(setToUseNTP, useDefaultUri, newHomepage);
@@ -116,18 +119,18 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
     /**
      * @return The user customized homepage setting.
      */
-    private String getHomepageForEditText() {
+    private GURL getHomepageForEditText() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return HomepagePolicyManager.getHomepageUrl().getSpec();
+            return HomepagePolicyManager.getHomepageUrl();
         }
 
-        String defaultUrl = HomepageManager.getDefaultHomepageUri();
-        String customUrl = mHomepageManager.getPrefHomepageCustomUri();
+        GURL defaultUrl = HomepageManager.getDefaultHomepageUri();
+        GURL customUrl = mHomepageManager.getPrefHomepageCustomUri();
         if (mHomepageManager.getPrefHomepageUseDefaultUri()) {
-            return UrlUtilities.isNTPUrl(defaultUrl) ? "" : defaultUrl;
+            return UrlUtilities.isNTPUrl(defaultUrl) ? GURL.emptyGURL() : defaultUrl;
         }
 
-        if (TextUtils.isEmpty(customUrl) && !UrlUtilities.isNTPUrl(defaultUrl)) {
+        if (customUrl.isEmpty() && !UrlUtilities.isNTPUrl(defaultUrl)) {
             return defaultUrl;
         }
 
@@ -162,7 +165,7 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         // Customized option should be visible when policy is not enforced or the option is checked.
         boolean isCustomizedOptionVisible = !isPolicyEnabled || !shouldCheckNTP;
 
-        return new PreferenceValues(checkedOption, getHomepageForEditText(),
+        return new PreferenceValues(checkedOption, getHomepageForEditText().getSpec(),
                 isRadioButtonPreferenceEnabled, isNTPOptionVisible, isCustomizedOptionVisible);
     }
 }

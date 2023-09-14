@@ -8,6 +8,9 @@ import org.chromium.url.GURL;
 
 /**
  * Java side version of chrome/common/url_constants.cc
+ *
+ * Do not add any more NTP related constants.
+ * TODO(crbug.com/1481277) Move NTP related constants to ChromeUrlConstants.java
  */
 public class UrlConstants {
     public static final String APP_INTENT_SCHEME = "android-app";

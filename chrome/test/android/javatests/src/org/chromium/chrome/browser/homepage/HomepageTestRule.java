@@ -10,6 +10,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.url.GURL;
 
 /**
  * Test rule for homepage related tests that remove related shared prefs after test cases.
@@ -39,7 +40,7 @@ public class HomepageTestRule implements TestRule {
         mManager.removeKey(ChromePreferenceKeys.HOMEPAGE_ENABLED);
         mManager.removeKey(ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI);
         mManager.removeKey(ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP);
-        mManager.removeKey(ChromePreferenceKeys.HOMEPAGE_CUSTOM_URI);
+        mManager.removeKey(ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL);
     }
 
     // Utility functions that help setting up homepage related shared preference.
@@ -97,6 +98,7 @@ public class HomepageTestRule implements TestRule {
         mManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
         mManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI, false);
         mManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, false);
-        mManager.writeString(ChromePreferenceKeys.HOMEPAGE_CUSTOM_URI, homepage);
+        mManager.writeString(
+                ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, new GURL(homepage).serialize());
     }
 }
