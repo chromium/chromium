@@ -730,13 +730,6 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_PKEYS=$enable_pkeys",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
   ]
-
-  if (is_apple) {
-    # TODO(crbug.com/1414153): once TimeTicks::Now behavior is unified on iOS,
-    # this should be removed.
-    flags += [ "PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS=" +
-               "$partition_alloc_enable_mach_absolute_time_ticks" ]
-  }
 }
 
 buildflag_header("chromecast_buildflags") {

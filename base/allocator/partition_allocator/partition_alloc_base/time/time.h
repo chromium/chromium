@@ -140,9 +140,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) TimeDelta {
   static TimeDelta FromZxDuration(zx_duration_t nanos);
 #endif
 #if BUILDFLAG(IS_APPLE)
-#if BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
   static TimeDelta FromMachTime(uint64_t mach_time);
-#endif  // BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 #endif  // BUILDFLAG(IS_APPLE)
 
   // Converts an integer value representing TimeDelta to a class. This is used
@@ -851,14 +849,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) TimeTicks
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#if BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
   static TimeTicks FromMachAbsoluteTime(uint64_t mach_absolute_time);
 
   // Sets the current Mach timebase to `timebase`. Returns the old timebase.
   static mach_timebase_info_data_t SetMachTimebaseInfoForTesting(
       mach_timebase_info_data_t timebase);
 
-#endif  // BUILDFLAG(PARTITION_ALLOC_ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(PA_IS_CHROMEOS_ASH)
