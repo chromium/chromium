@@ -663,11 +663,20 @@ void DebugDrawFrame(
           base::NumberToString(quad->resources.ids[0].GetUnsafeValue()));
 
       if (quad->resources.ids[0] != kInvalidResourceId) {
-        auto format =
-            resource_provider->GetBufferFormat(quad->resources.ids[0]);
-        DBG_DRAW_TEXT_OPT("frame.render_pass.buf_format", DBG_OPT_BLUE,
-                          display_rect.origin(),
-                          base::NumberToString(static_cast<int>(format)));
+        DBG_DRAW_TEXT_OPT(
+            "frame.render_pass.buf_format", DBG_OPT_BLUE, display_rect.origin(),
+            base::NumberToString(static_cast<int>(
+                resource_provider->GetBufferFormat(quad->resources.ids[0]))));
+        DBG_DRAW_TEXT_OPT(
+            "frame.render_pass.buf_sampled_color_space", DBG_OPT_RED,
+            display_rect.origin(),
+            resource_provider->GetSamplerColorSpace(quad->resources.ids[0])
+                .ToString());
+        DBG_DRAW_TEXT_OPT(
+            "frame.render_pass.buf_overlay_color_space", DBG_OPT_GREEN,
+            display_rect.origin(),
+            resource_provider->GetOverlayColorSpace(quad->resources.ids[0])
+                .ToString());
       }
       DBG_DRAW_RECT("frame.render_pass.quad", display_rect);
     }
