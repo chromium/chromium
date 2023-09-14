@@ -59,6 +59,25 @@ namespace {
   AppLaunchConfiguration config;
   // TODO (crbug.com/1285974) Remove when bug is resolved.
   config.features_disabled.push_back(kNewOverflowMenu);
+
+  if ([self isRunningTest:@selector
+            (testStandardProtectionSettingsPageWithFriendlierSafeBrowsing)] ||
+      [self isRunningTest:@selector
+            (testEnhancedProtectionSettingsPageWithFriendlierSafeBrowsing)]) {
+    config.features_enabled.push_back(
+        safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection);
+    config.features_enabled.push_back(
+        safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection);
+  }
+
+  if ([self isRunningTest:@selector(testStandardProtectionSettingsPage)] ||
+      [self isRunningTest:@selector(testEnhancedProtectionSettingsPage)]) {
+    config.features_disabled.push_back(
+        safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection);
+    config.features_disabled.push_back(
+        safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection);
+  }
+
   return config;
 }
 
@@ -189,73 +208,94 @@ namespace {
   [self pressInfoButtonForCell:kSettingsSafeBrowsingEnhancedProtectionCellId];
 
   // Check all rows exist.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-    // Check that headers and footer exist.
-    [[self elementInteractionWithGreyMatcher:
-               grey_accessibilityID(
-                   kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId)
-                           scrollViewMatcher:
-                               grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
-    [[self elementInteractionWithGreyMatcher:
-               grey_accessibilityID(
-                   kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId)
-                           scrollViewMatcher:
-                               grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionShieldCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionMetricCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
 
-    // Check that rows exist
-    [[self elementInteractionWithGreyMatcher:
-               grey_accessibilityID(kSafeBrowsingEnhancedProtectionDataCellId)
-                           scrollViewMatcher:
-                               grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
-    [[self
-        elementInteractionWithGreyMatcher:
-            grey_accessibilityID(kSafeBrowsingEnhancedProtectionDownloadCellId)
-                        scrollViewMatcher:
-                            grey_accessibilityID(
-                                kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
-    [[self elementInteractionWithGreyMatcher:
-               grey_accessibilityID(kSafeBrowsingEnhancedProtectionLinkCellId)
-                           scrollViewMatcher:
-                               grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionGIconCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionGlobeCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionKeyCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+}
 
-    [[self
-        elementInteractionWithGreyMatcher:
-            grey_accessibilityID(kSafeBrowsingEnhancedProtectionAccountCellId)
-                        scrollViewMatcher:
-                            grey_accessibilityID(
-                                kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
-    [[self elementInteractionWithGreyMatcher:
-               grey_accessibilityID(
-                   kSafeBrowsingEnhancedProtectionTableViewFooterId)
-                           scrollViewMatcher:
-                               grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
-  } else {
-    [[self elementInteractionWithGreyMatcher:
-               grey_accessibilityID(kSafeBrowsingEnhancedProtectionShieldCellId)
-                           scrollViewMatcher:
-                               grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
-    [[self elementInteractionWithGreyMatcher:
-               grey_accessibilityID(kSafeBrowsingEnhancedProtectionMetricCellId)
-                           scrollViewMatcher:
-                               grey_accessibilityID(
-                                   kSafeBrowsingEnhancedProtectionTableViewId)]
-        assertWithMatcher:grey_notNil()];
-  }
+// Tests that Enhanced Protection page can be navigated to and populated
+// correctly when the friendlier enhanced safe browsing feature is enabled.
+- (void)testEnhancedProtectionSettingsPageWithFriendlierSafeBrowsing {
+  [self openPrivacySafeBrowsingSettings];
+  [self pressInfoButtonForCell:kSettingsSafeBrowsingEnhancedProtectionCellId];
+
+  // Check that headers and footer exist.
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(
+                 kSafeBrowsingEnhancedProtectionTableViewFirstHeaderId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(
+                 kSafeBrowsingEnhancedProtectionTableViewSecondHeaderId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that rows exist
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionDataCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionDownloadCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionLinkCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+
+  [[self elementInteractionWithGreyMatcher:
+             grey_accessibilityID(kSafeBrowsingEnhancedProtectionAccountCellId)
+                         scrollViewMatcher:
+                             grey_accessibilityID(
+                                 kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
+  [[self
+      elementInteractionWithGreyMatcher:
+          grey_accessibilityID(kSafeBrowsingEnhancedProtectionTableViewFooterId)
+                      scrollViewMatcher:
+                          grey_accessibilityID(
+                              kSafeBrowsingEnhancedProtectionTableViewId)]
+      assertWithMatcher:grey_notNil()];
 
   [[self elementInteractionWithGreyMatcher:
              grey_accessibilityID(kSafeBrowsingEnhancedProtectionGIconCellId)
@@ -284,8 +324,6 @@ namespace {
   [self pressInfoButtonForCell:kSettingsSafeBrowsingStandardProtectionCellId];
 
   // Check all rows exist.
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
     [[self elementInteractionWithGreyMatcher:
                grey_accessibilityID(kSafeBrowsingStandardProtectionShieldCellId)
                            scrollViewMatcher:
@@ -298,8 +336,13 @@ namespace {
                                grey_accessibilityID(
                                    kSafeBrowsingStandardProtectionTableViewId)]
         assertWithMatcher:grey_notNil()];
-  }
+}
 
+// Tests that Standard Protection page can be navigated to and populated
+// correctly when the friendlier standard safe browsing feature is enabled.
+- (void)testStandardProtectionSettingsPageWithFriendlierSafeBrowsing {
+  [self openPrivacySafeBrowsingSettings];
+  [self pressInfoButtonForCell:kSettingsSafeBrowsingStandardProtectionCellId];
   [[self elementInteractionWithGreyMatcher:
              grey_accessibilityID(
                  kSafeBrowsingStandardProtectionPasswordLeakCellId)
