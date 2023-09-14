@@ -1,0 +1,164 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Updates to this file must be backwards-compatible, as it is used outside of
+// the Chromium repo. This file should be updated first, before syncing in the
+// other repos.
+
+// Next MinVersion: 2
+
+module ash.orca.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/gfx/range/mojom/range.mojom";
+
+[Stable, Extensible]
+enum PresetTextQueryType {
+  [Default] kUnknown = 0,
+  kShorten = 1,
+  kElaborate = 2,
+  kRephrase = 3,
+  kFormalize = 4,
+  kEmojify = 5,
+};
+
+[Stable]
+struct PresetTextQuery {
+  // An ID to uniquely identify this preset query.
+  string id@0;
+
+  // A short label in the UI for this preset query.
+  string label@1;
+
+  // A longer description in the UI for this preset query.
+  string description@2;
+
+  // The type of this preset query, used by the UI to style the query.
+  PresetTextQueryType type@3;
+};
+
+// A text query request from the service to the browser process.
+[Stable]
+struct TextQueryRequest {
+  // An ID to identify the particular query to be performed.
+  string text_query_id@0;
+
+  // The version of the `text_query_id`. A `text_query_id` can have multiple
+  // versions. It is a string rather than an integer to be human-readable
+  // (e.g. a version called "experiment").
+  string version@1;
+
+  // Generic parameters to pass to the browser process.
+  map<string, string> parameters@2;
+};
+
+// The result of a `TextQueryRequest`.
+[Stable]
+struct TextQueryResult {
+  // An ID associated with this result.
+  // Guaranteed to be unique while `EditorClient` is bound.
+  // Used to refer to this result for metrics and auditing.
+  string id@0;
+
+  // The result text to be shown to the user.
+  string text@1;
+};
+
+// Error codes related to a failed `TextQueryRequest`.
+[Extensible, Stable]
+enum TextQueryErrorCode {
+  [Default] kUnknown = 0,
+  kInvalidArgument = 1,
+};
+
+// An error that occurred when processing a `TextQueryRequest`.
+[Stable]
+struct TextQueryError {
+  TextQueryErrorCode code@0;
+  string message@1;
+};
+
+// The response for a `TextQueryRequest`.
+// Can either be a successful response containing a list of results, or an
+// error code.
+[Stable]
+union TextQueryResponse {
+  array<TextQueryResult> results@0;
+  TextQueryError error@1;
+};
+
+// The text around the current cursor / selection.
+[Stable]
+struct SurroundingText {
+  string text@0;
+  gfx.mojom.Range range@1;
+};
+
+// Context about the current OS state needed by the service.
+[Stable]
+struct Context {
+  SurroundingText surrounding_text@0;
+};
+
+// The UI uses this interface to talk to the service.
+[Stable]
+interface EditorClient {
+  // Returns the available preset text queries from the service.
+  GetPresetTextQueries@0() => (array<PresetTextQuery> text_queries);
+
+  // Requests the service to perform a preset rewrite. Use the optional
+  // text_override parameter if you want to override the current text.
+  RequestPresetRewrite@1(string text_query_id, string? text_override)
+    => (TextQueryResponse response);
+
+  // Requests the service to perform a freeform rewrite. Use the optional
+  // text_override parameter if you want to override the current text.
+  RequestFreeformRewrite@2(string input, string? text_override)
+    => (TextQueryResponse response);
+
+  // Requests the service to perform a freeform rewrite.
+  RequestFreeformWrite@3(string input) => (TextQueryResponse response);
+
+  // Insert the given text into the current text input target.
+  InsertText@4(string text);
+};
+
+// Used by the UI to bootstrap the connection with the service.
+[Stable]
+interface EditorClientConnector {
+  // Used to bind new instances of an editor.
+  BindEditorClient@0(pending_receiver<EditorClient> editor_client);
+};
+
+// The browser process uses this interface to send `Context` changes to the
+// service.
+[Stable]
+interface EditorEventSink {
+  OnContextUpdated@0(Context context);
+};
+
+// The service uses this interface to tell the browser process to perform some
+// actions.
+[Stable]
+interface TextActuator {
+  // Close the UI and insert `text` into the focused input field.
+  InsertText@0(string text);
+};
+
+// An interface that can respond to text query requests with responses.
+[Stable]
+interface TextQueryProvider {
+  // Processes a request asynchronously and return the response (either
+  // success or failure).
+  Process@0(TextQueryRequest request) => (TextQueryResponse response);
+};
+
+[Stable, ServiceSandbox=sandbox.mojom.Sandbox.kIme]
+interface OrcaService {
+  BindEditor@0(
+    pending_associated_remote<TextActuator> text_actuator,
+    pending_associated_remote<TextQueryProvider> text_query_provider,
+    pending_associated_receiver<EditorClientConnector> client_connector,
+    pending_associated_receiver<EditorEventSink> event_sink);
+};
