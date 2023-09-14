@@ -14,13 +14,24 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionReboot[] = "reboot-system";
+constexpr char kUserActionSkip[] = "tpm-skip";
 
 }  // namespace
 
-TpmErrorScreen::TpmErrorScreen(base::WeakPtr<TpmErrorView> view)
+// static
+std::string TpmErrorScreen::GetResultString(Result result) {
+  switch (result) {
+    case Result::kSkip:
+      return "Skip";
+  }
+}
+
+TpmErrorScreen::TpmErrorScreen(base::WeakPtr<TpmErrorView> view,
+                               const ScreenExitCallback& exit_callback)
     : BaseScreen(TpmErrorView::kScreenId,
                  OobeScreenPriority::SCREEN_HARDWARE_ERROR),
-      view_(std::move(view)) {}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
 TpmErrorScreen::~TpmErrorScreen() = default;
 
@@ -43,6 +54,8 @@ void TpmErrorScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionReboot) {
     chromeos::PowerManagerClient::Get()->RequestRestart(
         power_manager::REQUEST_RESTART_FOR_USER, "Signin screen");
+  } else if (action_id == kUserActionSkip) {
+    exit_callback_.Run(Result::kSkip);
   } else {
     BaseScreen::OnUserAction(args);
   }

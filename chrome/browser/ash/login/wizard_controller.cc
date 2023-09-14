@@ -754,7 +754,9 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<TpmErrorScreen>(
-      oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
+      oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnTpmErrorScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   if (ash::features::IsCryptohomeRecoveryEnabled()) {
     auto gaia_password_change_screen =
@@ -1274,6 +1276,17 @@ void WizardController::OnConsumerUpdateScreenExit(
   } else {
     AdvanceToScreen(PrefToScreenId(screen_name));
   }
+}
+
+void WizardController::OnTpmErrorScreenExit(TpmErrorScreen::Result result) {
+  OnScreenExit(TpmErrorView::kScreenId,
+               TpmErrorScreen::GetResultString(result));
+
+  // On ChromeOS Flex devices TpmErrorScreen is shown when users try to enroll,
+  // but the TPM is owned by a previous OS. Users can either try restarting the
+  // device to reconfigure TPM in BIOS or continue using the device without
+  // enrollment. This is a non-blocking error.
+  AdvanceToScreen(UserCreationView::kScreenId);
 }
 
 void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
