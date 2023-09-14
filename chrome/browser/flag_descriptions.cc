@@ -2868,8 +2868,14 @@ const char kPrivacyGuide3Description[] =
 
 const char kPrivacyGuidePreloadName[] = "Privacy Guide Preload";
 const char kPrivacyGuidePreloadDescription[] =
-    "Adds the preload card to the privacy guide 3 flow. "
+    "Adds the preload card to the Privacy Guide 3 flow. "
     "This requires #privacy-guide-3 to also be enabled.";
+
+const char kPrivacyGuidePreloadAndroidName[] =
+    "Privacy Guide Preload on Android";
+const char kPrivacyGuidePreloadAndroidDescription[] =
+    "Adds the preload card to the Privacy Guide 3 flow on Android. "
+    "This requires #privacy-guide-android-3 to also be enabled.";
 
 const char kPrivacySandboxAdsAPIsOverrideName[] = "Privacy Sandbox Ads APIs";
 const char kPrivacySandboxAdsAPIsOverrideDescription[] =
