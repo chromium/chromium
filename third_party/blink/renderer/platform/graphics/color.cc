@@ -502,6 +502,30 @@ void Color::ConvertToColorSpace(Color::ColorSpace destination_color_space) {
       color_space_ = ColorSpace::kSRGBLinear;
       return;
     }
+    case ColorSpace::kDisplayP3: {
+      auto [x, y, z] = ExportAsXYZD50Floats();
+      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToDisplayP3(x, y, z);
+      color_space_ = ColorSpace::kDisplayP3;
+      return;
+    }
+    case ColorSpace::kA98RGB: {
+      auto [x, y, z] = ExportAsXYZD50Floats();
+      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToAdobeRGB(x, y, z);
+      color_space_ = ColorSpace::kA98RGB;
+      return;
+    }
+    case ColorSpace::kProPhotoRGB: {
+      auto [x, y, z] = ExportAsXYZD50Floats();
+      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToProPhoto(x, y, z);
+      color_space_ = ColorSpace::kProPhotoRGB;
+      return;
+    }
+    case ColorSpace::kRec2020: {
+      auto [x, y, z] = ExportAsXYZD50Floats();
+      std::tie(param0_, param1_, param2_) = gfx::XYZD50ToRec2020(x, y, z);
+      color_space_ = ColorSpace::kRec2020;
+      return;
+    }
     case ColorSpace::kLab: {
       if (color_space_ == ColorSpace::kLch) {
         std::tie(param0_, param1_, param2_) =
@@ -631,13 +655,6 @@ void Color::ConvertToColorSpace(Color::ColorSpace destination_color_space) {
 
       return;
     }
-    // We do not yet interpolate in these spaces.
-    case ColorSpace::kDisplayP3:
-    case ColorSpace::kA98RGB:
-    case ColorSpace::kProPhotoRGB:
-    case ColorSpace::kRec2020:
-      NOTREACHED();
-      break;
   }
 }
 

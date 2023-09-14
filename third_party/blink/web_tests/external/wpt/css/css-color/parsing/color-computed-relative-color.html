@@ -676,23 +676,47 @@
       fuzzy_test_computed_color(`color(from color(${colorSpace} 7 -20.5 100 / none) ${colorSpace} x y z / alpha)`,               `color(${resultColorSpace} 7 -20.5 100 / 0)`);
   }
 
-    // Spec Examples: https://www.w3.org/TR/css-color-5/#relative-colors
-    // All examples here have multiple stages of calculations so minor disagreements in the values of keyword colors and other constants can compound.
-    // These tests require a wider epsilon of 0.02.
-    fuzzy_test_computed_color(`rgb(from var(--bg-color) r g b / 80%)`, `color(srgb 0 0 1 / 0.8)`, 0.02);
-    fuzzy_test_computed_color(`lch(from var(--color) calc(l / 2) c h)`, `lch(23.14 67.99 134.39)`, 0.02);
-    fuzzy_test_computed_color(`rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))`, `color(srgb 0.3 0.3 0.3)`, 0.02);
-    fuzzy_test_computed_color(`lch(from var(--color) l 0 h)`, `lch(46.28 0 134.39)`, 0.02);
-    fuzzy_test_computed_color(`rgb(from indianred 255 g b)`, `color(srgb 1 0.36 0.36)`, 0.02);
-    fuzzy_test_computed_color(`hsl(from var(--accent) calc(h + 180) s l)`, `color(srgb 0.7 0.13 0.16)`, 0.02);
-    fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / 100%)`, `lab(62.75 52.46 -34.12)`, 0.02);
-    fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / calc(alpha * 0.8))`, `lab(62.75 52.46 -34.12 / 0.8)`, 0.02);
-    fuzzy_test_computed_color(`lab(from var(--mycolor) l 0 0)`, `lab(62.75 0 0)`, 0.02);
-    fuzzy_test_computed_color(`lch(from peru calc(l * 0.8) c h)`, `lch(49.80 54 63.68)`, 0.02);
-    fuzzy_test_computed_color(`LCH(from var(--accent) l c calc(h + 180))`, `lch(65.49 39.45 10.11)`, 0.02);
-    fuzzy_test_computed_color(`lch(from var(--mycolor) l 0 h)`, `lch(62.75 0 326.96)`, 0.02);
-    fuzzy_test_computed_color(`var(--mygray)`, `lch(62.75 0 326.96)`, 0.02);
-    fuzzy_test_computed_color(`lch(from var(--mygray) l 30 h)`, `lch(62.75 30 326.96)`, 0.02);
+  // Test origin colors with different color spaces, going both to and from srgb.
+  fuzzy_test_computed_color(`color(from color(srgb-linear 0.25 0.5 0.75) srgb r g b)`, `color(srgb 0.537121 0.735394 0.880852)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(srgb 0.25 0.5 0.75) srgb-linear r g b)`, `color(srgb-linear 0.050864 0.213993 0.522484)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(display-p3 0.25 0.5 0.75) srgb r g b)`, `color(srgb 0.123874 0.507355 0.771198)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(srgb 0.25 0.5 0.75) display-p3 r g b)`, `color(display-p3 0.313084 0.494041 0.730118)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(a98-rgb 0.25 0.5 0.75) srgb r g b)`, `color(srgb -0.153808 0.503925 0.763874)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(srgb 0.25 0.5 0.75) a98-rgb r g b)`, `color(a98-rgb 0.346851 0.496124 0.736271)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(prophoto-rgb 0.25 0.5 0.75) srgb r g b)`, `color(srgb -0.510605 0.612396 0.825333)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(srgb 0.25 0.5 0.75) prophoto-rgb r g b)`, `color(prophoto-rgb 0.374905 0.416401 0.663692)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(rec2020 0.25 0.5 0.75) srgb r g b)`, `color(srgb -0.280102 0.565536 0.79958)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(srgb 0.25 0.5 0.75) rec2020 r g b)`, `color(rec2020 0.331976 0.440887 0.696358)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(xyz-d50 0.25 0.5 0.75) srgb r g b)`, `color(srgb -0.660065 0.874863 0.981117)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(srgb 0.25 0.5 0.75) xyz-d50 r g b)`, `color(xyz-d50 0.179349 0.196389 0.394585)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(xyz-d65 0.25 0.5 0.75) srgb r g b)`, `color(srgb -0.611881 0.868732 0.856899)`, 0.001);
+  fuzzy_test_computed_color(`color(from color(srgb 0.25 0.5 0.75) xyz-d65 r g b)`, `color(xyz-d65 0.191791 0.201562 0.523057)`, 0.001);
+  fuzzy_test_computed_color(`lab(from color(srgb 0.25 0.5 0.75) l a b)`, `lab(51.4265 -5.21401 -40.1491)`, 0.02); // Larger values means larger epsilon.
+  fuzzy_test_computed_color(`color(from lab(67.5345 -8.6911 -41.6019) srgb r g b)`, `color(srgb 0.382744 0.672806 0.938545)`, 0.001);
+  fuzzy_test_computed_color(`oklab(from color(srgb 0.25 0.5 0.75) l a b)`, `oklab(0.585502 -0.0393846 -0.111503)`, 0.001);
+  fuzzy_test_computed_color(`color(from oklab(72.322% -0.0465 -0.1150) srgb r g b)`, `color(srgb 0.382504 0.672783 0.938919)`, 0.001);
+  fuzzy_test_computed_color(`lch(from color(srgb 0.25 0.5 0.75) l c h)`, `lch(51.4265 40.4863 262.601)`, 0.02); // Larger values means larger epsilon.
+  fuzzy_test_computed_color(`color(from lch(67.5345% 42.5 258.2) srgb r g b)`, `color(srgb 0.382744 0.672806 0.938545)`, 0.001);
+  fuzzy_test_computed_color(`oklch(from color(srgb 0.25 0.5 0.75) l c h)`, `oklch(0.585502 0.118254 250.546)`, 0.02); // Larger values means larger epsilon.
+  fuzzy_test_computed_color(`color(from oklch(72.322% 0.12403 247.996) srgb r g b)`, `color(srgb 0.382631 0.672756 0.938904)`, 0.001);
+
+  // Spec Examples: https://www.w3.org/TR/css-color-5/#relative-colors
+  // All examples here have multiple stages of calculations so minor disagreements in the values of keyword colors and other constants can compound.
+  // These tests require a wider epsilon of 0.02.
+  fuzzy_test_computed_color(`rgb(from var(--bg-color) r g b / 80%)`, `color(srgb 0 0 1 / 0.8)`, 0.02);
+  fuzzy_test_computed_color(`lch(from var(--color) calc(l / 2) c h)`, `lch(23.14 67.99 134.39)`, 0.02);
+  fuzzy_test_computed_color(`rgb(from var(--color) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11) calc(r * .3 + g * .59 + b * .11))`, `color(srgb 0.3 0.3 0.3)`, 0.02);
+  fuzzy_test_computed_color(`lch(from var(--color) l 0 h)`, `lch(46.28 0 134.39)`, 0.02);
+  fuzzy_test_computed_color(`rgb(from indianred 255 g b)`, `color(srgb 1 0.36 0.36)`, 0.02);
+  fuzzy_test_computed_color(`hsl(from var(--accent) calc(h + 180) s l)`, `color(srgb 0.7 0.13 0.16)`, 0.02);
+  fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / 100%)`, `lab(62.75 52.46 -34.12)`, 0.02);
+  fuzzy_test_computed_color(`lab(from var(--mycolor) l a b / calc(alpha * 0.8))`, `lab(62.75 52.46 -34.12 / 0.8)`, 0.02);
+  fuzzy_test_computed_color(`lab(from var(--mycolor) l 0 0)`, `lab(62.75 0 0)`, 0.02);
+  fuzzy_test_computed_color(`lch(from peru calc(l * 0.8) c h)`, `lch(49.80 54 63.68)`, 0.02);
+  fuzzy_test_computed_color(`LCH(from var(--accent) l c calc(h + 180))`, `lch(65.49 39.45 10.11)`, 0.02);
+  fuzzy_test_computed_color(`lch(from var(--mycolor) l 0 h)`, `lch(62.75 0 326.96)`, 0.02);
+  fuzzy_test_computed_color(`var(--mygray)`, `lch(62.75 0 326.96)`, 0.02);
+  fuzzy_test_computed_color(`lch(from var(--mygray) l 30 h)`, `lch(62.75 30 326.96)`, 0.02);
 </script>
 </body>
 </html>

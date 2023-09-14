@@ -199,6 +199,12 @@ class PLATFORM_EXPORT Color {
                               absl::optional<float> param1,
                               absl::optional<float> param2,
                               absl::optional<float> alpha);
+  static Color FromColorSpace(ColorSpace space,
+                              absl::optional<float> param0,
+                              absl::optional<float> param1,
+                              absl::optional<float> param2) {
+    return FromColorSpace(space, param0, param1, param2, 1.0f);
+  }
 
   // Create a color using the hsl() syntax.
   static Color FromHSLA(absl::optional<float> h,
@@ -378,6 +384,7 @@ class PLATFORM_EXPORT Color {
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, HueInterpolation);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, Premultiply);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, Unpremultiply);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, ConvertToColorSpace);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, toSkColor4fValidation);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, ExportAsXYZD50Floats);
 
