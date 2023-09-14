@@ -36,12 +36,22 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"  // nogncheck
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -170,6 +180,45 @@ void CheckSessionRestartReasonHistogramDependingOnRebootStatus(
   }
   histogram->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 1);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class SystemWebAppWaiter {
+ public:
+  explicit SystemWebAppWaiter(
+      ash::SystemWebAppManager* system_web_app_manager) {
+    system_web_app_manager->on_apps_synchronized().Post(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          // Wait one execution loop for on_apps_synchronized() to be called on
+          // all listeners.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, run_loop_.QuitClosure());
+        }));
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInstallInfo(
+    const GURL& url) {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
+  info->start_url = url;
+  info->scope = url.GetWithoutFilename();
+  info->title = u"Web App";
+  return info;
+}
+
+web_app::WebAppInstallInfoFactory GetAppWebAppInfoFactory() {
+  static auto factory = base::BindRepeating(
+      &GetWebAppInstallInfo, GURL(content::GetWebUIURL("system-app")));
+  return factory;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -761,12 +810,11 @@ class KioskBrowserSessionTroubleshootingTest
     : public KioskBrowserSessionBaseTest<bool> {
  public:
   void SetUpKioskSession() {
-    bool is_web_kiosk = GetParam();
-    if (is_web_kiosk) {
+    if (is_web_kiosk()) {
       StartWebKioskSession();
-      return;
+    } else {
+      StartChromeAppKioskSession();
     }
-    StartChromeAppKioskSession();
   }
 
   void UpdateTroubleshootingToolsPolicy(bool enable) {
@@ -793,6 +841,9 @@ class KioskBrowserSessionTroubleshootingTest
     params.type = type;
     return CreateBrowserWithTestWindowForParams(params);
   }
+
+ private:
+  bool is_web_kiosk() const { return GetParam(); }
 };
 
 TEST_P(KioskBrowserSessionTroubleshootingTest,
@@ -1158,6 +1209,90 @@ TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
 
 INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
                          KioskBrowserSessionTroubleshootingShortcutsTest,
+                         ::testing::Bool());
+
+// Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
+// Test only the case when system web apps are enabled in the Kiosk session.
+// If system web apps are disabled in the Kiosk session, the system web app
+// browser cannot be created.
+class KioskBrowserSessionSwaTest : public KioskBrowserSessionBaseTest<bool> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kKioskEnableSystemWebApps);
+    KioskBrowserSessionBaseTest<bool>::SetUp();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+  void SetUpKioskSession() {
+    if (is_web_kiosk()) {
+      StartWebKioskSession();
+    } else {
+      StartChromeAppKioskSession();
+    }
+  }
+
+  void StartAndWaitForAppsToSynchronize() {
+    system_web_app_manager()->ResetForTesting();
+    SystemWebAppWaiter waiter(system_web_app_manager());
+    system_web_app_manager()->Start();
+    waiter.Wait();
+  }
+
+  std::unique_ptr<Browser> CreateSwaTestWindow() {
+    auto app_id = system_web_app_manager()->GetAppIdForSystemApp(
+        ash::SystemWebAppType::SETTINGS);
+    CHECK(app_id.has_value());
+
+    auto params = Browser::CreateParams::CreateForApp(
+        web_app::GenerateApplicationNameFromAppId(app_id.value()),
+        /*trusted_source=*/true,
+        /*window_bounds=*/gfx::Rect(), profile(),
+        /*user_gesture=*/true);
+
+    TestBrowserWindow* test_window = new TestBrowserWindow;
+    new TestBrowserWindowOwner(test_window);
+    params.window = test_window;
+
+    return base::WrapUnique<Browser>(Browser::Create(params));
+  }
+
+  ash::TestSystemWebAppManager* system_web_app_manager() {
+    return ash::TestSystemWebAppManager::Get(profile());
+    ;
+  }
+
+ private:
+  bool is_web_kiosk() const { return GetParam(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(KioskBrowserSessionSwaTest, OpenSystemWebApp) {
+  SetUpKioskSession();
+
+  ash::SystemWebAppDelegateMap system_apps;
+  system_apps.emplace(
+      ash::SystemWebAppType::SETTINGS,
+      std::make_unique<ash::UnittestingSystemAppDelegate>(
+          ash::SystemWebAppType::SETTINGS, "OSSettings",
+          GURL(content::GetWebUIURL("system-app")), GetAppWebAppInfoFactory()));
+  CHECK(system_web_app_manager());
+  system_web_app_manager()->SetSystemAppsForTesting(std::move(system_apps));
+  StartAndWaitForAppsToSynchronize();
+
+  EXPECT_FALSE(DidSessionCloseNewWindow(CreateSwaTestWindow()->window()));
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOpenedSystemWebApp,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+}
+
+// Test only the case when system web apps are enabled in the Kiosk session.
+// If system web apps are disabled in the Kiosk session, the system web app
+// browser cannot be created.
+INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionSwa,
+                         KioskBrowserSessionSwaTest,
                          ::testing::Bool());
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
