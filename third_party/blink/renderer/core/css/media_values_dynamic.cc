@@ -225,6 +225,10 @@ ui::WindowShowState MediaValuesDynamic::WindowShowState() const {
   return CalculateWindowShowState(frame_);
 }
 
+bool MediaValuesDynamic::Resizable() const {
+  return CalculateResizable(frame_);
+}
+
 bool MediaValuesDynamic::StrictMode() const {
   return CalculateStrictMode(frame_);
 }

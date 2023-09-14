@@ -69,6 +69,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     strict_mode = MediaValues::CalculateStrictMode(frame);
     display_mode = MediaValues::CalculateDisplayMode(frame);
     window_show_state = MediaValues::CalculateWindowShowState(frame);
+    resizable = MediaValues::CalculateResizable(frame);
     media_type = MediaValues::CalculateMediaType(frame);
     color_gamut = MediaValues::CalculateColorGamut(frame);
     preferred_color_scheme = MediaValues::CalculatePreferredColorScheme(frame);
@@ -274,6 +275,10 @@ blink::mojom::DisplayMode MediaValuesCached::DisplayMode() const {
 
 ui::WindowShowState MediaValuesCached::WindowShowState() const {
   return data_.window_show_state;
+}
+
+bool MediaValuesCached::Resizable() const {
+  return data_.resizable;
 }
 
 Document* MediaValuesCached::GetDocument() const {

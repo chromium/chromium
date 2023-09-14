@@ -3682,6 +3682,42 @@ TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
   }
 }
 
+TEST_F(StyleEngineTest, MediaQueriesChangeResizable) {
+  ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body {
+        background-color: white;
+      }
+      @media (resizable: true) {
+        body {
+          background-color: yellow;
+        }
+      }
+      @media (resizable: false) {
+        body {
+          background-color: cyan;
+        }
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  // resizable: true
+  // Default is set in /third_party/blink/renderer/core/frame/settings.json5.
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(/*yellow*/ 255, 255, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()));
+
+  // resizable: false
+  GetFrame().GetSettings()->SetResizable(false);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(/*cyan*/ 0, 255, 255),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()));
+}
+
 namespace {
 
 class TestMediaQueryListListener : public MediaQueryListListener {

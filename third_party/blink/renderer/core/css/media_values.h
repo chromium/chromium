@@ -80,6 +80,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual const String MediaType() const = 0;
   virtual blink::mojom::DisplayMode DisplayMode() const = 0;
   virtual ui::WindowShowState WindowShowState() const = 0;
+  virtual bool Resizable() const = 0;
   virtual bool StrictMode() const = 0;
   virtual Document* GetDocument() const = 0;
   virtual bool HasValues() const = 0;
@@ -168,6 +169,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static const String CalculateMediaType(LocalFrame*);
   static blink::mojom::DisplayMode CalculateDisplayMode(LocalFrame*);
   static ui::WindowShowState CalculateWindowShowState(LocalFrame*);
+  static bool CalculateResizable(LocalFrame*);
   static bool CalculateThreeDEnabled(LocalFrame*);
   static mojom::blink::PointerType CalculatePrimaryPointerType(LocalFrame*);
   static int CalculateAvailablePointerTypes(LocalFrame*);

@@ -488,6 +488,28 @@ static bool DisplayStateMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static bool ResizableMediaFeatureEval(const MediaQueryExpValue& value,
+                                      MediaQueryOperator,
+                                      const MediaValues& media_values) {
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return true;
+  }
+
+  if (!value.IsId()) {
+    return false;
+  }
+
+  bool resizable = media_values.Resizable();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kResizable,
+      resizable);
+
+  return (resizable && value.Id() == CSSValueID::kTrue) ||
+         (!resizable && value.Id() == CSSValueID::kFalse);
+}
+
 static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator,
                                         const MediaValues& media_values) {

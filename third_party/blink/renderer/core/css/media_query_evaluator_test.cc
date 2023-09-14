@@ -135,6 +135,18 @@ MediaQueryEvaluatorTestCase g_display_state_test_cases[] = {
     {nullptr, false}  // Do not remove the terminator line.
 };
 
+MediaQueryEvaluatorTestCase g_resizable_test_cases[] = {
+    {"(resizable)", true},
+    {"(resizable: true)", true},
+    {"(resizable: false)", false},
+    {"(resizable: #true)", false},
+    {"(resizable: @true)", false},
+    {"(resizable: 'true')", false},
+    {"(resizable: \"true\")", false},
+    {"(resizable: @junk true)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
 MediaQueryEvaluatorTestCase g_monochrome_test_cases[] = {
     {"(color)", false},
     {"(monochrome)", true},
@@ -540,6 +552,14 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(media_values);
     TestMQEvaluator(g_display_state_test_cases, media_query_evaluator);
+  }
+
+  // Default resizable values.
+  {
+    ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_resizable_test_cases, media_query_evaluator);
   }
 
   // Print values.
@@ -1588,6 +1608,33 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
                     IdentifiableSurface::MediaFeatureName::kDisplayState)));
   EXPECT_EQ(entry.metrics.begin()->value,
             IdentifiableToken(ui::SHOW_STATE_DEFAULT));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfaceResizable) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media all and (resizable: true) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kResizable)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(entry.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(
+                    IdentifiableSurface::MediaFeatureName::kResizable)));
+  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(true));
 }
 
 TEST_F(MediaQueryEvaluatorIdentifiabilityTest,

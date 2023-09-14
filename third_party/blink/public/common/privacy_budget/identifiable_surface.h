@@ -356,8 +356,9 @@ class IdentifiableSurface {
     kInvertedColors = 27,
     kScripting = 28,
     kDisplayState = 29,
+    kResizable = 30,
     // We can use enum values up to and including 63, see static_assert below.
-    kMaxValue = kDisplayState
+    kMaxValue = kResizable
   };
   static_assert(static_cast<int>(MediaFeatureName::kMaxValue) < 64,
                 "MediaFeatureName only allows values < 64 since we use it in "

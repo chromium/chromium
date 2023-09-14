@@ -76,5 +76,6 @@
     "stuck",
     "inverted-colors",
     "scripting",
+    "resizable",
   ],
 }

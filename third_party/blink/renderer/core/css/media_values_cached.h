@@ -68,6 +68,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
         mojom::blink::DisplayMode::kBrowser;
     ui::WindowShowState window_show_state =
         ui::WindowShowState::SHOW_STATE_DEFAULT;
+    bool resizable = true;
     ColorSpaceGamut color_gamut = ColorSpaceGamut::kUnknown;
     mojom::blink::PreferredColorScheme preferred_color_scheme =
         mojom::blink::PreferredColorScheme::kLight;
@@ -154,6 +155,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   const String MediaType() const override;
   blink::mojom::DisplayMode DisplayMode() const override;
   ui::WindowShowState WindowShowState() const override;
+  bool Resizable() const override;
   ColorSpaceGamut ColorGamut() const override;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
   mojom::blink::PreferredContrast GetPreferredContrast() const override;

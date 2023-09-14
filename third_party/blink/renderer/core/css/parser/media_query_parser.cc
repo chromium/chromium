@@ -109,7 +109,10 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
             RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled()) ||
            (RuntimeEnabledFeatures::
                 DesktopPWAsAdditionalWindowingControlsEnabled() &&
-            feature == media_feature_names::kDisplayStateMediaFeature);
+            feature == media_feature_names::kDisplayStateMediaFeature) ||
+           (RuntimeEnabledFeatures::
+                DesktopPWAsAdditionalWindowingControlsEnabled() &&
+            feature == media_feature_names::kResizableMediaFeature);
   }
 
   bool IsCaseSensitive(const String& feature) const override { return false; }

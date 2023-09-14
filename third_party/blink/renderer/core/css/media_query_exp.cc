@@ -69,6 +69,11 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kMinimized || ident == CSSValueID::kMaximized;
   }
 
+  if (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled() &&
+      media_feature == media_feature_names::kResizableMediaFeature) {
+    return ident == CSSValueID::kTrue || ident == CSSValueID::kFalse;
+  }
+
   if (media_feature == media_feature_names::kOrientationMediaFeature) {
     return ident == CSSValueID::kPortrait || ident == CSSValueID::kLandscape;
   }

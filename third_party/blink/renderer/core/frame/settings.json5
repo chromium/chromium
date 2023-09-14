@@ -515,6 +515,14 @@
       type: "ui::WindowShowState",
     },
 
+    // Only used by web tests.
+    {
+      name: "resizable",
+      initial: true,
+      invalidate: ["MediaQuery"],
+      type: "bool",
+    },
+
     // loadsImagesAutomatically only suppresses the network load of
     // the image URL. A cached image will still be rendered if requested.
     {
