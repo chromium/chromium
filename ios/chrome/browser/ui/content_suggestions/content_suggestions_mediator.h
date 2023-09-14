@@ -149,6 +149,9 @@ class WebStateList;
 // Disables the tab resumption tile.
 - (void)disableTabResumption;
 
+// Disables and hides Safety Check module in the Magic Stack.
+- (void)disableSafetyCheck;
+
 // Returns all possible items in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)allSetUpListItems;
 

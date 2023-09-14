@@ -309,6 +309,9 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     case ContentSuggestionsModuleType::kTabResumption:
       [self.contentSuggestionsMediator disableTabResumption];
       break;
+    case ContentSuggestionsModuleType::kSafetyCheck:
+      [self.contentSuggestionsMediator disableSafetyCheck];
+      break;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
