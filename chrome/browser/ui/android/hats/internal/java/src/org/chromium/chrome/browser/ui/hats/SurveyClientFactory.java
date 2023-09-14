@@ -6,21 +6,39 @@ package org.chromium.chrome.browser.ui.hats;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+
 /**
  * Factory class used to create SurveyClient.
  */
 public class SurveyClientFactory {
     private static SurveyClientFactory sInstance;
 
-    private SurveyClientFactory() {}
+    private final ObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
+
+    private SurveyClientFactory(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
+        mCrashUploadPermissionSupplier = crashUploadPermissionSupplier != null
+                ? crashUploadPermissionSupplier
+                : new ObservableSupplierImpl<>();
+    }
 
     /**
-     * @return The SurveyClientFactory instance.
+     * Initialize the survey factory instance.
+     * @param crashUploadPermissionSupplier Supplier for UMA upload permission.
+     */
+    public static void initialize(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
+        assert sInstance == null : "Instance is already #initialized.";
+        sInstance = new SurveyClientFactory(crashUploadPermissionSupplier);
+        ResettersForTesting.register(() -> sInstance = null);
+    }
+
+    /**
+     * Return the singleton SurveyClientFactory instance.
      */
     public static SurveyClientFactory getInstance() {
-        if (sInstance == null) {
-            sInstance = new SurveyClientFactory();
-        }
+        assert sInstance != null : "SurveyClientFactory is not initialized.";
         return sInstance;
     }
 
@@ -32,6 +50,7 @@ public class SurveyClientFactory {
      */
     public SurveyClient createClient(
             @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate) {
-        return new SurveyClientImpl(config, uiDelegate, SurveyControllerProvider.create());
+        return new SurveyClientImpl(config, uiDelegate, SurveyControllerProvider.create(),
+                mCrashUploadPermissionSupplier);
     }
 }

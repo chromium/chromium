@@ -85,8 +85,8 @@ public class ChromeSurveyController {
         mLifecycleDispatcher = lifecycleDispatcher;
         mActivity = activity;
         mMessageDispatcher = messageDispatcher;
-        mSurveyThrottler = new SurveyThrottler(triggerId, 1f / getMaxNumber(),
-                ChromeSurveyController::isUMAEnabled, getMaxDownloadAttempt());
+        mSurveyThrottler =
+                new SurveyThrottler(triggerId, 1f / getMaxNumber(), getMaxDownloadAttempt());
     }
 
     /**
@@ -366,7 +366,7 @@ public class ChromeSurveyController {
 
         @Override
         protected Boolean doInBackground() {
-            return mController.getThrottler().canShowSurvey();
+            return isUMAEnabled() && mController.getThrottler().canShowSurvey();
         }
 
         @Override

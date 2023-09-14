@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -53,7 +52,6 @@ public class SurveyThrottler {
 
     private final String mTriggerId;
     private final float mProbability;
-    private final Supplier<Boolean> mCrashUploadPermissionSupplier;
 
     private final String mPrefKeyPromptDisplayed;
     private final String mPrefKeyDownloadAttempts;
@@ -62,14 +60,11 @@ public class SurveyThrottler {
     /**
      * @param triggerId The trigger Id for the given survey.
      * @param probability The rate an eligible user is randomly selected for the survey.
-     * @param crashUploadPermissionSupplier Whether crash upload is permitted.
      * @param maxDownloadCap Max number of downloads allowed.
      */
-    public SurveyThrottler(String triggerId, float probability,
-            Supplier<Boolean> crashUploadPermissionSupplier, int maxDownloadCap) {
+    public SurveyThrottler(String triggerId, float probability, int maxDownloadCap) {
         mTriggerId = triggerId;
         mProbability = probability;
-        mCrashUploadPermissionSupplier = crashUploadPermissionSupplier;
         mMaxDownloadAttempts = maxDownloadCap;
 
         mPrefKeyPromptDisplayed =
@@ -82,9 +77,8 @@ public class SurveyThrottler {
      * @return Whether the given survey can be shown.
      */
     public boolean canShowSurvey() {
-        if (Boolean.FALSE.equals(mCrashUploadPermissionSupplier.get())) {
-            return false;
-        }
+        // Assert to be run on the background thread, since reading calendar can be a blocking call.
+        ThreadUtils.assertOnBackgroundThread();
 
         if (isSurveyForceEnabled()) {
             recordSurveyFilteringResult(FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT);
@@ -95,6 +89,8 @@ public class SurveyThrottler {
             recordSurveyFilteringResult(FilteringResult.FIRST_TIME_USER);
             return false;
         }
+
+        // TODO(wenyufu): Check SurveyConfig.isUserPrompted
 
         if (hasPromptBeenDisplayed()) {
             recordSurveyFilteringResult(FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED);

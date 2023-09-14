@@ -4,27 +4,33 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
-import android.content.Context;
+import android.app.Activity;
 
-import java.util.List;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+
+import java.util.Map;
 
 /**
  * SurveyClient created in charged to show survey.
  */
 public interface SurveyClient {
     /**
-     * Show survey in the given context.
+     * Show survey in the given activity.
+     * @param activity Activity the survey will be showing.
+     * @param lifecycleDispatcher LifecycleDispatcher of the given activity.
      */
-    void showSurvey(Context context);
+    void showSurvey(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher);
 
     /**
-     * Show the survey in the given context, with the input PSD data.
+     * Show the survey in the given activity, with the input PSD data.
+     *
+     * @param activity              Activity the survey will be showing.
+     * @param lifecycleDispatcher   LifecycleDispatcher of the given activity.
+     * @param surveyPsdBitValues    PSD string values matching the order of {@link
+     *                              SurveyConfig#mPsdBitDataFields}.
      * @param surveyPsdStringValues PSD string values matching the order of {@link
-     *         SurveyConfig#mPsdStringDataFields}.
-     * @param surveyPsdBitValues PSD string values matching the order of {@link
-     *         SurveyConfig#mPsdBitDataFields}.
+     *                              SurveyConfig#mPsdStringDataFields}.
      */
-    void showSurvey(
-            Context context, List<String> surveyPsdStringValues, List<Boolean> surveyPsdBitValues);
-
+    void showSurvey(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
+            Map<String, Boolean> surveyPsdBitValues, Map<String, String> surveyPsdStringValues);
 }

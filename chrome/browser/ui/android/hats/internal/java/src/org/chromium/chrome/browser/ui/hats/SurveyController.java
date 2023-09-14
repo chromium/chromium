@@ -51,4 +51,9 @@ public interface SurveyController {
     default boolean isSurveyExpired(String triggerId) {
         return false;
     }
+
+    /**
+     * Destroy the SurveyController and release related resources.
+     */
+    default void destroy() {}
 }

@@ -28,14 +28,20 @@ robolectric_library("junit") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/TestSurveyUtils.java",
   ]
   deps = [
     ":controller_java",
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/ui/android/hats:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 
