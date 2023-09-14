@@ -159,7 +159,10 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
             'transform', `translate(0,${graphHeightPx - graphMarginBottomPx})`)
         .call(xAxis)
         .call(g => g.select('.domain').classed(CssClass.AXIS, true))
-        .call(g => g.selectAll('text').classed(CssClass.TICK, true));
+        .call(
+            g => g.selectAll('text')
+                     .classed(CssClass.TICK, true)
+                     .attr('aria-hidden', 'true'));
 
     // Add the Y axis.
     svg.append('g')
@@ -173,7 +176,10 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
                          'x2',
                          graphWidthPx - graphMarginLeftPx - graphMarginRightPx)
                      .classed(CssClass.DIVIDER, true))
-        .call(g => g.selectAll('text').classed(CssClass.TICK, true));
+        .call(
+            g => g.selectAll('text')
+                     .classed(CssClass.TICK, true)
+                     .attr('aria-hidden', 'true'));
 
     // Add the line.
     svg.append('path')
@@ -204,7 +210,8 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     const tooltip = svg.append('text')
                         .attr('y', BUBBLE_PADDING_PX + tooltipHeight / 2)
                         .attr('dominant-baseline', 'middle')
-                        .attr('opacity', 0);
+                        .attr('opacity', 0)
+                        .attr('aria-hidden', 'true');
 
     const initialIndex = this.points.length - 1;
     this.showTooltip_(
@@ -255,6 +262,12 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
         }
       }
     });
+
+    this.$.historyGraph.setAttribute(
+        'aria-label',
+        loadTimeData.getString('historyTitle') +
+            this.getTooltipText_(initialIndex) +
+            loadTimeData.getString('historyGraphAccessibility'));
   }
 
   // Calculate y-axis ticks.
@@ -280,10 +293,9 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
 
     // Ensure the tick interval is a multiple of below values to improve the
     // readability. Bigger values are used when possible.
-    const multipliers =
-        [100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01];
+    const multipliers = [100, 50, 20, 10, 5, 2, 1];
 
-    let multiplier = 0.01;
+    let multiplier = 1;
     for (const tempMultiplier of multipliers) {
       if (tickInterval >= 2 * tempMultiplier) {
         multiplier = tempMultiplier;
@@ -301,13 +313,11 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
         Math.ceil((maxPrice - tickLow) / (TICK_COUNT_Y - 1) / multiplier) *
         multiplier;
 
-    const fractionDigits = tickInterval > 1 ? 0 : 2;
-
     const formatter = new Intl.NumberFormat(this.locale, {
       style: 'currency',
       currency: this.currency,
-      minimumFractionDigits: fractionDigits,
-      maximumFractionDigits: fractionDigits,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     });
 
     // Populate results.

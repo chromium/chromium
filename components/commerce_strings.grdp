@@ -292,6 +292,9 @@
     <message name="IDS_PRICE_HISTORY_DESCRIPTION" desc="The description of the Price History section in the Shopping Insights side panel explaining how the prices are gathered.">
       Typical prices are based on stores across the web over the past 90 days.
     </message>
+    <message name="IDS_PRICE_HISTORY_GRAPH_ACCESSIBILITY" desc="Accessibility string for the price history graph indicating how users can review the price changes on the graph.">
+      You can use the left/right arrow to review price changes on the graph
+    </message>
     <message name="IDS_SHOPPING_INSIGHTS_COLLECT_FEEDBACK" desc="Text shown in Shopping Insights side panel. Clicking this link will pop up the feedback dialog which allows users to share feedback about the feature.">
       Give feedback
     </message>
