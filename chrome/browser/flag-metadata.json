@@ -5004,7 +5004,7 @@
   {
     "name": "intents-on-phone-number",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 120
   },
   {
     "name": "interest-feed-v1-clicks-and-views-cond-upload",
