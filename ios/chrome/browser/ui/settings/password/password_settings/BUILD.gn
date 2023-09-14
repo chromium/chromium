@@ -38,6 +38,7 @@ source_set("password_settings") {
     "//ios/chrome/browser/sync:sync",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/password:common",
+    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password:password_ui",
     "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps",
     "//ios/chrome/browser/ui/settings/utils",

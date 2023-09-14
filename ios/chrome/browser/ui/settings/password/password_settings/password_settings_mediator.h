@@ -49,7 +49,8 @@ class SyncService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// TODO(crbug.com/1479178): Move passwords to account store.
+// Move the user's local passwords to the account store. Handle duplicates and
+// conflicts accordingly.
 - (void)userDidStartBulkMoveLocalPasswordsToAccountFlow;
 
 // Indicates that the user triggered the export flow.

@@ -188,12 +188,11 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 }
 
 - (CGRect)sourceRectForBulkMovePasswordsToAccount {
-  return
-      [self.tableView
-          cellForRowAtIndexPath:
-              [self.tableViewModel
-                  indexPathForItem:_bulkMovePasswordsToAccountDescriptionItem]]
-          .frame;
+  return [self.tableView
+             cellForRowAtIndexPath:
+                 [self.tableViewModel
+                     indexPathForItem:_bulkMovePasswordsToAccountButtonItem]]
+      .frame;
 }
 
 - (CGRect)sourceRectForPasswordExportAlerts {

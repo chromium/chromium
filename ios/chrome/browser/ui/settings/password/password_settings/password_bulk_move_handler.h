@@ -10,16 +10,20 @@
 // manager settings.
 @protocol BulkMoveLocalPasswordsToAccountHandler
 
-// TODO(crbug.com/1479177): Add auth for bulk move passwords.
-- (void)showAuthentication;
+// Attempts to auth the user and moves the passwords if auth is successful. If
+// it's not successful, does nothing. If the user has no auth set on their
+// device, prompt them to add some.
+- (void)showAuthenticationForMovePasswordsToAccountWithMessage:
+    (NSString*)message;
 
 // Show the move passwords to account confirmation alert with constructed title
 // and description.
 - (void)showConfirmationDialogWithAlertTitle:(NSString*)alertTitle
                             alertDescription:(NSString*)alertDescription;
 
-// TODO(crbug.com/1479177): Add auth for bulk move passwords.
-- (void)showSetPasscodeAlert;
+// Show the "set passcode" dialog for when a user has no auth setup on their
+// device.
+- (void)showSetPasscodeForMovePasswordsToAccountDialog;
 
 @end
 

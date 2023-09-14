@@ -16,6 +16,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/model_type.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -31,13 +32,13 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using password_manager::CredentialUIEntry;
 using password_manager::prefs::kCredentialsEnableService;
 
 namespace {
 
 // Returns true if the credential passed is not stored in the account store.
-bool isCredentialNotInAccountStore(
-    const password_manager::CredentialUIEntry& credential) {
+bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   return !credential.stored_in.contains(
       password_manager::PasswordForm::Store::kAccountStore);
 }
@@ -181,7 +182,15 @@ bool isCredentialNotInAccountStore(
 }
 
 - (void)userDidStartBulkMoveLocalPasswordsToAccountFlow {
-  // TODO(crbug.com/1479178): Move passwords to account store.
+  _syncService->TriggerLocalDataMigration(
+      syncer::ModelTypeSet{syncer::ModelType::PASSWORDS});
+
+  // TODO(crbug.com/1482293): Remove this histogram enumeration when using
+  // `MoveCredentialsToAccount`.
+  base::UmaHistogramEnumeration(
+      "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
+      password_manager::metrics_util::MoveToAccountStoreTrigger::
+          kExplicitlyTriggeredForMultiplePasswordsInSettings);
 }
 
 - (void)userDidStartExportFlow {
@@ -189,7 +198,7 @@ bool isCredentialNotInAccountStore(
   // can return duplicate passwords that shouldn't be included in the export.
   // However, this method also returns blocked sites ("Never save for
   // example.com"), so those must be filtered before passing to the exporter.
-  std::vector<password_manager::CredentialUIEntry> passwords =
+  std::vector<CredentialUIEntry> passwords =
       _savedPasswordsPresenter->GetSavedCredentials();
   base::EraseIf(passwords, [](const auto& credential) {
     return credential.blocked_by_user;
@@ -234,8 +243,8 @@ bool isCredentialNotInAccountStore(
   [self.exportHandler showPreparingPasswordsAlert];
 }
 
-- (void)showSetPasscodeDialog {
-  [self.exportHandler showSetPasscodeDialog];
+- (void)showSetPasscodeForPasswordExportDialog {
+  [self.exportHandler showSetPasscodeForPasswordExportDialog];
 }
 
 - (void)updateExportPasswordsButton {
@@ -421,7 +430,7 @@ bool isCredentialNotInAccountStore(
   for (password_manager::AffiliatedGroup group : affiliatedGroups) {
     passwordsCount += base::ranges::count_if(group.GetCredentials().begin(),
                                              group.GetCredentials().end(),
-                                             isCredentialNotInAccountStore);
+                                             IsCredentialNotInAccountStore);
   }
 
   return passwordsCount;
@@ -440,7 +449,7 @@ bool isCredentialNotInAccountStore(
   for (const password_manager::AffiliatedGroup& group : affiliatedGroups) {
     auto credential = base::ranges::find_if(group.GetCredentials().begin(),
                                             group.GetCredentials().end(),
-                                            isCredentialNotInAccountStore);
+                                            IsCredentialNotInAccountStore);
 
     // If a credential exists in this group that is in the profile store, append
     // the group's display name to the distinct domains.
