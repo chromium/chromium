@@ -951,7 +951,6 @@ void WizardController::OnSignInFatalErrorScreenExit() {
     // because the context is lost at this point. We should go to the Gaia
     // screen instead.
     previous_screens_[current_screen_] = GetScreen(GaiaView::kScreenId);
-    GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
   }
 
   // It's possible to get on the SignInFatalError screen both from the user pods
@@ -1246,12 +1245,12 @@ void WizardController::OnUserCreationScreenExit(
         if (features::IsOobeGaiaInfoScreenEnabled()) {
           ShowGaiaInfoScreen();
         } else {
-          AdvanceToSigninScreen();
+          AdvanceToScreen(GaiaView::kScreenId);
         }
       }
       break;
     case UserCreationScreen::Result::SKIPPED:
-      AdvanceToSigninScreen();
+      AdvanceToScreen(GaiaView::kScreenId);
       break;
     case UserCreationScreen::Result::CONTINUE_QUICK_START_FLOW:
       CHECK(wizard_context_->quick_start_enabled &&
@@ -1297,7 +1296,7 @@ void WizardController::OnConsumerUpdateScreenExit(
   const std::string screen_name =
       GetLocalState()->GetString(prefs::kOobeScreenAfterConsumerUpdate);
   if (screen_name == GaiaView::kScreenId.name) {
-    AdvanceToSigninScreen();
+    AdvanceToScreen(GaiaView::kScreenId);
   } else {
     AdvanceToScreen(PrefToScreenId(screen_name));
   }
@@ -1370,7 +1369,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
         LoginDisplayHost::default_host()->HideOobeDialog(
             gaia_page_defaults_to_saml);
       } else {
-        GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
+        GetScreen<GaiaScreen>()->LoadOnlineGaia();
       }
       break;
     }
@@ -1395,7 +1394,7 @@ void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
       break;
     case GaiaInfoScreen::Result::kNext:
     case GaiaInfoScreen::Result::kNotApplicable:
-      AdvanceToSigninScreen();
+      AdvanceToScreen(GaiaView::kScreenId);
       break;
   }
 }
@@ -1405,11 +1404,13 @@ void WizardController::OnAddChildScreenExit(AddChildScreen::Result result) {
                AddChildScreen::GetResultString(result));
   switch (result) {
     case AddChildScreen::Result::CHILD_SIGNIN:
-      GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
+      wizard_context_->gaia_config.gaia_path =
+          WizardContext::GaiaPath::kChildSignin;
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case AddChildScreen::Result::CHILD_ACCOUNT_CREATE:
-      GetScreen<GaiaScreen>()->LoadOnlineForChildSignup();
+      wizard_context_->gaia_config.gaia_path =
+          WizardContext::GaiaPath::kChildSignup;
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case AddChildScreen::Result::ENTERPRISE_ENROLL:
@@ -1421,7 +1422,7 @@ void WizardController::OnAddChildScreenExit(AddChildScreen::Result result) {
       ShowEnrollmentScreenIfEligible();
       break;
     case AddChildScreen::Result::SKIPPED:
-      AdvanceToSigninScreen();
+      AdvanceToScreen(GaiaView::kScreenId);
       break;
     case AddChildScreen::Result::BACK:
       AdvanceToScreen(UserCreationView::kScreenId);
@@ -1544,7 +1545,6 @@ void WizardController::OnOfflineLoginScreenExit(
       AdvanceToScreen(UserCreationView::kScreenId);
       break;
     case OfflineLoginScreen::Result::RELOAD_ONLINE_LOGIN:
-      GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
       AdvanceToScreen(GaiaView::kScreenId);
       break;
   }
@@ -1661,8 +1661,8 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
     case CryptohomeRecoveryScreen::Result::kRetry:
       // TODO(b/257073746): We probably want to differentiate between retry with
       // or without login.
-      GetScreen<GaiaScreen>()->LoadOnline(
-          wizard_context_->user_context->GetAccountId());
+      wizard_context_->gaia_config.prefilled_account =
+          wizard_context_->user_context->GetAccountId();
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case CryptohomeRecoveryScreen::Result::kManualRecovery:
@@ -1748,12 +1748,6 @@ void WizardController::OnScreenExit(OobeScreenId screen,
   oobe_metrics_helper_.OnScreenExited(screen, exit_reason);
 }
 
-void WizardController::AdvanceToSigninScreen() {
-  // Reset Gaia.
-  GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
-  AdvanceToScreen(GaiaView::kScreenId);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // WizardController, ExitHandlers:
 void WizardController::OnWrongHWIDScreenExit() {
@@ -1808,7 +1802,7 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
       ShowNetworkScreen();
       return;
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_SIGNIN:
-      AdvanceToSigninScreen();
+      AdvanceToScreen(GaiaView::kScreenId);
       return;
   }
 }
@@ -3033,7 +3027,14 @@ bool WizardController::MaybeSetToPreviousScreen() {
     return false;
   }
   auto* old_current_screen = current_screen_.get();
-  SetCurrentScreen(previous_screens_[current_screen_]);
+  auto* previous_screen = previous_screens_[current_screen_];
+
+  if (previous_screen->screen_id() == GaiaView::kScreenId) {
+    wizard_context_->gaia_config.gaia_path =
+        wizard_context_->gaia_config.last_gaia_path_shown;
+  }
+
+  SetCurrentScreen(previous_screen);
   return old_current_screen != current_screen_;
 }
 

@@ -121,11 +121,29 @@ GaiaScreen::~GaiaScreen() {
   backlights_forced_off_observation_.Reset();
 }
 
-void GaiaScreen::LoadOnline(const AccountId& account) {
+void GaiaScreen::LoadOnlineGaia() {
+  if (!view_) {
+    return;
+  }
+
+  switch (context()->gaia_config.gaia_path) {
+    case WizardContext::GaiaPath::kDefault:
+      LoadDefaultOnlineGaia(context()->gaia_config.prefilled_account);
+      break;
+    case WizardContext::GaiaPath::kReauth:
+      LoadDefaultOnlineGaia(EmptyAccountId());
+      break;
+    case WizardContext::GaiaPath::kChildSignin:
+    case WizardContext::GaiaPath::kChildSignup:
+      view_->LoadGaiaAsync(EmptyAccountId());
+      break;
+  }
+}
+
+void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
   if (!view_)
     return;
 
-  view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
   view_->SetReauthRequestToken(std::string());
 
   // Always fetch Gaia reauth request token if the testing switch is set. It
@@ -134,7 +152,7 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceCryptohomeRecoveryForTesting)) {
     DCHECK(features::IsCryptohomeRecoveryEnabled());
-    view_->SetGaiaPath(GaiaView::GaiaPath::kReauth);
+    context()->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
     FetchGaiaReauthToken(account);
     return;
   }
@@ -151,20 +169,6 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
   }
 }
 
-void GaiaScreen::LoadOnlineForChildSignup() {
-  if (!view_)
-    return;
-  view_->SetGaiaPath(GaiaView::GaiaPath::kChildSignup);
-  view_->LoadGaiaAsync(EmptyAccountId());
-}
-
-void GaiaScreen::LoadOnlineForChildSignin() {
-  if (!view_)
-    return;
-  view_->SetGaiaPath(GaiaView::GaiaPath::kChildSignin);
-  view_->LoadGaiaAsync(EmptyAccountId());
-}
-
 void GaiaScreen::ShowAllowlistCheckFailedError() {
   if (!view_)
     return;
@@ -174,7 +178,8 @@ void GaiaScreen::ShowAllowlistCheckFailedError() {
 void GaiaScreen::Reset() {
   if (!view_)
     return;
-  view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
+  context()->gaia_config.gaia_path = WizardContext::GaiaPath::kDefault;
+  context()->gaia_config.prefilled_account = EmptyAccountId();
   view_->Reset();
 }
 
@@ -196,6 +201,9 @@ void GaiaScreen::ShowImpl() {
     backlights_forced_off_observation_.Observe(
         Shell::Get()->backlights_forced_off_setter());
   }
+
+  LoadOnlineGaia();
+
   // Landed on the login screen. No longer skipping enrollment for tests.
   context()->skip_to_login_for_tests = false;
   view_->Show();
@@ -221,7 +229,13 @@ void GaiaScreen::HideImpl() {
   enrollment_nudge_email_.clear();
   if (!view_)
     return;
-  view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
+
+  // Reset gaia_config after storing the current GAIA Path in
+  // `gaia_config.last_gaia_path_shown`.
+  context()->gaia_config.last_gaia_path_shown =
+      context()->gaia_config.gaia_path;
+  Reset();
+
   view_->Hide();
   backlights_forced_off_observation_.Reset();
 }
@@ -229,9 +243,9 @@ void GaiaScreen::HideImpl() {
 void GaiaScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
-    GaiaView::GaiaPath gaiaPath = view_->GetGaiaPath();
-    if (gaiaPath == GaiaView::GaiaPath::kChildSignup ||
-        gaiaPath == GaiaView::GaiaPath::kChildSignin) {
+    WizardContext::GaiaPath gaiaPath = context()->gaia_config.gaia_path;
+    if (gaiaPath == WizardContext::GaiaPath::kChildSignup ||
+        gaiaPath == WizardContext::GaiaPath::kChildSignin) {
       exit_callback_.Run(Result::BACK_CHILD);
     } else {
       exit_callback_.Run(Result::BACK);
@@ -242,9 +256,9 @@ void GaiaScreen::OnUserAction(const base::Value::List& args) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
   } else if (action_id == kUserActionReloadDefault) {
     Reset();
-    LoadOnline(EmptyAccountId());
+    LoadDefaultOnlineGaia(EmptyAccountId());
   } else if (action_id == kUserActionRetry) {
-    LoadOnline(EmptyAccountId());
+    LoadDefaultOnlineGaia(EmptyAccountId());
   } else if (action_id == kUserActionEnterIdentifier) {
     CHECK_EQ(2u, args.size());
     const std::string& email = args[1].GetString();
@@ -314,7 +328,7 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
 
   const AccountId& account_id = user_context->GetAccountId();
   if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
-    view_->SetGaiaPath(GaiaView::GaiaPath::kReauth);
+    context()->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
   }
 
   if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {
