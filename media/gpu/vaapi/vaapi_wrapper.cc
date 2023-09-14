@@ -1837,14 +1837,23 @@ std::vector<SVCScalabilityMode> VaapiWrapper::GetSupportedScalabilityModes(
   if (media_profile == VP9PROFILE_PROFILE0) {
     scalability_modes.push_back(SVCScalabilityMode::kL1T2);
     scalability_modes.push_back(SVCScalabilityMode::kL1T3);
-    if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
-        GetDefaultVaEntryPoint(
+    if (GetDefaultVaEntryPoint(
             VaapiWrapper::kEncodeConstantQuantizationParameter, va_profile) ==
-            VAEntrypointEncSliceLP) {
-      scalability_modes.push_back(SVCScalabilityMode::kL2T2Key);
-      scalability_modes.push_back(SVCScalabilityMode::kL2T3Key);
-      scalability_modes.push_back(SVCScalabilityMode::kL3T2Key);
-      scalability_modes.push_back(SVCScalabilityMode::kL3T3Key);
+        VAEntrypointEncSliceLP) {
+      if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding)) {
+        scalability_modes.push_back(SVCScalabilityMode::kL2T2Key);
+        scalability_modes.push_back(SVCScalabilityMode::kL2T3Key);
+        scalability_modes.push_back(SVCScalabilityMode::kL3T2Key);
+        scalability_modes.push_back(SVCScalabilityMode::kL3T3Key);
+      }
+      if (base::FeatureList::IsEnabled(kVaapiVp9SModeHWEncoding)) {
+        scalability_modes.push_back(SVCScalabilityMode::kS2T1);
+        scalability_modes.push_back(SVCScalabilityMode::kS2T2);
+        scalability_modes.push_back(SVCScalabilityMode::kS2T3);
+        scalability_modes.push_back(SVCScalabilityMode::kS3T1);
+        scalability_modes.push_back(SVCScalabilityMode::kS3T2);
+        scalability_modes.push_back(SVCScalabilityMode::kS3T3);
+      }
     }
   }
 

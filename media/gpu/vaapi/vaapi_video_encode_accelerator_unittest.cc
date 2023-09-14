@@ -673,18 +673,34 @@ class VaapiVideoEncodeAcceleratorTest
 };
 
 struct VaapiVideoEncodeAcceleratorTestParam {
+  SVCInterLayerPredMode inter_layer_pred = SVCInterLayerPredMode::kOnKeyPic;
   uint8_t num_of_spatial_layers = 0;
   uint8_t num_of_temporal_layers = 0;
 } kTestCases[]{
-    // {num_of_spatial_layers, num_of_temporal_layers}
-    {1u, 1u}, {1u, 2u}, {1u, 3u}, {2u, 1u}, {2u, 2u},
-    {2u, 3u}, {3u, 1u}, {3u, 2u}, {3u, 3u},
+    // {inter_layer_pred, num_of_spatial_layers, num_of_temporal_layers}
+    {SVCInterLayerPredMode::kOnKeyPic, 2u, 1u},
+    {SVCInterLayerPredMode::kOnKeyPic, 2u, 2u},
+    {SVCInterLayerPredMode::kOnKeyPic, 2u, 3u},
+    {SVCInterLayerPredMode::kOnKeyPic, 3u, 1u},
+    {SVCInterLayerPredMode::kOnKeyPic, 3u, 2u},
+    {SVCInterLayerPredMode::kOnKeyPic, 3u, 3u},
+    {SVCInterLayerPredMode::kOff, 1u, 1u},
+    {SVCInterLayerPredMode::kOff, 1u, 2u},
+    {SVCInterLayerPredMode::kOff, 1u, 3u},
+    {SVCInterLayerPredMode::kOff, 2u, 1u},
+    {SVCInterLayerPredMode::kOff, 2u, 2u},
+    {SVCInterLayerPredMode::kOff, 2u, 3u},
+    {SVCInterLayerPredMode::kOff, 3u, 1u},
+    {SVCInterLayerPredMode::kOff, 3u, 2u},
+    {SVCInterLayerPredMode::kOff, 3u, 3u},
 };
 
 TEST_P(VaapiVideoEncodeAcceleratorTest, Initialize) {
   const uint8_t num_of_spatial_layers = GetParam().num_of_spatial_layers;
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
 
   VideoEncodeAccelerator::Config config = kDefaultVideoEncodeAcceleratorConfig;
+  config.inter_layer_pred = inter_layer_pred;
   const uint8_t num_of_temporal_layers = GetParam().num_of_temporal_layers;
   config.spatial_layers =
       GetDefaultSVCLayers(num_of_spatial_layers, num_of_temporal_layers);
@@ -722,6 +738,8 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithSingleSpatialLayer) {
     GTEST_SKIP() << "Test only meant for single spatial layer";
 
   VideoEncodeAccelerator::Config config = kDefaultVideoEncodeAcceleratorConfig;
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
+  config.inter_layer_pred = inter_layer_pred;
   VideoEncodeAccelerator::Config::SpatialLayer spatial_layer;
   spatial_layer.width = kDefaultEncodeSize.width();
   spatial_layer.height = kDefaultEncodeSize.height();
@@ -745,6 +763,8 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithMultipleSpatialLayers) {
 
   const uint8_t num_of_temporal_layers = GetParam().num_of_temporal_layers;
   VideoEncodeAccelerator::Config config = kDefaultVideoEncodeAcceleratorConfig;
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
+  config.inter_layer_pred = inter_layer_pred;
   config.input_format = PIXEL_FORMAT_NV12;
   config.storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;

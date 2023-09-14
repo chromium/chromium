@@ -40,7 +40,8 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
                 "VP9SVCLayers uses six reference frames");
 
   using SpatialLayer = VideoEncodeAccelerator::Config::SpatialLayer;
-  explicit VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers);
+  explicit VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers,
+                        SVCInterLayerPredMode inter_layer_pred);
   ~VP9SVCLayers();
 
   // Returns true if EncodeJob needs to produce key frame.
@@ -91,6 +92,9 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
 
   // The pattern index used for reference frames slots.
   uint8_t pattern_index_of_ref_frames_slots_[kMaxNumUsedReferenceFrames] = {};
+
+  // Inter layer prediction mode.
+  const SVCInterLayerPredMode inter_layer_pred_;
 };
 
 }  // namespace media

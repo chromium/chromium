@@ -32,59 +32,12 @@ enum FrameFlags : uint8_t {
 
 const char* GetSVCName(size_t begin_active_layer,
                        size_t end_active_layer,
-                       size_t num_temporal_layers) {
+                       size_t num_temporal_layers,
+                       SVCInterLayerPredMode inter_layer_pred) {
   DCHECK_LT(begin_active_layer, end_active_layer);
   size_t num_spatial_layers = end_active_layer - begin_active_layer;
-  absl::optional<SVCScalabilityMode> svc_mode;
-  switch (num_spatial_layers) {
-    case 1:
-      switch (num_temporal_layers) {
-        case 1:
-          return "L1T1";
-        case 2:
-          svc_mode = SVCScalabilityMode::kL1T2;
-          break;
-        case 3:
-          svc_mode = SVCScalabilityMode::kL1T3;
-          break;
-      }
-      break;
-    case 2:
-      switch (num_temporal_layers) {
-        case 1:
-          svc_mode = SVCScalabilityMode::kL2T1Key;
-          break;
-        case 2:
-          svc_mode = SVCScalabilityMode::kL2T2Key;
-          break;
-        case 3:
-          svc_mode = SVCScalabilityMode::kL2T3Key;
-          break;
-      }
-      break;
-    case 3:
-      switch (num_temporal_layers) {
-        case 1:
-          svc_mode = SVCScalabilityMode::kL3T1Key;
-          break;
-        case 2:
-          svc_mode = SVCScalabilityMode::kL3T2Key;
-          break;
-        case 3:
-          svc_mode = SVCScalabilityMode::kL3T3Key;
-          break;
-      }
-      break;
-  }
-
-  if (!svc_mode) {
-    DVLOGF(1) << "Unexpected SVC config: "
-              << "begin_active_layer=" << begin_active_layer
-              << ", end_active_layer=" << end_active_layer
-              << ", num_temporal_layers=" << num_temporal_layers;
-    return "INVALID SVC";
-  }
-  return GetScalabilityModeName(*svc_mode);
+  return GetScalabilityModeName(GetSVCScalabilityMode(
+      num_spatial_layers, num_temporal_layers, inter_layer_pred));
 }
 }  // namespace
 
@@ -102,8 +55,10 @@ struct VP9SVCLayers::FrameConfig {
   // totally uses up to 6 reference frame slots. SL0 uses the first two (0, 1)
   // slots, SL1 uses middle two (2, 3) slots, and SL2 uses last two (4, 5)
   // slots.
-  std::vector<uint8_t> GetRefFrameIndices(size_t spatial_idx,
-                                          size_t frame_num) const {
+  std::vector<uint8_t> GetRefFrameIndices(
+      size_t spatial_idx,
+      size_t frame_num,
+      SVCInterLayerPredMode inter_layer_pred) const {
     std::vector<uint8_t> indices;
     if (frame_num != 0) {
       for (size_t i = 0; i < kMaxNumUsedRefFramesEachSpatialLayer; ++i) {
@@ -113,12 +68,14 @@ struct VP9SVCLayers::FrameConfig {
         }
       }
     } else {
-      // For the key picture (|frame_num| equals 0), the higher spatial layer
-      // reference the lower spatial layers. e.g. for frame_num 0, SL1 will
-      // reference SL0, and SL2 will reference SL1.
       DCHECK_GT(spatial_idx, 0u);
-      indices.push_back((spatial_idx - 1) *
-                        kMaxNumUsedRefFramesEachSpatialLayer);
+      // For the key picture (|frame_num| equals 0) in the K-SVC, the higher
+      // spatial layer reference the lower spatial layers. e.g. for frame_num 0,
+      // SL1 will reference SL0, and SL2 will reference SL1.
+      if (inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic) {
+        indices.push_back((spatial_idx - 1) *
+                          kMaxNumUsedRefFramesEachSpatialLayer);
+      }
     }
     return indices;
   }
@@ -180,11 +137,13 @@ std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
 }
 }  // namespace
 
-VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers)
+VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers,
+                           SVCInterLayerPredMode inter_layer_pred)
     : num_temporal_layers_(spatial_layers[0].num_of_temporal_layers),
       temporal_layers_reference_pattern_(
           GetTemporalLayersReferencePattern(num_temporal_layers_)),
-      temporal_pattern_size_(temporal_layers_reference_pattern_.size()) {
+      temporal_pattern_size_(temporal_layers_reference_pattern_.size()),
+      inter_layer_pred_(inter_layer_pred) {
   for (const auto spatial_layer : spatial_layers) {
     spatial_layer_resolutions_.emplace_back(
         gfx::Size(spatial_layer.width, spatial_layer.height));
@@ -334,10 +293,10 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
       new_num_temporal_layers != num_temporal_layers_) {
     DVLOGF(2) << "SVC structure is changed from "
               << GetSVCName(begin_active_layer_, end_active_layer_,
-                            num_temporal_layers_)
+                            num_temporal_layers_, inter_layer_pred_)
               << " to "
               << GetSVCName(begin_active_layer, end_active_layer,
-                            new_num_temporal_layers);
+                            new_num_temporal_layers, inter_layer_pred_);
 
     // Update the stored active layer range.
     begin_active_layer_ = begin_active_layer;
@@ -413,13 +372,19 @@ void VP9SVCLayers::FillUsedRefFramesAndMetadata(
     picture->frame_hdr->refresh_frame_flags |= 1u << i;
   // Set the slots of reference frames used for the current frame.
   const std::vector<uint8_t> reference_frame_indices =
-      temporal_layers_config.GetRefFrameIndices(spatial_idx_, frame_num_);
+      temporal_layers_config.GetRefFrameIndices(spatial_idx_, frame_num_,
+                                                inter_layer_pred_);
 
   uint8_t ref_flags = 0;
   for (size_t i = 0; i < reference_frame_indices.size(); i++) {
     (*ref_frames_used)[i] = true;
     picture->frame_hdr->ref_frame_idx[i] = reference_frame_indices[i];
     ref_flags |= 1 << reference_frame_indices[i];
+  }
+
+  // Set the |frame_type| to KEYFRAME when |frame_num_=0| in S-mode encoding.
+  if (inter_layer_pred_ == SVCInterLayerPredMode::kOff && frame_num_ == 0) {
+    picture->frame_hdr->frame_type = Vp9FrameHeader::FrameType::KEYFRAME;
   }
 
   DVLOGF(4) << "Frame num: " << frame_num_
@@ -444,7 +409,11 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
     const std::vector<uint8_t>& reference_frame_indices) const {
   metadata->end_of_picture =
       spatial_idx_ == active_spatial_layer_resolutions_.size() - 1;
+
+  // Referenced by upper spatial layers only on the first frame in k-SVC
+  // encoding.
   metadata->referenced_by_upper_spatial_layers =
+      inter_layer_pred_ == SVCInterLayerPredMode::kOnKeyPic &&
       frame_num_ == 0 &&
       spatial_idx_ < active_spatial_layer_resolutions_.size() - 1;
 
@@ -464,6 +433,16 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
     return;
   }
 
+  // In S mode encoding, it also need fill |spatial_layer_resolutions| for upper
+  // layers if it is keyframe.
+  if (inter_layer_pred_ == SVCInterLayerPredMode::kOff && frame_num_ == 0) {
+    metadata->spatial_layer_resolutions = active_spatial_layer_resolutions_;
+    metadata->begin_active_spatial_layer_index =
+        base::checked_cast<uint8_t>(begin_active_layer_);
+    metadata->end_active_spatial_layer_index =
+        base::checked_cast<uint8_t>(end_active_layer_);
+  }
+
   // Below parameters only needed to filled for non key frame.
   uint8_t temp_temporal_layers_id =
       temporal_layers_reference_pattern_[pattern_index_ %
@@ -474,8 +453,12 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
   // referred.
   if (frame_num_ != 0)
     metadata->inter_pic_predicted = !reference_frame_indices.empty();
+  // Reference frames in lower spatial layers only on the first frame in k-SVC
+  // encoding.
   metadata->reference_lower_spatial_layers =
+      inter_layer_pred_ == SVCInterLayerPredMode::kOnKeyPic &&
       frame_num_ == 0 && (spatial_idx_ != 0);
+
   metadata->temporal_idx = temp_temporal_layers_id;
   metadata->spatial_idx = spatial_idx_;
 

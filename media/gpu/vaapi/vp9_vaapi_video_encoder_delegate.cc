@@ -250,22 +250,17 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
       return false;
     }
     if (num_spatial_layers > 1 &&
-        config.inter_layer_pred != SVCInterLayerPredMode::kOnKeyPic) {
-      std::string inter_layer_pred;
-      if (config.inter_layer_pred == SVCInterLayerPredMode::kOn) {
-        inter_layer_pred = base::StringPrintf("InterLayerPredMode::kOn");
-      } else {
-        inter_layer_pred = base::StringPrintf("InterLayerPredMode::kOff");
-      }
-      VLOGF(1) << "Support only k-SVC encoding. inter_layer_pred="
-               << inter_layer_pred;
+        config.inter_layer_pred != SVCInterLayerPredMode::kOnKeyPic &&
+        config.inter_layer_pred != SVCInterLayerPredMode::kOff) {
+      VLOGF(1) << "Only k-SVC and S-mode encoding are supported";
       return false;
     }
     for (const auto& spatial_layer : config.spatial_layers) {
       spatial_layer_resolutions.emplace_back(
           gfx::Size(spatial_layer.width, spatial_layer.height));
     }
-    svc_layers_ = std::make_unique<VP9SVCLayers>(config.spatial_layers);
+    svc_layers_ = std::make_unique<VP9SVCLayers>(config.spatial_layers,
+                                                 config.inter_layer_pred);
 
     current_params_.error_resilident_mode = true;
   }
@@ -310,6 +305,9 @@ size_t VP9VaapiVideoEncoderDelegate::GetMaxNumOfRefFrames() const {
 bool VP9VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (svc_layers_) {
+    // In S-mode encoding, this return true only for the first spatial layer.
+    // key_frame is set to true for the first frame in an upper spatial layer
+    // when svc_layers->FillUsedRefFramesAndMetadata() in SetFrameHeader().
     if (svc_layers_->UpdateEncodeJob(encode_job.IsKeyframeRequested(),
                                      current_params_.kf_period_frames)) {
       encode_job.ProduceKeyframe();
@@ -351,6 +349,12 @@ BitstreamBufferMetadata VP9VaapiVideoEncoderDelegate::GetMetadata(
   auto picture = GetVP9Picture(encode_job);
   DCHECK(picture);
   metadata.vp9 = picture->metadata_for_encoding;
+
+  // Overwrite |metadata.key_frame| by |picture->frame_hdr->IsKeframe()| because
+  // encode_job.IsKeyframeRequested() is false for the first frames on upper
+  // spatial layers in VP9 S-mode encoding.
+  metadata.key_frame = picture->frame_hdr->IsKeyframe();
+
   metadata.qp =
       base::strict_cast<int32_t>(picture->frame_hdr->quant_params.base_q_idx);
   return metadata;
@@ -481,6 +485,10 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
   if (svc_layers_) {
     // Reference frame settings for k-SVC stream.
     svc_layers_->FillUsedRefFramesAndMetadata(picture, ref_frames_used);
+
+    // Update the |keyframe| as it will be reset to keyframe for upper layers
+    // when |frame_num_=0| in S mode encoding.
+    keyframe = picture->frame_hdr->IsKeyframe();
   } else {
     // Reference frame settings for simple stream.
     if (keyframe) {

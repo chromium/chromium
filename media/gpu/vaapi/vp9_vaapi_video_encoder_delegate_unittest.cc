@@ -269,17 +269,23 @@ class VP9VaapiVideoEncoderDelegateTest
  protected:
   void ResetEncoder();
 
-  void InitializeVP9VaapiVideoEncoderDelegate(size_t num_spatial_layers,
-                                              size_t num_temporal_layers);
+  void InitializeVP9VaapiVideoEncoderDelegate(
+      SVCInterLayerPredMode inter_layer_pred,
+      size_t num_spatial_layers,
+      size_t num_temporal_layers);
   void EncodeConstantQuantizationParameterSequence(
-      bool is_keyframe,
+      bool force_key,
       const gfx::Size& layer_size,
       absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
           expected_ref_frames_used,
       uint8_t expected_temporal_layer_id,
-      uint8_t expected_spatial_layer_id);
-  void UpdateRatesTest(size_t num_spatial_layers, size_t num_temporal_layers);
+      uint8_t expected_spatial_layer_id,
+      bool s_mode_keyframe);
+  void UpdateRatesTest(SVCInterLayerPredMode inter_layer_pred,
+                       size_t num_spatial_layers,
+                       size_t num_temporal_layers);
   void UpdateRatesAndEncode(
+      SVCInterLayerPredMode inter_layer_pred,
       const VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate,
       bool valid_rates_request,
@@ -333,9 +339,11 @@ VP9VaapiVideoEncoderDelegateTest::CreateEncodeJob(
 }
 
 void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
+    SVCInterLayerPredMode inter_layer_pred,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
   auto config = kDefaultVideoEncodeAcceleratorConfig;
+  config.inter_layer_pred = inter_layer_pred;
   auto ave_config = kDefaultVaapiVideoEncoderDelegateConfig;
 
   auto rate_ctrl = std::make_unique<MockVP9RateControl>();
@@ -382,12 +390,13 @@ void VP9VaapiVideoEncoderDelegateTest::InitializeVP9VaapiVideoEncoderDelegate(
 
 void VP9VaapiVideoEncoderDelegateTest::
     EncodeConstantQuantizationParameterSequence(
-        bool is_keyframe,
+        bool force_key,
         const gfx::Size& layer_size,
         absl::optional<std::array<bool, kVp9NumRefsPerFrame>>
             expected_ref_frames_used,
         uint8_t expected_temporal_layer_id,
-        uint8_t expected_spatial_layer_id) {
+        uint8_t expected_spatial_layer_id,
+        bool s_mode_keyframe) {
   InSequence seq;
 
   constexpr VASurfaceID kDummyVASurfaceID = 123;
@@ -395,11 +404,13 @@ void VP9VaapiVideoEncoderDelegateTest::
       kDummyVASurfaceID, layer_size, VA_RT_FORMAT_YUV420, base::DoNothing());
   scoped_refptr<VP9Picture> picture = new VaapiVP9Picture(va_surface);
 
-  auto encode_job = CreateEncodeJob(is_keyframe, va_surface, picture);
+  auto encode_job = CreateEncodeJob(force_key, va_surface, picture);
 
+  // The first frame will be set to KeyFrame under the S-mode.
   libvpx::RcFrameType libvpx_frame_type =
-      is_keyframe ? libvpx::RcFrameType::kKeyFrame
-                  : libvpx::RcFrameType::kInterFrame;
+      force_key || s_mode_keyframe ? libvpx::RcFrameType::kKeyFrame
+                                   : libvpx::RcFrameType::kInterFrame;
+
   constexpr int kDefaultQP = 34;
   EXPECT_CALL(
       *mock_rate_ctrl_,
@@ -435,7 +446,7 @@ void VP9VaapiVideoEncoderDelegateTest::
       .WillOnce(Return());
   BitstreamBufferMetadata metadata;
   metadata.payload_size_bytes = kDefaultEncodedFrameSize;
-  metadata.key_frame = is_keyframe;
+  metadata.key_frame = force_key || s_mode_keyframe;
   metadata.qp = kDefaultQP;
   if (encoder_->svc_layers_) {
     metadata.vp9.emplace();
@@ -446,6 +457,7 @@ void VP9VaapiVideoEncoderDelegateTest::
 }
 
 void VP9VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(
+    SVCInterLayerPredMode inter_layer_pred,
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
     bool valid_rates_request,
@@ -490,20 +502,25 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
     const gfx::Size& layer_size = expected_spatial_layer_resolutions[sid];
     const bool is_keyframe = is_key_pic && sid == 0;
-    EncodeConstantQuantizationParameterSequence(
-        is_keyframe, layer_size,
-        /*expected_ref_frames_used=*/{}, expected_temporal_layer_id, sid);
+    const bool s_mode_keyframe =
+        (inter_layer_pred == SVCInterLayerPredMode::kOff) && is_key_pic;
+    EncodeConstantQuantizationParameterSequence(is_keyframe, layer_size,
+                                                /*expected_ref_frames_used=*/{},
+                                                expected_temporal_layer_id, sid,
+                                                s_mode_keyframe);
   }
 }
 
 void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
+    SVCInterLayerPredMode inter_layer_pred,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
   ASSERT_TRUE(num_temporal_layers <= VP9SVCLayers::kMaxSupportedTemporalLayers);
   ASSERT_TRUE(num_spatial_layers <= VP9SVCLayers::kMaxSupportedTemporalLayers);
   const auto spatial_layer_resolutions =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);
-  auto update_rates_and_encode = [this, num_spatial_layers, num_temporal_layers,
+  auto update_rates_and_encode = [this, inter_layer_pred, num_spatial_layers,
+                                  num_temporal_layers,
                                   &spatial_layer_resolutions](
                                      bool is_key_pic,
                                      uint8_t expected_temporal_layer_id,
@@ -511,7 +528,7 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
     auto bitrate_allocation = AllocateDefaultBitrateForTesting(
         num_spatial_layers, num_temporal_layers,
         media::Bitrate::ConstantBitrate(bitrate));
-    UpdateRatesAndEncode(bitrate_allocation, framerate,
+    UpdateRatesAndEncode(inter_layer_pred, bitrate_allocation, framerate,
                          /*valid_rates_request=*/true, is_key_pic,
                          spatial_layer_resolutions, num_temporal_layers,
                          expected_temporal_layer_id);
@@ -538,22 +555,40 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
 }
 
 struct VP9VaapiVideoEncoderDelegateTestParam {
+  SVCInterLayerPredMode inter_layer_pred = SVCInterLayerPredMode::kOnKeyPic;
   size_t num_spatial_layers;
   size_t num_temporal_layers;
 } kTestCasesForVP9VaapiVideoEncoderDelegateTest[] = {
-    {1u, 1u}, {1u, 2u}, {1u, 3u}, {2u, 1u}, {2u, 2u},
-    {2u, 3u}, {3u, 1u}, {3u, 2u}, {3u, 3u},
+    // {inter_layer_pred, num_of_spatial_layers, num_of_temporal_layers}
+    {SVCInterLayerPredMode::kOnKeyPic, 2u, 1u},
+    {SVCInterLayerPredMode::kOnKeyPic, 2u, 2u},
+    {SVCInterLayerPredMode::kOnKeyPic, 2u, 3u},
+    {SVCInterLayerPredMode::kOnKeyPic, 3u, 1u},
+    {SVCInterLayerPredMode::kOnKeyPic, 3u, 2u},
+    {SVCInterLayerPredMode::kOnKeyPic, 3u, 3u},
+    {SVCInterLayerPredMode::kOff, 1u, 1u},
+    {SVCInterLayerPredMode::kOff, 1u, 2u},
+    {SVCInterLayerPredMode::kOff, 1u, 3u},
+    {SVCInterLayerPredMode::kOff, 2u, 1u},
+    {SVCInterLayerPredMode::kOff, 2u, 2u},
+    {SVCInterLayerPredMode::kOff, 2u, 3u},
+    {SVCInterLayerPredMode::kOff, 3u, 1u},
+    {SVCInterLayerPredMode::kOff, 3u, 2u},
+    {SVCInterLayerPredMode::kOff, 3u, 3u},
+
 };
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, Initialize) {
-  InitializeVP9VaapiVideoEncoderDelegate(GetParam().num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(GetParam().inter_layer_pred,
+                                         GetParam().num_spatial_layers,
                                          GetParam().num_temporal_layers);
 }
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, EncodeWithSoftwareBitrateControl) {
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
-  InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(inter_layer_pred, num_spatial_layers,
                                          num_temporal_layers);
 
   const std::vector<gfx::Size> layer_sizes =
@@ -562,23 +597,26 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, EncodeWithSoftwareBitrateControl) {
   for (size_t frame_num = 0; frame_num < kEncodeFrames; ++frame_num) {
     for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
       const bool is_keyframe = (frame_num == 0 && sid == 0);
+      const bool s_mode_keyframe =
+          (inter_layer_pred == SVCInterLayerPredMode::kOff) && (frame_num == 0);
       std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
       uint8_t temporal_layer_id;
       GetTemporalLayer(is_keyframe, frame_num, num_spatial_layers,
                        num_temporal_layers, &ref_frames_used,
                        &temporal_layer_id);
-      EncodeConstantQuantizationParameterSequence(is_keyframe, layer_sizes[sid],
-                                                  ref_frames_used,
-                                                  temporal_layer_id, sid);
+      EncodeConstantQuantizationParameterSequence(
+          is_keyframe, layer_sizes[sid], ref_frames_used, temporal_layer_id,
+          sid, s_mode_keyframe);
     }
   }
 }
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest,
        ForceKeyFrameWithSoftwareBitrateControl) {
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
-  InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(inter_layer_pred, num_spatial_layers,
                                          num_temporal_layers);
   constexpr size_t kNumKeyFrames = 3;
   constexpr size_t kKeyFrameInterval = 20;
@@ -588,33 +626,37 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest,
     for (size_t i = 0; i < kKeyFrameInterval; ++i) {
       for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
         const bool keyframe = (i == 0 && sid == 0);
+        const bool s_mode_keyframe =
+            (inter_layer_pred == SVCInterLayerPredMode::kOff) && (i == 0);
         std::array<bool, kVp9NumRefsPerFrame> ref_frames_used;
         uint8_t temporal_layer_id;
         GetTemporalLayer(keyframe, i, num_spatial_layers, num_temporal_layers,
                          &ref_frames_used, &temporal_layer_id);
-        EncodeConstantQuantizationParameterSequence(keyframe, layer_sizes[sid],
-                                                    ref_frames_used,
-                                                    temporal_layer_id, sid);
+        EncodeConstantQuantizationParameterSequence(
+            keyframe, layer_sizes[sid], ref_frames_used, temporal_layer_id, sid,
+            s_mode_keyframe);
       }
     }
   }
 }
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, UpdateRates) {
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
-  InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(inter_layer_pred, num_spatial_layers,
                                          num_temporal_layers);
-  UpdateRatesTest(num_spatial_layers, num_temporal_layers);
+  UpdateRatesTest(inter_layer_pred, num_spatial_layers, num_temporal_layers);
 }
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
   if (num_spatial_layers == 1)
     GTEST_SKIP() << "Skip a single spatial layer";
 
-  InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
+  InitializeVP9VaapiVideoEncoderDelegate(inter_layer_pred, num_spatial_layers,
                                          num_temporal_layers);
 
   struct ActivationQuery {
@@ -677,7 +719,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
 
     // Always is_key_pic=true and temporal_layer_id=0 because the active spatial
     // layers are changed.
-    UpdateRatesAndEncode(bitrate_allocation, kFramerate,
+    UpdateRatesAndEncode(inter_layer_pred, bitrate_allocation, kFramerate,
                          /*valid_rates_request=*/true,
                          /*is_key_pic=*/true, spatial_layer_resolutions,
                          query.num_temporal_layers,
@@ -686,6 +728,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
 }
 
 TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
+  const SVCInterLayerPredMode inter_layer_pred = GetParam().inter_layer_pred;
   const size_t num_spatial_layers = GetParam().num_spatial_layers;
   const size_t num_temporal_layers = GetParam().num_temporal_layers;
   const VideoBitrateAllocation kDefaultBitrateAllocation =
@@ -728,14 +771,14 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
   const uint32_t kFramerate =
       *kDefaultVideoEncodeAcceleratorConfig.initial_framerate;
   for (const auto& invalid_allocation : invalid_bitrate_allocations) {
-    InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
+    InitializeVP9VaapiVideoEncoderDelegate(inter_layer_pred, num_spatial_layers,
                                            num_temporal_layers);
 
     // The values of expected_spatial_layer_resolutions, is_key_pic,
     // expected_temporal_layers and expected_temporal_layer_id are meaningless
     // because UpdateRatesAndEncode will returns before checking them due to the
     // invalid VideoBitrateAllocation request.
-    UpdateRatesAndEncode(invalid_allocation, kFramerate,
+    UpdateRatesAndEncode(inter_layer_pred, invalid_allocation, kFramerate,
                          /*valid_rates_request=*/false,
                          /*is_key_pic=*/true,
                          /*expected_spatial_layer_resolutions=*/{},
