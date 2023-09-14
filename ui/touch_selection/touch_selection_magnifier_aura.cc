@@ -6,6 +6,7 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 namespace ui {
 
@@ -49,21 +51,25 @@ constexpr int kMagnifierVerticalBoundsOffset = -8;
 
 constexpr int kMagnifierBorderThickness = 1;
 
-// Shadows values to draw around the zoomed contents.
-gfx::ShadowValues GetMagnifierShadowValues() {
+constexpr float kMagnifierBorderOpacity = 0.2f;
+
+// Shadows to draw around the zoomed contents.
+// TODO(b/299966070): Try to unify this with how other shadows are handled.
+gfx::ShadowValues GetMagnifierShadowValues(SkColor key_shadow_color,
+                                           SkColor ambient_shadow_color) {
   constexpr int kShadowElevation = 3;
-  constexpr int kShadowBlurCorrection = 2;
-  return {gfx::ShadowValue(gfx::Vector2d(0, kShadowElevation),
-                           kShadowBlurCorrection * kShadowElevation,
-                           SkColorSetA(SK_ColorBLACK, 0x3d)),
-          gfx::ShadowValue(gfx::Vector2d(),
-                           kShadowBlurCorrection * kShadowElevation,
-                           SkColorSetA(SK_ColorBLACK, 0x1a))};
+  constexpr int kShadowBlur = 2 * kShadowElevation;
+  return {gfx::ShadowValue(gfx::Vector2d(0, kShadowElevation), kShadowBlur,
+                           key_shadow_color),
+          gfx::ShadowValue(gfx::Vector2d(), kShadowBlur, ambient_shadow_color)};
 }
 
 // The space outside the zoom layer needed for shadows.
 gfx::Outsets GetMagnifierShadowOutsets() {
-  return gfx::ShadowValue::GetMargin(GetMagnifierShadowValues()).ToOutsets();
+  return gfx::ShadowValue::GetMargin(
+             GetMagnifierShadowValues(gfx::kPlaceholderColor,
+                                      gfx::kPlaceholderColor))
+      .ToOutsets();
 }
 
 // Bounds of the zoom layer in coordinates of its parent. These zoom layer
@@ -119,22 +125,12 @@ gfx::Point GetMagnifierSourceCenter(const gfx::Size& parent_container_size,
   return gfx::ToRoundedPoint(source_bounds.CenterPoint());
 }
 
-// Gets the color to use for the border based on the default native theme.
-SkColor GetBorderColor() {
-  auto* native_theme = NativeTheme::GetInstanceForNativeUi();
-  return SkColorSetA(
-      ColorProviderManager::Get()
-          .GetColorProviderFor(native_theme->GetColorProviderKey(nullptr))
-          ->GetColor(ui::kColorSeparator),
-      0x23);
-}
-
 }  // namespace
 
 // Delegate for drawing the magnifier border and shadows onto the border layer.
 class TouchSelectionMagnifierAura::BorderRenderer : public LayerDelegate {
  public:
-  BorderRenderer() = default;
+  BorderRenderer() { UpdateTheme(ui::NativeTheme::GetInstanceForNativeUi()); }
   BorderRenderer(const BorderRenderer&) = delete;
   BorderRenderer& operator=(const BorderRenderer&) = delete;
   ~BorderRenderer() override = default;
@@ -149,8 +145,8 @@ class TouchSelectionMagnifierAura::BorderRenderer : public LayerDelegate {
     cc::PaintFlags shadow_flags;
     shadow_flags.setAntiAlias(true);
     shadow_flags.setColor(SK_ColorTRANSPARENT);
-    shadow_flags.setLooper(
-        gfx::CreateShadowDrawLooper(GetMagnifierShadowValues()));
+    shadow_flags.setLooper(gfx::CreateShadowDrawLooper(
+        GetMagnifierShadowValues(key_shadow_color_, ambient_shadow_color)));
     recorder.canvas()->DrawRoundRect(zoom_layer_bounds, kMagnifierRadius,
                                      shadow_flags);
 
@@ -170,17 +166,34 @@ class TouchSelectionMagnifierAura::BorderRenderer : public LayerDelegate {
     border_flags.setAntiAlias(true);
     border_flags.setStyle(cc::PaintFlags::kStroke_Style);
     border_flags.setStrokeWidth(kMagnifierBorderThickness);
-    border_flags.setColor(GetBorderColor());
+    border_flags.setColor(border_color_);
+    border_flags.setAlphaf(kMagnifierBorderOpacity);
     recorder.canvas()->DrawRoundRect(zoom_layer_bounds, kMagnifierRadius,
                                      border_flags);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
+
+  void UpdateTheme(ui::NativeTheme* theme) {
+    auto* color_provider = ColorProviderManager::Get().GetColorProviderFor(
+        theme->GetColorProviderKey(nullptr));
+    border_color_ = color_provider->GetColor(ui::kColorSeparator);
+    key_shadow_color_ =
+        color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationThree);
+    ambient_shadow_color = color_provider->GetColor(
+        ui::kColorShadowValueAmbientShadowElevationThree);
+  }
+
+ private:
+  SkColor border_color_ = gfx::kPlaceholderColor;
+  SkColor key_shadow_color_ = gfx::kPlaceholderColor;
+  SkColor ambient_shadow_color = gfx::kPlaceholderColor;
 };
 
 TouchSelectionMagnifierAura::TouchSelectionMagnifierAura() {
   CreateMagnifierLayer();
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
 TouchSelectionMagnifierAura::~TouchSelectionMagnifierAura() = default;
@@ -235,6 +248,12 @@ void TouchSelectionMagnifierAura::ShowFocusBound(Layer* parent,
   if (!magnifier_layer_->IsVisible()) {
     magnifier_layer_->SetVisible(true);
   }
+}
+
+void TouchSelectionMagnifierAura::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  border_renderer_->UpdateTheme(observed_theme);
+  border_layer_->SchedulePaint(gfx::Rect(border_layer_->size()));
 }
 
 gfx::Rect TouchSelectionMagnifierAura::GetZoomedContentsBoundsForTesting()

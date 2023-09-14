@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
 
 namespace gfx {
@@ -19,7 +22,8 @@ class Layer;
 
 // A magnifier which shows the text caret or selection endpoint during a touch
 // selection session.
-class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura {
+class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura
+    : public ui::NativeThemeObserver {
  public:
   TouchSelectionMagnifierAura();
 
@@ -27,7 +31,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura {
   TouchSelectionMagnifierAura& operator=(const TouchSelectionMagnifierAura&) =
       delete;
 
-  ~TouchSelectionMagnifierAura();
+  ~TouchSelectionMagnifierAura() override;
 
   // Shows the magnifier at the focus bound. Roughly, this is a line segment
   // representing a caret position or selection endpoint and is generally
@@ -38,6 +42,9 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura {
   void ShowFocusBound(Layer* parent,
                       const gfx::Point& focus_start,
                       const gfx::Point& focus_end);
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   // Returns the bounds of the zoomed contents in coordinates of the magnifier's
   // parent layer.
@@ -63,6 +70,9 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura {
   // Otherwise `border_layer_` will have a pointer to a deleted delegate.
   std::unique_ptr<BorderRenderer> border_renderer_;
   std::unique_ptr<Layer> border_layer_;
+
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 };
 
 }  // namespace ui
