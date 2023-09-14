@@ -110,10 +110,6 @@ BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
-             "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetryPersistence,
              "SafeBrowsingExtensionTelemetryPersistence",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -162,10 +158,6 @@ BASE_FEATURE(kExtensionTelemetryTabsApiSignal,
 
 BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
              "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExtensionTelemetryCookiesGetSignal,
-             "SafeBrowsingExtensionTelemetryCookiesGetSignal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal,
@@ -381,8 +373,6 @@ constexpr struct {
     {&kDownloadTailoredWarnings, true},
     {&kEvaluateProtectedPasswordLengthMinimum, false},
     {&kExtensionTelemetry, true},
-    {&kExtensionTelemetryCookiesGetAllSignal, true},
-    {&kExtensionTelemetryCookiesGetSignal, true},
     {&kExtensionTelemetryDeclarativeNetRequestSignal, true},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
     {&kExtensionTelemetryFileData, true},

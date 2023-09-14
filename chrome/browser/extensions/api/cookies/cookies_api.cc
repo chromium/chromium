@@ -289,9 +289,7 @@ void CookiesGetFunction::NotifyExtensionTelemetry() {
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
 
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryCookiesGetSignal)) {
+  if (!telemetry_service || !telemetry_service->enabled()) {
     return;
   }
 
@@ -381,9 +379,7 @@ void CookiesGetAllFunction::NotifyExtensionTelemetry() {
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
 
-  if (!telemetry_service || !telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryCookiesGetAllSignal)) {
+  if (!telemetry_service || !telemetry_service->enabled()) {
     return;
   }
 

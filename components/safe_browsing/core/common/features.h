@@ -158,14 +158,6 @@ BASE_DECLARE_FEATURE(
 // telemetry reports to SB servers.
 BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 
-// Enables collection of arguments whenever an extension invokes the
-// cookies.getAll API call.
-BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetAllSignal);
-
-// Enables collection of arguments whenever an extension invokes the
-// cookies.get API call.
-BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetSignal);
-
 // Enables collection of DeclarativeNetRequest rules when an extension invokes
 // the updateDynamicRules()/updateSessionRules() APIs.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal);
