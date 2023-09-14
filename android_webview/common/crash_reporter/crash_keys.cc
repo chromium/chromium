@@ -45,6 +45,11 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "oop_read_failure",
     "gpu-gl-error-message",
 
+    // components/android_autofill
+    "crbug1479006-form_ token",
+    "crbug1479006-form token",
+    "crbug1479006-manager token",
+
     // components/viz
     "viz_deserialization",
 
