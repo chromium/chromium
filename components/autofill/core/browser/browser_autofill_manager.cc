@@ -2781,7 +2781,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     AutofillSuggestionTriggerSource trigger_source) const {
   address_form_event_logger_->OnDidPollSuggestions(field,
                                                    signin_state_for_metrics_);
-  AutofillProfile fake_profile;
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetSkipStatuses assumes that
   // the passed FormData and FormStructure have the same size. If it's not the
