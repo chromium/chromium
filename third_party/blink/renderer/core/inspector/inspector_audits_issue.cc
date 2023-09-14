@@ -557,7 +557,7 @@ void AuditsIssue::ReportMixedContentIssue(
     const mojom::blink::RequestContextType request_context,
     LocalFrame* frame,
     const MixedContentResolutionStatus resolution_status,
-    const absl::optional<String>& devtools_id) {
+    base::optional_ref<const String> devtools_id) {
   auto affected_frame =
       protocol::Audits::AffectedFrame::create()
           .setFrameId(frame->GetDevToolsFrameToken().ToString().c_str())
@@ -574,7 +574,7 @@ void AuditsIssue::ReportMixedContentIssue(
           .setFrame(std::move(affected_frame))
           .build();
 
-  if (devtools_id) {
+  if (devtools_id.has_value()) {
     auto request = protocol::Audits::AffectedRequest::create()
                        .setRequestId(*devtools_id)
                        .setUrl(insecure_url.GetString())
@@ -677,7 +677,7 @@ void AuditsIssue::ReportStylesheetLoadingLateImportIssue(
 void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
     Document* document,
     const KURL& url,
-    const absl::optional<String>& requestId,
+    base::optional_ref<const String> request_id,
     const KURL& initiator_url,
     WTF::OrdinalNumber initiator_line,
     WTF::OrdinalNumber initiator_column,
@@ -696,8 +696,8 @@ void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
                             .setFailureMessage(failureMessage)
                             .build();
 
-  if (requestId) {
-    requestDetails->setRequestId(*requestId);
+  if (request_id.has_value()) {
+    requestDetails->setRequestId(*request_id);
   }
   auto details =
       protocol::Audits::StylesheetLoadingIssueDetails::create()

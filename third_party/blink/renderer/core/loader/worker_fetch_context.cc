@@ -143,15 +143,15 @@ WorkerFetchContext::CreateWebSocketHandshakeThrottle() {
 bool WorkerFetchContext::ShouldBlockFetchByMixedContentCheck(
     mojom::blink::RequestContextType request_context,
     network::mojom::blink::IPAddressSpace target_address_space,
-    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
+    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
-    const absl::optional<String>& devtools_id) const {
-  RedirectStatus redirect_status = redirect_info
+    base::optional_ref<const String> devtools_id) const {
+  RedirectStatus redirect_status = redirect_info.has_value()
                                        ? RedirectStatus::kFollowedRedirect
                                        : RedirectStatus::kNoRedirect;
   const KURL& url_before_redirects =
-      redirect_info ? redirect_info->original_url : url;
+      redirect_info.has_value() ? redirect_info->original_url : url;
   return MixedContentChecker::ShouldBlockFetchOnWorker(
       *const_cast<WorkerFetchContext*>(this), request_context,
       url_before_redirects, redirect_status, url, reporting_disposition,

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
@@ -66,10 +67,10 @@ class WorkerFetchContext final : public BaseFetchContext {
   bool ShouldBlockFetchByMixedContentCheck(
       mojom::blink::RequestContextType request_context,
       network::mojom::blink::IPAddressSpace target_address_space,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
       const KURL& url,
       ReportingDisposition reporting_disposition,
-      const absl::optional<String>& devtools_id) const override;
+      base::optional_ref<const String> devtools_id) const override;
   bool ShouldBlockFetchAsCredentialedSubresource(const ResourceRequest&,
                                                  const KURL&) const override;
   const KURL& Url() const override;

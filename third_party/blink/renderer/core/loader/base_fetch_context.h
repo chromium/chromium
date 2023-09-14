@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BASE_FETCH_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BASE_FETCH_CONTEXT_H_
 
+#include "base/types/optional_ref.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink-forward.h"
@@ -50,7 +51,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>&) const override;
+      base::optional_ref<const ResourceRequest::RedirectInfo>) const override;
   absl::optional<ResourceRequestBlockedReason>
   CanRequestBasedOnSubresourceFilterOnly(
       ResourceType,
@@ -58,7 +59,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>&) const override;
+      base::optional_ref<const ResourceRequest::RedirectInfo>) const override;
   absl::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
@@ -96,7 +97,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   // aliases.
   bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
-      const absl::optional<KURL>& alias_url,
+      base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
 
@@ -106,10 +107,10 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       bool is_1p_origin,
       absl::optional<UserAgentMetadata> ua,
       const PermissionsPolicy* policy,
-      const absl::optional<ClientHintImageInfo>& image_info,
-      const absl::optional<WTF::AtomicString>& prefers_color_scheme,
-      const absl::optional<WTF::AtomicString>& prefers_reduced_motion,
-      const absl::optional<WTF::AtomicString>& prefers_reduced_transparency,
+      base::optional_ref<const ClientHintImageInfo> image_info,
+      base::optional_ref<const WTF::AtomicString> prefers_color_scheme,
+      base::optional_ref<const WTF::AtomicString> prefers_reduced_motion,
+      base::optional_ref<const WTF::AtomicString> prefers_reduced_transparency,
       ResourceRequest& request);
 
  protected:
@@ -135,10 +136,10 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual bool ShouldBlockFetchByMixedContentCheck(
       mojom::blink::RequestContextType request_context,
       network::mojom::blink::IPAddressSpace target_address_space,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
       const KURL& url,
       ReportingDisposition reporting_disposition,
-      const absl::optional<String>& devtools_id) const = 0;
+      base::optional_ref<const String> devtools_id) const = 0;
   virtual bool ShouldBlockFetchAsCredentialedSubresource(const ResourceRequest&,
                                                          const KURL&) const = 0;
   virtual const KURL& Url() const = 0;
@@ -161,7 +162,8 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info) const;
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
+      const;
 
   absl::optional<ResourceRequestBlockedReason> CheckCSPForRequestInternal(
       mojom::blink::RequestContextType,

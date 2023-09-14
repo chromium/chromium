@@ -176,7 +176,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
               const ClientHintsPreferences& client_hints_preferences,
               float device_pixel_ratio,
               const String& user_agent,
-              const absl::optional<UserAgentMetadata>& user_agent_metadata,
+              base::optional_ref<const UserAgentMetadata> user_agent_metadata,
               bool is_svg_image_chrome_client,
               bool is_prerendering,
               const String& reduced_accept_language)
@@ -187,7 +187,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
         client_hints_preferences(client_hints_preferences),
         device_pixel_ratio(device_pixel_ratio),
         user_agent(user_agent),
-        user_agent_metadata(user_agent_metadata),
+        user_agent_metadata(user_agent_metadata.CopyAsOptional()),
         is_svg_image_chrome_client(is_svg_image_chrome_client),
         is_prerendering(is_prerendering),
         reduced_accept_language(reduced_accept_language) {}
@@ -662,19 +662,19 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
 bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
     mojom::blink::RequestContextType request_context,
     network::mojom::blink::IPAddressSpace target_address_space,
-    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
+    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
-    const absl::optional<String>& devtools_id) const {
+    base::optional_ref<const String> devtools_id) const {
   if (GetResourceFetcherProperties().IsDetached()) {
     // TODO(yhirano): Implement the detached case.
     return false;
   }
   const KURL& url_before_redirects =
-      redirect_info ? redirect_info->original_url : url;
+      redirect_info.has_value() ? redirect_info->original_url : url;
   ResourceRequest::RedirectStatus redirect_status =
-      redirect_info ? RedirectStatus::kFollowedRedirect
-                    : RedirectStatus::kNoRedirect;
+      redirect_info.has_value() ? RedirectStatus::kFollowedRedirect
+                                : RedirectStatus::kNoRedirect;
   return MixedContentChecker::ShouldBlockFetch(
       GetFrame(), request_context, target_address_space, url_before_redirects,
       redirect_status, url, devtools_id, reporting_disposition,
@@ -813,7 +813,7 @@ void FrameFetchContext::Trace(Visitor* visitor) const {
 
 bool FrameFetchContext::CalculateIfAdSubresource(
     const ResourceRequestHead& resource_request,
-    const absl::optional<KURL>& alias_url,
+    base::optional_ref<const KURL> alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info) {
   // Mark the resource as an Ad if the BaseFetchContext thinks it's an ad.
@@ -826,7 +826,8 @@ bool FrameFetchContext::CalculateIfAdSubresource(
 
   // The AdTracker needs to know about the request as well, and may also mark it
   // as an ad.
-  const KURL& url = alias_url ? alias_url.value() : resource_request.Url();
+  const KURL& url =
+      alias_url.has_value() ? alias_url.value() : resource_request.Url();
   return GetFrame()->GetAdTracker()->CalculateIfAdSubresource(
       document_->domWindow(), url, type, initiator_info, known_ad);
 }
@@ -861,7 +862,8 @@ absl::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
     const KURL& url,
     const ResourceLoaderOptions& options,
     ReportingDisposition reporting_disposition,
-    const absl::optional<ResourceRequest::RedirectInfo>& redirect_info) const {
+    base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
+    const {
   if (!GetResourceFetcherProperties().IsDetached() &&
       document_->IsFreezingInProgress() && !resource_request.GetKeepalive()) {
     GetDetachableConsoleLogger().AddConsoleMessage(

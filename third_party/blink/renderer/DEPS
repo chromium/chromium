@@ -73,6 +73,7 @@ include_rules = [
     "+base/types/cxx23_to_underlying.h",
     "+base/types/expected.h",
     "+base/types/expected_macros.h",
+    "+base/types/optional_ref.h",
     "+base/types/optional_util.h",
     "+base/types/pass_key.h",
     "+base/types/strong_alias.h",

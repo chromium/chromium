@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_MOCK_FETCH_CONTEXT_H_
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
@@ -52,7 +53,7 @@ class MockFetchContext : public FetchContext {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
       const override {
     return absl::nullopt;
   }
@@ -63,7 +64,7 @@ class MockFetchContext : public FetchContext {
       const KURL& url,
       const ResourceLoaderOptions& options,
       ReportingDisposition reporting_disposition,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
       const override {
     if (blocked_urls_.Contains(url.GetString())) {
       return ResourceRequestBlockedReason::kSubresourceFilter;
@@ -100,10 +101,11 @@ class MockFetchContext : public FetchContext {
 
   bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
-      const absl::optional<KURL>& alias_url,
+      base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override {
-    const KURL url = alias_url ? alias_url.value() : resource_request.Url();
+    const KURL url =
+        alias_url.has_value() ? alias_url.value() : resource_request.Url();
     return tagged_urls_.Contains(url.GetString());
   }
 

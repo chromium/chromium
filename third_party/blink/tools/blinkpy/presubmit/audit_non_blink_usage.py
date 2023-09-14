@@ -140,6 +140,7 @@ _CONFIG = [
             'base::bit_cast',
             'base::expected',
             'base::make_span',
+            'base::optional_ref',
             'base::to_underlying',
             'base::unexpected',
             'base::ranges::.+',

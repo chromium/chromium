@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_MIXED_CONTENT_CHECKER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/types/optional_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink-forward.h"
@@ -80,7 +81,7 @@ class CORE_EXPORT MixedContentChecker final {
                                const KURL& url_before_redirects,
                                ResourceRequest::RedirectStatus redirect_status,
                                const KURL& url,
-                               const absl::optional<String>& devtools_id,
+                               base::optional_ref<const String> devtools_id,
                                ReportingDisposition reporting_disposition,
                                mojom::blink::ContentSecurityNotifier& notifier);
 

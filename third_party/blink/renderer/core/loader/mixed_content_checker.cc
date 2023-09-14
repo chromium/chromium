@@ -406,7 +406,7 @@ bool MixedContentChecker::ShouldBlockFetch(
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
-    const absl::optional<String>& devtools_id,
+    base::optional_ref<const String> devtools_id,
     ReportingDisposition reporting_disposition,
     mojom::blink::ContentSecurityNotifier& notifier) {
   Frame* mixed_frame = InWhichFrameIsContentMixed(frame, url);

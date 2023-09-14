@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -111,7 +112,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
       const {
     return ResourceRequestBlockedReason::kOther;
   }
@@ -124,7 +125,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
-      const absl::optional<ResourceRequest::RedirectInfo>& redirect_info)
+      base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
       const {
     return ResourceRequestBlockedReason::kOther;
   }
@@ -165,7 +166,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // which case it checks the latter.
   virtual bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
-      const absl::optional<KURL>& alias_url,
+      base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) {
     return false;

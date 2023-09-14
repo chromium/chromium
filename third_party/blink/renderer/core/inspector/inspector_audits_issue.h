@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_AUDITS_ISSUE_H_
 
 #include <memory>
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -154,7 +155,7 @@ class CORE_EXPORT AuditsIssue {
       const mojom::blink::RequestContextType request_context,
       LocalFrame* frame,
       const MixedContentResolutionStatus resolution_status,
-      const absl::optional<String>& devtools_id);
+      base::optional_ref<const String> devtools_id);
 
   static AuditsIssue CreateContentSecurityPolicyIssue(
       const blink::SecurityPolicyViolationEventInit& violation_data,
@@ -185,7 +186,7 @@ class CORE_EXPORT AuditsIssue {
   static void ReportStylesheetLoadingRequestFailedIssue(
       Document* document,
       const KURL& url,
-      const absl::optional<String>& requestId,
+      base::optional_ref<const String> request_id,
       const KURL& initiator_url,
       WTF::OrdinalNumber initiator_line,
       WTF::OrdinalNumber initiator_column,
