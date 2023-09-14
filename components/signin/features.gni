@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
@@ -10,7 +11,8 @@ declare_args() {
 }
 
 # Warning: The feature is still under development. See b/280753754.
-enable_search_engine_choice = is_linux || is_mac || is_win || is_chromeos
+enable_search_engine_choice =
+    (is_linux || is_mac || is_win || is_chromeos) && !is_chrome_for_testing
 
 # Dice is supported on the platform (but not necessarily enabled).
 enable_dice_support = is_linux || is_mac || is_win || is_fuchsia
