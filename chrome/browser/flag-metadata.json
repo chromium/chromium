@@ -832,6 +832,16 @@
     "expiry_milestone": 120
   },
   {
+    "name": "blink-extension",
+    "owners": ["ortuno", "cros-apps-platform-core@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
+    "name": "blink-extension-diagnostics",
+    "owners": ["ortuno", "cros-apps-platform-core@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "block-insecure-private-network-requests",
     "owners": [ "lyf", "phao", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 120

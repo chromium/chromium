@@ -7156,6 +7156,15 @@ const char kExperimentalWebAppStoragePartitionIsolationDescription[] =
     "experimental. Enabling this flag could break things. And a factory reset"
     "might be needed to fully recover the state.";
 
+const char kBlinkExtensionName[] = "Experimental Blink Extension";
+const char kBlinkExtensionDescription[] =
+    "Enable the experimental Blink Extension.";
+
+const char kBlinkExtensionDiagnosticsName[] =
+    "Experimental Diagnostics Blink Extension";
+const char kBlinkExtensionDiagnosticsDescription[] =
+    "Enable the experimental Diagnostics Blink Extension.";
+
 const char kLacrosMergeIcuDataFileName[] =
     "Enable merging of icudtl.dat in Lacros";
 const char kLacrosMergeIcuDataFileDescription[] =

@@ -53,6 +53,10 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace chrome {
 
 namespace {
@@ -187,6 +191,10 @@ static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
 #if BUILDFLAG(IS_ANDROID)
     &chrome::android::kCommandLineOnNonRooted,
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    &chromeos::features::kBlinkExtensionDiagnostics,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
