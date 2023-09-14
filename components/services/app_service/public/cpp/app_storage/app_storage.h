@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_H_
 
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace base {
 class FilePath;
@@ -38,11 +43,19 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  // Invoked when reading the app info data from the AppStorage file is
+  // finished.
+  void OnGetAppInfoData(std::vector<AppPtr> apps);
+
+  raw_ref<apps::AppRegistryCache> app_registry_cache_;
+
   scoped_refptr<AppStorageFileHandler> file_handler_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  base::WeakPtrFactory<AppStorage> weak_factory_{this};
 };
 
 }  // namespace apps
