@@ -9175,12 +9175,116 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
               testing::ElementsAre())));
 
   // Request should be padded to 256 bytes with 7 byte encryption header.
-  const size_t expected_ba_data_size = 256 + 7;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", expected_ba_data_size,
+  const size_t kExpectedBaDataSize = 256 + 7;
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
                           1);
   hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
+                        0);
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+                          AuctionResult::kSuccess, 1);
+  hist.ExpectUniqueSample(
+      "Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon", false, 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.AuctionWithWinnerTime",
+                        1);
+
+  // There should be no on-device metrics
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTime", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTimeNoWinner", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.AuctionWithWinnerTime", 0);
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
+  base::HistogramTester hist;
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
+                     /*size_group=*/absl::nullopt,
+                     /*buyer_reporting_id=*/absl::nullopt,
+                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  absl::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  std::string response;
+  // CBOR response computed using https://cbor.me/
+  /* Response:
+  {
+    "isChaff": true
+  }
+  */
+  // Converted to base64 with `cat | sed 's/#.*//' | xxd -r -p | gzip | xxd -ps
+  // -c 0 | sed 's/^/0200000022/' | xxd -r -p | base64`
+  ASSERT_TRUE(base::Base64Decode(
+      "AgAAAB4fiwgAAAAAAAADW5ieWeyckZiW9hUA2j0IngoAAAA=", &response));
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+  EXPECT_FALSE(result);
+
+  // Request should be padded to 256 bytes with 7 byte encryption header.
+  const size_t kExpectedBaDataSize = 256 + 7;
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+                          1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
+                        1);
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+                          AuctionResult::kNoBids, 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon",
+                        0);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.AuctionWithWinnerTime",
+                        0);
+
+  // There should be no on-device metrics
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTime", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTimeNoWinner", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.AuctionWithWinnerTime", 0);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
@@ -9354,8 +9458,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
               testing::ElementsAre())));
 
   // Request should be padded to 256 bytes with 7 byte encryption header.
-  const size_t expected_ba_data_size = 256 + 7;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", expected_ba_data_size,
+  const size_t kExpectedBaDataSize = 256 + 7;
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
                           1);
   hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
   hist.ExpectTotalCount(
@@ -9426,12 +9530,21 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
   EXPECT_EQ(network_responder_->ReportCount(), 0u);
 
   // Request should be padded to 256 bytes with 7 byte encryption header.
-  const size_t expected_ba_data_size = 256 + 7;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", expected_ba_data_size,
+  const size_t kExpectedBaDataSize = 256 + 7;
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
                           1);
   hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
+                        0);
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+                          AuctionResult::kInvalidServerResponse, 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon",
+                        0);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.AuctionWithWinnerTime",
+                        0);
 }
 
 }  // namespace content

@@ -1980,32 +1980,46 @@ InterestGroupAuction::~InterestGroupAuction() {
     final_auction_result_ = AuctionResult::kAborted;
   }
 
+  std::string uma_prefix = "Ads.InterestGroup.Auction.";
+  if (is_server_auction_) {
+    uma_prefix = "Ads.InterestGroup.ServerAuction.";
+  }
+
   // TODO(mmenke): Record histograms for component auctions.
   if (!parent_) {
-    UMA_HISTOGRAM_ENUMERATION("Ads.InterestGroup.Auction.Result",
-                              *final_auction_result_);
+    base::UmaHistogramEnumeration(uma_prefix + "Result",
+                                  *final_auction_result_);
 
     if (HasNonKAnonWinner()) {
-      UMA_HISTOGRAM_BOOLEAN("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon",
-                            NonKAnonWinnerIsKAnon());
+      base::UmaHistogramBoolean(uma_prefix + "NonKAnonWinnerIsKAnon",
+                                NonKAnonWinnerIsKAnon());
     }
 
     // Only record time of full auctions and aborts.
+    base::TimeTicks now = base::TimeTicks::Now();
     switch (*final_auction_result_) {
       case AuctionResult::kAborted:
-        UMA_HISTOGRAM_MEDIUM_TIMES("Ads.InterestGroup.Auction.AbortTime",
-                                   base::TimeTicks::Now() - creation_time_);
+        base::UmaHistogramMediumTimes(uma_prefix + "AbortTime",
+                                      now - creation_time_);
         break;
       case AuctionResult::kNoBids:
       case AuctionResult::kAllBidsRejected:
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Ads.InterestGroup.Auction.CompletedWithoutWinnerTime",
-            base::TimeTicks::Now() - creation_time_);
+        base::UmaHistogramMediumTimes(uma_prefix + "CompletedWithoutWinnerTime",
+                                      now - creation_time_);
+        if (is_server_auction_) {
+          base::UmaHistogramMediumTimes(
+              "Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner",
+              now - get_ad_auction_data_start_time_);
+        }
         break;
       case AuctionResult::kSuccess:
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Ads.InterestGroup.Auction.AuctionWithWinnerTime",
-            base::TimeTicks::Now() - creation_time_);
+        base::UmaHistogramMediumTimes(uma_prefix + "AuctionWithWinnerTime",
+                                      now - creation_time_);
+        if (is_server_auction_) {
+          base::UmaHistogramMediumTimes(
+              "Ads.InterestGroup.ServerAuction.EndToEndTime",
+              now - get_ad_auction_data_start_time_);
+        }
         break;
       default:
         break;
@@ -2174,6 +2188,7 @@ void InterestGroupAuction::StartFromServerResponse(
     AuctionPhaseCompletionCallback bidding_and_scoring_phase_callback) {
   bidding_and_scoring_phase_callback_ =
       std::move(bidding_and_scoring_phase_callback);
+  is_server_auction_ = true;
 
   // Check that response was witnessed by seller origin.
   std::array<uint8_t, crypto::kSHA256Length> hash =
@@ -2210,6 +2225,7 @@ void InterestGroupAuction::StartFromServerResponse(
         {"runAdAuction(): Seller in response doesn't match request"});
     return;
   }
+  get_ad_auction_data_start_time_ = request_context->start_time;
 
   auto maybe_response =
       quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
@@ -4239,7 +4255,7 @@ void InterestGroupAuction::OnDecompressedServerResponse(
   if (!result.has_value()) {
     // We couldn't unzip the response.
     OnBiddingAndScoringComplete(
-        AuctionResult::kBadMojoMessage,
+        AuctionResult::kInvalidServerResponse,
         {"runAdAuction(): Could not decompress server response"});
     return;
   }

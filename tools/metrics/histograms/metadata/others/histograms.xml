@@ -470,32 +470,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.Auction.AbortTime" units="ms"
-    expires_after="2024-06-20">
-  <owner>mmenke@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The length of time it took to run a FLEDGE auction that was aborted. This
-    only happens on frame destruction. Recorded when the frame is destroyed.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-</histogram>
-
-<histogram name="Ads.InterestGroup.Auction.AuctionWithWinnerTime" units="ms"
-    expires_after="2024-06-20">
-  <owner>mmenke@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The length of time it took to run a FLEDGE auction that had a winning bid.
-    Recorded on auction complete.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.Auction.BidFiltered" enum="Boolean"
     expires_after="2024-06-20">
   <owner>pauljensen@chromium.org</owner>
@@ -505,22 +479,6 @@ chromium-metrics-reviews@google.com.
     priorityVector whose sparse dot product with the browser generated
     prioritySignals was negative, indicating the generateBid() should not be
     invoked.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-</histogram>
-
-<histogram name="Ads.InterestGroup.Auction.CompletedWithoutWinnerTime"
-    units="ms" expires_after="2024-06-20">
-  <owner>mmenke@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The length of time it took to run a FLEDGE auction that completed
-    successfully without a winner either due to no bidders making a bid, or the
-    seller script rejecting all bidders. Not recoded when there are no bidders,
-    or when an auction fails due to the seller worklet failing to load. Recorded
-    on auction complete.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -663,16 +621,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon"
-    enum="Boolean" expires_after="2024-06-20">
-  <owner>behamilton@google.com</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    Recorded at the end of a FLEDGE auction when there is a non-k-anonymous
-    winner. True when the non-k-anonymous winner is k-anonymous.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.Auction.NumAuctionsPerPage" units="auctions"
     expires_after="2024-06-20">
   <owner>caraitto@chromium.org</owner>
@@ -793,19 +741,6 @@ chromium-metrics-reviews@google.com.
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The length of time it took to launch a process to execute FLEDGE worklets.
-
-    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
-    version of the FLEDGE explainer.
-  </summary>
-</histogram>
-
-<histogram name="Ads.InterestGroup.Auction.Result" enum="AuctionResult"
-    expires_after="2024-06-20">
-  <owner>mmenke@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The final result type of running a FLEDGE auction. Recorded on auction
-    completion/cancellation.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
@@ -955,6 +890,150 @@ chromium-metrics-reviews@google.com.
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
   </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.ServerAuction.EndToEndTime" units="ms"
+    expires_after="M121">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to run a Bidding and Auction Services auction.
+    This includes all of the time from the call to
+    `navigator.getInterestGroupAdAuctionData()` to the completion of the
+    `navigator.runAdAuction()` call. This metric is only recorded if there was a
+    winning bid.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.ServerAuction.EndToEndTimeNoWinner"
+    units="ms" expires_after="M121">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to run a Bidding and Auction Services auction.
+    This includes all of the time from the call to
+    `navigator.getInterestGroupAdAuctionData()` to the completion of the
+    `navigator.runAdAuction()` call. This metric is only recorded if there was
+    *no* winning bid.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.{AuctionType}.AbortTime" units="ms"
+    expires_after="2024-06-20">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The length of time it took to run a {AuctionType} auction that was aborted.
+    This only happens on frame destruction. Recorded when the frame is
+    destroyed.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services">
+      <owner>behamilton@google.com</owner>
+      <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ads.InterestGroup.{AuctionType}.AuctionWithWinnerTime"
+    units="ms" expires_after="2024-06-20">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The length of time it took to run a {AuctionType} auction that had a winning
+    bid. Recorded on auction complete.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services">
+      <owner>behamilton@google.com</owner>
+      <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ads.InterestGroup.{AuctionType}.CompletedWithoutWinnerTime"
+    units="ms" expires_after="2024-06-20">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The length of time it took to run a {AuctionType} auction that completed
+    successfully without a winner either due to no bidders making a bid, or the
+    seller script rejecting all bidders. Not recoded when there are no bidders,
+    or when an auction fails due to the seller worklet failing to load. Recorded
+    on auction complete.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services">
+      <owner>behamilton@google.com</owner>
+      <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ads.InterestGroup.{AuctionType}.NonKAnonWinnerIsKAnon"
+    enum="Boolean" expires_after="2024-06-20">
+  <owner>behamilton@google.com</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Recorded at the end of a {AuctionType} auction when there is a
+    non-k-anonymous winner. True when the non-k-anonymous winner is k-anonymous.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services">
+      <owner>behamilton@google.com</owner>
+      <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ads.InterestGroup.{AuctionType}.Result" enum="AuctionResult"
+    expires_after="2024-06-20">
+  <owner>mmenke@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The final result type of running a {AuctionType} auction. Recorded on
+    auction completion/cancellation.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services">
+      <owner>behamilton@google.com</owner>
+      <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Ads.Media.Duration" units="ms" expires_after="2022-10-30">

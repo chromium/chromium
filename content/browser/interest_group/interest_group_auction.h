@@ -1293,7 +1293,16 @@ class CONTENT_EXPORT InterestGroupAuction
       const PrivateAggregationRequests& private_aggregation_requests)>
       maybe_log_private_aggregation_web_features_callback_;
 
+  // This is set to true if the actual auction ran on a B&A server and we are
+  // just handling the response.
+  bool is_server_auction_ = false;
+
+  // Saved response from the server if the actual auction ran on a B&A server.
   absl::optional<BiddingAndAuctionResponse> saved_response_;
+
+  // Time when `getInterestGroupAdAuctionData()` was called. Only for auctions
+  // running on B&A servers.
+  base::TimeTicks get_ad_auction_data_start_time_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;

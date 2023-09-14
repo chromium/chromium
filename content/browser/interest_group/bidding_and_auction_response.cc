@@ -63,7 +63,6 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   absl::optional<bool> maybe_is_chaff = input_dict->FindBool("isChaff");
   if (maybe_is_chaff && maybe_is_chaff.value()) {
     output.is_chaff = true;
-    //  TODO(behamilton): Fail auction - auction failed on the server.
     return std::move(output);
   }
   output.is_chaff = false;

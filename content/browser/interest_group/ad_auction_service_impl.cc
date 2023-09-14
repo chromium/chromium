@@ -876,9 +876,9 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
       PageUserData<AdAuctionPageData>::GetOrCreateForPage(
           render_frame_host().GetPage());
 
-  AdAuctionRequestContext context(std::move(state.seller),
-                                  std::move(state.data.group_names),
-                                  std::move(*maybe_request).ReleaseContext());
+  AdAuctionRequestContext context(
+      std::move(state.seller), std::move(state.data.group_names),
+      std::move(*maybe_request).ReleaseContext(), state.start_time);
   ad_auction_page_data->RegisterAdAuctionRequestContext(state.request_id,
                                                         std::move(context));
 
