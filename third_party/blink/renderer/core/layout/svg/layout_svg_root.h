@@ -169,10 +169,11 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     return content_.DecoratedBoundingBox();
   }
 
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   HitTestPhase) override;
+  bool HitTestChildren(HitTestResult&,
+                       const HitTestLocation& location_in_container,
+                       const PhysicalOffset& accumulated_offset,
+                       HitTestPhase) override;
+  bool IsInSelfHitTestingPhase(HitTestPhase) const final;
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,

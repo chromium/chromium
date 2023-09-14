@@ -484,53 +484,26 @@ bool LayoutSVGRoot::UpdateCachedBoundaries() {
   return content_.UpdateBoundingBoxes(/* object_bounding_box_valid */ ignore);
 }
 
-bool LayoutSVGRoot::NodeAtPoint(HitTestResult& result,
-                                const HitTestLocation& hit_test_location,
-                                const PhysicalOffset& accumulated_offset,
-                                HitTestPhase phase) {
+bool LayoutSVGRoot::HitTestChildren(HitTestResult& result,
+                                    const HitTestLocation& hit_test_location,
+                                    const PhysicalOffset& accumulated_offset,
+                                    HitTestPhase phase) {
   NOT_DESTROYED();
   HitTestLocation local_border_box_location(hit_test_location,
                                             -accumulated_offset);
-
-  // Only test SVG content if the point is in our content box, or in case we
-  // don't clip to the viewport, the visual overflow rect.
-  // FIXME: This should be an intersection when rect-based hit tests are
-  // supported by nodeAtFloatPoint.
-  bool skip_children = (result.GetHitTestRequest().GetStopNode() == this);
-  if (!skip_children &&
-      (local_border_box_location.Intersects(PhysicalContentBoxRect()) ||
-       (!ClipsToContentBox() &&
-        local_border_box_location.Intersects(PhysicalVisualOverflowRect())))) {
-    TransformedHitTestLocation local_location(local_border_box_location,
-                                              LocalToBorderBoxTransform());
-    if (local_location) {
-      if (content_.HitTest(result, *local_location, phase))
-        return true;
-    }
+  TransformedHitTestLocation local_location(local_border_box_location,
+                                            LocalToBorderBoxTransform());
+  if (!local_location) {
+    return false;
   }
+  return content_.HitTest(result, *local_location, phase);
+}
 
-  // If we didn't early exit above, we've just hit the container <svg> element.
-  // Unlike SVG 1.1, 2nd Edition allows container elements to be hit.
-  if (phase == HitTestPhase::kSelfBlockBackground &&
-      VisibleToHitTestRequest(result.GetHitTestRequest())) {
-    // Only return true here, if the last hit testing phase 'BlockBackground'
-    // (or 'ChildBlockBackground' - depending on context) is executed.
-    // If we'd return true in the 'Foreground' phase, hit testing would stop
-    // immediately. For SVG only trees this doesn't matter.
-    // Though when we have a <foreignObject> subtree we need to be able to
-    // detect hits on the background of a <div> element.
-    // If we'd return true here in the 'Foreground' phase, we are not able to
-    // detect these hits anymore.
-    PhysicalRect bounds_rect(accumulated_offset, Size());
-    if (hit_test_location.Intersects(bounds_rect)) {
-      UpdateHitTestResult(result, local_border_box_location.Point());
-      if (result.AddNodeToListBasedTestResult(GetNode(), hit_test_location,
-                                              bounds_rect) == kStopHitTesting)
-        return true;
-    }
-  }
-
-  return false;
+bool LayoutSVGRoot::IsInSelfHitTestingPhase(HitTestPhase phase) const {
+  // Only hit-test the root <svg> container during the background
+  // phase. (Hit-testing during the foreground phase would make us miss for
+  // instance backgrounds of children inside <foreignObject>.)
+  return phase == HitTestPhase::kSelfBlockBackground;
 }
 
 void LayoutSVGRoot::AddSvgTextDescendant(LayoutNGSVGText& svg_text) {

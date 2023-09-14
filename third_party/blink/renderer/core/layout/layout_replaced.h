@@ -144,7 +144,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return true;
   }
 
-  bool IsInSelfHitTestingPhase(HitTestPhase phase) const final {
+  bool IsInSelfHitTestingPhase(HitTestPhase phase) const override {
     NOT_DESTROYED();
     if (LayoutBox::IsInSelfHitTestingPhase(phase))
       return true;
