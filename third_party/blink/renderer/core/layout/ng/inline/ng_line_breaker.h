@@ -115,6 +115,8 @@ class CORE_EXPORT NGLineBreaker {
   bool CanBreakInside(const NGInlineItemResult& item_result);
 
  private:
+  Document& GetDocument() const { return node_.GetDocument(); }
+
   const String& Text() const { return text_content_; }
   const HeapVector<NGInlineItem>& Items() const { return items_data_.items; }
 

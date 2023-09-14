@@ -44062,6 +44062,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4654" label="FetchLaterErrorQuotaExceeded"/>
   <int value="4655" label="V8FileSystemHandle_GetCloudIdentifiers_Method"/>
   <int value="4656" label="PrivateAggregationApiEnableDebugMode"/>
+  <int value="4657" label="LineBreakPhrase"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

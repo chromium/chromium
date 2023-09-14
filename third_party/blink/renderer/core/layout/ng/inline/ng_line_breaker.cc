@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
@@ -3505,6 +3506,7 @@ void NGLineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
           } else {
             line_break_type = LineBreakType::kPhrase;
             hyphens = Hyphens::kNone;
+            UseCounter::Count(GetDocument(), WebFeature::kLineBreakPhrase);
           }
           break_anywhere_if_overflow_ = false;
           break;
