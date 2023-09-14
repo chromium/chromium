@@ -150,14 +150,14 @@ design can be found at [policy_design.md](./policy_design.md).**
         -   Update
             `chrome/browser/ash/policy/core/device_policy_decoder.{h,cc}`
             for the new policy.
-10.  Test the policy.
+10. Test the policy.
     -   Add a test to verify the policy. You can add a test in
         `chrome/browser/policy/<area>_policy_browsertest.cc` or with the policy
         implementation. For example, a network policy test can be put into
         `chrome/browser/net`. Ideally, your test would set the policy, fire up
         the browser, and interact with the browser just as a user would do to
         check whether the policy takes effect.
-11.  Manually testing your policy.
+11. Manually testing your policy.
     -   Windows: The simplest way to test is to write the registry keys manually
         to `Software\Policies\Chromium` (for Chromium builds) or
         `Software\Policies\Google\Chrome` (for Google Chrome branded builds). If
@@ -178,7 +178,7 @@ design can be found at [policy_design.md](./policy_design.md).**
         If you'd just like to do a quick test for ChromeOS, the Linux code is
         also functional on CrOS, see
         [Linux Quick Start](https://www.chromium.org/administrators/linux-quick-start).
-12.  If you are adding a new policy that supersedes an older one, verify that the
+12. If you are adding a new policy that supersedes an older one, verify that the
     new policy works as expected even if the old policy is set (allowing us to
     set both during the transition time when Chrome versions honoring the old
     and the new policies coexist).
