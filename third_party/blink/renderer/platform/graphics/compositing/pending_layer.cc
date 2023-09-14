@@ -25,7 +25,7 @@ namespace {
 
 // Snap |bounds| if within floating-point numeric limits of an integral rect.
 void PreserveNearIntegralBounds(gfx::RectF& bounds) {
-  constexpr float kTolerance = 1e-5f;
+  constexpr float kTolerance = 1e-4f;
   if (std::abs(std::round(bounds.x()) - bounds.x()) <= kTolerance &&
       std::abs(std::round(bounds.y()) - bounds.y()) <= kTolerance &&
       std::abs(std::round(bounds.right()) - bounds.right()) <= kTolerance &&

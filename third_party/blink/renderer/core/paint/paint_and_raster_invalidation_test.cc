@@ -1031,14 +1031,13 @@ TEST_P(PaintAndRasterInvalidationTest, NoDamageDueToFloatingPointError) {
           height: 0;
           will-change: transform;
           transform-origin: top left;
+          transform: scale(1.8);
         }
-        .initial { transform: translateX(0px) scale(1.8); }
-        .updated { transform: translateX(47.22222222222222px) scale(1.8); }
         #tile {
           position: absolute;
           will-change: transform;
           transform-origin: top left;
-          transform: scale(0.55555555555556);
+          transform: translateX(49px) translateY(100px) scale(0.555555555556);
         }
         #tileInner {
           transform-origin: top left;
@@ -1055,18 +1054,20 @@ TEST_P(PaintAndRasterInvalidationTest, NoDamageDueToFloatingPointError) {
       </div>
   )HTML");
 
-  GetDocument().View()->SetTracksRasterInvalidations(true);
-
   auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
-  canvas->setAttribute(html_names::kClassAttr, AtomicString("updated"));
-  GetDocument().View()->SetPaintArtifactCompositorNeedsUpdate();
-
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(
-      GetRasterInvalidationTracking(
-          RuntimeEnabledFeatures::SolidColorLayersEnabled() ? 0 : 1, "tile")
-          ->HasInvalidations());
-  GetDocument().View()->SetTracksRasterInvalidations(false);
+  for (double x = 0; x < 200; x += 1) {
+    GetDocument().View()->SetTracksRasterInvalidations(true);
+    canvas->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString(String::Format("transform: translateX(%lfpx) scale(1.8)",
+                                    x / 1.8)));
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(
+        GetRasterInvalidationTracking(
+            RuntimeEnabledFeatures::SolidColorLayersEnabled() ? 0 : 1, "tile")
+            ->HasInvalidations());
+    GetDocument().View()->SetTracksRasterInvalidations(false);
+  }
 }
 
 TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
