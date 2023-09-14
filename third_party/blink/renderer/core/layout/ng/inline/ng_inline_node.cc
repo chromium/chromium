@@ -1931,8 +1931,9 @@ static LayoutUnit ComputeContentSize(
       // widths and the sum of NGInlineItemResult widths can be different.
     }
     *max_size_out = max_size_from_min_size.Finish(items_data.items.end());
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
     // Check the max size matches to the value computed from 2 pass.
-#if DCHECK_IS_ON()
     LayoutUnit content_size = ComputeContentSize(
         node, container_writing_mode, space, float_input,
         NGLineBreakerMode::kMaxContent, max_size_cache, nullptr, nullptr);
