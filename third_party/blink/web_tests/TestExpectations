@@ -588,6 +588,18 @@ crbug.com/1308431 external/wpt/css/css-masking/clip-path/animations/clip-path-sh
 
 crbug.com/1481244 external/wpt/css/css-masking/animations/clip-path-interpolation-xywh-rect.html [ Crash ]
 
+# Add Scroll Margin Support to Intersection Observer
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-4-val.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-horizontal.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-percent.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-clip-path.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-and-root-margin.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-dynamic.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-nested.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-nested-2.html [ Failure ]
+crbug.com/1469500 external/wpt/intersection-observer/scroll-margin-nested-3.html [ Failure ]
+
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
 
