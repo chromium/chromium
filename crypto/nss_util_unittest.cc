@@ -15,27 +15,26 @@ TEST(NSSUtilTest, PRTimeConversion) {
   EXPECT_EQ(base::Time::UnixEpoch(), PRTimeToBaseTime(0));
   EXPECT_EQ(0, BaseTimeToPRTime(base::Time::UnixEpoch()));
 
-  PRExplodedTime prxtime;
-  prxtime.tm_params.tp_gmt_offset = 0;
-  prxtime.tm_params.tp_dst_offset = 0;
-  base::Time::Exploded exploded;
-  exploded.year = prxtime.tm_year = 2011;
-  exploded.month = 12;
-  prxtime.tm_month = 11;
-  // PRExplodedTime::tm_wday is a smaller type than Exploded::day_of_week, so
-  // assigning the two in this order instead of the reverse avoids potential
-  // warnings about type downcasting.
-  exploded.day_of_week = prxtime.tm_wday = 0;  // Should be unused.
-  exploded.day_of_month = prxtime.tm_mday = 10;
-  exploded.hour = prxtime.tm_hour = 2;
-  exploded.minute = prxtime.tm_min = 52;
-  exploded.second = prxtime.tm_sec = 19;
-  exploded.millisecond = 342;
-  prxtime.tm_usec = 342000;
+  static constexpr PRExplodedTime kPrxtime = {
+      .tm_usec = 342000,
+      .tm_sec = 19,
+      .tm_min = 52,
+      .tm_hour = 2,
+      .tm_mday = 10,
+      .tm_month = 11,  // 0-based
+      .tm_year = 2011,
+      .tm_params = {.tp_gmt_offset = 0, .tp_dst_offset = 0}};
+  PRTime pr_time = PR_ImplodeTime(&kPrxtime);
 
-  PRTime pr_time = PR_ImplodeTime(&prxtime);
+  static constexpr base::Time::Exploded kExploded = {.year = 2011,
+                                                     .month = 12,  // 1-based
+                                                     .day_of_month = 10,
+                                                     .hour = 2,
+                                                     .minute = 52,
+                                                     .second = 19,
+                                                     .millisecond = 342};
   base::Time base_time;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &base_time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(kExploded, &base_time));
 
   EXPECT_EQ(base_time, PRTimeToBaseTime(pr_time));
   EXPECT_EQ(pr_time, BaseTimeToPRTime(base_time));
