@@ -190,6 +190,16 @@ chromium-metrics-reviews@google.com.
   <variant name="PageNavigation" summary="Page navigation"/>
 </variants>
 
+<histogram name="OptimizationGuide.AccessTokenHelper.Result"
+    enum="OptimizationGuideAccessTokenResult" expires_after="M121">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@google.com</owner>
+  <summary>
+    Records the result of an OAuth access token request. Recorded every time a
+    request was made for allowed request contexts for on-demand hints.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.ApplyDecision.{OptimizationType}"
     enum="OptimizationGuideOptimizationTypeDecision" expires_after="2024-03-10">
   <owner>sophiechang@chromium.org</owner>

@@ -37,6 +37,10 @@ class PredictionManager;
 class HintsManager;
 }  // namespace optimization_guide
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class BrowserList;
 class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
@@ -70,7 +74,8 @@ class OptimizationGuideService
       PrefService* pref_service,
       BrowserList* browser_list,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      BackgroundDownloadServiceProvider background_download_service_provider);
+      BackgroundDownloadServiceProvider background_download_service_provider,
+      signin::IdentityManager* identity_manager);
   ~OptimizationGuideService() override;
 
   OptimizationGuideService(const OptimizationGuideService&) = delete;

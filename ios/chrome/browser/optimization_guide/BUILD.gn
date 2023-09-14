@@ -31,6 +31,7 @@ source_set("optimization_guide") {
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
+    "//components/signin/public/identity_manager:identity_manager",
     "//components/variations",
     "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/metrics:accessor",
@@ -40,6 +41,7 @@ source_set("optimization_guide") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin",
     "//ios/web",
   ]
   frameworks = [ "UIKit.framework" ]

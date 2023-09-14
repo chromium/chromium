@@ -79853,6 +79853,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Active other profiles."/>
 </enum>
 
+<enum name="OptimizationGuideAccessTokenResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="User not signed-in"/>
+  <int value="3" label="Failed with transient error"/>
+  <int value="4" label="Failed with persistent error"/>
+</enum>
+
 <enum name="OptimizationGuideEntityAnnotatorCreationStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

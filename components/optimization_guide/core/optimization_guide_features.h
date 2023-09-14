@@ -208,11 +208,12 @@ bool ShouldPersistHintsToDisk();
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target);
 
-// Returns which OAuth scopes to use for personalized metadata.
-base::flat_set<std::string> OAuthScopesForPersonalizedMetadata();
+// Returns whether personalized metadata should be enabled for
+// |request_context|.
+bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context);
 
-// Returns whether personalized metadata is enabled for |request_context|.
-bool EnabledPersonalizedMetadata(proto::RequestContext request_context);
+// Returns the OAuth scopes to use for personalized metadata.
+std::set<std::string> GetOAuthScopesForPersonalizedMetadata();
 
 // Returns the minimum number of seconds to randomly delay before starting to
 // fetch for prediction models and host model features.

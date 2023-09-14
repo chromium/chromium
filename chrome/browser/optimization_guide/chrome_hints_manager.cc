@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -55,6 +56,7 @@ ChromeHintsManager::ChromeHintsManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<optimization_guide::PushNotificationManager>
         push_notification_manager,
+    signin::IdentityManager* identity_manager,
     OptimizationGuideLogger* optimization_guide_logger)
     : HintsManager(profile->IsOffTheRecord(),
                    g_browser_process->GetApplicationLocale(),
@@ -64,6 +66,7 @@ ChromeHintsManager::ChromeHintsManager(
                    tab_url_provider,
                    url_loader_factory,
                    std::move(push_notification_manager),
+                   identity_manager,
                    optimization_guide_logger),
       profile_(profile) {
   if (!optimization_guide::features::IsSRPFetchingEnabled()) {

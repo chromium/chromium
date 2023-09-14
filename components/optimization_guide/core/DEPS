@@ -2,6 +2,7 @@ include_rules = [
   "+components/crx_file",
   "+components/download/public/background_service",
   "+components/services/unzip",
+  "+components/signin/public",
   "+components/ukm/test_ukm_recorder.h",
   "+crypto",
   "+mojo/public/cpp",
