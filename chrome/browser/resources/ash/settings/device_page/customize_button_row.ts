@@ -83,6 +83,8 @@ function getKeyCombinationLabel(keyEvent: KeyEvent): string {
  */
 
 export type ShowRenamingDialogEvent = CustomEvent<{buttonIndex: number}>;
+export type ShowKeyCustomizationDialogEvent =
+    CustomEvent<{buttonIndex: number}>;
 
 const CustomizeButtonRowElementBase = I18nMixin(PolymerElement);
 
@@ -332,7 +334,13 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private onSelectChange_(): void {
     const select = this.$.remappingActionDropdown;
     if (select.value === KEY_COMBINATION_OPTION_LABEL) {
-      // TODO(yyhyyh@): Pops up key combination dialog.
+      // TODO(yyhyyh@): This event should be fired whenever users select the
+      // 'key combination' option, even if no 'change' happens.
+      this.dispatchEvent(new CustomEvent('show-key-combination-dialog', {
+        bubbles: true,
+        composed: true,
+        detail: {buttonIndex: this.remappingIndex},
+      }));
     } else if (select!.value !== this.fakePref_.value) {
       this.set('fakePref_.value', select!.value);
     }

@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CustomizeButtonsSubsectionElement} from 'chrome://os-settings/lazy_load.js';
+import {CustomizeButtonsSubsectionElement, KeyCombinationInputDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -78,5 +78,24 @@ suite('<customize-buttons-subsection>', () => {
     assertFalse(customizeButtonsSubsection.get('shouldShowRenamingDialog_'));
     assertFalse(!!customizeButtonsSubsection.shadowRoot!.querySelector(
         '#renamingDialog'));
+  });
+
+  test('open key combination dialog', async () => {
+    await initializeCustomizeButtonsSubsection();
+    const keyCombinationDialog: KeyCombinationInputDialogElement|null =
+        customizeButtonsSubsection.shadowRoot!.querySelector(
+            '#keyCombinationInputDialog');
+    assertTrue(!!keyCombinationDialog);
+    assertFalse(keyCombinationDialog.isOpen);
+    customizeButtonsSubsection.dispatchEvent(
+        new CustomEvent('show-key-combination-dialog', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            buttonIndex: 0,
+          },
+        }));
+    await flushTasks();
+    assertTrue(keyCombinationDialog.isOpen);
   });
 });

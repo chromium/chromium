@@ -1,5 +1,25 @@
 <style include="settings-shared input-device-settings-shared">
 </style>
-<cr-dialog id="keyCombinationDialog" show-on-attach>
+<cr-dialog id="keyCombinationInputDialog">
   <div slot="title">$i18n{keyCombinationDialogTitle}</div>
+  <div slot="body">
+    <div id="keyCombinationSubsection">
+      <!-- Display button remapping name for placeholder only. -->
+      [[buttonRemapping_.name]]
+    </div>
+  </div>
+  <div slot="button-container">
+    <div>
+      <cr-button id="cancelButton"
+          on-click="cancelDialogClicked_">
+        $i18n{buttonRemappingDialogCancelLabel}
+      </cr-button>
+    </div>
+    <div>
+      <cr-button id="saveButton" class="action-button"
+          on-click="saveDialogClicked_">
+        $i18n{buttonRemappingDialogSaveLabel}
+      </cr-button>
+    </div>
+  </div>
 </cr-dialog>

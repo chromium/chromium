@@ -15,6 +15,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 suite('<customize-button-row>', () => {
   let customizeButtonRow: CustomizeButtonRowElement;
   let buttonRemappingChangedEventCount: number = 0;
+  let showKeyCombinationDialogEventCount: number = 0;
   let provider: FakeInputDeviceSettingsProvider;
 
   setup(() => {
@@ -32,15 +33,26 @@ suite('<customize-button-row>', () => {
     }
     customizeButtonRow.remove();
     buttonRemappingChangedEventCount = 0;
+    showKeyCombinationDialogEventCount = 0;
     await flushTasks();
   });
 
-  function initializeCustomizeButtonRow() {
+  async function initializeCustomizeButtonRow() {
     customizeButtonRow = document.createElement(CustomizeButtonRowElement.is);
     customizeButtonRow.set('actionList', fakeGraphicsTabletButtonActions);
+    customizeButtonRow.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+
     customizeButtonRow.addEventListener('button-remapping-changed', function() {
       buttonRemappingChangedEventCount++;
     });
+    customizeButtonRow.addEventListener(
+        'show-key-combination-dialog', function() {
+          showKeyCombinationDialogEventCount++;
+        });
     document.body.appendChild(customizeButtonRow);
     return flushTasks();
   }
@@ -55,11 +67,6 @@ suite('<customize-button-row>', () => {
 
   test('Initialize customize button row', async () => {
     await initializeCustomizeButtonRow();
-    customizeButtonRow.set(
-        'buttonRemappingList',
-        fakeGraphicsTablets[0]!.settings.tabletButtonRemappings);
-    customizeButtonRow.set('remappingIndex', 0);
-    await flushTasks();
     let expectedRemapping =
         fakeGraphicsTablets[0]!.settings.tabletButtonRemappings[0];
     assertDeepEquals(
@@ -113,11 +120,7 @@ suite('<customize-button-row>', () => {
 
   test('update dropdown will sent events', async () => {
     await initializeCustomizeButtonRow();
-    customizeButtonRow.set(
-        'buttonRemappingList',
-        fakeGraphicsTablets[0]!.settings!.tabletButtonRemappings);
-    customizeButtonRow.set('remappingIndex', 0);
-    await flushTasks();
+
     assertEquals(getSelectedValue(), '2');
     assertEquals(buttonRemappingChangedEventCount, 0);
     // Update select to another remapping action.
@@ -203,5 +206,20 @@ suite('<customize-button-row>', () => {
         getDeepActiveElement(),
         customizeButtonRow.shadowRoot!.querySelector(
             '#remappingActionDropdown'));
+  });
+
+  test('select key combination will fire open dialog event', async () => {
+    await initializeCustomizeButtonRow();
+    assertEquals(showKeyCombinationDialogEventCount, 0);
+
+    const select: HTMLSelectElement|null =
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown');
+    assertTrue(!!select);
+    select.value = 'key combination';
+    select.dispatchEvent(new Event('change'));
+
+    await flushTasks();
+    assertEquals(showKeyCombinationDialogEventCount, 1);
   });
 });

@@ -33,6 +33,11 @@ suite('<key-combination-input-dialog>', () => {
 
   test('Initialize key combination dialog', async () => {
     await initializeDialog();
-    assertTrue(!!dialog.shadowRoot!.querySelector('#keyCombinationDialog'));
+    assertTrue(
+        !!dialog.shadowRoot!.querySelector('#keyCombinationInputDialog'));
+    const saveButton = dialog.shadowRoot!.querySelector('#saveButton');
+    assertTrue(!!saveButton);
+    const cancelButton = dialog.shadowRoot!.querySelector('#cancelButton');
+    assertTrue(!!cancelButton);
   });
 });
