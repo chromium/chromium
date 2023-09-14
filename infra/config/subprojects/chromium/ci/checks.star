@@ -30,6 +30,7 @@ ci.builder(
         category = "presubmit",
         short_name = "linux",
     ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     properties = {
         "$depot_tools/presubmit": {
@@ -52,6 +53,7 @@ ci.builder(
         category = "presubmit",
         short_name = "win",
     ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 6 * time.hour,
     properties = {
         "$depot_tools/presubmit": {

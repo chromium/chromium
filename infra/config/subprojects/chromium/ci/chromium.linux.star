@@ -229,6 +229,7 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-browser-infra-team@google.com",
     reclient_bootstrap_env = {
         "RBE_clang_depscan_archive": "true",
     },
@@ -254,6 +255,7 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-browser-infra-team@google.com",
     reclient_bootstrap_env = {
         "RBE_clang_depscan_archive": "true",
     },
@@ -318,6 +320,7 @@ ci.thin_tester(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-browser-infra-team@google.com",
     # TODO(crbug.com/1249968): Roll this out more broadly.
     resultdb_bigquery_exports = [
         resultdb.export_text_artifacts(
@@ -353,6 +356,7 @@ ci.thin_tester(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-browser-infra-team@google.com",
 )
 
 ci.thin_tester(

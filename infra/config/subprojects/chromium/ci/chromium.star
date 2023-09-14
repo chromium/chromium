@@ -439,6 +439,7 @@ ci.builder(
         category = "linux",
         short_name = "dbg",
     ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
     reclient_bootstrap_env = {
         "RBE_clang_depscan_archive": "true",
     },
@@ -469,6 +470,7 @@ ci.builder(
         category = "linux",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
     notifies = ["linux-archive-rel"],
     properties = {
         # The format of these properties is defined at archive/properties.proto
