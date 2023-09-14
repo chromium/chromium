@@ -25,12 +25,13 @@ namespace {
 // `MakeScriptInjectableOnce` which ensures JS isn't executed multiple times due
 // to duplicate injection.
 NSString* InjectionTokenForScript(NSString* script_filename) {
-  NSMutableCharacterSet* validCharacters =
+  NSMutableCharacterSet* valid_characters =
       [NSMutableCharacterSet alphanumericCharacterSet];
-  [validCharacters addCharactersInString:@"$_"];
-  NSCharacterSet* invalidCharacters = validCharacters.invertedSet;
+  [valid_characters addCharactersInString:@"$_"];
+  NSCharacterSet* invalid_characters = valid_characters.invertedSet;
   NSString* token =
-      [script_filename stringByTrimmingCharactersInSet:invalidCharacters];
+      [[script_filename componentsSeparatedByCharactersInSet:invalid_characters]
+          componentsJoinedByString:@""];
   DCHECK_GT(token.length, 0ul);
   return token;
 }
