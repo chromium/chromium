@@ -168,8 +168,9 @@ void AnnotationsTabHelper::ProcessParcelTrackingNumbers(
   if (!web_state_->IsVisible()) {
     return;
   }
-  NSMutableArray<CustomTextCheckingResult*>* parcels =
+  NSMutableArray<CustomTextCheckingResult*>* unique_parcels =
       [[NSMutableArray alloc] init];
+  NSMutableSet* existing_parcel_numbers = [NSMutableSet set];
   for (size_t i = 0; i < annotations_list.size();) {
     const base::Value::Dict& entity = annotations_list[i].GetDict();
     NSTextCheckingResult* match = web::DecodeNSTextCheckingResultData(
@@ -178,18 +179,24 @@ void AnnotationsTabHelper::ProcessParcelTrackingNumbers(
       i++;
       continue;
     }
-    [parcels addObject:base::apple::ObjCCast<CustomTextCheckingResult>(match)];
+    CustomTextCheckingResult* parcel =
+        base::apple::ObjCCast<CustomTextCheckingResult>(match);
+    // Avoid adding duplicates to `unique_parcels`.
+    if (![existing_parcel_numbers containsObject:[parcel carrierNumber]]) {
+      [existing_parcel_numbers addObject:[parcel carrierNumber]];
+      [unique_parcels addObject:parcel];
+    }
     // Remove the parcel from annotations_list to prevent decorating the
     // tracking number.
     annotations_list.EraseValue(annotations_list[i]);
   }
-  if ([parcels count] > 0) {
+  if ([unique_parcels count] > 0) {
     // Call asynchronously to allow the rest of the annotations to be decorated
     // first.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AnnotationsTabHelper::MaybeShowParcelTrackingUI,
-                       weak_factory_.GetWeakPtr(), parcels));
+                       weak_factory_.GetWeakPtr(), unique_parcels));
   }
 }
 
