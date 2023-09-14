@@ -80,6 +80,8 @@ CredentialModelTypeController::GetPreconditionState() const {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // If Sync-the-feature is enabled, then the user has opted in to that, and no
   // additional opt-in is required here.
+  // TODO(crbug.com/1466447): IsSyncFeatureEnabled() is deprecated and should be
+  // removed. See ConsentLevel::kSync documentation for details.
   if (sync_service_->IsSyncFeatureEnabled() ||
       sync_service_->IsLocalSyncEnabled()) {
     return PreconditionState::kPreconditionsMet;
@@ -147,6 +149,8 @@ void CredentialModelTypeController::OnAccountsCookieDeletedByUserAction() {
 void CredentialModelTypeController::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1466447): ConsentLevel::kSync is deprecated and should be
+  // removed. See ConsentLevel::kSync documentation for details.
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     // Note: kCleared event for ConsentLevel::kSync basically means that the
