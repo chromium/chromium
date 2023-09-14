@@ -64,6 +64,7 @@ blink_core_tests_fetch = [
   "fetch_data_loader_test.cc",
   "fetch_header_list_test.cc",
   "fetch_request_data_test.cc",
+  "fetch_manager_test.cc",
   "fetch_response_data_test.cc",
   "form_data_bytes_consumer_test.cc",
   "multipart_parser_test.cc",

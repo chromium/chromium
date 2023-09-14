@@ -1611,8 +1611,14 @@ void ResourceLoader::ActivateCacheAwareLoadingIfNeeded(
 }
 
 bool ResourceLoader::ShouldBeKeptAliveWhenDetached() const {
+  bool extra_check = true;
+  if (base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) {
+    // FetchLater requests should not be kept alive by renderer.
+    extra_check = !resource_->GetResourceRequest().IsFetchLaterAPI();
+  }
+
   return resource_->GetResourceRequest().GetKeepalive() &&
-         resource_->GetResponse().IsNull();
+         resource_->GetResponse().IsNull() && extra_check;
 }
 
 void ResourceLoader::AbortResponseBodyLoading() {

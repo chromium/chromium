@@ -250,8 +250,9 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
 
   // A FetchLater request must also be a keepalive request.
   const bool request_is_fetch_later = request.is_fetch_later_api;
-  // TODO(crbug.com/1465781): CHECK kFetchLaterAPI for FetchLater requests.
-  CHECK(!request_is_fetch_later || request.keepalive);
+  CHECK(!request_is_fetch_later ||
+        (request.keepalive &&
+         base::FeatureList::IsEnabled(features::kFetchLaterAPI)));
   // Use |keep_alive_loader_factory_| to send the keepalive requests to the
   // KeepAliveURLLoaderService in the browser process and trigger the special
   // keepalive request handling.
