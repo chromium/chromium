@@ -31,15 +31,31 @@ class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
    public:
     raw_ptr<void> start_addr;
     const size_t length;
-    size_t bytes_used;
+    size_t bytes_used = 0;
 
     MmappedPlane(void* start, size_t len) : start_addr(start), length(len) {}
 
-    void CopyIn(const uint8_t* frame_data, size_t frame_size) {
-      LOG_ASSERT(frame_size < length)
+    // Appends the current slice data to the mmapped buffer. Resets |bytes_used|
+    // to 0 for the first slice. This function is used for HEVC because multiple
+    // slices per frame are supported.
+    void CopyInSlice(const uint8_t* frame_data,
+                     size_t frame_size,
+                     bool is_first_slice) {
+      if (is_first_slice) {
+        bytes_used = 0;
+      }
+
+      LOG_ASSERT((bytes_used + frame_size) < length)
           << "Not enough memory allocated to copy into.";
-      bytes_used = frame_size;
-      memcpy(static_cast<uint8_t*>(start_addr), frame_data, frame_size);
+
+      memcpy(static_cast<uint8_t*>(start_addr) + bytes_used, frame_data,
+             frame_size);
+      bytes_used += frame_size;
+    }
+
+    // Overwrites the mmapped buffer with the current frame data.
+    void CopyIn(const uint8_t* frame_data, size_t frame_size) {
+      CopyInSlice(frame_data, frame_size, true);
     }
   };
 
