@@ -364,7 +364,13 @@ src/webgpu/shader/execution/expression/binary/bool_logical.spec.ts
 src/webgpu/shader/execution/expression/binary/f16_addition.spec.ts
 src/webgpu/shader/execution/expression/binary/f16_comparison.spec.ts
 src/webgpu/shader/execution/expression/binary/f16_division.spec.ts
+src/webgpu/shader/execution/expression/binary/f16_matrix_addition.spec.ts
+src/webgpu/shader/execution/expression/binary/f16_matrix_matrix_multiplication.spec.ts
+src/webgpu/shader/execution/expression/binary/f16_matrix_scalar_multiplication.spec.ts
+src/webgpu/shader/execution/expression/binary/f16_matrix_subtraction.spec.ts
+src/webgpu/shader/execution/expression/binary/f16_matrix_vector_multiplication.spec.ts
 src/webgpu/shader/execution/expression/binary/f16_multiplication.spec.ts
+src/webgpu/shader/execution/expression/binary/f16_remainder.spec.ts
 src/webgpu/shader/execution/expression/binary/f16_subtraction.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_addition.spec.ts
 src/webgpu/shader/execution/expression/binary/f32_comparison.spec.ts
