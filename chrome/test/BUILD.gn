@@ -2389,6 +2389,7 @@ if (!is_android) {
       "../browser/ssl/ssl_fenced_frame_browsertest.cc",
       "../browser/ssl/ssl_prerender_browsertest.cc",
       "../browser/ssl/stateful_ssl_host_state_delegate_test.cc",
+      "../browser/storage/database_access_browsertest.cc",
       "../browser/storage/durable_storage_browsertest.cc",
       "../browser/storage/shared_storage_browsertest.cc",
       "../browser/storage_access_api/api_browsertest.cc",

@@ -12,6 +12,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/switches.h"
 
 namespace content {
@@ -138,6 +139,9 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
     {network::switches::kUseFirstPartySet, std::cref(features::kFirstPartySets),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+    {blink::switches::kWebSQLAccess, std::cref(blink::features::kWebSQLAccess),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
     // Overrides for headless

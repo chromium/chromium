@@ -12,4 +12,12 @@ generate_token.py http://127.0.0.1:8000 WebSQL --expire-timestamp=2000000000
 test(t => {
   assert_true('openDatabase' in window, 'WebSQL exists on window scope');
 }, 'WebSQL entry point in Deprecation-Trial enabled document.');
+
+test(t => {
+  try {
+    window.openDatabase("test", "", "", 0);
+  } catch(e) {
+    assert_unreached('opening a database should not fail.')
+  }
+}, 'WebSQL database creation succeeds in Deprecation-Trial enabled document.');
 </script>
