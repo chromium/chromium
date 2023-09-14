@@ -180,6 +180,10 @@ bool CardboardRenderLoop::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
     return false;
   }
 
+  // Swap the surface once so that it will show an empty texture rather than
+  // just being transparent.
+  surface->SwapBuffers(base::DoNothing(), gfx::FrameData());
+
   // Assign the surface and context members now that initialization has
   // succeeded.
   surface_ = std::move(surface);
