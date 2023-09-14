@@ -38,6 +38,16 @@ class DownloadDisplay {
     bool show_animation = false;
   };
 
+  // Determines how the progress ring should be displayed in the icon.
+  struct ProgressInfo {
+    // Number of currently active downloads.
+    int download_count = 0;
+    // Percentage complete of all in-progress downloads.
+    int progress_percentage = 0;
+    // Whether we know the final size of all downloads.
+    bool progress_certain = true;
+  };
+
   // Shows the download display.
   virtual void Show() = 0;
 
@@ -56,6 +66,9 @@ class DownloadDisplay {
   // Updates the download icon according to `new_state` and `new_active` and
   // potentially shows an animation.
   virtual void UpdateDownloadIcon(const IconUpdateInfo& updates) = 0;
+
+  // Updates the progress ring of the download icon according to `info`.
+  virtual void UpdateIconProgress(const ProgressInfo& info) = 0;
 
   // Shows detailed information on the download display. It can be a popup or
   // dialog or partial view, essentially anything other than the main view.

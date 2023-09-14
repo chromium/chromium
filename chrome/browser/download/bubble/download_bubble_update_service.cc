@@ -50,7 +50,7 @@ using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 using ItemSortKey = DownloadBubbleUpdateService::ItemSortKey;
 template <typename Id, typename Item>
 using IterMap = DownloadBubbleUpdateService::IterMap<Id, Item>;
-using ProgressInfo = DownloadDisplayController::ProgressInfo;
+using ProgressInfo = DownloadDisplay::ProgressInfo;
 template <typename Item>
 using SortedItems = DownloadBubbleUpdateService::SortedItems<Item>;
 

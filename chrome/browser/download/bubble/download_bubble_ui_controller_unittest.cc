@@ -125,7 +125,7 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   bool IsInitialized() const override { return true; }
 
-  MOCK_METHOD(DownloadDisplayController::ProgressInfo,
+  MOCK_METHOD(DownloadDisplay::ProgressInfo,
               GetProgressInfo,
               (const web_app::AppId*),
               (const override));

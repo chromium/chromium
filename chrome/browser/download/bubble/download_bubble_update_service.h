@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -100,7 +101,7 @@ class DownloadBubbleUpdateService
   // returned progress info may be slightly inaccurate in edge cases. This is
   // ok, as it is only for the purpose of showing a progress ring around the
   // icon, which is not precise anyway. Virtual for testing.
-  virtual DownloadDisplayController::ProgressInfo GetProgressInfo(
+  virtual DownloadDisplay::ProgressInfo GetProgressInfo(
       const web_app::AppId* web_app_id) const;
 
   // Notifies the appropriate browser windows that a download item was added.
@@ -238,7 +239,7 @@ class DownloadBubbleUpdateService
         bool force_backfill_download_items = false);
     const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo()
         const;
-    DownloadDisplayController::ProgressInfo GetProgressInfo() const;
+    DownloadDisplay::ProgressInfo GetProgressInfo() const;
 
     // Adds an item to the cache if it is recent enough and meets other criteria
     // for showing in the bubble. If adding an item makes the map size exceed

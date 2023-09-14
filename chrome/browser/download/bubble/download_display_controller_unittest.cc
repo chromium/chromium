@@ -86,6 +86,10 @@ class FakeDownloadDisplay : public DownloadDisplay {
     }
   }
 
+  void UpdateIconProgress(const ProgressInfo& info) override {
+    progress_info_ = info;
+  }
+
   void ShowDetails() override { detail_shown_ = true; }
   void HideDetails() override { detail_shown_ = false; }
   bool IsShowingDetails() const override { return detail_shown_; }
@@ -99,6 +103,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
 
   DownloadIconState GetIconState() const override { return state_; }
   DownloadIconActive GetIconActive() const { return active_; }
+  ProgressInfo GetIconProgress() const { return progress_info_; }
   void SetIsFullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
   void SetShouldShowExclusiveAccessBubble(bool show) {
     should_show_exclusive_access_bubble_ = show;
@@ -111,6 +116,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
   bool enabled_ = false;
   DownloadIconState state_ = DownloadIconState::kComplete;
   DownloadIconActive active_ = DownloadIconActive::kInactive;
+  ProgressInfo progress_info_;
   bool detail_shown_ = false;
   bool is_fullscreen_ = false;
   bool should_show_exclusive_access_bubble_ = true;
@@ -203,7 +209,7 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   bool IsInitialized() const override { return true; }
 
-  MOCK_METHOD(DownloadDisplayController::ProgressInfo,
+  MOCK_METHOD(DownloadDisplay::ProgressInfo,
               GetProgressInfo,
               (const web_app::AppId*),
               (const override));
@@ -269,6 +275,9 @@ class DownloadDisplayControllerTest : public testing::Test {
     mock_update_service_ =
         std::make_unique<StrictMock<MockDownloadBubbleUpdateService>>(
             profile_, items_, offline_items_);
+    // Will be called when the DownloadDisplayController is constructed.
+    EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
+        .WillRepeatedly(Return(DownloadDisplay::ProgressInfo()));
     display_ = std::make_unique<FakeDownloadDisplay>();
     window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile_, true);
@@ -350,7 +359,7 @@ class DownloadDisplayControllerTest : public testing::Test {
                                                      nullptr);
     mock_update_service_->AddModel(
         MockDownloadBubbleUpdateService::ModelType::kDownloadItem);
-    DownloadDisplayController::ProgressInfo progress_info;
+    DownloadDisplay::ProgressInfo progress_info;
     progress_info.download_count = in_progress_count_;
     progress_info.progress_percentage = in_progress_count_ > 0 ? 50 : 0;
     EXPECT_CALL(*mock_update_service_, GetProgressInfo(_))
@@ -365,7 +374,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     if (state == OfflineItemState::IN_PROGRESS) {
       ++in_progress_count_;
     }
-    DownloadDisplayController::ProgressInfo progress_info;
+    DownloadDisplay::ProgressInfo progress_info;
     progress_info.download_count = in_progress_count_;
     progress_info.progress_percentage = in_progress_count_ > 0 ? 50 : 0;
     progress_info.progress_certain = false;
@@ -458,6 +467,11 @@ class DownloadDisplayControllerTest : public testing::Test {
     return success;
   }
 
+  // Simulates an update to make the download display update.
+  void TriggerIconUpdate() {
+    controller().OnUpdatedItem(/*is_done=*/true, /*may_show_details=*/true);
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -486,10 +500,10 @@ TEST_F(DownloadDisplayControllerTest, GetProgressItemsInProgress) {
                    download::DownloadItem::COMPLETE);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar4.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  DownloadDisplayController::ProgressInfo progress = controller().GetProgress();
+  TriggerIconUpdate();
 
-  EXPECT_EQ(progress.download_count, 2);
-  EXPECT_EQ(progress.progress_percentage, 50);
+  EXPECT_EQ(display().GetIconProgress().download_count, 2);
+  EXPECT_EQ(display().GetIconProgress().progress_percentage, 50);
 }
 
 TEST_F(DownloadDisplayControllerTest, OfflineItemsUncertainProgress) {
@@ -501,11 +515,11 @@ TEST_F(DownloadDisplayControllerTest, OfflineItemsUncertainProgress) {
                    download::DownloadItem::IN_PROGRESS);
   // This offline item has uncertain progress
   InitOfflineItem(OfflineItemState::IN_PROGRESS);
-  DownloadDisplayController::ProgressInfo progress = controller().GetProgress();
+  TriggerIconUpdate();
 
-  EXPECT_EQ(progress.download_count, 3);
-  EXPECT_EQ(progress.progress_percentage, 50);
-  EXPECT_FALSE(progress.progress_certain);
+  EXPECT_EQ(display().GetIconProgress().download_count, 3);
+  EXPECT_EQ(display().GetIconProgress().progress_percentage, 50);
+  EXPECT_FALSE(display().GetIconProgress().progress_certain);
 }
 
 TEST_F(DownloadDisplayControllerTest, GetProgressItemsAllComplete) {
@@ -513,10 +527,10 @@ TEST_F(DownloadDisplayControllerTest, GetProgressItemsAllComplete) {
                    download::DownloadItem::COMPLETE);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
                    download::DownloadItem::COMPLETE);
-  DownloadDisplayController::ProgressInfo progress = controller().GetProgress();
+  TriggerIconUpdate();
 
-  EXPECT_EQ(progress.download_count, 0);
-  EXPECT_EQ(progress.progress_percentage, 0);
+  EXPECT_EQ(display().GetIconProgress().download_count, 0);
+  EXPECT_EQ(display().GetIconProgress().progress_percentage, 0);
 }
 
 TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState) {

@@ -742,7 +742,7 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfo) {
   InitDownloadItem(DownloadState::COMPLETE, "completed",
                    /*is_paused=*/false);
 
-  DownloadDisplayController::ProgressInfo progress_info =
+  DownloadDisplay::ProgressInfo progress_info =
       update_service_->GetProgressInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(progress_info.download_count, 2);
   EXPECT_TRUE(progress_info.progress_certain);
@@ -774,19 +774,19 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfoForWebApp) {
   InitDownloadItem(DownloadState::IN_PROGRESS, "non_app_download",
                    /*is_paused=*/false, now);
 
-  DownloadDisplayController::ProgressInfo non_app_progress_info =
+  DownloadDisplay::ProgressInfo non_app_progress_info =
       update_service_->GetProgressInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_progress_info.download_count, 1);
   EXPECT_TRUE(non_app_progress_info.progress_certain);
   EXPECT_EQ(non_app_progress_info.progress_percentage, 50);
 
-  DownloadDisplayController::ProgressInfo app_a_progress_info =
+  DownloadDisplay::ProgressInfo app_a_progress_info =
       update_service_->GetProgressInfo(&app_a_id);
   EXPECT_EQ(app_a_progress_info.download_count, 2);
   EXPECT_TRUE(app_a_progress_info.progress_certain);
   EXPECT_EQ(app_a_progress_info.progress_percentage, 50);
 
-  DownloadDisplayController::ProgressInfo app_b_progress_info =
+  DownloadDisplay::ProgressInfo app_b_progress_info =
       update_service_->GetProgressInfo(&app_b_id);
   EXPECT_EQ(app_b_progress_info.download_count, 3);
   EXPECT_TRUE(app_b_progress_info.progress_certain);
@@ -866,11 +866,11 @@ TEST_F(DownloadBubbleUpdateServiceTest,
   ASSERT_EQ(models.size(), 1u);
   EXPECT_EQ(models[0]->GetContentId().id, "app_download");
 
-  DownloadDisplayController::ProgressInfo non_app_progress_info =
+  DownloadDisplay::ProgressInfo non_app_progress_info =
       update_service_->GetProgressInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_progress_info.download_count, 0);
 
-  DownloadDisplayController::ProgressInfo app_progress_info =
+  DownloadDisplay::ProgressInfo app_progress_info =
       update_service_->GetProgressInfo(&app_id);
   EXPECT_EQ(app_progress_info.download_count, 1);
 

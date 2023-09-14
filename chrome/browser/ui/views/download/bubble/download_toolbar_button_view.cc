@@ -240,10 +240,8 @@ gfx::RenderText& DownloadToolbarButtonView::GetBadgeText(
 }
 
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
-  DownloadDisplayController::ProgressInfo progress_info =
-      controller_->GetProgress();
   // Do not show the progress ring when there is no in progress download.
-  if (progress_info.download_count == 0) {
+  if (progress_info_.download_count == 0) {
     if (scanning_animation_.is_animating()) {
       scanning_animation_.End();
     }
@@ -266,7 +264,7 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   int diameter = 2 * ring_radius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
 
-  if (state_ == IconState::kDeepScanning || !progress_info.progress_certain) {
+  if (state_ == IconState::kDeepScanning || !progress_info_.progress_certain) {
     if (!scanning_animation_.is_animating()) {
       scanning_animation_.Reset();
       scanning_animation_.Show();
@@ -282,7 +280,7 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   views::DrawProgressRing(
       canvas, gfx::RectFToSkRect(ring_bounds), background_color, progress_color,
       kProgressRingStrokeWidth, /*start_angle=*/-90,
-      /*sweep_angle=*/360 * progress_info.progress_percentage / 100.0);
+      /*sweep_angle=*/360 * progress_info_.progress_percentage / 100.0);
 }
 
 void DownloadToolbarButtonView::Show() {
@@ -322,6 +320,10 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(
     active_ = *updates.new_active;
   }
   UpdateIcon();
+}
+
+void DownloadToolbarButtonView::UpdateIconProgress(const ProgressInfo& info) {
+  progress_info_ = info;
 }
 
 bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() const {
@@ -414,7 +416,7 @@ void DownloadToolbarButtonView::UpdateIcon() {
       ui::ImageModel::FromVectorIcon(
           *new_icon, GetForegroundColor(ButtonState::STATE_DISABLED)));
 
-  int progress_download_count = controller_->GetProgress().download_count;
+  int progress_download_count = progress_info_.download_count;
   badge_image_view_->SetImage(
       GetBadgeImage(active_ == IconActive::kActive, progress_download_count,
                     GetProgressColor(GetVisualState() == Button::STATE_DISABLED,

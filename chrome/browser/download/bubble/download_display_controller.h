@@ -62,18 +62,6 @@ class DownloadDisplayController : public FullscreenObserver,
     static const AllDownloadUIModelsInfo& EmptyInfo();
   };
 
-  struct ProgressInfo {
-    bool progress_certain = true;
-    int progress_percentage = 0;
-    int download_count = 0;
-  };
-
-  // Returns a ProgressInfo where |download_count| is the number of currently
-  // active downloads. If we know the final size of all downloads,
-  // |progress_certain| is true. |progress_percentage| is the percentage
-  // complete of all in-progress downloads. Forwards to the
-  // DownloadBubbleUpdateService.
-  ProgressInfo GetProgress();
 
   // Returns whether the display is showing details.
   bool IsDisplayShowingDetails();
@@ -125,9 +113,10 @@ class DownloadDisplayController : public FullscreenObserver,
  private:
   friend class DownloadDisplayControllerTest;
 
-  // Gets info about all models to display, then updates the toolbar button
-  // state accordingly. Returns the info about all models.
-  const AllDownloadUIModelsInfo& UpdateButtonStateFromAllModelsInfo();
+  // Gets info about all models to display and progress ring info from the
+  // update service, then updates the toolbar button state accordingly. Returns
+  // the info about all models.
+  const AllDownloadUIModelsInfo& UpdateButtonStateFromUpdateService();
 
   // Stops and restarts `icon_disappearance_timer_`. The toolbar button will
   // be hidden after the `interval`.
@@ -140,8 +129,11 @@ class DownloadDisplayController : public FullscreenObserver,
   // button is already showing.
   void ShowToolbarButton();
 
-  // Updates the icon state of the `display_`.
-  void UpdateToolbarButtonState(const AllDownloadUIModelsInfo& info);
+  // Updates the icon state of the `display_`, including the progress ring.
+  void UpdateToolbarButtonState(
+      const AllDownloadUIModelsInfo& info,
+      const DownloadDisplay::ProgressInfo& progress_info);
+
   // Asks `display_` to make the download icon inactive.
   void UpdateDownloadIconToInactive();
 

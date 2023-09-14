@@ -84,7 +84,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
     return;
   }
 
-  UpdateButtonStateFromAllModelsInfo();
+  UpdateButtonStateFromUpdateService();
   if (display_->ShouldShowExclusiveAccessBubble()) {
     fullscreen_notification_shown_ = true;
     ExclusiveAccessContext* exclusive_access_context =
@@ -109,7 +109,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromAllModelsInfo();
+  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromUpdateService();
   bool will_show_details = may_show_details && is_done && IsAllDone(info);
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
@@ -133,7 +133,7 @@ void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  UpdateButtonStateFromAllModelsInfo();
+  UpdateButtonStateFromUpdateService();
 }
 
 void DownloadDisplayController::OnButtonPressed() {
@@ -188,7 +188,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
   }
   fullscreen_notification_shown_ = false;
 
-  UpdateButtonStateFromAllModelsInfo();
+  UpdateButtonStateFromUpdateService();
   if (download::ShouldShowDownloadBubble(browser_->profile()) &&
       should_show_details_on_exit_fullscreen_) {
     display_->ShowDetails();
@@ -197,7 +197,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
 }
 
 void DownloadDisplayController::OnResume() {
-  UpdateButtonStateFromAllModelsInfo();
+  UpdateButtonStateFromUpdateService();
 }
 
 void DownloadDisplayController::OpenSecuritySubpage(
@@ -206,7 +206,8 @@ void DownloadDisplayController::OpenSecuritySubpage(
 }
 
 void DownloadDisplayController::UpdateToolbarButtonState(
-    const DownloadDisplayController::AllDownloadUIModelsInfo& info) {
+    const DownloadDisplayController::AllDownloadUIModelsInfo& info,
+    const DownloadDisplay::ProgressInfo& progress_info) {
   if (info.all_models_size == 0) {
     HideToolbarButton();
     return;
@@ -247,6 +248,8 @@ void DownloadDisplayController::UpdateToolbarButtonState(
     ShowToolbarButton();
   }
   display_->UpdateDownloadIcon(updates);
+
+  display_->UpdateIconProgress(progress_info);
 }
 
 void DownloadDisplayController::UpdateDownloadIconToInactive() {
@@ -256,11 +259,16 @@ void DownloadDisplayController::UpdateDownloadIconToInactive() {
 }
 
 const DownloadDisplayController::AllDownloadUIModelsInfo&
-DownloadDisplayController::UpdateButtonStateFromAllModelsInfo() {
+DownloadDisplayController::UpdateButtonStateFromUpdateService() {
   const AllDownloadUIModelsInfo& info =
       bubble_controller_->update_service()->GetAllModelsInfo(
           GetWebAppIdForBrowser(browser_));
-  UpdateToolbarButtonState(info);
+  DownloadDisplay::ProgressInfo progress_info =
+      bubble_controller_->update_service()->GetProgressInfo(
+          GetWebAppIdForBrowser(browser_));
+
+  UpdateToolbarButtonState(info, progress_info);
+
   return info;
 }
 
@@ -291,7 +299,7 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
     return;
   }
 
-  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromAllModelsInfo();
+  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromUpdateService();
   if (display_->IsShowing()) {
     ScheduleToolbarDisappearance(
         kToolbarIconVisibilityTimeInterval -
@@ -313,10 +321,4 @@ bool DownloadDisplayController::HasRecentCompleteDownload(
 
 bool DownloadDisplayController::IsDisplayShowingDetails() {
   return display_->IsShowingDetails();
-}
-
-DownloadDisplayController::ProgressInfo
-DownloadDisplayController::GetProgress() {
-  return bubble_controller_->update_service()->GetProgressInfo(
-      GetWebAppIdForBrowser(browser_));
 }

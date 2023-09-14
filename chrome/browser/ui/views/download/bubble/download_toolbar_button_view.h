@@ -75,6 +75,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void Enable() override;
   void Disable() override;
   void UpdateDownloadIcon(const IconUpdateInfo& updates) override;
+  void UpdateIconProgress(const ProgressInfo& info) override;
   void ShowDetails() override;
   void HideDetails() override;
   bool IsShowingDetails() const override;
@@ -173,6 +174,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // UpdateIcon() afterwards.
   IconState state_ = IconState::kComplete;
   IconActive active_ = IconActive::kInactive;
+
+  // Parameters determining how the progress ring should be drawn.
+  ProgressInfo progress_info_;
 
   // Marks whether there is a pending download started animation. This is needed
   // because the animation should only be triggered after the view has been
