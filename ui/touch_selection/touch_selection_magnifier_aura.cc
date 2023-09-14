@@ -4,6 +4,7 @@
 
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/color/color_id.h"
