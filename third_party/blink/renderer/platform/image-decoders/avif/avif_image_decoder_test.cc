@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/libavif/src/include/avif/avif.h"
@@ -1151,8 +1152,8 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTag, SkISize::MakeEmpty(),
-      ImageDecoder::AnimationOption::kUnspecified);
+      ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
+      SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
   EXPECT_FALSE(decoder->IsSizeAvailable());
 
   scoped_refptr<SharedBuffer> data =
@@ -1177,8 +1178,8 @@ TEST(StaticAVIFTests, ProgressiveDecoding) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTag, SkISize::MakeEmpty(),
-      ImageDecoder::AnimationOption::kUnspecified);
+      ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
+      SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
 
   scoped_refptr<SharedBuffer> data =
       ReadFile("/images/resources/avif/tiger_3layer_1res.avif");
@@ -1245,8 +1246,8 @@ TEST(StaticAVIFTests, IncrementalDecoding) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTag, SkISize::MakeEmpty(),
-      ImageDecoder::AnimationOption::kUnspecified);
+      ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
+      SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
 
   scoped_refptr<SharedBuffer> data =
       ReadFile("/images/resources/avif/tiger_420_8b_grid1x13.avif");

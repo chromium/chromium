@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -67,7 +68,8 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       segment_reader, data_complete, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore);
+      ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore,
+      Platform::GetMaxDecodedImageBytes());
   if (!decoder || !decoder->IsSizeAvailable())
     return nullptr;
 

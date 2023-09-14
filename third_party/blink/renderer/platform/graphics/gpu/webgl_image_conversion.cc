@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/cpu/arm/webgl_image_conversion_neon.h"
 #include "third_party/blink/renderer/platform/graphics/cpu/loongarch64/webgl_image_conversion_lsx.h"
 #include "third_party/blink/renderer/platform/graphics/cpu/mips/webgl_image_conversion_msa.h"
@@ -3872,9 +3873,9 @@ WebGLImageConversion::ImageExtractor::ImageExtractor(
           target_color_space ? ColorBehavior::kTag : ColorBehavior::kIgnore;
 
       // Decode the image here on the main thread.
-      std::unique_ptr<ImageDecoder> decoder(
-          ImageDecoder::Create(image->Data(), data_complete, alpha_option,
-                               bit_depth, color_behavior));
+      std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
+          image->Data(), data_complete, alpha_option, bit_depth, color_behavior,
+          Platform::GetMaxDecodedImageBytes()));
       if (!decoder || !decoder->FrameCount()) {
         return;
       }

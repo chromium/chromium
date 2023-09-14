@@ -381,4 +381,9 @@ std::unique_ptr<media::MediaLog> Platform::GetMediaLog(
   return nullptr;
 }
 
+size_t Platform::GetMaxDecodedImageBytes() {
+  return Current() ? Current()->MaxDecodedImageBytes()
+                   : kNoDecodedImageByteLimit;
+}
+
 }  // namespace blink

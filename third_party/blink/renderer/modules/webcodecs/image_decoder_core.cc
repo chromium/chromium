@@ -11,6 +11,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -317,7 +318,8 @@ void ImageDecoderCore::Reinitialize(
       mime_type_, segment_reader_, data_complete_,
       ImageDecoder::kAlphaNotPremultiplied,
       ImageDecoder::HighBitDepthDecodingOption::kDefaultBitDepth,
-      color_behavior_, desired_size_, animation_option_);
+      color_behavior_, Platform::GetMaxDecodedImageBytes(), desired_size_,
+      animation_option_);
   DCHECK(decoder_);
 }
 

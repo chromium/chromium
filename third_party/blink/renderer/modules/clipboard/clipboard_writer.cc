@@ -7,6 +7,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -65,7 +66,8 @@ class ClipboardImageWriter final : public ClipboardWriter {
         SegmentReader::CreateFromSkData(
             SkData::MakeWithoutCopy(png_data.Data(), png_data.DataLength())),
         /*data_complete=*/true, ImageDecoder::kAlphaPremultiplied,
-        ImageDecoder::kDefaultBitDepth, ColorBehavior::kTag);
+        ImageDecoder::kDefaultBitDepth, ColorBehavior::kTag,
+        Platform::GetMaxDecodedImageBytes());
     sk_sp<SkImage> image = nullptr;
     // `decoder` is nullptr if `png_data` doesn't begin with the PNG signature.
     if (decoder) {

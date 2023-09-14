@@ -80,11 +80,10 @@ cc::ImageType FileExtensionToImageType(String image_extension) {
 
 wtf_size_t CalculateMaxDecodedBytes(
     ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option,
-    const SkISize& desired_size) {
+    const SkISize& desired_size,
+    size_t platform_max_decoded_bytes) {
   const wtf_size_t max_decoded_bytes =
-      Platform::Current()
-          ? static_cast<wtf_size_t>(Platform::Current()->MaxDecodedImageBytes())
-          : ImageDecoder::kNoDecodedImageByteLimit;
+      base::saturated_cast<wtf_size_t>(platform_max_decoded_bytes);
   if (desired_size.isEmpty()) {
     return max_decoded_bytes;
   }
@@ -242,6 +241,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     ColorBehavior color_behavior,
+    size_t platform_max_decoded_bytes,
     const SkISize& desired_size,
     AnimationOption animation_option) {
   auto type = SniffMimeTypeInternal(data);
@@ -251,7 +251,8 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
 
   return CreateByMimeType(type, std::move(data), data_complete, alpha_option,
                           high_bit_depth_decoding_option, color_behavior,
-                          desired_size, animation_option);
+                          platform_max_decoded_bytes, desired_size,
+                          animation_option);
 }
 
 std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
@@ -261,10 +262,11 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
     AlphaOption alpha_option,
     HighBitDepthDecodingOption high_bit_depth_decoding_option,
     ColorBehavior color_behavior,
+    size_t platform_max_decoded_bytes,
     const SkISize& desired_size,
     AnimationOption animation_option) {
-  const wtf_size_t max_decoded_bytes =
-      CalculateMaxDecodedBytes(high_bit_depth_decoding_option, desired_size);
+  const wtf_size_t max_decoded_bytes = CalculateMaxDecodedBytes(
+      high_bit_depth_decoding_option, desired_size, platform_max_decoded_bytes);
 
   // Note: The mime types below should match those supported by
   // MimeUtil::IsSupportedImageMimeType() (which forces lowercase).

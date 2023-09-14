@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -68,7 +69,7 @@ void DecodeAndResizeImage(
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       std::move(data), /*data_complete=*/true,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTransformToSRGB);
+      ColorBehavior::kTransformToSRGB, Platform::GetMaxDecodedImageBytes());
 
   if (!decoder) {
     notify_complete(SkBitmap(), -1.0);

@@ -307,10 +307,10 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
               : ImageDecoder::kDefaultBitDepth;
 
   // The newly created decoder just grabbed the data.  No need to reset it.
-  return ImageDecoder::Create(data_, all_data_received_,
-                              PixmapAlphaOption(pixmap_),
-                              high_bit_depth_decoding_option,
-                              decoder_color_behavior_, pixmap_.dimensions());
+  return ImageDecoder::Create(
+      data_, all_data_received_, PixmapAlphaOption(pixmap_),
+      high_bit_depth_decoding_option, decoder_color_behavior_,
+      Platform::GetMaxDecodedImageBytes(), pixmap_.dimensions());
 }
 
 }  // namespace blink

@@ -15,6 +15,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -586,7 +587,8 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
             ? ImageDecoder::kHighBitDepthToHalfFloat
             : ImageDecoder::kDefaultBitDepth,
         parsed_options.has_color_space_conversion ? ColorBehavior::kTag
-                                                  : ColorBehavior::kIgnore));
+                                                  : ColorBehavior::kIgnore,
+        Platform::GetMaxDecodedImageBytes()));
     auto skia_image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
     if (!skia_image)
       return;
