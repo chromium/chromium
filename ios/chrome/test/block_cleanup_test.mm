@@ -14,7 +14,7 @@ BlockCleanupTest::BlockCleanupTest() = default;
 BlockCleanupTest::~BlockCleanupTest() = default;
 
 void BlockCleanupTest::SetUp() {
-  pool_ = std::make_unique<base::apple::ScopedNSAutoreleasePool>();
+  pool_.emplace();
 }
 
 void BlockCleanupTest::TearDown() {

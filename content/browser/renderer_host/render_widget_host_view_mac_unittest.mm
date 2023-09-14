@@ -16,6 +16,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
@@ -563,6 +564,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
 
  private:
   // This class isn't derived from PlatformTest.
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
   base::apple::ScopedNSAutoreleasePool pool_;
 
   base::SimpleTestTickClock mock_clock_;

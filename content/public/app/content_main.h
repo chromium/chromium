@@ -17,9 +17,8 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-namespace base::apple {
-class ScopedNSAutoreleasePool;
-}
+#include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/memory/stack_allocated.h"
 #endif
 
 namespace sandbox {
@@ -71,7 +70,8 @@ struct CONTENT_EXPORT ContentMainParams {
 
 #if BUILDFLAG(IS_MAC)
   // The outermost autorelease pool to pass to main entry points.
-  raw_ptr<base::apple::ScopedNSAutoreleasePool> autorelease_pool = nullptr;
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
+  base::apple::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
 #endif
 
   // Returns a copy of this ContentMainParams without the move-only data

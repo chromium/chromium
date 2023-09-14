@@ -21,9 +21,8 @@ namespace sandbox {
 struct SandboxInterfaceInfo;
 }
 #elif BUILDFLAG(IS_MAC)
-namespace base::apple {
-class ScopedNSAutoreleasePool;
-}
+#include "base/apple/scoped_nsautorelease_pool.h"
+#include "base/memory/stack_allocated.h"
 #endif
 
 namespace content {
@@ -50,10 +49,8 @@ struct CONTENT_EXPORT MainFunctionParams {
 #if BUILDFLAG(IS_WIN)
   raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
 #elif BUILDFLAG(IS_MAC)
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #union
-  RAW_PTR_EXCLUSION base::apple::ScopedNSAutoreleasePool* autorelease_pool =
-      nullptr;
+  STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
+  base::apple::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   bool zygote_child = false;
 #endif
