@@ -6925,6 +6925,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "query-tiles-disable-country-override",
+    "owners": [ "qinmin" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "query-tiles-enable-query-editing",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 93

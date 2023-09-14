@@ -4159,6 +4159,11 @@ const char kQueryTilesEnableTrendingName[] =
     "Query Tiles - Enable trending queries";
 const char kQueryTilesEnableTrendingDescription[] =
     "Allow tiles of trending queries to show up in front of curated tiles";
+const char kQueryTilesDisableCountryOverrideName[] =
+    "Disable tre default country list for query tiles.";
+const char kQueryTilesDisableCountryOverrideDescription[] =
+    "Disable the default country list for query tiles. It is still "
+    "possible to show query tiles through server experiments.";
 const char kQueryTilesCountryCode[] = "Country code for getting tiles";
 const char kQueryTilesCountryCodeDescription[] =
     "When query tiles are enabled, this value determines tiles for which "
