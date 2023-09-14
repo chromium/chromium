@@ -158,7 +158,12 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             };
             const observer = new IntersectionObserver(entries => {
               assert(entries.length === 1);
-              this.wasScrolledToBottom = entries[0].intersectionRatio === 1;
+              // We cannot check for intersectionRatio strictly equal to 1
+              // because its value is sometimes reported with ~0.99 values
+              // (see crbug.com/1020466): this can lead to a state where
+              // the more button is always visible, with unclickable action
+              // buttons covered by an overlay (b/299120185).
+              this.wasScrolledToBottom = entries[0].intersectionRatio >= 0.99;
 
               // After the whole text content was visible at least once, stop
               // observing.
