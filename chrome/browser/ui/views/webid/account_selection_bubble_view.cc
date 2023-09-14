@@ -486,7 +486,7 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
       kInvalidRequest, kUnauthorizedClient, kAccessDenied,
       kTemporarilyUnavailable};
   if (!codes_need_extra_description.contains(code)) {
-    return std::tie(summary, description);
+    return {summary, description};
   }
 
   if (url.is_empty()) {
@@ -499,7 +499,7 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
                               idp_for_display);
   }
 
-  return std::tie(summary, description);
+  return {summary, description};
 }
 
 }  // namespace
