@@ -925,7 +925,7 @@ def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
         content = proxy_impl_java.Generate(jni_obj,
                                            gen_jni_class=gen_jni_class,
                                            script_name=script_name)
-        zip_path = f'{jni_obj.java_class.full_name_with_slashes}Jni.java'
+        zip_path = f'{jni_obj.java_class.class_without_prefix.full_name_with_slashes}Jni.java'
         zip_helpers.add_to_zip_hermetic(srcjar, zip_path, data=content)
 
       content = placeholder_gen_jni_java.Generate(jni_objs,

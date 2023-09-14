@@ -60,6 +60,8 @@ PRIMITIVES = frozenset(_DEFAULT_VALUE_BY_PRIMITIVE_TYPE)
 class JavaClass:
   """Represents a reference type."""
   _fqn: str
+  # This is only meaningful if make_prefix have been called on the original class.
+  _class_without_prefix: 'JavaClass' = None
 
   def __post_init__(self):
     assert '.' not in self._fqn, f'{self._fqn} should have / and $, but not .'
@@ -95,6 +97,10 @@ class JavaClass:
   def full_name_with_dots(self):
     return self._fqn.replace('/', '.').replace('$', '.')
 
+  @property
+  def class_without_prefix(self):
+    return self._class_without_prefix if self._class_without_prefix else self
+
   def to_java(self, type_resolver=None):
     # Empty resolver used to shorted java.lang classes.
     type_resolver = type_resolver or _EMPTY_TYPE_RESOLVER
@@ -107,7 +113,7 @@ class JavaClass:
     if not prefix:
       return self
     prefix = prefix.replace('.', '/')
-    return JavaClass(f'{prefix}/{self._fqn}')
+    return JavaClass(f'{prefix}/{self._fqn}', self)
 
   def make_nested(self, name):
     return JavaClass(f'{self._fqn}${name}')

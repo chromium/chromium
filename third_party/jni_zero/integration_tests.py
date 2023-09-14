@@ -133,7 +133,7 @@ class BaseTest(unittest.TestCase):
       name_to_goldens = {
           f'{dir_prefix}org/jni_zero/{file_prefix}GEN_JNI.java':
           f'{golden_name}-Placeholder-GEN_JNI.java.golden',
-          f'{dir_prefix}org/jni_zero/samples/{basename}Jni.java':
+          f'org/jni_zero/samples/{basename}Jni.java':
           f'{golden_name}-{basename}Jni.java.golden',
       }
 

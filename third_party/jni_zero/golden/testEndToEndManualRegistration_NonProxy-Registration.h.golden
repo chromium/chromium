@@ -187,6 +187,6 @@ bool RegisterNatives(JNIEnv* env) {
   return true;
 }
 
-}  // namespace
+}  // namespace 
 
 #endif  // TEMP_DIR_HEADER_
