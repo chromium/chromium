@@ -189,7 +189,9 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   }
 
   void BubbleViewCancelButtonPressed(Browser* browser) override {
-    NOTREACHED();
+    // Even though there is no cancel button, users can still cancel the dialog
+    // by pressing escape.
+    delegate_->OnAlertClosed();
   }
 
   void BubbleViewDetailsButtonPressed(Browser* browser) override {
