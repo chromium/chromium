@@ -31,6 +31,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -286,17 +287,19 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
             : kColorOmniboxAnswerIconBackground;
     const auto& icon = gfx::CreateVectorIcon(
         vector_icon, color_provider->GetColor(foreground_color_id));
+    const int answer_image_size = GetAnswerImageSize();
     answer_image_view_->SetImageSize(
-        gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
+        gfx::Size(answer_image_size, answer_image_size));
     if (OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()) {
       answer_image_view_->SetImage(
           gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-              GetAnswerImageSize(), GetIconAndImageCornerRadius(),
+              gfx::SizeF(answer_image_size, answer_image_size),
+              GetIconAndImageCornerRadius(),
               color_provider->GetColor(background_color_id), icon));
     } else {
       answer_image_view_->SetImage(
           gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-              GetAnswerImageSize() / 2,
+              /*radius=*/answer_image_size / 2,
               color_provider->GetColor(background_color_id), icon));
     }
   };
@@ -359,7 +362,8 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
             : kColorOmniboxResultsIconGM3Background;
     icon_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            kUniformRowHeightIconSize, GetIconAndImageCornerRadius(),
+            gfx::SizeF(kUniformRowHeightIconSize, kUniformRowHeightIconSize),
+            GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(background_color), image));
   } else {
     icon_view_->SetImage(image);
@@ -382,13 +386,13 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   int height = image.height();
   const int max = std::max(width, height);
 
+  const float scaled_size = max / GetEntityAndWeatherBackgroundScale();
   if (OmniboxFieldTrial::kSquareSuggestIconWeather.Get() && is_weather_answer) {
     // Weather icon square background should be the same color as the pop-up
     // background.
     answer_image_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            max / GetEntityAndWeatherBackgroundScale(),
-            GetIconAndImageCornerRadius(),
+            gfx::SizeF(scaled_size, scaled_size), GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(kColorOmniboxResultsBackground),
             gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
                 GetIconAndImageCornerRadius(), image)));
@@ -396,8 +400,7 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
              !is_weather_answer) {
     answer_image_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            max / GetEntityAndWeatherBackgroundScale(),
-            GetIconAndImageCornerRadius(),
+            gfx::SizeF(scaled_size, scaled_size), GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
             gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
                 GetIconAndImageCornerRadius(), image)));

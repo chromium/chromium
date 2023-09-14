@@ -116,7 +116,8 @@ gfx::ImageSkia GetFaviconForWebContents(content::WebContents* web_contents) {
   constexpr int kMainImageDimension = 112;
   gfx::ImageSkia centered_favicon =
       gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-          kMainImageDimension, 0, background_color, favicon);
+          gfx::SizeF(kMainImageDimension, kMainImageDimension), /*radius=*/0,
+          background_color, favicon);
   return centered_favicon;
 }
 
