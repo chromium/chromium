@@ -381,6 +381,7 @@
 ./tools/wptrunner/wptrunner/expectedtree.py
 ./tools/wptrunner/wptrunner/font.py
 ./tools/wptrunner/wptrunner/formatters/__init__.py
+./tools/wptrunner/wptrunner/formatters/chromium.py
 ./tools/wptrunner/wptrunner/formatters/wptreport.py
 ./tools/wptrunner/wptrunner/formatters/wptscreenshot.py
 ./tools/wptrunner/wptrunner/instruments.py
