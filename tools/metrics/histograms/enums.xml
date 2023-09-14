@@ -88226,6 +88226,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   </summary>
   <int value="-2066290458" label="search.mojom.EmbeddedSearchConnector"/>
   <int value="-2012727489" label="device.mojom.ScreenOrientation"/>
+  <int value="-1398143678" label="blink.mojom.ClipboardHost (Unexpected)"/>
   <int value="-1354302262" label="blink.mojom.BackForwardCacheControllerHost"/>
   <int value="-71187962" label="supervised_user.mojom.SupervisedUserCommands"/>
   <int value="-4973921" label="blink.mojom.AttributionHost"/>
