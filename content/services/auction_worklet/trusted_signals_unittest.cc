@@ -85,7 +85,7 @@ const char kBaseBiddingJson[] = R"(
 )";
 
 // Common JSON used for most scoring signals tests.
-const char kBaseScoringJson[] = R"(
+const char kBaseScoringJsonOldNames[] = R"(
   {
     "renderUrls": {
       "https://foo.test/": 1,
@@ -102,7 +102,7 @@ const char kBaseScoringJson[] = R"(
   }
 )";
 
-const char kBaseScoringJsonNewNames[] = R"(
+const char kBaseScoringJson[] = R"(
   {
     "renderURLs": {
       "https://foo.test/": 1,
@@ -833,7 +833,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
                  "https://bazsub.test/"}));
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsNewNames) {
+TEST_F(TrustedSignalsTest, ScoringSignalsOldNames) {
   // URLs are currently added in lexical order.
   scoped_refptr<TrustedSignals::Result> signals =
       FetchScoringSignalsWithResponse(
@@ -842,7 +842,7 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNewNames) {
                "https%3A%2F%2Fbaz.test%2F,https%3A%2F%2Ffoo.test%2F"
                "&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,"
                "https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F"),
-          kBaseScoringJsonNewNames,
+          kBaseScoringJsonOldNames,
           /*render_urls=*/
           {"https://foo.test/", "https://bar.test/", "https://baz.test/"},
           /*ad_component_render_urls=*/
