@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -75,6 +76,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     InterestGroupAuction* auction,
     const base::Value& bid_in,
     const base::Uuid& auction_nonce,
+    const base::flat_set<url::Origin>& interest_group_buyers,
     const url::Origin& seller,
     base::optional_ref<const url::Origin> top_level_seller) {
   const base::Value::Dict* result_dict = bid_in.GetIfDict();
@@ -142,6 +144,14 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     return base::unexpected(base::StrCat(
         {"Additional bid on auction with seller '", seller.Serialize(),
          "' rejected due to missing or invalid interest group info."}));
+  }
+
+  if (interest_group_buyers.find(ig_owner.value()) ==
+      interest_group_buyers.end()) {
+    return base::unexpected(base::StrCat(
+        {"Additional bid on auction with seller '", seller.Serialize(),
+         "' rejected because the additional bid's owner, '",
+         ig_owner->Serialize(), "', is not in interestGroupBuyers."}));
   }
 
   if (!ig_owner->IsSameOriginWith(ig_bidding_url)) {
