@@ -66,9 +66,6 @@ class AutofillProviderAndroidBridge {
   virtual void StartAutofillSession(FormDataAndroid& form,
                                     const FieldInfo& field,
                                     bool has_server_predictions) = 0;
-  // TODO(crbug.com/1478934): Remove this method? It is a no-op on the Java
-  // side.
-  virtual void Reset() = 0;
 
   // Informs the Java side that the server prediction request is completed.
   virtual void OnServerPredictionQueryDone(bool success) = 0;

@@ -376,7 +376,6 @@ void AutofillProviderAndroid::Reset(AndroidAutofillManager* manager) {
   }
 
   Reset();
-  bridge_->Reset();
 }
 
 bool AutofillProviderAndroid::GetCachedIsAutofilled(

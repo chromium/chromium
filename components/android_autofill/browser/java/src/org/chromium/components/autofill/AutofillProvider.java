@@ -517,16 +517,6 @@ public class AutofillProvider {
         }
     }
 
-    /**
-     * Invoked when current query need to be reset.
-     */
-    @CalledByNative
-    protected void reset() {
-        // We don't need to reset anything here, it should be safe to cancel
-        // current autofill session when new one starts in
-        // startAutofillSession().
-    }
-
     @CalledByNative
     protected void setNativeAutofillProvider(long nativeAutofillProvider) {
         if (nativeAutofillProvider == mNativeAutofillProvider) return;

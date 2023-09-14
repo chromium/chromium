@@ -85,16 +85,6 @@ void AutofillProviderAndroidBridgeImpl::StartAutofillSession(
       has_server_predictions);
 }
 
-void AutofillProviderAndroidBridgeImpl::Reset() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null()) {
-    return;
-  }
-
-  Java_AutofillProvider_reset(env, obj);
-}
-
 void AutofillProviderAndroidBridgeImpl::OnServerPredictionQueryDone(
     bool success) {
   JNIEnv* env = AttachCurrentThread();

@@ -32,7 +32,6 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   void StartAutofillSession(FormDataAndroid& form,
                             const FieldInfo& field,
                             bool has_server_predictions) override;
-  void Reset() override;
   void OnServerPredictionQueryDone(bool success) override;
   void ShowDatalistPopup(base::span<const std::u16string> values,
                          base::span<const std::u16string> labels,
