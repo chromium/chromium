@@ -8106,6 +8106,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "upstream-trusted-reports-firmware",
+    "owners": [ "rishabhagr" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "use-android-staging-smds",
     "owners": [ "cros-connectivity@google.com", "chadduffin"],
     // This flag is required for cellular tests that involve SM-DS to be able

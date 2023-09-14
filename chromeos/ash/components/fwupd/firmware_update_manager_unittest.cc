@@ -72,6 +72,8 @@ const char kFirmwareUpdateNotificationId[] =
     "cros_firmware_update_notification_id";
 const char kFlagsKey[] = "Flags";
 const uint64_t kFakeFlagForTesting = 1;
+const char kTrustFlagsKey[] = "TrustFlags";
+const uint64_t kFakeReportFlagForTesting = 1llu << 8;
 
 void RunResponseCallback(dbus::ObjectProxy::ResponseOrErrorCallback callback,
                          std::unique_ptr<dbus::Response> response) {
@@ -291,6 +293,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
     device_array_writer.OpenDictEntry(&dict_writer);
     dict_writer.AppendString(kFlagsKey);
     dict_writer.AppendVariantOfUint64(kFakeFlagForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kTrustFlagsKey);
+    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
     device_array_writer.CloseContainer(&dict_writer);
 
     response_array_writer.CloseContainer(&device_array_writer);

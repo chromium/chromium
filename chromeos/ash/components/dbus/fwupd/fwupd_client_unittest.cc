@@ -32,6 +32,7 @@ const char kFakeUpdateUriForTesting[] =
     "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
 const char kFakeSha256ForTesting[] =
     "3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f";
+const uint64_t kFakeReportFlagForTesting = 1llu << 8;
 const char kNameKey[] = "Name";
 const char kIdKey[] = "DeviceId";
 const char kVersionKey[] = "Version";
@@ -39,6 +40,7 @@ const char kDescriptionKey[] = "Description";
 const char kPriorityKey[] = "Urgency";
 const char kUriKey[] = "Uri";
 const char kChecksumKey[] = "Checksum";
+const char kTrustFlagsKey[] = "TrustFlags";
 
 void RunResponseOrErrorCallback(
     dbus::ObjectProxy::ResponseOrErrorCallback callback,
@@ -409,6 +411,11 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   device_array_writer.OpenDictEntry(&dict_writer);
   dict_writer.AppendString(kUriKey);
   dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kTrustFlagsKey);
+  dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
   device_array_writer.CloseContainer(&dict_writer);
 
   device_array_writer.OpenDictEntry(&dict_writer);

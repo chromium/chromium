@@ -11026,6 +11026,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRuntimeCountersTelemetryDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(reporting::kEnableRuntimeCountersTelemetry)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"upstream-trusted-reports-firmware",
+     flag_descriptions::kUpstreamTrustedReportsFirmwareName,
+     flag_descriptions::kUpstreamTrustedReportsFirmwareDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kUpstreamTrustedReportsFirmware)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ipp-first-setup-for-usb-printers",

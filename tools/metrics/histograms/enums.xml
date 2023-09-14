@@ -65889,6 +65889,7 @@ from previous Chrome versions.
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
   <int value="566031886" label="DIPS:disabled"/>
   <int value="567368307" label="enable-experimental-canvas-features"/>
+  <int value="569192576" label="UpstreamTrustedReportsFirmware:enabled"/>
   <int value="570445904" label="WGIGamepadTriggerRumble:disabled"/>
   <int value="570469494" label="LoginDetection:disabled"/>
   <int value="570882482" label="CrOSDspBasedAecAllowed:enabled"/>
@@ -67165,6 +67166,7 @@ from previous Chrome versions.
   <int value="1205929554" label="SendTabToSelfOmniboxSendingAnimation:enabled"/>
   <int value="1206140820" label="RelatedSearchesInBar:disabled"/>
   <int value="1206486242" label="UseDnsHttpsSvcbAlpn:enabled"/>
+  <int value="1206725424" label="UpstreamTrustedReportsFirmware:disabled"/>
   <int value="1210118915" label="ShelfAutoHideSeparation:disabled"/>
   <int value="1210298193" label="FontAccessPersistent:enabled"/>
   <int value="1210343926" label="enable-drop-sync-credential"/>

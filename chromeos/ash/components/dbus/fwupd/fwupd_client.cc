@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -36,6 +38,9 @@ const int kSha256Length = 64;
 // "1" is the bitflag for an internal device. Defined here:
 // https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
 const uint64_t kInternalDeviceFlag = 1;
+// "100000000"(9th bit) is the bit release flag for a trusted report.
+// Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
+const uint64_t kTrustedReportsReleaseFlag = 1llu << 8;
 
 base::FilePath GetFilePathFromUri(const GURL uri) {
   const std::string filepath = uri.spec();
@@ -216,6 +221,14 @@ class FwupdClientImpl : public FwupdClient {
               (value_uint64 & kInternalDeviceFlag) == kInternalDeviceFlag;
           result.Set(key, is_internal);
         }
+        if (key == "TrustFlags") {
+          uint64_t value_uint64 = 0;
+          variant_reader.PopUint64(&value_uint64);
+          const bool has_trusted_report =
+              (value_uint64 & kTrustedReportsReleaseFlag) ==
+              kTrustedReportsReleaseFlag;
+          result.Set(key, has_trusted_report);
+        }
       }
     }
     return result;
@@ -255,6 +268,19 @@ class FwupdClientImpl : public FwupdClient {
       absl::optional<int> priority = dict.FindInt("Urgency");
       const std::string* uri = dict.FindString("Uri");
       const std::string* checksum = dict.FindString("Checksum");
+      const std::string* remote_id = dict.FindString("RemoteId");
+      absl::optional<bool> trusted_report = dict.FindBool("TrustFlags");
+      bool has_trusted_report =
+          !base::FeatureList::IsEnabled(
+              features::kUpstreamTrustedReportsFirmware) ||
+          (trusted_report.has_value() && trusted_report.value());
+
+      // Skip release if its coming from LVFS and feature flag not enabled
+      if (remote_id && *remote_id == "lvfs" &&
+          !base::FeatureList::IsEnabled(
+              features::kUpstreamTrustedReportsFirmware)) {
+        continue;
+      }
 
       base::FilePath filepath;
       if (uri) {
@@ -283,8 +309,8 @@ class FwupdClientImpl : public FwupdClient {
       }
       int priority_value = priority.value_or(UpdatePriority::kLow);
 
-      const bool success =
-          version && !filepath.empty() && !sha_checksum.empty();
+      const bool success = version && !filepath.empty() &&
+                           !sha_checksum.empty() && has_trusted_report;
       // TODO(michaelcheco): Confirm that this is the expected behavior.
       if (success) {
         VLOG(1) << "fwupd: Found update version for device: " << device_id
