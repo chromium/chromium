@@ -201,21 +201,4 @@ void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
       std::move(callback));
 }
 
-// TODO(b/261907495): Update this method to return the appropriate icon effects
-// for each promise status. These icon effects are currently placeholders.
-IconEffects GetPromiseIconEffectsForAppStatus(ash::AppStatus status) {
-  switch (status) {
-    // These statuses are not applicable to promise apps.
-    case ash::AppStatus::kBlocked:
-    case ash::AppStatus::kPaused:
-    case ash::AppStatus::kReady:
-      NOTREACHED();
-      return IconEffects::kNone;
-    case ash::AppStatus::kPending:
-      return IconEffects::kPaused;
-    case ash::AppStatus::kInstalling:
-      return IconEffects::kCrOsStandardMask;
-  }
-}
-
 }  // namespace apps

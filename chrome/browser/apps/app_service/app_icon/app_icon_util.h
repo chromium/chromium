@@ -92,8 +92,6 @@ void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
                                  const std::vector<std::string>& app_ids,
                                  base::OnceCallback<void()> callback);
 
-IconEffects GetPromiseIconEffectsForAppStatus(ash::AppStatus status);
-
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_UTIL_H_

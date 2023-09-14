@@ -6344,7 +6344,8 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
   EXPECT_EQ(other_item->app_status, ash::AppStatus::kPending);
 }
 
-TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
+TEST_F(ChromeShelfControllerPromiseAppsTest,
+       ShelfItemFetchesAndAppliesEffectsToIcon) {
   // Register the main promise app that we will check the updates for.
   const apps::PackageId package_id =
       apps::PackageId(apps::AppType::kArc, "com.example.test");
@@ -6375,28 +6376,9 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, ShelfItemFetchesAndUpdatesIcon) {
   ash::ShelfID id(package_id.ToString());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   SkBitmap result_bitmap = *item->image.bitmap();
-  SkBitmap expected_bitmap = ApplyEffectsToBitmap(
-      base_bitmap,
-      apps::GetPromiseIconEffectsForAppStatus(ash::AppStatus::kPending));
+  SkBitmap expected_bitmap =
+      ApplyEffectsToBitmap(base_bitmap, apps::IconEffects::kCrOsStandardMask);
   EXPECT_TRUE(gfx::BitmapsAreEqual(result_bitmap, expected_bitmap));
-
-  // Change the status of the promise app.
-  apps::PromiseAppPtr update = std::make_unique<apps::PromiseApp>(package_id);
-  update->status = apps::PromiseStatus::kInstalling;
-  cache()->OnPromiseApp(std::move(update));
-  WaitForItemUpdate();
-
-  // Verify that the shelf item has an updated icon.
-  const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
-  SkBitmap result_updated_bitmap = *item_after_update->image.bitmap();
-  SkBitmap expected_updated_bitmap = ApplyEffectsToBitmap(
-      base_bitmap,
-      apps::GetPromiseIconEffectsForAppStatus(ash::AppStatus::kInstalling));
-  EXPECT_TRUE(
-      gfx::BitmapsAreEqual(result_updated_bitmap, expected_updated_bitmap));
-
-  // Confirm the initial icon and the updated icon are different.
-  EXPECT_FALSE(gfx::BitmapsAreEqual(result_bitmap, result_updated_bitmap));
 }
 
 TEST_F(ChromeShelfControllerPromiseAppsTest, RemoveShelfItem) {

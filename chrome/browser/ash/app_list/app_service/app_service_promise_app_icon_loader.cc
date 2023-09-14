@@ -60,12 +60,8 @@ void AppServicePromiseAppIconLoader::FetchImage(const std::string& id) {
   if (!promise_app) {
     return;
   }
-  ash::AppStatus status =
-      promise_app ? ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
-                        promise_app->status)
-                  : ash::AppStatus::kPending;
   CallLoadIcon(apps::PackageId::FromString(id).value(),
-               apps::GetPromiseIconEffectsForAppStatus(status));
+               apps::IconEffects::kCrOsStandardMask);
 }
 
 void AppServicePromiseAppIconLoader::ClearImage(const std::string& id) {
@@ -87,10 +83,7 @@ void AppServicePromiseAppIconLoader::OnPromiseAppUpdate(
   if (update.Status() == apps::PromiseStatus::kRemove) {
     return;
   }
-  CallLoadIcon(update.PackageId(),
-               apps::GetPromiseIconEffectsForAppStatus(
-                   ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
-                       update.Status())));
+  CallLoadIcon(update.PackageId(), apps::IconEffects::kCrOsStandardMask);
 }
 
 void AppServicePromiseAppIconLoader::OnPromiseAppRegistryCacheWillBeDestroyed(
