@@ -38,6 +38,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     // Java exception stack traces
     "exception_info",
 
+    // base
+    "base-OpenApkAssetError",
+
     // gpu
     "gpu-driver",
     "gpu-psver",
