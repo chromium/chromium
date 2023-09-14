@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -485,7 +486,7 @@ void HoldingSpaceViewDelegate::WriteDragDataForView(views::View* sender,
   // Payload.
   std::vector<ui::FileInfo> filenames;
   for (const HoldingSpaceItemView* view : selection) {
-    const base::FilePath& file_path = view->item()->file_path();
+    const base::FilePath& file_path = view->item()->file().file_path;
     filenames.push_back(ui::FileInfo(file_path, file_path.BaseName()));
   }
   data->SetFilenames(filenames);
@@ -514,7 +515,7 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
             const bool remove = base::Contains(items, item);
             if (remove) {
               if (HoldingSpaceItem::IsSuggestionType(item->type())) {
-                suggested_file_paths.push_back(item->file_path());
+                suggested_file_paths.push_back(item->file().file_path);
               }
               holding_space_metrics::RecordItemAction(
                   {item}, holding_space_metrics::ItemAction::kRemove);
@@ -614,7 +615,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     // are already pinned will be ignored.
     is_pinnable = is_pinnable.value_or(false) ||
                   !model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
-                                       item->file_path());
+                                       item->file().file_path);
   }
 
   struct MenuItemModel {
@@ -651,7 +652,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
 
     std::string mime_type;
     const bool is_image =
-        net::GetMimeTypeFromFile(selection.front()->item()->file_path(),
+        net::GetMimeTypeFromFile(selection.front()->item()->file().file_path,
                                  &mime_type) &&
         net::MatchesMimeType(kMimeTypeImage, mime_type);
 

@@ -899,8 +899,8 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
   service()
       ->UpdateItem(item->id())
       ->SetAccessibleName(in_progress_download->GetAccessibleName())
-      .SetBackingFile(HoldingSpaceFile(file_system_type, file_system_url),
-                      file_path)
+      .SetBackingFile(
+          HoldingSpaceFile(file_path, file_system_type, file_system_url))
       .SetInProgressCommands(std::move(in_progress_commands))
       .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())

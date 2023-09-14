@@ -58,10 +58,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetAccessibleName(
         const absl::optional<std::u16string>& accessible_name);
 
-    // TODO(http://b/288471183): Remove file path.
     // Sets the backing file for the item and returns a reference to `this`.
-    ScopedItemUpdate& SetBackingFile(const HoldingSpaceFile& file,
-                                     const base::FilePath& file_path);
+    ScopedItemUpdate& SetBackingFile(const HoldingSpaceFile& file);
 
     // Sets the commands for an in-progress item which are shown in the item's
     // context menu and possibly, in the case of cancel/pause/resume, as
@@ -101,7 +99,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
 
     absl::optional<absl::optional<std::u16string>> accessible_name_;
     absl::optional<HoldingSpaceFile> file_;
-    absl::optional<base::FilePath> file_path_;
     absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
         in_progress_commands_;
     absl::optional<HoldingSpaceProgress> progress_;

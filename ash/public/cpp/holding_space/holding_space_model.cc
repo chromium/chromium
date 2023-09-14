@@ -39,8 +39,8 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   }
 
   // Update backing file.
-  if (file_ && file_path_) {
-    if (item_->SetBackingFile(file_.value(), file_path_.value())) {
+  if (file_) {
+    if (item_->SetBackingFile(file_.value())) {
       updated_fields |= HoldingSpaceModelObserver::UpdatedField::kBackingFile;
     }
   }
@@ -104,10 +104,8 @@ HoldingSpaceModel::ScopedItemUpdate::SetAccessibleName(
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
-    const HoldingSpaceFile& file,
-    const base::FilePath& file_path) {
+    const HoldingSpaceFile& file) {
   file_ = file;
-  file_path_ = file_path;
   return *this;
 }
 
@@ -331,7 +329,7 @@ const HoldingSpaceItem* HoldingSpaceModel::GetItem(
   auto item_it = base::ranges::find_if(
       items_,
       [&type, &file_path](const std::unique_ptr<HoldingSpaceItem>& item) {
-        return item->type() == type && item->file_path() == file_path;
+        return item->type() == type && item->file().file_path == file_path;
       });
 
   if (item_it == items_.end())

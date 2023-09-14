@@ -1723,7 +1723,7 @@ TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Files) {
               holding_space_item->type());
 
     EXPECT_EQ(share_target.file_attachments[i].file_path(),
-              holding_space_item->file_path());
+              holding_space_item->file().file_path);
   }
 }
 

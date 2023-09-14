@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
@@ -474,7 +475,7 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
   // Pin.
   const bool is_item_pinned =
       HoldingSpaceController::Get()->model()->ContainsItem(
-          HoldingSpaceItem::Type::kPinnedFile, item()->file_path());
+          HoldingSpaceItem::Type::kPinnedFile, item()->file().file_path);
 
   // Unpinning `item()` may result in the destruction of this view.
   auto weak_ptr = weak_factory_.GetWeakPtr();
@@ -509,7 +510,7 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   // Pin.
   const bool is_item_pinned =
       HoldingSpaceController::Get()->model()->ContainsItem(
-          HoldingSpaceItem::Type::kPinnedFile, item()->file_path());
+          HoldingSpaceItem::Type::kPinnedFile, item()->file().file_path);
   primary_action_pin_->SetToggled(!is_item_pinned);
   primary_action_pin_->SetVisible(!is_item_in_progress);
 

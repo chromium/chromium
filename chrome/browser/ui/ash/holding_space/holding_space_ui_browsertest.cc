@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
   ASSERT_EQ(1u, download_chips.size());
 
   PerformDragAndDrop(/*from=*/download_chips[0], /*to=*/target());
-  EXPECT_EQ(download_file->file_path(), target()->copied_file_path());
+  EXPECT_EQ(download_file->file().file_path, target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
   ASSERT_EQ(3u, pinned_file_chips.size());
 
   PerformDragAndDrop(/*from=*/pinned_file_chips.back(), /*to=*/target());
-  EXPECT_EQ(pinned_file->file_path(), target()->copied_file_path());
+  EXPECT_EQ(pinned_file->file().file_path, target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
   ASSERT_EQ(1u, screen_capture_views.size());
 
   PerformDragAndDrop(/*from=*/screen_capture_views[0], /*to=*/target());
-  EXPECT_EQ(screenshot_file->file_path(), target()->copied_file_path());
+  EXPECT_EQ(screenshot_file->file().file_path, target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
         .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
           ASSERT_EQ(items.size(), 1u);
           ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kPinnedFile);
-          ASSERT_EQ(items[0]->file_path(), file_paths[0]);
+          ASSERT_EQ(items[0]->file().file_path, file_paths[0]);
           run_loop.Quit();
         });
 
@@ -841,9 +841,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest,
         .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
           ASSERT_EQ(items.size(), 2u);
           ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kPinnedFile);
-          ASSERT_EQ(items[0]->file_path(), file_paths[1]);
+          ASSERT_EQ(items[0]->file().file_path, file_paths[1]);
           ASSERT_EQ(items[1]->type(), HoldingSpaceItem::Type::kPinnedFile);
-          ASSERT_EQ(items[1]->file_path(), file_paths[2]);
+          ASSERT_EQ(items[1]->file().file_path, file_paths[2]);
           run_loop.Quit();
         });
 

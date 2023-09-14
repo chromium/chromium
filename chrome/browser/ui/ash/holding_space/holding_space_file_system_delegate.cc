@@ -75,7 +75,8 @@ bool IsArcFileSystemDisconnected(Profile* profile) {
 // Returns whether the item is backed by an Android file. Can be used with
 // non-initialized items.
 bool ItemBackedByAndroidFile(const HoldingSpaceItem* item) {
-  return file_manager::util::GetAndroidFilesPath().IsParent(item->file_path());
+  return file_manager::util::GetAndroidFilesPath().IsParent(
+      item->file().file_path);
 }
 
 }  // namespace
@@ -174,7 +175,7 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
       if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
         requirements.must_be_newer_than = kMaxFileAge;
     }
-    ScheduleFilePathValidityCheck({item->file_path(), requirements});
+    ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
 }
 
@@ -242,8 +243,8 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
          const HoldingSpaceItem* item) {
         return base::ranges::any_of(
             deleted_paths, [&](const base::FilePath& deleted_path) {
-              return item->file_path() == deleted_path ||
-                     deleted_path.IsParent(item->file_path());
+              return item->file().file_path == deleted_path ||
+                     deleted_path.IsParent(item->file().file_path);
             });
       },
       std::cref(deleted_paths)));
@@ -297,7 +298,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
       // is already being watched, this will no-op. Note that it is not
       // necessary to register a watch if the `item` is in-progress since
       // in-progress items are not subject to validity checks.
-      AddWatchForParent(item->file_path());
+      AddWatchForParent(item->file().file_path);
       continue;
     }
 
@@ -318,8 +319,8 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     // device is not currently mounted. The logic will have to be updated if
     // support for restoring items across removable device mounts becomes a
     // requirement.
-    const GURL file_system_url =
-        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
+    const GURL file_system_url = holding_space_util::ResolveFileSystemUrl(
+        profile(), item->file().file_path);
     if (file_system_url.is_empty())
       continue;
 
@@ -333,7 +334,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
       if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
         requirements.must_be_newer_than = kMaxFileAge;
     }
-    ScheduleFilePathValidityCheck({item->file_path(), requirements});
+    ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
 }
 
@@ -341,7 +342,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const HoldingSpaceItem* item : items)
-    MaybeRemoveWatch(item->file_path().DirName());
+    MaybeRemoveWatch(item->file().file_path.DirName());
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
@@ -351,13 +352,13 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
 
   // In-progress items are not subject to validity checks.
   if (item->progress().IsComplete())
-    AddWatchForParent(item->file_path());
+    AddWatchForParent(item->file().file_path);
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  AddWatchForParent(item->file_path());
+  AddWatchForParent(item->file().file_path);
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
@@ -371,15 +372,15 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
   for (auto& item : model()->items()) {
     if (item->IsInitialized())
       continue;
-    if (!volume.mount_path().IsParent(item->file_path()))
+    if (!volume.mount_path().IsParent(item->file().file_path)) {
       continue;
-
+    }
     holding_space_util::ValidityRequirement requirements;
     if (!features::IsHoldingSpacePredictabilityEnabled()) {
       if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
         requirements.must_be_newer_than = kMaxFileAge;
     }
-    ScheduleFilePathValidityCheck({item->file_path(), requirements});
+    ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
 }
 
@@ -435,8 +436,10 @@ void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
   // the existence of these backing files to trigger removal of any holding
   // space items that no longer exist.
   for (const auto& item : model()->items()) {
-    if (file_path.IsParent(item->file_path()))
-      ScheduleFilePathValidityCheck({item->file_path(), /*requirements=*/{}});
+    if (file_path.IsParent(item->file().file_path)) {
+      ScheduleFilePathValidityCheck(
+          {item->file().file_path, /*requirements=*/{}});
+    }
   }
 }
 
@@ -445,7 +448,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathModified(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->InvalidateItemImageIf(base::BindRepeating(
       [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
-        return item->file_path() == file_path;
+        return item->file().file_path == file_path;
       },
       file_path));
 }
@@ -461,14 +464,14 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
   // Maps item ID to the item's new file path.
   std::vector<std::pair<std::string, base::FilePath>> items_to_move;
   for (auto& item : model()->items()) {
-    if (src == item->file_path()) {
+    if (src == item->file().file_path) {
       items_to_move.push_back(std::make_pair(item->id(), dst));
       continue;
     }
 
-    if (src.IsParent(item->file_path())) {
+    if (src.IsParent(item->file().file_path)) {
       base::FilePath target_path(dst);
-      if (!src.AppendRelativePath(item->file_path(), &target_path)) {
+      if (!src.AppendRelativePath(item->file().file_path, &target_path)) {
         NOTREACHED();
         continue;
       }
@@ -512,8 +515,9 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
 
   // Mark conflicts with existing items that arise from the move for removal.
   for (auto& item : model()->items()) {
-    if (dst == item->file_path() || dst.IsParent(item->file_path()))
+    if (dst == item->file().file_path || dst.IsParent(item->file().file_path)) {
       item_ids_to_remove.insert(item->id());
+    }
   }
 
   // Remove items which have been marked for removal.
@@ -532,7 +536,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
 
     // Update.
     model()->UpdateItem(id)->SetBackingFile(
-        HoldingSpaceFile(file_system_type, file_system_url), file_path);
+        HoldingSpaceFile(file_path, file_system_type, file_system_url));
   }
 
   // If a backing file update occurred, it's possible that there are no longer
@@ -596,7 +600,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
         if (arc_file_system_disconnected && ItemBackedByAndroidFile(item))
           return false;
 
-        return base::Contains(*invalid_paths, item->file_path());
+        return base::Contains(*invalid_paths, item->file().file_path);
       },
       arc_file_system_disconnected, &invalid_paths));
 
@@ -608,19 +612,21 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
       continue;
 
     if (!item->IsInitialized() &&
-        base::Contains(valid_paths, item->file_path())) {
+        base::Contains(valid_paths, item->file().file_path)) {
       items_to_initialize.push_back(item.get());
     }
   }
 
   for (auto* item : items_to_initialize) {
+    const base::FilePath& file_path = item->file().file_path;
     const GURL file_system_url =
-        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
+        holding_space_util::ResolveFileSystemUrl(profile(), file_path);
     const HoldingSpaceFile::FileSystemType file_system_type =
         holding_space_util::ResolveFileSystemType(profile(), file_system_url);
 
     model()->InitializeOrRemoveItem(
-        item->id(), HoldingSpaceFile(file_system_type, file_system_url));
+        item->id(),
+        HoldingSpaceFile(file_path, file_system_type, file_system_url));
   }
 }
 
@@ -640,7 +646,7 @@ void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
   const bool remove_watch =
       base::ranges::none_of(model()->items(), [&file_path](const auto& item) {
         return item->IsInitialized() &&
-               item->file_path().DirName() == file_path;
+               item->file().file_path.DirName() == file_path;
       });
 
   if (!remove_watch)
@@ -656,7 +662,7 @@ void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->RemoveIf(base::BindRepeating(
       [](const base::FilePath& parent_path, const HoldingSpaceItem* item) {
-        return parent_path.IsParent(item->file_path());
+        return parent_path.IsParent(item->file().file_path);
       },
       parent_path));
 }
@@ -673,7 +679,7 @@ void HoldingSpaceFileSystemDelegate::ClearNonInitializedItems() {
         // initialization may have been delayed - for example due to
         // issues/delays with initializing ARC.
         const GURL url = holding_space_util::ResolveFileSystemUrl(
-            profile, item->file_path());
+            profile, item->file().file_path);
         return url.is_empty();
       },
       profile()));

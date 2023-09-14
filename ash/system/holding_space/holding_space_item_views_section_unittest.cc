@@ -171,10 +171,11 @@ TEST_P(HoldingSpaceItemViewsSectionTest, PartiallyInitializedItemsDontShow) {
   model()->InitializeOrRemoveItem(
       partially_initialized_item->id(),
       HoldingSpaceFile(
+          partially_initialized_item->file().file_path,
           HoldingSpaceFile::FileSystemType::kTest,
-          GURL(base::StrCat(
-              {"filesystem:",
-               partially_initialized_item->file_path().BaseName().value()}))));
+          GURL(base::StrCat({"filesystem:", partially_initialized_item->file()
+                                                .file_path.BaseName()
+                                                .value()}))));
 
   views = item_views_section()->GetHoldingSpaceItemViews();
   ASSERT_EQ(views.size(), 2u);

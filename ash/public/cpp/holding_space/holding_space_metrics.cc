@@ -144,7 +144,7 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
     // Record "HoldingSpace.Item.Action.{action}.Extension".
     base::UmaHistogramExactLinear(base::StrCat({"HoldingSpace.Item.Action.",
                                                 action_string, ".Extension"}),
-                                  FilePathToExtension(item->file_path()),
+                                  FilePathToExtension(item->file().file_path),
                                   kExtensionsSize);
 
     // Record "HoldingSpace.Item.Action.{action}.FileSystemType".

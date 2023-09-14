@@ -45,12 +45,12 @@ using HoldingSpaceItemTest = testing::TestWithParam<HoldingSpaceItem::Type>;
 
 // Tests round-trip serialization for each holding space item type.
 TEST_P(HoldingSpaceItemTest, Serialization) {
-  const base::FilePath file_path("file_path");
-  const HoldingSpaceFile file(HoldingSpaceFile::FileSystemType::kTest,
+  const HoldingSpaceFile file(base::FilePath("file_path"),
+                              HoldingSpaceFile::FileSystemType::kTest,
                               GURL("filesystem:file_system_url"));
 
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), file, file_path,
+      /*type=*/GetParam(), file,
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
   const base::Value::Dict serialized_holding_space_item =
@@ -75,9 +75,9 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
 TEST_P(HoldingSpaceItemTest, DeserializeId) {
   const auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem:file_system_url")),
-      base::FilePath("file_path"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
   const base::Value::Dict serialized_holding_space_item =
@@ -97,9 +97,9 @@ TEST_P(HoldingSpaceItemTest, AccessibleName) {
   // Create a `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      base::FilePath("file_path"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
   // Initially the accessible name should be based on the backing file.
@@ -133,9 +133,9 @@ TEST_P(HoldingSpaceItemTest, InProgressCommands) {
   // Create an in-progress `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      base::FilePath("file_path"),
       HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
@@ -231,9 +231,9 @@ TEST_P(HoldingSpaceItemTest, Progress) {
   // Create a `holding_space_item` w/ explicitly specified progress.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      base::FilePath("file_path"),
       HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
@@ -268,9 +268,9 @@ TEST_P(HoldingSpaceItemTest, Progress) {
   // Create a `holding_space_item` w/ default progress.
   holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      base::FilePath("file_path"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
   // Since not specified during construction, progress should be complete.
@@ -287,9 +287,9 @@ TEST_P(HoldingSpaceItemTest, SecondaryText) {
   // Create a `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      base::FilePath("file_path"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
   // Initially the secondary text should be absent.
@@ -313,9 +313,9 @@ TEST_P(HoldingSpaceItemTest, SecondaryTextColor) {
   // Create a `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      base::FilePath("file_path"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
   // Initially the secondary text color id should be absent.
@@ -344,9 +344,9 @@ TEST_P(HoldingSpaceItemTest, Text) {
   // Create a `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(),
-      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+      HoldingSpaceFile(base::FilePath("file_path"),
+                       HoldingSpaceFile::FileSystemType::kTest,
                        GURL("filesystem::file_system_url")),
-      base::FilePath("file_path"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
   // Initially the text should reflect the backing file.

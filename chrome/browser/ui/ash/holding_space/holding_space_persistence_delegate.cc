@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -27,7 +28,7 @@ namespace {
 // backed items in a secondary user profile.
 bool ShouldIgnoreItem(Profile* profile, const HoldingSpaceItem* item) {
   return file_manager::util::GetAndroidFilesPath().IsParent(
-             item->file_path()) &&
+             item->file().file_path) &&
          !ProfileHelper::IsPrimaryProfile(profile);
 }
 

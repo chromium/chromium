@@ -144,7 +144,7 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
       holding_space_util::ResolveFileSystemType(profile, file_system_url);
 
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      type, HoldingSpaceFile(file_system_type, file_system_url), file_path,
+      type, HoldingSpaceFile(file_path, file_system_type, file_system_url),
       progress,
       base::BindLambdaForTesting(
           [&](HoldingSpaceItem::Type type, const base::FilePath& path) {

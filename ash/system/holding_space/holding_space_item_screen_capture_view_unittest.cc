@@ -67,9 +67,9 @@ class HoldingSpaceItemScreenCaptureViewTest
 
     item_ = HoldingSpaceItem::CreateFileBackedItem(
         type,
-        HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest,
+        HoldingSpaceFile(base::FilePath("file_path"),
+                         HoldingSpaceFile::FileSystemType::kTest,
                          GURL("filesystem:file_system_url")),
-        base::FilePath("file_path"),
         base::BindOnce(
             [](HoldingSpaceItem::Type type, const base::FilePath& file_path)
                 -> std::unique_ptr<HoldingSpaceImage> {

@@ -44,8 +44,9 @@ absl::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
   for (const auto& candidate_item : model.items()) {
     if (candidate_item.get() == item)
       continue;
-    if (candidate_item->file_path() == item->file_path())
+    if (candidate_item->file().file_path == item->file().file_path) {
       return candidate_item.get();
+    }
   }
   return absl::nullopt;
 }
@@ -147,10 +148,10 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
 
     items.push_back(HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kPinnedFile,
-        HoldingSpaceFile(holding_space_util::ResolveFileSystemType(
+        HoldingSpaceFile(file_system_url.path(),
+                         holding_space_util::ResolveFileSystemType(
                              profile_, file_system_url.ToGURL()),
                          file_system_url.ToGURL()),
-        file_system_url.path(),
         base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 
     // When pinning an item which already exists in holding space, the pin
@@ -297,8 +298,8 @@ HoldingSpaceKeyedService::AddItems(
     }
     // Ignore any `items` that already exist in the `holding_space_model_` if
     // `allow_duplicates` is false.
-    if (!allow_duplicates &&
-        holding_space_model_.ContainsItem(item->type(), item->file_path())) {
+    if (!allow_duplicates && holding_space_model_.ContainsItem(
+                                 item->type(), item->file().file_path)) {
       result.push_back(std::cref(base::EmptyString()));
       continue;
     }
@@ -491,9 +492,10 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceKeyedService::CreateItemOfType(
   return HoldingSpaceItem::CreateFileBackedItem(
       type,
       HoldingSpaceFile(
+          file_path,
           holding_space_util::ResolveFileSystemType(profile_, file_system_url),
           file_system_url),
-      file_path, progress,
+      progress,
       base::BindOnce(
           &holding_space_util::ResolveImageWithPlaceholderImageSkiaResolver,
           &thumbnail_loader_, placeholder_image_skia_resolver));

@@ -770,7 +770,7 @@ TEST_F(ScanServiceTest, HoldingSpaceScan) {
       HoldingSpaceItem* scanned_item =
           holding_space_model->items()[num_items_in_holding_space++].get();
       EXPECT_EQ(scanned_item->type(), HoldingSpaceItem::Type::kScan);
-      EXPECT_EQ(scanned_item->file_path(), saved_scan_path);
+      EXPECT_EQ(scanned_item->file().file_path, saved_scan_path);
     }
 
     // Remove the scan data from FakeLorgnetteScannerManager so the scan will

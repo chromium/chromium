@@ -100,7 +100,7 @@ bool HoldingSpaceTestApi::IsShowingInShelf() {
 
 const base::FilePath& HoldingSpaceTestApi::GetHoldingSpaceItemFilePath(
     const views::View* item_view) const {
-  return HoldingSpaceItemView::Cast(item_view)->item()->file_path();
+  return HoldingSpaceItemView::Cast(item_view)->item()->file().file_path;
 }
 
 const std::string& HoldingSpaceTestApi::GetHoldingSpaceItemId(
