@@ -118,7 +118,16 @@ void PartitionAllocator::init(PartitionOptions opts) {
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
   partition_root_.Init(opts);
-  MemoryReclaimer::Instance()->RegisterPartition(&partition_root_);
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // The MemoryReclaimer won't have write access to the partition, so skip
+  // registration.
+  const bool use_memory_reclaimer = !opts.thread_isolation.enabled;
+#else
+  constexpr bool use_memory_reclaimer = true;
+#endif
+  if (use_memory_reclaimer) {
+    MemoryReclaimer::Instance()->RegisterPartition(&partition_root_);
+  }
 }
 
 }  // namespace partition_alloc
