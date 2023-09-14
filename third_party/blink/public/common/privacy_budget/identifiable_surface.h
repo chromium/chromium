@@ -279,17 +279,17 @@ class IdentifiableSurface {
     kDocumentCreated_NavigationSourceId = 3,
     kWorkerClientAdded_ClientSourceId = 4,
     kWorkerClientAdded_WorkerType = 5,
-    kMax = kWorkerClientAdded_WorkerType
+    kMaxValue = kWorkerClientAdded_WorkerType
   };
 
   enum class WorkerType : uint64_t {
     kSharedWorker = 0,
     kServiceWorker = 1,
-    kMax = kServiceWorker,
+    kMaxValue = kServiceWorker,
   };
 
   static_assert(
-      static_cast<uint64_t>(ReservedSurfaceMetrics::kMax) <
+      static_cast<uint64_t>(ReservedSurfaceMetrics::kMaxValue) <
           std::min(
               ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
               ukm::builders::Identifiability::kStudyGeneration_626NameHash),
@@ -357,9 +357,9 @@ class IdentifiableSurface {
     kScripting = 28,
     kDisplayState = 29,
     // We can use enum values up to and including 63, see static_assert below.
-    kMax = kDisplayState
+    kMaxValue = kDisplayState
   };
-  static_assert(static_cast<int>(MediaFeatureName::kMax) < 64,
+  static_assert(static_cast<int>(MediaFeatureName::kMaxValue) < 64,
                 "MediaFeatureName only allows values < 64 since we use it in "
                 "a uint64_t bitfield inside document.h to track if a media "
                 "feature has already been sampled");
