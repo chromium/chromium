@@ -9,18 +9,72 @@ import os
 import textwrap
 import unittest
 from datetime import datetime
+from typing import List
 from unittest import mock
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.tool.commands.update_metadata import UpdateMetadata
+from blinkpy.web_tests.builder_list import BuilderList
+from blinkpy.web_tests.port.base import VirtualTestSuite
 from blinkpy.wpt_tests.wpt_adapter import WPTAdapter
 
 
 class WPTAdapterTest(unittest.TestCase):
     def setUp(self):
         self.host = MockHost()
+        self.host.builders = BuilderList({
+            'linux-rel': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Linux', 'Release'],
+                'steps': {
+                    'blink_wpt_tests': {
+                        'uses_wptrunner': True,
+                    },
+                    'fake_flag_blink_wpt_tests': {
+                        'flag_specific': 'fake-flag',
+                        'uses_wptrunner': True,
+                    },
+                },
+            },
+            'linux-wpt-chrome-rel': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Linux', 'Release'],
+                'steps': {
+                    'blink_wpt_tests': {
+                        'uses_wptrunner': True,
+                        'product': 'chrome',
+                    },
+                },
+            },
+            'mac-rel': {
+                'port_name': 'test-mac-mac10.11',
+                'specifiers': ['Mac10.11', 'Release'],
+                'steps': {
+                    'blink_wpt_tests': {
+                        'uses_wptrunner': True,
+                    },
+                },
+            },
+        })
+
         self.fs = self.host.filesystem
         self.finder = PathFinder(self.fs)
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('FlagSpecificConfig'),
+            json.dumps([{
+                'name': 'fake-flag',
+                'args': ['--enable-features=FakeFeature'],
+                'smoke_file': 'TestLists/fake-flag',
+            }]))
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('TestLists', 'fake-flag'),
+            textwrap.dedent("""\
+                # The non-WPT test should be excluded.
+                external/wpt/dir/
+                not/a/wpt.html
+                wpt_internal/variant.html
+                """))
         self.fs.write_text_file(
             self.finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
@@ -40,6 +94,7 @@ class WPTAdapterTest(unittest.TestCase):
             self.finder.path_from_web_tests('wpt_internal', 'MANIFEST.json'),
             json.dumps({
                 'version': 8,
+                'url_base': '/wpt_internal/',
                 'items': {
                     'testharness': {
                         'variant.html': [
@@ -57,11 +112,25 @@ class WPTAdapterTest(unittest.TestCase):
 
         self._mocks = contextlib.ExitStack()
         self._mocks.enter_context(self.fs.patch_builtins())
+        vts1 = VirtualTestSuite(prefix='fake-vts-1',
+                                platforms=['Linux', 'Mac'],
+                                bases=['wpt_internal/variant.html?xyz'],
+                                args=['--enable-features=FakeFeature'])
+        vts2 = VirtualTestSuite(prefix='fake-vts-2',
+                                platforms=['Linux'],
+                                bases=['wpt_internal/'],
+                                args=['--enable-features=FakeFeature'])
+        self._mocks.enter_context(
+            mock.patch(
+                'blinkpy.web_tests.port.test.TestPort.virtual_test_suites',
+                return_value=[vts1, vts2]))
+
         self.output_stream = io.StringIO()
         stream_mock = mock.Mock(wraps=self.output_stream)
         stream_mock.isatty.return_value = False
         stream_mock.fileno.return_value = 1
         self._mocks.enter_context(mock.patch('sys.stdout', stream_mock))
+
         self.results_processor = mock.Mock()
         self.results_processor.stream_results.return_value = (
             contextlib.nullcontext(mock.Mock()))
@@ -69,6 +138,20 @@ class WPTAdapterTest(unittest.TestCase):
         self._mocks.enter_context(
             mock.patch('blinkpy.wpt_tests.wpt_adapter.WPTResultsProcessor',
                        return_value=self.results_processor))
+
+        tool = mock.Mock(wraps=self.host)
+        tool.main = self._mock_tool_main
+        self._mocks.enter_context(
+            mock.patch('blinkpy.wpt_tests.wpt_adapter.BlinkTool',
+                       return_value=tool))
+
+    def _mock_tool_main(self, args: List[str]):
+        command_factory = {
+            'update-metadata': lambda: UpdateMetadata(self.host),
+        }[args[1]]
+        command = command_factory()
+        options, args = command.parse_args(args[2:])
+        return command.check_arguments_and_execute(options, args, self.host)
 
     def tearDown(self):
         self._mocks.close()
@@ -189,21 +272,6 @@ class WPTAdapterTest(unittest.TestCase):
                 }, set(options.binary_args))
 
     def test_flag_specific(self):
-        self.fs.write_text_file(
-            self.finder.path_from_web_tests('TestLists', 'fake-flag'),
-            textwrap.dedent("""\
-                # The non-WPT test should be excluded.
-                external/wpt/dir/
-                not/a/wpt.html
-                wpt_internal/variant.html
-                """))
-        self.fs.write_text_file(
-            self.finder.path_from_web_tests('FlagSpecificConfig'),
-            json.dumps([{
-                'name': 'fake-flag',
-                'args': ['--enable-features=FakeFeature'],
-                'smoke_file': 'TestLists/fake-flag',
-            }]))
         adapter = WPTAdapter.from_args(
             self.host, ['--flag-specific=fake-flag', '--no-manifest-update'])
         with adapter.test_env() as options:
@@ -322,3 +390,237 @@ class WPTAdapterTest(unittest.TestCase):
             mock.call.open_url('file:///mock-checkout/out/Release/'
                                'layout-test-results/results.html'),
         ])
+
+    def write_contents(self, path: str, contents: str):
+        self.fs.write_text_file(self.finder.path_from_web_tests(path),
+                                textwrap.dedent(contents))
+
+    def assert_contents(self, path: str, contents: str):
+        self.assertEqual(
+            self.fs.read_text_file(self.finder.path_from_web_tests(path)),
+            textwrap.dedent(contents))
+
+    def write_wptreport(self, options, results, **run_info):
+        self.fs.write_text_file(
+            options.log_wptreport[0].name,
+            json.dumps({
+                'run_info': {
+                    'os': 'linux',
+                    'port': 'linux',
+                    'debug': False,
+                    'flag_specific': '',
+                    'product': 'content_shell',
+                    **run_info,
+                },
+                'subsuites': {
+                    '': {
+                        'virtual_suite': '',
+                    },
+                    'fake-vts-1': {
+                        'virtual_suite': 'fake-vts-1',
+                    },
+                    'fake-vts-2': {
+                        'virtual_suite': 'fake-vts-2',
+                    },
+                },
+                'results': results,
+            }))
+
+    def test_reset_results_pass_to_fail(self):
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--reset-results'])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/dir/reftest.html',
+                'subsuite': '',
+                'status': 'FAIL',
+                'expected': 'PASS',
+                'subtests': [],
+            }])
+        self.assert_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected: FAIL
+            """)
+
+    def test_reset_results_pass_to_flaky(self):
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--reset-results'])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/dir/reftest.html',
+                'subsuite': '',
+                'status': 'FAIL',
+                'expected': 'PASS',
+                'subtests': [],
+            }, {
+                'test': '/dir/reftest.html',
+                'subsuite': '',
+                'status': 'PASS',
+                'subtests': [],
+            }])
+        self.assert_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected: [PASS, FAIL]
+            """)
+
+    def test_reset_results_fail_to_pass(self):
+        self.write_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected: FAIL
+            """)
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--reset-results'])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/dir/reftest.html',
+                'subsuite': '',
+                'status': 'PASS',
+                'expected': 'FAIL',
+                'subtests': [],
+            }])
+        self.assertFalse(
+            self.fs.exists(
+                self.finder.path_from_wpt_tests('dir', 'reftest.html.ini')))
+
+    def test_reset_results_fail_to_pass_chrome_only(self):
+        self.write_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected: FAIL
+            """)
+        adapter = WPTAdapter.from_args(
+            self.host,
+            ['--no-manifest-update', '--reset-results', '--product=chrome'])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/dir/reftest.html',
+                'subsuite': '',
+                'status': 'PASS',
+                'expected': 'FAIL',
+                'subtests': [],
+            }],
+                                 product='chrome')
+        self.assert_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected:
+                if product == "content_shell": FAIL
+            """)
+
+    def test_reset_results_fail_to_pass_flag_specific_only(self):
+        self.write_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected: FAIL
+            """)
+        adapter = WPTAdapter.from_args(self.host, [
+            '--no-manifest-update',
+            '--reset-results',
+            '--flag-specific=fake-flag',
+        ])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/dir/reftest.html',
+                'subsuite': '',
+                'status': 'PASS',
+                'expected': 'FAIL',
+                'subtests': [],
+            }],
+                                 flag_specific='fake-flag')
+        self.assert_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected:
+                if flag_specific == "": FAIL
+            """)
+
+    def test_reset_results_keep_unmanaged_branches(self):
+        self.write_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected:
+                if os == "win": FAIL
+                if os == "linux": FAIL
+            """)
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--reset-results'])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/dir/reftest.html',
+                'subsuite': '',
+                'status': 'PASS',
+                'expected': 'FAIL',
+                'subtests': [],
+            }])
+        # When possible, do not discard branches mentioning non-update
+        # properties.
+        #
+        # TODO(crbug.com/1480061): This might be too conservative. Consider
+        # clobbering all unmanaged branches.
+        self.assert_contents(
+            'external/wpt/dir/reftest.html.ini', """\
+            [reftest.html]
+              expected:
+                if os == "win": FAIL
+            """)
+
+    def test_reset_results_fail_to_pass_virtual_only(self):
+        self.write_contents(
+            'wpt_internal/variant.html.ini', """\
+            [variant.html?xyz]
+              expected: ERROR
+            """)
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--reset-results'])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/wpt_internal/variant.html?xyz',
+                'subsuite': 'fake-vts-1',
+                'status': 'OK',
+                'expected': 'ERROR',
+                'subtests': [],
+            }])
+        self.assert_contents(
+            'wpt_internal/variant.html.ini', """\
+            [variant.html?xyz]
+              expected:
+                if virtual_suite == "fake-vts-1": OK
+                ERROR
+            """)
+
+    def test_reset_results_base_passes_but_virtual_still_fails(self):
+        self.write_contents(
+            'wpt_internal/variant.html.ini', """\
+            [variant.html?xyz]
+              expected: ERROR
+            """)
+        adapter = WPTAdapter.from_args(
+            self.host, ['--no-manifest-update', '--reset-results'])
+        with adapter.test_env() as options:
+            self.write_wptreport(options, [{
+                'test': '/wpt_internal/variant.html?xyz',
+                'subsuite': '',
+                'status': 'OK',
+                'expected': 'ERROR',
+                'subtests': [],
+            }, {
+                'test': '/wpt_internal/variant.html?xyz',
+                'subsuite': 'fake-vts-1',
+                'status': 'ERROR',
+                'subtests': [],
+            }, {
+                'test': '/wpt_internal/variant.html?xyz',
+                'subsuite': 'fake-vts-2',
+                'status': 'OK',
+                'expected': 'ERROR',
+                'subtests': [],
+            }])
+        self.assert_contents(
+            'wpt_internal/variant.html.ini', """\
+            [variant.html?xyz]
+              expected:
+                if virtual_suite == "fake-vts-1": ERROR
+            """)

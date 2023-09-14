@@ -1,8 +1,9 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-r"""Run web platform tests as described in //docs/testing/web_platform_tests_wptrunner.md"""
+"""Run web platform tests as described in //docs/testing/web_platform_tests_wptrunner.md"""
 
+import argparse
 import contextlib
 import functools
 import json
@@ -20,6 +21,7 @@ from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.system import command_line
+from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.port.base import Port
@@ -437,12 +439,12 @@ class WPTAdapter:
             subsuite = {
                 'name': subsuite_name,
                 'config': {
-                    'binary_args': subsuite_args
+                    'binary_args': subsuite_args,
                 },
                 'run_info': {
-                    'virtual_suite': subsuite_name
+                    'virtual_suite': subsuite_name,
                 },
-                'include': tests
+                'include': tests,
             }
             subsuite_json[subsuite_name] = subsuite
         return include_tests, subsuite_json
@@ -522,7 +524,7 @@ class WPTAdapter:
                                         tests_root)
 
             stack.enter_context(
-                self.process_and_upload_results(runner_options))
+                self.process_and_upload_results(runner_options, tmp_dir))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
             # Changing the CWD is not ideal, but necessary for `wptserve` to
@@ -534,6 +536,13 @@ class WPTAdapter:
         with self.test_env() as runner_options:
             run = _load_entry_point(runner_options.tools_root)
             exit_code = run(**vars(runner_options))
+            # Reopen the `web-platform-tests` logger so that `update-metadata`
+            # can use it.
+            #
+            # TODO(crbug.com/1480061): Find a better way to handle logger
+            # lifecycles.
+            from wptrunner.metadata import logger
+            logger._state.has_shutdown = False
             return 1 if exit_code else 0
 
     def _checkout_3h_epoch_commit(self, tools_root: str):
@@ -569,7 +578,8 @@ class WPTAdapter:
             json.dump(run_info, file_handle)
 
     @contextlib.contextmanager
-    def process_and_upload_results(self, runner_options):
+    def process_and_upload_results(self, runner_options: argparse.Namespace,
+                                   tmp_dir: str):
         artifacts_dir = self.port.artifacts_directory()
         processor = WPTResultsProcessor(
             self.fs,
@@ -589,6 +599,68 @@ class WPTAdapter:
                 and processor.num_initial_failures > 0):
             self.port.show_results_html_file(
                 self.fs.join(artifacts_dir, 'results.html'))
+        if self.options.reset_results:
+            self._reset_results(runner_options, tmp_dir)
+
+    def _reset_results(self, runner_options: argparse.Namespace, tmp_dir: str):
+        properties_path = self.fs.join(tmp_dir, 'update_properties.json')
+        with self.fs.open_text_file_for_writing(
+                properties_path) as properties_file:
+            json.dump(self._choose_update_properties(), properties_file)
+
+        blink_tool_path = self.finder.path_from_blink_tools('blink_tool.py')
+        command = [
+            blink_tool_path,
+            'update-metadata',
+            f'--report={runner_options.log_wptreport[0].name}',
+            f'--update-properties={properties_path}',
+            '--min-samples=1',
+            '--no-trigger-jobs',
+            '--no-manifest-update',
+        ]
+        if self.options.verbose:
+            command.append('--verbose')
+        command.extend(f'--exclude={exclude}'
+                       for exclude in runner_options.exclude)
+        command.extend(runner_options.include)
+        exit_code = BlinkTool(blink_tool_path).main(command)
+        if exit_code != exit_codes.OK_EXIT_STATUS:
+            logger.error(
+                f'Failed to update expectations (exit code: {exit_code})')
+
+    def _choose_update_properties(self):
+        # Attempt to emulate the behavior of `run_web_tests.py --reset-results`,
+        # which places new `*-expected.txt` under:
+        #   `web_tests/(flag-specific/*/)?(virtual/*/)?`
+        #
+        # Modeling this behavior with `update-metadata` is complicated because
+        # updating the generic baselines may or may not cause virtual or
+        # flag-specific suites to inherit them, depending on whether or not
+        # those suites have existing baselines themselves.
+        #
+        # Therefore, use the following heuristics:
+        #  1. For the prototypical case where the test behavior is the same
+        #     everywhere, `run_wpt_tests.py --reset-results` with the implied
+        #     `product=content_shell` and `flag_specific=""` should add or
+        #     remove unconditional expectations.
+        #  2. Virtual suites are often designed to induce different behavior
+        #     (through enabling/disabling different features), so always use
+        #     it as an update property. Most tests never run in a virtual
+        #     suite, so (2) should not substantially interfere with (1).
+        #  3. Using a non-default `--product=...` or `--flag-specific=...`
+        #     should only update expectations for that product/flag-specific
+        #     suite, like `run_web_tests.py --reset-results --flag-specific`.
+        #     Product should also be mutually exclusive with the other update
+        #     properties, as (currently) only `content_shell` runs virtual or
+        #     flag-specific suites.
+        primary_properties = []
+        if self.port.driver_name() == self.port.CONTENT_SHELL_NAME:
+            primary_properties.append('virtual_suite')
+            if self.options.flag_specific:
+                primary_properties.append('flag_specific')
+        else:
+            primary_properties.append('product')
+        return {'properties': primary_properties}
 
 
 def _load_entry_point(tools_root: str):
