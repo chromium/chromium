@@ -44,6 +44,7 @@ public class AwSafeBrowsingConfigHelper {
         sEnabledByManifest = enabled;
     }
 
+    @CalledByNative
     public static boolean getSafeBrowsingEnabledByManifest() {
         return sEnabledByManifest;
     }

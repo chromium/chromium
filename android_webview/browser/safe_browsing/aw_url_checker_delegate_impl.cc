@@ -129,7 +129,11 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
 
   std::unique_ptr<AwContentsIoThreadClient> client;
   if (originated_from_service_worker) {
-    client = AwContentsIoThreadClient::GetServiceWorkerIoThreadClient();
+    if (!Java_AwSafeBrowsingConfigHelper_getSafeBrowsingEnabledByManifest(
+            env)) {
+      // Skip the check if safe browsing is disabled in the app's manifest.
+      return true;
+    }
   } else if (!rfh_id) {
     client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
   } else {
