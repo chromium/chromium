@@ -5323,6 +5323,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.CreateDeviceSuccessLatency" units="ms"
+    expires_after="2024-03-11">
+  <owner>herre@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Time during VideoSourceImpl startup taken to create a video_capture::Device
+    object. Only recorded if the creation was successful. Is a subset of
+    Media.VideoCapture.StartSourceSuccessLatency corresponding to Device
+    creation, rather than capture startup in the device.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.DelayUntilFirstFrame" units="ms"
     expires_after="2024-01-07">
   <owner>armax@chromium.org</owner>
@@ -5630,6 +5642,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts the times Starting video capture results in success or failure (due
     to eg timeouts etc).
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.StartSourceSuccessLatency" units="ms"
+    expires_after="2024-03-11">
+  <owner>herre@google.com</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Total time for a VideoSourceImpl to start a device to serve the first push
+    subscription mojo connection. Only recorded if starting is successful.
   </summary>
 </histogram>
 

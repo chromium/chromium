@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/video_capture/push_video_stream_subscription_impl.h"
 
 namespace video_capture {
@@ -43,6 +44,10 @@ void VideoSourceImpl::CreatePushSubscription(
         subscription_receiver,
     CreatePushSubscriptionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (device_status_ == DeviceStatus::kNotStarted) {
+    device_startup_start_time_ = base::TimeTicks::Now();
+  }
+
   auto subscription = std::make_unique<PushVideoStreamSubscriptionImpl>(
       std::move(subscription_receiver), std::move(subscriber),
       requested_settings, std::move(callback), &broadcaster_);
@@ -131,6 +136,8 @@ void VideoSourceImpl::OnCreateDeviceResponse(
   CHECK(!device_);
 
   if (info.result_code == media::VideoCaptureError::kNone) {
+    UmaHistogramTimes("Media.VideoCapture.CreateDeviceSuccessLatency",
+                      base::TimeTicks::Now() - device_startup_start_time_);
     device_ = info.device;
 
     if (scoped_trace)
@@ -139,6 +146,8 @@ void VideoSourceImpl::OnCreateDeviceResponse(
     // Device was created successfully.
     info.device->StartInProcess(device_start_settings_,
                                 broadcaster_.GetWeakPtr());
+    UmaHistogramTimes("Media.VideoCapture.StartSourceSuccessLatency",
+                      base::TimeTicks::Now() - device_startup_start_time_);
     device_status_ = DeviceStatus::kStarted;
     if (push_subscriptions_.empty()) {
       StopDeviceAsynchronously();
