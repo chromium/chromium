@@ -440,6 +440,10 @@ std::unique_ptr<Scorer> Scorer::CreateScorerWithImageEmbeddingModel(
 
 double Scorer::ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
                                 const FeatureMap& features) const {
+  if (!rule->feature()) {
+    return rule->weight();
+  }
+
   const std::unordered_map<std::string, double>& feature_map =
       features.features();
   double rule_score = 1.0;
