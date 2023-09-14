@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 
@@ -77,7 +76,6 @@ public class SafeBrowsingReferringAppBridgeTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1)
     public void testFromIntentExtraActivityReferrerHighVersion() {
         String appReferrer = "android-app://app.name/";
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -91,7 +89,6 @@ public class SafeBrowsingReferringAppBridgeTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1)
     public void testFromActivityReferrerHighVersion() {
         String appReferrer = "android-app://app.name/";
         setAppReferrerIntent(appReferrer);
