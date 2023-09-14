@@ -92,7 +92,7 @@ source_set("passwords") {
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/web",
-    "//ios/chrome/browser/webdata_services",
+    "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//ios/web/common",
@@ -153,7 +153,7 @@ source_set("store_factory") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/glue",
-    "//ios/chrome/browser/webdata_services",
+    "//ios/chrome/browser/webdata_services/model",
     "//ios/web/public",
     "//services/network/public/cpp",
   ]

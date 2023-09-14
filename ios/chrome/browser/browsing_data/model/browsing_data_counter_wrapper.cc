@@ -24,7 +24,7 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
-#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#include "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
 namespace {
 

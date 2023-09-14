@@ -97,7 +97,7 @@ source_set("signin") {
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/webdata_services",
+    "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util:image_util",

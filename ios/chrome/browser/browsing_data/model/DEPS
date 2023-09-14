@@ -3,7 +3,7 @@ include_rules = [
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/passwords",
   "+ios/chrome/browser/sync",
-  "+ios/chrome/browser/webdata_services",
+  "+ios/chrome/browser/webdata_services/model",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/autofill",
   "+ios/chrome/browser/bookmarks/model",

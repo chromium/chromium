@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/widget_kit/model",
-  "+ios/chrome/browser/webdata_services",
+  "+ios/chrome/browser/webdata_services/model",
   "+ios/chrome/browser/google",
 ]
