@@ -1029,7 +1029,7 @@ TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasIsCompositedIfImageChromium) {
   EXPECT_TRUE(bridge->IsValid());
   DrawSomething(bridge.get());
   EXPECT_FALSE(bridge->IsAccelerated());
-  EXPECT_TRUE(bridge->IsComposited());
+  EXPECT_TRUE(Host()->IsComposited());
 }
 
 TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasNotCompositedIfNotImageChromium) {
@@ -1039,7 +1039,7 @@ TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasNotCompositedIfNotImageChromium) {
   EXPECT_TRUE(bridge->IsValid());
   DrawSomething(bridge.get());
   EXPECT_FALSE(bridge->IsAccelerated());
-  EXPECT_FALSE(bridge->IsComposited());
+  EXPECT_FALSE(Host()->IsComposited());
 }
 
 }  // namespace blink

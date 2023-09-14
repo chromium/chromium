@@ -31,6 +31,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
       RasterModeHint hint) = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) = 0;
+  virtual bool IsHibernating() const;
+  bool IsComposited() const;
 
   virtual void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   cc::PaintFlags::FilterQuality FilterQuality() const {

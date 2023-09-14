@@ -157,10 +157,7 @@ bool CanvasRenderingContext2D::IsComposited() const {
   if (settings && !settings->GetAcceleratedCompositingEnabled()) {
     return false;
   }
-  if (Canvas2DLayerBridge* layer_bridge = canvas()->GetCanvas2DLayerBridge()) {
-    return layer_bridge->IsComposited();
-  }
-  return false;
+  return canvas()->IsComposited();
 }
 
 void CanvasRenderingContext2D::Stop() {

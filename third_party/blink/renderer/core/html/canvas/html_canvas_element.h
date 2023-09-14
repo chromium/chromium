@@ -207,6 +207,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsCanvasElement() const override { return true; }
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
+  bool IsHibernating() const override;
 
   // SurfaceLayerBridgeObserver implementation
   void OnWebLayerUpdated() override;

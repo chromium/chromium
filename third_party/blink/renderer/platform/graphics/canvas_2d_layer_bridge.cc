@@ -107,25 +107,6 @@ bool Canvas2DLayerBridge::IsAccelerated() const {
   return resource_host_ && resource_host_->ShouldTryToUseGpuRaster();
 }
 
-bool Canvas2DLayerBridge::IsComposited() const {
-  if (IsHibernating()) {
-    return false;
-  }
-
-  if (UNLIKELY(!resource_host_)) {
-    return false;
-  }
-
-  CanvasResourceProvider* resource_provider =
-      resource_host_->ResourceProvider();
-  if (UNLIKELY(!resource_provider)) {
-    return false;
-  }
-
-  return resource_provider->SupportsDirectCompositing() &&
-         !resource_host_->LowLatencyEnabled();
-}
-
 static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
                              base::TimeTicks /*idleDeadline*/) {
   if (bridge) {
@@ -254,7 +235,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
     // If this DCHECK fails, it probably means that
     // CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() was
     // called on a 2D context before this function.
-    if (IsComposited()) {
+    if (resource_host_->IsComposited()) {
       DCHECK(!!layer_);
     }
 #endif
@@ -290,7 +271,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   // TODO crbug/1090081: Check possibility to move DidDraw inside Clear.
   DidDraw();
 
-  if (IsComposited() && !layer_) {
+  if (resource_host_->IsComposited() && !layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
@@ -742,7 +723,8 @@ void Canvas2DLayerBridge::FinalizeFrame(
       constexpr unsigned kMaxCanvasAnimationBacklog = 2;
       if (frames_since_last_commit_ >=
           static_cast<int>(kMaxCanvasAnimationBacklog)) {
-        if (IsComposited() && !rate_limiter_) {
+        if (resource_host_ && resource_host_->IsComposited() &&
+            !rate_limiter_) {
           rate_limiter_ = std::make_unique<SharedContextRateLimiter>(
               kMaxCanvasAnimationBacklog);
         }
@@ -756,7 +738,7 @@ void Canvas2DLayerBridge::FinalizeFrame(
 }
 
 void Canvas2DLayerBridge::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
-  if (layer_ && IsComposited()) {
+  if (layer_ && resource_host_ && resource_host_->IsComposited()) {
     layer_->SetNeedsDisplayRect(dirty_rect);
   }
 }

@@ -1945,4 +1945,8 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
   return LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());
 }
 
+bool HTMLCanvasElement::IsHibernating() const {
+  return canvas2d_bridge_ && canvas2d_bridge_->IsHibernating();
+}
+
 }  // namespace blink

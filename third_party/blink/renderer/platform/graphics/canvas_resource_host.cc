@@ -72,4 +72,21 @@ bool CanvasResourceHost::ShouldTryToUseGpuRaster() const {
   return preferred_2d_raster_mode_ == RasterModeHint::kPreferGPU && CanUseGPU();
 }
 
+bool CanvasResourceHost::IsComposited() const {
+  if (IsHibernating()) {
+    return false;
+  }
+
+  if (UNLIKELY(!resource_provider_)) {
+    return false;
+  }
+
+  return resource_provider_->SupportsDirectCompositing() &&
+         !LowLatencyEnabled();
+}
+
+bool CanvasResourceHost::IsHibernating() const {
+  return false;
+}
+
 }  // namespace blink

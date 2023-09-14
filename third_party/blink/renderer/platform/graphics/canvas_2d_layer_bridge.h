@@ -84,8 +84,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   virtual void DidRestoreCanvasMatrixClipStack(cc::PaintCanvas*) {}
   virtual bool IsAccelerated() const;
 
-  bool IsComposited() const;
-
   // This may recreate CanvasResourceProvider
   cc::PaintCanvas* GetPaintCanvas();
   bool IsValid();
