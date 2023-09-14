@@ -28,6 +28,7 @@ through `builders.cpu`, `builders.os` and `builders.goma` respectively.
 load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
+load("./gn_args.star", "register_gn_args")
 load("./bootstrap.star", "register_bootstrap")
 load("./builder_config.star", "register_builder_config")
 load("./builder_health_indicators.star", "register_health_spec")
@@ -490,6 +491,7 @@ def builder(
         shadow_pool = args.DEFAULT,
         shadow_service_account = args.DEFAULT,
         shadow_reclient_instance = args.DEFAULT,
+        gn_args = None,
         **kwargs):
     """Define a builder.
 
@@ -955,6 +957,8 @@ def builder(
 
     health_spec = defaults.get_value("health_spec", health_spec)
     register_health_spec(bucket, name, health_spec)
+
+    register_gn_args(builder_group, bucket, name, gn_args)
 
     builder_name = "{}/{}".format(bucket, name)
 

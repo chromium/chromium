@@ -9,6 +9,14 @@
 # * trailing commas are allowed.
 
 {
+  # Paths to gn_args_locations.json relative to the directory containing mb_config.pyl.
+  # Such json files contain maps of
+  # builder group -> builder ID -> file path of "gn-args.json" generated from starlark.
+  'gn_args_locations_files': [
+      '../../infra/config/generated/builders/gn_args_locations.json',
+      '../../infra/config/generated/builders-dev/gn_args_locations.json',
+  ],
+
   # This is a map of builder group names -> builder names -> config names
   # (where each config name is a key in the 'configs' dict, below). MB uses
   # this dict to look up which config to use for a given bot.

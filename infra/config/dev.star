@@ -21,6 +21,7 @@ lucicfg.config(
     config_dir = "generated",
     tracked_files = [
         "builders-dev/*/*/*",
+        "builders-dev/gn_args_locations.json",
         "luci/cr-buildbucket-dev.cfg",
         "luci/luci-analysis-dev.cfg",
         "luci/luci-logdog-dev.cfg",
