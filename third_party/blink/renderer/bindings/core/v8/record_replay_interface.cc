@@ -2892,6 +2892,19 @@ __RECORD_REPLAY_ARGUMENTS__.internal = {
   updateNextStackingContextId: (f) => { gNextStackingContextId = f(gNextStackingContextId); },
 };
 
+/** ###########################################################################
+ * Export JS API methods via `__RECORD_REPLAY__`.
+ * This is officially available for scripts in `eval*` commands to use.
+ * ##########################################################################*/
+Object.assign(__RECORD_REPLAY__, {
+  getProtocolIdForObject(obj) {
+    return registerPlainObject(obj);
+  },
+  getObjectFromProtocolId(rrpId) {
+    return getPlainObjectByRrpId(rrpId);
+  },
+});
+
 } catch (e) {
   log(`Error: Initialization exception ${e}`);
 }
@@ -5009,6 +5022,9 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
   // Add __RECORD_REPLAY_ANNOTATION_HOOK__ as a global.
   SetFunctionProperty(isolate, context->Global(), AnnotationHookJSName,
                       InvokeOnAnnotation);
+
+  v8::Local<v8::Object> jsrrApi = v8::Object::New(isolate);
+  DefineProperty(isolate, context->Global(), "__RECORD_REPLAY__", jsrrApi);
 
   v8::Local<v8::Object> args = v8::Object::New(isolate);
   DefineProperty(isolate, context->Global(), "__RECORD_REPLAY_ARGUMENTS__",
