@@ -10,28 +10,39 @@
   font-family: Ahem;
   font-size: 40px;
 }
-.first-line::first-line {
-  font-size: 200%;
+.no-autospace {
+  text-autospace: no-autospace;
 }
 </style>
-<div class="test" expect="1,3">国国XX国</div>
-<div class="test" expect="3">国。XX国</div>
-<div dir="rtl" class="test" expect="1,3">国国XX国</div>
-<div dir="rtl" class="test" expect="3">国。XX国</div>
-<div class="test first-line" expect="1,3,6,8">国国XX国<br>国国XX国</div>
+<div id="container">
+  <div class="test" expect="1,3">国国XX国</div>
+  <div class="test" expect="3">国。XX国</div>
+  <div dir="rtl" class="test" expect="1,3">国国XX国</div>
+  <div dir="rtl" class="test" expect="3">国。XX国</div>
+</div>
 <script>
+// Compute expected advances from advances without `text-autospace` and the
+// `expect` attribute.
+const container = document.getElementById('container');
+container.classList.add('no-autospace');
+const tests = [];
 for (const element of document.getElementsByClassName('test')) {
+  const em = parseFloat(getComputedStyle(element).fontSize);
+  const spacing = em / 8;
   const advances = getCharAdvances(element);
-
-  const advances_expect = [...advances];
   const expect = element.getAttribute('expect').split(',').map(i => parseInt(i));
   for (const i of expect) {
-    // To make computing the spacing simple, the character before must be the
-    // same size without the spacing.
-    advances_expect[i] = advances[i - 1] * 1.125;
+    advances[i] += spacing;
   }
+  tests.push({element: element, advances: advances});
+}
+
+// Apply `text-autospace` and compare the actual advances.
+container.classList.remove('no-autospace');
+for (const t of tests) {
+  const advances = getCharAdvances(t.element);
   test(() => {
-    assert_array_equals(advances, advances_expect);
+    assert_array_equals(advances, t.advances);
   })
 }
 </script>
