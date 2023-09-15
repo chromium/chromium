@@ -29,7 +29,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,7 +43,6 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.tab_ui.R;
@@ -110,11 +108,6 @@ public final class TabGridViewBinderUnitTest {
 
         LayoutParams thumbnailParams = new LayoutParams(INIT_WIDTH, INIT_HEIGHT);
         when(mThumbnailView.getLayoutParams()).thenReturn(thumbnailParams);
-    }
-
-    @After
-    public void tearDown() {
-        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     @Test

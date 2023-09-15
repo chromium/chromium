@@ -32,7 +32,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -133,7 +132,6 @@ public class BottomSheetControllerTest {
             mTestSupport.forceDismissAllContent();
             mTestSupport.endAllAnimations();
         });
-        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     /** @return The height of the container view. */

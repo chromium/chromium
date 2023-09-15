@@ -83,6 +83,13 @@ public class CachedFeatureFlags {
         return CachedFlagsSafeMode.getInstance().getBehaviorForTesting();
     }
 
+    /**
+     * Do not call this from tests.
+     *
+     * Features.JUnitProcessor and Features.InstrumentationProcessor already reset this state.
+     *
+     * Exceptions are tests that test the flags infrastructure.
+     */
     public static void resetFlagsForTesting() {
         ValuesReturned.clearForTesting();
         ValuesOverridden.removeOverrides();

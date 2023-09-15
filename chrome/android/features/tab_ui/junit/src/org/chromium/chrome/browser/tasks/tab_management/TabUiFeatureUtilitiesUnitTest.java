@@ -20,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -42,12 +41,10 @@ public class TabUiFeatureUtilitiesUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         setAccessibilityEnabledForTesting(false);
-        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     @After
     public void tearDown() {
-        CachedFeatureFlags.resetFlagsForTesting();
         setAccessibilityEnabledForTesting(null);
         DeviceClassManager.resetForTesting();
     }

@@ -58,7 +58,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
@@ -1042,7 +1041,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             mStripMCP.destroy();
             mGridMCP.destroy();
             mSelectableMCP.destroy();
-            CachedFeatureFlags.resetFlagsForTesting();
         });
         super.tearDownTest();
     }

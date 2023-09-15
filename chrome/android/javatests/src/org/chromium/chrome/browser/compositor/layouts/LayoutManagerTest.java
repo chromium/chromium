@@ -58,7 +58,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -691,7 +690,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @After
     public void tearDown() {
         setAccessibilityEnabledForTesting(null);
-        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     private void verifyTabSwitcherLayoutEnable(

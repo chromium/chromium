@@ -31,10 +31,12 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.KeyRepresentation;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
@@ -43,9 +45,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * Unit tests for OptimizationGuidePushNotificationManager.
@@ -53,9 +53,12 @@ import java.util.Map;
 @RunWith(BaseJUnit4ClassRunner.class)
 // Batch this per class since the test is setting global feature state.
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS)
 public class OptimizationGuidePushNotificationManagerUnitTest {
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Mock
     private Profile mProfile;
@@ -77,14 +80,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     private static final HintNotificationPayload NOTIFICATION_WITHOUT_PAYLOAD =
             HintNotificationPayload.newBuilder(NOTIFICATION_WITH_PAYLOAD).clearPayload().build();
 
-    private void setFeatureStatusForTest(boolean isEnabled) {
-        Map<String, Boolean> testFeatures = new HashMap<String, Boolean>();
-        testFeatures.put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, isEnabled);
-        FeatureList.setTestFeatures(testFeatures);
-
-        ChromeFeatureList.sOptimizationGuidePushNotifications.setForTesting(isEnabled);
-    }
-
     @Before
     public void setUp() {
         resetFeatureFlags();
@@ -104,7 +99,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     public void resetFeatureFlags() {
-        CachedFeatureFlags.resetFlagsForTesting();
         OptimizationGuidePushNotificationManager.clearCacheForAllTypes();
         FeatureList.setTestFeatures(null);
     }
@@ -113,7 +107,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testBasicSuccessCaseNoNative() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
         Assert.assertEquals(new ArrayList<OptimizationType>(),
@@ -148,7 +141,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     @UiThreadTest
     public void testNativeCalled() {
-        setFeatureStatusForTest(true);
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(true);
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITHOUT_PAYLOAD);
@@ -168,8 +160,8 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS)
     public void testFeatureDisabled() {
-        setFeatureStatusForTest(false);
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
@@ -192,7 +184,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     public void testClearAllOnFeatureOff() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
-        setFeatureStatusForTest(true);
         OptimizationGuidePushNotificationManager.onPushNotification(
                 HintNotificationPayload.newBuilder(NOTIFICATION_WITH_PAYLOAD)
                         .setOptimizationType(OptimizationType.LITE_PAGE)
@@ -214,7 +205,10 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertEquals(Arrays.asList(OptimizationType.LITE_PAGE, OptimizationType.LITE_VIDEO),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
 
-        setFeatureStatusForTest(false);
+        // Flag state cannot change within the same process instance, so this  behavior does not
+        // actually get triggered in real usage.
+        ChromeFeatureList.sOptimizationGuidePushNotifications.setForTesting(false);
+
         // Push another notification to trigger the clear.
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
 
@@ -235,7 +229,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testOverflow() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         final int overflowSize = 5;
         OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE.setForTesting(overflowSize);
@@ -277,7 +270,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testIdenticalDeduplicated() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         for (int i = 0; i < 10; i++) {
             OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
@@ -302,7 +294,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testIncompleteNotPersisted() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         // No optimization type.
         OptimizationGuidePushNotificationManager.onPushNotification(
@@ -336,7 +327,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testPayloadOptional() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITHOUT_PAYLOAD);
 
@@ -355,7 +345,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testCacheDecodingErrors_Success() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         int startSuccessErrorCount = RecordHistogram.getHistogramValueCountForTesting(
                 "OptimizationGuide.PushNotifications.ReadCacheResult", /*SUCCESS=*/1);
@@ -384,7 +373,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testCacheDecodingErrors_InvalidProtobuf() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         int startPBErrorCount = RecordHistogram.getHistogramValueCountForTesting(
                 "OptimizationGuide.PushNotifications.ReadCacheResult", /*INVALID_PROTOBUF=*/2);
@@ -416,7 +404,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     @SmallTest
     public void testCacheDecodingErrors_Base64Error() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-        setFeatureStatusForTest(true);
 
         int startB64ErrorCount = RecordHistogram.getHistogramValueCountForTesting(
                 "OptimizationGuide.PushNotifications.ReadCacheResult", /*BASE64_ERROR=*/3);

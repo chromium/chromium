@@ -13,7 +13,6 @@ import android.content.Context;
 import android.view.View;
 
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,7 +27,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -80,11 +78,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mManager.onNativeInitialized();
 
         Assert.assertTrue(OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext));
-    }
-
-    @After
-    public void tearDown() {
-        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     /**
