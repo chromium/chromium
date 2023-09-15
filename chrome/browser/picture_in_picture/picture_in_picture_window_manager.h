@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
@@ -13,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/origin.h"
 
 namespace content {
 enum class PictureInPictureResult;
@@ -145,6 +148,14 @@ class PictureInPictureWindowManager {
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<views::View> GetOverlayView();
 #endif
+
+  // Get the origins for initiators of active Picture-in-Picture sessions.
+  // Always returns an empty vector for Document Picture-in-Picture sessions.
+  // For Video picture-in-picture sessions, the maximum size of the vector
+  // will be 1, because only one window can be present per Chrome instances.
+  // See spec for detailed information:
+  // https://www.w3.org/TR/picture-in-picture/#defines
+  std::vector<url::Origin> GetActiveSessionOrigins();
 
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;

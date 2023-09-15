@@ -66,4 +66,9 @@ ArcPictureInPictureWindowControllerImpl::GetChildWebContents() {
   return nullptr;
 }
 
+absl::optional<url::Origin>
+ArcPictureInPictureWindowControllerImpl::GetOrigin() {
+  return absl::nullopt;
+}
+
 }  // namespace arc

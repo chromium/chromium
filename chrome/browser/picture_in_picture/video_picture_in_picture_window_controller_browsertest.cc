@@ -105,6 +105,7 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(NextSlide, void());
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
   MOCK_METHOD0(GetWindowBounds, absl::optional<gfx::Rect>());
+  MOCK_METHOD0(GetOrigin, absl::optional<url::Origin>());
 };
 
 const base::FilePath::CharType kPictureInPictureWindowSizePage[] =
@@ -1259,12 +1260,21 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
       .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(mock_controller(), Show());
   pip_window_manager->EnterPictureInPictureWithController(&mock_controller());
+  EXPECT_TRUE(pip_window_manager->GetActiveSessionOrigins().empty());
 
   // Now show the WebContents based Picture-in-Picture window controller.
   // This should close the existing window and show the new one.
   EXPECT_CALL(mock_controller(), Close(_));
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
+
+  ASSERT_EQ(pip_window_manager->GetActiveSessionOrigins().size(), 1u);
+  const GURL& url = browser()
+                        ->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetLastCommittedURL();
+  EXPECT_TRUE(
+      pip_window_manager->GetActiveSessionOrigins()[0].IsSameOriginWith(url));
 
   ASSERT_TRUE(GetOverlayWindow());
   EXPECT_TRUE(GetOverlayWindow()->IsVisible());

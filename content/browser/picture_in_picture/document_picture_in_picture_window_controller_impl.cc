@@ -121,6 +121,11 @@ WebContents* DocumentPictureInPictureWindowControllerImpl::GetWebContents() {
   return web_contents();
 }
 
+absl::optional<url::Origin>
+DocumentPictureInPictureWindowControllerImpl::GetOrigin() {
+  return absl::nullopt;
+}
+
 void DocumentPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
   // The opener web contents are being destroyed. Stop observing, and forget
   // `opener_web_contents_`. This will also prevent `NotifyAndStopObserving`

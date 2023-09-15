@@ -311,7 +311,7 @@ void PictureInPictureWindowManager::CreateWindowInternal(
 }
 
 void PictureInPictureWindowManager::CloseWindowInternal() {
-  DCHECK(pip_window_controller_);
+  CHECK(pip_window_controller_);
 
   video_web_contents_observer_.reset();
   pip_window_controller_->Close(false /* should_pause_video */);
@@ -334,7 +334,7 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
 }
 
 std::unique_ptr<views::View> PictureInPictureWindowManager::GetOverlayView() {
-  // This should probably DCHECK, but tests often can't set the controller.
+  // This should probably CHECK, but tests often can't set the controller.
   if (!pip_window_controller_) {
     return nullptr;
   }
@@ -369,6 +369,16 @@ std::unique_ptr<views::View> PictureInPictureWindowManager::GetOverlayView() {
   return overlay_view;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+std::vector<url::Origin>
+PictureInPictureWindowManager::GetActiveSessionOrigins() {
+  std::vector<url::Origin> active_origins;
+  if (pip_window_controller_ &&
+      pip_window_controller_->GetOrigin().has_value()) {
+    active_origins.push_back(pip_window_controller_->GetOrigin().value());
+  }
+  return active_origins;
+}
 
 PictureInPictureWindowManager::PictureInPictureWindowManager() = default;
 

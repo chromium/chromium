@@ -72,6 +72,7 @@ class TestVideoPictureInPictureWindowController
   void HangUp() override {}
   const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
   absl::optional<gfx::Rect> GetWindowBounds() override { return absl::nullopt; }
+  absl::optional<url::Origin> GetOrigin() override { return absl::nullopt; }
 
  private:
   raw_ptr<content::WebContents> web_contents_;

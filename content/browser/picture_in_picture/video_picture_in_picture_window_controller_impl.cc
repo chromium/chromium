@@ -176,6 +176,16 @@ WebContents* VideoPictureInPictureWindowControllerImpl::GetChildWebContents() {
   return nullptr;
 }
 
+absl::optional<url::Origin>
+VideoPictureInPictureWindowControllerImpl::GetOrigin() {
+  return origin_;
+}
+
+void VideoPictureInPictureWindowControllerImpl::SetOrigin(
+    absl::optional<url::Origin> origin) {
+  origin_ = origin;
+}
+
 void VideoPictureInPictureWindowControllerImpl::UpdatePlaybackState() {
   if (!window_)
     return;

@@ -43,6 +43,7 @@ class ArcPictureInPictureWindowControllerImpl
   content::WebContents* GetWebContents() override;
   absl::optional<gfx::Rect> GetWindowBounds() override;
   content::WebContents* GetChildWebContents() override;
+  absl::optional<url::Origin> GetOrigin() override;
 
  private:
   const raw_ptr<arc::ArcPipBridge, ExperimentalAsh> arc_pip_bridge_;

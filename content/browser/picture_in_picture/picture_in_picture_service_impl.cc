@@ -73,8 +73,11 @@ PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
 
 VideoPictureInPictureWindowControllerImpl&
 PictureInPictureServiceImpl::GetController() {
-  return *VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-      WebContents::FromRenderFrameHost(&render_frame_host()));
+  auto& controller =
+      *VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+          WebContents::FromRenderFrameHost(&render_frame_host()));
+  controller.SetOrigin(origin());
+  return controller;
 }
 
 }  // namespace content

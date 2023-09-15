@@ -55,6 +55,7 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   WebContents* GetWebContents() override;
   absl::optional<gfx::Rect> GetWindowBounds() override;
   WebContents* GetChildWebContents() override;
+  absl::optional<url::Origin> GetOrigin() override;
 
   // DocumentPictureInPictureWindowController:
   void SetChildWebContents(WebContents* child_contents) override;

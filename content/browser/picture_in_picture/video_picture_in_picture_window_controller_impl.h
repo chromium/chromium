@@ -84,6 +84,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   const gfx::Rect& GetSourceBounds() const override;
   absl::optional<gfx::Rect> GetWindowBounds() override;
 
+  absl::optional<url::Origin> GetOrigin() override;
+  void SetOrigin(absl::optional<url::Origin> origin);
+
   // Called by the MediaSessionImpl when the MediaSessionInfo changes.
   void MediaSessionInfoChanged(
       const media_session::mojom::MediaSessionInfoPtr& info);
@@ -201,6 +204,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   // Coordinates of the video element in WebContents coordinates.
   gfx::Rect source_bounds_;
+
+  // The origin of the initiator.
+  absl::optional<url::Origin> origin_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

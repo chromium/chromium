@@ -48,6 +48,7 @@ class MockPictureInPictureWindowController
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));
   MOCK_METHOD(absl::optional<gfx::Rect>, GetWindowBounds, (), (override));
   MOCK_METHOD(content::WebContents*, GetChildWebContents, (), (override));
+  MOCK_METHOD(absl::optional<url::Origin>, GetOrigin, (), (override));
 };
 
 class PictureInPictureWindowManagerTest
