@@ -32536,6 +32536,57 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_BulkUpload_Close">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the Bulk Upload Settings is dismissed. iOS only.
+  </description>
+</action>
+
+<action name="Signin_BulkUpload_FaceID_CannotBeStarted">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the face id auth cannot be started in the Bulk Upload
+    Settings. iOS only.
+  </description>
+</action>
+
+<action name="Signin_BulkUpload_FaceID_Failed">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the face id auth fails in the Bulk Upload Settings. iOS only.
+  </description>
+</action>
+
+<action name="Signin_BulkUpload_FaceID_Success">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the face id auth is successful in the Bulk Upload Settings.
+    iOS only.
+  </description>
+</action>
+
+<action name="Signin_BulkUpload_Open">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the Bulk Upload Settings is opened. iOS only.
+  </description>
+</action>
+
+<action name="Signin_BulkUpload_Save">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user presses the save button in the Bulk Upload Settings.
+    iOS only.
+  </description>
+</action>
+
 <action name="Signin_EnterpriseAccountPrompt_Cancel">
   <owner>gogerald@chromium.org</owner>
   <description>
