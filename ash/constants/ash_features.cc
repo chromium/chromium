@@ -2226,6 +2226,11 @@ BASE_FEATURE(kProjectorAccountSwitchNotification,
 // Controls whether to show promise icons during app installations.
 BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to show promise icons during web app installations.
+BASE_FEATURE(kPromiseIconsForWebApps,
+             "kPromiseIconsForWebApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2907,6 +2912,11 @@ bool ArePolicyProvidedTrustAnchorsAllowedAtLockScreen() {
 
 bool ArePromiseIconsEnabled() {
   return base::FeatureList::IsEnabled(kPromiseIcons);
+}
+
+bool ArePromiseIconsForWebAppsEnabled() {
+  return base::FeatureList::IsEnabled(kPromiseIconsForWebApps) &&
+         ArePromiseIconsEnabled();
 }
 
 bool AreSideAlignedToastsEnabled() {
