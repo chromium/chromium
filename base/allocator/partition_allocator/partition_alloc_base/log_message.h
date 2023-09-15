@@ -6,9 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_LOG_MESSAGE_H_
 
 #include <stddef.h>
-#include <cstdint>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error.h"
@@ -48,16 +46,6 @@ constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 #else
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
 #endif
-
-// This block duplicates the above entries to facilitate incremental conversion
-// from LOG_FOO to LOGGING_FOO.
-// TODO(thestig): Convert existing users to LOGGING_FOO and remove this block.
-constexpr LogSeverity LOG_VERBOSE = LOGGING_VERBOSE;
-constexpr LogSeverity LOG_INFO = LOGGING_INFO;
-constexpr LogSeverity LOG_WARNING = LOGGING_WARNING;
-constexpr LogSeverity LOG_ERROR = LOGGING_ERROR;
-constexpr LogSeverity LOG_FATAL = LOGGING_FATAL;
-constexpr LogSeverity LOG_DFATAL = LOGGING_DFATAL;
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 extern base::strings::CStringBuilder* g_swallow_stream;
