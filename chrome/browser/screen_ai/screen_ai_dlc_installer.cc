@@ -23,7 +23,7 @@ constexpr int kMaxInstallRetries = 3;
 
 struct InstallMetadata {
   bool dlc_available_from_before_this_session = false;
-  int install_retries = kMaxInstallRetries;
+  int install_retries = 0;
   int retry_delay_in_seconds = kBaseRetryDelayInSeconds;
 };
 

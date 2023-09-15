@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
@@ -14,6 +15,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
+namespace {
+// `kBaseRetryDelayInSeconds` must be synced with `kBaseRetryDelayInSeconds` in
+// screen_ai_dlc_installer.cc.
+constexpr int kBaseRetryDelayInSeconds = 3;
+}  // namespace
 namespace ash {
 
 class ScreenAIDlcInstallerTest
@@ -31,6 +37,11 @@ class ScreenAIDlcInstallerTest
 
   void InstallAndWait() {
     screen_ai::dlc_installer::Install();
+    task_environment_.RunUntilIdle();
+  }
+
+  void WaitForDelay(int delay_in_seconds) {
+    task_environment_.AdvanceClock(base::Seconds(delay_in_seconds));
     task_environment_.RunUntilIdle();
   }
 
@@ -77,6 +88,14 @@ TEST_F(ScreenAIDlcInstallerTest, InstallFailureWithDlcErrorNeedReboot) {
 TEST_F(ScreenAIDlcInstallerTest, InstallFailureWithDlcErrorBusy) {
   SetInstallError(dlcservice::kErrorBusy);
   InstallAndWait();
+  ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
+
+  int delay_in_seconds = kBaseRetryDelayInSeconds;
+  WaitForDelay(delay_in_seconds);
+  delay_in_seconds *= delay_in_seconds;
+  WaitForDelay(delay_in_seconds);
+  delay_in_seconds *= delay_in_seconds;
+  WaitForDelay(delay_in_seconds);
   ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
 }
 
@@ -84,21 +103,28 @@ TEST_F(ScreenAIDlcInstallerTest,
        InstallFailureWithDlcErrorBusyAndRetrySuccess) {
   SetInstallError(dlcservice::kErrorBusy);
   InstallAndWait();
-  ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
+  int delay_in_seconds = kBaseRetryDelayInSeconds;
+  WaitForDelay(delay_in_seconds);
+  ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
 
   SetInstallError(dlcservice::kErrorNone);
-  InstallAndWait();
-  ExpectSuccessHistogramCount(/*expected_count=*/1, /*expected_total_count=*/2);
+  delay_in_seconds *= delay_in_seconds;
+  WaitForDelay(delay_in_seconds);
+  ExpectSuccessHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
 }
 
 TEST_F(ScreenAIDlcInstallerTest, InstallFailuresRepeatedWithDlcErrorBusy) {
   SetInstallError(dlcservice::kErrorBusy);
   InstallAndWait();
+  ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
+
+  int delay_in_seconds = kBaseRetryDelayInSeconds;
+  WaitForDelay(delay_in_seconds);
+  delay_in_seconds *= delay_in_seconds;
+  WaitForDelay(delay_in_seconds);
+  delay_in_seconds *= delay_in_seconds;
+  WaitForDelay(delay_in_seconds);
   ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
-  InstallAndWait();
-  ExpectFailureHistogramCount(/*expected_count=*/2, /*expected_total_count=*/2);
-  InstallAndWait();
-  ExpectFailureHistogramCount(/*expected_count=*/3, /*expected_total_count=*/3);
 }
 
 }  // namespace ash
