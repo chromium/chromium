@@ -32,7 +32,6 @@ export enum BiDiModule {
   // keep-sorted start
   Browser = 'browser',
   BrowsingContext = 'browsingContext',
-  // XXX(#98): Implement `cdp`.
   Cdp = 'cdp',
   Input = 'input',
   Log = 'log',
