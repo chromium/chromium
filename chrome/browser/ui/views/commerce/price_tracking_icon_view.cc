@@ -41,6 +41,8 @@
 
 namespace {
 
+// This will add the bookmark to the shopping collection if the feature is
+// enabled, otherwise we save to "other bookmarks".
 void AddIfNotBookmarkedToTheDefaultFolder(bookmarks::BookmarkModel* model,
                                           content::WebContents* web_contents) {
   GURL url;
@@ -51,8 +53,14 @@ void AddIfNotBookmarkedToTheDefaultFolder(bookmarks::BookmarkModel* model,
       return;
     }
 
-    const bookmarks::BookmarkNode* other_node = model->other_node();
-    model->AddNewURL(other_node, other_node->children().size(), title, url);
+    const bookmarks::BookmarkNode* parent = model->other_node();
+
+    // Automatically add the bookmark to the shopping collection if enabled.
+    if (base::FeatureList::IsEnabled(commerce::kShoppingCollection)) {
+      parent = commerce::GetShoppingCollectionBookmarkFolder(model, true);
+    }
+
+    model->AddNewURL(parent, parent->children().size(), title, url);
   }
 }
 
