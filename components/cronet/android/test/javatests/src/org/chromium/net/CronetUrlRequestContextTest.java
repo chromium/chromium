@@ -237,7 +237,7 @@ public class CronetUrlRequestContextTest {
         runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/false);
     }
 
-    private void setChromiumBaseFeatureLogFlag(boolean enable) {
+    private void setChromiumBaseFeatureLogFlag(boolean enable, String marker) {
         mTestRule.getTestFramework().setHttpFlags(
                 Flags.newBuilder()
                         .putFlags(BaseFeature.FLAG_PREFIX + "CronetLogMe",
@@ -246,22 +246,26 @@ public class CronetUrlRequestContextTest {
                                                 FlagValue.ConstrainedValue.newBuilder()
                                                         .setBoolValue(enable))
                                         .build())
+                        .putFlags(BaseFeature.FLAG_PREFIX + "CronetLogMe"
+                                        + BaseFeature.PARAM_DELIMITER + "message",
+                                FlagValue.newBuilder()
+                                        .addConstrainedValues(
+                                                FlagValue.ConstrainedValue.newBuilder()
+                                                        .setStringValue(marker))
+                                        .build())
                         .build());
     }
 
-    // TODO: we can't use a marker for this because we have no way to communicate the marker to the
-    // logging code. However when we support Feature Params, we should be able to provide the marker
-    // as a param.
-    private static final String CHROMIUM_BASE_FEATURE_LOG_MESSAGE = "CronetLogMe feature flag set";
-
     @Test
     @SmallTest
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "HTTP flags are only supported on native Cronet for now")
     public void
-    testBaseFeatureFlagsAreNotSetIfNoHttpFlags() throws Exception {
+    testBaseFeatureFlagsOverridesEnabled() throws Exception {
         setReadHttpFlagsInManifest(true);
-        runRequestWhileExpectingLog(CHROMIUM_BASE_FEATURE_LOG_MESSAGE, /*shouldBeLogged=*/false);
+        String marker = UUID.randomUUID().toString();
+        setChromiumBaseFeatureLogFlag(true, marker);
+        runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/true);
     }
 
     @Test
@@ -269,21 +273,11 @@ public class CronetUrlRequestContextTest {
     @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
             reason = "HTTP flags are only supported on native Cronet for now")
     public void
-    testBaseFeatureFlagsAreSetToEnabled() throws Exception {
+    testBaseFeatureFlagsOverridesDisabled() throws Exception {
         setReadHttpFlagsInManifest(true);
-        setChromiumBaseFeatureLogFlag(true);
-        runRequestWhileExpectingLog(CHROMIUM_BASE_FEATURE_LOG_MESSAGE, /*shouldBeLogged=*/true);
-    }
-
-    @Test
-    @SmallTest
-    @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
-            reason = "HTTP flags are only supported on native Cronet for now")
-    public void
-    testBaseFeatureFlagsAreSetToDisabled() throws Exception {
-        setReadHttpFlagsInManifest(true);
-        setChromiumBaseFeatureLogFlag(false);
-        runRequestWhileExpectingLog(CHROMIUM_BASE_FEATURE_LOG_MESSAGE, /*shouldBeLogged=*/false);
+        String marker = UUID.randomUUID().toString();
+        setChromiumBaseFeatureLogFlag(false, marker);
+        runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/false);
     }
 
     @Test

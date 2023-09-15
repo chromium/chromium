@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
@@ -52,6 +53,7 @@ namespace {
 // on library initialization. This is useful for testing that the Cronet
 // base::Feature integration works.
 BASE_FEATURE(kLogMe, "CronetLogMe", base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<std::string> kLogMeMessage{&kLogMe, "message", ""};
 
 // SingleThreadTaskExecutor on the init thread, which is where objects that
 // receive Java notifications generally live.
@@ -89,7 +91,8 @@ void NativeInit(JNIEnv* env) {
 
   if (base::FeatureList::IsEnabled(kLogMe)) {
     LOG(/* Bypass log spam warning regex */ INFO)
-        << "CronetLogMe feature flag set, logging as instructed";
+        << "CronetLogMe feature flag set, logging as instructed. Message: "
+        << kLogMeMessage.Get();
   }
 
   if (!base::ThreadPoolInstance::Get())
