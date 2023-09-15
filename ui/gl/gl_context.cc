@@ -113,7 +113,6 @@ bool GLContext::MakeCurrent(GLSurface* surface) {
 
 GLApi* GLContext::CreateGLApi(DriverGL* driver) {
   real_gl_api_ = new RealGLApi;
-  real_gl_api_->set_gl_workarounds(gl_workarounds_);
   real_gl_api_->SetDisabledExtensions(disabled_gl_extensions_);
   real_gl_api_->Initialize(driver);
   return real_gl_api_;
@@ -365,11 +364,6 @@ void GLContext::SetCurrent(GLSurface* surface) {
       GetGLImplementation() != kGLImplementationStubGL) {
     SetThreadLocalCurrentGL(nullptr);
   }
-}
-
-void GLContext::SetGLWorkarounds(const GLWorkarounds& workarounds) {
-  DCHECK(!real_gl_api_);
-  gl_workarounds_ = workarounds;
 }
 
 void GLContext::SetDisabledGLExtensions(

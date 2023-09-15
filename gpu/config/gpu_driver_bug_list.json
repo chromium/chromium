@@ -2056,39 +2056,6 @@
       ]
     },
     {
-      "id": 236,
-      "description": "glClearColor does not always work on Intel 6xxx Mac drivers",
-      "cr_bugs": [710443],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<",
-          "value": "10.12.6"
-        }
-      },
-      "vendor_id": "0x8086",
-      "device_id": ["0x1626", "0x162B", "0x1622"],
-      "features": [
-        "clear_to_zero_or_one_broken"
-      ]
-    },
-    {
-      "id": 239,
-      "description": "Reset TexImage2D base level to 0 on Intel Mac 10.12.4",
-      "cr_bugs": [705865],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": ">=",
-          "value": "10.12.4"
-        }
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "reset_teximage2d_base_level"
-      ]
-    },
-    {
       "id": 240,
       "cr_bugs": [750306, 764526],
       "description": "glGetQueryObject(GL_QUERY_RESULT_AVAILABLE) blocks unexpectedly on Adreno",

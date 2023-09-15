@@ -109,7 +109,6 @@ component("gl") {
     "gl_utils.h",
     "gl_version_info.cc",
     "gl_version_info.h",
-    "gl_workarounds.h",
     "gpu_switching_manager.cc",
     "gpu_switching_manager.h",
     "gpu_timing.cc",
