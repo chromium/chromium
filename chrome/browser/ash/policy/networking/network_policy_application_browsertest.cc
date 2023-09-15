@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include "build/build_config.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -2212,8 +2213,14 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
 // modifiable.
 // Also tests that when going back to not "Recommending" those, they become
 // unmodifiable and switch back to DHCP.
+// TODO(crbug.com/1483397): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RetainEthernetIPAddr DISABLED_RetainEthernetIPAddr
+#else
+#define MAYBE_RetainEthernetIPAddr RetainEthernetIPAddr
+#endif
 IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
-                       RetainEthernetIPAddr) {
+                       MAYBE_RetainEthernetIPAddr) {
   constexpr char kEthernetGuid[] = "{EthernetGuid}";
 
   shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
