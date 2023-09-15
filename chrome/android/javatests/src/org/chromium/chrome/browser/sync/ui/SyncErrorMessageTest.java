@@ -192,7 +192,7 @@ public class SyncErrorMessageTest {
         int syncError = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
                     SyncFirstSetupCompleteSource.BASIC_FLOW);
-            return SyncSettingsUtils.getSyncError();
+            return SyncSettingsUtils.getSyncError(mSyncTestRule.getSyncService());
         });
 
         Assert.assertEquals(MessageType.NOT_SHOWN, SyncErrorMessage.getMessageType(syncError));

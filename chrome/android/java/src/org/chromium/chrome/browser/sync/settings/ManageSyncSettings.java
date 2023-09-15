@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -171,7 +172,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
         mSyncErrorCardPreference =
                 (SyncErrorCardPreference) findPreference(PREF_SYNC_ERROR_CARD_PREFERENCE);
-        mSyncErrorCardPreference.setSyncErrorCardPreferenceListener(this);
+        mSyncErrorCardPreference.initialize(
+                ProfileDataCache.createWithDefaultImageSize(
+                        getContext(), R.drawable.ic_sync_badge_error_20dp),
+                mSyncService, IdentityServicesProvider.get().getIdentityManager(profile), this);
 
         mSyncingCategory = (PreferenceCategory) findPreference(PREF_SYNCING_CATEGORY);
 

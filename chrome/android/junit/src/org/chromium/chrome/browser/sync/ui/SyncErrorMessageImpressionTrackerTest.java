@@ -22,22 +22,15 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** Unit tests for SyncErrorMessageImpressionTracker. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SyncErrorMessageImpressionTrackerTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-
     @Rule
     public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -45,22 +38,13 @@ public class SyncErrorMessageImpressionTrackerTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
-    private Profile mProfile;
-
-    @Mock
     private PrefService mPrefService;
-
-    @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
 
     private SharedPreferencesManager mSharedPrefsManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         mSharedPrefsManager = SharedPreferencesManager.getInstance();
     }
 
@@ -85,7 +69,7 @@ public class SyncErrorMessageImpressionTrackerTest {
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfPwmMessage));
 
-        assertFalse(SyncErrorMessageImpressionTracker.canShowNow());
+        assertFalse(SyncErrorMessageImpressionTracker.canShowNow(mPrefService));
     }
 
     @Test
@@ -103,7 +87,7 @@ public class SyncErrorMessageImpressionTrackerTest {
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfPwmMessage));
 
-        assertFalse(SyncErrorMessageImpressionTracker.canShowNow());
+        assertFalse(SyncErrorMessageImpressionTracker.canShowNow(mPrefService));
     }
 
     @Test
@@ -123,6 +107,6 @@ public class SyncErrorMessageImpressionTrackerTest {
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfPwmMessage));
 
-        assertTrue(SyncErrorMessageImpressionTracker.canShowNow());
+        assertTrue(SyncErrorMessageImpressionTracker.canShowNow(mPrefService));
     }
 }

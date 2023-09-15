@@ -36,9 +36,12 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
+import org.chromium.chrome.browser.sync.settings.SignInPreference;
+import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
@@ -48,8 +51,11 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -162,6 +168,22 @@ public class MainSettings extends ChromeBaseSettingsFragment
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
+
+        ProfileDataCache profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext());
+        AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
+
+        SyncPromoPreference syncPromoPreference = findPreference(PREF_SYNC_PROMO);
+        syncPromoPreference.initialize(
+                profileDataCache, accountManagerFacade, signinManager, identityManager);
+
+        SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
+        signInPreference.initialize(profileDataCache, accountManagerFacade,
+                UserPrefs.get(getProfile()), SyncServiceFactory.getForProfile(getProfile()),
+                signinManager, identityManager);
 
         cachePreferences();
 
@@ -289,11 +311,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                                  .getIdentityManager(getProfile())
                                                  .getPrimaryAccountInfo(ConsentLevel.SYNC)
                 != null;
-        mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity()));
-        mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
+
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
+
+        mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity(), syncService));
+        mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity(), syncService));
         mManageSync.setOnPreferenceClickListener(pref -> {
             Context context = getContext();
-            if (SyncServiceFactory.getForProfile(getProfile()).isSyncDisabledByEnterprisePolicy()) {
+            if (syncService.isSyncDisabledByEnterprisePolicy()) {
                 SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
             } else if (isSyncConsentAvailable) {
                 SettingsLauncher settingsLauncher = new SettingsLauncherImpl();

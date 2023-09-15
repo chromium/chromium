@@ -35,6 +35,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -110,14 +111,15 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
      * @param identityManager The {@link IdentityManager}.
      * @param syncService The {@link SyncService}.
      */
-    public static void maybeShowMessageUi(
-            WindowAndroid windowAndroid, IdentityManager identityManager, SyncService syncService) {
+    public static void maybeShowMessageUi(WindowAndroid windowAndroid,
+            IdentityManager identityManager, SyncService syncService, PrefService prefService) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
-            if (getMessageType(SyncSettingsUtils.getSyncError()) == MessageType.NOT_SHOWN) {
+            if (getMessageType(SyncSettingsUtils.getSyncError(syncService))
+                    == MessageType.NOT_SHOWN) {
                 return;
             }
 
-            if (!SyncErrorMessageImpressionTracker.canShowNow()) {
+            if (!SyncErrorMessageImpressionTracker.canShowNow(prefService)) {
                 return;
             }
 
@@ -142,7 +144,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     private SyncErrorMessage(MessageDispatcher dispatcher, Activity activity,
             IdentityManager identityManager, SyncService syncService) {
         @SyncError
-        int error = SyncSettingsUtils.getSyncError();
+        int error = SyncSettingsUtils.getSyncError(syncService);
         String errorMessage = error == SyncError.SYNC_SETUP_INCOMPLETE
                 ? activity.getString(R.string.sync_settings_not_confirmed_title)
                 : SyncSettingsUtils.getSyncErrorHint(activity, error);
@@ -179,7 +181,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     @Override
     public void syncStateChanged() {
         // If the error disappeared or changed type in the meantime, dismiss the UI.
-        if (mType != getMessageType(SyncSettingsUtils.getSyncError())) {
+        if (mType != getMessageType(SyncSettingsUtils.getSyncError(mSyncService))) {
             mMessageDispatcher.dismissMessage(mModel, DismissReason.UNKNOWN);
             assert !SYNC_ERROR_MESSAGE_KEY.isAttachedToAnyHost(this)
                 : "Message UI should have been dismissed";

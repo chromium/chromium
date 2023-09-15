@@ -22,21 +22,28 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /**
  * Dialog to ask the user to enter a new custom passphrase.
  */
-public class PassphraseCreationDialogFragment extends DialogFragment {
+public class PassphraseCreationDialogFragment
+        extends DialogFragment implements FragmentHelpAndFeedbackLauncher {
     public interface Listener {
         void onPassphraseCreated(String passphrase);
     }
 
+    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private EditText mEnterPassphrase;
     private EditText mConfirmPassphrase;
+
+    @Override
+    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -78,12 +85,9 @@ public class PassphraseCreationDialogFragment extends DialogFragment {
                 new SpanInfo("<learnmore>", "</learnmore>", new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        HelpAndFeedbackLauncherImpl
-                                .getForProfile(Profile.getLastUsedRegularProfile())
-                                .show(activity,
-                                        activity.getString(
-                                                R.string.help_context_change_sync_passphrase),
-                                        null);
+                        mHelpAndFeedbackLauncher.show(activity,
+                                activity.getString(R.string.help_context_change_sync_passphrase),
+                                null);
                     }
                 }));
     }
