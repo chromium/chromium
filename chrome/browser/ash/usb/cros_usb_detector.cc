@@ -438,8 +438,6 @@ CrosUsbDetector::CrosUsbDetector() {
   DCHECK(!g_cros_usb_detector);
   g_cros_usb_detector = this;
 
-  // if we still feel squirrely about allowing HID we can prevent ash from
-  // creating a 'Share with Linux' notification.
   guest_os_classes_without_notif_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_HID));
   guest_os_classes_without_notif_.emplace_back(
