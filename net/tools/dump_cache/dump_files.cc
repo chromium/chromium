@@ -307,7 +307,8 @@ bool CacheDumper::HexDump(disk_cache::CacheAddr addr, std::string* out) {
 }
 
 std::string ToLocalTime(int64_t time_us) {
-  base::Time time = base::Time::FromInternalValue(time_us);
+  base::Time time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time_us));
   base::Time::Exploded e;
   time.LocalExplode(&e);
   return base::StringPrintf("%d/%d/%d %d:%d:%d.%d", e.year, e.month,
