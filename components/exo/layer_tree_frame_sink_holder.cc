@@ -456,7 +456,8 @@ void LayerTreeFrameSinkHolder::UpdateSubmitFrameTimer() {
     submit_frame_timer_.Start(
         FROM_HERE, pending_begin_frames_.front().send_deadline_estimate,
         base::BindOnce(&LayerTreeFrameSinkHolder::OnSendDeadlineExpired,
-                       base::Unretained(this), true));
+                       base::Unretained(this), true),
+        base::subtle::DelayPolicy::kPrecise);
   } else {
     submit_frame_timer_.Stop();
   }
