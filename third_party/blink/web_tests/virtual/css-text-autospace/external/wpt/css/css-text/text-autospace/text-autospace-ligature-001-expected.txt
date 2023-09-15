@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS test1.assert(0, 1, spacing)
+PASS test1.assert(1, 3, 0)
+PASS test2.assert(0, 2, spacing)
+PASS test2.assert(2, 3, 0)
+PASS test3.assert(0, 1, spacing)
+PASS test3.assert(1, 3, spacing)
+PASS test3.assert(3, 4, 0)
+Harness: the test ran to completion.
+

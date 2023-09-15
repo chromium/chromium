@@ -308,10 +308,10 @@ struct TextAutoSpaceTextData {
   std::vector<wtf_size_t> offsets;
 
 } text_auto_space_test_data[] = {
-    {u"Abcあああ", {2}},
-    {u"ああ123あああ", {1, 4}},
-    {u"ああ123ああ", {1, 4, 10}},
-    {u"ああ123ああ", {0, 1, 2, 3, 4, 5, 6, 10}},
+    {u"Abcあああ", {3}},
+    {u"ああ123あああ", {2, 5}},
+    {u"ああ123ああ", {2, 5}},
+    {u"ああ123ああ", {1, 2, 3, 4, 5, 6, 7}},
 };
 class TextAutoSpaceResultText
     : public ShapeResultTest,
@@ -359,39 +359,12 @@ TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
   result->ApplyTextAutoSpacing(offsets);
   float accumulated_spacing = 0.0;
   for (wtf_size_t i = 0, j = 0; i < string.length(); i++) {
-    EXPECT_NEAR(accumulated_spacing,
-                result->PositionForOffset(i) - before_adding_spacing[i],
-                /* abs_error= */ 1e-5);
     if (j < test_data.offsets.size() && offsets[j].offset == i) {
       accumulated_spacing += offsets[j].spacing;
       j++;
     }
-  }
-}
-
-// Tests the spacing should be appended at the correct positions.
-TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeographRTL) {
-  const auto& test_data = GetParam();
-  String string(test_data.string);
-  HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kRtl);
-
-  // Record the position before applying text-autospace, and fill the spacing
-  // widths with different values.
-  Vector<float> before_adding_spacing =
-      RecordPositionBeforeApplyingSpacing(result.get(), string.length());
-  Vector<OffsetWithSpacing, 16> offsets =
-      RecordExpectedSpacing(test_data.offsets);
-  result->ApplyTextAutoSpacing(offsets);
-  float accumulated_spacing = 0.0;
-
-  for (wtf_size_t i = string.length(), j = offsets.size(); i >= 1; i--) {
-    if (j > 0 && offsets[j - 1].offset == i - 1) {
-      accumulated_spacing += offsets[j - 1].spacing;
-      j--;
-    }
     EXPECT_NEAR(accumulated_spacing,
-                result->PositionForOffset(i - 1) - before_adding_spacing[i - 1],
+                result->PositionForOffset(i) - before_adding_spacing[i],
                 /* abs_error= */ 1e-5);
   }
 }

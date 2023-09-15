@@ -78,7 +78,7 @@ TEST_F(TextAutoSpaceTest, Unapply) {
 
   // Apply auto-spacing.
   const float spacing = TextAutoSpace::GetSpacingWidth(font);
-  result->ApplyTextAutoSpacing({{1, spacing}, {4, spacing}});
+  result->ApplyTextAutoSpacing({{2, spacing}, {5, spacing}});
   const float with_spacing = size + spacing;
   EXPECT_THAT(GetAdvances(*result),
               ElementsAre(size, with_spacing, size, size, with_spacing));

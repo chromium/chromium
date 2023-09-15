@@ -583,7 +583,7 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // Internal implementation of `ApplyTextAutoSpacing`. The iterator can be
   // Vector::iterator or Vector::reverse_iterator, depending on the text
   // direction.
-  template <class Iterator>
+  template <TextDirection direction, class Iterator>
   void ApplyTextAutoSpacingCore(Iterator offset_begin, Iterator offset_end);
 };
 

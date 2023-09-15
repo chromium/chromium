@@ -60,7 +60,7 @@ class SpacingApplier {
       // condition of adding spacing.
       // https://drafts.csswg.org/css-text-4/#propdef-text-autospace.
       offsets_with_spacing_.emplace_back(
-          OffsetWithSpacing({.offset = *offset - 1, .spacing = spacing}));
+          OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
       ++offset;
     }
     // Apply all pending spaces to the previous item.
@@ -71,7 +71,7 @@ class SpacingApplier {
     last_item_ = current_item;
     for (; offset != offsets.end(); ++offset) {
       offsets_with_spacing_.emplace_back(
-          OffsetWithSpacing({.offset = *offset - 1, .spacing = spacing}));
+          OffsetWithSpacing({.offset = *offset, .spacing = spacing}));
     }
   }
 

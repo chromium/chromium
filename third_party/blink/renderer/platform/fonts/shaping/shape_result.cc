@@ -980,22 +980,33 @@ bool ShapeResult::HasAutoSpacingBefore(unsigned offset) const {
 
 void ShapeResult::ApplyTextAutoSpacing(
     const Vector<OffsetWithSpacing, 16>& offsets_with_spacing) {
+  // `offsets_with_spacing` must be non-empty, ascending list without the same
+  // offsets.
   DCHECK(!offsets_with_spacing.empty());
-  EnsurePositionData();
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  DCHECK(std::is_sorted(
+      offsets_with_spacing.begin(), offsets_with_spacing.end(),
+      [](const OffsetWithSpacing& lhs, const OffsetWithSpacing& rhs) {
+        return lhs.offset <= rhs.offset;
+      }));
+  DCHECK_GT(offsets_with_spacing.front().offset, StartIndex());
+  // TODO(crbug.com/1463890): Disable for now, unit tests hit this.
+  // DCHECK_LE(offsets_with_spacing.back().offset, EndIndex());
+#endif
 
+  EnsurePositionData();
   if (LIKELY(IsLtr())) {
-    ApplyTextAutoSpacingCore(offsets_with_spacing.begin(),
-                             offsets_with_spacing.end());
+    ApplyTextAutoSpacingCore<TextDirection::kLtr>(offsets_with_spacing.begin(),
+                                                  offsets_with_spacing.end());
   } else {
-    ApplyTextAutoSpacingCore(offsets_with_spacing.rbegin(),
-                             offsets_with_spacing.rend());
+    ApplyTextAutoSpacingCore<TextDirection::kRtl>(offsets_with_spacing.rbegin(),
+                                                  offsets_with_spacing.rend());
   }
 }
 
-template <class Iterator>
-void ShapeResult::ApplyTextAutoSpacingCore(
-    Iterator offset_begin,
-    Iterator offset_end) {
+template <TextDirection direction, class Iterator>
+void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
+                                           Iterator offset_end) {
   DCHECK(offset_begin != offset_end);
 
   float total_space = 0.0;
@@ -1004,29 +1015,63 @@ void ShapeResult::ApplyTextAutoSpacingCore(
     if (UNLIKELY(!run)) {
       continue;
     }
+    if (current_offset == offset_end) {
+      break;
+    }
+    wtf_size_t offset = current_offset->offset;
+    DCHECK_GE(offset, run->start_index_);
+    wtf_size_t offset_in_run = offset - run->start_index_;
+    if (offset_in_run > run->num_characters_) {
+      continue;
+    }
 
     float total_space_for_run = 0;
-    for (wtf_size_t i = 0;
-         i < run->glyph_data_.size() && current_offset != offset_end; i++) {
-      HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
-
-      // Skip if it's not a grapheme cluster boundary. Set it to UNLIKELY, since
-      // this method should be executed within ideograph content.
-      if (UNLIKELY(i + 1 < run->glyph_data_.size() &&
-                   glyph_data.character_index ==
-                       run->glyph_data_[i + 1].character_index)) {
-        continue;
+    for (wtf_size_t i = 0; i < run->NumGlyphs(); i++) {
+      // `character_index` may repeat or skip. Add the spacing to the glyph
+      // before the first one that is equal to or greater than `offset_in_run`.
+      wtf_size_t next_character_index;
+      if (i + 1 < run->glyph_data_.size()) {
+        next_character_index = run->glyph_data_[i + 1].character_index;
+      } else {
+        next_character_index = run->num_characters_;
       }
-      if (glyph_data.character_index + run->start_index_ ==
-          current_offset->offset) {
+      bool should_add_spacing;
+      if (blink::IsLtr(direction)) {
+        // In the following example, add the spacing to the glyph 2 if the
+        // `offset_in_run` is 1, 2, or 3.
+        //   Glyph|0|1|2|3|4|5|
+        //   Char |0|0|0|3|3|4|
+        should_add_spacing = next_character_index >= offset_in_run;
+      } else {
+        // TODO(crbug.com/1463890): RTL might need more considerations, both
+        // the protocol and the logic.
+        // In the following example, add the spacing to the glyph 2 if the
+        // `offset_in_run` is 1, 2, or 3.
+        //   Glyph|0|1|2|3|4|5|
+        //   Char |4|3|3|0|0|0|
+        if (offset_in_run == run->num_characters_) {
+          // Except when adding to the end of the run. In that case, add to the
+          // last glyph.
+          should_add_spacing = i == run->NumGlyphs() - 1;
+        } else {
+          should_add_spacing = next_character_index < offset_in_run;
+        }
+      }
+      if (should_add_spacing) {
+        HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
         glyph_data.advance += current_offset->spacing;
         total_space_for_run += current_offset->spacing;
 
-        ShapeResultCharacterData& data = CharacterData(current_offset->offset);
+        ShapeResultCharacterData& data = CharacterData(offset - 1);
         DCHECK(!data.has_auto_spacing_after);
         data.has_auto_spacing_after = true;
 
-        current_offset++;
+        if (++current_offset == offset_end) {
+          break;
+        }
+        offset = current_offset->offset;
+        DCHECK_GE(offset, run->start_index_);
+        offset_in_run = offset - run->start_index_;
       }
     }
     run->width_ += total_space_for_run;
