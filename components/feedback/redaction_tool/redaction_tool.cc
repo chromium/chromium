@@ -118,7 +118,7 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // PSM identifier is a 4-character brand code, which can be encoded as 8 hex
     // digits, followed by a slash ('/') and a serial number.
     {"PSM ID",
-     "(?i)(PSM.*\\s+.*\\b)((?:[a-z]{4}|[0-9a-f]{8})\\/"
+     "(?i)(PSM.*[\t ]+.*\\b)((?:[a-z]{4}|[0-9a-f]{8})\\/"
      "[0-9a-z\\-.:\\/\\\\\\x00-\\x09\\x0B-\\x1F]+)(\\b)",
      PIIType::kSerial},
 
