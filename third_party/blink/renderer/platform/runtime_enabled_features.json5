@@ -3792,6 +3792,12 @@
       name: "UnexposedTaskIds",
       base_feature: "none",
     },
+    {
+      // Skip CSS animation events on unowned CSS animations:
+      // https://drafts.csswg.org/css-animations-2/#event-dispatch
+      name: "UnownedAnimationsSkipCSSEvents",
+      status: "stable",
+    },
     // This is a reverse OT used for a phased deprecation, on desktop
     // https://crbug.com/1071424
     {
