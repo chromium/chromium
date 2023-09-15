@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.2.0-alpha15" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha15">
+<issues format="6" by="lint 8.3.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha03">
 
     <issue
         id="MissingClass"
@@ -19,7 +19,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="723"
+            line="174"
             column="51"/>
     </issue>
 
@@ -30,7 +30,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="744"
+            line="195"
             column="13"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="749"
+            line="200"
             column="13"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="754"
+            line="205"
             column="13"/>
     </issue>
 
@@ -107,7 +107,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
-            line="269"
+            line="242"
             column="13"/>
     </issue>
 
@@ -142,17 +142,6 @@
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
             line="193"
             column="24"/>
-    </issue>
-
-    <issue
-        id="IntentWithNullActionLaunch"
-        message="This intent has no action set and is not explicit by component.You should either make this intent explicit by component or set an action matching the targeted intent filter."
-        errorLine1="            startActivity(new Intent(this, WebViewAnimationTestActivity.class));"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="769"
-            column="27"/>
     </issue>
 
     <issue
