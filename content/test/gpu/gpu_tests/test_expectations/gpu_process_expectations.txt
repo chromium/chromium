@@ -139,7 +139,6 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
 
 
-crbug.com/1384930 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFailure ]
 
 
 #######################################################################
