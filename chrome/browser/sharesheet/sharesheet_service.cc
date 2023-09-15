@@ -298,8 +298,9 @@ void SharesheetService::LoadAppIcons(
 
   // Making a copy because we move |intent_launch_info| out below.
   auto app_id = intent_launch_info[index].app_id;
+  // TODO(crbug.com/1412708): Update when we have the icon effect interface.
   absl::optional<apps::IconKey> icon_key =
-      app_service_proxy_->GetIconKey(app_id);
+      app_service_proxy_->app_icon_loader()->GetIconKey(app_id);
   if (icon_key.has_value()) {
     if (intent_launch_info[index].is_dlp_blocked) {
       icon_key->icon_effects |= apps::IconEffects::kBlocked;

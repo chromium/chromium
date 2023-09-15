@@ -209,20 +209,16 @@ void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
   publishers_[app_type]->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
 }
 
-absl::optional<IconKey> AppServiceProxyBase::GetIconKey(const std::string& id) {
-  return app_outer_icon_loader_.GetIconKey(id);
-}
-
-std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyBase::LoadIconFromIconKey(const std::string& id,
-                                         const IconKey& icon_key,
-                                         IconType icon_type,
-                                         int32_t size_hint_in_dip,
-                                         bool allow_placeholder_icon,
-                                         LoadIconCallback callback) {
-  return app_outer_icon_loader_.LoadIconFromIconKey(
-      id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
-      std::move(callback));
+std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
+    AppType app_type,
+    const std::string& app_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  return app_icon_loader()->LoadIcon(app_type, app_id, icon_type,
+                                     size_hint_in_dip, allow_placeholder_icon,
+                                     std::move(callback));
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
@@ -233,8 +229,9 @@ AppServiceProxyBase::LoadIconFromIconKey(AppType app_type,
                                          int32_t size_hint_in_dip,
                                          bool allow_placeholder_icon,
                                          LoadIconCallback callback) {
-  return LoadIconFromIconKey(app_id, icon_key, icon_type, size_hint_in_dip,
-                             allow_placeholder_icon, std::move(callback));
+  return app_icon_loader()->LoadIconFromIconKey(
+      app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+      std::move(callback));
 }
 
 void AppServiceProxyBase::Launch(const std::string& app_id,

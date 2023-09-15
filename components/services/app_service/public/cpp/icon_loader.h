@@ -71,6 +71,8 @@ class IconLoader {
   // Convenience method that calls "LoadIconFromIconKey(app_type, app_id,
   // GetIconKey(app_id), etc)". `callback` may be dispatched synchronously if
   // it's possible to quickly return a result.
+  // TODO(crbug.com/1412708): Update this interface to not include app specific
+  // params.
   std::unique_ptr<Releaser> LoadIcon(AppType app_type,
                                      const std::string& app_id,
                                      const IconType& icon_type,

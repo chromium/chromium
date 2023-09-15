@@ -251,7 +251,8 @@ AppSearchDataSource::AppSearchDataSource(
     : profile_(profile),
       list_controller_(list_controller),
       clock_(clock),
-      icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile),
+      icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile)
+                      ->app_icon_loader(),
                   apps::IconCache::GarbageCollectionPolicy::kExplicit) {
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile)

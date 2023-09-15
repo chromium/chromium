@@ -77,7 +77,6 @@ struct IntentLaunchInfo {
 //
 // See components/services/app_service/README.md.
 class AppServiceProxyBase : public KeyedService,
-                            public IconLoader,
                             public PreferredAppsImpl::Host {
  public:
   explicit AppServiceProxyBase(Profile* profile);
@@ -112,23 +111,37 @@ class AppServiceProxyBase : public KeyedService,
   void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                          bool open_in_app) override;
 
-  // apps::IconLoader overrides.
-  absl::optional<IconKey> GetIconKey(const std::string& id) override;
-  std::unique_ptr<Releaser> LoadIconFromIconKey(
+  // Convenience method that calls app_icon_loader()->LoadIcon to load app icons
+  // with `app_id`. `callback` may be dispatched synchronously if it's possible
+  // to quickly return a result.
+  // TODO(crbug.com/1412708): Remove app_type from interface.
+  std::unique_ptr<IconLoader::Releaser> LoadIcon(
+      AppType app_type,
+      const std::string& app_id,
+      const IconType& icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadIconCallback callback);
+
+  // Load the icon for app represented by `app_id`. `icon_key` can be used to
+  // specify custom icon effect the caller wants to apply on the icon.
+  // `allow_placeholder_icon` indicate whether we allow loading placeholder icon
+  // from the in memory cache and do not attempt to retry to load the actual
+  // icon.
+  // TODO(crbug.com/1412708): Remove app_type from interface.
+  // TODO(crbug.com/1412708): Update the interface to load icon with icon
+  // effects instead of icon key.
+  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
+      AppType app_type,
       const std::string& app_id,
       const IconKey& icon_key,
       IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
-      LoadIconCallback callback) override;
+      LoadIconCallback callback);
 
-  std::unique_ptr<Releaser> LoadIconFromIconKey(AppType app_type,
-                                                const std::string& app_id,
-                                                const IconKey& icon_key,
-                                                IconType icon_type,
-                                                int32_t size_hint_in_dip,
-                                                bool allow_placeholder_icon,
-                                                LoadIconCallback callback);
+  // Return the most outer layer of the app icon loader that app service owns.
+  IconLoader* app_icon_loader() { return &app_outer_icon_loader_; }
 
   // Launches the app for the given `app_id`.
   //
@@ -314,17 +327,16 @@ class AppServiceProxyBase : public KeyedService,
   // An adapter, presenting an IconLoader interface based on the underlying
   // service (or on a fake implementation for testing).
   //
-  // Conceptually, the ASP (the AppServiceProxyBase) is itself such an adapter:
-  // UI clients call the IconLoader::LoadIconFromIconKey method (which the ASP
-  // implements) and the ASP translates (i.e. adapts) these to publisher's
-  // LoadIcon calls (or C++ calls to the Fake). This diagram shows control flow
-  // going left to right (with "=c=>" and "=> Publisher::LoadIcon" denoting C++
-  // and publisher's LoadIcon calls), and the responses (callbacks) then run
-  // right to left in LIFO order:
+  // UI clients call through ASP interface to call into the IconLoader owned
+  // by ASP, which will eventually call into this adapter. This adapter then
+  // calls into IconReader to read the icon from App Service Icon storage on
+  // disk. The publishers will install the icon to the App Service Icon storage
+  // if it is not present. This diagram shows control flow going left to right,
+  // and the responses (callbacks) then run right to left in LIFO order:
   //
-  //   UI =c=> ASP => Publisher::LoadIcon
-  //                |       or
-  //                +=c=> Fake
+  //   UI => ASP => IconLoader =>  IconReader
+  //                            |    or
+  //                            +=> Fake
   //
   // It is more complicated in practice, as we want to insert IconLoader
   // decorators (as in the classic "decorator" or "wrapper" design pattern) to
@@ -335,12 +347,11 @@ class AppServiceProxyBase : public KeyedService,
   // sub-components. Once again, control flow runs from left to right, and
   // inside the ASP, outer layers (wrappers) call into inner layers (wrappees):
   //
-  //           +------------------ ASP ------------------+
-  //           |                                         |
-  //   UI =c=> | Outer =c=> MoreDecorators... =c=> Inner | =>
-  //   Publisher::LoadIcon
-  //           |                                         |  |       or
-  //           +-----------------------------------------+  +=c=> Fake
+  //         +------------------ ASP ----------------+
+  //         |                                       |
+  //   UI => | Outer => MoreDecorators... => Inner   | => IconReader
+  //         |                                       |  |    or
+  //         +---------------------------------------+  +=> Fake
   //
   // The app_inner_icon_loader_ field (of type AppInnerIconLoader) is the
   // "Inner" component: the one that ultimately talks to the Mojo service.

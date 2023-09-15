@@ -112,33 +112,16 @@ AppServiceProxyLacros::WebsiteMetricsService() {
   return metrics_service_.get();
 }
 
-absl::optional<IconKey> AppServiceProxyLacros::GetIconKey(
-    const std::string& id) {
-  return app_outer_icon_loader_.GetIconKey(id);
-}
-
-std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyLacros::LoadIconFromIconKey(const std::string& id,
-                                           const IconKey& icon_key,
-                                           IconType icon_type,
-                                           int32_t size_hint_in_dip,
-                                           bool allow_placeholder_icon,
-                                           apps::LoadIconCallback callback) {
-  return app_outer_icon_loader_.LoadIconFromIconKey(
-      id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
-      std::move(callback));
-}
-
-std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyLacros::LoadIconFromIconKey(AppType app_type,
-                                           const std::string& app_id,
-                                           const IconKey& icon_key,
-                                           IconType icon_type,
-                                           int32_t size_hint_in_dip,
-                                           bool allow_placeholder_icon,
-                                           apps::LoadIconCallback callback) {
-  return LoadIconFromIconKey(app_id, icon_key, icon_type, size_hint_in_dip,
-                             allow_placeholder_icon, std::move(callback));
+std::unique_ptr<IconLoader::Releaser> AppServiceProxyLacros::LoadIcon(
+    AppType app_type,
+    const std::string& app_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  return app_icon_loader()->LoadIcon(app_type, app_id, icon_type,
+                                     size_hint_in_dip, allow_placeholder_icon,
+                                     std::move(callback));
 }
 
 void AppServiceProxyLacros::Launch(const std::string& app_id,

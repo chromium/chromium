@@ -578,11 +578,11 @@ AppServiceProxyAsh::ShortcutInnerIconLoader::LoadIconFromIconKey(
   // updated before we filter out the shortcuts from web app publisher.
   // TODO(crbug.com/1412708): Use icon reader to get the icon from shortcut
   // publisher instead of the web app publisher.
-  std::string equvelent_web_app_id =
+  std::string equivalent_web_app_id =
       host_->ShortcutRegistryCache()->GetShortcutLocalId(ShortcutId(id));
-  host_->LoadIconFromIconKey(equvelent_web_app_id, icon_key, icon_type,
-                             size_hint_in_dip, allow_placeholder_icon,
-                             std::move(callback));
+  host_->LoadIconFromIconKey(AppType::kWeb, equivalent_web_app_id, icon_key,
+                             icon_type, size_hint_in_dip,
+                             allow_placeholder_icon, std::move(callback));
 
   return nullptr;
 }
@@ -630,7 +630,8 @@ void AppServiceProxyAsh::UninstallImpl(const std::string& app_id,
     uninstall_dialog_ptr->SetDialogCreatedCallbackForTesting(
         std::move(callback));
     uninstall_dialogs_.emplace(update.AppId(), std::move(uninstall_dialog_ptr));
-    uninstall_dialog->PrepareToShow(std::move(icon_key.value()), this);
+    uninstall_dialog->PrepareToShow(std::move(icon_key.value()),
+                                    this->app_icon_loader());
   });
 }
 
