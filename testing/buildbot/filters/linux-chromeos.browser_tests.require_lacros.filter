@@ -32,8 +32,6 @@ CrosapiSystemLogSourceTest*
 -ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
--SelectToSpeakEnhancedNetworkTtsVoicesTest.*
--SelectToSpeakNavigationControlTest.*
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
