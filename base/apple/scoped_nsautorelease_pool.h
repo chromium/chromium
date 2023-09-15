@@ -43,21 +43,11 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
   void Recycle();
 
  private:
-  // Pushes the autorelease pool and does all required verification.
-  void PushImpl() VALID_CONTEXT_REQUIRED(thread_checker_);
-
-  // Pops the autorelease pool and does all required verification.
-  void PopImpl() VALID_CONTEXT_REQUIRED(thread_checker_);
-
   // This field is not a raw_ptr<> because it is a pointer to an Objective-C
   // object.
   RAW_PTR_EXCLUSION void* autorelease_pool_ GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);
-
-#if DCHECK_IS_ON()
-  unsigned long level_ = 0;
-#endif
 };
 
 }  // namespace base::apple
