@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -87,7 +88,8 @@ content::BrowserContext* ScalableIphFactoryImpl::GetBrowserContextToUse(
     return nullptr;
   }
 
-  if (!profile->IsRegularProfile()) {
+  if (!ash::IsUserBrowserContext(browser_context) ||
+      !profile->IsRegularProfile()) {
     return nullptr;
   }
 
