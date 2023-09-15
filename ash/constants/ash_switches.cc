@@ -247,6 +247,10 @@ const char kAshForceEnableStylusTools[] = "force-enable-stylus-tools";
 // state.
 const char kAshForceStatusAreaCollapsible[] = "force-status-area-collapsible";
 
+// Path for which to load growth campaigns file for testing (instead of
+// downloading from Omaha).
+const char kGrowthCampaignsPath[] = "growth-campaigns-path";
+
 // Hides notifications that are irrelevant to Chrome OS device factory testing,
 // such as battery level updates.
 const char kAshHideNotificationsForFactory[] =

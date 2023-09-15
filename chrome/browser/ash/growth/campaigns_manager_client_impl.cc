@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -27,6 +29,13 @@ CampaignsManagerClientImpl::~CampaignsManagerClientImpl() = default;
 
 void CampaignsManagerClientImpl::LoadCampaignsComponent(
     growth::CampaignComponentLoadedCallback callback) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(ash::switches::kGrowthCampaignsPath)) {
+    std::move(callback).Run(base::FilePath(command_line->GetSwitchValueASCII(
+        ash::switches::kGrowthCampaignsPath)));
+    return;
+  }
+
   // Loads campaigns component.
   auto cros_component_manager =
       g_browser_process->platform_part()->cros_component_manager();

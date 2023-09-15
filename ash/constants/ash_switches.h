@@ -82,6 +82,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshEnableWaylandServer[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshForceEnableStylusTools[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshForceStatusAreaCollapsible[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGrowthCampaignsPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshHideNotificationsForFactory[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshNoNudges[];
