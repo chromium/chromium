@@ -52,12 +52,9 @@ class Decoration {
  * Section (like find in page) is used to be able to find text even if
  * there are DOM changes between extraction and decoration. Using WeakRef
  * around nodes also avoids holding on to deleted nodes.
- * TODO(crbug.com/1350973): WeakRef starts in 14.5, remove checks once 14 is
- *   deprecated. This also means that < 14.5 sectionsNodes is never releasing
- *   nodes, even if they are released from the DOM.
  */
 class Section {
-  constructor(public node: Node|WeakRef<Node>, public index: number) {}
+  constructor(public node: WeakRef<Node>, public index: number) {}
 }
 
 /**
@@ -485,9 +482,7 @@ function enumerateTextNodes(
  */
 function enumerateSectionsNodes(process: EnumNodesFunction): void {
   for (let section of sections) {
-    const node: Node|undefined = window.WeakRef ?
-        (section.node as WeakRef<Node>).deref() :
-        section.node as Node;
+    const node: Node|undefined = section.node.deref();
     if (!node)
       continue;
 
@@ -507,8 +502,7 @@ function getPageText(maxChars: number): string {
   const parts: string[] = [];
   sections = [];
   enumerateTextNodes(document.body, function(node, index, text) {
-    sections.push(new Section(window.WeakRef ?
-        new WeakRef<Node>(node) : node, index));
+    sections.push(new Section(new WeakRef<Node>(node), index));
     if (index + text.length > maxChars) {
       parts.push(text.substring(0, maxChars - index));
     } else {
