@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol GREYAction;
 @protocol GREYMatcher;
 
 namespace chrome_test_util {
@@ -42,6 +43,15 @@ id<GREYMatcher> SettingsSignInRowMatcher();
 
 // Matcher for the primary button ("Yes, I'm In") in the history opt-in screen.
 id<GREYMatcher> HistoryOptInPrimaryButtonMatcher();
+
+// Matcher for the secondary button ("No Thanks") in the history opt-in screen.
+id<GREYMatcher> HistoryOptInSecondaryButtonMatcher();
+
+// Matcher for the parent scrollview for the history opt-in screen.
+id<GREYMatcher> HistoryOptInScrollViewMatcher();
+
+// Action for searching an UI element in the history opt-in screen..
+id<GREYAction> HistoryOptInScrollDown();
 
 }  // namespace chrome_test_util
 

@@ -445,6 +445,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:test_constants",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells:constants",
+    "//ios/chrome/browser/ui/authentication/history_sync:pref_names",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/elements:constants",

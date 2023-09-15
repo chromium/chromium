@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
@@ -107,32 +108,6 @@ GURL TestPageURL() {
   return web::test::HttpServer::MakeUrl(kURLOfTestPage);
 }
 
-// Returns matcher for the history sync screen primary action button.
-id<GREYMatcher> HistorySyncAcceptButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for the history sync screen secondary action button.
-id<GREYMatcher> HistorySyncDeclineButtonMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for the scrollview inside the history sync screen.
-id<GREYMatcher> HistorySyncScrollViewMatcher() {
-  return grey_allOf(
-      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier),
-      grey_sufficientlyVisible(), nil);
-}
-
-// Returns matcher for search action inside the history sync screen scroll view.
-id<GREYAction> HistorySyncScrollSearchAction() {
-  return grey_scrollInDirection(kGREYDirectionDown, 200);
-}
-
 }  // namespace
 
 // Earl grey integration tests for Recent Tabs Panel Controller.
@@ -164,6 +139,8 @@ id<GREYAction> HistorySyncScrollSearchAction() {
             (testShowPromoIfSignedOutAndNoAccounts_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
             (testDelineHistorySyncIfSignedOut_SyncToSigninEnabled)] ||
+      [self isRunningTest:@selector
+            (testDelineRepeatedlyHistorySyncIfSignedIn_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
             (testShowPromoIfSignedInAndTabsDisabled_SyncToSigninEnabled)] ||
       [self isRunningTest:@selector
@@ -357,13 +334,14 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_text(disclaimerText),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncAcceptButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           HistoryOptInPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
@@ -415,9 +393,10 @@ id<GREYAction> HistorySyncScrollSearchAction() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncDeclineButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           HistoryOptInSecondaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
@@ -439,6 +418,55 @@ id<GREYAction> HistorySyncScrollSearchAction() {
       @"MSBB consent should not be granted.");
   // Verify that the identity is signed out.
   [SigninEarlGrey verifySignedOut];
+}
+
+// Tests that for a signed in user, after declining twice History Sync, the
+// History Sync is still shown when tapping on the promo action button.
+- (void)testDelineRepeatedlyHistorySyncIfSignedIn_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  // Open Recent Tabs.
+  OpenRecentTabsPanel();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(RecentTabsTable(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap on promo button and decline History Sync 3 times.
+  for (int i = 0; i <= 2; i++) {
+    // Tap on "Turn on" button.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(grey_accessibilityID(
+                           kRecentTabsTabSyncOffButtonAccessibilityIdentifier),
+                       grey_accessibilityTrait(UIAccessibilityTraitButton),
+                       grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+    // Verify that the History Sync Opt-In screen is shown.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kHistorySyncViewAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    // Decline History Sync.
+    [[[EarlGrey selectElementWithMatcher:
+                    chrome_test_util::HistoryOptInSecondaryButtonMatcher()]
+           usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+        onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
+        performAction:grey_tap()];
+    [ChromeEarlGrey
+        waitForUIElementToDisappearWithMatcher:
+            grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+  }
+
+  // Verify that the History Sync is disabled.
+  GREYAssertFalse(
+      [SigninEarlGreyAppInterface
+          isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
+      @"History sync should be disabled.");
+  GREYAssertFalse([SigninEarlGreyAppInterface
+                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+                  @"Tabs sync should be disabled.");
 }
 
 // Tests that no promo to sign-in + sync is shown to a user who is signed out
@@ -539,13 +567,14 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_text(disclaimerText),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncAcceptButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           HistoryOptInPrimaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
@@ -596,9 +625,10 @@ id<GREYAction> HistorySyncScrollSearchAction() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Decline History Sync.
-  [[[EarlGrey selectElementWithMatcher:HistorySyncDeclineButtonMatcher()]
-         usingSearchAction:HistorySyncScrollSearchAction()
-      onElementWithMatcher:HistorySyncScrollViewMatcher()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                           HistoryOptInSecondaryButtonMatcher()]
+         usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
+      onElementWithMatcher:chrome_test_util::HistoryOptInScrollViewMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:

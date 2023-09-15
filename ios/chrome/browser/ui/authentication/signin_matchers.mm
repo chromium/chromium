@@ -57,7 +57,25 @@ id<GREYMatcher> SettingsSignInRowMatcher() {
 }
 
 id<GREYMatcher> HistoryOptInPrimaryButtonMatcher() {
-  return grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
+  return grey_allOf(
+      grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> HistoryOptInSecondaryButtonMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleSecondaryActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> HistoryOptInScrollViewMatcher() {
+  return grey_allOf(
+      grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+id<GREYAction> HistoryOptInScrollDown() {
+  return grey_scrollInDirection(kGREYDirectionDown, 200);
 }
 
 }  // namespace chrome_test_util
