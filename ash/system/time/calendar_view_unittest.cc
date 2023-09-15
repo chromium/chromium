@@ -1518,8 +1518,15 @@ class CalendarViewAnimationTest : public AshTestBase {
   views::ScrollView* scroll_view() { return calendar_view_->scroll_view_; }
   views::View* event_list_view() { return calendar_view_->event_list_view_; }
   CalendarModel* calendar_model() { return calendar_model_; }
+  views::View* calendar_sliding_surface_view() {
+    return calendar_view_->calendar_sliding_surface_;
+  }
   calendar_test_utils::CalendarClientTestImpl* calendar_client() {
     return calendar_client_.get();
+  }
+
+  bool should_months_animate() {
+    return calendar_view_->should_months_animate_;
   }
 
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month() {
@@ -1866,44 +1873,97 @@ TEST_F(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-//  Disabled due to excessive flakiness. http://crbug.com/1337168
-TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
+TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Create calendar view and wait for the animation to finish.
   CreateCalendarView();
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(header()->layer());
 
   // Expect header visible before starting ResetToToday animation.
   EXPECT_EQ(1.0f, header()->layer()->opacity());
 
-  // Expect header visible after resetting to today.
   ResetToTodayWithAnimation();
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
+  // The header starts to animate.
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+
+  // The header's opacity should be between 0~1 after the first animator
+  // finished and in the middle of the second animation.
+  animation_waiter.Wait(header()->layer());
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+  EXPECT_GT(1.0f, header()->layer()->opacity());
+
+  // The header's opacity should be 1 after the second animator finished.
+  animation_waiter.Wait(header()->layer());
+  EXPECT_FALSE(header()->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(1.0f, header()->layer()->opacity());
 
   // Open event list by selecting the next month's first cell.
   const auto* date_cell = GetDateCell(/*month=*/next_month(), /*day=*/u"1");
   ClickDateCell(date_cell);
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
 
-  // Expect today's date in `selected_date_` after resetting to today.
-  ResetToTodayWithAnimation();
+  // Event list view starts to animate.
+  EXPECT_TRUE(
+      calendar_sliding_surface_view()->layer()->GetAnimator()->is_animating());
+  animation_waiter.Wait(current_label()->layer());
+  animation_waiter.Wait(calendar_sliding_surface_view()->layer());
+
+  // Event list view just finished animating.
+  EXPECT_FALSE(
+      calendar_sliding_surface_view()->layer()->GetAnimator()->is_animating());
+  EXPECT_FALSE(should_months_animate());
+  // The cool-down time for enabling animation. Otherwise the next reset to
+  // today animation will not be enabled.
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_TRUE(should_months_animate());
+  EXPECT_TRUE(event_list_view());
+  EXPECT_EQ(1.0f, event_list_view()->layer()->opacity());
+
+  ResetToTodayWithAnimation();
+  // The header starts to animate.
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+
+  // The header's opacity should be between 0~1 after the first animator
+  // finished and in the middle of the second animation.
+  animation_waiter.Wait(header()->layer());
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+  EXPECT_GT(1.0f, header()->layer()->opacity());
+
+  // The header's opacity should be 1 after the second animator finished.
+  animation_waiter.Wait(header()->layer());
+  EXPECT_FALSE(header()->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(1.0f, header()->layer()->opacity());
+  // Expect today's date in `selected_date_` after resetting to today.
   EXPECT_EQ(calendar_utils::GetMonthDayYear(base::Time::Now()),
             calendar_utils::GetMonthDayYear(GetSelectedDate()));
 
   // Expect header visible after closing event list and resetting to today.
   CloseEventList();
+  EXPECT_TRUE(
+      calendar_sliding_surface_view()->layer()->GetAnimator()->is_animating());
+  // Wait `event_list_view()`'s layer first since it can be deleted after the
+  // animation finished.
+  animation_waiter.Wait(event_list_view()->layer());
+  animation_waiter.Wait(calendar_sliding_surface_view()->layer());
+  EXPECT_FALSE(
+      calendar_sliding_surface_view()->layer()->GetAnimator()->is_animating());
+
   ResetToTodayWithAnimation();
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
+  // The header starts to animate.
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+
+  // The header's opacity should be between 0~1 after the first animator
+  // finished and in the middle of the second animation.
+  animation_waiter.Wait(header()->layer());
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+  EXPECT_GT(1.0f, header()->layer()->opacity());
+
+  // The header's opacity should be 1 after the second animator finished.
+  animation_waiter.Wait(header()->layer());
+  EXPECT_FALSE(header()->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(1.0f, header()->layer()->opacity());
 }
 
