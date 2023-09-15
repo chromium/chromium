@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
-#include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/transaction_impl.h"
@@ -58,7 +57,6 @@ DatabaseImpl::CreateAndBind(std::unique_ptr<IndexedDBConnection> connection,
 DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
                            IndexedDBDispatcherHost* dispatcher_host)
     : dispatcher_host_(dispatcher_host),
-      indexed_db_context_(dispatcher_host->context()),
       connection_(std::move(connection)) {
   DCHECK(connection_);
 }
@@ -149,8 +147,7 @@ void DatabaseImpl::CreateTransaction(
           ->CreateTransaction(durability, mode)
           .release());
   connection_->database()->RegisterAndScheduleTransaction(transaction);
-  TransactionImpl::CreateAndBind(GetBucketLocator(), indexed_db_context_,
-                                 std::move(transaction_receiver),
+  TransactionImpl::CreateAndBind(std::move(transaction_receiver),
                                  transaction->AsWeakPtr());
 }
 

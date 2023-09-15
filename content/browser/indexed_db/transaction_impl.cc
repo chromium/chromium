@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
-#include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -22,23 +21,15 @@ namespace content {
 
 // static
 void TransactionImpl::CreateAndBind(
-    const storage::BucketLocator& bucket_locator,
-    scoped_refptr<IndexedDBContextImpl> indexed_db_context,
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction> pending,
     base::WeakPtr<IndexedDBTransaction> transaction) {
   mojo::MakeSelfOwnedAssociatedReceiver(
-      base::WrapUnique(
-          new TransactionImpl(transaction, bucket_locator, indexed_db_context)),
-      std::move(pending));
+      base::WrapUnique(new TransactionImpl(transaction)), std::move(pending));
 }
 
 TransactionImpl::TransactionImpl(
-    base::WeakPtr<IndexedDBTransaction> transaction,
-    const storage::BucketLocator& bucket_locator,
-    scoped_refptr<IndexedDBContextImpl> indexed_db_context)
-    : indexed_db_context_(indexed_db_context),
-      transaction_(std::move(transaction)),
-      bucket_locator_(bucket_locator) {
+    base::WeakPtr<IndexedDBTransaction> transaction)
+    : transaction_(std::move(transaction)) {
   DCHECK(transaction_);
 }
 
@@ -158,6 +149,10 @@ void TransactionImpl::Put(
 
   transaction_->set_size(input_value->bits.size() + key.size_estimate() +
                          total_blob_size);
+  // Warm up the disk space cache.
+  transaction_->bucket_context()->CheckCanUseDiskSpace(transaction_->size(),
+                                                       {});
+
   std::unique_ptr<IndexedDBDatabase::PutOperationParams> params(
       std::make_unique<IndexedDBDatabase::PutOperationParams>());
   IndexedDBValue& output_value = params->value;
@@ -253,14 +248,12 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
     return;
   }
 
-  indexed_db_context_->quota_manager_proxy()->GetBucketSpaceRemaining(
-      bucket_locator_, indexed_db_context_->IDBTaskRunner(),
-      base::BindOnce(&TransactionImpl::OnQuotaCheckDone,
-                     weak_factory_.GetWeakPtr()));
+  transaction_->bucket_context()->CheckCanUseDiskSpace(
+      transaction_->size(), base::BindOnce(&TransactionImpl::OnQuotaCheckDone,
+                                           weak_factory_.GetWeakPtr()));
 }
 
-void TransactionImpl::OnQuotaCheckDone(
-    storage::QuotaErrorOr<int64_t> space_left) {
+void TransactionImpl::OnQuotaCheckDone(bool allowed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!transaction_) {
     return;
@@ -272,7 +265,7 @@ void TransactionImpl::OnQuotaCheckDone(
     return;
   }
 
-  if (space_left.has_value() && space_left.value() >= transaction_->size()) {
+  if (allowed) {
     transaction_->SetCommitFlag();
   } else {
     connection->AbortTransactionAndTearDownOnError(

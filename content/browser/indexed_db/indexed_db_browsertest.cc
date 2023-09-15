@@ -769,13 +769,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LevelDBLogFileTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CanDeleteWhenOverQuotaTest) {
-  const GURL kTestUrl = GetTestUrl("indexeddb", "fill_up_5k.html");
+  SetQuota(5);
+  const GURL kTestUrl = GetTestUrl("indexeddb", "fill_quota.html");
   SimpleTest(kTestUrl);
-  int64_t size = RequestUsage(
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl)));
-  const int kQuotaKilobytes = 2;
-  EXPECT_GT(size, kQuotaKilobytes * 1024);
-  SetQuota(kQuotaKilobytes);
+  SetQuota(1);
   SimpleTest(GetTestUrl("indexeddb", "delete_over_quota.html"));
 }
 

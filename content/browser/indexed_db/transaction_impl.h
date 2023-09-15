@@ -11,14 +11,12 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
-class IndexedDBContextImpl;
 class IndexedDBTransaction;
 
 class TransactionImpl : public blink::mojom::IDBTransaction {
@@ -26,18 +24,13 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
   // Creates a self-owned `TransactionImpl` that deletes itself when its
   // mojo connection is closed.
   static void CreateAndBind(
-      const storage::BucketLocator& bucket_locator,
-      scoped_refptr<IndexedDBContextImpl> indexed_db_context,
       mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction> pending,
       base::WeakPtr<IndexedDBTransaction> transaction);
 
   ~TransactionImpl() override;
 
  private:
-  explicit TransactionImpl(
-      base::WeakPtr<IndexedDBTransaction> transaction,
-      const storage::BucketLocator& bucket_locator,
-      scoped_refptr<IndexedDBContextImpl> indexed_db_context);
+  explicit TransactionImpl(base::WeakPtr<IndexedDBTransaction> transaction);
 
   TransactionImpl(const TransactionImpl&) = delete;
   TransactionImpl& operator=(const TransactionImpl&) = delete;
@@ -56,7 +49,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
            blink::mojom::IDBTransaction::PutCallback callback) override;
   void Commit(int64_t num_errors_handled) override;
 
-  void OnQuotaCheckDone(storage::QuotaErrorOr<int64_t> space_remaining);
+  void OnQuotaCheckDone(bool allowed);
 
   // Turns an IDBValue into a set of IndexedDBExternalObjects in
   // |external_objects|.
@@ -64,9 +57,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
       blink::mojom::IDBValuePtr& value,
       std::vector<IndexedDBExternalObject>* external_objects);
 
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   base::WeakPtr<IndexedDBTransaction> transaction_;
-  const storage::BucketLocator bucket_locator_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

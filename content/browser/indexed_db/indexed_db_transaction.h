@@ -137,6 +137,10 @@ class CONTENT_EXPORT IndexedDBTransaction {
     return ptr_factory_.GetWeakPtr();
   }
 
+  IndexedDBBucketContext* bucket_context() {
+    return bucket_context_.bucket_context();
+  }
+
   const base::flat_set<PartitionedLockId> lock_ids() const { return lock_ids_; }
   PartitionedLockHolder* mutable_locks_receiver() { return &locks_receiver_; }
 

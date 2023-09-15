@@ -212,6 +212,61 @@ void IndexedDBBucketContext::RunInstanceClosure(InstanceClosure method) {
   method.Run(*this);
 }
 
+void IndexedDBBucketContext::CheckCanUseDiskSpace(
+    int64_t space_requested,
+    base::OnceCallback<void(bool)> bucket_space_check_callback) {
+  if (space_requested <= GetBucketSpaceToAllot()) {
+    if (bucket_space_check_callback) {
+      bucket_space_remaining_ -= space_requested;
+      std::move(bucket_space_check_callback).Run(/*allowed=*/true);
+    }
+    return;
+  }
+
+  bucket_space_remaining_ = 0;
+  bucket_space_remaining_timestamp_ = base::TimeTicks();
+  bool check_pending = !bucket_space_check_callbacks_.empty();
+  bucket_space_check_callbacks_.emplace(space_requested,
+                                        std::move(bucket_space_check_callback));
+  if (!check_pending) {
+    quota_manager()->GetBucketSpaceRemaining(
+        bucket_locator(), backing_store_->idb_task_runner(),
+        base::BindOnce(&IndexedDBBucketContext::OnGotBucketSpaceRemaining,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void IndexedDBBucketContext::OnGotBucketSpaceRemaining(
+    storage::QuotaErrorOr<int64_t> space_left) {
+  bool allowed = space_left.has_value();
+  bucket_space_remaining_ = space_left.value_or(0);
+  bucket_space_remaining_timestamp_ = base::TimeTicks::Now();
+  while (!bucket_space_check_callbacks_.empty()) {
+    auto& [space_requested, result_callback] =
+        bucket_space_check_callbacks_.front();
+    allowed = allowed && (space_requested <= bucket_space_remaining_);
+
+    if (allowed && result_callback) {
+      bucket_space_remaining_ -= space_requested;
+    }
+    auto taken_callback = std::move(result_callback);
+    bucket_space_check_callbacks_.pop();
+    if (taken_callback) {
+      std::move(taken_callback).Run(allowed);
+    }
+  }
+}
+
+int64_t IndexedDBBucketContext::GetBucketSpaceToAllot() {
+  base::TimeDelta bucket_space_age =
+      base::TimeTicks::Now() - bucket_space_remaining_timestamp_;
+  if (bucket_space_age > kBucketSpaceCacheTimeLimit) {
+    return 0;
+  }
+  return bucket_space_remaining_ *
+         (1 - bucket_space_age / kBucketSpaceCacheTimeLimit);
+}
+
 std::tuple<IndexedDBBucketContext::RunTasksResult, leveldb::Status>
 IndexedDBBucketContext::RunTasks() {
   task_run_scheduled_ = false;

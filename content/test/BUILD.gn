@@ -2392,6 +2392,7 @@ test("content_unittests") {
     "../browser/idle/idle_manager_unittest.cc",
     "../browser/indexed_db/indexed_db_active_blob_registry_unittest.cc",
     "../browser/indexed_db/indexed_db_backing_store_unittest.cc",
+    "../browser/indexed_db/indexed_db_bucket_context_unittest.cc",
     "../browser/indexed_db/indexed_db_cleanup_on_io_error_unittest.cc",
     "../browser/indexed_db/indexed_db_context_unittest.cc",
     "../browser/indexed_db/indexed_db_database_unittest.cc",

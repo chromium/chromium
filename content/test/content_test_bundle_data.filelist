@@ -6016,6 +6016,7 @@ data/indexeddb/delete_compact.html
 data/indexeddb/delete_over_quota.html
 data/indexeddb/disk_full_on_commit.html
 data/indexeddb/empty_blob.html
+data/indexeddb/fill_quota.html
 data/indexeddb/fill_up_5k.html
 data/indexeddb/force_close_event.html
 data/indexeddb/force_close_event.js

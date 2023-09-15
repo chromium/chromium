@@ -268,10 +268,8 @@ void IndexedDBDispatcherHost::Open(
   base::FilePath indexed_db_path =
       indexed_db_context_->GetDataPath(bucket_locator);
 
-  auto create_transaction_callback =
-      base::BindOnce(&TransactionImpl::CreateAndBind, bucket_locator,
-                     base::WrapRefCounted(indexed_db_context_),
-                     std::move(transaction_receiver));
+  auto create_transaction_callback = base::BindOnce(
+      &TransactionImpl::CreateAndBind, std::move(transaction_receiver));
   std::unique_ptr<IndexedDBPendingConnection> connection =
       std::make_unique<IndexedDBPendingConnection>(
           std::move(callbacks), std::move(database_callbacks), transaction_id,

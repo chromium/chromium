@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <queue>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -20,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
@@ -89,6 +91,12 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // Visible for testing.
   static constexpr const base::TimeDelta kMaxEarliestBucketCompactionFromNow =
       base::Days(3);
+
+  // `CheckCanUseDiskSpace` fudges quota values a little. If there is excess
+  // free space, QuotaManager may not be checked the next time a transaction
+  // requests space. The decays over this time period.
+  static constexpr const base::TimeDelta kBucketSpaceCacheTimeLimit =
+      base::Seconds(30);
 
   enum class ClosingState {
     // IndexedDBBucketContext isn't closing.
@@ -177,6 +185,16 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // the correct sequence.
   void RunInstanceClosure(InstanceClosure method);
 
+  // Called when `space_requested` bytes are about to be used by committing a
+  // transaction. Will invoke `disk_space_check_callback` if this usage is
+  // approved, or false if there's insufficient space as per the `QuotaManager`.
+  // If `disk-space_check_callback` is non-null, it will be invoked with the
+  // response. If it is null, the check is considered a dry-run, which warms up
+  // the space cache but doesn't decrement from it.
+  void CheckCanUseDiskSpace(
+      int64_t space_requested,
+      base::OnceCallback<void(bool)> disk_space_check_callback);
+
   const storage::BucketInfo& bucket_info() { return bucket_info_; }
   storage::BucketLocator bucket_locator() {
     return bucket_info_.ToBucketLocator();
@@ -239,6 +257,8 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // Test needs access to CompactionKillSwitchWorks.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionKillSwitchWorks);
 
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBBucketContextTest, BucketSpaceDecay);
+
   // Used to synchronize the global throttling of LevelDB cleanup operations.
   // See `for_each_bucket_context`.
   static void SetInternalState(base::Time earliest_global_sweep_time,
@@ -269,6 +289,13 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // then the current time will be written to the database as the last
   // compaction time.
   bool ShouldRunCompaction();
+
+  void OnGotBucketSpaceRemaining(storage::QuotaErrorOr<int64_t> space_left);
+
+  // Returns the amount of bucket space `this` has the authority to approve by
+  // decaying `bucket_space_remaining_` according to the amount of time passed
+  // since `bucket_space_remaining_timestamp_`.
+  int64_t GetBucketSpaceToAllot();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -302,6 +329,18 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // given out for this factory using OpenReference. This is used as closing
   // criteria for this object, see CanClose.
   int64_t open_handles_ = 0;
+
+  // A queue of callbacks representing `CheckCanUseDiskSpace()` requests.
+  std::queue<std::tuple<int64_t /*space_requested*/,
+                        base::OnceCallback<void(bool /*allowed*/)>>>
+      bucket_space_check_callbacks_;
+  // The number of bytes `this` has the authority to approve in response to
+  // `CheckCanUseDiskSpace` requests before the QuotaManager will be consulted
+  // once more. This is a performance optimization.
+  int64_t bucket_space_remaining_ = 0;
+  // Timestamp when `bucket_space_remaining_` was last fetched from the quota
+  // manager.
+  base::TimeTicks bucket_space_remaining_timestamp_;
 
   std::unique_ptr<IndexedDBPreCloseTaskQueue> pre_close_task_queue_;
 

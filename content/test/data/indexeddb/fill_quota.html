@@ -1,13 +1,23 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2013 The Chromium Authors
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <head>
+<title>IDB test that origins over quota aren't trapped Part 1 / 2</title>
 <script type="text/javascript" src="common.js"></script>
 <script>
+
+// Generates a pseudorandom string of the given length.
+function generateRandomString(sizeInKb) {
+  let output = '';
+  for (let i = 0; i < sizeInKb * 1024 / 8 + 1; i++) {
+    output += Math.random().toString(36).slice(2, 10);
+  }
+  return output;
+}
 
 function test() {
   indexedDBTest(prepareDatabase, startNewTransaction);
@@ -17,8 +27,7 @@ function prepareDatabase()
 {
   db = event.target.result;
   objectStore = db.createObjectStore("test123");
-  var len = 1024;
-  data = Array(1+len).join("X");
+  data = generateRandomString(1);
   numTransactions = 0;
 }
 
@@ -26,10 +35,13 @@ function startNewTransaction() {
   debug("Starting new transaction.");
 
   var trans = db.transaction(['test123'], 'readwrite');
-  trans.onabort = unexpectedAbortCallback;
+  trans.onabort = e => {
+    if (trans.error.name === 'QuotaExceededError') done();
+    else fail('unexpected error ' + trans.error.name);
+  };
   trans.oncomplete = getQuotaAndUsage;
   var store = trans.objectStore('test123');
-  request = store.put({x: data}, numTransactions);
+  request = store.put({x: numTransactions, data: data}, numTransactions);
   request.onerror = unexpectedErrorCallback;
 }
 
@@ -45,10 +57,7 @@ function usageCallback(usage, quota) {
   returnedQuota = quota;
   debug("Allotted quota is " + displaySize(returnedQuota));
   debug("LevelDB usage is " + displaySize(returnedUsage));
-  if (returnedUsage < 5 * 1024)
-    startNewTransaction();
-  else
-    done("Filled up " + returnedUsage);
+  startNewTransaction();
 }
 
 function displaySize(bytes) {

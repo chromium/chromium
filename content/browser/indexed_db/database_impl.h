@@ -27,7 +27,6 @@ class IndexedDBKeyRange;
 
 namespace content {
 class IndexedDBConnection;
-class IndexedDBContextImpl;
 class IndexedDBDispatcherHost;
 
 class DatabaseImpl : public blink::mojom::IDBDatabase {
@@ -129,7 +128,6 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   // This raw pointer is safe because all DatabaseImpl instances are owned by
   // an IndexedDBDispatcherHost.
   raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
 
   SEQUENCE_CHECKER(sequence_checker_);
