@@ -8,18 +8,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/installer/gcapi/gcapi.h"
 #include "chrome/installer/gcapi/google_update_util.h"
 #include "chrome/installer/util/google_update_constants.h"
 
 namespace {
-
-constexpr const wchar_t* kDays[] = {L"Sun", L"Mon", L"Tue", L"Wed",
-                                    L"Thu", L"Fri", L"Sat"};
-
-constexpr const wchar_t* kMonths[] = {L"Jan", L"Feb", L"Mar", L"Apr",
-                                      L"May", L"Jun", L"Jul", L"Aug",
-                                      L"Sep", L"Oct", L"Nov", L"Dec"};
 
 // Returns the number of weeks since 2/3/2003.
 int GetCurrentRlzWeek(const base::Time& current_time) {
@@ -107,6 +101,10 @@ bool SetRelaunchExperimentLabels(const wchar_t* brand_code, int shell_mode) {
 }
 
 std::wstring BuildExperimentDateString(base::Time current_time) {
+  // It's not critical that we deal with leap years etc.; approximating one year
+  // as 365 days is fine.
+  current_time += base::Days(365);
+
   // The Google Update experiment_labels timestamp format is:
   // "DAY, DD0 MON YYYY HH0:MI0:SE0 TZ"
   //  DAY = 3 character day of week,
@@ -117,11 +115,13 @@ std::wstring BuildExperimentDateString(base::Time current_time) {
   //  MI0 = 2 digit minute,
   //  SE0 = 2 digit second,
   //  TZ = 3 character timezone
-  base::Time::Exploded then = {};
+  static constexpr const wchar_t* kDays[] = {L"Sun", L"Mon", L"Tue", L"Wed",
+                                             L"Thu", L"Fri", L"Sat"};
+  static constexpr const wchar_t* kMonths[] = {L"Jan", L"Feb", L"Mar", L"Apr",
+                                               L"May", L"Jun", L"Jul", L"Aug",
+                                               L"Sep", L"Oct", L"Nov", L"Dec"};
+  base::Time::Exploded then;
   current_time.UTCExplode(&then);
-  then.year += 1;
-  DCHECK(then.HasValidValues());
-
   return base::StringPrintf(L"%s, %02d %s %d %02d:%02d:%02d GMT",
                             kDays[then.day_of_week], then.day_of_month,
                             kMonths[then.month - 1], then.year, then.hour,
