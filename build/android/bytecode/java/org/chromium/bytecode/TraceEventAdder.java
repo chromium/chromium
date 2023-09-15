@@ -44,6 +44,7 @@ public class TraceEventAdder extends ByteCodeRewriter {
 
     public static void main(String[] args) throws IOException {
         // Invoke this script using //build/android/gyp/trace_event_bytecode_rewriter.py
+        args = ByteCodeRewriter.expandArgs(args);
 
         if (args.length < 2) {
             System.err.println("Expected arguments: <':' separated list with N input jar paths> "

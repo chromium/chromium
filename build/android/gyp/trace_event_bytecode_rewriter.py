@@ -6,10 +6,16 @@
 
 import argparse
 import sys
+import tempfile
 import os
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+
+
+# The real limit is generally >100kb, but 10k seems like a reasonable "it's big"
+# threshold.
+_MAX_CMDLINE = 10000
 
 
 def main(argv):
@@ -39,6 +45,14 @@ def main(argv):
       args.script, '--classpath', ':'.join(sorted(all_input_jars)),
       ':'.join(args.input_jars), ':'.join(args.output_jars)
   ]
+  if sum(len(x) for x in cmd) > _MAX_CMDLINE:
+    # Cannot put --classpath in the args file because that is consumed by the
+    # wrapper script.
+    args_file = tempfile.NamedTemporaryFile(mode='w')
+    args_file.write('\n'.join(cmd[3:]))
+    args_file.flush()
+    cmd[3:] = ['@' + args_file.name]
+
   build_utils.CheckOutput(cmd, print_stdout=True)
 
   build_utils.Touch(args.stamp)
