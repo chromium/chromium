@@ -2035,7 +2035,6 @@ source_set("browser") {
     "service_process_host_impl.cc",
     "service_worker/embedded_worker_instance.cc",
     "service_worker/embedded_worker_instance.h",
-    "service_worker/embedded_worker_status.h",
     "service_worker/payment_handler_support.cc",
     "service_worker/payment_handler_support.h",
     "service_worker/service_worker_accessed_callback.h",
