@@ -690,7 +690,7 @@ Things to consider:
         Turn on “Lock Incognito Tabs When You Close Chrome.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SUBTITLE" desc="Incognito Lock subtitle displayed in What's New. [iOS only]">
-        Lock your incognito when you leave Chrome or switch to a different app.
+        Lock your incognito tabs when you leave Chrome or switch to a different app.
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_TITLE" desc="Mini Maps title displayed in What's New. [iOS only]">
         Maps in Chrome

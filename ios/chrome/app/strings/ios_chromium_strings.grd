@@ -684,7 +684,7 @@ Things to consider:
         Turn on “Lock Incognito Tabs When You Close Chromium.”
       </message>
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SUBTITLE" desc="Chromium version of Incognito Lock subtitle displayed in What's New. [iOS only]">
-        Lock your incognito when you leave Chromium or switch to a different app.
+        Lock your incognito tabs when you leave Chromium or switch to a different app.
       </message>
       <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_TITLE" desc="Chromium version of Mini Maps title displayed in What's New. [iOS only]">
         Maps in Chromium
