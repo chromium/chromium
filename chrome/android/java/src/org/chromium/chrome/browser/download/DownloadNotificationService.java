@@ -617,15 +617,6 @@ public class DownloadNotificationService {
                 ChromePreferenceKeys.DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT);
     }
 
-    void onForegroundServiceRestarted(int pinnedNotificationId) {
-        // In API < 24, notifications pinned to the foreground will get killed with the service.
-        // Fix this by relaunching the notification that was pinned to the service as the service
-        // dies, if there is one.
-        relaunchPinnedNotification(pinnedNotificationId);
-
-        updateNotificationsForShutdown();
-    }
-
     void onForegroundServiceTaskRemoved() {
         // If we've lost all Activities, cancel the off the record downloads.
         if (ApplicationStatus.isEveryActivityDestroyed()) {

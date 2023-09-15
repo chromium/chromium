@@ -16,12 +16,6 @@ public class DownloadNotificationServiceObserver
     public DownloadNotificationServiceObserver() {}
 
     @Override
-    public void onForegroundServiceRestarted(int pinnedNotificationId) {
-        DownloadNotificationService.getInstance().onForegroundServiceRestarted(
-                pinnedNotificationId);
-    }
-
-    @Override
     public void onForegroundServiceTaskRemoved() {
         DownloadNotificationService.getInstance().onForegroundServiceTaskRemoved();
     }
