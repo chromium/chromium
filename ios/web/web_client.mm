@@ -64,16 +64,6 @@ std::vector<JavaScriptFeature*> WebClient::GetJavaScriptFeatures(
   return std::vector<JavaScriptFeature*>();
 }
 
-NSString* WebClient::GetDocumentStartScriptForAllFrames(
-    BrowserState* browser_state) const {
-  return @"";
-}
-
-NSString* WebClient::GetDocumentStartScriptForMainFrame(
-    BrowserState* browser_state) const {
-  return @"";
-}
-
 void WebClient::PrepareErrorPage(WebState* web_state,
                                  const GURL& url,
                                  NSError* error,

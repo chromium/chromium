@@ -17,7 +17,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
-#import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
 #import "ios/web/public/browser_state.h"
@@ -32,26 +31,6 @@ namespace {
 
 // A key used to associate a WKWebViewConfigurationProvider with a BrowserState.
 const char kWKWebViewConfigProviderKeyName[] = "wk_web_view_config_provider";
-
-// Returns a WKUserScript for JavsScript injected into the main frame at the
-// beginning of the document load.
-WKUserScript* InternalGetDocumentStartScriptForMainFrame(
-    BrowserState* browser_state) {
-  return [[WKUserScript alloc]
-        initWithSource:GetDocumentStartScriptForMainFrame(browser_state)
-         injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-      forMainFrameOnly:YES];
-}
-
-// Returns a WKUserScript for JavsScript injected into all frames at the
-// beginning of the document load.
-WKUserScript* InternalGetDocumentStartScriptForAllFrames(
-    BrowserState* browser_state) {
-  return [[WKUserScript alloc]
-        initWithSource:GetDocumentStartScriptForAllFrames(browser_state)
-         injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-      forMainFrameOnly:NO];
-}
 
 }  // namespace
 
@@ -209,13 +188,6 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
   }
   SessionRestoreJavaScriptFeature::FromBrowserState(browser_state_)
       ->ConfigureHandlers(user_content_controller);
-
-  // Main frame script depends upon scripts injected into all frames, so the
-  // "AllFrames" scripts must be injected first.
-  [configuration_.userContentController
-      addUserScript:InternalGetDocumentStartScriptForAllFrames(browser_state_)];
-  [configuration_.userContentController
-      addUserScript:InternalGetDocumentStartScriptForMainFrame(browser_state_)];
 }
 
 void WKWebViewConfigurationProvider::Purge() {

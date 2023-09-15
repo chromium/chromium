@@ -49,16 +49,6 @@ std::vector<JavaScriptFeature*> FakeWebClient::GetJavaScriptFeatures(
   return java_script_features_;
 }
 
-NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
-    BrowserState* browser_state) const {
-  return early_page_script_for_all_frames_ ?: @"";
-}
-
-NSString* FakeWebClient::GetDocumentStartScriptForMainFrame(
-    BrowserState* browser_state) const {
-  return early_page_script_for_main_frame_ ?: @"";
-}
-
 void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
   plugin_not_supported_text_ = text;
 }
@@ -66,16 +56,6 @@ void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
 void FakeWebClient::SetJavaScriptFeatures(
     std::vector<JavaScriptFeature*> features) {
   java_script_features_ = features;
-}
-
-void FakeWebClient::SetEarlyPageScriptForAllFrames(
-    NSString* page_script_for_all_frames) {
-  early_page_script_for_all_frames_ = [page_script_for_all_frames copy];
-}
-
-void FakeWebClient::SetEarlyPageScriptForMainFrame(
-    NSString* page_script_for_main_frame) {
-  early_page_script_for_main_frame_ = [page_script_for_main_frame copy];
 }
 
 void FakeWebClient::PrepareErrorPage(

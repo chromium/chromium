@@ -274,8 +274,6 @@ ios_web_view_sources = [
   "internal/web_view_browser_state.mm",
   "internal/web_view_download_manager.h",
   "internal/web_view_download_manager.mm",
-  "internal/web_view_early_page_script_provider.h",
-  "internal/web_view_early_page_script_provider.mm",
   "internal/web_view_global_state_util.h",
   "internal/web_view_java_script_dialog_presenter.h",
   "internal/web_view_java_script_dialog_presenter.mm",
@@ -532,7 +530,6 @@ test("ios_web_view_unittests") {
     "internal/translate/cwv_translation_controller_unittest.mm",
     "internal/translate/cwv_translation_language_unittest.mm",
     "internal/translate/cwv_translation_policy_unittest.mm",
-    "internal/web_view_early_page_script_provider_unittest.mm",
     "internal/web_view_global_state_util_stub.mm",
     "internal/web_view_web_client_unittest.mm",
   ]
