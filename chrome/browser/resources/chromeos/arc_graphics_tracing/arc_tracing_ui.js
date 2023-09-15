@@ -72,8 +72,6 @@ const eventAttributes = {
   // kChromeBarrierFlush
   301: {color: unusedColor, name: 'barrier flush'},
 
-  // kSurfaceFlingerVsyncHandler
-  400: {color: '#993300', name: 'vsync handler', width: 1.0},
   // kSurfaceFlingerInvalidationStart
   401: {color: '#ff9933', name: 'invalidation start'},
   // kSurfaceFlingerInvalidationDone
@@ -82,15 +80,6 @@ const eventAttributes = {
   403: {color: '#3399ff', name: 'composition start'},
   // kSurfaceFlingerCompositionDone
   404: {color: unusedColor, name: 'composition done'},
-  // kSurfaceFlingerCompositionJank
-  405: {
-    color: '#ff0000',
-    name: 'Android composition jank',
-    width: 1.0,
-    radius: 4.0,
-  },
-  // kVsyncTimestamp
-  406: {color: '#ff3300', name: 'vsync', width: 0.5},
 
   // kChromeOSDraw
   500: {color: '#3399ff', name: 'draw'},
@@ -1129,12 +1118,7 @@ class EventBands {
     for (let i = 0; i < globalEventCnt; ++i) {
       const globalEvent = globalEvents[i];
       const globalEventType = globalEvent[0];
-      let globalEventTimestamp = globalEvent[1];
-      if (globalEventType == 406 /* kVsyncTimestamp */) {
-        // -1 to prevent VSYNC detects itself. In last case, previous VSYNC
-        // would be chosen.
-        globalEventTimestamp -= 1;
-      }
+      const globalEventTimestamp = globalEvent[1];
 
       yOffset = this.addTimeInfoToTooltip_(svg, yOffset, globalEventTimestamp);
 
