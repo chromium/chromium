@@ -406,89 +406,69 @@ std::pair<Installer::Result, absl::optional<int>>
 MakeInstallerResultAndOriginalError(
     absl::optional<InstallerOutcome> installer_outcome,
     int exit_code) {
+  InstallerOutcome outcome;
   if (installer_outcome && installer_outcome->installer_result) {
-    Installer::Result result;
-    switch (*installer_outcome->installer_result) {
-      case InstallerResult::kSuccess:
-        // This is unconditional success:
-        // - use the command line if available, and ignore everything else.
-        result.error = 0;
-        if (installer_outcome->installer_cmd_line) {
-          result.installer_cmd_line = *installer_outcome->installer_cmd_line;
-        }
-        CHECK_EQ(result.error, 0);
-        break;
-
-      case InstallerResult::kCustomError:
-        // This is an unconditional error:
-        // - use the installer error, or the exit code, or report a generic
-        //   error.
-        // - use the installer extra code if available.
-        // - use the text description of the error if available.
-        result.error = installer_outcome->installer_error
-                           ? *installer_outcome->installer_error
-                           : exit_code;
-        if (!result.error) {
-          result.error = kErrorApplicationInstallerFailed;
-        }
-        if (installer_outcome->installer_extracode1) {
-          result.extended_error = *installer_outcome->installer_extracode1;
-        }
-        if (installer_outcome->installer_text) {
-          result.installer_text = *installer_outcome->installer_text;
-        }
-        CHECK_NE(result.error, 0);
-        break;
-
-      case InstallerResult::kMsiError:
-      case InstallerResult::kSystemError:
-        // This is an unconditional error:
-        // - same as the case above but use a system-provided text.
-        result.error = installer_outcome->installer_error
-                           ? *installer_outcome->installer_error
-                           : exit_code;
-        if (!result.error) {
-          result.error = kErrorApplicationInstallerFailed;
-        }
-        if (installer_outcome->installer_extracode1) {
-          result.extended_error = *installer_outcome->installer_extracode1;
-        }
-        result.installer_text = GetTextForSystemError(result.error);
-        CHECK_NE(result.error, 0);
-        break;
-
-      case InstallerResult::kExitCode:
-        // This is could be a success or an error.
-        // - if success, then use the command line if available.
-        // - if an error, then ignore everything.
-        result.error = exit_code;
-        if (result.error == 0 && installer_outcome->installer_cmd_line) {
-          result.installer_cmd_line = *installer_outcome->installer_cmd_line;
-        }
-        break;
+    outcome = *installer_outcome;
+  } else {
+    // Set the installer result based on whether this is a success or an error.
+    // TODO(crbug.com/1481314): handle an `exit_code` of
+    // `ERROR_SUCCESS_REBOOT_REQUIRED`.
+    if (exit_code == 0) {
+      outcome.installer_result = InstallerResult::kSuccess;
+    } else {
+      outcome.installer_result = InstallerResult::kExitCode;
+      outcome.installer_error = kErrorApplicationInstallerFailed;
+      outcome.installer_extracode1 = exit_code;
     }
-
-    // `update_client` needs to view `ERROR_SUCCESS_REBOOT_REQUIRED` as a
-    // success, otherwise it will consider the app as not installed even though
-    // it installed successfully. So we reset the `error` to `0` here. The
-    // original error will be returned by this function via the
-    // `original_result_error`.
-    if (result.error == ERROR_SUCCESS_REBOOT_REQUIRED) {
-      const int original_result_error = result.error;
-      result.error = 0;
-      return std::make_pair(result, original_result_error);
-    }
-
-    return std::make_pair(result, absl::nullopt);
   }
 
-  // TODO(crbug.com/1481314): handle an `exit_code` of
-  // `ERROR_SUCCESS_REBOOT_REQUIRED`.
-  return std::make_pair(
-      exit_code == 0
-          ? Installer::Result(update_client::InstallError::NONE)
-          : Installer::Result(kErrorApplicationInstallerFailed, exit_code),
-      absl::nullopt);
+  Installer::Result result;
+  switch (*outcome.installer_result) {
+    case InstallerResult::kSuccess:
+      // This is unconditional success:
+      // - use the command line if available, and ignore everything else.
+      result.error = 0;
+      if (outcome.installer_cmd_line) {
+        result.installer_cmd_line = *outcome.installer_cmd_line;
+      }
+      CHECK_EQ(result.error, 0);
+      break;
+
+    case InstallerResult::kCustomError:
+    case InstallerResult::kMsiError:
+    case InstallerResult::kSystemError:
+    case InstallerResult::kExitCode:
+      // These are unconditional errors:
+      // - use the installer error, or the exit code, or report a generic
+      //   error.
+      // - use the installer extra code if available.
+      // - use the text description of the error if available.
+      result.error =
+          outcome.installer_error ? *outcome.installer_error : exit_code;
+      if (!result.error) {
+        result.error = kErrorApplicationInstallerFailed;
+      }
+      if (outcome.installer_extracode1) {
+        result.extended_error = *outcome.installer_extracode1;
+      }
+      result.installer_text = outcome.installer_text
+                                  ? *outcome.installer_text
+                                  : GetTextForSystemError(result.error);
+      CHECK_NE(result.error, 0);
+      break;
+  }
+
+  // `update_client` needs to view `ERROR_SUCCESS_REBOOT_REQUIRED` as a
+  // success, otherwise it will consider the app as not installed even though
+  // it installed successfully. So we reset the `error` to `0` here. The
+  // original error will be returned by this function via the
+  // `original_result_error`.
+  if (result.error == ERROR_SUCCESS_REBOOT_REQUIRED) {
+    const int original_result_error = result.error;
+    result.error = 0;
+    return std::make_pair(result, original_result_error);
+  }
+  return std::make_pair(result, absl::nullopt);
 }
 
 // Calls `MakeInstallerResultAndOriginalError` and returns the resultant

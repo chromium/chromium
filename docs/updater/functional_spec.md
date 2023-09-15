@@ -536,10 +536,21 @@ installing so that the updater can provide feedback to the user on the progress.
 * `InstallerResult` : Specifies the result type and how to determine success or
 failure:
   *   0 - SUCCESS
-  *   1 - FAILED\_CUSTOM\_ERROR
-  *   2 - FAILED\_MSI\_ERROR
-  *   3 - FAILED\_SYSTEM\_ERROR
-  *   4 - FAILED\_EXIT\_CODE (default)
+      The installer succeeded, unconditionally.
+      - if a launch command was provided via the installer API, the command will
+        be launched and the updater UI will exit silently. Otherwise, the
+        updater will show an install success dialog.
+
+  *   All the errors below are treated the same.
+      - if an installer error was not provided via the installer API or the exit
+        code, generic error `kErrorApplicationInstallerFailed` will be reported.
+      - the installer extra code is used if reported via the installer API.
+      - the text description of the error is used if reported via the installer
+        API.
+      *   1 - FAILED\_CUSTOM\_ERROR
+      *   2 - FAILED\_MSI\_ERROR
+      *   3 - FAILED\_SYSTEM\_ERROR
+      *   4 - FAILED\_EXIT\_CODE (default)
 * `InstallerResultUIString` : A string to be displayed to the user, if
 `InstallerResult` is FAILED*.
 * `InstallerSuccessLaunchCmdLine` : On success, the installer writes a command
@@ -557,6 +568,23 @@ display the string.
 
 TODO(crbug.com/1339454): Implement running installers at
 BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.
+
+#### Updater UI behavior
+
+The updater UI does the following:
+*   on successful installs that do not specify an installer API launch command:
+    *   Displays a "Thank you for installing" message that the user must click
+        to close.
+*   on successful installs that specify a launch command:
+    *   Shows all UI until installation is completed then launches the launch
+        command and then exits without displaying the thank you message or
+        requiring the user to click on the UI.
+*   on error:
+    *   The UI is always shown with the error message. If a specific text
+        description of the error is provided via the installer API, that is
+        shown. Otherwise, a generic message with the error code is shown, either
+        the code provided via the installer API, or the exit code, or a generic
+        error `kErrorApplicationInstallerFailed`.
 
 ### Installer Setup
 
