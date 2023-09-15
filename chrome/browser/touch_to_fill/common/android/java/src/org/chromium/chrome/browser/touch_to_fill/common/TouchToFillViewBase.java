@@ -245,8 +245,6 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      * Measures the content of the bottom sheet.
      */
     protected void remeasure() {
-        RelativeLayout.LayoutParams sheetItemListLayoutParams =
-                (RelativeLayout.LayoutParams) mSheetItemListView.getLayoutParams();
         mContentView.measure(
                 View.MeasureSpec.makeMeasureSpec(getInsetDisplayWidthPx(), MeasureSpec.AT_MOST),
                 MeasureSpec.UNSPECIFIED);
