@@ -923,6 +923,7 @@ void HTMLInputElement::ParseAttribute(
 void HTMLInputElement::ParserDidSetAttributes() {
   DCHECK(parsing_in_progress_);
   InitializeTypeInParsing();
+  TextControlElement::ParserDidSetAttributes();
 }
 
 void HTMLInputElement::FinishParsingChildren() {

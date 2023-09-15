@@ -3341,21 +3341,6 @@ void HTMLElement::FinishParsingChildren() {
     EnsureElementInternals().TakeStateAndRestore();
 }
 
-void HTMLElement::ParserDidSetAttributes() {
-  Element::ParserDidSetAttributes();
-
-  if (GetDocument().HasDirAttribute() && !HasDirectionAuto() &&
-      !ElementAffectsDirectionality(this)) {
-    bool needs_slot_assignment_recalc = false;
-    auto* parent =
-        GetParentForDirectionality(*this, needs_slot_assignment_recalc);
-    if (needs_slot_assignment_recalc)
-      SetNeedsInheritDirectionalityFromParent();
-    else if (parent)
-      SetCachedDirectionality(parent->CachedDirectionality());
-  }
-}
-
 }  // namespace blink
 
 #ifndef NDEBUG

@@ -216,7 +216,6 @@ class CORE_EXPORT HTMLElement : public Element {
   void UpdateDirectionalityAfterInputTypeChange(const AtomicString& old_value,
                                                 const AtomicString& new_value);
   void AdjustDirectionalityIfNeededAfterShadowRootChanged();
-  void ParserDidSetAttributes() override;
 
   V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
   void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);
