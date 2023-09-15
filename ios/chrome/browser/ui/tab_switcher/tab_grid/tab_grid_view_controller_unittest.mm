@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
@@ -208,87 +207,6 @@ TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
 // Checks that the ESC keyboard shortcut is always possible.
 TEST_F(TabGridViewControllerTest, CanPerform_Close) {
   EXPECT_TRUE(CanPerform(@"keyCommand_close"));
-}
-
-// Checks that opening a new incognito tab from the toolbar is skipped if not
-// allowed.
-TEST_F(TabGridViewControllerTest,
-       OpenNewTabInIncognitoPageFromToolbar_SkipIfNotAllowed) {
-  InitializeViewController(TabGridPageConfiguration::kIncognitoPageDisabled);
-  // Set the delegate as a strict mock to make sur that -showActiveTabInPage
-  // isn't called to open a tab when opening isn't allowed on the page.
-  view_controller_.tabPresentationDelegate =
-      OCMStrictProtocolMock(@protocol(TabPresentationDelegate));
-  [view_controller_ setCurrentPageAndPageControl:TabGridPageIncognitoTabs
-                                        animated:NO];
-
-  // Emulate tapping one the new tab button by using the actions wrangler
-  // interface that would normally be called by the tap action target.
-  [view_controller_ newTabButtonTapped:nil];
-
-  EXPECT_OCMOCK_VERIFY(view_controller_.tabPresentationDelegate);
-}
-
-// Checks that opening a new incognito tab from the toolbar is done when
-// allowed.
-TEST_F(TabGridViewControllerTest,
-       OpenNewTabInIncognitoPageFromToolbar_OpenIfAllowed) {
-  // Test from the incognito page.
-  TabGridPage page = TabGridPageIncognitoTabs;
-
-  InitializeViewController(TabGridPageConfiguration::kAllPagesEnabled);
-  [view_controller_ setCurrentPageAndPageControl:page animated:NO];
-
-  view_controller_.tabPresentationDelegate =
-      OCMStrictProtocolMock(@protocol(TabPresentationDelegate));
-  OCMExpect([view_controller_.tabPresentationDelegate showActiveTabInPage:page
-                                                             focusOmnibox:NO]);
-
-  // Emulate tapping one the new tab button by using the actions wrangler
-  // interface that would normally be called by the tap action target.
-  [view_controller_ newTabButtonTapped:nil];
-
-  EXPECT_OCMOCK_VERIFY(view_controller_.tabPresentationDelegate);
-}
-
-// Checks that opening a new regular tab from the toolbar is skipped if not
-// allowed.
-TEST_F(TabGridViewControllerTest,
-       OpenNewTabInRegularPageFromToolbar_SkipIfNotAllowed) {
-  InitializeViewController(TabGridPageConfiguration::kIncognitoPageOnly);
-  // Set the delegate as a strict mock to make sur that -showActiveTabInPage
-  // isn't called to open a tab when opening isn't allowed on the page.
-  view_controller_.tabPresentationDelegate =
-      OCMStrictProtocolMock(@protocol(TabPresentationDelegate));
-  [view_controller_ setCurrentPageAndPageControl:TabGridPageRegularTabs
-                                        animated:NO];
-
-  // Emulate tapping one the new tab button by using the actions wrangler
-  // interface that would normally be called by the tap action target.
-  [view_controller_ newTabButtonTapped:nil];
-
-  EXPECT_OCMOCK_VERIFY(view_controller_.tabPresentationDelegate);
-}
-
-// Checks that opening a new regular tab from the toolbar is done when allowed.
-TEST_F(TabGridViewControllerTest,
-       OpenNewTabInRegularPageFromToolbar_OpenIfAllowed) {
-  // Test from the incognito page.
-  TabGridPage page = TabGridPageRegularTabs;
-
-  InitializeViewController(TabGridPageConfiguration::kAllPagesEnabled);
-  [view_controller_ setCurrentPageAndPageControl:page animated:NO];
-
-  view_controller_.tabPresentationDelegate =
-      OCMStrictProtocolMock(@protocol(TabPresentationDelegate));
-  OCMExpect([view_controller_.tabPresentationDelegate showActiveTabInPage:page
-                                                             focusOmnibox:NO]);
-
-  // Emulate tapping one the new tab button by using the actions wrangler
-  // interface that would normally be called by the tap action target.
-  [view_controller_ newTabButtonTapped:nil];
-
-  EXPECT_OCMOCK_VERIFY(view_controller_.tabPresentationDelegate);
 }
 
 }  // namespace

@@ -87,10 +87,10 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
-  _incognitoAuthMediator = nil;
 
   [_dispatcher stopDispatchingForProtocol:@protocol(IncognitoReauthCommands)];
   _dispatcher = nil;
+  _incognitoAuthMediator = nil;
 }
 
 #pragma mark - IncognitoGridMediatorDelegate

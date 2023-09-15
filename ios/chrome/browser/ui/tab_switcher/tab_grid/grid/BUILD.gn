@@ -65,6 +65,7 @@ source_set("grid_ui") {
     "grid_cell.h",
     "grid_cell.mm",
     "grid_commands.h",
+    "grid_consumer.h",
     "grid_empty_view.h",
     "grid_header.h",
     "grid_header.mm",

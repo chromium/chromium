@@ -2298,35 +2298,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.tabGridMode = TabGridModeNormal;
 }
 
-- (void)newTabButtonTapped:(id)sender {
-  // Ignore the tap if the current page is disabled for some reason, by policy
-  // for instance. This is to avoid situations where the tap action from an
-  // enabled page can make it to a disabled page by releasing the
-  // button press after switching to the disabled page (b/273416844 is an
-  // example).
-  if (![self isPageEnabled:self.currentPage]) {
-    return;
-  }
-
-  [self setCurrentIdlePageStatus:NO];
-  base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
-  [self openNewTabInPage:self.currentPage focusOmnibox:NO];
-  // Record metrics for button taps
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      base::RecordAction(
-          base::UserMetricsAction("MobileTabGridCreateIncognitoTab"));
-      break;
-    case TabGridPageRegularTabs:
-      base::RecordAction(
-          base::UserMetricsAction("MobileTabGridCreateRegularTab"));
-      break;
-    case TabGridPageRemoteTabs:
-      // No-op.
-      break;
-  }
-}
-
 - (void)closeSelectedTabs:(id)sender {
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
@@ -2786,6 +2757,21 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                      self.regularTabsViewController.gridView.contentInset =
                          inset;
                    }];
+}
+
+#pragma mark - GridConsumer
+
+- (void)setPageIdleStatus:(BOOL)status {
+  [self setCurrentIdlePageStatus:status];
+}
+
+- (void)setActivePageFromPage:(TabGridPage)page {
+  self.activePage = page;
+}
+
+- (void)prepareForDismissal {
+  [self.incognitoTabsViewController prepareForDismissal];
+  [self.regularTabsViewController prepareForDismissal];
 }
 
 @end

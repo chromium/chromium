@@ -14,8 +14,6 @@
 
 - (void)doneButtonTapped:(id)sender;
 
-- (void)newTabButtonTapped:(id)sender;
-
 - (void)selectAllButtonTapped:(id)sender;
 
 - (void)searchButtonTapped:(id)sender;

@@ -17,11 +17,11 @@ class AuthenticationService;
 @class BaseGridMediator;
 class Browser;
 class BrowserList;
-class ChromeBrowserState;
 @class FakeTabCollectionConsumer;
 class GURL;
 class IOSChromeScopedTestingLocalState;
 class PlatformTest;
+class TestChromeBrowserState;
 
 namespace web {
 class FakeWebState;
@@ -53,7 +53,7 @@ class GridMediatorTestClass : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeTabCollectionConsumer* consumer_;
   NSSet<NSString*>* original_identifiers_;
   NSString* original_selected_identifier_;

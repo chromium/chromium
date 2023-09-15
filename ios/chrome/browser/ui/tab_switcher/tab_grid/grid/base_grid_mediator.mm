@@ -217,6 +217,8 @@ NSString* GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   _toolbarsMutator = nil;
   _containedGridToolbarsProvider = nil;
   _actionWrangler = nil;
+  _gridConsumer = nil;
+  _tabPresentationDelegate = nil;
 
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
@@ -1084,7 +1086,7 @@ NSString* GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  [self.actionWrangler newTabButtonTapped:sender];
+  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
 - (void)selectAllButtonTapped:(id)sender {

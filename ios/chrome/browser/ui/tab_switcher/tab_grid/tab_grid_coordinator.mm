@@ -870,6 +870,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.remoteTabsMediator.toolbarsMutator =
       _toolbarsCoordinator.toolbarsMutator;
 
+  self.incognitoTabsMediator.tabPresentationDelegate = self;
+  self.regularTabsMediator.tabPresentationDelegate = self;
+
+  self.incognitoTabsMediator.gridConsumer = self.baseViewController;
+  self.regularTabsMediator.gridConsumer = self.baseViewController;
+
   self.snackbarCoordinator =
       [[SnackbarCoordinator alloc] initWithBaseViewController:baseViewController
                                                       browser:_regularBrowser
