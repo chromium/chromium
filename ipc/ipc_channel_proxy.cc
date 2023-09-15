@@ -450,23 +450,13 @@ std::unique_ptr<ChannelProxy> ChannelProxy::Create(
   return channel;
 }
 
-ChannelProxy::ChannelProxy(Context* context)
-    : context_(context), did_init_(false) {
-#if defined(ENABLE_IPC_FUZZER)
-  outgoing_message_filter_ = nullptr;
-#endif
-}
+ChannelProxy::ChannelProxy(Context* context) : context_(context) {}
 
 ChannelProxy::ChannelProxy(
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner)
-    : context_(new Context(listener, ipc_task_runner, listener_task_runner)),
-      did_init_(false) {
-#if defined(ENABLE_IPC_FUZZER)
-  outgoing_message_filter_ = nullptr;
-#endif
-}
+    : context_(new Context(listener, ipc_task_runner, listener_task_runner)) {}
 
 ChannelProxy::~ChannelProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

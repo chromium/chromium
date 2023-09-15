@@ -431,10 +431,10 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
   scoped_refptr<Context> context_;
 
   // Whether the channel has been initialized.
-  bool did_init_;
+  bool did_init_ = false;
 
 #if defined(ENABLE_IPC_FUZZER)
-  raw_ptr<OutgoingMessageFilter> outgoing_message_filter_;
+  raw_ptr<OutgoingMessageFilter> outgoing_message_filter_ = nullptr;
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
