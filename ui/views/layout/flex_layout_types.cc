@@ -59,7 +59,7 @@ class LazySize {
   const gfx::Size& operator*() const { return *get(); }
   const gfx::Size* get() const {
     if (!size_)
-      size_ = (view_.get()->*size_func_)();
+      size_ = (view_->*size_func_)();
     return &size_.value();
   }
   LazyDimension width() const {

@@ -34,7 +34,7 @@ class ScopedGLuint {
                GenFunc gen_func,
                DeleteFunc delete_func)
       : gl_(gl), id_(0u), delete_func_(delete_func) {
-    (gl_.get()->*gen_func)(1, &id_);
+    (gl_->*gen_func)(1, &id_);
   }
 
   operator GLuint() const { return id_; }
@@ -46,7 +46,7 @@ class ScopedGLuint {
 
   ~ScopedGLuint() {
     if (id_ != 0) {
-      (gl_.get()->*delete_func_)(1, &id_);
+      (gl_->*delete_func_)(1, &id_);
     }
   }
 
@@ -86,13 +86,13 @@ class ScopedBinder {
   typedef void (gles2::GLES2Interface::*BindFunc)(GLenum target, GLuint id);
   ScopedBinder(gles2::GLES2Interface* gl, GLuint id, BindFunc bind_func)
       : gl_(gl), bind_func_(bind_func) {
-    (gl_.get()->*bind_func_)(Target, id);
+    (gl_->*bind_func_)(Target, id);
   }
 
   ScopedBinder(const ScopedBinder&) = delete;
   ScopedBinder& operator=(const ScopedBinder&) = delete;
 
-  virtual ~ScopedBinder() { (gl_.get()->*bind_func_)(Target, 0); }
+  virtual ~ScopedBinder() { (gl_->*bind_func_)(Target, 0); }
 
  private:
   raw_ptr<gles2::GLES2Interface> gl_;

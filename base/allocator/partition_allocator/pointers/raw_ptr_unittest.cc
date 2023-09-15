@@ -1409,6 +1409,37 @@ class PmfTestDerived : public PmfTestBase {
   int MemFunc(float, double) { return 22; }
 };
 
+TEST_F(RawPtrTest, PointerToMemberFunction) {
+  PmfTestDerived object;
+  int (PmfTestBase::*pmf_base_base)(char, double) const = &PmfTestBase::MemFunc;
+  int (PmfTestDerived::*pmf_derived_base)(char, double) const =
+      &PmfTestDerived::MemFunc;
+  int (PmfTestDerived::*pmf_derived_derived)(float, double) =
+      &PmfTestDerived::MemFunc;
+
+  // Test for `derived_ptr`
+  CountingRawPtr<PmfTestDerived> derived_ptr = &object;
+
+  EXPECT_EQ((derived_ptr->*pmf_base_base)(0, 0), 11);
+  EXPECT_EQ((derived_ptr->*pmf_derived_base)(0, 0), 11);
+  EXPECT_EQ((derived_ptr->*pmf_derived_derived)(0, 0), 22);
+
+  // Test for `derived_ptr_const`
+  const CountingRawPtr<PmfTestDerived> derived_ptr_const = &object;
+
+  EXPECT_EQ((derived_ptr_const->*pmf_base_base)(0, 0), 11);
+  EXPECT_EQ((derived_ptr_const->*pmf_derived_base)(0, 0), 11);
+  EXPECT_EQ((derived_ptr_const->*pmf_derived_derived)(0, 0), 22);
+
+  // Test for `const_derived_ptr`
+  CountingRawPtr<const PmfTestDerived> const_derived_ptr = &object;
+
+  EXPECT_EQ((const_derived_ptr->*pmf_base_base)(0, 0), 11);
+  EXPECT_EQ((const_derived_ptr->*pmf_derived_base)(0, 0), 11);
+  // const_derived_ptr->*pmf_derived_derived is not a const member function,
+  // so it's not possible to test it.
+}
+
 TEST_F(RawPtrTest, WorksWithOptional) {
   int x = 0;
   absl::optional<raw_ptr<int>> maybe_int;

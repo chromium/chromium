@@ -36,7 +36,7 @@ AutoSigninFirstRunDialogView::AutoSigninFirstRunDialogView(
   auto call_controller = [](AutoSigninFirstRunDialogView* dialog,
                             ControllerCallbackFn func) {
     if (dialog->controller_) {
-      (dialog->controller_.get()->*func)();
+      (dialog->controller_->*func)();
     }
   };
   SetAcceptCallback(

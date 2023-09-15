@@ -21,10 +21,6 @@ struct DerivedProducer : Producer {};
 struct OtherDerivedProducer : Producer {};
 struct Unrelated {};
 struct DerivedUnrelated : Unrelated {};
-struct PmfTest {
- public:
-  int Func(char, double) const { return 11; }
-};
 
 #if defined(NCTEST_INVALID_RAW_PTR_TRAIT)  // [r"Unknown raw_ptr trait\(s\)"]
 
@@ -111,16 +107,6 @@ void WontCompile() {
 void WontCompile() {
   raw_ptr<void(int)> raw_ptr_var;
   std::ignore = raw_ptr_var.get();
-}
-
-#elif defined(NCTEST_POINTER_TO_MEMBER) // [r"overload resolution selected deleted operator '->\*'"]
-
-void WontCompile() {
-  PmfTest object;
-  int (PmfTest::*pmf_func)(char, double) const = &PmfTest::Func;
-
-  raw_ptr<PmfTest> object_ptr = &object;
-  std::ignore = object_ptr->*pmf_func;
 }
 
 #elif defined(NCTEST_DANGLING_GSL) // [r"object backing the pointer will be destroyed at the end of the full-expression"]

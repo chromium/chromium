@@ -577,12 +577,6 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return GetForDereference();
   }
 
-  // Disables `(my_raw_ptr->*pmf)(...)` as a workaround for
-  // the ICE in GCC parsing the code, reported at
-  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=103455
-  template <typename PMF>
-  void operator->*(PMF) const = delete;
-
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr operator T*() const { return GetForExtraction(); }
