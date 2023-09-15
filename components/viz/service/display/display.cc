@@ -613,6 +613,9 @@ namespace {
 
 DBG_FLAG_FBOOL("frame.debug.non_root_passes", debug_non_root_passes)
 
+DBG_FLAG_FBOOL("frame.render_pass.non_root_passes_in_root_space",
+               non_root_passes_in_root_space)
+
 void DebugDrawFrame(
     const AggregatedFrame& frame,
     const std::unique_ptr<DisplayResourceProvider>& resource_provider) {
@@ -628,10 +631,16 @@ void DebugDrawFrame(
       continue;
     }
 
+    auto output_rect = render_pass->output_rect;
+    auto damage_rect = render_pass->damage_rect;
+    if (non_root_passes_in_root_space()) {
+      output_rect = render_pass->transform_to_root_target.MapRect(output_rect);
+      damage_rect = render_pass->transform_to_root_target.MapRect(damage_rect);
+    }
+
     DBG_DRAW_RECT_OPT("frame.render_pass.output_rect", DBG_OPT_BLUE,
-                      render_pass->output_rect);
-    DBG_DRAW_RECT_OPT("frame.render_pass.damage", DBG_OPT_RED,
-                      render_pass->damage_rect);
+                      output_rect);
+    DBG_DRAW_RECT_OPT("frame.render_pass.damage", DBG_OPT_RED, damage_rect);
 
     DBG_LOG_OPT("frame.render_pass.meta", DBG_OPT_BLUE,
                 "Render pass id=%" PRIu64
@@ -648,8 +657,13 @@ void DebugDrawFrame(
 
     for (auto* quad : render_pass->quad_list) {
       auto* sqs = quad->shared_quad_state;
-      auto& transform = sqs->quad_to_target_transform;
-      auto display_rect = transform.MapRect(gfx::RectF(quad->rect));
+      auto quad_to_root_transform = sqs->quad_to_target_transform;
+      if (non_root_passes_in_root_space()) {
+        quad_to_root_transform.PostConcat(
+            render_pass->transform_to_root_target);
+      }
+      auto display_rect =
+          quad_to_root_transform.MapRect(gfx::RectF(quad->rect));
       DBG_DRAW_TEXT_OPT("frame.render_pass.material", DBG_OPT_GREEN,
                         display_rect.origin(),
                         base::NumberToString(static_cast<int>(quad->material)));
