@@ -23,18 +23,20 @@
     <template is="dom-if" if="[[allowScrollSettings_]]">
       <h2 class="subsection-subtitle">$i18n{mouseCursor}</h2>
     </template>
-    <div class="settings-box">
-      <div class="start settings-box-text" id="mouseSwapButtonLabel">
-        $i18n{mouseSwapButtonsLabel}
+    <template is="dom-if" if="[[!isPeripheralCustomizationEnabled_]]">
+      <div class="settings-box">
+        <div class="start settings-box-text" id="mouseSwapButtonLabel">
+          $i18n{mouseSwapButtonsLabel}
+        </div>
+        <settings-dropdown-menu id="mouseSwapButtonDropdown"
+            aria-describedby="mouseName"
+            label="$i18n{mouseSwapButtonsLabel}"
+            pref="{{primaryRightPref}}"
+            menu-options="[[swapPrimaryOptions]]"
+            deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
+        </settings-dropdown-menu>
       </div>
-      <settings-dropdown-menu id="mouseSwapButtonDropdown"
-          aria-describedby="mouseName"
-          label="$i18n{mouseSwapButtonsLabel}"
-          pref="{{primaryRightPref}}"
-          menu-options="[[swapPrimaryOptions]]"
-          deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
-      </settings-dropdown-menu>
-    </div>
+    </template>
     <settings-toggle-button id="mouseAcceleration"
         class="hr"
         pref="{{accelerationPref}}"

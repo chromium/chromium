@@ -5,9 +5,10 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsCustomizeMouseButtonsSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {FakeInputDeviceSettingsProvider, fakeMice, fakeMouseButtonActions, getInputDeviceSettingsProvider, Mouse, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, fakeMouseButtonActions, getInputDeviceSettingsProvider, Mouse, PolicyStatus, Router, routes, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<settings-customize-mouse-buttons-subpage>', () => {
   let page: SettingsCustomizeMouseButtonsSubpageElement;
@@ -86,5 +87,44 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
     await Router.getInstance().navigateTo(routes.DEVICE);
     observed_devices = provider.getObservedDevices();
     assertEquals(0, observed_devices.length);
+  });
+
+  /**
+   * Test that API are updated when mouse settings change.
+   */
+  test('Update API when mouse settings change', async () => {
+    const mouseSwapToggleButton =
+        page.shadowRoot!.querySelector<CrToggleElement>(
+            '#mouseSwapToggleButton');
+    assertTrue(!!mouseSwapToggleButton);
+    assertEquals(
+        fakeMice[0]!.settings.swapRight, mouseSwapToggleButton.checked);
+    mouseSwapToggleButton.click();
+    await flushTasks();
+    const updatedMice = await provider.getConnectedMouseSettings();
+    assertEquals(
+        updatedMice[0]!.settings.swapRight, mouseSwapToggleButton.checked);
+  });
+
+  /**
+   * Verifies that the policy indicator is properly reflected in the UI.
+   */
+  test('swap right policy reflected in UI', async () => {
+    page.set('mousePolicies', {
+      swapRightPolicy: {policy_status: PolicyStatus.kManaged, value: false},
+    });
+    await flushTasks();
+    const mouseSwapToggleButton =
+        page.shadowRoot!.querySelector('#mouseSwapToggleButton');
+    assertTrue(!!mouseSwapToggleButton);
+    let policyIndicator = mouseSwapToggleButton.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator');
+    assertTrue(isVisible(policyIndicator));
+
+    page.set('mousePolicies', {swapRightPolicy: undefined});
+    await flushTasks();
+    policyIndicator = mouseSwapToggleButton.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator');
+    assertFalse(isVisible(policyIndicator));
   });
 });

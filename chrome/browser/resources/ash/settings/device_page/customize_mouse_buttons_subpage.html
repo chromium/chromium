@@ -10,10 +10,12 @@
     margin-inline-start: 20px;
   }
 </style>
-<div id="header">
-  <div id="description">[[selectedMouse.name]]</div>
-</div>
 <div class="subsection">
+  <settings-toggle-button id="mouseSwapToggleButton"
+      aria-describedby="description"
+      label="$i18n{mouseSwapButtonsLabel}"
+      pref="{{primaryRightPref_}}">
+  </settings-toggle-button>
   <customize-buttons-subsection
       button-remapping-list="{{selectedMouse.settings.buttonRemappings}}"
       action-list$="[[buttonActionList_]]">
