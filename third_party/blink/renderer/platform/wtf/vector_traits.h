@@ -30,6 +30,14 @@
 
 namespace WTF {
 
+// Vector traits serve two purposes:
+// 1. Faster bulk operations: Instead of invoking proper constructors,
+//    destructors, copy operators, and move operators on individual elements,
+//    the vector implementation will just use `memcpy()` and friends where
+//    possible.
+// 2. Garbage collection support: HeapVector requires certain traits to be set
+//    which is used to acknowledge that semantics are different from regular
+//    `WTF::Vector` and `std::vector`.
 template <typename T>
 struct VectorTraitsBase {
   // When true, T will be destroyed using `~T`.
@@ -41,7 +49,7 @@ struct VectorTraitsBase {
   static constexpr bool kCanInitializeWithMemset =
       std::is_trivially_default_constructible<T>::value;
 
-  // When true, allows setting a value for a range with `memset()` instead of
+  // When true, allows setting a value for a range with `memset(0)` instead of
   // invoking constructors.
   static constexpr bool kCanFillWithMemset =
       std::is_default_constructible<T>::value && (sizeof(T) == sizeof(char));
@@ -51,16 +59,21 @@ struct VectorTraitsBase {
       std::is_scalar<T>::value;  // Types without padding.
 
   // When true, allows moving vector backings with memcpy instead of invoking
-  // move operations on every vector slot.
+  // move operations on every vector slot. There's no move operator being
+  // invoked.
   //
   // Garbage collection support: When true, the GC may move vector backings when
   // they are not referred to from the native stack. This prohibits keeping
-  // inner pointers to vectors across event loop turns.
+  // inner pointers to vector elements and backing stores across event loop
+  // turns. When elements are moved using copy, their old storage is is just
+  // freed. In essence, no constructor/destructor/move operations will be
+  // invoked.
   static constexpr bool kCanMoveWithMemcpy =
       std::is_trivially_move_assignable<T>::value;
 
   // When true, allows copying vector backings with memcpy instead of invoking
-  // copy operations on every vector slot.
+  // copy operations on every vector slot. There's no copy operator being
+  // invoked.
   static constexpr bool kCanCopyWithMemcpy =
       std::is_trivially_copy_assignable<T>::value;
 
