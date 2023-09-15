@@ -1819,6 +1819,10 @@ message DeviceChargingSoundsProto {
   optional bool enabled = 1;
 }
 
+message DeviceSwitchFunctionKeysBehaviorEnabledProto {
+  optional bool enabled = 1;
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -2023,4 +2027,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceChargingSoundsProto device_charging_sounds = 150;
   optional StringListPolicyProto device_authentication_url_blocklist = 151;
   optional StringListPolicyProto device_authentication_url_allowlist = 152;
+  optional DeviceSwitchFunctionKeysBehaviorEnabledProto
+      device_switch_function_keys_behavior_enabled = 153;
 }

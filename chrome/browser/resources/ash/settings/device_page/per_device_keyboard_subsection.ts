@@ -169,6 +169,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       ...this.topRowAreFunctionKeysPref,
       ...getPrefPolicyFields(this.keyboardPolicies.topRowAreFkeysPolicy),
     };
+    this.blockMetaFunctionKeyRewritesPref = {
+      ...this.blockMetaFunctionKeyRewritesPref,
+      ...getPrefPolicyFields(
+          this.keyboardPolicies.enableMetaFkeyRewritesPolicy),
+    };
   }
 
   private onLearnMoreLinkClicked_(event: Event): void {
