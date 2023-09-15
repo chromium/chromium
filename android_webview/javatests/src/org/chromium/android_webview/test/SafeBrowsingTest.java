@@ -35,6 +35,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
@@ -189,6 +190,16 @@ public class SafeBrowsingTest {
     }
 
     /**
+     * A fake PlatformServiceBridge that allows tests to make safe browsing requests without GMS.
+     */
+    private static class MockPlatformServiceBridge extends PlatformServiceBridge {
+        @Override
+        public boolean canUseGms() {
+            return true;
+        }
+    }
+
+    /**
      * A fake AwBrowserContext which loads the MockSafetyNetApiHandler instead of the real one.
      */
     private static class MockAwBrowserContext extends AwBrowserContext {
@@ -299,6 +310,9 @@ public class SafeBrowsingTest {
         mContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(
                 mContentsClient, false, new SafeBrowsingDependencyFactory());
         mAwContents = (MockAwContents) mContainerView.getAwContents();
+
+        MockPlatformServiceBridge mockPlatformServiceBridge = new MockPlatformServiceBridge();
+        PlatformServiceBridge.injectInstance(mockPlatformServiceBridge);
 
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());

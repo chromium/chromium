@@ -96,6 +96,13 @@ public class AwSafeBrowsingConfigHelper {
         return sSafeBrowsingUserOptIn;
     }
 
+    // This feature checks if GMS is present, enabled, accessible to WebView and has minimum
+    // version to support safe browsing
+    @CalledByNative
+    private static boolean canUseGms() {
+        return PlatformServiceBridge.getInstance().canUseGms();
+    }
+
     public static void setSafeBrowsingUserOptIn(boolean optin) {
         sSafeBrowsingUserOptIn = optin;
     }
