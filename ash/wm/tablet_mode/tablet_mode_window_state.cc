@@ -154,7 +154,7 @@ TabletModeWindowState::TabletModeWindowState(aura::Window* window,
   // maximized if possible, centered with a backdrop if not possible.
   state_type_on_attach_ = snap || state->IsFloated()
                               ? current_state_type_
-                              : state->GetMaximizedOrCenteredWindowType();
+                              : state->GetWindowTypeOnMaximizable();
   // TODO(oshima|sammiequon): consider SplitView scenario.
   WindowState::ScopedBoundsChangeAnimation bounds_animation(
       window, entering_tablet_mode && !ShouldAnimateWindowForTransition(window)
@@ -313,8 +313,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_TOGGLE_MAXIMIZE:
     case WM_EVENT_CENTER:
     case WM_EVENT_MAXIMIZE:
-      UpdateWindow(window_state,
-                   window_state->GetMaximizedOrCenteredWindowType(),
+      UpdateWindow(window_state, window_state->GetWindowTypeOnMaximizable(),
                    /*animate=*/true);
       break;
     case WM_EVENT_NORMAL: {
@@ -322,8 +321,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       if (window_state->window()->GetProperty(aura::client::kIsRestoringKey)) {
         DoRestore(window_state);
       } else {
-        UpdateWindow(window_state,
-                     window_state->GetMaximizedOrCenteredWindowType(),
+        UpdateWindow(window_state, window_state->GetWindowTypeOnMaximizable(),
                      /*animate=*/true);
       }
       break;
@@ -531,7 +529,7 @@ WindowStateType TabletModeWindowState::GetSnappedWindowStateType(
   return SplitViewController::Get(Shell::GetPrimaryRootWindow())
                  ->CanSnapWindow(window_state->window())
              ? target_state
-             : window_state->GetMaximizedOrCenteredWindowType();
+             : window_state->GetWindowTypeOnMaximizable();
 }
 
 WindowStateType TabletModeWindowState::AdjustStateForTabletMode(
@@ -543,7 +541,7 @@ WindowStateType TabletModeWindowState::AdjustStateForTabletMode(
     return window_state->GetStateType();
   }
 
-  return window_state->GetMaximizedOrCenteredWindowType();
+  return window_state->GetWindowTypeOnMaximizable();
 }
 
 void TabletModeWindowState::UpdateBounds(
@@ -600,7 +598,7 @@ void TabletModeWindowState::CycleTabletSnap(
   SplitViewController* split_view_controller = SplitViewController::Get(window);
   // If |window| is already snapped in |snap_position|, then unsnap |window|.
   if (window == split_view_controller->GetSnappedWindow(snap_position)) {
-    UpdateWindow(window_state, window_state->GetMaximizedOrCenteredWindowType(),
+    UpdateWindow(window_state, window_state->GetWindowTypeOnMaximizable(),
                  /*animate=*/true);
     window_state->ReadOutWindowCycleSnapAction(
         IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT);

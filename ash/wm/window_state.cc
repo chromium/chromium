@@ -775,7 +775,7 @@ WindowStateType WindowState::GetRestoreWindowState() const {
   // the existing floated window.
   if (IsMinimized() && restore_state == WindowStateType::kFloated) {
     if (window_util::GetFloatedWindowForActiveDesk()) {
-      return IsTabletModeEnabled() ? GetMaximizedOrCenteredWindowType()
+      return IsTabletModeEnabled() ? GetWindowTypeOnMaximizable()
                                    : WindowStateType::kNormal;
     }
   }
@@ -794,7 +794,7 @@ WindowStateType WindowState::GetRestoreWindowState() const {
         (IsFloated() &&
          (restore_state == WindowStateType::kPrimarySnapped ||
           restore_state == WindowStateType::kSecondarySnapped))) {
-      restore_state = GetMaximizedOrCenteredWindowType();
+      restore_state = GetWindowTypeOnMaximizable();
     }
   }
 
@@ -1203,8 +1203,7 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
   }
 }
 
-chromeos::WindowStateType WindowState::GetMaximizedOrCenteredWindowType()
-    const {
+chromeos::WindowStateType WindowState::GetWindowTypeOnMaximizable() const {
   return CanMaximize() && ::wm::GetTransientParent(window_) == nullptr
              ? WindowStateType::kMaximized
              : WindowStateType::kNormal;

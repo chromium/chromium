@@ -558,11 +558,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   void UpdateWindowStateRestoreHistoryStack(
       chromeos::WindowStateType previous_state_type);
 
-  // Depending on the capabilities of the window we either return
-  // |WindowStateType::kMaximized| or |WindowStateType::kNormal|.
-  // |WindowStateType::kMaximized| can only be returned if the window can be
-  // maximized and is not a transient child window.
-  chromeos::WindowStateType GetMaximizedOrCenteredWindowType() const;
+  // Used in tablet mode to get the window state type depends on whether the
+  // window is maximizable. If not, the window will be put in
+  // `WindowStateType::kNormal` state and be centered to the work area of the
+  // current display.
+  chromeos::WindowStateType GetWindowTypeOnMaximizable() const;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

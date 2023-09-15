@@ -59,8 +59,7 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_NORMAL:
     case WM_EVENT_RESTORE:
     case WM_EVENT_MAXIMIZE:
-      UpdateWindow(window_state,
-                   GetMaximizedOrCenteredWindowType(window_state));
+      UpdateWindow(window_state, GetWindowTypeOnMaximizable(window_state));
       return;
     case WM_EVENT_MINIMIZE:
       UpdateWindow(window_state, WindowStateType::kMinimized);
@@ -79,8 +78,7 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
       if (current_state_type_ != WindowStateType::kMaximized &&
           current_state_type_ != WindowStateType::kMinimized &&
           current_state_type_ != WindowStateType::kFullscreen) {
-        UpdateWindow(window_state,
-                     GetMaximizedOrCenteredWindowType(window_state));
+        UpdateWindow(window_state, GetWindowTypeOnMaximizable(window_state));
       } else {
         UpdateBounds(window_state);
       }
@@ -106,7 +104,7 @@ void LockWindowState::AttachState(WindowState* window_state,
   if (current_state_type_ != WindowStateType::kMaximized &&
       current_state_type_ != WindowStateType::kMinimized &&
       current_state_type_ != WindowStateType::kFullscreen) {
-    UpdateWindow(window_state, GetMaximizedOrCenteredWindowType(window_state));
+    UpdateWindow(window_state, GetWindowTypeOnMaximizable(window_state));
   }
 }
 
@@ -176,8 +174,8 @@ void LockWindowState::UpdateWindow(WindowState* window_state,
   }
 }
 
-WindowStateType LockWindowState::GetMaximizedOrCenteredWindowType(
-    WindowState* window_state) {
+WindowStateType LockWindowState::GetWindowTypeOnMaximizable(
+    WindowState* window_state) const {
   return window_state->CanMaximize() ? WindowStateType::kMaximized
                                      : WindowStateType::kNormal;
 }
