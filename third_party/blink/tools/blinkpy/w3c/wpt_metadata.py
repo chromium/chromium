@@ -7,7 +7,16 @@ import collections
 import contextlib
 import optparse
 import re
-from typing import Any, Dict, Iterator, Literal, Optional, Set, Tuple
+from typing import (
+    Any,
+    Dict,
+    FrozenSet,
+    Iterator,
+    Literal,
+    Optional,
+    Set,
+    Tuple,
+)
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
@@ -76,6 +85,8 @@ class TestConfigurations(collections.abc.Mapping):
         self._finder = path_finder.PathFinder(self._fs)
         self._configs = configs
         self._get_dir_manifest = memoized(manifestexpected.get_dir_manifest)
+        # Do not memoize with `self` as an argument, which is unhashable.
+        self.possible_values = memoized(self._possible_values)
 
     def __getitem__(self, config: metadata.RunInfo) -> Port:
         return self._configs[config]
@@ -202,6 +213,9 @@ class TestConfigurations(collections.abc.Mapping):
         metadata_path = self._fs.join(dir_path, '__dir__.ini')
         manifest = self._get_dir_manifest(metadata_path, config)
         return manifest.disabled if manifest else None
+
+    def _possible_values(self, prop: str) -> FrozenSet[Any]:
+        return frozenset(config[prop] for config in self)
 
 
 TestType = Literal[tuple(wpttest.manifest_test_cls)]

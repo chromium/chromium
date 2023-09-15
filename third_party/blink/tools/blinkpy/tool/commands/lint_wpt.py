@@ -14,6 +14,7 @@ import logging
 import multiprocessing
 import optparse
 import pathlib
+import random
 import re
 import textwrap
 import typing
@@ -510,11 +511,19 @@ class MetadataLinter(static.Compiler):
                 test_id = test_id[1:]
             if not self.manifest.is_slow_test(test_id):
                 continue
+            if not any(condition.value == 'TIMEOUT'
+                       for condition in test.get_conditions('expected')):
+                # This is an optimization to skip evaluating the condition on
+                # every config (slow) if there are no consistent timeouts in the
+                # first place. The main check is still necessary in case all
+                # `TIMEOUT`s are only taken by disabled configs.
+                continue
             configs = self.configs.enabled_configs(test, self.metadata_root)
             for config in configs:
                 with contextlib.suppress(KeyError):
                     if test.get('expected', config) == 'TIMEOUT':
                         self._error(MetadataLongTimeout, test=test_id)
+                        break
 
     def visit(self, node: wptnode.Node):
         with self._disable_rules(node):
@@ -601,8 +610,30 @@ class MetadataLinter(static.Compiler):
         conditions_not_taken = set(range(len(conditions)))
         unique_values = set(map(self.visit, values))
         implicit_default = self._implicit_default_value(key_value_node.data)
+        if unique_values == {implicit_default}:
+            self._error(MetadataUnnecessaryKey, value=_format_node(values[0]))
+            return
+        if conditions == [None]:  # Early out for unconditional values
+            return
+
         # Simulate conditional value resolution for each test configuration.
-        for config in self.configs:
+        # Randomly shuffling the configs is an optimization to try to exercise
+        # every branch and take the early out as quickly as possible (sometimes
+        # with >8x speedups). Most conditions are very simple:
+        #   expected:
+        #     if os == "win": FAIL
+        #
+        # However, if we rely on the default lexographical order, we may get
+        # unlucky and need to iterate almost the entire `TestConfigurations`,
+        # which shuffling mitigates:
+        #   os=linux virtual_suite=threaded
+        #   ...
+        #   os=linux virtual_suite=webgpu
+        #   os=mac virtual_suite=threaded
+        #   ...
+        #   os=mac virtual_suite=webgpu
+        #   os=win virtual_suite=threaded   <= First (os == "win") config
+        for config in self._shuffled_configs:
             for i, condition in enumerate(conditions):
                 try:
                     if self._eval_condition_taken(condition, config):
@@ -620,12 +651,13 @@ class MetadataLinter(static.Compiler):
                     conditions_not_taken.discard(i)
             else:
                 unique_values.add(implicit_default)
+            if not conditions_not_taken and (conditions[-1] is None
+                                             or implicit_default
+                                             in unique_values):
+                break
 
-        if unique_values == {implicit_default}:
-            self._error(MetadataUnnecessaryKey, value=_format_node(values[0]))
-            return
-        elif (len([condition for condition in conditions if condition]) > 0
-              and len(unique_values) == 1):
+        if (len([condition for condition in conditions if condition]) > 0
+                and len(unique_values) == 1):
             self._error(MetadataConditionsUnnecessary,
                         value=_format_node(values[0]))
             return
@@ -635,12 +667,18 @@ class MetadataLinter(static.Compiler):
             self._error(MetadataUnreachableValue,
                         condition=_format_condition(conditions[i]))
         for prop, values in self.context['prop_comparisons'].items():
-            unknown_values = values - {config[prop] for config in self.configs}
+            unknown_values = values - self.configs.possible_values(prop)
             for value in unknown_values:
                 self._error(MetadataUnknownPropValue,
                             prop=prop,
                             value=value,
                             condition=_format_condition(condition))
+
+    @functools.cached_property
+    def _shuffled_configs(self) -> List[metadata.RunInfo]:
+        configs = list(self.configs)
+        random.shuffle(configs)
+        return configs
 
     def _implicit_default_value(self, key: str) -> Hashable:
         """Return the value wptrunner infers when no conditions match."""
