@@ -31,9 +31,9 @@ namespace policy::psm {
 
 // static
 std::unique_ptr<RlweDmserverClientImpl::RlweClient>
-RlweDmserverClientImpl::Create(const psm_rlwe::RlwePlaintextId& plaintext_id) {
-  auto status_or_client = RlweClient::Create(
-      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, {plaintext_id});
+RlweDmserverClientImpl::Create(private_membership::rlwe::RlweUseCase use_case,
+                               const psm_rlwe::RlwePlaintextId& plaintext_id) {
+  auto status_or_client = RlweClient::Create(use_case, {plaintext_id});
   DCHECK(status_or_client.ok()) << status_or_client.status().message();
 
   return std::move(status_or_client).value();
@@ -45,7 +45,9 @@ RlweDmserverClientImpl::RlweDmserverClientImpl(
     const PlaintextId& plaintext_id,
     RlweClientFactory rlwe_client_factory)
     : plaintext_id_(plaintext_id),
-      psm_rlwe_client_(rlwe_client_factory.Run(plaintext_id)),
+      psm_rlwe_client_(
+          rlwe_client_factory.Run(private_membership::rlwe::CROS_DEVICE_STATE,
+                                  plaintext_id)),
       random_device_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       url_loader_factory_(url_loader_factory),
       device_management_service_(device_management_service) {

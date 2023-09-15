@@ -36,11 +36,14 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
       private_membership::rlwe::PrivateMembershipRlweOprfResponse;
   using RlweClient = private_membership::rlwe::PrivateMembershipRlweClient;
   using RlweClientFactory = base::RepeatingCallback<std::unique_ptr<RlweClient>(
+      private_membership::rlwe::RlweUseCase,
       const private_membership::rlwe::RlwePlaintextId&)>;
 
   // Creates PSM RLWE client that generates and holds a randomly generated
   // key.
-  static std::unique_ptr<RlweClient> Create(const PlaintextId& plaintext_id);
+  static std::unique_ptr<RlweClient> Create(
+      private_membership::rlwe::RlweUseCase use_case,
+      const PlaintextId& plaintext_id);
 
   // `device_management_service`, `url_loader_factory`.
   // `device_management_service` must outlive RlweDmserverClientImpl.

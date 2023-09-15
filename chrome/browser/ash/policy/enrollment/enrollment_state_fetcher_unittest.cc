@@ -37,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "private_membership_rlwe.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -76,6 +77,7 @@ class MockDeviceSettingsService : public ash::DeviceSettingsService {
 
 std::unique_ptr<EnrollmentStateFetcher::RlweClient> CreateRlweClientForTesting(
     const psm::testing::RlweTestCase& test_case,
+    private_membership::rlwe::RlweUseCase use_case,
     const private_membership::rlwe::RlwePlaintextId& plaintext_id) {
   // Below we use test_case.plaintext_id() instead of the computed plaintext_id
   // to ensure that Query/OPRF requests and responses match the ones in the
@@ -84,8 +86,7 @@ std::unique_ptr<EnrollmentStateFetcher::RlweClient> CreateRlweClientForTesting(
   EXPECT_EQ(plaintext_id.non_sensitive_id(), kTestPsmId);
   auto client =
       private_membership::rlwe::PrivateMembershipRlweClient::CreateForTesting(
-          private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE,
-          {test_case.plaintext_id()}, test_case.ec_cipher_key(),
+          use_case, {test_case.plaintext_id()}, test_case.ec_cipher_key(),
           test_case.seed());
   return std::move(client.value());
 }
@@ -439,10 +440,11 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
   auto fetcher = EnrollmentStateFetcher::Create(
       future.GetCallback(), &local_state_,
       base::BindRepeating(
-          [](const private_membership::rlwe::RlwePlaintextId& plaintext_id) {
+          [](private_membership::rlwe::RlweUseCase use_case,
+             const private_membership::rlwe::RlwePlaintextId& plaintext_id) {
             return private_membership::rlwe::PrivateMembershipRlweClient::
                 CreateForTesting(
-                       private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE,
+                       use_case,
                        // Using fake ID, cipher key and seed will cause failure
                        // to create query request since it won't match the
                        // ecrypted ID in OPRF response from the psm_test_case_.

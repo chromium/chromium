@@ -72,6 +72,7 @@ class EnrollmentStateFetcher {
  public:
   using RlweClient = private_membership::rlwe::PrivateMembershipRlweClient;
   using RlweClientFactory = base::RepeatingCallback<std::unique_ptr<RlweClient>(
+      private_membership::rlwe::RlweUseCase,
       const private_membership::rlwe::RlwePlaintextId&)>;
   using Factory =
       base::RepeatingCallback<std::unique_ptr<EnrollmentStateFetcher>(
