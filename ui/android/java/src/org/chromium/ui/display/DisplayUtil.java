@@ -6,8 +6,14 @@ package org.chromium.ui.display;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
+import org.chromium.base.compat.ApiHelperForR;
 
 /**
  * Helper functions relevant to working with displays, but have no parallel in the native
@@ -98,5 +104,34 @@ public abstract class DisplayUtil {
                 / (displayMetrics.density * getUiScalingFactorForAutomotive()));
         configuration.smallestScreenWidthDp =
                 Math.min(configuration.screenWidthDp, configuration.screenHeightDp);
+    }
+
+    /**
+     * Get current smallest screen width in dp. This method uses {@link WindowManager} on
+     * Android R and above; otherwise, {@link DisplayUtil#getSmallestWidth(DisplayAndroid)}.
+     *
+     * @param context {@link Context} used to get system service and target display.
+     * @return Smallest screen width in dp.
+     */
+    public static int getCurrentSmallestScreenWidth(Context context) {
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
+        // Android T does not receive updated width upon foldable unfold from window context.
+        // Continue to rely on context on this case.
+        Context windowManagerContext =
+                (VERSION.SDK_INT >= VERSION_CODES.R && VERSION.SDK_INT < VERSION_CODES.TIRAMISU)
+                ? (display.getWindowContext() != null ? display.getWindowContext() : context)
+                : context;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Context#getSystemService(Context.WINDOW_SERVICE) is preferred over
+            // Activity#getWindowManager, because during #attachBaseContext, #getWindowManager
+            // is not ready yet and always returns null. See crbug.com/1252150.
+            WindowManager manager =
+                    (WindowManager) windowManagerContext.getSystemService(Context.WINDOW_SERVICE);
+            assert manager != null;
+            Rect bounds = ApiHelperForR.getMaximumWindowMetricsBounds(manager);
+            return DisplayUtil.pxToDp(
+                    display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
+        }
+        return DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
     }
 }

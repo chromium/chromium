@@ -58,13 +58,13 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroid;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroidManager;
+import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayUtil;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowTabUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
@@ -88,6 +88,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -107,8 +108,8 @@ import java.util.Map.Entry;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowSysUtils.class, ShadowProfile.class, ShadowUmaSessionStats.class,
-                ShadowDisplayAndroid.class, ShadowDisplayAndroidManager.class,
-                ShadowTabUtils.class})
+                ShadowDisplayAndroid.class, ShadowDisplayAndroidManager.class, ShadowTabUtils.class,
+                ShadowDisplayUtil.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -209,14 +210,26 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Implements(DisplayUtil.class)
+    static class ShadowDisplayUtil {
+        private static int sSmallestScreenWidthDp;
+
+        public static void setCurrentSmallestScreenWidth(int smallestScreenWidthDp) {
+            sSmallestScreenWidthDp = smallestScreenWidthDp;
+        }
+
+        @Implementation
+        public static int getCurrentSmallestScreenWidth(Context context) {
+            return sSmallestScreenWidthDp;
+        }
+    }
+
     @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
     private MessageDispatcher mMessageDispatcher;
     @Mock
     private Activity mActivity;
-    @Mock
-    private AsyncInitializationActivity mAsyncInitializationActivity;
     @Mock
     private Window mWindow;
     @Mock
@@ -320,7 +333,7 @@ public class RequestDesktopUtilsUnitTest {
         enableFeatureWithParams(
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING, null, false);
         enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, false);
-        when(mAsyncInitializationActivity.getCurrentSmallestScreenWidth(any())).thenReturn(800);
+        ShadowDisplayUtil.setCurrentSmallestScreenWidth(800);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         doAnswer(invocation -> mWindowSetting)
                 .when(mPrefService)
@@ -1535,21 +1548,9 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeDefaultEnableWindowSetting_FeatureOff() {
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mAsyncInitializationActivity, mProfile);
-        Assert.assertFalse(
-                "Desktop site window setting should not be default enabled when feature is off",
-                mWindowSetting);
-    }
-
-    @Test
-    public void testMaybeDefaultEnableWindowSetting_InvalidActivity() {
-        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
-        mWindowSetting = false;
-        mIsDefaultValuePreference = true;
         RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
         Assert.assertFalse(
-                "Desktop site window setting should not be default enabled when the activity is "
-                        + "invalid",
+                "Desktop site window setting should not be default enabled when feature is off",
                 mWindowSetting);
     }
 
@@ -1558,8 +1559,8 @@ public class RequestDesktopUtilsUnitTest {
         enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
-        when(mAsyncInitializationActivity.getCurrentSmallestScreenWidth(any())).thenReturn(400);
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mAsyncInitializationActivity, mProfile);
+        ShadowDisplayUtil.setCurrentSmallestScreenWidth(400);
+        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
         Assert.assertFalse(
                 "Desktop site window setting should not be default enabled when the smallest "
                         + "screen width is less than 600dp",
@@ -1572,7 +1573,7 @@ public class RequestDesktopUtilsUnitTest {
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
         when(mDisplay.getDisplayId()).thenReturn(/*non built-in display*/ 2);
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mAsyncInitializationActivity, mProfile);
+        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
         Assert.assertFalse(
                 "Desktop site window setting should not be default enabled when Chrome is opened "
                         + "on external display",
@@ -1584,7 +1585,7 @@ public class RequestDesktopUtilsUnitTest {
         enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         mIsDefaultValuePreference = false;
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mAsyncInitializationActivity, mProfile);
+        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
         Assert.assertFalse(
                 "Desktop site window setting should not be default enabled when the preference "
                         + "has been previously changed",
@@ -1596,7 +1597,7 @@ public class RequestDesktopUtilsUnitTest {
         enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
         mWindowSetting = false;
         mIsDefaultValuePreference = true;
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mAsyncInitializationActivity, mProfile);
+        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, mProfile);
         Assert.assertTrue("Desktop site window setting should be default enabled", mWindowSetting);
     }
 
