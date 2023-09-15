@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_observer.h"
@@ -21,6 +22,7 @@
 
 namespace aura {
 class Window;
+class WindowTracker;
 }  // namespace aura
 
 namespace ash {
@@ -94,14 +96,22 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
 
   enum class WindowGameState { kGame, kNotGame, kNotYetKnown };
 
-  // Checks to see if the given window is a game. If there's not enough
-  // information, then returns `kNotYetKnown`, otherwise returns `kGame` or
-  // `kNotGame`.
-  WindowGameState GetWindowGameState(aura::Window* window) const;
+  using GetWindowStateCallback = base::OnceCallback<void(WindowGameState)>;
 
-  // Updates the window observation, depending on whether the given window is a
-  // game or not.
-  void RefreshWindowTracking(aura::Window* window);
+  // Checks whether the given window is a game, and then calls
+  // `RefreshWindowTracking`. If there's not enough information, it passes
+  // `kNotYetKnown`, otherwise `kGame` or `kNotGame`, as the `game_state`.
+  void GetWindowGameState(aura::Window* window);
+
+  // Callback when `GetWindowGameState` calls `GameDashboardDelegate` to
+  // retrieve the app category for the given window in `window_tracker`.
+  // This function calls `RefreshWindowTracking`, as long as the window has not
+  // been destroyed.
+  void OnArcWindowIsGame(std::unique_ptr<aura::WindowTracker> window_tracker,
+                         bool is_game);
+
+  // Updates the window observation, dependent on `game_state`.
+  void RefreshWindowTracking(aura::Window* window, WindowGameState game_state);
 
   // Updates the Game Dashboard button state for a game window.
   void RefreshGameDashboardButton(aura::Window* window);
@@ -125,6 +135,8 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Owned by `game_window_contexts_`.
   raw_ptr<GameDashboardContext, DanglingUntriaged | ExperimentalAsh>
       active_recording_context_ = nullptr;
+
+  base::WeakPtrFactory<GameDashboardController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

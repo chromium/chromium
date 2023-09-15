@@ -6,8 +6,9 @@
 
 namespace ash {
 
-bool TestGameDashboardDelegate::IsGame(const std::string& app_id) const {
-  return app_id == kGameAppId;
+void TestGameDashboardDelegate::GetIsGame(const std::string& app_id,
+                                          IsGameCallback callback) {
+  std::move(callback).Run(app_id == kGameAppId);
 }
 
 }  // namespace ash
