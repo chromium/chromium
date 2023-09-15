@@ -164,6 +164,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
+  registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
