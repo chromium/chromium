@@ -22,7 +22,7 @@ struct AdKeywordReplacement {
 // promise param resolved --- either the top-level auction (if `main_auction`)
 // or a particular component auction.
 union AuctionAdConfigAuctionId {
-  uint32 main_auction;  // value unused.
+  uint32 main_auction;
   uint32 component_auction;  // value position in component_auctions array.
 };
 

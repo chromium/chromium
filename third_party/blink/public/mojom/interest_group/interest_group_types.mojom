@@ -423,8 +423,8 @@ struct AuctionAdConfigNonSharedParams {
   // This is only required for auctions that provide additional bids, and each
   // of those additional bids must use the same auction nonce to ensure that
   // each of those additional bids was intended for this and only this auction.
-  // In multi-seller auctions, this field is only meaningful for the top-level
-  // auction config; it's ignored in component auction configs.
+  // In multi-seller auctions, it must be component auction configs providing
+  // this for their auctions.
   mojo_base.mojom.Uuid? auction_nonce;
 
   // Nested auctions whose results will also be fed to `seller`. Only the top
