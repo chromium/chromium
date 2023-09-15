@@ -102,7 +102,7 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
       text_frame_rect_.offset, text_frame_rect_.size.width, style_,
       /* inline_context */ nullptr, selection_text_decoration);
 
-  const NGTextDecorationOffset decoration_offset(style_, style_);
+  const NGTextDecorationOffset decoration_offset(style_);
 
   // Paint underline and overline text decorations
   PaintUnderOrOverLineDecorations(NGTextFragmentPaintInfo{}, decoration_offset,

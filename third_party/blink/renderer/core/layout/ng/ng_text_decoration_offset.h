@@ -6,29 +6,43 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_TEXT_DECORATION_OFFSET_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
+#include "third_party/blink/renderer/platform/fonts/font_baseline.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 
 namespace blink {
 
 class ComputedStyle;
+class SimpleFontData;
+enum class FontVerticalPositionType;
+enum class ResolvedUnderlinePosition;
 
 // Class for computing the decoration offset for text fragments in LayoutNG.
-class CORE_EXPORT NGTextDecorationOffset : public TextDecorationOffsetBase {
+class CORE_EXPORT NGTextDecorationOffset {
   STACK_ALLOCATED();
 
  public:
-  NGTextDecorationOffset(const ComputedStyle& style,
-                         const ComputedStyle& text_style)
-      : TextDecorationOffsetBase(style), text_style_(text_style) {}
+  explicit NGTextDecorationOffset(const ComputedStyle& text_style)
+      : text_style_(text_style) {}
   ~NGTextDecorationOffset() = default;
 
   int ComputeUnderlineOffsetForUnder(const Length& style_underline_offset,
                                      float computed_font_size,
                                      const SimpleFontData* font_data,
                                      float text_decoration_thickness,
-                                     FontVerticalPositionType) const override;
+                                     FontVerticalPositionType) const;
+
+  int ComputeUnderlineOffset(ResolvedUnderlinePosition,
+                             float computed_font_size,
+                             const SimpleFontData* font_data,
+                             const Length& style_underline_offset,
+                             float text_decoration_thickness) const;
 
  private:
+  static float StyleUnderlineOffsetToPixels(
+      const Length& style_underline_offset,
+      float font_size);
+
   const ComputedStyle& text_style_;
 };
 

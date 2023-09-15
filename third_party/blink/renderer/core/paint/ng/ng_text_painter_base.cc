@@ -7,7 +7,7 @@
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
-#include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -30,7 +30,7 @@ namespace blink {
 //   3. Paint line through
 void NGTextPainterBase::PaintUnderOrOverLineDecorations(
     const NGTextFragmentPaintInfo& fragment_paint_info,
-    const TextDecorationOffsetBase& decoration_offset,
+    const NGTextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
     const PaintInfo& paint_info,
@@ -64,7 +64,7 @@ void NGTextPainterBase::PaintUnderOrOverLineDecorations(
 
 void NGTextPainterBase::PaintUnderOrOverLineDecorationShadows(
     const NGTextFragmentPaintInfo& fragment_paint_info,
-    const TextDecorationOffsetBase& decoration_offset,
+    const NGTextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
     const cc::PaintFlags* flags,
@@ -103,7 +103,7 @@ void NGTextPainterBase::PaintUnderOrOverLineDecorationShadows(
 
 void NGTextPainterBase::PaintUnderOrOverLineDecorations(
     const NGTextFragmentPaintInfo& fragment_paint_info,
-    const TextDecorationOffsetBase& decoration_offset,
+    const NGTextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
     const cc::PaintFlags* flags,

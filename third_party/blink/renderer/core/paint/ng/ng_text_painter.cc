@@ -274,8 +274,7 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
                                   ~TextDecorationLine::kLineThrough))
     return;
 
-  const NGTextDecorationOffset decoration_offset(decoration_info.TargetStyle(),
-                                                 text_item.Style());
+  const NGTextDecorationOffset decoration_offset(text_item.Style());
 
   if (svg_text_paint_state_.has_value() &&
       !decoration_info.HasDecorationOverride()) {
@@ -473,7 +472,7 @@ void NGTextPainter::PaintSvgTextFragment(
 
 void NGTextPainter::PaintSvgDecorationsExceptLineThrough(
     const NGTextFragmentPaintInfo& fragment_paint_info,
-    const TextDecorationOffsetBase& decoration_offset,
+    const NGTextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
     const PaintInfo& paint_info,

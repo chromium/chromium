@@ -26,8 +26,8 @@ class ComputedStyle;
 class Font;
 class NGDecoratingBox;
 class NGInlinePaintContext;
+class NGTextDecorationOffset;
 class SimpleFontData;
-class TextDecorationOffsetBase;
 
 enum class ResolvedUnderlinePosition {
   kNearAlphabeticBaselineAuto,
@@ -100,10 +100,10 @@ class CORE_EXPORT TextDecorationInfo {
   // through. Must be called before trying to paint or compute bounds
   // for a line.
   void SetLineData(TextDecorationLine line, float line_offset);
-  void SetUnderlineLineData(const TextDecorationOffsetBase& decoration_offset);
-  void SetOverlineLineData(const TextDecorationOffsetBase& decoration_offset);
+  void SetUnderlineLineData(const NGTextDecorationOffset& decoration_offset);
+  void SetOverlineLineData(const NGTextDecorationOffset& decoration_offset);
   void SetLineThroughLineData();
-  void SetSpellingOrGrammarErrorLineData(const TextDecorationOffsetBase&);
+  void SetSpellingOrGrammarErrorLineData(const NGTextDecorationOffset&);
 
   // These methods do not depend on |SetDecorationIndex|.
   LayoutUnit Width() const { return width_; }
