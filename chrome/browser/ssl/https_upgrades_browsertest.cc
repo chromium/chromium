@@ -2643,6 +2643,47 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
+// Regression test for crbug.com/1475747. With HTTPS-Upgrades enabled but
+// HFM-for-Typically-Secure-Users disabled, sets the prefs as though
+// HFM-for-Typically-Secure-Users had triggered accidentally and tests whether
+// the remediation that resets this works correctly.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       AccidentalTypicallySecureUsersRemediation) {
+  // Just test for HTTPS-Upgrades (we want HFM-for-Typically-Secure-Users to be
+  // disabled).
+  if (https_upgrades_test_type() != HttpsUpgradesTestType::kHttpsUpgradesOnly) {
+    return;
+  }
+
+  // Pretend that the feature had been erroneously enabled previously. The prefs
+  // must be set in this order, as setting kHttpsOnlyModeEnabled will cause
+  // kHttpsOnlyModeAutoEnabled to be reset to false by the pref observer
+  // in HttpsFirstModeService.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               true);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled,
+                                               true);
+
+  // Start a navigation to a URL that will be upgraded but fail, which should
+  // cause the prefs to be reset and no interstitial should be shown.
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Check that the prefs have been reset.
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kHttpsOnlyModeAutoEnabled));
+}
+
 // A simple test fixture that constructs a HistogramTester (so that it gets
 // initialized before browser startup). Used for testing pref tracking logic.
 class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
