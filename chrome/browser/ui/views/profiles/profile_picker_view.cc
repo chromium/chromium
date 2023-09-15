@@ -760,7 +760,7 @@ void ProfilePickerView::SwitchToSignedInFlow(
   GetProfilePickerFlowController()->SwitchToPostSignIn(
       signed_in_profile,
       IdentityManagerFactory::GetForProfile(signed_in_profile)
-          ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
       profile_color, std::move(contents));
 }
 #endif

@@ -25,10 +25,12 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -135,8 +137,8 @@ class DiceResponseHandlerTest : public testing::Test,
   }
 
   // Called after the refresh token was fetched and added in the token service.
-  void EnableSync(const CoreAccountId& account_id) {
-    enable_sync_account_id_ = account_id;
+  void EnableSync(const CoreAccountInfo& account_info) {
+    enable_sync_account_info_ = account_info;
   }
 
   void HandleTokenExchangeFailure(const std::string& email,
@@ -261,7 +263,7 @@ class DiceResponseHandlerTest : public testing::Test,
   int reconcilor_unblocked_count_ = 0;
   CoreAccountId token_exchange_account_id_;
   bool token_exchange_is_new_account_ = false;
-  CoreAccountId enable_sync_account_id_;
+  CoreAccountInfo enable_sync_account_info_;
   GoogleServiceAuthError auth_error_;
   std::string auth_error_email_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -288,8 +290,8 @@ class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
   }
 
   // Called after the refresh token was fetched and added in the token service.
-  void EnableSync(const CoreAccountId& account_id) override {
-    owner_->EnableSync(account_id);
+  void EnableSync(const CoreAccountInfo& account_info) override {
+    owner_->EnableSync(account_info);
   }
 
   void HandleTokenExchangeFailure(
@@ -671,14 +673,15 @@ TEST_F(DiceResponseHandlerTest, SigninEnableSyncAfterRefreshTokenFetched) {
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
   // Check that delegate was not called to enable sync.
-  EXPECT_TRUE(enable_sync_account_id_.empty());
+  EXPECT_TRUE(enable_sync_account_info_.IsEmpty());
 
   // Enable sync.
   dice_response_handler_->ProcessDiceHeader(
       MakeDiceParams(DiceAction::ENABLE_SYNC),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
   // Check that delegate was called to enable sync.
-  EXPECT_EQ(account_id, enable_sync_account_id_);
+  EXPECT_EQ(account_info.gaia_id, enable_sync_account_info_.gaia);
+  EXPECT_EQ(account_info.email, enable_sync_account_info_.email);
 }
 
 // Checks that a ENABLE_SYNC action received before the refresh token is added
@@ -701,7 +704,7 @@ TEST_F(DiceResponseHandlerTest, SigninEnableSyncBeforeRefreshTokenFetched) {
       MakeDiceParams(DiceAction::ENABLE_SYNC),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
   // Check that delegate was not called to enable sync.
-  EXPECT_TRUE(enable_sync_account_id_.empty());
+  EXPECT_TRUE(enable_sync_account_info_.IsEmpty());
 
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
@@ -713,7 +716,8 @@ TEST_F(DiceResponseHandlerTest, SigninEnableSyncBeforeRefreshTokenFetched) {
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
   // Check that delegate was called to enable sync.
-  EXPECT_EQ(account_id, enable_sync_account_id_);
+  EXPECT_EQ(account_info.gaia_id, enable_sync_account_info_.gaia);
+  EXPECT_EQ(account_info.email, enable_sync_account_info_.email);
 }
 
 TEST_F(DiceResponseHandlerTest, Timeout) {

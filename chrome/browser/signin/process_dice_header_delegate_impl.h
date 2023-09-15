@@ -18,6 +18,7 @@ namespace content {
 class WebContents;
 }
 
+struct CoreAccountInfo;
 class Profile;
 class SigninUIError;
 
@@ -32,7 +33,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
                               signin_metrics::PromoAction,
                               signin_metrics::Reason,
                               content::WebContents*,
-                              const CoreAccountId&)>;
+                              const CoreAccountInfo&)>;
 
   // Callback showing a signin error UI.
   // This is similar to `DiceTabHelper::ShowSigninErrorCallback` but is a once
@@ -66,7 +67,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   // ProcessDiceHeaderDelegate:
   void HandleTokenExchangeSuccess(CoreAccountId account_id,
                                   bool is_new_account) override;
-  void EnableSync(const CoreAccountId& account_id) override;
+  void EnableSync(const CoreAccountInfo& account_info) override;
   void HandleTokenExchangeFailure(const std::string& email,
                                   const GoogleServiceAuthError& error) override;
   signin_metrics::AccessPoint GetAccessPoint() override;

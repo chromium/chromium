@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -22,13 +23,14 @@ void FinalizeNewProfileSetup(Profile* profile,
 
 // Helper to obtain a profile name derived from the user's identity.
 //
-// Obtains the identity associated with `account_id` from `identity_manager`.
+// Obtains the identity associated with `core_account_info` from
+// `identity_manager`.
 // Calling `RunWithProfileName()` allows providing a callback that will be
 // executed when the name is resolved. The name is never empty.
 class ProfileNameResolver : public signin::IdentityManager::Observer {
  public:
   explicit ProfileNameResolver(signin::IdentityManager* identity_manager,
-                               const CoreAccountId& account_id);
+                               const CoreAccountInfo& core_account_info);
 
   ProfileNameResolver(const ProfileNameResolver&) = delete;
   ProfileNameResolver& operator=(const ProfileNameResolver&) = delete;
@@ -55,7 +57,7 @@ class ProfileNameResolver : public signin::IdentityManager::Observer {
  private:
   void OnProfileNameResolved(const std::u16string& profile_name);
 
-  const CoreAccountId account_id_;
+  const CoreAccountInfo core_account_info_;
 
   std::u16string resolved_profile_name_;
   base::CancelableOnceClosure extended_account_info_timeout_closure_;

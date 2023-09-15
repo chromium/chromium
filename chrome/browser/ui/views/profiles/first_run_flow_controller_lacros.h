@@ -39,7 +39,7 @@ class FirstRunFlowControllerLacros
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
  private:

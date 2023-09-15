@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -26,7 +27,7 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
       [](Profile* profile, signin_metrics::AccessPoint access_point,
          signin_metrics::PromoAction promo_action,
          signin_metrics::Reason reason, content::WebContents* web_contents,
-         const CoreAccountId& account_id) {
+         const CoreAccountInfo& account_info) {
         DCHECK(profile);
         Browser* browser =
             web_contents ? chrome::FindBrowserWithWebContents(web_contents)
@@ -37,7 +38,8 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
         // TurnSyncOnHelper is suicidal (it will kill itself once it
         // finishes enabling sync).
         new TurnSyncOnHelper(
-            profile, browser, access_point, promo_action, reason, account_id,
+            profile, browser, access_point, promo_action, reason,
+            account_info.account_id,
             TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
       });
 }

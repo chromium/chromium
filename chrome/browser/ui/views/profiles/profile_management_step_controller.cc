@@ -120,10 +120,10 @@ class DiceSignInStepController : public ProfileManagementStepController {
 
  private:
   void OnStepFinished(Profile* profile,
-                      const CoreAccountId& account_id,
+                      const CoreAccountInfo& account_info,
                       std::unique_ptr<content::WebContents> contents) {
     std::move(signed_in_callback_)
-        .Run(profile, account_id, std::move(contents));
+        .Run(profile, account_info, std::move(contents));
     // The step controller can be destroyed when `signed_in_callback_` runs.
     // Don't interact with members below.
   }

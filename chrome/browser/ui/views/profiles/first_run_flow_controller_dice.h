@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 
+struct CoreAccountInfo;
 enum class IntroChoice;
 class Profile;
 
@@ -47,11 +48,11 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
       override;
 
-  // `account_id` may not be set as the primary account yet.
+  // `account_info` may not be set as the primary account yet.
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
  private:

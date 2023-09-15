@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
@@ -101,12 +102,12 @@ ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
 
 ProfileNameResolver::ProfileNameResolver(
     signin::IdentityManager* identity_manager,
-    const CoreAccountId& account_id)
-    : account_id_(account_id) {
-  CHECK(!account_id_.empty());
+    const CoreAccountInfo& core_account_info)
+    : core_account_info_(core_account_info) {
+  CHECK(!core_account_info_.IsEmpty());
 
   auto extended_account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id_);
+      identity_manager->FindExtendedAccountInfo(core_account_info_);
   if (extended_account_info.IsValid()) {
     OnExtendedAccountInfoUpdated(extended_account_info);
     return;
@@ -118,7 +119,7 @@ ProfileNameResolver::ProfileNameResolver(
   // Set up a timeout for extended account info.
   std::u16string fallback_profile_name =
       profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
-          extended_account_info);
+          core_account_info_);
   CHECK(!fallback_profile_name.empty());
   extended_account_info_timeout_closure_.Reset(
       base::BindOnce(&ProfileNameResolver::OnProfileNameResolved,
@@ -144,7 +145,8 @@ void ProfileNameResolver::RunWithProfileName(NameResolvedCallback callback) {
 
 void ProfileNameResolver::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
-  if (!account_info.IsValid() || account_id_ != account_info.account_id) {
+  if (!account_info.IsValid() ||
+      core_account_info_.account_id != account_info.account_id) {
     return;
   }
 

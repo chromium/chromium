@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-struct CoreAccountId;
+struct CoreAccountInfo;
 class DiceTabHelper;
 class ProfilePickerWebContentsHost;
 
@@ -32,7 +32,7 @@ class ProfilePickerDiceSignInProvider
       public ChromeWebModalDialogManagerDelegate {
  public:
   // The callback returns the newly created profile and a valid WebContents
-  // instance within this profile. If the account ID is empty, sign-in is not
+  // instance within this profile. If the account info is empty, sign-in is not
   // completed there yet. Otherwise, the newly created profile has the account
   // in its `IdentityManager`, but the account may not be set as primary yet.
   // If the flow gets canceled by closing the window, the callback never gets
@@ -41,7 +41,7 @@ class ProfilePickerDiceSignInProvider
   // casing is not needed here.
   using SignedInCallback =
       base::OnceCallback<void(Profile*,
-                              const CoreAccountId&,
+                              const CoreAccountInfo&,
                               std::unique_ptr<content::WebContents>)>;
 
   // Creates a new provider that will render the Gaia sign-in flow in `host` for
@@ -105,9 +105,9 @@ class ProfilePickerDiceSignInProvider
       base::OnceCallback<void(bool)> switch_finished_callback,
       Profile* new_profile);
 
-  // `account_id` is empty is empty if the signin could not complete and must
-  // continue in a browser (e.g. for SAML).
-  void FinishFlow(const CoreAccountId& account_id);
+  // `account_info` is empty if the signin could not complete and must continue
+  // in a browser (e.g. for SAML).
+  void FinishFlow(const CoreAccountInfo& account_info);
 
   // Callback for the `DiceTabHelper`. Calls `FinishFlow()`.
   void FinishFlowInPicker(Profile* profile,
@@ -115,7 +115,7 @@ class ProfilePickerDiceSignInProvider
                           signin_metrics::PromoAction promo_action,
                           signin_metrics::Reason reason,
                           content::WebContents* contents,
-                          const CoreAccountId& account_id);
+                          const CoreAccountInfo& account_info);
 
   void OnSignInContentsFreedUp();
 

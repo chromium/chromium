@@ -526,11 +526,11 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   }
 
   void SimulateEnableSyncDiceHeader(content::WebContents* contents,
-                                    const CoreAccountId& account_id) {
+                                    const CoreAccountInfo& account_info) {
     // Simulate the Dice "ENABLE_SYNC" header parameter.
     auto process_dice_header_delegate_impl =
         ProcessDiceHeaderDelegateImpl::Create(contents);
-    process_dice_header_delegate_impl->EnableSync(account_id);
+    process_dice_header_delegate_impl->EnableSync(account_info);
   }
 
   AccountInfo FinishDiceSignIn(
@@ -555,8 +555,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
     if (web_contents()) {
-      SimulateEnableSyncDiceHeader(web_contents(),
-                                   core_account_info.account_id);
+      SimulateEnableSyncDiceHeader(web_contents(), core_account_info);
     }
 
     // The flow should work even if the primary account is not set at this
@@ -1290,7 +1289,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
-  SimulateEnableSyncDiceHeader(web_contents(), core_account_info.account_id);
+  SimulateEnableSyncDiceHeader(web_contents(), core_account_info);
   WaitForLoadStop(GetSyncConfirmationURL());
 
   // Simulate closing the UI with "No, Thanks".
@@ -1348,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
-  SimulateEnableSyncDiceHeader(web_contents(), core_account_info.account_id);
+  SimulateEnableSyncDiceHeader(web_contents(), core_account_info);
   WaitForLoadStop(GetSyncConfirmationURL());
 
   // Simulate closing the UI with "No, thanks".

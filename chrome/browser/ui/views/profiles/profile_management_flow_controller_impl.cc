@@ -31,14 +31,14 @@ ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
 
 void ProfileManagementFlowControllerImpl::SwitchToIdentityStepsFromPostSignIn(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents,
     StepSwitchFinishedCallback step_switch_finished_callback) {
   DCHECK_NE(Step::kPostSignInFlow, current_step());
   DCHECK(!IsStepInitialized(Step::kPostSignInFlow));
-  RegisterStep(
-      Step::kPostSignInFlow,
-      CreatePostSignInStep(signed_in_profile, account_id, std::move(contents)));
+  RegisterStep(Step::kPostSignInFlow,
+               CreatePostSignInStep(signed_in_profile, account_info,
+                                    std::move(contents)));
   SwitchToStep(Step::kPostSignInFlow,
                /*reset_state=*/true, std::move(step_switch_finished_callback));
 }
@@ -80,10 +80,10 @@ void ProfileManagementFlowControllerImpl::
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreatePostSignInStep(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   return ProfileManagementStepController::CreateForPostSignInFlow(
-      host(), CreateSignedInFlowController(signed_in_profile, account_id,
+      host(), CreateSignedInFlowController(signed_in_profile, account_info,
                                            std::move(contents)));
 }
 
@@ -106,7 +106,7 @@ ProfileManagementFlowControllerImpl::CreateSamlStep(
 
 void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   CHECK(!signin_util::IsForceSigninEnabled() ||
         base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
@@ -114,7 +114,7 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   DCHECK_EQ(Step::kAccountSelection, current_step());
 
   Step step;
-  if (account_id.empty()) {
+  if (account_info.IsEmpty()) {
     step = Step::kFinishSamlSignin;
     DCHECK(!IsStepInitialized(step));
     // The SAML step controller handles finishing the profile setup by itself
@@ -123,7 +123,7 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   } else {
     step = Step::kPostSignInFlow;
     DCHECK(!IsStepInitialized(step));
-    RegisterStep(step, CreatePostSignInStep(signed_in_profile, account_id,
+    RegisterStep(step, CreatePostSignInStep(signed_in_profile, account_info,
                                             std::move(contents)));
   }
 

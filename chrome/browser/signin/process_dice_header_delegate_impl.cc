@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -137,7 +138,7 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
 }
 
 void ProcessDiceHeaderDelegateImpl::EnableSync(
-    const CoreAccountId& account_id) {
+    const CoreAccountInfo& account_info) {
   content::WebContents* web_contents = web_contents_.get();
   DiceTabHelper* tab_helper = GetDiceTabHelperFromWebContents(web_contents);
   if (tab_helper) {
@@ -152,7 +153,7 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
   VLOG(1) << "Start sync after web sign-in.";
   std::move(enable_sync_callback_)
       .Run(&profile_.get(), access_point_, promo_action_, reason_, web_contents,
-           account_id);
+           account_info);
 
   Redirect();
 }

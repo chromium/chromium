@@ -132,13 +132,13 @@ class ProfileCreationSignedInFlowController
   ProfileCreationSignedInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       absl::optional<SkColor> profile_color,
       base::OnceCallback<void(PostHostClearedCallback)> finish_flow_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
-                                            account_id,
+                                            account_info,
                                             std::move(contents),
                                             kAccessPoint,
                                             profile_color),
@@ -173,7 +173,7 @@ class ProfileCreationSignedInFlowController
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
     profile_name_resolver_ =
-        std::make_unique<ProfileNameResolver>(identity_manager, account_id());
+        std::make_unique<ProfileNameResolver>(identity_manager, account_info());
   }
 
   void Cancel() override {
@@ -296,13 +296,13 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfilePickerFlowController::SwitchToPostSignIn(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     absl::optional<SkColor> profile_color,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
   suggested_profile_color_ = profile_color;
   SwitchToIdentityStepsFromPostSignIn(
-      signed_in_profile, account_id,
+      signed_in_profile, account_info,
       content::WebContents::Create(
           content::WebContents::CreateParams(signed_in_profile)),
       StepSwitchFinishedCallback());
@@ -374,7 +374,7 @@ ProfilePickerFlowController::CreateDiceSignInProvider() {
 std::unique_ptr<ProfilePickerSignedInFlowController>
 ProfilePickerFlowController::CreateSignedInFlowController(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK(!weak_signed_in_flow_controller_);
 
@@ -388,7 +388,7 @@ ProfilePickerFlowController::CreateSignedInFlowController(
                      base::Unretained(signed_in_profile));
 
   auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
-      host(), signed_in_profile, account_id, std::move(contents),
+      host(), signed_in_profile, account_info, std::move(contents),
       suggested_profile_color_, std::move(finish_flow_callback));
   weak_signed_in_flow_controller_ = signed_in_flow->GetWeakPtr();
   return signed_in_flow;

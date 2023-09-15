@@ -443,9 +443,8 @@ void DiceResponseHandler::ProcessEnableSyncHeader(
       return;  // There is already a request in flight with the same parameters.
     }
   }
-  CoreAccountId account_id =
-      identity_manager_->PickAccountIdForAccount(gaia_id, email);
-  delegate->EnableSync(account_id);
+  delegate->EnableSync(
+      identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id));
 }
 
 void DiceResponseHandler::ProcessDiceSignoutHeader(
@@ -541,8 +540,10 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
       base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
   token_fetcher->delegate()->HandleTokenExchangeSuccess(account_id,
                                                         is_new_account);
-  if (should_enable_sync)
-    token_fetcher->delegate()->EnableSync(account_id);
+  if (should_enable_sync) {
+    token_fetcher->delegate()->EnableSync(
+        identity_manager_->FindExtendedAccountInfoByAccountId(account_id));
+  }
 
   DeleteTokenFetcher(token_fetcher);
 }

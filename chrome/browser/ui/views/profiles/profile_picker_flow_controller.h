@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "google_apis/gaia/core_account_id.h"
 
+struct CoreAccountInfo;
 class ProfilePickerSignedInFlowController;
 
 class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
@@ -30,7 +30,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SwitchToPostSignIn(Profile* signed_in_profile,
-                          const CoreAccountId& account_id,
+                          const CoreAccountInfo& account_info,
                           absl::optional<SkColor> profile_color,
                           std::unique_ptr<content::WebContents> contents);
 #endif
@@ -50,7 +50,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
 
   const ProfilePicker::EntryPoint entry_point_;

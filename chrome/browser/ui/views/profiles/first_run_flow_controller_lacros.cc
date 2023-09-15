@@ -58,14 +58,14 @@ class LacrosFirstRunSignedInFlowController
   LacrosFirstRunSignedInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
-      const CoreAccountId& account_id,
+      const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       base::OnceClosure sync_confirmation_seen_callback,
       base::OnceCallback<void(PostHostClearedCallback)> step_completed_callback)
       : ProfilePickerSignedInFlowController(
             host,
             profile,
-            account_id,
+            account_info,
             std::move(contents),
             signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE,
             absl::optional<SkColor>()),
@@ -202,7 +202,7 @@ void FirstRunFlowControllerLacros::Init(
     StepSwitchFinishedCallback step_switch_finished_callback) {
   SwitchToIdentityStepsFromPostSignIn(
       profile_,
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountId(
+      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin),
       content::WebContents::Create(
           content::WebContents::CreateParams(profile_)),
@@ -223,7 +223,7 @@ bool FirstRunFlowControllerLacros::PreFinishWithBrowser() {
 std::unique_ptr<ProfilePickerSignedInFlowController>
 FirstRunFlowControllerLacros::CreateSignedInFlowController(
     Profile* signed_in_profile,
-    const CoreAccountId& account_id,
+    const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(profile_, signed_in_profile);
 
@@ -234,7 +234,7 @@ FirstRunFlowControllerLacros::CreateSignedInFlowController(
                      base::Unretained(this));
 
   auto signed_in_flow = std::make_unique<LacrosFirstRunSignedInFlowController>(
-      host(), profile_, account_id, std::move(contents),
+      host(), profile_, account_info, std::move(contents),
       std::move(mark_sync_confirmation_seen_callback),
       // This is the last step: when it completes, finish and exit the whole
       // flow.

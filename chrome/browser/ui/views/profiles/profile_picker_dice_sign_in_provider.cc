@@ -29,11 +29,11 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -177,7 +177,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     InitializeDiceTabHelper(*tab_helper, DiceTabHelperMode::kInBrowser);
     // The rest of the SAML flow logic is handled by the signed-in flow
     // controller.
-    FinishFlow(CoreAccountId());
+    FinishFlow(CoreAccountInfo());
   }
 }
 
@@ -254,11 +254,11 @@ bool ProfilePickerDiceSignInProvider::IsInitialized() const {
 }
 
 void ProfilePickerDiceSignInProvider::FinishFlow(
-    const CoreAccountId& account_id) {
+    const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
   contents()->SetDelegate(nullptr);
-  std::move(callback_).Run(profile_.get(), account_id, std::move(contents_));
+  std::move(callback_).Run(profile_.get(), account_info, std::move(contents_));
 }
 
 void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
@@ -267,9 +267,9 @@ void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
     signin_metrics::PromoAction /*promo_action*/,
     signin_metrics::Reason /*reason*/,
     content::WebContents* /*contents*/,
-    const CoreAccountId& account_id) {
+    const CoreAccountInfo& account_info) {
   CHECK_EQ(profile, profile_.get());
-  FinishFlow(account_id);
+  FinishFlow(account_info);
 }
 
 GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {

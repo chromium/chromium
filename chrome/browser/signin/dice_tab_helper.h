@@ -14,7 +14,7 @@ namespace content {
 class NavigationHandle;
 }
 
-struct CoreAccountId;
+struct CoreAccountInfo;
 class SigninUIError;
 
 // Tab helper used for DICE to tag signin tabs. Signin tabs can be reused.
@@ -29,7 +29,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                                    signin_metrics::PromoAction,
                                    signin_metrics::Reason,
                                    content::WebContents*,
-                                   const CoreAccountId&)>;
+                                   const CoreAccountInfo&)>;
 
   // Callback displaying a signin error to the user. This is a repeating
   // callback, because multiple `ProcessDiceHeaderDelegateImpl` may make copies
