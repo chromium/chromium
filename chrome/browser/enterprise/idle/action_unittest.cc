@@ -34,16 +34,14 @@ TEST(IdleActionTest, Build) {
 TEST(IdleActionTest, ClearBrowsingDataIsSingleAction) {
   auto* factory = ActionFactory::GetInstance();
 
-  auto queue = factory->Build(nullptr, {
-#if !BUILDFLAG(IS_ANDROID)
-    ActionType::kClearDownloadHistory, ActionType::kClearHostedAppData,
-#endif  // !BUILDFLAG(IS_ANDROID)
-        ActionType::kClearBrowsingHistory,
-        ActionType::kClearCookiesAndOtherSiteData,
-        ActionType::kClearCachedImagesAndFiles,
-        ActionType::kClearPasswordSignin, ActionType::kClearAutofill,
-        ActionType::kClearSiteSettings
-  });
+  auto queue = factory->Build(
+      nullptr,
+      {ActionType::kClearBrowsingHistory, ActionType::kClearDownloadHistory,
+       ActionType::kClearCookiesAndOtherSiteData,
+       ActionType::kClearCachedImagesAndFiles,
+       ActionType::kClearCachedImagesAndFiles, ActionType::kClearPasswordSignin,
+       ActionType::kClearAutofill, ActionType::kClearSiteSettings,
+       ActionType::kClearHostedAppData});
   EXPECT_EQ(1u, queue.size());
   EXPECT_EQ(static_cast<int>(ActionType::kClearBrowsingHistory),
             queue.top()->priority());
