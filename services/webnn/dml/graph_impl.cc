@@ -617,6 +617,9 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
   auto input_b_tensor_desc =
       graph_builder.GetNodeOutput(input_b_node_output_info).tensor_desc;
 
+  std::vector<NodeOutputInfo> input_node_output_infos{input_a_node_output_info,
+                                                      input_b_node_output_info};
+
   const auto output_tensor_desc =
       GetOutputTensorDesc(operation, id_to_operand_map);
 
@@ -637,6 +640,9 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
         input_c_node_output_iterator->second;
     input_c_tensor_desc =
         graph_builder.GetNodeOutput(input_c_node_output_info).tensor_desc;
+
+    // Ensure the graph edge for c operand will be created.
+    input_node_output_infos.push_back(input_c_node_output_info);
 
     // TODO(crbug.com/1471201): Support broadcasting for C.
     auto input_c_shape = input_c_tensor_desc->GetDimensions();
@@ -670,8 +676,7 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
   };
 
   NodeInfo gemm_node_info = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_GEMM, &gemm_operator_desc,
-      {input_a_node_output_info, input_b_node_output_info});
+      DML_OPERATOR_GEMM, &gemm_operator_desc, input_node_output_infos);
   if (gemm_node_info.type == NodeInfo::Type::kInvalid) {
     return false;
   }

@@ -99,15 +99,6 @@ NodeOutputInfo GraphBuilder::CreateNodeOutput(const NodeInfo& node_info,
 ComPtr<IDMLCompiledOperator> GraphBuilder::Compile(
     const std::vector<NodeOutputInfo>& node_output_infos,
     DML_EXECUTION_FLAGS flags) const {
-  ComPtr<IDMLCompiledOperator> compiled_operator;
-  // If there is only one operator node in the graph, just compile the operator
-  // and return the compiled operator.
-  if (dml_operators_.size() == 1) {
-    RETURN_NULL_IF_FAILED(dml_device_->CompileOperator(
-        dml_operators_[0].Get(), flags, IID_PPV_ARGS(&compiled_operator)));
-    return compiled_operator;
-  }
-
   // Create output edges with node outputs.
   size_t outputs_count = node_output_infos.size();
   std::vector<DML_OUTPUT_GRAPH_EDGE_DESC> output_edges(outputs_count);
@@ -159,6 +150,7 @@ ComPtr<IDMLCompiledOperator> GraphBuilder::Compile(
   RETURN_NULL_IF_FAILED(
       dml_device_->QueryInterface(IID_PPV_ARGS(&dml_device1)));
 
+  ComPtr<IDMLCompiledOperator> compiled_operator;
   RETURN_NULL_IF_FAILED(dml_device1->CompileGraph(
       &dml_graph_desc, flags, IID_PPV_ARGS(&compiled_operator)));
   return compiled_operator;

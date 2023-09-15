@@ -23,7 +23,6 @@ class WebNNGraphBuilderTest : public TestBase {
 
  protected:
   ComPtr<IDMLDevice> dml_device_;
-  bool is_compile_graph_supported_ = true;
 };
 
 void WebNNGraphBuilderTest::SetUp() {
@@ -34,8 +33,10 @@ void WebNNGraphBuilderTest::SetUp() {
   ASSERT_NE(adapter.get(), nullptr);
   dml_device_ = adapter->dml_device();
   ASSERT_NE(dml_device_.Get(), nullptr);
-  is_compile_graph_supported_ =
-      adapter->IsDMLDeviceCompileGraphSupportedForTesting();
+  // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
+  // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the
+  // DirectML version doesn't support this feature.
+  SKIP_TEST_IF(!adapter->IsDMLDeviceCompileGraphSupportedForTesting());
 }
 
 // Test creating an invalid operator node with inconsistent tensor dimensions.
@@ -186,7 +187,6 @@ TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorSplit) {
 //        \   /
 //       conv2d
 TEST_F(WebNNGraphBuilderTest, BuildGraphWithReluAndConv2d) {
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   GraphBuilder graph_builder(dml_device_);
 
   TensorDesc input_tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32, {1, 1, 3, 3});

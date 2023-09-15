@@ -27,7 +27,6 @@ class WebNNGraphDMLImplTest : public TestBase {
   bool CreateAndBuildGraph(const mojom::GraphInfoPtr& graph_info);
 
  protected:
-  bool is_compile_graph_supported_ = true;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<Adapter> adapter_;
 };
@@ -38,8 +37,10 @@ void WebNNGraphDMLImplTest::SetUp() {
   Adapter::EnableDebugLayerForTesting();
   adapter_ = Adapter::GetInstanceForTesting();
   ASSERT_NE(adapter_.get(), nullptr);
-  is_compile_graph_supported_ =
-      adapter_->IsDMLDeviceCompileGraphSupportedForTesting();
+  // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
+  // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the
+  // DirectML version doesn't support this feature.
+  SKIP_TEST_IF(!adapter_->IsDMLDeviceCompileGraphSupportedForTesting());
 }
 
 bool WebNNGraphDMLImplTest::CreateAndBuildGraph(
@@ -424,7 +425,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorSoftmax) {
 //       |
 //      relu2
 TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoRelu) {
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -460,7 +460,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorReshape) {
 //       |
 //     reshape
 TEST_F(WebNNGraphDMLImplTest, BuildGraphWithReshapeAsLastNode) {
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -484,7 +483,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildGraphWithReshapeAsLastNode) {
 //       |
 //      relu
 TEST_F(WebNNGraphDMLImplTest, BuildGraphWithReshapeAsIntermediateNode) {
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -507,7 +505,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildGraphWithReshapeAsIntermediateNode) {
 //       |
 //    reshape2
 TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoReshape) {
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -530,7 +527,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoReshape) {
 //     |        |
 // [output1] [output2]
 TEST_F(WebNNGraphDMLImplTest, BuildGraphWithTwoOutputs) {
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_operand_id = builder.BuildInput(
@@ -669,7 +665,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleInputsAppendingConstants) {
   // DML_FEATURE_LEVEL_4_0.
   SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
                DML_FEATURE_LEVEL_4_0);
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =
@@ -721,7 +716,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleConstantsAppendingInputs) {
   // DML_FEATURE_LEVEL_4_0.
   SKIP_TEST_IF(GetMaxSupportedDMLFeatureLevel(adapter_->dml_device()) <
                DML_FEATURE_LEVEL_4_0);
-  SKIP_TEST_IF(!is_compile_graph_supported_);
   // Build the mojom graph info.
   GraphInfoBuilder builder;
   uint64_t input_a_operand_id =

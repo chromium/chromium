@@ -97,11 +97,7 @@ class GraphBuilder final {
                                   TensorDesc tensor,
                                   uint32_t output_index = 0);
 
-  // For single operator graph, it just calls IDMLDevice::CompileOperator() with
-  // most widely Windows versions support.
-  // For multiple operators graph, it firstly queries whether IDMLDevice1 is
-  // available, if it is, it calls IDMLDevice1::CompileGraph().
-  // Also notice that IDMLDevice1::CompileGraph takes long time to compile
+  // Notice that IDMLDevice1::CompileGraph may take long time to compile
   // shaders (if not cached before), so this method may block current thread.
   // Consider posting this method to thread pool to avoid blocking.
   ComPtr<IDMLCompiledOperator> Compile(
