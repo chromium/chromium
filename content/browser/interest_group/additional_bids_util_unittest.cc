@@ -22,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
@@ -707,6 +708,26 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdComponentsEntry) {
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
       "due to invalid entry in adComponents.",
+      result.error());
+}
+
+TEST_F(AdditionalBidsUtilTest, TooManyAdComponents) {
+  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::Value::List ad_components_list;
+  for (size_t i = 0; i < blink::kMaxAdAuctionAdComponents + 1; ++i) {
+    ad_components_list.Append("https://en.wikipedia.test/wiki/Locomotive");
+  }
+  additional_bid_dict.SetByDottedPath("bid.adComponents",
+                                      std::move(ad_components_list));
+  base::Value input(std::move(additional_bid_dict));
+
+  auto result = DecodeAdditionalBid(
+      /*auction=*/nullptr, input, kAuctionNonce, kInterestGroupBuyers, kSeller,
+      base::optional_ref<const url::Origin>(kTopSeller));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      "Additional bid on auction with seller 'https://seller.test' rejected "
+      "due to too many ad component URLs.",
       result.error());
 }
 

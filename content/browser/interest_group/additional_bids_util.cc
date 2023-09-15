@@ -24,6 +24,7 @@
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/origin.h"
@@ -259,6 +260,12 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
           {"Additional bid on auction with seller '", seller.Serialize(),
            "' rejected due to invalid adComponents."}));
     }
+    if (ad_components_list->size() > blink::kMaxAdAuctionAdComponents) {
+      return base::unexpected(base::StrCat(
+          {"Additional bid on auction with seller '", seller.Serialize(),
+           "' rejected due to too many ad component URLs."}));
+    }
+
     synth_interest_group->interest_group.ad_components.emplace();
     for (const base::Value& ad_component : *ad_components_list) {
       const std::string* ad_component_str = ad_component.GetIfString();
