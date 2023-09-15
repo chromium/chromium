@@ -4695,10 +4695,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchSelectionStrategyDescription,
      kOsAndroid,  // TODO(mfomitchev): Add CrOS/Win/Linux support soon.
      MULTI_VALUE_TYPE(kTouchTextSelectionStrategyChoices)},
-    {"enable-suggestions-with-substring-match",
-     flag_descriptions::kSuggestionsWithSubStringMatchName,
-     flag_descriptions::kSuggestionsWithSubStringMatchDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillTokenPrefixMatching)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-virtual-keyboard", flag_descriptions::kVirtualKeyboardName,
      flag_descriptions::kVirtualKeyboardDescription, kOsCrOS,

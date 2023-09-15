@@ -3199,12 +3199,6 @@ const char kStorageAccessAPIDescription[] =
     "Enables the Storage Access API, allowing websites to request storage "
     "access when it would otherwise be restricted.";
 
-const char kSuggestionsWithSubStringMatchName[] =
-    "Substring matching for Autofill suggestions";
-const char kSuggestionsWithSubStringMatchDescription[] =
-    "Match Autofill suggestions based on substrings (token prefixes) rather "
-    "than just prefixes.";
-
 const char kSupportTool[] = "Support Tool";
 const char kSupportToolDescription[] =
     "Support Tool collects and exports logs to help debugging the issues. It's"

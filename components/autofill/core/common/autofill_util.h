@@ -21,10 +21,6 @@ namespace autofill {
 // the length used for server autofill data.
 constexpr int kLocalGuidSize = 36;
 
-// Returns true when command line switch |kEnableSuggestionsWithSubstringMatch|
-// is on.
-bool IsFeatureSubstringMatchEnabled();
-
 // Returns true if showing autofill signature as HTML attributes is enabled.
 bool IsShowAutofillSignaturesEnabled();
 
@@ -33,14 +29,6 @@ bool IsKeyboardAccessoryEnabled();
 
 // A token is a sequences of contiguous characters separated by any of the
 // characters that are part of delimiter set {' ', '.', ',', '-', '_', '@'}.
-
-// Returns true if the |field_contents| is a substring of the |suggestion|
-// starting at token boundaries. |field_contents| can span multiple |suggestion|
-// tokens.
-bool FieldIsSuggestionSubstringStartingOnTokenBoundary(
-    const std::u16string& suggestion,
-    const std::u16string& field_contents,
-    bool case_sensitive);
 
 // Currently, a token for the purposes of this method is defined as {'@'}.
 // Returns true if the |full_string| has a |prefix| as a prefix and the prefix

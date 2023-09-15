@@ -27,11 +27,6 @@ struct Suggestion {
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload = absl::variant<BackendId, GURL, ValueToFill>;
 
-  enum MatchMode {
-    PREFIX_MATCH,    // for prefix matched suggestions;
-    SUBSTRING_MATCH  // for substring matched suggestions;
-  };
-
   // The text information shown on the UI layer for a Suggestion.
   struct Text {
     using IsPrimary = base::StrongAlias<class IsPrimaryTag, bool>;
@@ -158,8 +153,6 @@ struct Suggestion {
   // cards. It also holds Google Password Manager icon on the settings entry for
   // the passwords Autofill popup.
   std::string trailing_icon;
-
-  MatchMode match = PREFIX_MATCH;
 
   // Whether suggestion was interacted with and is now in a loading state.
   IsLoading is_loading = IsLoading(false);

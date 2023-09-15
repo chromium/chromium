@@ -115,8 +115,8 @@ void AppendSuggestionIfMatching(
     std::vector<autofill::Suggestion>* suggestions) {
   std::u16string lower_suggestion = base::i18n::ToLower(field_suggestion);
   std::u16string lower_contents = base::i18n::ToLower(field_contents);
-  if (show_all || autofill::FieldIsSuggestionSubstringStartingOnTokenBoundary(
-                      lower_suggestion, lower_contents, true)) {
+  if (show_all || base::StartsWith(lower_suggestion, lower_contents,
+                                   base::CompareCase::SENSITIVE)) {
     bool replaced_username;
     autofill::Suggestion suggestion(
         ReplaceEmptyUsername(field_suggestion, &replaced_username));
@@ -146,11 +146,6 @@ void AppendSuggestionIfMatching(
                                      ? autofill::PopupItemId::kPasswordEntry
                                      : autofill::PopupItemId::kUsernameEntry;
     }
-    suggestion.match =
-        show_all || base::StartsWith(lower_suggestion, lower_contents,
-                                     base::CompareCase::SENSITIVE)
-            ? autofill::Suggestion::PREFIX_MATCH
-            : autofill::Suggestion::SUBSTRING_MATCH;
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = "globeIcon";
@@ -160,10 +155,8 @@ void AppendSuggestionIfMatching(
 }
 
 // This function attempts to fill |suggestions| from |fill_data| based on
-// |current_username| that is the current value of the field. Unless |show_all|
-// is true, it only picks suggestions allowed by
-// FieldIsSuggestionSubstringStartingOnTokenBoundary. It can pick either a
-// substring or a prefix based on the flag.
+// |current_username| that is the current value of the field. If |show_all|
+// is true, we do not match suggestions with field content.
 void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                     const std::u16string& current_username,
                     const gfx::Image& custom_icon,
@@ -189,16 +182,6 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
             [](const autofill::Suggestion& a, const autofill::Suggestion& b) {
               return a.main_text.value < b.main_text.value;
             });
-
-  // Prefix matches should precede other token matches.
-  if (!show_all && autofill::IsFeatureSubstringMatchEnabled()) {
-    // Using stable sort in order to preserve sorting by 'value'
-    std::stable_sort(
-        suggestions->begin(), suggestions->end(),
-        [](const autofill::Suggestion& a, const autofill::Suggestion& b) {
-          return a.match < b.match;
-        });
-  }
 }
 
 void MaybeAppendManagePasswordsEntry(

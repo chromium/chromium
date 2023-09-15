@@ -411,20 +411,15 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     if (value.empty())
       continue;
 
-    bool prefix_matched_suggestion;
     std::u16string suggestion_canon =
         NormalizeForComparisonForType(value, type.GetStorableType());
     if (IsValidSuggestionForFieldContents(
             suggestion_canon, field_contents_canon, type,
-            /* is_masked_server_card= */ false, field_is_autofilled,
-            &prefix_matched_suggestion)) {
+            /* is_masked_server_card= */ false, field_is_autofilled)) {
       matched_profiles->push_back(profile);
 
       suggestions.emplace_back(value);
       suggestions.back().payload = Suggestion::BackendId(profile->guid());
-      suggestions.back().match = prefix_matched_suggestion
-                                     ? Suggestion::PREFIX_MATCH
-                                     : Suggestion::SUBSTRING_MATCH;
       suggestions.back().acceptance_a11y_announcement =
           l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
       if (base::FeatureList::IsEnabled(
@@ -438,14 +433,6 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
             kAllServerFieldTypes, type, suggestions.back());
       }
     }
-  }
-
-  // Prefix matches should precede other token matches.
-  if (IsFeatureSubstringMatchEnabled()) {
-    std::stable_sort(suggestions.begin(), suggestions.end(),
-                     [](const Suggestion& a, const Suggestion& b) {
-                       return a.match < b.match;
-                     });
   }
 
   return suggestions;
@@ -508,10 +495,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                                        std::u16string field_contents_canon,
                                        const AutofillType& type,
                                        bool is_masked_server_card,
-                                       bool field_is_autofilled,
-                                       bool* is_prefix_matched) {
-  *is_prefix_matched = true;
-
+                                       bool field_is_autofilled) {
   // Phones should do a substring match because they can be trimmed to remove
   // the first parts (e.g. country code or prefix). It is still considered a
   // prefix match in order to put it at the top of the suggestions.
@@ -550,14 +534,6 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
 
   if (base::StartsWith(suggestion_canon, field_contents_canon,
                        base::CompareCase::SENSITIVE)) {
-    return true;
-  }
-
-  if (IsFeatureSubstringMatchEnabled() &&
-      suggestion_canon.length() >= field_contents_canon.length() &&
-      GetTextSelectionStart(suggestion_canon, field_contents_canon, false) !=
-          std::u16string::npos) {
-    *is_prefix_matched = false;
     return true;
   }
 

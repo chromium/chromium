@@ -3588,11 +3588,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-suggestions-with-substring-match",
-    "owners": [ "autofill-squad-muc@google.com" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "enable-supervised-users-remain-signed-in",
     "owners": [
       "ljjlee",

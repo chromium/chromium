@@ -63922,7 +63922,6 @@ from previous Chrome versions.
   <int value="-413286115"
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
-  <int value="-412645531" label="AutofillTokenPrefixMatching:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
   <int value="-408769228" label="ArcGraphicBuffersVisualizationTool:disabled"/>
   <int value="-406850932" label="EnableEmojiContextMenu:enabled"/>
@@ -67567,7 +67566,6 @@ from previous Chrome versions.
   <int value="1398333721" label="ForceEnableDevicesPage:disabled"/>
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
   <int value="1399657075" label="IndexedDBCompressValuesWithSnappy:enabled"/>
-  <int value="1399950951" label="AutofillTokenPrefixMatching:disabled"/>
   <int value="1402940985" label="kScrollableTabStripWithDragging:disabled"/>
   <int value="1403195370" label="ArcCupsApi:enabled"/>
   <int value="1403792475" label="ShareMenu:enabled"/>

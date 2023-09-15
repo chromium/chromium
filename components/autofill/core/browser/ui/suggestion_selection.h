@@ -82,15 +82,12 @@ std::vector<Suggestion> GetUniqueSuggestions(
 
 // Returns whether the |suggestion_canon| is valid considering the
 // |field_contents_canon|, the |type|, |is_masked_server_card|, and
-// |field_is_autofilled|. Assigns true to |is_prefix_matched| if the
-// |field_contents_canon| is a prefix to |suggestion_canon|, assigns false
-// otherwise.
+// |field_is_autofilled|.
 bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
                                        std::u16string field_contents_canon,
                                        const AutofillType& type,
                                        bool is_masked_server_card,
-                                       bool field_is_autofilled,
-                                       bool* is_prefix_matched);
+                                       bool field_is_autofilled);
 
 // Removes profiles that haven't been used after |min_last_used| from
 // |profiles|. The relative ordering of |profiles| is maintained.

@@ -207,34 +207,25 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     if (creditcard_field_value.empty())
       continue;
 
-    bool prefix_matched_suggestion;
     if (suggestion_selection::IsValidSuggestionForFieldContents(
             base::i18n::ToLower(creditcard_field_value), field_contents_lower,
             type,
             credit_card.record_type() ==
                 CreditCard::RecordType::kMaskedServerCard,
-            field.is_autofilled, &prefix_matched_suggestion)) {
+            field.is_autofilled)) {
       bool card_linked_offer_available =
           base::Contains(card_linked_offers_map, credit_card.guid());
       if (ShouldShowVirtualCardOption(&credit_card)) {
-        suggestions.push_back(CreateCreditCardSuggestion(
-            credit_card, type, prefix_matched_suggestion,
-            /*virtual_card_option=*/true, app_locale,
-            card_linked_offer_available));
+        suggestions.push_back(
+            CreateCreditCardSuggestion(credit_card, type,
+                                       /*virtual_card_option=*/true, app_locale,
+                                       card_linked_offer_available));
       }
-      suggestions.push_back(CreateCreditCardSuggestion(
-          credit_card, type, prefix_matched_suggestion,
-          /*virtual_card_option=*/false, app_locale,
-          card_linked_offer_available));
+      suggestions.push_back(
+          CreateCreditCardSuggestion(credit_card, type,
+                                     /*virtual_card_option=*/false, app_locale,
+                                     card_linked_offer_available));
     }
-  }
-
-  // Prefix matches should precede other token matches.
-  if (IsFeatureSubstringMatchEnabled()) {
-    std::stable_sort(suggestions.begin(), suggestions.end(),
-                     [](const Suggestion& a, const Suggestion& b) {
-                       return a.match < b.match;
-                     });
   }
 
   return suggestions;
@@ -491,7 +482,6 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
 Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,
     const AutofillType& type,
-    bool prefix_matched_suggestion,
     bool virtual_card_option,
     const std::string& app_locale,
     bool card_linked_offer_available) const {
@@ -502,8 +492,6 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   CHECK(suggestion.popup_item_id == PopupItemId::kAutocompleteEntry);
   suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
   suggestion.payload = Suggestion::BackendId(credit_card.guid());
-  suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
-                                               : Suggestion::SUBSTRING_MATCH;
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
   suggestion.is_icon_at_start = true;

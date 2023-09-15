@@ -58,8 +58,8 @@ class TestAutofillSuggestionGenerator : public AutofillSuggestionGenerator {
       bool virtual_card_option,
       bool card_linked_offer_available) const {
     return AutofillSuggestionGenerator::CreateCreditCardSuggestion(
-        credit_card, type, /*prefix_matched_suggestion=*/false,
-        virtual_card_option, /*app_locale=*/"", card_linked_offer_available);
+        credit_card, type, virtual_card_option, /*app_locale=*/"",
+        card_linked_offer_available);
   }
 };
 

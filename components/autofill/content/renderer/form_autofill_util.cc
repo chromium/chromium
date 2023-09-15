@@ -2578,15 +2578,7 @@ bool IsWebElementEmpty(const blink::WebElement& root) {
 void PreviewSuggestion(const std::u16string& suggestion,
                        const std::u16string& user_input,
                        blink::WebFormControlElement* input_element) {
-  size_t selection_start = user_input.length();
-  if (IsFeatureSubstringMatchEnabled()) {
-    size_t offset = GetTextSelectionStart(suggestion, user_input, false);
-    // Zero selection start is for password manager, which can show usernames
-    // that do not begin with the user input value.
-    selection_start = (offset == std::u16string::npos) ? 0 : offset;
-  }
-
-  input_element->SetSelectionRange(selection_start, suggestion.length());
+  input_element->SetSelectionRange(user_input.length(), suggestion.length());
 }
 
 std::u16string FindChildText(const WebNode& node) {

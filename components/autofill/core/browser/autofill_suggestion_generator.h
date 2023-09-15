@@ -129,14 +129,11 @@ class AutofillSuggestionGenerator {
  protected:
   // Creates a suggestion for the given `credit_card`. `type` denotes the
   // AutofillType of the field that is focused when the query is triggered.
-  // `prefix_matched_suggestion` indicates whether the suggestion has content
-  // that prefix-matches the field content. `virtual_card_option` suggests
-  // whether the suggestion is a virtual card option.
-  // `card_linked_offer_available` indicates whether a card-linked offer is
-  // attached to the `credit_card`.
+  // `virtual_card_option` suggests whether the suggestion is a virtual card
+  // option. `card_linked_offer_available` indicates whether a card-linked offer
+  // is attached to the `credit_card`.
   Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
                                         const AutofillType& type,
-                                        bool prefix_matched_suggestion,
                                         bool virtual_card_option,
                                         const std::string& app_locale,
                                         bool card_linked_offer_available) const;

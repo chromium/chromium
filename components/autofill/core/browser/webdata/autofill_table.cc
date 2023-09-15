@@ -1375,35 +1375,6 @@ bool AutofillTable::GetFormValuesForElementName(
     }
 
     succeeded = s1.Succeeded();
-
-    if (IsFeatureSubstringMatchEnabled()) {
-      sql::Statement s2;
-      SelectBuilder(db_, s2, kAutofillTable,
-                    {kName, kValue, kDateCreated, kDateLastUsed},
-                    "WHERE name = ? AND ("
-                    " value LIKE '% ' || :prefix || '%' ESCAPE '!' OR "
-                    " value LIKE '%.' || :prefix || '%' ESCAPE '!' OR "
-                    " value LIKE '%,' || :prefix || '%' ESCAPE '!' OR "
-                    " value LIKE '%-' || :prefix || '%' ESCAPE '!' OR "
-                    " value LIKE '%@' || :prefix || '%' ESCAPE '!' OR "
-                    " value LIKE '%!_' || :prefix || '%' ESCAPE '!' ) "
-                    "ORDER BY count DESC "
-                    "LIMIT ?");
-
-      s2.BindString16(0, name);
-      // escaper as L'!' -> 0x21.
-      s2.BindString16(1, Substitute(prefix_lower, u"_%", 0x21));
-      s2.BindInt(2, limit);
-      while (s2.Step()) {
-        entries->push_back(AutofillEntry(
-            AutofillKey(/*name=*/s2.ColumnString16(0),
-                        /*value=*/s2.ColumnString16(1)),
-            /*date_created=*/base::Time::FromTimeT(s2.ColumnInt64(2)),
-            /*date_last_used=*/base::Time::FromTimeT(s2.ColumnInt64(3))));
-      }
-
-      succeeded &= s2.Succeeded();
-    }
   }
 
   return succeeded;
