@@ -33,6 +33,8 @@ class SharedWebContentsLockDescription : public LockDescription {
 
 // Holding this locks means you have exclusive access to a background web
 // contents that is shared by the WebAppProvider system.
+// The web contents will be prepared for use via
+// WebAppUrlLoader::PrepareForLoad() prior to being granted access.
 //
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.

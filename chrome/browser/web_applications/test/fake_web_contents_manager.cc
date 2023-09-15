@@ -90,6 +90,12 @@ class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
         FROM_HERE, base::BindOnce(std::move(callback), page.url_load_result));
   }
 
+  void PrepareForLoad(content::WebContents* web_contents,
+                      base::OnceClosure callback) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+  }
+
  private:
   base::WeakPtr<FakeWebContentsManager> manager_;
 

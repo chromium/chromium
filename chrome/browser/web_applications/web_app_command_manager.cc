@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -83,6 +84,7 @@ void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
                                        WebAppProvider& provider) {
   provider_ = &provider;
   lock_manager_.SetProvider(PassKey(), provider);
+  url_loader_ = provider_->web_contents_manager().CreateUrlLoader();
 }
 
 void WebAppCommandManager::Start() {
@@ -146,11 +148,14 @@ void WebAppCommandManager::StartCommand(WebAppCommand* command,
   auto command_it = commands_.find(command->id());
   DCHECK(command_it != commands_.end());
 #endif
+  DVLOG(2) << "Starting command: " << CreateCommandMetadata(*command);
   if (command->lock_description().IncludesSharedWebContents()) {
     CHECK(shared_web_contents_);
+    url_loader_->PrepareForLoad(shared_web_contents_.get(),
+                                std::move(start_command));
+  } else {
+    std::move(start_command).Run();
   }
-  DVLOG(2) << "Starting command: " << CreateCommandMetadata(*command);
-  std::move(start_command).Run();
 }
 
 void WebAppCommandManager::Shutdown() {
@@ -273,10 +278,11 @@ content::WebContents* WebAppCommandManager::EnsureWebContentsCreated(
 
 content::WebContents* WebAppCommandManager::EnsureWebContentsCreated() {
   DCHECK(profile_);
-  if (!shared_web_contents_)
+  if (!shared_web_contents_) {
     shared_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
-  web_app::CreateWebAppInstallTabHelpers(shared_web_contents_.get());
+    web_app::CreateWebAppInstallTabHelpers(shared_web_contents_.get());
+  }
 
   return shared_web_contents_.get();
 }

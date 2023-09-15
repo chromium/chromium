@@ -186,19 +186,12 @@ void WebAppUrlLoader::LoadUrl(
     UrlComparison url_comparison,
     ResultCallback callback) {
   CHECK(web_contents);
-  bool bypass_prepare_for_load = false;
-  if (load_url_params.url == GURL(url::kAboutBlankURL)) {
-    bypass_prepare_for_load = true;
-  }
-  auto load_requested_url = base::BindOnce(
-      &WebAppUrlLoader::LoadUrlInternal, weak_factory_.GetWeakPtr(),
-      std::move(load_url_params), web_contents->GetWeakPtr(), url_comparison,
-      std::move(callback));
-  if (bypass_prepare_for_load) {
-    std::move(load_requested_url).Run();
-  } else {
-    PrepareForLoad(web_contents, std::move(load_requested_url));
-  }
+  PrepareForLoad(
+      web_contents,
+      base::BindOnce(&WebAppUrlLoader::LoadUrlInternal,
+                     weak_factory_.GetWeakPtr(), std::move(load_url_params),
+                     web_contents->GetWeakPtr(), url_comparison,
+                     std::move(callback)));
 }
 
 void WebAppUrlLoader::LoadUrl(const GURL& url,
@@ -213,8 +206,15 @@ void WebAppUrlLoader::LoadUrl(const GURL& url,
 
 void WebAppUrlLoader::PrepareForLoad(content::WebContents* web_contents,
                                      base::OnceClosure complete) {
-  const GURL kAboutBlankURL = GURL(url::kAboutBlankURL);
-  content::NavigationController::LoadURLParams load_params(kAboutBlankURL);
+  if (web_contents->GetLastCommittedURL().IsAboutBlank() &&
+      web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(complete));
+    return;
+  }
+
+  content::NavigationController::LoadURLParams load_params{
+      GURL(url::kAboutBlankURL)};
   load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
   LoadUrlInternal(load_params, web_contents->GetWeakPtr(),
                   UrlComparison::kExact,
