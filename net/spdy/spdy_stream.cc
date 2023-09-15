@@ -806,17 +806,14 @@ void SpdyStream::OnEarlyHintsReceived(
 void SpdyStream::SaveResponseHeaders(
     const spdy::Http2HeaderBlock& response_headers,
     int status) {
-  DCHECK(response_headers_.empty());
-  if (response_headers.find("transfer-encoding") != response_headers.end()) {
+  if (response_headers.contains("transfer-encoding")) {
     session_->ResetStream(stream_id_, ERR_HTTP2_PROTOCOL_ERROR,
                           "Received transfer-encoding header");
     return;
   }
 
-  for (spdy::Http2HeaderBlock::const_iterator it = response_headers.begin();
-       it != response_headers.end(); ++it) {
-    response_headers_.insert(*it);
-  }
+  DCHECK(response_headers_.empty());
+  response_headers_ = response_headers.Clone();
 
   // If delegate is not yet attached, OnHeadersReceived() will be called after
   // the delegate gets attached to the stream.
