@@ -1244,13 +1244,25 @@ void ShoppingService::OnGetAllDiscountsFromOptGuide(
     DiscountInfoCallback callback,
     const std::vector<DiscountsPair>& results) {
   DiscountsMap map;
+  std::vector<std::string> urls_to_check_in_db;
   for (auto res : results) {
     if (res.second.size() > 0) {
       map.insert(res);
+    } else {
+      urls_to_check_in_db.push_back(res.first.spec());
     }
   }
-  // TODO(b:289243652): Check local db.
-  std::move(callback).Run(std::move(map));
+  if (discounts_storage_) {
+    discounts_storage_->HandleServerDiscounts(
+        urls_to_check_in_db, std::move(map), std::move(callback));
+  } else {
+    std::move(callback).Run(std::move(map));
+  }
+}
+
+void ShoppingService::SetDiscountsStorageForTesting(
+    std::unique_ptr<DiscountsStorage> storage) {
+  discounts_storage_ = std::move(storage);
 }
 
 void ShoppingService::Subscribe(

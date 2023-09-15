@@ -584,6 +584,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
                                      DiscountInfoCallback callback,
                                      const std::vector<DiscountsPair>& results);
 
+  void SetDiscountsStorageForTesting(std::unique_ptr<DiscountsStorage> storage);
+
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
 

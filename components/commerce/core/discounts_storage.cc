@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/session_proto_db/session_proto_storage.h"
@@ -16,5 +17,129 @@ DiscountsStorage::DiscountsStorage(
     SessionProtoStorage<DiscountsContent>* discounts_proto_db)
     : proto_db_(discounts_proto_db) {}
 DiscountsStorage::~DiscountsStorage() = default;
+
+void DiscountsStorage::HandleServerDiscounts(
+    const std::vector<std::string>& urls_to_check,
+    DiscountsMap server_results,
+    DiscountInfoCallback callback) {
+  // Update local database with server-fetched results.
+  for (const auto& result : server_results) {
+    CHECK(result.second.size() > 0);
+    SaveDiscounts(result.first, result.second);
+  }
+
+  if (urls_to_check.size() == 0) {
+    std::move(callback).Run(std::move(server_results));
+  } else {
+    proto_db_->LoadAllEntries(base::BindOnce(
+        &DiscountsStorage::OnLoadAllDiscounts, weak_ptr_factory_.GetWeakPtr(),
+        urls_to_check, std::move(server_results), std::move(callback)));
+  }
+}
+
+void DiscountsStorage::SaveDiscounts(const GURL& url,
+                                     const std::vector<DiscountInfo>& infos) {
+  DiscountsContent proto;
+  proto.set_key(url.spec());
+  for (const DiscountInfo& info : infos) {
+    discounts_db::DiscountContent* discount_proto = proto.add_discounts();
+    discounts_db::DiscountContent_ClusterType cluster_type =
+        discounts_db::DiscountContent_ClusterType_CLUSTER_TYPE_UNSPECIFIED;
+    if (info.cluster_type == DiscountClusterType::kOfferLevel) {
+      cluster_type = discounts_db::DiscountContent_ClusterType_OFFER_LEVEL;
+    }
+    discount_proto->set_cluster_type(cluster_type);
+    discount_proto->set_id(info.id);
+    discounts_db::DiscountContent_Type type =
+        discounts_db::DiscountContent_Type_TYPE_UNSPECIFIED;
+    if (info.type == DiscountType::kFreeListingWithCode) {
+      type = discounts_db::DiscountContent_Type_FREE_LISTING_WITH_CODE;
+    }
+    discount_proto->set_type(type);
+    discount_proto->set_language_code(info.language_code);
+    discount_proto->set_description_detail(info.description_detail);
+    if (info.terms_and_conditions.has_value()) {
+      discount_proto->set_terms_and_conditions(
+          info.terms_and_conditions.value());
+    }
+    discount_proto->set_value_in_text(info.value_in_text);
+    discount_proto->set_expiry_time_sec(info.expiry_time_sec);
+    discount_proto->set_is_merchant_wide(info.is_merchant_wide);
+    if (info.discount_code.has_value()) {
+      discount_proto->set_discount_code(info.discount_code.value());
+    }
+    discount_proto->set_offer_id(info.offer_id);
+  }
+
+  proto_db_->InsertContent(url.spec(), proto,
+                           base::BindOnce([](bool succeeded) {}));
+}
+
+void DiscountsStorage::DeleteDiscountsForUrl(const std::string& url) {
+  proto_db_->DeleteOneEntry(url, base::BindOnce([](bool succeeded) {}));
+}
+
+void DiscountsStorage::OnLoadAllDiscounts(
+    const std::vector<std::string>& urls_to_check,
+    DiscountsMap server_results,
+    DiscountInfoCallback callback,
+    bool succeeded,
+    DiscountsKeyAndValues data) {
+  if (!succeeded) {
+    std::move(callback).Run(std::move(server_results));
+    return;
+  }
+
+  for (SessionProtoStorage<DiscountsContent>::KeyAndValue& kv : data) {
+    if (std::find(urls_to_check.begin(), urls_to_check.end(), kv.first) !=
+        urls_to_check.end()) {
+      std::vector<DiscountInfo> infos =
+          GetUnexpiredDiscountsFromProto(kv.second);
+      if (infos.size() == 0) {
+        DeleteDiscountsForUrl(kv.first);
+      } else {
+        server_results[GURL(kv.first)] = infos;
+
+        // Update local database if expired discounts found.
+        if ((int)(infos.size()) != kv.second.discounts().size()) {
+          SaveDiscounts(GURL(kv.first), infos);
+        }
+      }
+    }
+  }
+  std::move(callback).Run(std::move(server_results));
+}
+
+std::vector<DiscountInfo> DiscountsStorage::GetUnexpiredDiscountsFromProto(
+    const DiscountsContent& proto) {
+  std::vector<DiscountInfo> infos;
+  for (const discounts_db::DiscountContent& content : proto.discounts()) {
+    // First check whether the discount is expired.
+    if ((base::Time::Now() - base::Time::UnixEpoch()).InSeconds() >
+        content.expiry_time_sec()) {
+      continue;
+    }
+
+    DiscountInfo info;
+    info.cluster_type = DiscountClusterType(content.cluster_type());
+    info.id = content.id();
+    info.type = DiscountType(content.type());
+    info.language_code = content.language_code();
+    info.description_detail = content.description_detail();
+    if (content.has_terms_and_conditions()) {
+      info.terms_and_conditions = content.terms_and_conditions();
+    }
+    info.value_in_text = content.value_in_text();
+    info.expiry_time_sec = content.expiry_time_sec();
+    info.is_merchant_wide = content.is_merchant_wide();
+    if (content.has_discount_code()) {
+      info.discount_code = content.discount_code();
+    }
+    info.offer_id = content.offer_id();
+    infos.push_back(info);
+  }
+
+  return infos;
+}
 
 }  // namespace commerce
