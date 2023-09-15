@@ -23,9 +23,9 @@ class MyXRMock : public MockXRDeviceHookBase {
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
 
   // The test waits for a submitted frame before returning.
-  void WaitForFrames(int count) {
+  void WaitForTotalFrames(int count) {
     DCHECK(!wait_loop_);
-    wait_frame_count_ = num_frames_submitted_ + count;
+    wait_frame_count_ = count;
 
     base::RunLoop* wait_loop =
         new base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed);
@@ -60,8 +60,7 @@ void MyXRMock::OnFrameSubmitted(
 
 }  // namespace
 
-// Currently disabled due to crbug.com/1477272.
-WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestNoStalledFrameLoop) {
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestNoStalledFrameLoop) {
   MyXRMock my_mock;
 
   // Load the test page, and enter presentation.
@@ -70,7 +69,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(DISABLED_TestNoStalledFrameLoop) {
 
   // Wait for 2 frames to be submitted back to the device, but the js frame loop
   // should've only been called once.
-  my_mock.WaitForFrames(2);
+  my_mock.WaitForTotalFrames(2);
   ASSERT_TRUE(t->RunJavaScriptAndExtractBoolOrFail("frame_count === 1"));
 
   // Now restart the frame loop and wait for another frame to get submitted.
