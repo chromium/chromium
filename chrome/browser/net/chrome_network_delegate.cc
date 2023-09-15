@@ -78,6 +78,7 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
       "/media",
       "/opt/oem",
       "/run/arc/sdcard/write/emulated/0",
+      "/run/imageloader",
       "/usr/share/chromeos-assets",
       "/var/log",
   };
