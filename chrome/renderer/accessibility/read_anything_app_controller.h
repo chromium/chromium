@@ -168,6 +168,10 @@ class ReadAnythingAppController
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts() const;
 
+  // The language code that should be used to determine which voices are
+  // supported for speech.
+  const std::string& GetLanguageCodeForSpeech() const;
+
   void Distill();
   void Draw();
   void DrawSelection();

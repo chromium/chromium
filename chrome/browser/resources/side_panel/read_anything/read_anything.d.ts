@@ -63,6 +63,9 @@ declare namespace chrome {
     // Fonts supported by the browser's preferred language.
     let supportedFonts: string[];
 
+    // The language code that should be used for speech synthesis voices.
+    let speechSynthesisLanguageCode: string;
+
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
     // in this node, only returns children which are partially or entirely

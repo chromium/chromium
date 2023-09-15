@@ -510,13 +510,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const message = this.utterancesToSpeak_[this.currentUtteranceIndex_];
 
     // TODO(crbug.com/1474951): Use correct locale when speaking.
-    message.lang = 'en-US';
+    const languageCode = chrome.readingMode.speechSynthesisLanguageCode;
+    message.lang = languageCode;
 
     // TODO(crbug.com/1474951): Allow voice selection.
-    // This just selects the default English voice. If no voice is available,
-    // nothing happens.
+    // This just selects the default voice of the brower's language. If no
+    // voice is available, nothing happens.
     const voices =
-        this.synth.getVoices().filter(voice => voice.lang === 'en-US');
+        this.synth.getVoices().filter(voice => voice.lang === languageCode);
     message.voice = voices[0];
 
     // TODO(crbug.com/1474951): Ensure the correct default values are used.

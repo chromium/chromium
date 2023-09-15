@@ -276,6 +276,13 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetNextSentence(text, maxTextLength);
   }
 
+  std::string LanguageCodeForSpeech() {
+    return controller_->GetLanguageCodeForSpeech();
+  }
+  void SetLanguageCode(std::string code) {
+    controller_->SetLanguageForTesting(code);
+  }
+
   ui::AXTreeID tree_id_;
   MockAXTreeDistiller* distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
@@ -1510,4 +1517,10 @@ TEST_F(
   size_t index = GetNextSentence(sentence, 12);
   EXPECT_TRUE(index < sentence.length());
   EXPECT_EQ(sentence.substr(0, index), u"Hello, ");
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetLanguageCodeForSpeech_ReturnsCorrectLanguageCode) {
+  SetLanguageCode("es");
+  ASSERT_EQ(LanguageCodeForSpeech(), "es");
 }

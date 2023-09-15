@@ -24,6 +24,7 @@
 #include "gin/dictionary.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "read_anything_app_controller.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -630,6 +631,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
       .SetProperty("isSelectable", &ReadAnythingAppController::IsSelectable)
+      .SetProperty("speechSynthesisLanguageCode",
+                   &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
                  &ReadAnythingAppController::GetTextDirection)
@@ -903,6 +906,12 @@ bool ReadAnythingAppController::IsReadAloudEnabled() const {
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() const {
   return model_.GetSupportedFonts();
+}
+
+const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
+  // TODO(crbug.com/1474951): Instead of returning the default browser language
+  // we should use the page language.
+  return model_.default_language_code();
 }
 
 void ReadAnythingAppController::OnConnected() {
