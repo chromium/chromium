@@ -2152,17 +2152,6 @@
     "expires": "never"
   },
   {
-    "prefix": "extend-script-resource-lifetime",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "http/tests/cache/script-keepalive.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=ExtendScriptResourceLifetime",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "disable-solid-color-layers",
     "owners": ["wangxianzhu@chromium.org"],
     "platforms": ["Linux"],

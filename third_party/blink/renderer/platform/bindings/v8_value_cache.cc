@@ -26,8 +26,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
 
 #include <utility>
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -72,17 +70,15 @@ ParkableStringCacheMapTraits::MapFromWeakCallbackInfo(
                ->parkable_string_cache_);
 }
 
-void ParkableStringCacheMapTraits::Dispose(
-    v8::Isolate* isolate,
-    v8::Global<v8::String> value,
-    std::pair<ParkableStringImpl*, Resource*> key) {
-  key.first->Release();
+void ParkableStringCacheMapTraits::Dispose(v8::Isolate* isolate,
+                                           v8::Global<v8::String> value,
+                                           ParkableStringImpl* key) {
+  key->Release();
 }
 
 void ParkableStringCacheMapTraits::DisposeWeak(
     const v8::WeakCallbackInfo<WeakCallbackDataType>& data) {
-  data.GetParameter()->first->Release();
-  DisposeCallbackData(data.GetParameter());
+  data.GetParameter()->Release();
 }
 
 void ParkableStringCacheMapTraits::OnWeakCallback(
@@ -119,13 +115,9 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
 }
 
 static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
-                                                const ParkableString& string,
-                                                Resource* resource_keep_alive) {
+                                                const ParkableString& string) {
   if (string.Is8Bit()) {
     auto* string_resource = new ParkableStringResource8(string);
-    if (resource_keep_alive) {
-      string_resource->SetResourceKeepAlive(resource_keep_alive);
-    }
     v8::Local<v8::String> new_string;
     if (!v8::String::NewExternalOneByte(isolate, string_resource)
              .ToLocal(&new_string)) {
@@ -136,9 +128,6 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
   }
 
   auto* string_resource = new ParkableStringResource16(string);
-  if (resource_keep_alive) {
-    string_resource->SetResourceKeepAlive(resource_keep_alive);
-  }
   v8::Local<v8::String> new_string;
   if (!v8::String::NewExternalTwoByte(isolate, string_resource)
            .ToLocal(&new_string)) {
@@ -169,25 +158,17 @@ v8::Local<v8::String> StringCache::V8ExternalStringSlow(
 
 v8::Local<v8::String> StringCache::V8ExternalString(
     v8::Isolate* isolate,
-    const ParkableString& string,
-    Resource* resource) {
+    const ParkableString& string) {
   if (!string.length())
     return v8::String::Empty(isolate);
 
-  Resource* resource_keep_alive =
-      base::FeatureList::IsEnabled(
-          blink::features::kExtendScriptResourceLifetime)
-          ? resource
-          : nullptr;
-
   ParkableStringCacheMapTraits::MapType::PersistentValueReference
-      cached_v8_string = parkable_string_cache_.GetReference(
-          {string.Impl(), resource_keep_alive});
+      cached_v8_string = parkable_string_cache_.GetReference(string.Impl());
   if (!cached_v8_string.IsEmpty()) {
     return cached_v8_string.NewLocal(isolate);
   }
 
-  return CreateStringAndInsertIntoCache(isolate, string, resource_keep_alive);
+  return CreateStringAndInsertIntoCache(isolate, string);
 }
 
 void StringCache::SetReturnValueFromStringSlow(
@@ -236,14 +217,13 @@ v8::Local<v8::String> StringCache::CreateStringAndInsertIntoCache(
 
 v8::Local<v8::String> StringCache::CreateStringAndInsertIntoCache(
     v8::Isolate* isolate,
-    const ParkableString& string,
-    Resource* resource_keep_alive) {
+    const ParkableString& string) {
   ParkableStringImpl* string_impl = string.Impl();
-  DCHECK(!parkable_string_cache_.Contains({string_impl, resource_keep_alive}));
+  DCHECK(!parkable_string_cache_.Contains(string_impl));
   DCHECK(string_impl->length());
 
   v8::Local<v8::String> new_string =
-      MakeExternalString(isolate, ParkableString(string), resource_keep_alive);
+      MakeExternalString(isolate, ParkableString(string));
   DCHECK(!new_string.IsEmpty());
   DCHECK(new_string->Length());
 
@@ -253,8 +233,7 @@ v8::Local<v8::String> StringCache::CreateStringAndInsertIntoCache(
   // ParkableStringImpl objects are not cache in |string_cache_| or
   // |last_string_impl_|.
   ParkableStringCacheMapTraits::MapType::PersistentValueReference unused;
-  parkable_string_cache_.Set({string_impl, resource_keep_alive},
-                             std::move(wrapper), &unused);
+  parkable_string_cache_.Set(string_impl, std::move(wrapper), &unused);
 
   return new_string;
 }

@@ -7,7 +7,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -80,10 +79,6 @@ class StringResourceBase {
     return atomic_string_;
   }
 
-  void SetResourceKeepAlive(Resource* resource) {
-    resource_keep_alive_ = resource;
-  }
-
  protected:
   StringImpl* GetStringImpl() const {
     if (!plain_string_.IsNull())
@@ -108,10 +103,6 @@ class StringResourceBase {
   // If this string is parkable, its value is held here, and the other
   // members above are null.
   ParkableString parkable_string_;
-
-  // Keeps the ScriptResource alive in blink memory cache.
-  // See https://crbug.com/1393246 for details.
-  Persistent<Resource> resource_keep_alive_;
 };
 
 // Even though StringResource{8,16}Base are effectively empty in release mode,

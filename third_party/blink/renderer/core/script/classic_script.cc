@@ -121,7 +121,7 @@ ClassicScript* ClassicScript::CreateFromResource(
           : SanitizeScriptErrors::kSanitize,
       resource->CacheHandler(), TextPosition::MinimumPosition(), streamer,
       not_streamed_reason, cache_consumer,
-      SourceMapUrlFromResponse(resource->GetResponse()), resource);
+      SourceMapUrlFromResponse(resource->GetResponse()));
 }
 
 ClassicScript* ClassicScript::CreateUnspecifiedScript(
@@ -155,8 +155,7 @@ ClassicScript::ClassicScript(
     ScriptStreamer* streamer,
     ScriptStreamer::NotStreamingReason not_streaming_reason,
     ScriptCacheConsumer* cache_consumer,
-    const String& source_map_url,
-    ScriptResource* resource_keep_alive)
+    const String& source_map_url)
     : Script(fetch_options,
              SanitizeBaseUrl(base_url, sanitize_script_errors),
              source_url,
@@ -168,15 +167,13 @@ ClassicScript::ClassicScript(
       streamer_(streamer),
       not_streaming_reason_(not_streaming_reason),
       cache_consumer_(cache_consumer),
-      source_map_url_(source_map_url),
-      resource_keep_alive_(resource_keep_alive) {}
+      source_map_url_(source_map_url) {}
 
 void ClassicScript::Trace(Visitor* visitor) const {
   Script::Trace(visitor);
   visitor->Trace(cache_handler_);
   visitor->Trace(streamer_);
   visitor->Trace(cache_consumer_);
-  visitor->Trace(resource_keep_alive_);
 }
 
 v8::Local<v8::Data> ClassicScript::CreateHostDefinedOptions(

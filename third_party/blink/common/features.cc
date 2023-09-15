@@ -748,10 +748,6 @@ BASE_FEATURE(kExcludeLowEntropyImagesFromLCP,
 const base::FeatureParam<double> kMinimumEntropyForLCP{
     &kExcludeLowEntropyImagesFromLCP, "min_bpp", 0.05};
 
-BASE_FEATURE(kExtendScriptResourceLifetime,
-             "ExtendScriptResourceLifetime",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
 // this feature does not automatically expose this element to the web, it only
 // allows the element to be enabled by the runtime enabled feature, for origin
