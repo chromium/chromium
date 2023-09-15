@@ -418,7 +418,7 @@ void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(
     base::Uuid generation_id,
     base::OnceCallback<void(BiddingAndAuctionData)> callback) {
   AdAuctionDataLoaderState state;
-  state.serializer.SetPublisher(top_level_origin.Serialize());
+  state.serializer.SetPublisher(top_level_origin.host());
   state.serializer.SetGenerationId(std::move(generation_id));
   state.callback = std::move(callback);
   GetAllInterestGroupOwners(base::BindOnce(
