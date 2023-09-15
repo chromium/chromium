@@ -13,7 +13,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
@@ -61,6 +63,17 @@ class AutofillSuggestionGenerator {
       AutofillType field_type,
       base::span<SkipStatus> skip_statuses,
       const std::string& app_locale);
+
+  // Returns a list of Suggestion objects, each representing an element in
+  // `profiles`.
+  // `field_types` holds the type of fields relevant for the current suggestion.
+  // The profiles passed to this function should already have been matched on
+  // `trigger_field_contents_canon` and deduplicated.
+  std::vector<Suggestion> CreateSuggestionsFromProfiles(
+      const std::vector<AutofillProfile*>& profiles,
+      const ServerFieldTypeSet& field_types,
+      const AutofillType& trigger_field_type,
+      uint64_t trigger_field_max_length);
 
   // Generates suggestions for all available credit cards based on the `type`
   // and the value of `field`. `app_locale` is the locale used by the

@@ -409,14 +409,11 @@ class PersonalDataManager : public KeyedService,
   // settings.
   std::vector<AutofillProfile*> GetProfilesForSettings() const;
 
-  // Returns Suggestions corresponding to the focused field's |type| and
-  // |field_contents|, i.e. what the user has typed. |field_is_autofilled| is
-  // true if the field has already been autofilled, and |field_types| stores the
-  // types of all the form's input fields, including the field with which the
-  // user is interacting.
-  // TODO(crbug.com/1210112): Move profile suggestion creation to
-  // suggestion_generator.
-  std::vector<Suggestion> GetProfileSuggestions(
+  // Returns profiles to be displayed by suggestions, corresponding to the
+  // focused field's |type| and |field_contents|, i.e. what the user has typed.
+  // |field_types| stores the types of all the form's input fields, including
+  // the field with which the user is interacting.
+  std::vector<AutofillProfile*> GetProfilesForSuggestions(
       const AutofillType& type,
       const std::u16string& field_contents,
       bool field_is_autofilled,
@@ -687,11 +684,12 @@ class PersonalDataManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            DeleteDisusedCreditCards_DoNothingWhenDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetProfileSuggestions_ProfileAutofillDisabled);
+                           GetProfilesForSuggestions_ProfileAutofillDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      PersonalDataManagerTest,
+      GetProfilesForSuggestions_NoProfilesLoadedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetProfileSuggestions_NoProfilesLoadedIfDisabled);
-  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
-                           GetProfileSuggestions_NoProfilesAddedIfDisabled);
+                           GetProfilesForSuggestions_NoProfilesAddedIfDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            GetCreditCardsToSuggest_CreditCardAutofillDisabled);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,

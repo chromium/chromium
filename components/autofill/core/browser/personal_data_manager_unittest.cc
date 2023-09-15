@@ -69,7 +69,6 @@ using testing::UnorderedElementsAre;
 
 constexpr char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
-constexpr char kAddressEntryIcon[] = "accountIcon";
 
 const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
 const base::Time kSomeLaterTime = base::Time::FromDoubleT(1000);
@@ -118,13 +117,6 @@ void ExpectSameElements(const std::vector<T*>& expectations,
           .first,
       results_copy.end());
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-std::vector<std::vector<Suggestion::Text>> ConstructLabelLineMatrix(
-    const std::vector<std::u16string>& parts) {
-  return {{Suggestion::Text(ConstructLabelLine(parts))}};
-}
-#endif
 
 }  // anonymous namespace
 
@@ -2094,26 +2086,10 @@ TEST_F(PersonalDataManagerTest, UpdateLanguageCodeInProfile) {
   EXPECT_EQ("en", results[0]->language_code());
 }
 
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  AddProfileToPersonalDataManager(profile);
-  ResetPersonalDataManager();
-
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
-            suggestions[0].main_text.value);
-}
-
 // Tests that special characters will be used while prefix matching the user's
 // field input with the available emails to suggest.
 TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_UseSpecialCharactersInEmail) {
+       GetProfilesForSuggestions_UseSpecialCharactersInEmail) {
   AutofillProfile profile_1, profile_2;
   profile_1.SetRawInfo(EMAIL_ADDRESS, u"test@email.xyz");
   profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
@@ -2121,56 +2097,15 @@ TEST_F(PersonalDataManagerTest,
   AddProfileToPersonalDataManager(profile_2);
   ASSERT_EQ(personal_data_->GetProfilesToSuggest().size(), 2u);
 
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(EMAIL_ADDRESS), u"Test@", false, {});
+  std::vector<AutofillProfile*> profiles =
+      personal_data_->GetProfilesForSuggestions(AutofillType(EMAIL_ADDRESS),
+                                                u"Test@", false, {});
 
-  ASSERT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(u"test@email.xyz", suggestions[0].main_text.value);
+  ASSERT_EQ(profiles.size(), 1u);
+  EXPECT_EQ(*profiles[0], profile_1);
 }
 
-TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_PhoneSubstring_NoImprovedDisambiguation) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  AddProfileToPersonalDataManager(profile);
-  ResetPersonalDataManager();
-
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false, {});
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
-}
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_PhoneSubstring_ImprovedDisambiguation) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox",
-                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  AddProfileToPersonalDataManager(profile);
-  ResetPersonalDataManager();
-
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"234", false, {});
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_EQ(u"(234) 567-8910", suggestions[0].main_text.value);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_HideSubsets) {
+TEST_F(PersonalDataManagerTest, GetProfilesForSuggestions_HideSubsets) {
   AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
@@ -2202,23 +2137,20 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_HideSubsets) {
 
   // Simulate a form with street address, city and state.
   ServerFieldTypeSet types = {ADDRESS_HOME_CITY, ADDRESS_HOME_STATE};
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, types);
-  ASSERT_EQ(2U, suggestions.size());
-  ASSERT_EQ(1U, suggestions[0].labels.size());
-  ASSERT_EQ(1U, suggestions[0].labels[0].size());
-  EXPECT_EQ(u"Hollywood, CA", suggestions[0].labels[0][0].value);
-  ASSERT_EQ(1U, suggestions[1].labels.size());
-  ASSERT_EQ(1U, suggestions[1].labels.size());
-  EXPECT_EQ(u"Hollywood, TX", suggestions[1].labels[0][0].value);
+  std::vector<AutofillProfile*> profiles =
+      personal_data_->GetProfilesForSuggestions(
+          AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, types);
+  ASSERT_EQ(2U, profiles.size());
+  EXPECT_EQ(profiles[0]->GetRawInfo(ADDRESS_HOME_STATE), u"CA");
+  EXPECT_EQ(profiles[1]->GetRawInfo(ADDRESS_HOME_STATE), u"TX");
 }
 
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_SuggestionsLimit) {
+TEST_F(PersonalDataManagerTest, GetProfilesForSuggestions_SuggestionsLimit) {
   // Drawing takes noticeable time when there are more than 10 profiles.
   // Therefore, we keep only the 10 first suggested profiles.
   std::vector<AutofillProfile> profiles;
-  for (size_t i = 0; i < 2 * suggestion_selection::kMaxUniqueSuggestionsCount;
-       i++) {
+  for (size_t i = 0;
+       i < 2 * suggestion_selection::kMaxUniqueSuggestedProfilesCount; i++) {
     AutofillProfile profile;
     test::SetProfileInfo(&profile, base::StringPrintf("Marion%zu", i).c_str(),
                          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
@@ -2229,16 +2161,17 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_SuggestionsLimit) {
   }
   ResetPersonalDataManager();
 
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), u"Ma", false, {});
+  std::vector<AutofillProfile*> suggested_profiles =
+      personal_data_->GetProfilesForSuggestions(AutofillType(NAME_FIRST), u"Ma",
+                                                false, {});
 
-  ASSERT_EQ(2 * suggestion_selection::kMaxUniqueSuggestionsCount,
+  ASSERT_EQ(2 * suggestion_selection::kMaxUniqueSuggestedProfilesCount,
             personal_data_->GetProfiles().size());
-  ASSERT_EQ(suggestion_selection::kMaxUniqueSuggestionsCount,
-            suggestions.size());
+  ASSERT_EQ(suggestion_selection::kMaxUniqueSuggestedProfilesCount,
+            suggested_profiles.size());
 }
 
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
+TEST_F(PersonalDataManagerTest, GetProfilesForSuggestions_ProfilesLimit) {
   // Deduping takes noticeable time when there are more than 50 profiles.
   // Therefore, keep only the 50 first pre-dedupe matching profiles.
   std::vector<AutofillProfile> profiles;
@@ -2273,18 +2206,20 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
 
   ResetPersonalDataManager();
 
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), u"Ma", false, {});
+  std::vector<AutofillProfile*> suggested_profiles =
+      personal_data_->GetProfilesForSuggestions(AutofillType(NAME_FIRST), u"Ma",
+                                                false, {});
 
   ASSERT_EQ(suggestion_selection::kMaxSuggestedProfilesCount + 1,
             personal_data_->GetProfiles().size());
-  ASSERT_EQ(1U, suggestions.size());
-  EXPECT_EQ(u"Marion", suggestions[0].main_text.value);
+  ASSERT_EQ(1U, suggested_profiles.size());
+  EXPECT_EQ(suggested_profiles.front()->GetRawInfo(NAME_FIRST),
+            profiles.front().GetRawInfo(NAME_FIRST));
 }
 
-// Tests that GetProfileSuggestions orders its suggestions based on the ranking
-// formula.
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
+// Tests that GetProfilesForSuggestions orders its suggestions based on the
+// ranking formula.
+TEST_F(PersonalDataManagerTest, GetProfilesForSuggestions_Ranking) {
   // Set up the profiles. They are named with number suffixes X so the X is the
   // order in which they should be ordered by the ranking formula.
   AutofillProfile profile3;
@@ -2315,16 +2250,17 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
   AddProfileToPersonalDataManager(profile2);
 
   ResetPersonalDataManager();
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), u"Ma", false, {});
-  ASSERT_EQ(3U, suggestions.size());
-  EXPECT_EQ(suggestions[0].main_text.value, u"Marion1");
-  EXPECT_EQ(suggestions[1].main_text.value, u"Marion2");
-  EXPECT_EQ(suggestions[2].main_text.value, u"Marion3");
+  std::vector<AutofillProfile*> suggested_profiles =
+      personal_data_->GetProfilesForSuggestions(AutofillType(NAME_FIRST), u"Ma",
+                                                false, {});
+  ASSERT_EQ(3U, suggested_profiles.size());
+  EXPECT_EQ(suggested_profiles[0]->GetRawInfo(NAME_FIRST), u"Marion1");
+  EXPECT_EQ(suggested_profiles[1]->GetRawInfo(NAME_FIRST), u"Marion2");
+  EXPECT_EQ(suggested_profiles[2]->GetRawInfo(NAME_FIRST), u"Marion3");
 }
 
-// Tests that GetProfileSuggestions returns all profiles suggestions.
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_NumberOfSuggestions) {
+// Tests that GetProfilesForSuggestions returns all profiles suggestions.
+TEST_F(PersonalDataManagerTest, GetProfilesForSuggestions_NumberOfSuggestions) {
   // Set up 3 different profiles.
   AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
@@ -2350,15 +2286,16 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_NumberOfSuggestions) {
   ResetPersonalDataManager();
 
   // Verify that all the profiles are suggested.
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), std::u16string(), false, {});
-  EXPECT_EQ(3U, suggestions.size());
+  std::vector<AutofillProfile*> suggested_profiles =
+      personal_data_->GetProfilesForSuggestions(AutofillType(NAME_FIRST),
+                                                std::u16string(), false, {});
+  EXPECT_EQ(3U, suggested_profiles.size());
 }
 
 // Tests that disused profiles are suppressed when suppression is enabled and
 // the input field is empty.
 TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_SuppressDisusedProfilesOnEmptyField) {
+       GetProfilesForSuggestions_SuppressDisusedProfilesOnEmptyField) {
   // Set up 2 different profiles.
   AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
@@ -2380,40 +2317,43 @@ TEST_F(PersonalDataManagerTest,
 
   // Query with empty string only returns profile2.
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), std::u16string(), false, {});
-    EXPECT_EQ(1U, suggestions.size());
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), std::u16string(), false,
+            {});
+    EXPECT_EQ(1U, suggested_profiles.size());
   }
 
   // Query with non-alpha-numeric string only returns profile2.
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"--", false, {});
-    EXPECT_EQ(1U, suggestions.size());
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"--", false, {});
+    EXPECT_EQ(1U, suggested_profiles.size());
   }
 
   // Query with prefix for profile1 returns profile1.
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
-    ASSERT_EQ(1U, suggestions.size());
-    EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
-              suggestions[0].main_text.value);
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
+    ASSERT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(u"Marion1", suggested_profiles[0]->GetRawInfo(NAME_FIRST));
   }
 
   // Query with prefix for profile2 returns profile2.
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"456", false, {});
-    EXPECT_EQ(1U, suggestions.size());
-    EXPECT_EQ(u"456 Zoo St., Second Line, Third line, unit 5",
-              suggestions[0].main_text.value);
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"456", false, {});
+    EXPECT_EQ(1U, suggested_profiles.size());
+    EXPECT_EQ(u"Marion2", suggested_profiles[0]->GetRawInfo(NAME_FIRST));
   }
 }
 
 // Tests that phone number types are correctly deduplicated for suggestions.
 TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_PhoneNumberDeduplication) {
+       GetProfilesForSuggestions_PhoneNumberDeduplication) {
   // Set up 2 different profiles.
   AutofillProfile profile1;
   profile1.SetRawInfo(NAME_FULL, u"First Middle Last");
@@ -2428,40 +2368,41 @@ TEST_F(PersonalDataManagerTest,
   ResetPersonalDataManager();
 
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(NAME_FULL), std::u16string(), false,
-        {NAME_FULL, PHONE_HOME_WHOLE_NUMBER});
-    EXPECT_EQ(2U, suggestions.size());
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_WHOLE_NUMBER});
+    EXPECT_EQ(2U, suggested_profiles.size());
   }
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(NAME_FULL), std::u16string(), false,
-        {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_AND_NUMBER});
-    EXPECT_EQ(2U, suggestions.size());
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_AND_NUMBER});
+    EXPECT_EQ(2U, suggested_profiles.size());
   }
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(NAME_FULL), std::u16string(), false,
-        {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE,
-         PHONE_HOME_NUMBER});
-    EXPECT_EQ(2U, suggestions.size());
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE,
+             PHONE_HOME_NUMBER});
+    EXPECT_EQ(2U, suggested_profiles.size());
   }
   {
-    std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(NAME_FULL), std::u16string(), false,
-        {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE});
-    EXPECT_EQ(1U, suggestions.size());
+    std::vector<AutofillProfile*> suggested_profiles =
+        personal_data_->GetProfilesForSuggestions(
+            AutofillType(NAME_FULL), std::u16string(), false,
+            {NAME_FULL, PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE});
+    EXPECT_EQ(1U, suggested_profiles.size());
   }
 }
 
-// Test that local and server profiles are not shown if
-// |kAutofillProfileEnabled| is set to |false|.
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfileAutofillDisabled) {
-  ///////////////////////////////////////////////////////////////////////
-  // Setup.
-  ///////////////////////////////////////////////////////////////////////
+// Test that profiles are not shown if |kAutofillProfileEnabled| is set to
+// |false|.
+TEST_F(PersonalDataManagerTest,
+       GetProfilesForSuggestions_ProfileAutofillDisabled) {
   const std::string kServerAddressId("server_address1");
-
   ASSERT_TRUE(TurnOnSyncFeature());
 
   // Add two different profiles, a local and a server one.
@@ -2482,20 +2423,17 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfileAutofillDisabled) {
   // Expect no autofilled values or suggestions.
   EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
 
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
-  ASSERT_EQ(0U, suggestions.size());
+  std::vector<AutofillProfile*> suggested_profiles =
+      personal_data_->GetProfilesForSuggestions(
+          AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
+  ASSERT_EQ(0U, suggested_profiles.size());
 }
 
 // Test that local and server profiles are not loaded into memory on start-up if
 // |kAutofillProfileEnabled| is set to |false|.
 TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_NoProfilesLoadedIfDisabled) {
-  ///////////////////////////////////////////////////////////////////////
-  // Setup.
-  ///////////////////////////////////////////////////////////////////////
+       GetProfilesForSuggestions_NoProfilesLoadedIfDisabled) {
   const std::string kServerAddressId("server_address1");
-
   ASSERT_TRUE(TurnOnSyncFeature());
 
   // Add two different profiles, a local and a server one.
@@ -2522,15 +2460,16 @@ TEST_F(PersonalDataManagerTest,
   // Expect no profile values or suggestions were loaded.
   EXPECT_EQ(0U, personal_data_->GetProfilesToSuggest().size());
 
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
+  std::vector<AutofillProfile*> suggestions =
+      personal_data_->GetProfilesForSuggestions(
+          AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, {});
   ASSERT_EQ(0U, suggestions.size());
 }
 
 // Test that local profiles are not added if |kAutofillProfileEnabled| is set to
 // |false|.
 TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_NoProfilesAddedIfDisabled) {
+       GetProfilesForSuggestions_NoProfilesAddedIfDisabled) {
   // Disable Profile autofill.
   prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
 
@@ -2544,341 +2483,6 @@ TEST_F(PersonalDataManagerTest,
   // Expect no profile values or suggestions were added.
   EXPECT_EQ(0U, personal_data_->GetProfiles().size());
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_LogProfileSuggestionsMadeWithFormatter) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AddProfileToPersonalDataManager(profile);
-
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  base::HistogramTester histogram_tester;
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FIRST), std::u16string(), false,
-          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(testing::Field(
-          &Suggestion::main_text,
-          Suggestion::Text(u"Hoa", Suggestion::Text::IsPrimary(true)))));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileSuggestionsMadeWithFormatter", true, 1);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ForContactForm) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AddProfileToPersonalDataManager(profile);
-
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FIRST), std::u16string(), false,
-          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(AllOf(
-          testing::Field(&Suggestion::labels,
-                         ConstructLabelLineMatrix(
-                             {u"(978) 674-4120", u"hoa.pham@comcast.net"})),
-          testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressForm) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AddProfileToPersonalDataManager(profile);
-
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  EXPECT_THAT(personal_data_->GetProfileSuggestions(
-                  AutofillType(NAME_FULL), std::u16string(), false,
-                  {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
-              ElementsAre(AllOf(
-                  testing::Field(&Suggestion::labels,
-                                 ConstructLabelLineMatrix(
-                                     {u"401 Merrimack St, Lowell, MA 01852"})),
-                  testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressPhoneForm) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AddProfileToPersonalDataManager(profile);
-
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), std::u16string(), false,
-          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(
-          AllOf(testing::Field(&Suggestion::labels,
-                               ConstructLabelLineMatrix(
-                                   {u"(978) 674-4120", u"401 Merrimack St"})),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressEmailForm) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AddProfileToPersonalDataManager(profile);
-
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), std::u16string(), false,
-          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS}),
-      ElementsAre(AllOf(
-          testing::Field(&Suggestion::labels,
-                         ConstructLabelLineMatrix(
-                             {u"401 Merrimack St", u"hoa.pham@comcast.net"})),
-          testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_FormWithOneProfile) {
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AddProfileToPersonalDataManager(profile);
-
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kAutofillUseImprovedLabelDisambiguation);
-
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), std::u16string(), false,
-          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
-           PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(
-          AllOf(testing::Field(&Suggestion::labels,
-                               ConstructLabelLineMatrix({u"401 Merrimack St"})),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest,
-       GetProfileSuggestions_AddressContactFormWithProfiles) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::
-                                kAutofillEnableRankingFormulaAddressProfiles,
-                            features::kAutofillUseImprovedLabelDisambiguation},
-      /*disabled_features=*/{});
-
-  AutofillProfile profile1;
-  test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-
-  AutofillProfile profile2;
-  test::SetProfileInfo(&profile2, "Hoa", "", "Pham", "hp@aol.com", "",
-                       "216 Broadway St", "", "Lowell", "MA", "01854", "US",
-                       "19784523366");
-
-  // The profiles' use dates and counts are set make this test deterministic.
-  // The suggestion created with data from profile1 should be ranked higher
-  // than profile2's associated suggestion. This ensures that profile1's
-  // suggestion is the first element in the collection returned by
-  // GetProfileSuggestions.
-  profile1.set_use_date(AutofillClock::Now());
-  profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
-  profile2.set_use_count(1);
-
-  EXPECT_TRUE(profile1.HasGreaterRankingThan(&profile2, AutofillClock::Now()));
-
-  AddProfileToPersonalDataManager(profile1);
-  AddProfileToPersonalDataManager(profile2);
-
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), std::u16string(), false,
-          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
-           PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(
-          AllOf(testing::Field(&Suggestion::labels,
-                               ConstructLabelLineMatrix(
-                                   {u"401 Merrimack St", u"(978) 674-4120",
-                                    u"hoa.pham@comcast.net"})),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
-          AllOf(testing::Field(&Suggestion::labels,
-                               ConstructLabelLineMatrix({u"216 Broadway St",
-                                                         u"(978) 452-3366",
-                                                         u"hp@aol.com"})),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
-  std::map<std::string, std::string> parameters;
-  parameters[features::kAutofillUseMobileLabelDisambiguationParameterName] =
-      features::kAutofillUseMobileLabelDisambiguationParameterShowOne;
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kAutofillUseMobileLabelDisambiguation, parameters);
-
-  AutofillProfile profile1;
-  test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AutofillProfile profile2;
-  test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
-                       "11 Elkins St", "", "Boston", "MA", "02127", "US",
-                       "6172686862");
-
-  // The profiles' use dates and counts are set make this test deterministic.
-  // The suggestion created with data from profile1 should be ranked higher
-  // than profile2's associated suggestion. This ensures that profile1's
-  // suggestion is the first element in the collection returned by
-  // GetProfileSuggestions.
-  profile1.set_use_date(AutofillClock::Now());
-  profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
-  profile2.set_use_count(1);
-
-  AddProfileToPersonalDataManager(profile1);
-  AddProfileToPersonalDataManager(profile2);
-
-  // Tests a form with name, email address, and phone number fields.
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(
-          AllOf(testing::Field(&Suggestion::labels,
-                               std::vector<std::vector<Suggestion::Text>>{
-                                   {Suggestion::Text(u"(978) 674-4120")}}),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
-          AllOf(testing::Field(&Suggestion::labels,
-                               std::vector<std::vector<Suggestion::Text>>{
-                                   {Suggestion::Text(u"(617) 268-6862")}}),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-
-  // Tests a form with name, address, phone number, and email address fields.
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-           EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(
-          AllOf(testing::Field(&Suggestion::labels,
-                               std::vector<std::vector<Suggestion::Text>>{
-                                   {Suggestion::Text(u"401 Merrimack St")}}),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
-          AllOf(testing::Field(&Suggestion::labels,
-                               std::vector<std::vector<Suggestion::Text>>{
-                                   {Suggestion::Text(u"11 Elkins St")}}),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
-  std::map<std::string, std::string> parameters;
-  parameters[features::kAutofillUseMobileLabelDisambiguationParameterName] =
-      features::kAutofillUseMobileLabelDisambiguationParameterShowAll;
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeatureWithParameters(
-      features::kAutofillUseMobileLabelDisambiguation, parameters);
-
-  AutofillProfile profile1;
-  test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
-                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
-                       "19786744120");
-  AutofillProfile profile2;
-  test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
-                       "11 Elkins St", "", "Boston", "MA", "02127", "US",
-                       "6172686862");
-
-  // The profiles' use dates and counts are set make this test deterministic.
-  // The suggestion created with data from profile1 should be ranked higher
-  // than profile2's associated suggestion. This ensures that profile1's
-  // suggestion is the first element in the collection returned by
-  // GetProfileSuggestions.
-  profile1.set_use_date(AutofillClock::Now());
-  profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
-  profile2.set_use_count(1);
-
-  AddProfileToPersonalDataManager(profile1);
-  AddProfileToPersonalDataManager(profile2);
-
-  // Tests a form with name, email address, and phone number fields.
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(
-          AllOf(testing::Field(&Suggestion::labels,
-                               std::vector<std::vector<Suggestion::Text>>{
-                                   {Suggestion::Text(ConstructMobileLabelLine(
-                                       {u"Hoa", u"(978) 674-4120"}))}}),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
-          AllOf(testing::Field(&Suggestion::labels,
-                               std::vector<std::vector<Suggestion::Text>>{
-                                   {Suggestion::Text(ConstructMobileLabelLine(
-                                       {u"María", u"(617) 268-6862"}))}}),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-
-  // Tests a form with name, address, phone number, and email address fields.
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-           EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(
-          AllOf(
-              testing::Field(
-                  &Suggestion::labels,
-                  std::vector<std::vector<Suggestion::Text>>{
-                      {Suggestion::Text(ConstructMobileLabelLine(
-                          {u"Hoa", u"401 Merrimack St", u"(978) 674-4120"}))}}),
-              testing::Field(&Suggestion::icon, kAddressEntryIcon)),
-          AllOf(testing::Field(
-                    &Suggestion::labels,
-                    std::vector<std::vector<Suggestion::Text>>{
-                        {Suggestion::Text(ConstructMobileLabelLine(
-                            {u"María", u"11 Elkins St", u"(617) 268-6862"}))}}),
-                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
-}
-#endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 TEST_F(PersonalDataManagerTest, IsKnownCard_MatchesMaskedServerCard) {
   // Add a masked server card.

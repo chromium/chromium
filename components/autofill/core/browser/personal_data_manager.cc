@@ -58,6 +58,7 @@
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -72,6 +73,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -81,6 +83,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Checks the order of preference of the `original_card` with the
@@ -1557,13 +1560,14 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
   return GetProfiles(ProfileOrder::kMostRecentlyModifiedDesc);
 }
 
-std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
+std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSuggestions(
     const AutofillType& type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
     const ServerFieldTypeSet& field_types) {
-  if (IsInAutofillSuggestionsDisabledExperiment())
-    return std::vector<Suggestion>();
+  if (IsInAutofillSuggestionsDisabledExperiment()) {
+    return {};
+  }
 
   std::u16string field_contents_canon =
       suggestion_selection::NormalizeForComparisonForType(
@@ -1581,82 +1585,19 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
                                                               &sorted_profiles);
   }
 
-  std::vector<AutofillProfile*> matched_profiles;
-  std::vector<Suggestion> suggestions =
-      suggestion_selection::GetPrefixMatchedSuggestions(
+  std::vector<AutofillProfile*> matched_profiles =
+      suggestion_selection::GetPrefixMatchedProfiles(
           type, field_contents, field_contents_canon, app_locale_,
-          field_is_autofilled, sorted_profiles, &matched_profiles);
+          field_is_autofilled, sorted_profiles);
 
   const AutofillProfileComparator comparator(app_locale_);
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
-  std::vector<AutofillProfile*> unique_matched_profiles;
-  std::vector<Suggestion> unique_suggestions =
-      suggestion_selection::GetUniqueSuggestions(field_types, comparator,
-                                                 matched_profiles, suggestions,
-                                                 &unique_matched_profiles);
+  std::vector<AutofillProfile*> unique_matched_profiles =
+      suggestion_selection::DeduplicatedProfilesForSuggestions(
+          type, field_types, comparator, matched_profiles);
 
-  std::unique_ptr<LabelFormatter> formatter;
-  bool use_formatter;
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseImprovedLabelDisambiguation);
-#else
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseMobileLabelDisambiguation);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  // The formatter stores a constant reference to |unique_matched_profiles|.
-  // This is safe since the formatter is destroyed when this function returns.
-  formatter = use_formatter
-                  ? LabelFormatter::Create(unique_matched_profiles, app_locale_,
-                                           type.GetStorableType(), field_types)
-                  : nullptr;
-
-  // Generate disambiguating labels based on the list of matches.
-  std::vector<std::u16string> labels;
-  if (formatter) {
-    labels = formatter->GetLabels();
-  } else {
-    AutofillProfile::CreateInferredLabels(unique_matched_profiles, field_types,
-                                          type.GetStorableType(), 1,
-                                          app_locale_, &labels);
-  }
-
-  if (use_formatter && !unique_suggestions.empty()) {
-    AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(formatter !=
-                                                            nullptr);
-  }
-
-  suggestion_selection::PrepareSuggestions(labels, &unique_suggestions,
-                                           comparator);
-
-  // We add an icon to the address (profile) suggestion if there is more than
-  // one profile related field in the form. Returns true if |type| is related to
-  // address profiles.
-  auto is_field_type_profile_related = [](ServerFieldType type) {
-    FieldTypeGroup group = AutofillType(type).group();
-    return group == FieldTypeGroup::kName ||
-           group == FieldTypeGroup::kAddress ||
-           group == FieldTypeGroup::kPhone || group == FieldTypeGroup::kEmail;
-  };
-  if (base::ranges::count_if(field_types, is_field_type_profile_related) > 1) {
-    for (auto& suggestion : unique_suggestions) {
-      // TODO(crbug.com/1459990): Remove this hardcoding once the last filling
-      // granularity is available to this method. Filling granularies different
-      // than full form will not have an icon.
-      const bool fill_full_form = true;
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillGranularFillingAvailable)) {
-        suggestion.icon = fill_full_form ? "locationIcon" : "";
-      } else {
-        suggestion.icon = "accountIcon";
-      }
-    }
-  }
-
-  return unique_suggestions;
+  return unique_matched_profiles;
 }
 
 const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest()

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <vector>
 
 #include "base/rand_util.h"
@@ -17,13 +18,16 @@
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/label_formatter_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_selection.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -43,6 +47,34 @@
 using gfx::test::AreImagesEqual;
 
 namespace autofill {
+
+namespace {
+
+using testing::Field;
+using testing::Matcher;
+
+constexpr char kAddressEntryIcon[] = "accountIcon";
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+std::vector<std::vector<Suggestion::Text>> ConstructLabelLineMatrix(
+    const std::vector<std::u16string>& parts) {
+  return {{Suggestion::Text(ConstructLabelLine(parts))}};
+}
+#endif
+
+Matcher<Suggestion> EqualsSuggestion(PopupItemId id) {
+  return Field(&Suggestion::popup_item_id, id);
+}
+
+Matcher<Suggestion> EqualsSuggestion(PopupItemId id,
+                                     const std::u16string& text) {
+  return AllOf(
+      Field(&Suggestion::popup_item_id, id),
+      Field(&Suggestion::main_text,
+            Suggestion::Text(text, Suggestion::Text::IsPrimary(true))));
+}
+
+}  // namespace
 
 // Test component for tests to access implementation details in
 // AutofillSuggestionGenerator.
@@ -166,6 +198,621 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
+
+TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {}, AutofillType(ADDRESS_HOME_STREET_ADDRESS),
+          /*trigger_field_max_length=*/0);
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
+            suggestions[0].main_text.value);
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_PhoneSubstring_NoImprovedDisambiguation) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {}, AutofillType(PHONE_HOME_WHOLE_NUMBER),
+          /*trigger_field_max_length=*/0);
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_EQ(u"12345678910", suggestions[0].main_text.value);
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_PhoneSubstring_ImprovedDisambiguation) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox",
+                       "123 Zoo St.\nSecond Line\nThird line", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {}, AutofillType(PHONE_HOME_WHOLE_NUMBER),
+          /*trigger_field_max_length=*/0);
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_EQ(u"(234) 567-8910", suggestions[0].main_text.value);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_LogProfileSuggestionsMadeWithFormatter) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile},
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(NAME_FIRST),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(testing::Field(
+          &Suggestion::main_text,
+          Suggestion::Text(u"Hoa", Suggestion::Text::IsPrimary(true)))));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileSuggestionsMadeWithFormatter", true, 1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_ForContactForm) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile},
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(NAME_FIRST),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(AllOf(
+          testing::Field(&Suggestion::labels,
+                         ConstructLabelLineMatrix(
+                             {u"(978) 674-4120", u"hoa.pham@comcast.net"})),
+          testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_AddressForm) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  EXPECT_THAT(suggestion_generator()->CreateSuggestionsFromProfiles(
+                  {&profile},
+                  {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+                   ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP},
+                  AutofillType(NAME_FULL),
+                  /*trigger_field_max_length=*/0),
+              ElementsAre(AllOf(
+                  testing::Field(&Suggestion::labels,
+                                 ConstructLabelLineMatrix(
+                                     {u"401 Merrimack St, Lowell, MA 01852"})),
+                  testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_AddressPhoneForm) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile},
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(NAME_FULL),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix(
+                                   {u"(978) 674-4120", u"401 Merrimack St"})),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_AddressEmailForm) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS},
+          AutofillType(NAME_FULL),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(AllOf(
+          testing::Field(&Suggestion::labels,
+                         ConstructLabelLineMatrix(
+                             {u"401 Merrimack St", u"hoa.pham@comcast.net"})),
+          testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_FormWithOneProfile) {
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      features::kAutofillUseImprovedLabelDisambiguation);
+
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile},
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
+           PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(NAME_FULL),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix({u"401 Merrimack St"})),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_AddressContactFormWithProfiles) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      /*enabled_features=*/{features::
+                                kAutofillEnableRankingFormulaAddressProfiles,
+                            features::kAutofillUseImprovedLabelDisambiguation},
+      /*disabled_features=*/{});
+
+  AutofillProfile profile1;
+  test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+
+  AutofillProfile profile2;
+  test::SetProfileInfo(&profile2, "Hoa", "", "Pham", "hp@aol.com", "",
+                       "216 Broadway St", "", "Lowell", "MA", "01854", "US",
+                       "19784523366");
+
+  // The profiles' use dates and counts are set make this test deterministic.
+  // The suggestion created with data from profile1 should be ranked higher
+  // than profile2's associated suggestion. This ensures that profile1's
+  // suggestion is the first element in the collection returned by
+  // GetProfilesForSuggestions.
+  profile1.set_use_date(AutofillClock::Now());
+  profile1.set_use_count(10);
+  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
+  profile2.set_use_count(1);
+
+  EXPECT_TRUE(profile1.HasGreaterRankingThan(&profile2, AutofillClock::Now()));
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile1, &profile2},
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS,
+           PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(NAME_FULL),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix(
+                                   {u"401 Merrimack St", u"(978) 674-4120",
+                                    u"hoa.pham@comcast.net"})),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix({u"216 Broadway St",
+                                                         u"(978) 452-3366",
+                                                         u"hp@aol.com"})),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_MobileShowOne) {
+  std::map<std::string, std::string> parameters;
+  parameters[features::kAutofillUseMobileLabelDisambiguationParameterName] =
+      features::kAutofillUseMobileLabelDisambiguationParameterShowOne;
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      features::kAutofillUseMobileLabelDisambiguation, parameters);
+
+  AutofillProfile profile1;
+  test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+  AutofillProfile profile2;
+  test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
+                       "11 Elkins St", "", "Boston", "MA", "02127", "US",
+                       "6172686862");
+
+  // The profiles' use dates and counts are set make this test deterministic.
+  // The suggestion created with data from profile1 should be ranked higher
+  // than profile2's associated suggestion. This ensures that profile1's
+  // suggestion is the first element in the collection returned by
+  // GetProfilesForSuggestions.
+  profile1.set_use_date(AutofillClock::Now());
+  profile1.set_use_count(10);
+  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
+  profile2.set_use_count(1);
+
+  // Tests a form with name, email address, and phone number fields.
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile1, &profile2},
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(EMAIL_ADDRESS),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"(978) 674-4120")}}),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"(617) 268-6862")}}),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+
+  // Tests a form with name, address, phone number, and email address fields.
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile1, &profile2},
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+           EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(EMAIL_ADDRESS),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"401 Merrimack St")}}),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"11 Elkins St")}}),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_MobileShowAll) {
+  std::map<std::string, std::string> parameters;
+  parameters[features::kAutofillUseMobileLabelDisambiguationParameterName] =
+      features::kAutofillUseMobileLabelDisambiguationParameterShowAll;
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      features::kAutofillUseMobileLabelDisambiguation, parameters);
+
+  AutofillProfile profile1;
+  test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
+                       "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
+                       "19786744120");
+  AutofillProfile profile2;
+  test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
+                       "11 Elkins St", "", "Boston", "MA", "02127", "US",
+                       "6172686862");
+
+  // The profiles' use dates and counts are set make this test deterministic.
+  // The suggestion created with data from profile1 should be ranked higher
+  // than profile2's associated suggestion. This ensures that profile1's
+  // suggestion is the first element in the collection returned by
+  // GetProfilesForSuggestions.
+  profile1.set_use_date(AutofillClock::Now());
+  profile1.set_use_count(10);
+  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
+  profile2.set_use_count(1);
+
+  // Tests a form with name, email address, and phone number fields.
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile1, &profile2},
+          {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(EMAIL_ADDRESS),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(ConstructMobileLabelLine(
+                                       {u"Hoa", u"(978) 674-4120"}))}}),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(ConstructMobileLabelLine(
+                                       {u"María", u"(617) 268-6862"}))}}),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+
+  // Tests a form with name, address, phone number, and email address fields.
+  EXPECT_THAT(
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile1, &profile2},
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+           EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          AutofillType(EMAIL_ADDRESS),
+          /*trigger_field_max_length=*/0),
+      ElementsAre(
+          AllOf(
+              testing::Field(
+                  &Suggestion::labels,
+                  std::vector<std::vector<Suggestion::Text>>{
+                      {Suggestion::Text(ConstructMobileLabelLine(
+                          {u"Hoa", u"401 Merrimack St", u"(978) 674-4120"}))}}),
+              testing::Field(&Suggestion::icon, kAddressEntryIcon)),
+          AllOf(testing::Field(
+                    &Suggestion::labels,
+                    std::vector<std::vector<Suggestion::Text>>{
+                        {Suggestion::Text(ConstructMobileLabelLine(
+                            {u"María", u"11 Elkins St", u"(617) 268-6862"}))}}),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
+}
+#endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+// TODO(crbug.com/1459990): Consider having a test fixture for granular filling
+// related tests. In general these tests are quite lengthy and finding a way to
+// make them more concise is desirable.
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_FirstLevelChildrenSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillGranularFillingAvailable);
+
+  AutofillProfile profile = test::GetFullProfile();
+
+  auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
+      {&profile}, {}, AutofillType(NAME_FIRST),
+      /*trigger_field_max_length=*/0);
+
+  ASSERT_EQ(1U, suggestions.size());
+  // Test root suggestion
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(Field(&Suggestion::main_text,
+                        Suggestion::Text(profile.GetRawInfo(NAME_FIRST),
+                                         Suggestion::Text::IsPrimary(true)))));
+
+  // The children suggestions should be.
+  //
+  // 1. fill full name
+  // 2. first name
+  // 3. middle name
+  // 4. family name
+  // 5. line separator
+  // 6. address line 1
+  // 7. address line 2
+  // 8. Zip
+  // 9. line separator
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit profile
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
+  std::string app_locale = personal_data()->app_locale();
+  EXPECT_THAT(
+      suggestions[0].children,
+      ElementsAre(
+          EqualsSuggestion(PopupItemId::kFillFullName),
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           profile.GetInfo(NAME_FIRST, app_locale)),
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           profile.GetInfo(NAME_MIDDLE, app_locale)),
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           profile.GetInfo(NAME_LAST, app_locale)),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           profile.GetInfo(ADDRESS_HOME_LINE1, app_locale)),
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           profile.GetInfo(ADDRESS_HOME_LINE2, app_locale)),
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           profile.GetInfo(ADDRESS_HOME_ZIP, app_locale)),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
+          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
+                           profile.GetInfo(EMAIL_ADDRESS, app_locale)),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsSuggestion(PopupItemId::kEditAddressProfile),
+          EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_SecondLevelChildrenSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillGranularFillingAvailable);
+
+  AutofillProfile profile = test::GetFullProfile();
+
+  auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
+      {&profile}, {}, AutofillType(NAME_FIRST),
+      /*trigger_field_max_length=*/0);
+
+  // Suggestions should have two levels of children, The address line 1 (sixth
+  // child) suggestion should have the following children: house number street
+  // name.
+  ASSERT_EQ(2U, suggestions[0].children[5].children.size());
+  std::string app_locale = personal_data()->app_locale();
+  EXPECT_THAT(
+      suggestions[0].children[5].children,
+      ElementsAre(EqualsSuggestion(
+                      PopupItemId::kFieldByFieldFilling,
+                      profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale)),
+                  EqualsSuggestion(
+                      PopupItemId::kFieldByFieldFilling,
+                      profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale))));
+  // House number and street name suggestions should have labels.
+  EXPECT_EQ(suggestions[0].children[5].children[0].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Building number")}}));
+  EXPECT_EQ(suggestions[0].children[5].children[1].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Street")}}));
+}
+
+// Asserts that when the triggering field is a phone field, the phone number
+// suggestion is of type `PopupItemId::kFillFullPhoneNumber`. In other
+// scenarios, phone number is of type `PopupItemId::kFieldByFieldFilling` as the
+// user expressed intent to use their phone number their phone number on a
+// "random" field.
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillGranularFillingAvailable);
+
+  AutofillProfile profile = test::GetFullProfile();
+
+  std::vector<AutofillProfile*> matched_profiles;
+  auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
+      {&profile}, {}, AutofillType(PHONE_HOME_WHOLE_NUMBER),
+      /*trigger_field_max_length=*/0);
+
+  // The child suggestions should be:
+  //
+  // 1. first name
+  // 2. middle name
+  // 3. family name
+  // 4. line separator
+  // 5. address line 1
+  // 6. address line 2
+  // 7. Zip
+  // 8. line separator
+  // 9. phone number
+  // 10. email
+  // 11. line separator
+  // 12. edit profile
+  // 13. delete address
+  ASSERT_EQ(13U, suggestions[0].children.size());
+  EXPECT_THAT(
+      suggestions[0].children[8],
+      Field(&Suggestion::popup_item_id, PopupItemId::kFillFullPhoneNumber));
+}
+
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_ChildrenSuggestionsAddressField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillGranularFillingAvailable);
+
+  AutofillProfile profile = test::GetFullProfile();
+
+  auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
+      {&profile}, {}, AutofillType(ADDRESS_HOME_LINE1),
+      /*trigger_field_max_length=*/0);
+
+  // The child suggestions should be:
+  //
+  // 1. first name
+  // 2. middle name
+  // 3. family name
+  // 4. line separator
+  // 5. fill full address
+  // 6. address line 1
+  // 7. address line 2
+  // 8. Zip
+  // 9. line separator
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit address
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
+  EXPECT_THAT(suggestions[0].children[4],
+              Field(&Suggestion::popup_item_id, PopupItemId::kFillFullAddress));
+}
+
+TEST_F(
+    AutofillSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_ChildrenSuggestions_HouseNumberAndStreetNameCanBeNestedUnderDifferentAddressLines) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillGranularFillingAvailable);
+
+  AutofillProfile profile;
+  // Update the profile to have house number and street name information in
+  // different address lines.
+  std::string app_locale = personal_data()->app_locale();
+  // profile.SetRawInfo(NAME_FULL, u"First Middle Last");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"Amphitheatre Parkway, Brookling");
+  profile.SetRawInfo(ADDRESS_HOME_LINE2, u"1600 Apartment 1");
+  profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Amphitheatre Parkway");
+  profile.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"1600");
+
+  auto suggestions = suggestion_generator()->CreateSuggestionsFromProfiles(
+      {&profile}, {}, AutofillType(ADDRESS_HOME_LINE1),
+      /*trigger_field_max_length=*/0);
+  ASSERT_EQ(1u, suggestions.size());
+  ASSERT_LE(3u, suggestions[0].children.size());
+
+  // The address line 1 (sixth child) should have the street name as child.
+  EXPECT_THAT(suggestions[0].children[1].children,
+              ElementsAre(EqualsSuggestion(
+                  PopupItemId::kFieldByFieldFilling,
+                  profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale))));
+  // The address line 2 (seventh child) should have the house number as child.
+  EXPECT_THAT(suggestions[0].children[2].children,
+              ElementsAre(EqualsSuggestion(
+                  PopupItemId::kFieldByFieldFilling,
+                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale))));
+}
 
 TEST_F(AutofillSuggestionGeneratorTest,
        RemoveExpiredCreditCardsNotUsedSinceTimestamp) {

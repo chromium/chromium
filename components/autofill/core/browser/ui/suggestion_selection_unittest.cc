@@ -15,7 +15,9 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,56 +29,11 @@ using base::ASCIIToUTF16;
 using testing::Each;
 using testing::ElementsAre;
 using testing::Field;
-using ::testing::Matcher;
 using testing::Not;
 using testing::ResultOf;
 
 namespace {
 const std::string TEST_APP_LOCALE = "en-US";
-
-template <typename T>
-bool CompareElements(T* a, T* b) {
-  return a->Compare(*b) < 0;
-}
-
-template <typename T>
-bool ElementsEqual(T* a, T* b) {
-  return a->Compare(*b) == 0;
-}
-
-// Verifies that two vectors have the same elements (according to T::Compare)
-// while ignoring order. This is useful because multiple profiles or credit
-// cards that are added to the SQLite DB within the same second will be returned
-// in GUID (aka random) order.
-template <typename T>
-void ExpectSameElements(const std::vector<T*>& expectations,
-                        const std::vector<T*>& results) {
-  ASSERT_EQ(expectations.size(), results.size());
-
-  std::vector<T*> expectations_copy = expectations;
-  std::sort(expectations_copy.begin(), expectations_copy.end(),
-            CompareElements<T>);
-  std::vector<T*> results_copy = results;
-  std::sort(results_copy.begin(), results_copy.end(), CompareElements<T>);
-
-  EXPECT_EQ(
-      base::ranges::mismatch(results_copy, expectations_copy, ElementsEqual<T>)
-          .first,
-      results_copy.end());
-}
-
-Matcher<Suggestion> EqualsSuggestion(PopupItemId id) {
-  return Field(&Suggestion::popup_item_id, id);
-}
-
-Matcher<Suggestion> EqualsSuggestion(PopupItemId id,
-                                     const std::u16string& text) {
-  return AllOf(
-      Field(&Suggestion::popup_item_id, id),
-      Field(&Suggestion::main_text,
-            Suggestion::Text(text, Suggestion::Text::IsPrimary(true))));
-}
-
 }  // anonymous namespace
 
 class SuggestionSelectionTest : public testing::Test {
@@ -115,53 +72,40 @@ class SuggestionSelectionTest : public testing::Test {
   const AutofillProfileComparator comparator_;
 };
 
-TEST_F(SuggestionSelectionTest,
-       GetPrefixMatchedSuggestions_GetMatchingProfile) {
+TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_GetMatchingProfile) {
   const std::unique_ptr<AutofillProfile> profile1 =
       CreateProfileUniquePtr("Marion");
   const std::unique_ptr<AutofillProfile> profile2 =
       CreateProfileUniquePtr("Bob");
 
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
+  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, {profile1.get(), profile2.get()},
-      &matched_profiles);
+      comparator_.app_locale(), false, {profile1.get(), profile2.get()});
 
-  ASSERT_EQ(1U, suggestions.size());
   ASSERT_EQ(1U, matched_profiles.size());
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(Field(
-          &Suggestion::main_text,
-          Suggestion::Text(u"Marion", Suggestion::Text::IsPrimary(true)))));
+  EXPECT_EQ(profile1.get(), matched_profiles[0]);
 }
 
-TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_NoMatchingProfile) {
+TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_NoMatchingProfile) {
   const std::unique_ptr<AutofillProfile> profile1 =
       CreateProfileUniquePtr("Bob");
 
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
+  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, {profile1.get()}, &matched_profiles);
+      comparator_.app_locale(), false, {profile1.get()});
 
   ASSERT_TRUE(matched_profiles.empty());
-  ASSERT_TRUE(suggestions.empty());
 }
 
-TEST_F(SuggestionSelectionTest,
-       GetPrefixMatchedSuggestions_EmptyProfilesInput) {
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
+TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_EmptyProfilesInput) {
+  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, {}, &matched_profiles);
+      comparator_.app_locale(), false, {});
 
   ASSERT_TRUE(matched_profiles.empty());
-  ASSERT_TRUE(suggestions.empty());
 }
 
-TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
+TEST_F(SuggestionSelectionTest, GetPrefixMatchedProfiles_LimitProfiles) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles_data;
   for (size_t i = 0; i < kMaxSuggestedProfilesCount; i++) {
     profiles_data.push_back(CreateProfileUniquePtr("Marion"));
@@ -174,19 +118,12 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
   std::vector<AutofillProfile*> profiles_pointers = base::test::ToVector(
       profiles_data, &std::unique_ptr<AutofillProfile>::get);
 
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
+  std::vector<AutofillProfile*> matched_profiles = GetPrefixMatchedProfiles(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_.app_locale(), false, profiles_pointers, &matched_profiles);
+      comparator_.app_locale(), false, profiles_pointers);
 
   // Marie should not be found.
-  ASSERT_EQ(kMaxSuggestedProfilesCount, suggestions.size());
   ASSERT_EQ(kMaxSuggestedProfilesCount, matched_profiles.size());
-
-  EXPECT_THAT(suggestions,
-              Each(Field(&Suggestion::main_text,
-                         Not(Suggestion::Text(
-                             u"Marie", Suggestion::Text::IsPrimary(true))))));
 
   EXPECT_THAT(matched_profiles,
               Each(ResultOf(
@@ -194,217 +131,6 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
                     return profile_ptr->GetRawInfo(NAME_FIRST);
                   },
                   Not(u"Marie"))));
-}
-
-// TODO(crbug.com/1459990): Consider having a test fixture for granular filling
-// related tests. In general these tests are quite lengthy and finding a way to
-// make them more concise is desirable.
-TEST_F(SuggestionSelectionTest,
-       GetPrefixMatchedSuggestions_FirstLevelChildrenSuggestions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillGranularFillingAvailable);
-
-  AutofillProfile profile = test::GetFullProfile();
-  std::string app_locale = comparator_.app_locale();
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
-      AutofillType(NAME_FIRST), u"", GetCanonicalUtf16Content(""), app_locale,
-      /*field_is_autofilled=*/false, {&profile}, &matched_profiles);
-
-  ASSERT_EQ(1U, suggestions.size());
-  ASSERT_EQ(1U, matched_profiles.size());
-  // Test root suggestion
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(Field(&Suggestion::main_text,
-                        Suggestion::Text(profile.GetRawInfo(NAME_FIRST),
-                                         Suggestion::Text::IsPrimary(true)))));
-
-  // The children suggestions should be.
-  //
-  // 1. fill full name
-  // 2. first name
-  // 3. middle name
-  // 4. family name
-  // 5. line separator
-  // 6. address line 1
-  // 7. address line 2
-  // 8. Zip
-  // 9. line separator
-  // 10. phone number
-  // 11. email
-  // 12. line separator
-  // 13. edit profile
-  // 14. delete address
-  ASSERT_EQ(14U, suggestions[0].children.size());
-  EXPECT_THAT(
-      suggestions[0].children,
-      ElementsAre(
-          EqualsSuggestion(PopupItemId::kFillFullName),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(NAME_FIRST, app_locale)),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(NAME_MIDDLE, app_locale)),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(NAME_LAST, app_locale)),
-          EqualsSuggestion(PopupItemId::kSeparator),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(ADDRESS_HOME_LINE1, app_locale)),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(ADDRESS_HOME_LINE2, app_locale)),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(ADDRESS_HOME_ZIP, app_locale)),
-          EqualsSuggestion(PopupItemId::kSeparator),
-          EqualsSuggestion(
-              PopupItemId::kFieldByFieldFilling,
-              profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale)),
-          EqualsSuggestion(PopupItemId::kFieldByFieldFilling,
-                           profile.GetInfo(EMAIL_ADDRESS, app_locale)),
-          EqualsSuggestion(PopupItemId::kSeparator),
-          EqualsSuggestion(PopupItemId::kEditAddressProfile),
-          EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
-}
-
-TEST_F(SuggestionSelectionTest,
-       GetPrefixMatchedSuggestions_SecondLevelChildrenSuggestions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillGranularFillingAvailable);
-
-  AutofillProfile profile = test::GetFullProfile();
-  std::string app_locale = comparator_.app_locale();
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
-      AutofillType(NAME_FIRST), u"", GetCanonicalUtf16Content(""), app_locale,
-      /*field_is_autofilled=*/false, {&profile}, &matched_profiles);
-
-  // Suggestions should have two levels of children, The address line 1 (sixth
-  // child) suggestion should have the following children: house number street
-  // name.
-  ASSERT_EQ(2U, suggestions[0].children[5].children.size());
-  EXPECT_THAT(
-      suggestions[0].children[5].children,
-      ElementsAre(EqualsSuggestion(
-                      PopupItemId::kFieldByFieldFilling,
-                      profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale)),
-                  EqualsSuggestion(
-                      PopupItemId::kFieldByFieldFilling,
-                      profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale))));
-  // House number and street name suggestions should have labels.
-  EXPECT_EQ(suggestions[0].children[5].children[0].labels,
-            std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Building number")}}));
-  EXPECT_EQ(suggestions[0].children[5].children[1].labels,
-            std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Street")}}));
-}
-
-// Asserts that when the triggering field is a phone field, the phone number
-// suggestion is of type `PopupItemId::kFillFullPhoneNumber`. In other
-// scenarios, phone number is of type `PopupItemId::kFieldByFieldFilling` as the
-// user expressed intent to use their phone number their phone number on a
-// "random" field.
-TEST_F(SuggestionSelectionTest,
-       GetPrefixMatchedSuggestions_ChildrenSuggestionsPhoneField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillGranularFillingAvailable);
-
-  AutofillProfile profile = test::GetFullProfile();
-  std::string app_locale = comparator_.app_locale();
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
-      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"", GetCanonicalUtf16Content(""),
-      app_locale,
-      /*field_is_autofilled=*/false, {&profile}, &matched_profiles);
-
-  // The child suggestions should be:
-  //
-  // 1. first name
-  // 2. middle name
-  // 3. family name
-  // 4. line separator
-  // 5. address line 1
-  // 6. address line 2
-  // 7. Zip
-  // 8. line separator
-  // 9. phone number
-  // 10. email
-  // 11. line separator
-  // 12. edit profile
-  // 13. delete address
-  ASSERT_EQ(13U, suggestions[0].children.size());
-  EXPECT_THAT(
-      suggestions[0].children[8],
-      Field(&Suggestion::popup_item_id, PopupItemId::kFillFullPhoneNumber));
-}
-
-TEST_F(SuggestionSelectionTest,
-       GetPrefixMatchedSuggestions_ChildrenSuggestionsAddressField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillGranularFillingAvailable);
-
-  AutofillProfile profile = test::GetFullProfile();
-  std::string app_locale = comparator_.app_locale();
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
-      AutofillType(ADDRESS_HOME_LINE1), u"", GetCanonicalUtf16Content(""),
-      app_locale, /*field_is_autofilled=*/false, {&profile}, &matched_profiles);
-
-  // The child suggestions should be:
-  //
-  // 1. first name
-  // 2. middle name
-  // 3. family name
-  // 4. line separator
-  // 5. fill full address
-  // 6. address line 1
-  // 7. address line 2
-  // 8. Zip
-  // 9. line separator
-  // 10. phone number
-  // 11. email
-  // 12. line separator
-  // 13. edit address
-  // 14. delete address
-  ASSERT_EQ(14U, suggestions[0].children.size());
-  EXPECT_THAT(suggestions[0].children[4],
-              Field(&Suggestion::popup_item_id, PopupItemId::kFillFullAddress));
-}
-
-TEST_F(
-    SuggestionSelectionTest,
-    GetPrefixMatchedSuggestions_ChildrenSuggestions_HouseNumberAndStreetNameCanBeNestedUnderDifferentAddressLines) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillGranularFillingAvailable);
-
-  AutofillProfile profile = test::GetFullProfile();
-  // Update the profile to have house number and street name information in
-  // different address lines.
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"Amphitheatre Parkway, Brookling");
-  profile.SetRawInfo(ADDRESS_HOME_LINE2, u"1600 Apartment 1");
-  profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Amphitheatre Parkway");
-  profile.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"1600");
-
-  std::string app_locale = comparator_.app_locale();
-  std::vector<AutofillProfile*> matched_profiles;
-  auto suggestions = GetPrefixMatchedSuggestions(
-      AutofillType(ADDRESS_HOME_LINE1), u"", GetCanonicalUtf16Content(""),
-      app_locale, /*field_is_autofilled=*/false, {&profile}, &matched_profiles);
-
-  // The address line 1 (sixth child) should have the street name as child.
-  EXPECT_THAT(suggestions[0].children[5].children,
-              ElementsAre(EqualsSuggestion(
-                  PopupItemId::kFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale))));
-  // The address line 2 (seventh child) should have the house number as child.
-  EXPECT_THAT(suggestions[0].children[6].children,
-              ElementsAre(EqualsSuggestion(
-                  PopupItemId::kFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale))));
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
@@ -417,19 +143,12 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
 
   auto profile_pointers = {profile1.get(), profile2.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
-  auto unique_suggestions =
-      GetUniqueSuggestions({}, comparator_, profile_pointers,
-                           CreateSuggestions(profile_pointers, NAME_FIRST),
-                           &unique_matched_profiles);
+  std::vector<AutofillProfile*> unique_matched_profiles =
+      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {},
+                                         comparator_, profile_pointers);
 
-  ASSERT_EQ(1U, unique_suggestions.size());
   ASSERT_EQ(1U, unique_matched_profiles.size());
-  EXPECT_THAT(
-      unique_suggestions,
-      ElementsAre(
-          Field(&Suggestion::main_text,
-                Suggestion::Text(u"Bob", Suggestion::Text::IsPrimary(true)))));
+  EXPECT_EQ(profile1.get(), unique_matched_profiles[0]);
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_MultipleDedupe) {
@@ -445,30 +164,20 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_MultipleDedupe) {
 
   auto profile_pointers = {profile1.get(), profile2.get(), profile3.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
-  auto unique_suggestions =
-      GetUniqueSuggestions({NAME_LAST}, comparator_, profile_pointers,
-                           CreateSuggestions(profile_pointers, NAME_FIRST),
-                           &unique_matched_profiles);
+  std::vector<AutofillProfile*> unique_matched_profiles =
+      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {NAME_LAST},
+                                         comparator_, profile_pointers);
 
-  ASSERT_EQ(3U, unique_suggestions.size());
   ASSERT_EQ(3U, unique_matched_profiles.size());
 
-  EXPECT_THAT(
-      unique_suggestions,
-      ElementsAre(
-          Field(&Suggestion::main_text,
-                Suggestion::Text(u"Bob", Suggestion::Text::IsPrimary(true))),
-          Field(&Suggestion::main_text,
-                Suggestion::Text(u"Bob", Suggestion::Text::IsPrimary(true))),
-          Field(&Suggestion::main_text,
-                Suggestion::Text(u"Mary", Suggestion::Text::IsPrimary(true)))));
+  EXPECT_THAT(unique_matched_profiles,
+              ElementsAre(profile1.get(), profile2.get(), profile3.get()));
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
   // Test limit of suggestions.
   std::vector<std::unique_ptr<AutofillProfile>> profiles_data;
-  for (size_t i = 0; i < kMaxUniqueSuggestionsCount + 1; i++) {
+  for (size_t i = 0; i < kMaxUniqueSuggestedProfilesCount + 1; i++) {
     profiles_data.push_back(CreateProfileUniquePtr(
         base::StringPrintf("Bob %zu", i).c_str(), "Doe"));
   }
@@ -478,29 +187,22 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
   base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
                           &std::unique_ptr<AutofillProfile>::get);
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
-  auto unique_suggestions =
-      GetUniqueSuggestions({NAME_LAST}, comparator_, profiles_pointers,
-                           CreateSuggestions(profiles_pointers, NAME_FIRST),
-                           &unique_matched_profiles);
+  std::vector<AutofillProfile*> unique_matched_profiles =
+      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {NAME_LAST},
+                                         comparator_, profiles_pointers);
 
-  ASSERT_EQ(kMaxUniqueSuggestionsCount, unique_suggestions.size());
-  ASSERT_EQ(kMaxUniqueSuggestionsCount, unique_matched_profiles.size());
+  ASSERT_EQ(kMaxUniqueSuggestedProfilesCount, unique_matched_profiles.size());
 
   // All profiles are different.
-  for (size_t i = 0; i < unique_suggestions.size(); i++) {
-    ASSERT_EQ(ASCIIToUTF16(base::StringPrintf("Bob %zu", i)),
-              unique_suggestions[i].main_text.value);
+  for (size_t i = 0; i < unique_matched_profiles.size(); i++) {
+    ASSERT_EQ(profiles_pointers[i], unique_matched_profiles[i]);
   }
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_EmptyMatchingProfiles) {
-  std::vector<AutofillProfile*> unique_matched_profiles;
-  auto unique_suggestions = GetUniqueSuggestions({NAME_LAST}, comparator_, {},
-                                                 {}, &unique_matched_profiles);
-
-  ASSERT_EQ(0U, unique_matched_profiles.size());
-  ASSERT_EQ(0U, unique_suggestions.size());
+  ASSERT_EQ(0U, DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST),
+                                                   {NAME_LAST}, comparator_, {})
+                    .size());
 }
 
 // Tests that `kAccount` profiles are preferred over `kLocalOrSyncable` profile
@@ -516,10 +218,9 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_kAccount) {
   std::vector<AutofillProfile*> profiles = {local_profile.get(),
                                             account_profile.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
-  GetUniqueSuggestions({}, comparator_, profiles,
-                       CreateSuggestions(profiles, NAME_FIRST),
-                       &unique_matched_profiles);
+  std::vector<AutofillProfile*> unique_matched_profiles =
+      DeduplicatedProfilesForSuggestions(AutofillType(NAME_FIRST), {},
+                                         comparator_, profiles);
   // Usually, duplicates are resolved in favour of the earlier profile. Expect
   // that this is not the case when profiles of different sources are involved.
   EXPECT_THAT(unique_matched_profiles, ElementsAre(account_profile.get()));

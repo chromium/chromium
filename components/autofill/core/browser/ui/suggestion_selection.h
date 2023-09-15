@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
@@ -20,8 +21,7 @@ class AutofillType;
 namespace suggestion_selection {
 
 extern const size_t kMaxSuggestedProfilesCount;
-extern const size_t kMaxUniqueSuggestionsCount;
-extern const size_t kMaxPrunedUniqueSuggestionsCount;
+extern const size_t kMaxUniqueSuggestedProfilesCount;
 
 // Sets the `popup_item_id` for `suggestion` depending on
 // `last_filling_granularity`. If the `last_filling_granularity` for a certain
@@ -56,29 +56,26 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
                                              ServerFieldType type);
 
 // Matches based on prefix search, and limits number of profiles.
-// Returns the top matching suggestions based on prefix search, and adds the
-// corresponding profiles to |matched_profiles|. At most
-// |kMaxSuggestedProfilesCount| are returned.
-std::vector<Suggestion> GetPrefixMatchedSuggestions(
+// Returns the top matching profiles based on prefix search. At most
+// `kMaxSuggestedProfilesCount` are returned.
+std::vector<AutofillProfile*> GetPrefixMatchedProfiles(
     const AutofillType& type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
     const std::string& app_locale,
     bool field_is_autofilled,
-    const std::vector<AutofillProfile*>& profiles,
-    std::vector<AutofillProfile*>* matched_profiles);
+    const std::vector<AutofillProfile*>& profiles);
 
-// Dedupes given suggestions based on if one is a subset of the other.
-// Returns unique_suggestions, and adds the corresponding profiles to
-// |unique_matched_profiles|. At most |kMaxUniqueSuggestionsCount| are returned.
-// |field_types| stores all of the form's ServerFieldTypes, including that of
-// the field on which the user is currently focused.
-std::vector<Suggestion> GetUniqueSuggestions(
+// Dedupes the given profiles based on if one is a subset of the other for
+// suggestions represented by `field_types`. The function returns at most
+// `kMaxUniqueSuggestedProfilesCount` profiles. `field_types` stores all of the
+// ServerFieldTypes relevant for the current suggestions, including that of the
+// field on which the user is currently focused.
+std::vector<AutofillProfile*> DeduplicatedProfilesForSuggestions(
+    const AutofillType& type,
     const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
-    const std::vector<AutofillProfile*> matched_profiles,
-    const std::vector<Suggestion>& suggestions,
-    std::vector<AutofillProfile*>* unique_matched_profiles);
+    const std::vector<AutofillProfile*> matched_profiles);
 
 // Returns whether the |suggestion_canon| is valid considering the
 // |field_contents_canon|, the |type|, |is_masked_server_card|, and

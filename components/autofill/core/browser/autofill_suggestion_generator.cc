@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_filler.h"
@@ -30,6 +31,7 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/label_formatter.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -123,18 +125,107 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     }
   }
 
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      field_type, field.value, field.is_autofilled, field_types);
+  std::vector<AutofillProfile*> profiles =
+      personal_data_->GetProfilesForSuggestions(
+          field_type, field.value, field.is_autofilled, field_types);
+
+  return CreateSuggestionsFromProfiles(profiles, field_types, field_type,
+                                       field.max_length);
+}
+
+std::vector<Suggestion>
+AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
+    const std::vector<AutofillProfile*>& profiles,
+    const ServerFieldTypeSet& field_types,
+    const AutofillType& trigger_field_type,
+    uint64_t trigger_field_max_length) {
+  std::vector<Suggestion> suggestions;
+  std::string app_locale = personal_data_->app_locale();
+  for (const AutofillProfile* profile : profiles) {
+    std::u16string value = suggestion_selection::GetSuggestionMainText(
+        profile, trigger_field_type, app_locale);
+    suggestions.emplace_back(value);
+    suggestions.back().payload = Suggestion::BackendId(profile->guid());
+    suggestions.back().acceptance_a11y_announcement =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable)) {
+      suggestion_selection::AddGranularFillingChildSuggestions(
+          trigger_field_type, *profile, app_locale, suggestions.back());
+      suggestion_selection::AddSuggestionDetailsForCurrentFillingGranularity(
+          kAllServerFieldTypes, trigger_field_type, suggestions.back());
+    }
+  }
+  std::unique_ptr<LabelFormatter> formatter;
+  bool use_formatter;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  use_formatter = base::FeatureList::IsEnabled(
+      features::kAutofillUseImprovedLabelDisambiguation);
+#else
+  use_formatter = base::FeatureList::IsEnabled(
+      features::kAutofillUseMobileLabelDisambiguation);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // The formatter stores a constant reference to |profiles|.
+  // This is safe since the formatter is destroyed when this function returns.
+  formatter = use_formatter
+                  ? LabelFormatter::Create(profiles, app_locale,
+                                           trigger_field_type.GetStorableType(),
+                                           field_types)
+                  : nullptr;
+
+  // Generate disambiguating labels based on the list of matches.
+  std::vector<std::u16string> labels;
+  if (formatter) {
+    labels = formatter->GetLabels();
+  } else {
+    AutofillProfile::CreateInferredLabels(profiles, field_types,
+                                          trigger_field_type.GetStorableType(),
+                                          1, app_locale, &labels);
+  }
+
+  if (use_formatter && !suggestions.empty()) {
+    AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(formatter !=
+                                                            nullptr);
+  }
+
+  const AutofillProfileComparator comparator(app_locale);
+  suggestion_selection::PrepareSuggestions(labels, &suggestions, comparator);
+
+  // We add an icon to the address (profile) suggestion if there is more than
+  // one profile related field in the form. Returns true if |type| is related to
+  // address profiles.
+  auto is_field_type_profile_related = [](ServerFieldType type) {
+    FieldTypeGroup group = AutofillType(type).group();
+    return group == FieldTypeGroup::kName ||
+           group == FieldTypeGroup::kAddress ||
+           group == FieldTypeGroup::kPhone || group == FieldTypeGroup::kEmail;
+  };
+  if (base::ranges::count_if(field_types, is_field_type_profile_related) > 1) {
+    for (auto& suggestion : suggestions) {
+      // TODO(crbug.com/1459990): Remove this hardcoding once the last filling
+      // granularity is available to this method. Filling granularies different
+      // than full form will not have an icon.
+      const bool fill_full_form = true;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillGranularFillingAvailable)) {
+        suggestion.icon = fill_full_form ? "locationIcon" : "";
+      } else {
+        suggestion.icon = "accountIcon";
+      }
+    }
+  }
 
   // Adjust phone number to display in prefix/suffix case.
-  if (field_type.group() == FieldTypeGroup::kPhone) {
+  if (trigger_field_type.group() == FieldTypeGroup::kPhone) {
     for (auto& suggestion : suggestions) {
       const AutofillProfile* profile = personal_data_->GetProfileByGUID(
           suggestion.GetPayload<Suggestion::BackendId>().value());
       if (profile) {
         suggestion.main_text = Suggestion::Text(
             FieldFiller::GetPhoneNumberValueForInput(
-                field.max_length, suggestion.main_text.value,
+                trigger_field_max_length, suggestion.main_text.value,
                 profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale)),
             Suggestion::Text::IsPrimary(true));
       }

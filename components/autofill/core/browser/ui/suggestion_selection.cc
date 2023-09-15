@@ -282,7 +282,7 @@ constexpr size_t kMaxSuggestedProfilesCount = 50;
 
 // As of November 2018, displaying 10 suggestions cover at least 99% of the
 // indices clicked by our users. The suggestions will also refine as they type.
-constexpr size_t kMaxUniqueSuggestionsCount = 10;
+constexpr size_t kMaxUniqueSuggestedProfilesCount = 10;
 
 std::u16string GetSuggestionMainText(const AutofillProfile* profile,
                                      const AutofillType& type,
@@ -380,21 +380,19 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
   return AutofillProfileComparator::NormalizeForComparison(text);
 }
 
-std::vector<Suggestion> GetPrefixMatchedSuggestions(
+std::vector<AutofillProfile*> GetPrefixMatchedProfiles(
     const AutofillType& type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
     const std::string& app_locale,
     bool field_is_autofilled,
-    const std::vector<AutofillProfile*>& profiles,
-    std::vector<AutofillProfile*>* matched_profiles) {
-  std::vector<Suggestion> suggestions;
+    const std::vector<AutofillProfile*>& profiles) {
+  std::vector<AutofillProfile*> matched_profiles;
 
-  for (size_t i = 0; i < profiles.size() &&
-                     matched_profiles->size() < kMaxSuggestedProfilesCount;
-       i++) {
-    AutofillProfile* profile = profiles[i];
-
+  for (AutofillProfile* profile : profiles) {
+    if (matched_profiles.size() == kMaxSuggestedProfilesCount) {
+      break;
+    }
     // Don't offer to fill the exact same value again. If detailed suggestions
     // with different secondary data is available, it would appear to offer
     // refilling the whole form with something else. E.g. the same name with a
@@ -416,41 +414,31 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     if (IsValidSuggestionForFieldContents(
             suggestion_canon, field_contents_canon, type,
             /* is_masked_server_card= */ false, field_is_autofilled)) {
-      matched_profiles->push_back(profile);
-
-      suggestions.emplace_back(value);
-      suggestions.back().payload = Suggestion::BackendId(profile->guid());
-      suggestions.back().acceptance_a11y_announcement =
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillGranularFillingAvailable)) {
-        AddGranularFillingChildSuggestions(type, *profile, app_locale,
-                                           suggestions.back());
-
-        // TODO(crbug.com/1466116): Make kAllServerFieldTypes a param to
-        // GetPrefixMatchedSuggestions.
-        AddSuggestionDetailsForCurrentFillingGranularity(
-            kAllServerFieldTypes, type, suggestions.back());
-      }
+      matched_profiles.push_back(profile);
     }
   }
 
-  return suggestions;
+  return matched_profiles;
 }
 
-std::vector<Suggestion> GetUniqueSuggestions(
+std::vector<AutofillProfile*> DeduplicatedProfilesForSuggestions(
+    const AutofillType& type,
     const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
-    const std::vector<AutofillProfile*> matched_profiles,
-    const std::vector<Suggestion>& suggestions,
-    std::vector<AutofillProfile*>* unique_matched_profiles) {
-  std::vector<Suggestion> unique_suggestions;
+    const std::vector<AutofillProfile*> matched_profiles) {
+  std::vector<AutofillProfile*> unique_matched_profiles;
+  std::vector<std::u16string> suggestion_main_text;
+  for (const AutofillProfile* profile : matched_profiles) {
+    suggestion_main_text.push_back(
+        GetSuggestionMainText(profile, type, comparator.app_locale()));
+  }
 
   // Limit number of unique profiles as having too many makes the
   // browser hang due to drawing calculations (and is also not
   // very useful for the user).
-  for (size_t i = 0; i < matched_profiles.size() &&
-                     unique_suggestions.size() < kMaxUniqueSuggestionsCount;
+  for (size_t i = 0;
+       i < matched_profiles.size() &&
+       unique_matched_profiles.size() < kMaxUniqueSuggestedProfilesCount;
        ++i) {
     bool include = true;
     AutofillProfile* profile_a = matched_profiles[i];
@@ -458,8 +446,8 @@ std::vector<Suggestion> GetUniqueSuggestions(
       AutofillProfile* profile_b = matched_profiles[j];
       // Check if profile A is a subset of profile B. If not, continue.
       if (i == j ||
-          !comparator.Compare(suggestions[i].main_text.value,
-                              suggestions[j].main_text.value) ||
+          !comparator.Compare(suggestion_main_text[i],
+                              suggestion_main_text[j]) ||
           !profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,
                                             field_types)) {
         continue;
@@ -484,11 +472,10 @@ std::vector<Suggestion> GetUniqueSuggestions(
       break;
     }
     if (include) {
-      unique_matched_profiles->push_back(profile_a);
-      unique_suggestions.push_back(suggestions[i]);
+      unique_matched_profiles.push_back(profile_a);
     }
   }
-  return unique_suggestions;
+  return unique_matched_profiles;
 }
 
 bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
