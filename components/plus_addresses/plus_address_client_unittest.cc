@@ -4,7 +4,6 @@
 
 #include "components/plus_addresses/plus_address_client.h"
 
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
@@ -33,99 +32,6 @@
 #include "url/gurl.h"
 
 namespace plus_addresses {
-
-// PlusAddressParsing tests validate the ParsePlusAddressFrom* methods
-// Returns empty when the DataDecoder fails to parse the JSON.
-TEST(PlusAddressParsing, NotValidJson) {
-  data_decoder::DataDecoder::ValueOrError error = base::unexpected("error!");
-  EXPECT_EQ(PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-                std::move(error)),
-            absl::nullopt);
-}
-
-// Success case - Returns the plus address.
-TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
-  absl::optional<base::Value> perfect = base::JSONReader::Read(R"(
-    {
-      "plusProfile": [
-        {
-          "unwanted": 123,
-          "plusEmail" : {
-            "plusAddress": "foobar"
-          }
-        }
-      ],
-      "unwanted": "abc"
-    }
-    )");
-  ASSERT_TRUE(perfect.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(perfect.value());
-  EXPECT_EQ(PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-                std::move(value)),
-            absl::make_optional("foobar"));
-}
-
-// Returns empty if there are no Profile objects.
-TEST(PlusAddressParsing, FromV1Create_FailsWithoutAddress) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
-    {
-      "plusProfile": [
-        {
-          "plusEmail" : {
-          }
-        }
-      ]
-    }
-    )");
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-                std::move(value)),
-            absl::nullopt);
-}
-
-TEST(PlusAddressParsing, FromV1Create_FailsWithoutEmailObject) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
-    {
-      "plusProfile": [
-        {
-          "address": "foobar"
-        }
-      ]
-    }
-    )");
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-                std::move(value)),
-            absl::nullopt);
-}
-
-TEST(PlusAddressParsing, FromV1Create_FailsWithEmptyProfileList) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
-    {
-      "plusProfile": []
-    }
-    )");
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-                std::move(value)),
-            absl::nullopt);
-}
-
-TEST(PlusAddressParsing, FromV1Create_FailsWithoutProfile) {
-  absl::optional<base::Value> json = base::JSONReader::Read(R"(
-      {
-        "address": "wouldnt this be nice?"
-      }
-    )");
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-                std::move(value)),
-            absl::nullopt);
-}
 
 // Tests that use fake out the URL loading and issues requests to the enterprise
 // provided server.
@@ -169,7 +75,7 @@ class PlusAddressClientRequests : public ::testing::Test {
 };
 
 // Ensures the request sent by Chrome matches what we intended.
-TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_IssuesCorrectRequest) {
+TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_IssuesCorrectRequest) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   std::string site = "https://foobar.com";
   client.SetAccessTokenInfoForTesting(eternal_token_info);
@@ -199,7 +105,7 @@ TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_IssuesCorrectRequest) {
 
 // For tests that cover successful but unexpected server responses, see the
 // PlusAddressParsing.FromV1Create tests.
-TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_RunsCallbackOnSuccess) {
+TEST_F(PlusAddressClientRequests, CreatePlusAddressV1_RunsCallbackOnSuccess) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   std::string site = "https://foobar.com";
@@ -215,6 +121,7 @@ TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_RunsCallbackOnSuccess) {
       "plusProfile": [
         {
           "unwanted": 123,
+          "facet": "youtube.com",
           "plusEmail" : {
             "plusAddress": "plusone@plus.plus"
           }
@@ -228,7 +135,7 @@ TEST_F(PlusAddressClientRequests, CreatePlusProfileV1_RunsCallbackOnSuccess) {
 // TODO (kaklilu): Add tests verifying behavior when request times out or the
 // response is too large to be downloaded.
 TEST_F(PlusAddressClientRequests,
-       CreatePlusProfileV1_FailedRequestDoesntRunCallback) {
+       CreatePlusAddressV1_FailedRequestDoesntRunCallback) {
   PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
   client.SetAccessTokenInfoForTesting(eternal_token_info);
   std::string site = "https://foobar.com";
@@ -238,7 +145,75 @@ TEST_F(PlusAddressClientRequests,
   client.CreatePlusAddress(site, on_response_parsed.Get());
 
   // The request fails and the callback is never run
-  EXPECT_CALL(on_response_parsed, Run(testing::_)).Times(0);
+  EXPECT_CALL(on_response_parsed, Run).Times(0);
+  EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      GURL(fullProfileEndpoint),
+      network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND),
+      network::CreateURLResponseHead(net::HTTP_NOT_FOUND), ""));
+}
+
+// Ensures the request sent by Chrome matches what we intended.
+TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_IssuesCorrectRequest) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+  client.GetAllPlusAddresses(base::DoNothing());
+
+  // Validate that the V1 List request uses the right url and requests method.
+  EXPECT_EQ(last_request.url, fullProfileEndpoint);
+  EXPECT_EQ(last_request.method, net::HttpRequestHeaders::kGetMethod);
+  // Validate the Authorization header includes "myToken".
+  std::string authorization_value;
+  last_request.headers.GetHeader("Authorization", &authorization_value);
+  EXPECT_EQ(authorization_value, "Bearer " + token);
+}
+
+// For tests that cover successful but unexpected server responses, see the
+// PlusAddressParsing.FromV1List tests.
+TEST_F(PlusAddressClientRequests, GetAllPlusAddressesV1_RunsCallbackOnSuccess) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+
+  base::MockOnceCallback<void(const PlusAddressMap&)> on_response_parsed;
+  // Initiate a request...
+  client.GetAllPlusAddresses(on_response_parsed.Get());
+  PlusAddressMap expected({{"google.com", "plusone@plus.plus"},
+                           {"netflix.com", "plusplustwo@plus.plus"}});
+  // Fulfill the request and the callback should be run
+  EXPECT_CALL(on_response_parsed, Run(expected)).Times(1);
+  test_url_loader_factory.SimulateResponseForPendingRequest(fullProfileEndpoint,
+                                                            R"(
+    {
+      "plusProfiles": [
+        {
+          "unwanted": 123,
+          "facet": "google.com",
+          "plusEmail" : {
+            "plusAddress": "plusone@plus.plus"
+          }
+        },
+        {
+          "facet": "netflix.com",
+          "plusEmail" : {
+            "plusAddress": "plusplustwo@plus.plus"
+          }
+        }
+      ],
+      "unwanted": "abc"
+    }
+    )");
+}
+
+TEST_F(PlusAddressClientRequests,
+       GetAllPlusAddressesV1_FailedRequestDoesntRunCallback) {
+  PlusAddressClient client(identity_manager, scoped_shared_url_loader_factory);
+  client.SetAccessTokenInfoForTesting(eternal_token_info);
+
+  base::MockOnceCallback<void(const PlusAddressMap&)> on_response_parsed;
+  // Initiate a request...
+  client.GetAllPlusAddresses(on_response_parsed.Get());
+
+  // The request fails and the callback is never run
+  EXPECT_CALL(on_response_parsed, Run).Times(0);
   EXPECT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
       GURL(fullProfileEndpoint),
       network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND),

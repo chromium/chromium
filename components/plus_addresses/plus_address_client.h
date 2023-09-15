@@ -13,7 +13,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -30,11 +29,14 @@ class SimpleURLLoader;
 namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
-}
+}  // namespace signin
 
 namespace plus_addresses {
 
+// TODO (b/300123836): move these types to a central place.
 typedef base::OnceCallback<void(const std::string&)> PlusAddressCallback;
+typedef std::unordered_map<std::string, std::string> PlusAddressMap;
+typedef base::OnceCallback<void(const PlusAddressMap&)> PlusAddressMapCallback;
 
 // This endpoint is used for most plus-address operations.
 constexpr char kServerPlusProfileEndpoint[] = "v1/profiles";
@@ -54,6 +56,11 @@ class PlusAddressClient {
   // completes successfully and returns the expected response.
   void CreatePlusAddress(const std::string& site, PlusAddressCallback callback);
 
+  // Initiates a request to get all plus addresses from the remote enterprise-
+  // specified server, running callback with them only if the request completes
+  // successfully and returns the expected response.
+  void GetAllPlusAddresses(PlusAddressMapCallback callback);
+
   // Initiates a request for a new OAuth token. If the request succeeds, this
   // stores the token in `access_token_info_` and runs `on_fetched`.
   void GetAuthToken(base::OnceClosure on_fetched);
@@ -62,9 +69,6 @@ class PlusAddressClient {
     access_token_info_ = info;
   }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
-  // Helper to test the plus_address parsing logic.
-  static absl::optional<std::string> ParsePlusAddressFromV1CreateForTesting(
-      data_decoder::DataDecoder::ValueOrError response);
  private:
   // Initiates a network request for an OAuth token, and may only be
   // called by GetAuthToken. This also must be run on the UI thread.
@@ -79,8 +83,9 @@ class PlusAddressClient {
       access_token_fetcher_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Used to make HTTP requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  // We only support loading a single url at once.
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  // Use a separate URLLoader for each request flow.
+  std::unique_ptr<network::SimpleURLLoader> loader_for_creation_;
+  std::unique_ptr<network::SimpleURLLoader> loader_for_retrieval_;
 
   const absl::optional<GURL> server_url_;
   signin::AccessTokenInfo access_token_info_;

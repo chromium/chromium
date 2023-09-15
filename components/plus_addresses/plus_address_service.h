@@ -83,7 +83,7 @@ class PlusAddressService : public KeyedService {
       PrefService* pref_service);
 
   // The user's existing set of plus addresses, scoped to sites.
-  std::unordered_map<std::string, std::string> plus_address_by_site_;
+  PlusAddressMap plus_address_by_site_;
 
   // Used to drive the `IsPlusAddress` function, and derived from the values of
   // `plus_profiles`.

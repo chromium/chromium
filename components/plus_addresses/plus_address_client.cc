@@ -3,19 +3,22 @@
 // found in the LICENSE file.
 
 #include "components/plus_addresses/plus_address_client.h"
+
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/sequence_checker.h"
-#include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_parser.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace plus_addresses {
@@ -26,7 +29,7 @@ const base::TimeDelta kRequestTimeout = base::Seconds(5);
 
 // See docs/network_traffic_annotations.md for reference.
 // TODO(b/277532955): Update the description and trigger fields when possible.
-//                Also replace the policy_exception with a policy if we add one.
+//                    Also replace the policy_exception when we have a policy.
 const net::NetworkTrafficAnnotationTag kCreatePlusAddressAnnotation =
     net::DefineNetworkTrafficAnnotation("plus_address_creation", R"(
       semantics {
@@ -55,65 +58,39 @@ const net::NetworkTrafficAnnotationTag kCreatePlusAddressAnnotation =
       }
     )");
 
+// TODO(b/277532955): Update the description and trigger fields when possible.
+//                    Also replace the policy_exception when we have a policy.
+const net::NetworkTrafficAnnotationTag kGetAllPlusAddressesAnnotation =
+    net::DefineNetworkTrafficAnnotation("get_all_plus_addresses", R"(
+      semantics {
+        sender: "Chrome Plus Address Client"
+        description: "This request fetches all plus addresses from the "
+                      "enterprise-specified server."
+        trigger: "n/a. This happens in the background to keep the PlusAddress "
+                 "service in sync with the remote server."
+        internal {
+          contacts {
+              email: "dc-komics@google.com"
+          }
+        }
+        user_data {
+          type: ACCESS_TOKEN
+        }
+        data: "n/a"
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2023-09-13"
+      }
+      policy {
+        cookies_allowed: NO
+        setting: "Disable the Plus Addresses feature."
+        policy_exception_justification: "We don't have an opt-out policy yet"
+                                        " as Plus Addresses hasn't launched."
+      }
+    )");
+
 absl::optional<GURL> ValidateAndGetUrl() {
   GURL maybe_url = GURL(kEnterprisePlusAddressServerUrl.Get());
   return maybe_url.is_valid() ? absl::make_optional(maybe_url) : absl::nullopt;
-}
-
-//   If `response` is populated, it will be in JSON and fit this schema:
-//   {
-//     "plusProfile": [
-//       {
-//         "plusEmail": {
-//           "address": string,
-//         },
-//       }
-//     ]
-//   }
-//  This method parses out the relevant plus address from this JSON value.
-absl::optional<std::string> ParsePlusAddressFromV1CreateResponse(
-    data_decoder::DataDecoder::ValueOrError response) {
-  if (!response.has_value() || !response->is_dict()) {
-    return absl::nullopt;
-  }
-
-  // Use iterators to avoid looking up by JSON keys.
-  for (const std::pair<const std::string&, const base::Value&>
-           first_level_entry : response.value().GetDict()) {
-    const auto& [first_key, first_val] = first_level_entry;
-    if (!base::MatchPattern(first_key, "*Profile") || !first_val.is_list()) {
-      continue;
-    }
-    const base::Value::List* profile_list = &first_val.GetList();
-
-    // Note: assumes server will only return 1 profile. This is what we
-    // expect in v1.
-    if (profile_list->size() != 1 || !(*profile_list)[0].is_dict()) {
-      return absl::nullopt;
-    }
-
-    // Note: This has many entries, but we only want the dict-type one.
-    // Use the iterator to avoid looking up by "PlusAddressWrapper" key.
-    for (const std::pair<const std::string&, const base::Value&>
-             second_level_entry : (*profile_list)[0].GetDict()) {
-      const auto& [second_key, second_val] = second_level_entry;
-      if (!base::MatchPattern(second_key, "*Email") || !second_val.is_dict()) {
-        continue;
-      }
-
-      const base::Value::Dict* email = &second_val.GetDict();
-
-      for (const std::pair<const std::string&, const base::Value&>
-               third_level_entry : *email) {
-        const auto& [third_key, third_val] = third_level_entry;
-        if (base::MatchPattern(third_key, "*Address") &&
-            third_val.is_string()) {
-          return absl::make_optional(third_val.GetString());
-        }
-      }
-    }
-  }
-  return absl::nullopt;
 }
 
 }  // namespace
@@ -133,7 +110,6 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
   if (!server_url_) {
     return;
   }
-
   // Refresh the OAuth token if it's expired.
   if (access_token_info_.expiration_time < clock_->Now()) {
     GetAuthToken(base::BindOnce(&PlusAddressClient::CreatePlusAddress,
@@ -157,15 +133,15 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
   bool wrote_payload = base::JSONWriter::Write(payload, &request_body);
   DCHECK(wrote_payload);
 
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 kCreatePlusAddressAnnotation);
-  url_loader_->AttachStringForUpload(request_body, "application/json");
-
-  url_loader_->SetTimeoutDuration(kRequestTimeout);
+  // TODO(b/300443275): Handle potential race to `loader_for_creation_` here.
+  loader_for_creation_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), kCreatePlusAddressAnnotation);
+  loader_for_creation_->AttachStringForUpload(request_body, "application/json");
+  loader_for_creation_->SetTimeoutDuration(kRequestTimeout);
   // Use max download size for now.
   // TODO(kaklilu) - Measure average downloadsize and pick a more appropriate
   // one.
-  url_loader_->DownloadToString(
+  loader_for_creation_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
           [](PlusAddressCallback callback,
@@ -176,15 +152,71 @@ void PlusAddressClient::CreatePlusAddress(const std::string& site,
               return;
             }
             data_decoder::DataDecoder::ParseJsonIsolated(
-                *response, base::BindOnce(&ParsePlusAddressFromV1CreateResponse)
-                               .Then(base::BindOnce(
-                                   [](PlusAddressCallback callback,
-                                      absl::optional<std::string> result) {
-                                     if (result.has_value()) {
-                                       std::move(callback).Run(result.value());
-                                     }
-                                   },
-                                   std::move(callback))));
+                *response,
+                base::BindOnce(&PlusAddressParser::ParsePlusAddressFromV1Create)
+                    .Then(base::BindOnce(
+                        [](PlusAddressCallback callback,
+                           absl::optional<std::string> result) {
+                          if (result.has_value()) {
+                            std::move(callback).Run(result.value());
+                          }
+                        },
+                        std::move(callback))));
+          },
+          std::move(callback)),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void PlusAddressClient::GetAllPlusAddresses(PlusAddressMapCallback callback) {
+  if (!server_url_) {
+    return;
+  }
+  // Refresh the OAuth token if it's expired.
+  if (access_token_info_.expiration_time < clock_->Now()) {
+    GetAuthToken(base::BindOnce(&PlusAddressClient::GetAllPlusAddresses,
+                                base::Unretained(this), std::move(callback)));
+    return;
+  }
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->method = net::HttpRequestHeaders::kGetMethod;
+  resource_request->url =
+      server_url_.value().Resolve(kServerPlusProfileEndpoint);
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({"Bearer ", access_token_info_.token}));
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  // TODO(b/300443275): Handle potential race to `loader_for_retrieval_` here.
+  loader_for_retrieval_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), kGetAllPlusAddressesAnnotation);
+  loader_for_retrieval_->SetTimeoutDuration(kRequestTimeout);
+  // Use max download size for now.
+  // TODO(kaklilu) - Measure average downloadsize and pick a more appropriate
+  // one.
+  loader_for_retrieval_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(
+          [](PlusAddressMapCallback callback,
+             std::unique_ptr<std::string> response) {
+            if (!response) {
+              // The request has failed.
+              // TODO: Add metrics here.
+              return;
+            }
+
+            data_decoder::DataDecoder::ParseJsonIsolated(
+                *response,
+                base::BindOnce(
+                    &PlusAddressParser::ParsePlusAddressMapFromV1List)
+                    .Then(base::BindOnce(
+                        [](PlusAddressMapCallback callback,
+                           absl::optional<PlusAddressMap> result) {
+                          if (result.has_value()) {
+                            std::move(callback).Run(result.value());
+                          }
+                        },
+                        std::move(callback))));
           },
           std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
@@ -200,13 +232,6 @@ void PlusAddressClient::GetAuthToken(base::OnceClosure callback) {
     // Only request an auth token if it's not yet pending.
     RequestAuthToken();
   }
-}
-
-// static
-absl::optional<std::string>
-PlusAddressClient::ParsePlusAddressFromV1CreateForTesting(
-    data_decoder::DataDecoder::ValueOrError response) {
-  return ParsePlusAddressFromV1CreateResponse(std::move(response));
 }
 
 void PlusAddressClient::RequestAuthToken() {
