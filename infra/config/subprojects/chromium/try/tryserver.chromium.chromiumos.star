@@ -320,6 +320,7 @@ This builder should be removed after migrating linux-chromeos-rel from Ninja to 
 
 try_.compilator_builder(
     name = "linux-chromeos-siso-rel-compilator",
+    cores = 32,
     main_list_view = "try",
     siso_enabled = True,
 )
