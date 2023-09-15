@@ -2311,10 +2311,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   GURL url = https_server().GetURL("a.test", "/empty.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   EXPECT_TRUE(content::ExecJs(web_contents(), R"(
-    let link = document.createElement("a");
+    document.write("<a>test</a>");
+    let link = document.querySelector("a");
     link.href = '/empty.html';
     link.target = "<\n";
-    document.body.appendChild(link);
     link.click();
   )"));
 
@@ -2327,12 +2327,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kDanglingMarkupInTargetNotEndsWithNewLineOrGT, 0);
 
   EXPECT_TRUE(content::ExecJs(web_contents(), R"(
-    let base = document.createElement("base");
+    document.write("<base><a>test</a>");
+    let base = document.querySelector("base");
     base.target = "<\ntest";
-    document.body.appendChild(base);
-    let link = document.createElement("a");
+    let link = document.querySelector("a");
     link.href = '/empty.html';
-    document.body.appendChild(link);
     link.click();
   )"));
   CheckCounter(WebFeature::kDanglingMarkupInWindowName, 0);
