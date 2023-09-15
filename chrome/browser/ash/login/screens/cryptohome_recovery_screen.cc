@@ -104,10 +104,13 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
   if (is_configured) {
     if (user_context->GetReauthProofToken().empty()) {
-      if (context()->gaia_reauth_token_fetch_error) {
+      if (was_reauth_proof_token_missing_) {
+        LOG(ERROR)
+            << "Reauth proof token is still missing after the second attempt";
         view_->OnRecoveryFailed();
       } else {
         LOG(WARNING) << "Reauth proof token is not present";
+        was_reauth_proof_token_missing_ = true;
         RecordReauthReason(user_context->GetAccountId(),
                            ReauthReason::kCryptohomeRecovery);
         view_->ShowReauthNotification();
@@ -186,6 +189,7 @@ void CryptohomeRecoveryScreen::OnReplaceContextKey(
     view_->OnRecoveryFailed();
     return;
   }
+  VLOG(1) << "User data is successfully recovered";
   view_->OnRecoverySucceeded();
 }
 

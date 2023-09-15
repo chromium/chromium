@@ -67,6 +67,11 @@ class CryptohomeRecoveryScreen : public BaseScreen {
 
   ScreenExitCallback exit_callback_;
 
+  // Indicates whether the reauth proof token was missing during the last
+  // recovery attempt. This flag helps us determine if we should ask the user to
+  // perform reauth again.
+  bool was_reauth_proof_token_missing_ = false;
+
   base::WeakPtrFactory<CryptohomeRecoveryScreen> weak_ptr_factory_{this};
 };
 

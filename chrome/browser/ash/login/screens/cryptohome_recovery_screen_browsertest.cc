@@ -202,8 +202,8 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
   AddFakeUser(kOldPassword);
   cryptohome_.AddRecoveryFactor(test_user_.account_id);
-  fake_recovery_service_.SetErrorResponse("/v1/rart",
-                                          net::HTTP_SERVICE_UNAVAILABLE);
+  fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery",
+                                          net::HTTP_BAD_REQUEST);
 
   OpenGaiaDialog(test_user_.account_id);
   SetUpExitCallback();
