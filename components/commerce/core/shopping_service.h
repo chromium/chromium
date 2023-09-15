@@ -23,6 +23,7 @@
 #include "base/uuid.h"
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/parcel_manager.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
@@ -118,7 +119,6 @@ class ScheduledMetricsManager;
 
 class BookmarkUpdateManager;
 class DiscountsStorage;
-class ParcelManager;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
@@ -385,6 +385,25 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // should not be used when deciding whether to create critical,
   // feature-related infrastructure.
   virtual bool IsDiscountEligibleToShowOnNavigation();
+
+  // Starts tracking a list of parcels from a given page.
+  void StartTrackingParcels(
+      const std::vector<ParcelIdentifier>& parcel_identifiers,
+      const std::string& source_page_domain,
+      ParcelManager::GetParcelStatusCallback callback);
+
+  // Gets status for a list of parcels. If the parcel status is outdated, a
+  // request will be sent to the server to retrieve the information. Otherwise,
+  // recently cached status will be returned in the callback.
+  void GetParcelStatus(const std::vector<ParcelIdentifier>& parcel_identifiers,
+                       ParcelManager::GetParcelStatusCallback callback);
+
+  // Called to stop tracking a given parcel.
+  void StopTrackingParcel(const std::string& tracking_id,
+                          base::OnceCallback<void(bool)> callback);
+
+  // Called to stop tracking all parcels.
+  void StopTrackingAllParcels(base::OnceCallback<void(bool)> callback);
 
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();

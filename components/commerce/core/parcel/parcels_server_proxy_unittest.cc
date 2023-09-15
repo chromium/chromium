@@ -115,9 +115,9 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatus) {
   server_proxy_->GetParcelStatus(
       GetTestParcelIdentifiers(),
       base::BindOnce(
-          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+          [](base::RunLoop* run_loop, ParcelRequestStatus request_status,
              std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
-            ASSERT_EQ(ParcelStatusRequestStatus::kSuccess, request_status);
+            ASSERT_EQ(ParcelRequestStatus::kSuccess, request_status);
             ASSERT_EQ(1, static_cast<int>(parcel_status->size()));
             auto status = (*parcel_status)[0];
             ASSERT_EQ(ParcelStatus::PICKED_UP, status.parcel_state());
@@ -143,9 +143,9 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatusWithErrorResponse) {
   server_proxy_->GetParcelStatus(
       GetTestParcelIdentifiers(),
       base::BindOnce(
-          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+          [](base::RunLoop* run_loop, ParcelRequestStatus request_status,
              std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
-            ASSERT_EQ(ParcelStatusRequestStatus::kServerReponseParsingError,
+            ASSERT_EQ(ParcelRequestStatus::kServerReponseParsingError,
                       request_status);
             ASSERT_EQ(0, static_cast<int>(parcel_status->size()));
             run_loop->Quit();
@@ -159,9 +159,9 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatusWithoutTrackingId) {
   server_proxy_->GetParcelStatus(
       std::vector<ParcelIdentifier>{ParcelIdentifier()},
       base::BindOnce(
-          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+          [](base::RunLoop* run_loop, ParcelRequestStatus request_status,
              std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
-            ASSERT_EQ(ParcelStatusRequestStatus::kInvalidParcelIdentifiers,
+            ASSERT_EQ(ParcelRequestStatus::kInvalidParcelIdentifiers,
                       request_status);
             ASSERT_EQ(0, static_cast<int>(parcel_status->size()));
             run_loop->Quit();
@@ -180,9 +180,9 @@ TEST_F(ParcelsServerProxyTest, TestGetParcelStatusWithServerError) {
   server_proxy_->GetParcelStatus(
       GetTestParcelIdentifiers(),
       base::BindOnce(
-          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+          [](base::RunLoop* run_loop, ParcelRequestStatus request_status,
              std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
-            ASSERT_EQ(ParcelStatusRequestStatus::kServerError, request_status);
+            ASSERT_EQ(ParcelRequestStatus::kServerError, request_status);
             ASSERT_EQ(0, static_cast<int>(parcel_status->size()));
             run_loop->Quit();
           },
@@ -200,9 +200,9 @@ TEST_F(ParcelsServerProxyTest, TestStartTrackingParcelsWithServerError) {
   server_proxy_->StartTrackingParcels(
       GetTestParcelIdentifiers(), kTestSourcePageDomain,
       base::BindOnce(
-          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+          [](base::RunLoop* run_loop, ParcelRequestStatus request_status,
              std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
-            ASSERT_EQ(ParcelStatusRequestStatus::kServerError, request_status);
+            ASSERT_EQ(ParcelRequestStatus::kServerError, request_status);
             ASSERT_EQ(0, static_cast<int>(parcel_status->size()));
             run_loop->Quit();
           },
@@ -220,9 +220,9 @@ TEST_F(ParcelsServerProxyTest, TestStartTrackingParcels) {
   server_proxy_->StartTrackingParcels(
       GetTestParcelIdentifiers(), kTestSourcePageDomain,
       base::BindOnce(
-          [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status,
+          [](base::RunLoop* run_loop, ParcelRequestStatus request_status,
              std::unique_ptr<std::vector<ParcelStatus>> parcel_status) {
-            ASSERT_EQ(ParcelStatusRequestStatus::kSuccess, request_status);
+            ASSERT_EQ(ParcelRequestStatus::kSuccess, request_status);
             ASSERT_EQ(1, static_cast<int>(parcel_status->size()));
             auto status = (*parcel_status)[0];
             ASSERT_EQ(ParcelStatus::PICKED_UP, status.parcel_state());
@@ -247,14 +247,13 @@ TEST_F(ParcelsServerProxyTest, TestStopTrackingParcel) {
       .Times(1);
   base::RunLoop run_loop;
   server_proxy_->StopTrackingParcel(
-      kTestTrackingId, base::BindOnce(
-                           [](base::RunLoop* run_loop,
-                              ParcelStatusRequestStatus request_status) {
-                             ASSERT_EQ(ParcelStatusRequestStatus::kSuccess,
-                                       request_status);
-                             run_loop->Quit();
-                           },
-                           &run_loop));
+      kTestTrackingId,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, ParcelRequestStatus request_status) {
+            ASSERT_EQ(ParcelRequestStatus::kSuccess, request_status);
+            run_loop->Quit();
+          },
+          &run_loop));
   run_loop.Run();
 }
 
@@ -266,8 +265,8 @@ TEST_F(ParcelsServerProxyTest, TestStopTrackingAllParcels) {
       .Times(1);
   base::RunLoop run_loop;
   server_proxy_->StopTrackingAllParcels(base::BindOnce(
-      [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status) {
-        ASSERT_EQ(ParcelStatusRequestStatus::kSuccess, request_status);
+      [](base::RunLoop* run_loop, ParcelRequestStatus request_status) {
+        ASSERT_EQ(ParcelRequestStatus::kSuccess, request_status);
         run_loop->Quit();
       },
       &run_loop));
@@ -282,8 +281,8 @@ TEST_F(ParcelsServerProxyTest, TestStopTrackingAllParcelsWithServerError) {
       .Times(1);
   base::RunLoop run_loop;
   server_proxy_->StopTrackingAllParcels(base::BindOnce(
-      [](base::RunLoop* run_loop, ParcelStatusRequestStatus request_status) {
-        ASSERT_EQ(ParcelStatusRequestStatus::kServerError, request_status);
+      [](base::RunLoop* run_loop, ParcelRequestStatus request_status) {
+        ASSERT_EQ(ParcelRequestStatus::kServerError, request_status);
         run_loop->Quit();
       },
       &run_loop));

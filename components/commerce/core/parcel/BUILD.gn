@@ -6,10 +6,13 @@ source_set("parcel") {
   sources = [
     "parcels_server_proxy.cc",
     "parcels_server_proxy.h",
+    "parcels_storage.cc",
+    "parcels_storage.h",
   ]
   deps = [
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:proto",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/leveldb_proto",
@@ -19,6 +22,7 @@ source_set("parcel") {
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
   ]
+  public_deps = [ "//components/session_proto_db:core" ]
 }
 
 source_set("unit_tests") {

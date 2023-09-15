@@ -266,10 +266,9 @@ absl::optional<ParcelStatus> Deserialize(const base::Value& value) {
 void OnInvalidParcelIdentifierError(
     ParcelsServerProxy::GetParcelStatusCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     ParcelStatusRequestStatus::kInvalidParcelIdentifiers,
-                     std::make_unique<std::vector<ParcelStatus>>()));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                ParcelRequestStatus::kInvalidParcelIdentifiers,
+                                std::make_unique<std::vector<ParcelStatus>>()));
 }
 
 }  // namespace
@@ -352,7 +351,7 @@ void ParcelsServerProxy::ProcessGetParcelStatusResponse(
     GetParcelStatusCallback callback,
     std::unique_ptr<EndpointResponse> response) {
   if (response->http_status_code != net::HTTP_OK || response->error_type) {
-    std::move(callback).Run(ParcelStatusRequestStatus::kServerError,
+    std::move(callback).Run(ParcelRequestStatus::kServerError,
                             std::make_unique<std::vector<ParcelStatus>>());
     return;
   }
@@ -374,12 +373,12 @@ void ParcelsServerProxy::OnGetParcelStatusJsonParsed(
           parcel_status->push_back(*status);
         }
       }
-      std::move(callback).Run(ParcelStatusRequestStatus::kSuccess,
+      std::move(callback).Run(ParcelRequestStatus::kSuccess,
                               std::move(parcel_status));
       return;
     }
   }
-  std::move(callback).Run(ParcelStatusRequestStatus::kServerReponseParsingError,
+  std::move(callback).Run(ParcelRequestStatus::kServerReponseParsingError,
                           std::make_unique<std::vector<ParcelStatus>>());
 }
 
@@ -388,9 +387,9 @@ void ParcelsServerProxy::OnStopTrackingResponse(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
   if (response->http_status_code != net::HTTP_OK || response->error_type) {
-    std::move(callback).Run(ParcelStatusRequestStatus::kServerError);
+    std::move(callback).Run(ParcelRequestStatus::kServerError);
   } else {
-    std::move(callback).Run(ParcelStatusRequestStatus::kSuccess);
+    std::move(callback).Run(ParcelRequestStatus::kSuccess);
   }
 }
 

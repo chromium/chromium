@@ -25,7 +25,6 @@
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
-#include "components/commerce/core/parcel_manager.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -1402,6 +1401,40 @@ void ShoppingService::IsClusterIdTrackedByUser(
       SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
       base::NumberToString(cluster_id), ManagementType::kUserManaged);
   subscriptions_manager_->IsSubscribed(std::move(sub), std::move(callback));
+}
+
+void ShoppingService::StartTrackingParcels(
+    const std::vector<ParcelIdentifier>& parcel_identifiers,
+    const std::string& source_page_domain,
+    ParcelManager::GetParcelStatusCallback callback) {
+  if (parcel_manager_) {
+    parcel_manager_->StartTrackingParcels(
+        parcel_identifiers, source_page_domain, std::move(callback));
+  }
+}
+
+void ShoppingService::GetParcelStatus(
+    const std::vector<ParcelIdentifier>& parcel_identifiers,
+    ParcelManager::GetParcelStatusCallback callback) {
+  if (parcel_manager_) {
+    parcel_manager_->GetParcelStatus(parcel_identifiers, std::move(callback));
+  }
+}
+
+void ShoppingService::StopTrackingParcel(
+    const std::string& tracking_id,
+    base::OnceCallback<void(bool)> callback) {
+  if (parcel_manager_) {
+    parcel_manager_->StopTrackingParcel(tracking_id, std::move(callback));
+  }
+}
+
+// Called to stop tracking all parcels.
+void ShoppingService::StopTrackingAllParcels(
+    base::OnceCallback<void(bool)> callback) {
+  if (parcel_manager_) {
+    parcel_manager_->StopTrackingAllParcels(std::move(callback));
+  }
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

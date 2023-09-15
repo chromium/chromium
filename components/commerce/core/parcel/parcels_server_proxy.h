@@ -31,7 +31,7 @@ namespace commerce {
 // Possible result status of a parcel tracking request.
 // TODO(qinmin): emit histogram with these enums. And merge these
 // enums with the ones defined in SubscriptionsManager.
-enum class ParcelStatusRequestStatus {
+enum class ParcelRequestStatus {
   // Subscriptions successfully added or removed on server.
   kSuccess = 0,
   // Parcel identifiers are invalid, missing tracking id or carrier.
@@ -49,10 +49,10 @@ enum class ParcelStatusRequestStatus {
 class ParcelsServerProxy {
  public:
   using GetParcelStatusCallback =
-      base::OnceCallback<void(ParcelStatusRequestStatus,
+      base::OnceCallback<void(ParcelRequestStatus,
                               std::unique_ptr<std::vector<ParcelStatus>>)>;
   using StopParcelTrackingCallback =
-      base::OnceCallback<void(ParcelStatusRequestStatus)>;
+      base::OnceCallback<void(ParcelRequestStatus)>;
 
   ParcelsServerProxy(
       signin::IdentityManager* identity_manager,
