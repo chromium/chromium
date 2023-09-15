@@ -67,7 +67,6 @@ public class PageInsightsSwaaCheckerUnitTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(PageInsightsSwaaCheckerJni.TEST_HOOKS, mPageInsightsSwaaCheckerJni);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
-        mSharedPreferencesManager.disableKeyCheckerForTesting();
 
         mSwaaChecker = new PageInsightsSwaaChecker(mProfile, mActivateCallback);
         mHandler = spy(mSwaaChecker.getHandlerForTesting());

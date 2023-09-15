@@ -313,7 +313,6 @@ public class RequestDesktopUtilsUnitTest {
                 .toDomainWildcardPattern(anyString());
 
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
-        mSharedPreferencesManager.disableKeyCheckerForTesting();
 
         mResources = ApplicationProvider.getApplicationContext().getResources();
         mResources.getConfiguration().smallestScreenWidthDp = 600;

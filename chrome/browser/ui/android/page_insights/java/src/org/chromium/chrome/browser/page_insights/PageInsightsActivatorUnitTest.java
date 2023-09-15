@@ -90,7 +90,6 @@ public class PageInsightsActivatorUnitTest {
     @Test
     public void testInvalidateSwaaCacheUponProfileChange() throws Exception {
         var prefs = SharedPreferencesManager.getInstance();
-        prefs.disableKeyCheckerForTesting();
 
         int token = mActivator.start(mActivateCallback);
 
