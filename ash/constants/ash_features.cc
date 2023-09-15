@@ -2982,7 +2982,8 @@ bool IsEapDefaultCasWithoutSubjectVerificationAllowed() {
 }
 
 bool IsAltClickAndSixPackCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kAltClickAndSixPackCustomization);
+  return IsInputDeviceSettingsSplitEnabled() &&
+         base::FeatureList::IsEnabled(kAltClickAndSixPackCustomization);
 }
 
 bool IsAmbientModeDevUseProdEnabled() {

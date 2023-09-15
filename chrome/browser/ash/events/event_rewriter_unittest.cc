@@ -5827,8 +5827,10 @@ class EventRewriterSixPackKeysTest : public EventRewriterTest {
  public:
   void SetUp() override {
     EventRewriterTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kAltClickAndSixPackCustomization);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kInputDeviceSettingsSplit,
+         features::kAltClickAndSixPackCustomization},
+        /*disabled_features=*/{});
   }
 };
 
@@ -6109,8 +6111,10 @@ class EventRewriterRemapToRightClickTest
  public:
   void SetUp() override {
     EventRewriterTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAltClickAndSixPackCustomization);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kInputDeviceSettingsSplit,
+         features::kAltClickAndSixPackCustomization},
+        /*disabled_features=*/{});
     auto deprecation_controller =
         std::make_unique<DeprecationNotificationController>(&message_center_);
     deprecation_controller_ = deprecation_controller.get();

@@ -56,8 +56,10 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
 };
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAltClickAndSixPackCustomization);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kInputDeviceSettingsSplit,
+       features::kAltClickAndSixPackCustomization},
+      /*disabled_features=*/{});
   mojom::Keyboard keyboard_external;
   keyboard_external.device_key = kExternalKeyboardId;
   keyboard_external.is_external = true;
@@ -309,8 +311,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAltClickAndSixPackCustomization);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kInputDeviceSettingsSplit,
+       features::kAltClickAndSixPackCustomization},
+      /*disabled_features=*/{});
   mojom::Touchpad touchpad_external;
   touchpad_external.device_key = kExternalTouchpadId;
   touchpad_external.is_external = true;
