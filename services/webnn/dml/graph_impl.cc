@@ -778,8 +778,8 @@ void GraphImpl::OnCompilationComplete(
 
   // Create the persistent resource which is bound as output of operator
   // initializer.
-  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc =
-      absl::nullopt;
+  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
+  absl::optional<DML_BUFFER_BINDING> persistent_buffer_binding;
   DML_BINDING_PROPERTIES execution_binding_properties =
       compiled_operator->GetBindingProperties();
   uint64_t persistent_buffer_size =
@@ -795,13 +795,14 @@ void GraphImpl::OnCompilationComplete(
       return;
     }
 
-    DML_BUFFER_BINDING persistent_buffer_binding{
-        .Buffer = persistent_buffer.Get(),
-        .Offset = 0,
-        .SizeInBytes = persistent_buffer_size};
+    persistent_buffer_binding =
+        DML_BUFFER_BINDING{.Buffer = persistent_buffer.Get(),
+                           .Offset = 0,
+                           .SizeInBytes = persistent_buffer_size};
 
-    persistent_buffer_binding_desc = DML_BINDING_DESC{
-        .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
+    persistent_buffer_binding_desc =
+        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_BUFFER,
+                         .Desc = &persistent_buffer_binding.value()};
   }
 
   hr = command_recorder->InitializeOperator(compiled_operator.Get(),
