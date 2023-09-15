@@ -26,8 +26,8 @@ using chromeos::machine_learning::mojom::ValueList;
 
 namespace {
 
-constexpr int kHeatmapHeight = 50;
-constexpr int kHeatmapWidth = 32;
+constexpr int kHeatmapHeight = 48;
+constexpr int kHeatmapWidth = 76;
 
 }  // namespace
 
@@ -43,7 +43,7 @@ void HeatmapMlAgent::LazyInitialize() {
   if (!model_) {
     // Load the model.
     BuiltinModelSpecPtr spec =
-        BuiltinModelSpec::New(BuiltinModelId::PONCHO_PALM_REJECTION_20230213);
+        BuiltinModelSpec::New(BuiltinModelId::PONCHO_PALM_REJECTION_20230907);
 
     ml_service_->LoadBuiltinModel(
         std::move(spec), model_.BindNewPipeAndPassReceiver(),

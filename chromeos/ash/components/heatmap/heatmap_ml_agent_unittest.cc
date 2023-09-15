@@ -18,7 +18,7 @@ using chromeos::machine_learning::mojom::ExecuteResult;
 using chromeos::machine_learning::mojom::TensorPtr;
 
 constexpr double kExpectedResult = 0.968;
-constexpr int kExpectedDataLength = 1600;
+constexpr int kExpectedDataLength = 3648;
 
 class HeatmapMlAgentTest : public testing::Test {
  public:

@@ -17,7 +17,7 @@ namespace {
 using DetectionResult = ui::PalmDetector::DetectionResult;
 
 constexpr double kExpectedResult = 0.968;
-constexpr int kExpectedDataLength = 1600;
+constexpr int kExpectedDataLength = 3648;
 
 class HeatmapPalmDetectorTest : public testing::Test {
  public:
