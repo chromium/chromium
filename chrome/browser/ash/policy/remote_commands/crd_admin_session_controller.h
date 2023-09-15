@@ -9,8 +9,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/policy/remote_commands/remote_activity_notification_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/start_crd_session_job_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/session_id.h"
@@ -63,9 +65,12 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  void Init(base::OnceClosure done_callback = base::DoNothing());
+  void Init(PrefService* local_state,
+            base::OnceClosure done_callback = base::DoNothing());
 
   StartCrdSessionJobDelegate& GetDelegate();
+
+  void ClickNotificationButtonForTesting();
 
  private:
   class CrdHostSession;
@@ -76,6 +81,9 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
   // either when we conclude there is no reconnectable session, or when the
   // reconnectable session has been re-established.
   void TryToReconnect(base::OnceClosure done_callback);
+
+  void OnCurtainSessionStarted();
+  bool IsCurrentSessionCurtained() const;
 
   // `DeviceCommandStartCrdSessionJob::Delegate` implementation:
   bool HasActiveSession() const override;
@@ -88,6 +96,8 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
 
   std::unique_ptr<RemotingServiceProxy> remoting_service_;
   std::unique_ptr<CrdHostSession> active_session_;
+  std::unique_ptr<RemoteActivityNotificationController>
+      notification_controller_;
 };
 
 }  // namespace policy

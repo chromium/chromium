@@ -287,7 +287,7 @@ void BrowserPolicyConnectorAsh::Init(
               DeviceScheduledRebootHandler::kRebootTimerTag),
           reboot_notifications_scheduler_.get());
 
-  crd_admin_session_controller_->Init();
+  crd_admin_session_controller_->Init(local_state);
 }
 
 void BrowserPolicyConnectorAsh::PreShutdown() {

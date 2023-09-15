@@ -5,18 +5,26 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 
 #include <iomanip>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
 
+#include "ash/shell.h"
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/browser/ash/policy/remote_commands/remote_activity_notification_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/chromeos/features.h"
@@ -26,6 +34,7 @@
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "remoting/protocol/errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/widget/widget.h"
 
 namespace policy {
 
@@ -33,6 +42,8 @@ using AccessCodeCallback = StartCrdSessionJobDelegate::AccessCodeCallback;
 using ErrorCallback = StartCrdSessionJobDelegate::ErrorCallback;
 using SessionEndCallback = StartCrdSessionJobDelegate::SessionEndCallback;
 using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
+using CurtainSessionStartedCallback = base::OnceClosure;
+using HostSessionStartedCallback = base::OnceClosure;
 using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 namespace {
@@ -96,12 +107,16 @@ std::ostream& operator<<(std::ostream& os,
 
 class SupportHostObserver : public remoting::mojom::SupportHostObserver {
  public:
-  SupportHostObserver(AccessCodeCallback success_callback,
-                      ErrorCallback error_callback,
-                      SessionEndCallback session_finished_callback)
+  SupportHostObserver(
+      AccessCodeCallback success_callback,
+      ErrorCallback error_callback,
+      SessionEndCallback session_finished_callback,
+      HostSessionStartedCallback host_session_connected_callback)
       : success_callback_(std::move(success_callback)),
         error_callback_(std::move(error_callback)),
-        session_finished_callback_(std::move(session_finished_callback)) {}
+        session_finished_callback_(std::move(session_finished_callback)),
+        session_connected_callback_(
+            std::move(host_session_connected_callback)) {}
 
   SupportHostObserver(const SupportHostObserver&) = delete;
   SupportHostObserver& operator=(const SupportHostObserver&) = delete;
@@ -127,6 +142,9 @@ class SupportHostObserver : public remoting::mojom::SupportHostObserver {
   void OnHostStateConnected(const std::string& remote_username) override {
     CRD_DVLOG(3) << __FUNCTION__;
     session_connected_time_ = base::Time::Now();
+    if (session_connected_callback_) {
+      std::move(session_connected_callback_).Run();
+    }
   }
   void OnHostStateDisconnected(
       const absl::optional<std::string>& disconnect_reason) override {
@@ -190,6 +208,7 @@ class SupportHostObserver : public remoting::mojom::SupportHostObserver {
   AccessCodeCallback success_callback_;
   ErrorCallback error_callback_;
   SessionEndCallback session_finished_callback_;
+  HostSessionStartedCallback session_connected_callback_;
   absl::optional<base::Time> session_connected_time_;
   mojo::Receiver<remoting::mojom::SupportHostObserver> receiver_{this};
 };
@@ -227,21 +246,28 @@ class CrdAdminSessionController::CrdHostSession {
       : CrdHostSession(remoting_service,
                        base::DoNothing(),
                        base::DoNothing(),
+                       base::DoNothing(),
                        base::DoNothing()) {}
   CrdHostSession(RemotingServiceProxy& remoting_service,
                  AccessCodeCallback success_callback,
                  ErrorCallback error_callback,
-                 SessionEndCallback session_finished_callback)
+                 SessionEndCallback session_finished_callback,
+                 CurtainSessionStartedCallback curtain_session_started_callback)
       : remoting_service_(remoting_service),
         observer_(std::move(success_callback),
                   std::move(error_callback),
-                  std::move(session_finished_callback)) {}
+                  std::move(session_finished_callback),
+                  base::BindOnce(&CrdHostSession::OnHostSessionStartedCallback,
+                                 base::Unretained(this))),
+        curtain_session_started_callback_(
+            std::move(curtain_session_started_callback)) {}
   CrdHostSession(const CrdHostSession&) = delete;
   CrdHostSession& operator=(const CrdHostSession&) = delete;
   ~CrdHostSession() = default;
 
   void Start(const SessionParameters& parameters) {
     CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters;
+    session_parameters_ = parameters;
 
     remoting_service_->StartSession(
         GetSessionParameters(parameters), GetEnterpriseParameters(parameters),
@@ -255,6 +281,17 @@ class CrdAdminSessionController::CrdHostSession {
         base::BindOnce(&CrdHostSession::ReconnectToSession,
                        weak_factory_.GetWeakPtr())
             .Then(std::move(done_callback)));
+  }
+
+  void OnHostSessionStartedCallback() {
+    if (IsSessionCurtained()) {
+      std::move(curtain_session_started_callback_).Run();
+    }
+  }
+
+  bool IsSessionCurtained() {
+    return session_parameters_.has_value() &&
+           session_parameters_->curtain_local_user_session;
   }
 
  private:
@@ -285,6 +322,8 @@ class CrdAdminSessionController::CrdHostSession {
 
   raw_ref<RemotingServiceProxy> remoting_service_;
   SupportHostObserver observer_;
+  CurtainSessionStartedCallback curtain_session_started_callback_;
+  absl::optional<SessionParameters> session_parameters_;
 
   base::WeakPtrFactory<CrdHostSession> weak_factory_{this};
 };
@@ -298,12 +337,27 @@ CrdAdminSessionController::CrdAdminSessionController(
 
 CrdAdminSessionController::~CrdAdminSessionController() = default;
 
-void CrdAdminSessionController::Init(base::OnceClosure done_callback) {
+void CrdAdminSessionController::Init(PrefService* local_state,
+                                     base::OnceClosure done_callback) {
   if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
     TryToReconnect(std::move(done_callback));
+
+    CHECK(!notification_controller_);
+    notification_controller_ =
+        std::make_unique<RemoteActivityNotificationController>(
+            CHECK_DEREF(local_state),
+            base::BindRepeating(
+                &CrdAdminSessionController::IsCurrentSessionCurtained,
+                base::Unretained(this)));
   } else {
     std::move(done_callback).Run();
   }
+}
+
+void CrdAdminSessionController::ClickNotificationButtonForTesting() {
+  CHECK(notification_controller_);
+  CHECK_IS_TEST();
+  notification_controller_->ClickNotificationButtonForTesting();  // IN-TEST
 }
 
 StartCrdSessionJobDelegate& CrdAdminSessionController::GetDelegate() {
@@ -336,9 +390,24 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
   CHECK(!active_session_);
   active_session_ = std::make_unique<CrdHostSession>(
       *remoting_service_, std::move(success_callback),
-      std::move(error_callback), std::move(session_finished_callback));
+      std::move(error_callback), std::move(session_finished_callback),
+      base::BindOnce(&CrdAdminSessionController::OnCurtainSessionStarted,
+                     base::Unretained(this)));
 
   active_session_->Start(parameters);
+}
+
+void CrdAdminSessionController::OnCurtainSessionStarted() {
+  if (!base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
+    return;
+  }
+
+  CHECK(notification_controller_);
+  notification_controller_->OnCurtainSessionStarted();
+}
+
+bool CrdAdminSessionController::IsCurrentSessionCurtained() const {
+  return active_session_ && active_session_->IsSessionCurtained();
 }
 
 // static

@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 
+#include <string>
+
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,7 +17,12 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/chromeos/features.h"
@@ -183,9 +194,11 @@ class Response {
 // A test class used for testing the `CrdAdminSessionController` class.
 // The value is used to verify the correct delivery of individual boolean fields
 // of `ChromeOsEnterpriseParams`.
-class CrdAdminSessionControllerTest : public testing::Test {
+class CrdAdminSessionControllerTest : public ash::AshTestBase {
  public:
-  CrdAdminSessionControllerTest() = default;
+  CrdAdminSessionControllerTest()
+      : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        local_state_(TestingBrowserProcess::GetGlobal()) {}
   CrdAdminSessionControllerTest(const CrdAdminSessionControllerTest&) = delete;
   CrdAdminSessionControllerTest& operator=(
       const CrdAdminSessionControllerTest&) = delete;
@@ -238,7 +251,8 @@ class CrdAdminSessionControllerTest : public testing::Test {
   // bound. This observer is used by the CRD host code to inform our delegate of
   // status updates, and is returned by this method so we can spoof these status
   // updates during our tests.
-  SupportHostObserver& StartCrdHostAndBindObserver() {
+  SupportHostObserver& StartCrdHostAndBindObserver(
+      SessionParameters session_parameters = SessionParameters{}) {
     EXPECT_CALL(remoting_service(), StartSession)
         .WillOnce(
             [&](SupportSessionParamsPtr params,
@@ -248,7 +262,7 @@ class CrdAdminSessionControllerTest : public testing::Test {
                   StartSupportSessionResponse::NewObserver(BindObserver()));
             });
 
-    delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
+    delegate().StartCrdHostAndGetCode(session_parameters, success_callback(),
                                       error_callback(),
                                       session_finished_callback());
 
@@ -256,11 +270,41 @@ class CrdAdminSessionControllerTest : public testing::Test {
     return *observer_;
   }
 
-  void FlushForTesting() { observer_.FlushForTesting(); }
+  void InitControllerWithNoReconnectableSession() {
+    // We return nullopt when we query for the re-connectable session id.
+    EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
+        .WillOnce(
+            [&](auto callback) { std::move(callback).Run(absl::nullopt); });
 
-  base::test::SingleThreadTaskEnvironment& environment() {
-    return environment_;
+    TestFuture<void> done_signal;
+    session_controller().Init(&local_state(), done_signal.GetCallback());
+    ASSERT_TRUE(done_signal.Wait());
   }
+
+  void TerminateActiveSession() {
+    TestFuture<void> terminate_signal;
+    delegate().TerminateSession(terminate_signal.GetCallback());
+    ASSERT_TRUE(terminate_signal.GetCallback());
+  }
+
+  const aura::Window& GetLockScreenContainersContainer() {
+    return CHECK_DEREF(ash::Shell::Get()->GetPrimaryRootWindow()->GetChildById(
+        ash::kShellWindowId_LockScreenContainersContainer));
+  }
+
+  bool IsNotificationViewVisible() {
+    const auto* notification_widget =
+        GetLockScreenContainersContainer().GetChildById(
+            ash::kShellWindowId_AdminWasPresentNotificationWindow);
+
+    if (!notification_widget) {
+      return false;
+    }
+
+    return notification_widget->IsVisible();
+  }
+
+  void FlushForTesting() { observer_.FlushForTesting(); }
 
   mojo::PendingReceiver<SupportHostObserver> BindObserver() {
     return observer_.BindNewPipeAndPassReceiver();
@@ -276,9 +320,21 @@ class CrdAdminSessionControllerTest : public testing::Test {
     feature_.InitAndEnableFeature(feature);
   }
 
+  bool GetPref(const char* pref_name) {
+    return local_state().GetBoolean(pref_name);
+  }
+
+  void SetPref(const char* pref_name, bool value) {
+    local_state().SetBoolean(pref_name, value);
+  }
+
+  TestingPrefServiceSimple& local_state() { return *local_state_.Get(); }
+
+  session_manager::SessionManager& session_manager() {
+    return CHECK_DEREF(session_manager::SessionManager::Get());
+  }
+
  private:
-  base::test::SingleThreadTaskEnvironment environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestFuture<Response> result_;
   TestFuture<base::TimeDelta> session_finish_result_;
   mojo::Remote<SupportHostObserver> observer_;
@@ -286,6 +342,7 @@ class CrdAdminSessionControllerTest : public testing::Test {
   CrdAdminSessionController session_controller_{
       std::make_unique<RemotingServiceWrapper>(&remoting_service_)};
   base::test::ScopedFeatureList feature_;
+  ScopedTestingLocalState local_state_;
 };
 
 // Fixture for tests parameterized over boolean values.
@@ -574,7 +631,7 @@ TEST_F(CrdAdminSessionControllerTest,
 
   observer.OnHostStateConnected(kTestUserName);
   observer.OnHostStateStarting();
-  environment().FastForwardBy(duration);
+  task_environment()->FastForwardBy(duration);
   observer.OnHostStateDisconnected("the-disconnect-reason");
 
   base::TimeDelta session_duration = WaitForSessionFinishResult();
@@ -599,7 +656,7 @@ TEST_F(CrdAdminSessionControllerTest,
       });
 
   TestFuture<void> done_signal;
-  session_controller().Init(done_signal.GetCallback());
+  session_controller().Init(&local_state(), done_signal.GetCallback());
   ASSERT_TRUE(done_signal.Wait());
 
   EXPECT_TRUE(delegate().HasActiveSession());
@@ -617,7 +674,7 @@ TEST_F(CrdAdminSessionControllerTest,
   EXPECT_NO_CALLS(remoting_service(), ReconnectToSession);
 
   TestFuture<void> done_signal;
-  session_controller().Init(done_signal.GetCallback());
+  session_controller().Init(&local_state(), done_signal.GetCallback());
 
   // The `done_signal` should still be invoked.
   ASSERT_TRUE(done_signal.Wait());
@@ -631,7 +688,7 @@ TEST_F(CrdAdminSessionControllerTest,
   EXPECT_NO_CALLS(remoting_service(), ReconnectToSession);
 
   TestFuture<void> done_signal;
-  session_controller().Init(done_signal.GetCallback());
+  session_controller().Init(&local_state(), done_signal.GetCallback());
   ASSERT_TRUE(done_signal.Wait());
 }
 
@@ -647,6 +704,147 @@ TEST_F(
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("enterprise remote support disabled", response.error_message());
   EXPECT_EQ(ResultCode::FAILURE_DISABLED_BY_POLICY, response.error_code());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotSetRemoteAdminWasPresentPrefIfDisabledByFeature) {
+  DisableFeature(kEnableCrdAdminRemoteAccessV2);
+  TestFuture<void> done_signal;
+  session_controller().Init(&local_state(), done_signal.GetCallback());
+  ASSERT_TRUE(done_signal.Wait());
+
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = true;
+
+  SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
+  observer.OnHostStateConnected(kTestUserName);
+  FlushForTesting();
+
+  EXPECT_EQ(GetPref(prefs::kRemoteAdminWasPresent), false);
+}
+
+TEST_F(CrdAdminSessionControllerTest, ShouldSetRemoteAdminWasPresentPref) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitControllerWithNoReconnectableSession();
+  TerminateActiveSession();
+
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = true;
+
+  SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
+  observer.OnHostStateConnected(kTestUserName);
+  FlushForTesting();
+
+  EXPECT_EQ(GetPref(prefs::kRemoteAdminWasPresent), true);
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotSetRemoteAdminWasPresentPrefIfSessionIsUncurtained) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  InitControllerWithNoReconnectableSession();
+  TerminateActiveSession();
+
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = false;
+
+  SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
+  observer.OnHostStateConnected(kTestUserName);
+  FlushForTesting();
+
+  EXPECT_EQ(GetPref(prefs::kRemoteAdminWasPresent), false);
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldShowNotificationIfRemoteAdminWasPresentPrefIsSet) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  SetPref(prefs::kRemoteAdminWasPresent, true);
+  InitControllerWithNoReconnectableSession();
+
+  // Notifies the observers that the login screen is visible and ensure the
+  // `RemoteActivityNotificationController::Init()` is called.
+  session_manager().NotifyLoginOrLockScreenVisible();
+
+  EXPECT_TRUE(IsNotificationViewVisible());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotShowNotificationIfRemoteAdminPrefIsNotSet) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  SetPref(prefs::kRemoteAdminWasPresent, false);
+  InitControllerWithNoReconnectableSession();
+
+  // Notifies the observers that the login screen is visible and ensure the
+  // `RemoteActivityNotificationController::Init()` is called.
+  session_manager().NotifyLoginOrLockScreenVisible();
+
+  EXPECT_FALSE(IsNotificationViewVisible());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldDismissNotificationWidgetOnButtonClick) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  SetPref(prefs::kRemoteAdminWasPresent, true);
+  InitControllerWithNoReconnectableSession();
+
+  // Notifies the observers that the login screen is visible and ensure the
+  // `RemoteActivityNotificationController::Init()` is called.
+  session_manager().NotifyLoginOrLockScreenVisible();
+
+  EXPECT_TRUE(IsNotificationViewVisible());
+
+  session_controller().ClickNotificationButtonForTesting();
+
+  EXPECT_FALSE(IsNotificationViewVisible());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldResetStatePrefWhenCurrentSessionIsNotCurtained) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  SetPref(prefs::kRemoteAdminWasPresent, true);
+  InitControllerWithNoReconnectableSession();
+  TerminateActiveSession();
+
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = false;
+
+  SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
+  observer.OnHostStateConnected(kTestUserName);
+  FlushForTesting();
+
+  // Notifies the observers that the login screen is visible and ensure the
+  // `RemoteActivityNotificationController::Init()` is called.
+  session_manager().NotifyLoginOrLockScreenVisible();
+
+  EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
+
+  session_controller().ClickNotificationButtonForTesting();
+
+  EXPECT_FALSE(GetPref(prefs::kRemoteAdminWasPresent));
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotResetStatePrefWhenCurrentSessionIsCurtained) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+  SetPref(prefs::kRemoteAdminWasPresent, true);
+  InitControllerWithNoReconnectableSession();
+  TerminateActiveSession();
+
+  SessionParameters parameters;
+  parameters.curtain_local_user_session = true;
+
+  SupportHostObserver& observer = StartCrdHostAndBindObserver(parameters);
+  observer.OnHostStateConnected(kTestUserName);
+  FlushForTesting();
+
+  // Notifies the observers that the login screen is visible and ensure the
+  // `RemoteActivityNotificationController::Init()` is called.
+  session_manager().NotifyLoginOrLockScreenVisible();
+
+  EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
+
+  session_controller().ClickNotificationButtonForTesting();
+
+  EXPECT_TRUE(GetPref(prefs::kRemoteAdminWasPresent));
 }
 
 INSTANTIATE_TEST_SUITE_P(CrdAdminSessionControllerTestWithBoolParams,
