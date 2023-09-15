@@ -127,7 +127,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
       plugin_tree_source_(nullptr),
       ukm_timer_(std::make_unique<base::ElapsedTimer>()),
       last_ukm_source_id_(ukm::kInvalidSourceId),
-      serialize_post_lifecycle_(true) {
+      serialize_post_lifecycle_(serialize_post_lifecycle) {
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   content::RenderThread::Get()->BindHostReceiver(
       factory.BindNewPipeAndPassReceiver());
