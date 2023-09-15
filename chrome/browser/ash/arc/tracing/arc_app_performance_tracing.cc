@@ -83,6 +83,7 @@ class AppToCategoryMapper {
     Add("niajncocfieigpbiamllekeadpgbhkke", "GarenaFreeFire");
     Add("icloenboalgjkknjdficgpgpcedmmojn", "Netflix");
     Add("nlhkolcnehphdkaljhgcbkmahloeacoj", "PUBGMobile");
+    Add("gihmggjjlnjaldngedmnegjmhccccahg", "MinecraftConsumerEdition");
   }
 
   static AppToCategoryMapper& GetInstance() {

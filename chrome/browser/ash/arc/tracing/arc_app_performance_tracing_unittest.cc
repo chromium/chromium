@@ -48,16 +48,16 @@ constexpr base::TimeDelta kTestPeriod = base::Seconds(1) / (60 / 20);
 
 constexpr int kMillisecondsToFirstFrame = 500;
 
-// Creates name of histogram with required statistics.
-std::string GetFocusStatisticName(const std::string& name) {
+std::string GetStatisticName(const std::string& name,
+                             const std::string& category) {
   return base::StringPrintf("Arc.Runtime.Performance.%s.%s", name.c_str(),
-                            kFocusCategory);
+                            category.c_str());
 }
 
 // Reads statistics value from histogram.
-int64_t ReadFocusStatistics(const std::string& name) {
+int64_t ReadStatistics(const std::string& name, const std::string& category) {
   const base::HistogramBase* histogram =
-      base::StatisticsRecorder::FindHistogram(GetFocusStatisticName(name));
+      base::StatisticsRecorder::FindHistogram(GetStatisticName(name, category));
   DCHECK(histogram);
 
   std::unique_ptr<base::HistogramSamples> samples =
@@ -65,6 +65,11 @@ int64_t ReadFocusStatistics(const std::string& name) {
   DCHECK(samples.get());
   DCHECK_EQ(1, samples->TotalCount());
   return samples->sum();
+}
+
+// Reads focus statistics value from histogram
+int64_t ReadFocusStatistics(const std::string& name) {
+  return ReadStatistics(name, kFocusCategory);
 }
 
 }  // namespace
@@ -103,7 +108,8 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
  protected:
   // Ensures that tracing is active.
-  views::Widget* StartArcFocusAppTracing() {
+  views::Widget* StartArcAppTracing(const std::string& package_name,
+                                    const std::string& activity_name) {
     shell_root_surface_ = std::make_unique<exo::Surface>();
     views::Widget* arc_widget =
         ArcTaskWindowBuilder()
@@ -116,13 +122,17 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
         wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
         arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
     tracing_helper().GetTracing()->OnTaskCreated(
-        1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
+        1 /* task_Id */, package_name, activity_name,
         std::string() /* intent */, 0 /* session_id */);
     DCHECK(tracing_helper().GetTracingSession());
     tracing_helper().GetTracingSession()->FireTimerForTesting();
     DCHECK(tracing_helper().GetTracingSession());
     DCHECK(tracing_helper().GetTracingSession()->tracing_active());
     return arc_widget;
+  }
+
+  views::Widget* StartArcFocusAppTracing() {
+    return StartArcAppTracing(kFocusAppPackage, kFocusAppActivity);
   }
 
   void ResetRootSurface() { shell_root_surface_.reset(); }
@@ -257,6 +267,21 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   EXPECT_EQ(45L, ReadFocusStatistics("FPS2"));
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
+  arc_widget->Close();
+}
+
+TEST_F(ArcAppPerformanceTracingTest,
+       MinecraftConsumerEditionStatisticsReported) {
+  const std::string package = "com.mojang.minecraftpe";
+  const std::string activity = "com.mojang.minecraftpe.MainActivity";
+  views::Widget* const arc_widget = StartArcAppTracing(package, activity);
+
+  tracing_helper().PlayDefaultSequence();
+  tracing_helper().FireTimerForTesting();
+  EXPECT_EQ(45L, ReadStatistics("FPS2", "MinecraftConsumerEdition"));
+  EXPECT_EQ(216L,
+            ReadStatistics("CommitDeviation2", "MinecraftConsumerEdition"));
+  EXPECT_EQ(48L, ReadStatistics("RenderQuality2", "MinecraftConsumerEdition"));
   arc_widget->Close();
 }
 
