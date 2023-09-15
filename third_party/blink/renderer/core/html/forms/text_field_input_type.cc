@@ -534,8 +534,8 @@ void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
   if (!SupportsPlaceholder())
     return;
   HTMLElement* placeholder = GetElement().PlaceholderElement();
-  String placeholder_text = GetElement().GetPlaceholderValue();
-  if (placeholder_text.empty()) {
+  if (!is_suggested_value &&
+      !GetElement().FastHasAttribute(html_names::kPlaceholderAttr)) {
     if (placeholder)
       placeholder->remove(ASSERT_NO_EXCEPTION);
     return;
@@ -565,7 +565,7 @@ void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
   } else {
     placeholder->RemoveInlineStyleProperty(CSSPropertyID::kUserSelect);
   }
-  placeholder->setTextContent(placeholder_text);
+  placeholder->setTextContent(GetElement().GetPlaceholderValue());
 }
 
 void TextFieldInputType::AppendToFormData(FormData& form_data) const {

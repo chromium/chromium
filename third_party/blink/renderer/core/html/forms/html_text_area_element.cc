@@ -696,7 +696,7 @@ void HTMLTextAreaElement::UpdatePlaceholderText() {
   HTMLElement* placeholder = PlaceholderElement();
   const String placeholder_text = GetPlaceholderValue();
   const bool is_suggested_value = !SuggestedValue().empty();
-  if (placeholder_text.empty()) {
+  if (!is_suggested_value && !FastHasAttribute(html_names::kPlaceholderAttr)) {
     if (placeholder)
       UserAgentShadowRoot()->RemoveChild(placeholder);
     return;

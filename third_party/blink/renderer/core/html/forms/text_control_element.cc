@@ -203,21 +203,21 @@ HTMLElement* TextControlElement::PlaceholderElement() const {
 }
 
 void TextControlElement::UpdatePlaceholderVisibility() {
+  bool place_holder_was_visible = IsPlaceholderVisible();
   HTMLElement* placeholder = PlaceholderElement();
   if (!placeholder) {
     UpdatePlaceholderText();
-    SetPlaceholderVisibility(PlaceholderShouldBeVisible());
-    return;
+    placeholder = PlaceholderElement();
   }
-
-  bool place_holder_was_visible = IsPlaceholderVisible();
   SetPlaceholderVisibility(PlaceholderShouldBeVisible());
 
-  placeholder->SetInlineStyleProperty(
-      CSSPropertyID::kDisplay,
-      IsPlaceholderVisible() || !SuggestedValue().empty() ? CSSValueID::kBlock
-                                                          : CSSValueID::kNone,
-      true);
+  if (placeholder) {
+    placeholder->SetInlineStyleProperty(
+        CSSPropertyID::kDisplay,
+        IsPlaceholderVisible() || !SuggestedValue().empty() ? CSSValueID::kBlock
+                                                            : CSSValueID::kNone,
+        true);
+  }
 
   // If there was a visibility change not caused by the suggested value, set
   // that the pseudo state changed.

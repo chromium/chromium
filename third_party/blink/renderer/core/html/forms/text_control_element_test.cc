@@ -116,4 +116,23 @@ TEST_F(TextControlElementTest, DisabledAttributeChangeEditability) {
             Input().InnerEditorElement()->GetComputedStyle()->UsedUserModify());
 }
 
+TEST_F(TextControlElementTest, PlaceholderElement) {
+  EXPECT_EQ(Input().PlaceholderElement(), nullptr);
+  EXPECT_EQ(TextControl().PlaceholderElement(), nullptr);
+
+  Input().setAttribute(html_names::kPlaceholderAttr, g_empty_atom);
+  TextControl().setAttribute(html_names::kPlaceholderAttr, g_empty_atom);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_NE(Input().PlaceholderElement(), nullptr);
+  EXPECT_NE(TextControl().PlaceholderElement(), nullptr);
+
+  Input().removeAttribute(html_names::kPlaceholderAttr);
+  TextControl().removeAttribute(html_names::kPlaceholderAttr);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(Input().PlaceholderElement(), nullptr);
+  EXPECT_EQ(TextControl().PlaceholderElement(), nullptr);
+}
+
 }  // namespace blink
