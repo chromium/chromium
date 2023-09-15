@@ -53,12 +53,12 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
                                 .value();
   base::Value expected_policy = empty_lists.Clone();
   disabled_profile->GetPrefs()->SetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
   disabled_profile->GetPrefs()->SetDict(
       first_party_sets::kFirstPartySetsOverrides,
       std::move(empty_lists.Clone().GetDict()));
   enabled_profile->GetPrefs()->SetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsEnabled, true);
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   enabled_profile->GetPrefs()->SetDict(
       first_party_sets::kFirstPartySetsOverrides,
       std::move(empty_lists.GetDict()));

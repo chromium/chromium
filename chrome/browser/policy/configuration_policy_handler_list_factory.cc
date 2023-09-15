@@ -1917,7 +1917,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kFirstPartySetsEnabled,
-      prefs::kPrivacySandboxFirstPartySetsEnabled,
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
     base::Value::Type::BOOLEAN},
   { key::kWebSQLAccess,
     storage::kWebSQLAccess,

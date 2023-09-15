@@ -116,8 +116,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
                            FledgeJoinSettingTimeRangeDeletion);
-  // Called when the First-Party Sets enabled preference is changed.
-  void OnFirstPartySetsEnabledPrefChanged();
+  // Called when the Related Website Sets enabled preference is changed.
+  void OnRelatedWebsiteSetsEnabledPrefChanged();
 
   // Determines based on the current features, preferences and provided
   // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for

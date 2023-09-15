@@ -208,7 +208,7 @@ class FirstPartySetsPolicyServiceTest
 
   void SetEnabledPref(bool enabled) {
     profile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxFirstPartySetsEnabled, enabled);
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, enabled);
   }
 
   void SetInvokeCallbacksAsynchronously(bool asynchronous) {

@@ -163,9 +163,9 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      prefs::kPrivacySandboxFirstPartySetsEnabled,
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
       base::BindRepeating(
-          &PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged,
+          &PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged,
           base::Unretained(this)));
 }
 
@@ -754,14 +754,14 @@ void PrivacySandboxSettingsImpl::OnCookiesCleared() {
   SetTopicsDataAccessibleFromNow();
 }
 
-void PrivacySandboxSettingsImpl::OnFirstPartySetsEnabledPrefChanged() {
+void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
   if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     return;
   }
 
   for (auto& observer : observers_) {
-    observer.OnFirstPartySetsEnabledChanged(
-        pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+    observer.OnFirstPartySetsEnabledChanged(pref_service_->GetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   }
 }
 
@@ -885,8 +885,8 @@ void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
     return;
   }
 
-  bool first_party_sets_enabled =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled);
+  bool first_party_sets_enabled = pref_service_->GetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
   // FPS should be on in the 3PCD experiment unless all 3PC are blocked.
   if (tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
     first_party_sets_enabled =

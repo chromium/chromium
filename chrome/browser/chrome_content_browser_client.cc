@@ -5296,7 +5296,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
   if (profile && profile->GetPrefs() &&
       profile->GetPrefs()->GetBoolean(
-          prefs::kPrivacySandboxFirstPartySetsEnabled) &&
+          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled) &&
       base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     MaybeAddThrottle(first_party_sets::FirstPartySetsNavigationThrottle::
                          MaybeCreateNavigationThrottle(handle),

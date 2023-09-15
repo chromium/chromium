@@ -973,8 +973,8 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
       url::Origin::Create(GURL("https://third.com"))));
 }
 
-TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged) {
-  // OnFirstPartySetsEnabledChanged() should only call observers when the
+TEST_F(PrivacySandboxSettingsTest, OnRelatedWebsiteSetsEnabledChanged) {
+  // OnRelatedWebsiteSetsEnabledChanged() should only call observers when the
   // base::Feature is enabled and the pref changes.
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(features::kFirstPartySets);
@@ -982,19 +982,19 @@ TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged) {
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/true));
 
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/false));
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(features::kFirstPartySets);
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(testing::_)).Times(0);
 
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
 }
 
 TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged3pcd) {
@@ -1004,7 +1004,7 @@ TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged3pcd) {
   privacy_sandbox_settings()->AddObserver(&observer);
 
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/false));
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/true));

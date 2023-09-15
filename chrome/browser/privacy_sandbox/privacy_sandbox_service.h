@@ -229,13 +229,13 @@ class PrivacySandboxService : public KeyedService {
   // Called when the V2 Privacy Sandbox preference is changed.
   void OnPrivacySandboxV2PrefChanged();
 
-  // Returns whether the FirstPartySets preference is enabled.
+  // Returns whether the RelatedWebsiteSets preference is enabled.
   bool IsFirstPartySetsDataAccessEnabled() const;
 
-  // Returns whether the FirstPartySets preference is managed.
+  // Returns whether the RelatedWebsiteSets preference is managed.
   virtual bool IsFirstPartySetsDataAccessManaged() const;
 
-  // Toggles the FirstPartySets preference.
+  // Toggles the RelatedWebsiteSets preference.
   void SetFirstPartySetsDataAccessEnabled(bool enabled);
 
   // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE

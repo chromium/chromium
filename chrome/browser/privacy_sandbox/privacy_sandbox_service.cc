@@ -485,16 +485,17 @@ void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
 }
 
 bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() const {
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled);
+  return pref_service_->GetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 bool PrivacySandboxService::IsFirstPartySetsDataAccessManaged() const {
   return pref_service_->IsManagedPreference(
-      prefs::kPrivacySandboxFirstPartySetsEnabled);
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 void PrivacySandboxService::SetFirstPartySetsDataAccessEnabled(bool enabled) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  pref_service_->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                             enabled);
 }
 
@@ -837,10 +838,10 @@ void PrivacySandboxService::LogPrivacySandboxState() {
   auto fps_status = FirstPartySetsState::kFpsNotRelevant;
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
       cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
-    fps_status =
-        pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled)
-            ? FirstPartySetsState::kFpsEnabled
-            : FirstPartySetsState::kFpsDisabled;
+    fps_status = pref_service_->GetBoolean(
+                     prefs::kPrivacySandboxRelatedWebsiteSetsEnabled)
+                     ? FirstPartySetsState::kFpsEnabled
+                     : FirstPartySetsState::kFpsDisabled;
   }
   RecordFirstPartySetsStateHistogram(fps_status);
 
@@ -1526,7 +1527,7 @@ void PrivacySandboxService::MaybeInitializeFirstPartySetsPref() {
   // init has been run is not synced). If any of the user's devices local state
   // would disable the pref, it is disabled across all devices.
   if (AreThirdPartyCookiesBlocked(cookie_settings_.get())) {
-    pref_service_->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
+    pref_service_->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                               false);
   }
 

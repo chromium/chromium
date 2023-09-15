@@ -776,7 +776,7 @@ void SetupPromptTestState(
 // returning them to their default value.
 void ClearFpsUserPrefs(
     sync_preferences::TestingPrefServiceSyncable* pref_service) {
-  pref_service->RemoveUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled);
+  pref_service->RemoveUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
   pref_service->RemoveUserPref(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
 }
@@ -1826,7 +1826,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxPromptNoticeWaiting) {
 TEST_F(PrivacySandboxServiceTest,
        FirstPartySetsNotRelevantMetricAllowedCookies) {
   base::HistogramTester histogram_tester;
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -1846,7 +1846,7 @@ TEST_F(PrivacySandboxServiceTest,
 TEST_F(PrivacySandboxServiceTest,
        FirstPartySetsNotRelevantMetricBlockedCookies) {
   base::HistogramTester histogram_tester;
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -1865,7 +1865,7 @@ TEST_F(PrivacySandboxServiceTest,
 
 TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
   base::HistogramTester histogram_tester;
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -1884,7 +1884,7 @@ TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
 
 TEST_F(PrivacySandboxServiceTest, FirstPartySetsDisabledMetric) {
   base::HistogramTester histogram_tester;
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(false));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
@@ -2409,7 +2409,7 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
 
   EXPECT_EQ(u"google.com",
             privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
@@ -2454,7 +2454,7 @@ TEST_F(PrivacySandboxServiceTest,
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        std::make_unique<base::Value>(static_cast<int>(
                            content_settings::CookieControlsMode::kOff)));
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
@@ -2496,7 +2496,7 @@ TEST_F(PrivacySandboxServiceTest,
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
@@ -2540,7 +2540,7 @@ TEST_F(PrivacySandboxServiceTest,
       /*managed_cookie_exceptions=*/{});
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
@@ -2585,7 +2585,7 @@ TEST_F(PrivacySandboxServiceTest,
       /*managed_cookie_exceptions=*/{});
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
@@ -2630,7 +2630,7 @@ TEST_F(PrivacySandboxServiceTest,
       /*managed_cookie_exceptions=*/{});
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(false));
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
@@ -2667,7 +2667,7 @@ TEST_F(PrivacySandboxServiceTest,
       /*managed_cookie_exceptions=*/{});
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   // Verify `GetFirstPartySetOwner` returns empty if FPS is enabled but the
@@ -2703,7 +2703,7 @@ TEST_F(PrivacySandboxServiceTest,
       /*managed_cookie_exceptions=*/{});
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   // Simulate that the Global First-Party Sets are ready with the following set:
@@ -2748,7 +2748,8 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
 
   CreateService();
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2761,7 +2762,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
 
   CreateService();
   EXPECT_FALSE(
-      prefs()->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+      prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2773,7 +2774,8 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
                            content_settings::CookieControlsMode::kOff)));
 
   CreateService();
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2782,7 +2784,8 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2795,7 +2798,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   CreateService();
   EXPECT_FALSE(
-      prefs()->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+      prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 }
@@ -2823,7 +2826,7 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       /*managed_cookie_exceptions=*/{});
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   // Simulate that the Global First-Party Sets are ready with the following
@@ -2878,7 +2881,7 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       /*managed_cookie_exceptions=*/{});
   CreateService();
   ClearFpsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   // Expect queries to be resolved based on the FPS backend.

@@ -353,7 +353,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::content_settings::kCookieSessionOnly] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kPrivacySandboxFirstPartySetsEnabled] =
+  (*s_allowlist)[::prefs::kPrivacySandboxRelatedWebsiteSetsEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kBlockAll3pcToggleEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

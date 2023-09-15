@@ -51,7 +51,7 @@ bool GetEnabledStateForProfile(const PrefService* prefs) {
     return true;
   }
   return prefs &&
-         prefs->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled);
+         prefs->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 }  // namespace
