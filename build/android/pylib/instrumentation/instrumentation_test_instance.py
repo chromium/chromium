@@ -751,10 +751,11 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     if self._junit4_runner_class:
       if self._test_apk_incremental_install_json:
-        self._junit4_runner_supports_listing = next(
-            (True for x in self._test_apk.GetAllMetadata()
-             if 'real-instr' in x[0] and x[1] in _TEST_LIST_JUNIT4_RUNNERS),
-            False)
+        for name, value in self._test_apk.GetAllMetadata():
+          if (name.startswith('incremental-install-instrumentation-')
+              and value in _TEST_LIST_JUNIT4_RUNNERS):
+            self._junit4_runner_supports_listing = True
+            break
       else:
         self._junit4_runner_supports_listing = (
             self._junit4_runner_class in _TEST_LIST_JUNIT4_RUNNERS)
