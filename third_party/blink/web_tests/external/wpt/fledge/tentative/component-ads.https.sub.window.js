@@ -168,7 +168,7 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
 
-  await runBasicFledgeTestExpectingNoWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test,
       {uuid: uuid,
        interestGroupOverrides: {
@@ -216,7 +216,7 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
 
-  await runBasicFledgeTestExpectingNoWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test,
       { uuid: uuid,
         interestGroupOverrides: {
@@ -232,7 +232,7 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
 
-  await runBasicFledgeTestExpectingNoWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test,
       { uuid: uuid,
         interestGroupOverrides: {
@@ -248,7 +248,7 @@ promise_test(async test => {
 promise_test(async test => {
   const uuid = generateUuid(test);
 
-  await runBasicFledgeTestExpectingNoWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test,
       { uuid: uuid,
         interestGroupOverrides: {
@@ -331,7 +331,7 @@ promise_test(async test => {
     adComponentsList.push(componentRenderURL);
   }
 
-  await runBasicFledgeTestExpectingNoWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test,
       { uuid: uuid,
         interestGroupOverrides: {
@@ -357,7 +357,7 @@ promise_test(async test => {
     adComponentsList.push(adComponents[0].renderURL);
   }
 
-  await runBasicFledgeTestExpectingNoWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test,
       { uuid: uuid,
         interestGroupOverrides: {

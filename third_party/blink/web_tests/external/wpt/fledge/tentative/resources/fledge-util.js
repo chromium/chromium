@@ -2,6 +2,7 @@
 
 const BASE_URL = document.baseURI.substring(0, document.baseURI.lastIndexOf('/') + 1);
 const BASE_PATH = (new URL(BASE_URL)).pathname;
+const RESOURCE_PATH = `${BASE_PATH}resources/`
 
 const DEFAULT_INTEREST_GROUP_NAME = 'default name';
 
@@ -127,7 +128,8 @@ async function waitForObservedRequests(uuid, expectedRequests) {
 //
 // The default reportWin() method is empty.
 function createBiddingScriptURL(params = {}) {
-  let url = new URL(`${BASE_URL}resources/bidding-logic.sub.py`);
+  let origin = params.origin ? params.origin : new URL(BASE_URL).origin;
+  let url = new URL(`${origin}${RESOURCE_PATH}bidding-logic.sub.py`);
   if (params.generateBid)
     url.searchParams.append('generateBid', params.generateBid);
   if (params.reportWin)
@@ -173,6 +175,23 @@ function createRenderURL(uuid, script, signalsParams) {
   return url.toString();
 }
 
+// Creates an interest group owned by "origin" with a bidding logic URL located
+// on "origin" as well. Uses standard render and report URLs, which are not
+// necessarily on "origin". "interestGroupOverrides" may be used to override any
+// field of the created interest group.
+function createInterestGroupForOrigin(uuid, origin,
+                                      interestGroupOverrides = {}) {
+  return {
+    owner: origin,
+    name: DEFAULT_INTEREST_GROUP_NAME,
+    biddingLogicURL: createBiddingScriptURL(
+        { origin: origin,
+          reportWin: `sendReportTo('${createBidderReportURL(uuid)}');` }),
+    ads: [{ renderURL: createRenderURL(uuid) }],
+    ...interestGroupOverrides
+  };
+}
+
 // Joins an interest group that, by default, is owned by the current frame's
 // origin, is named DEFAULT_INTEREST_GROUP_NAME, has a bidding script that
 // issues a bid of 9 with a renderURL of "https://not.checked.test/${uuid}",
@@ -184,14 +203,8 @@ function createRenderURL(uuid, script, signalsParams) {
 // interest group.
 async function joinInterestGroup(test, uuid, interestGroupOverrides = {},
                                  durationSeconds = 60) {
-  let interestGroup = {
-    owner: window.location.origin,
-    name: DEFAULT_INTEREST_GROUP_NAME,
-    biddingLogicURL: createBiddingScriptURL(
-      { reportWin: `sendReportTo('${createBidderReportURL(uuid)}');` }),
-    ads: [{ renderURL: createRenderURL(uuid) }],
-    ...interestGroupOverrides
-  };
+  let interestGroup = createInterestGroupForOrigin(uuid, window.location.origin,
+                                                   interestGroupOverrides);
 
   await navigator.joinAdInterestGroup(interestGroup, durationSeconds);
   test.add_cleanup(
@@ -232,15 +245,33 @@ async function runBasicFledgeAuction(test, uuid, auctionConfigOverrides = {}) {
   return await navigator.runAdAuction(auctionConfig);
 }
 
+// Wrapper around runBasicFledgeAuction() that runs an auction with the specified
+// arguments, expecting the auction to have a winner. Returns the FencedFrameConfig
+// from the auction.
+async function runBasicFledgeTestExpectingWinner(test, uuid, auctionConfigOverrides = {}) {
+  let config = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
+  assert_true(config !== null, `Auction unexpectedly had no winner`);
+  assert_true(config instanceof FencedFrameConfig,
+      `Wrong value type returned from auction: ${config.constructor.type}`);
+  return config;
+}
+
+// Wrapper around runBasicFledgeAuction() that runs an auction with the specified
+// arguments, expecting the auction to have no winner.
+async function runBasicFledgeTestExpectingNoWinner(
+    test, uuid, auctionConfigOverrides = {}) {
+  let result = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
+  assert_true(result === null, 'Auction unexpectedly had a winner');
+}
+
 // Calls runBasicFledgeAuction(), expecting the auction to have a winner.
 // Creates a fenced frame that will be destroyed on completion of "test", and
 // navigates it to the URN URL returned by the auction. Does not wait for the
 // fenced frame to finish loading, since there's no API that can do that.
 async function runBasicFledgeAuctionAndNavigate(test, uuid,
                                                 auctionConfigOverrides = {}) {
-  let config = await runBasicFledgeAuction(test, uuid, auctionConfigOverrides);
-  assert_true(config instanceof FencedFrameConfig,
-      `Wrong value type returned from auction: ${config.constructor.type}`);
+  let config = await runBasicFledgeTestExpectingWinner(test, uuid,
+                                                       auctionConfigOverrides);
 
   let fencedFrame = document.createElement('fencedframe');
   fencedFrame.mode = 'opaque-ads';
@@ -252,24 +283,19 @@ async function runBasicFledgeAuctionAndNavigate(test, uuid,
 // Joins an interest group and runs an auction, expecting a winner to be
 // returned. "testConfig" can optionally modify the uuid, interest group or
 // auctionConfig.
-async function runBasicFledgeTestExpectingWinner(test, testConfig = {}) {
+async function joinGroupAndRunBasicFledgeTestExpectingWinner(test, testConfig = {}) {
   const uuid = testConfig.uuid ? testConfig.uuid : generateUuid(test);
   await joinInterestGroup(test, uuid, testConfig.interestGroupOverrides);
-  let config = await runBasicFledgeAuction(
-      test, uuid, testConfig.auctionConfigOverrides);
-  assert_true(config instanceof FencedFrameConfig,
-      `Wrong value type returned from auction: ${config.constructor.type}`);
+  await runBasicFledgeTestExpectingWinner(test, uuid, testConfig.auctionConfigOverrides);
 }
 
 // Joins an interest group and runs an auction, expecting no winner to be
 // returned. "testConfig" can optionally modify the uuid, interest group or
 // auctionConfig.
-async function runBasicFledgeTestExpectingNoWinner(test, testConfig = {}) {
+async function joinGroupAndRunBasicFledgeTestExpectingNoWinner(test, testConfig = {}) {
   const uuid = testConfig.uuid ? testConfig.uuid : generateUuid(test);
   await joinInterestGroup(test, uuid, testConfig.interestGroupOverrides);
-  let result = await runBasicFledgeAuction(
-      test, uuid, testConfig.auctionConfigOverrides);
-  assert_true(result === null, 'Auction unexpectedly had a winner');
+  await runBasicFledgeTestExpectingNoWinner(test, uuid, testConfig.auctionConfigOverrides);
 }
 
 // Test helper for report phase of auctions that lets the caller specify the

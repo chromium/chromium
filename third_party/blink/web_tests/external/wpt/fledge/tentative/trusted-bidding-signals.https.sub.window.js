@@ -25,7 +25,7 @@ async function runTrustedBiddingSignalsTest(
   interestGroupOverrides.biddingLogicURL =
     createBiddingScriptURL({
           generateBid: `if (!(${generateBidCheck})) return false;` });
-  await runBasicFledgeTestExpectingWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingWinner(
       test, {interestGroupOverrides: interestGroupOverrides});
 }
 

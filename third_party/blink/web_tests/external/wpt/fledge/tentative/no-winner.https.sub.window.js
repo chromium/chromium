@@ -62,7 +62,7 @@ const DECISION_LOGIC_SCRIPT_ERRORS = [
 for (error of BIDDING_LOGIC_SCRIPT_ERRORS) {
   promise_test((async (error, test) => {
     let biddingLogicURL = `${BASE_URL}resources/bidding-logic.sub.py?${error}`;
-    await runBasicFledgeTestExpectingNoWinner(
+    await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test,
       {interestGroupOverrides: {biddingLogicURL: biddingLogicURL}}
     );
@@ -73,7 +73,7 @@ for (error of DECISION_LOGIC_SCRIPT_ERRORS) {
   promise_test((async (error, test) => {
     let decisionLogicURL =
         `${BASE_URL}resources/decision-logic.sub.py?${error}`;
-    await runBasicFledgeTestExpectingNoWinner(
+    await joinGroupAndRunBasicFledgeTestExpectingNoWinner(
       test, { auctionConfigOverrides: { decisionLogicURL: decisionLogicURL } }
     );
   }).bind(undefined, error), `Decision logic script: ${error}`);

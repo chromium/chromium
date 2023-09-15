@@ -27,7 +27,7 @@ async function runTrustedScoringSignalsTest(test, uuid, renderURL, scoreAdCheck,
       decisionLogicURL:
           createDecisionScriptURL(uuid, {
                   scoreAd: `if (!(${scoreAdCheck})) throw "error";` })};
-  await runBasicFledgeTestExpectingWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingWinner(
       test,
       {
         uuid: uuid,
@@ -92,7 +92,7 @@ subsetTest(promise_test, async test => {
   const decisionLogicScriptUrl = createDecisionScriptURL(
       uuid,
       { scoreAd: 'if (trustedScoringSignals !== null) throw "error";' });
-  await runBasicFledgeTestExpectingWinner(
+  await joinGroupAndRunBasicFledgeTestExpectingWinner(
       test,
       { uuid: uuid,
         auctionConfigOverrides: { decisionLogicURL: decisionLogicScriptUrl }
