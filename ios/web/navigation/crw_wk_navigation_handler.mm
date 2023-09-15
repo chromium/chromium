@@ -440,6 +440,10 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   GURL responseURL = net::GURLWithNSURL(WKResponse.response.URL);
   if ([CRWErrorPageHelper isErrorPageFileURL:responseURL]) {
     handler(WKNavigationResponsePolicyAllow);
+    // Set the mime type for error pages. This allows them to be treated as
+    // HTML.
+    [self updatePendingNavigationInfoFromNavigationResponse:WKResponse
+                                                HTTPHeaders:nullptr];
     return;
   }
 

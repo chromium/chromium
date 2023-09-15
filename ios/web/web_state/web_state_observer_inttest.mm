@@ -364,7 +364,7 @@ ACTION_P6(VerifyErrorFinishedContext,
   EXPECT_FALSE((*context)->IsRendererInitiated());
   EXPECT_FALSE((*context)->GetResponseHeaders());
   ASSERT_TRUE(!web_state->IsLoading());
-  ASSERT_FALSE(web_state->ContentIsHTML());
+  ASSERT_TRUE(web_state->ContentIsHTML());
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
   NavigationItem* item = navigation_manager->GetLastCommittedItem();
   if (committed) {
