@@ -16,10 +16,9 @@
     (FamilyPickerCoordinator*)coordinator;
 
 // Called when the user confirms the selection by clicking the share button.
-- (void)familyPickerCoordinatorWasDismissed:
-            (FamilyPickerCoordinator*)coordinator
-                     withSelectedRecipients:
-                         (NSArray<RecipientInfoForIOSDisplay*>*)recipients;
+- (void)familyPickerCoordinator:(FamilyPickerCoordinator*)coordinator
+            didSelectRecipients:
+                (NSArray<RecipientInfoForIOSDisplay*>*)recipients;
 
 // Called when the user navigates back from family recipients selection to
 // password selection.

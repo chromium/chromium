@@ -34,13 +34,18 @@
 
 @implementation FamilyPickerCoordinator
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                recipients:
-                                    (NSArray<RecipientInfoForIOSDisplay*>*)
-                                        recipients {
-  self = [super initWithBaseViewController:viewController browser:browser];
+@synthesize baseNavigationController = _baseNavigationController;
+
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                          recipients:(NSArray<RecipientInfoForIOSDisplay*>*)
+                                         recipients {
+  self = [super initWithBaseViewController:navigationController
+                                   browser:browser];
   if (self) {
+    _baseNavigationController = navigationController;
     _recipients = recipients;
   }
   return self;
@@ -70,25 +75,19 @@
         @[ [UISheetPresentationControllerDetent mediumDetent] ];
   }
 
-  if (self.shouldDisplayBackButton) {
+  if (self.shouldNavigateBack) {
     [self.viewController setupLeftBackButton];
   } else {
     [self.viewController setupLeftCancelButton];
   }
 
-  [self.baseViewController presentViewController:self.navigationController
-                                        animated:YES
-                                      completion:nil];
+  // Disable animation when the view is displayed on top of the spinner view so
+  // that it looks as the spinner is replaced with the loaded data.
+  [self.baseNavigationController pushViewController:self.viewController
+                                           animated:self.shouldNavigateBack];
 }
 
 - (void)stop {
-  [self stopWithDismissViewCompletion:nil];
-}
-
-- (void)stopWithDismissViewCompletion:(ProceduralBlock)completion {
-  [self.viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:completion];
   self.navigationController = nil;
   self.viewController = nil;
   self.mediator = nil;
@@ -102,11 +101,11 @@
 
 - (void)familyPickerClosed:(FamilyPickerViewController*)controller
     withSelectedRecipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients {
-  [self.delegate familyPickerCoordinatorWasDismissed:self
-                              withSelectedRecipients:recipients];
+  [self.delegate familyPickerCoordinator:self didSelectRecipients:recipients];
 }
 
 - (void)familyPickerNavigatedBack:(FamilyPickerViewController*)controller {
+  [self.baseNavigationController popViewControllerAnimated:YES];
   [self.delegate familyPickerCoordinatorNavigatedBack:self];
 }
 

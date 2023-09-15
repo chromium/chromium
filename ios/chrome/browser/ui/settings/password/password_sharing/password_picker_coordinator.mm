@@ -31,14 +31,19 @@
 
 @implementation PasswordPickerCoordinator
 
+@synthesize baseNavigationController = _baseNavigationController;
+
 - (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                   credentials:
-                       (const std::vector<password_manager::CredentialUIEntry>&)
-                           credentials {
-  self = [super initWithBaseViewController:viewController browser:browser];
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                         credentials:(const std::vector<
+                                         password_manager::CredentialUIEntry>&)
+                                         credentials {
+  self = [super initWithBaseViewController:navigationController
+                                   browser:browser];
   if (self) {
+    _baseNavigationController = navigationController;
     _credentials = credentials;
   }
   return self;
@@ -68,19 +73,13 @@
     ];
   }
 
-  [self.baseViewController presentViewController:self.navigationController
-                                        animated:YES
-                                      completion:nil];
+  // Disable animation so that it looks as if the loaded password data replaces
+  // the spinner view displayed from the parent coordinator.
+  [self.baseNavigationController pushViewController:self.viewController
+                                           animated:NO];
 }
 
 - (void)stop {
-  [self stopWithDismissViewCompletion:nil];
-}
-
-- (void)stopWithDismissViewCompletion:(ProceduralBlock)completion {
-  [self.viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:completion];
   self.navigationController = nil;
   self.viewController = nil;
   self.mediator = nil;
@@ -89,14 +88,15 @@
 #pragma mark - PasswordPickerViewControllerPresentationDelegate
 
 - (void)passwordPickerWasDismissed:(PasswordPickerViewController*)controller {
+  [self.baseNavigationController popViewControllerAnimated:NO];
   [self.delegate passwordPickerCoordinatorWasDismissed:self];
 }
 
 - (void)passwordPickerClosed:(PasswordPickerViewController*)controller
      withSelectedCredentials:
          (const std::vector<password_manager::CredentialUIEntry>&)credentials {
-  [self.delegate passwordPickerCoordinatorWasDismissed:self
-                               withSelectedCredentials:credentials];
+  [self.delegate passwordPickerCoordinator:self
+                      didSelectCredentials:credentials];
 }
 
 @end

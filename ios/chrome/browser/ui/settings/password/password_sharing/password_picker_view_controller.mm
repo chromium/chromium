@@ -77,11 +77,6 @@ const CGFloat kAccessorySymbolSize = 22;
   }
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [self.delegate passwordPickerWasDismissed:self];
-  [super viewDidDisappear:animated];
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView

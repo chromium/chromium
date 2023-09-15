@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator.h"
 
-#import "base/ios/block_types.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -131,29 +130,24 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.navigationController = nil;
   self.mediator = nil;
 
-  [self stopFamilyPickerCoordinatorWithDismissViewCompletion:nil];
+  [self stopFamilyPickerCoordinator];
   [self stopFamilyPromoCoordinator];
   [self stopAlertCoordinator];
-  [self stopPasswordPickerCoordinatorWithDismissViewCompletion:nil];
+  [self stopPasswordPickerCoordinator];
 }
 
 #pragma mark - FamilyPickerCoordinatorDelegate
 
 - (void)familyPickerCoordinatorWasDismissed:
     (FamilyPickerCoordinator*)coordinator {
-  if (self.familyPickerCoordinator == coordinator) {
-    [self stopFamilyPickerCoordinatorWithDismissViewCompletion:nil];
-  }
-
   [self.delegate passwordSharingCoordinatorDidRemove:self];
 }
 
-- (void)familyPickerCoordinatorWasDismissed:
-            (FamilyPickerCoordinator*)coordinator
-                     withSelectedRecipients:
-                         (NSArray<RecipientInfoForIOSDisplay*>*)recipients {
+- (void)familyPickerCoordinator:(FamilyPickerCoordinator*)coordinator
+            didSelectRecipients:
+                (NSArray<RecipientInfoForIOSDisplay*>*)recipients {
   if (self.familyPickerCoordinator == coordinator) {
-    [self stopFamilyPickerCoordinatorWithDismissViewCompletion:nil];
+    [self stopFamilyPickerCoordinator];
   }
 
   // TODO(crbug.com/1463882): Implement status view that should be displayed
@@ -168,9 +162,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)familyPickerCoordinatorNavigatedBack:
     (FamilyPickerCoordinator*)coordinator {
   if (self.familyPickerCoordinator == coordinator) {
-    [self stopFamilyPickerCoordinatorWithDismissViewCompletion:^{
-      [self startPasswordPickerCoordinator];
-    }];
+    [self stopFamilyPickerCoordinator];
   }
 }
 
@@ -189,26 +181,15 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 - (void)passwordPickerCoordinatorWasDismissed:
     (PasswordPickerCoordinator*)coordinator {
-  if (self.passwordPickerCoordinator == coordinator) {
-    [self stopPasswordPickerCoordinatorWithDismissViewCompletion:nil];
-  }
-
   [self.delegate passwordSharingCoordinatorDidRemove:self];
 }
 
-- (void)
-    passwordPickerCoordinatorWasDismissed:
-        (PasswordPickerCoordinator*)coordinator
-                  withSelectedCredentials:
-                      (const std::vector<password_manager::CredentialUIEntry>&)
-                          credentials {
+- (void)passwordPickerCoordinator:(PasswordPickerCoordinator*)coordinator
+             didSelectCredentials:
+                 (const std::vector<password_manager::CredentialUIEntry>&)
+                     credentials {
   self.mediator.selectedCredentials = credentials;
-
-  if (self.passwordPickerCoordinator == coordinator) {
-    [self stopPasswordPickerCoordinatorWithDismissViewCompletion:^{
-      [self startFamilyPickerCoordinator];
-    }];
-  }
+  [self startFamilyPickerCoordinator];
 }
 
 #pragma mark - PasswordSharingMediatorDelegate
@@ -253,21 +234,20 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)startFamilyPickerCoordinator {
   [self.familyPickerCoordinator stop];
   self.familyPickerCoordinator = [[FamilyPickerCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                      recipients:self.recipients];
+      initWithBaseNavigationController:self.navigationController
+                               browser:self.browser
+                            recipients:self.recipients];
   self.familyPickerCoordinator.delegate = self;
-  self.familyPickerCoordinator.shouldDisplayBackButton =
-      _credentials.size() > 1;
+  self.familyPickerCoordinator.shouldNavigateBack = _credentials.size() > 1;
   [self.familyPickerCoordinator start];
 }
 
 - (void)startPasswordPickerCoordinator {
   [self.passwordPickerCoordinator stop];
   self.passwordPickerCoordinator = [[PasswordPickerCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                     credentials:_credentials];
+      initWithBaseNavigationController:self.navigationController
+                               browser:self.browser
+                           credentials:_credentials];
   self.passwordPickerCoordinator.delegate = self;
   [self.passwordPickerCoordinator start];
 }
@@ -295,16 +275,14 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.alertCoordinator start];
 }
 
-- (void)stopFamilyPickerCoordinatorWithDismissViewCompletion:
-    (ProceduralBlock)completion {
-  [self.familyPickerCoordinator stopWithDismissViewCompletion:completion];
+- (void)stopFamilyPickerCoordinator {
+  [self.familyPickerCoordinator stop];
   self.familyPickerCoordinator.delegate = nil;
   self.familyPickerCoordinator = nil;
 }
 
-- (void)stopPasswordPickerCoordinatorWithDismissViewCompletion:
-    (ProceduralBlock)completion {
-  [self.passwordPickerCoordinator stopWithDismissViewCompletion:completion];
+- (void)stopPasswordPickerCoordinator {
+  [self.passwordPickerCoordinator stop];
   self.passwordPickerCoordinator.delegate = nil;
   self.passwordPickerCoordinator = nil;
 }
