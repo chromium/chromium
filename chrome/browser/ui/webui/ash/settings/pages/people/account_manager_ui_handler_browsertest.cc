@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/account_manager_ui_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler.h"
 
 #include <memory>
 #include <ostream>
@@ -349,8 +349,9 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   // Check secondary accounts.
   for (const base::Value& account_value : result) {
     const base::Value::Dict& account = account_value.GetDict();
-    if (ValueOrEmpty(account.FindString("id")) == GetDeviceAccountInfo().id)
+    if (ValueOrEmpty(account.FindString("id")) == GetDeviceAccountInfo().id) {
       continue;
+    }
     EXPECT_FALSE(account.FindBool("isDeviceAccount").value());
 
     ::account_manager::Account expected_account =
@@ -437,8 +438,9 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
       const std::vector<::account_manager::Account>& accounts,
       const std::string& email) {
     for (const auto& account : accounts) {
-      if (account.raw_email == email)
+      if (account.raw_email == email) {
         return account;
+      }
     }
     return absl::nullopt;
   }
@@ -447,8 +449,9 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
       const base::Value::List& accounts,
       const std::string& email) {
     for (const base::Value& account : accounts) {
-      if (ValueOrEmpty(account.GetDict().FindString("email")) == email)
+      if (ValueOrEmpty(account.GetDict().FindString("email")) == email) {
         return account.Clone();
+      }
     }
     return absl::nullopt;
   }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/people_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/people_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -25,9 +25,9 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/account_manager_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/fingerprint_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/ash/parental_controls_handler.h"
@@ -361,8 +361,9 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
   html_source->AddResourcePath("fingerprint_scanner_animation.json",
                                IDR_FINGERPRINT_DEFAULT_ANIMATION);
 
-  if (are_fingerprint_settings_allowed)
+  if (are_fingerprint_settings_allowed) {
     quick_unlock::AddFingerprintResources(html_source);
+  }
 
   auto fp_setup_strings = quick_unlock::GetFingerprintDescriptionStrings(
       quick_unlock::GetFingerprintLocation());
@@ -538,8 +539,9 @@ PeopleSection::PeopleSection(Profile* profile,
       auth_performer_(UserDataAuthClient::Get()),
       fp_engine_(&auth_performer_) {
   // No search tags are registered if in guest mode.
-  if (IsGuestModeActive())
+  if (IsGuestModeActive()) {
     return;
+  }
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPeopleSearchConcepts());
@@ -565,8 +567,9 @@ PeopleSection::PeopleSection(Profile* profile,
 
   // Parental control search tags are added if necessary and do not update
   // dynamically during a user session.
-  if (ShouldShowParentalControlSettings(profile))
+  if (ShouldShowParentalControlSettings(profile)) {
     updater.AddSearchTags(GetParentalSearchConcepts());
+  }
 }
 
 PeopleSection::~PeopleSection() = default;
@@ -788,8 +791,9 @@ void PeopleSection::UpdateAccountManagerSearchTags(
   DCHECK(user);
 
   for (const ::account_manager::Account& account : accounts) {
-    if (IsSameAccount(account.key, user->GetAccountId()))
+    if (IsSameAccount(account.key, user->GetAccountId())) {
       continue;
+    }
 
     // If a non-device account exists, add the "Remove Account" search tag.
     updater.AddSearchTags(GetRemoveAccountSearchConcepts());

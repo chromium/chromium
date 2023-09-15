@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/account_manager_ui_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler.h"
 
 #include <utility>
 
@@ -207,8 +207,9 @@ AccountManagerUIHandler::AccountManagerUIHandler(
 AccountManagerUIHandler::~AccountManagerUIHandler() = default;
 
 void AccountManagerUIHandler::RegisterMessages() {
-  if (!profile_)
+  if (!profile_) {
     profile_ = Profile::FromWebUI(web_ui());
+  }
 
   web_ui()->RegisterMessageCallback(
       "getAccounts",
@@ -276,8 +277,9 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
     const base::flat_set<account_manager::Account>& arc_accounts) {
   // If JS was disallowed (e.g. the Settings window was closed) - return without
   // resolving the callback_id.
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
