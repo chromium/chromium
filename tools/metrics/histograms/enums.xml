@@ -72736,6 +72736,7 @@ Called by update_use_counter_css.py.-->
 
 <enum name="MobileBookmarkManagerFilter">
   <int value="0" label="Shopping"/>
+  <int value="1" label="Placeholder"/>
 </enum>
 
 <enum name="MobileDefaultBrowserState">

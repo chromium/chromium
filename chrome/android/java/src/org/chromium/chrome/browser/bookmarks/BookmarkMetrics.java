@@ -18,7 +18,9 @@ public class BookmarkMetrics {
     @IntDef({BookmarkManagerFilter.SHOPPING, BookmarkManagerFilter.COUNT})
     public @interface BookmarkManagerFilter {
         int SHOPPING = 0;
-        int COUNT = 1;
+        // Not reported to, but needed to avoid DCHECKs before another filter is added.
+        int PLACEHOLDER = 1;
+        int COUNT = 2;
     }
 
     /** Report a sort option was used in the bookmarks manager. */
