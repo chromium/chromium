@@ -444,6 +444,12 @@ BASE_FEATURE(kAutofillOverridePredictions,
 const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
     &kAutofillOverridePredictions, "spec", "[]"};
 
+// If enabled, Autofill will first look at field labels and then at field
+// attributes when classifying address fields in Mexico.
+BASE_FEATURE(kAutofillPreferLabelsInSomeCountries,
+             "AutofillPreferLabelsInSomeCountries",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill would not override the field values that were either
 // filled by Autofill or on page load.
 // TODO(crbug/1275649): Remove once experiment is finished.

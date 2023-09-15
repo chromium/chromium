@@ -32,6 +32,7 @@ inline constexpr char16_t kCompanyRe[] =
     u"|شرکت"                      // fa
     u"|회사|직장"                 // ko-KR
     u"|(nama.?)?perusahaan";      // id
+inline constexpr char16_t kStreetLocationRe[] = u"calle y número";  // es-MX
 inline constexpr char16_t kStreetNameRe[] =
     u"stra(ss|ß)e"                 // de
     u"|street"                     // en
@@ -39,6 +40,7 @@ inline constexpr char16_t kStreetNameRe[] =
     u"|rua|avenida"                // pt-PT, pt-BR
     u"|((?<!do |de )endere[çc]o)"  // pt-BR
     u"|logradouro"                 // pt-BR
+    u"|dirección"                  // es-MX
     u"|calle";                     // es-MX
 inline constexpr char16_t kHouseNumberRe[] =
     u"(house.?|street.?|^)(number|no\\.?$)"    // en
@@ -48,7 +50,7 @@ inline constexpr char16_t kHouseNumberRe[] =
     u"|exterior";                              // es-MX
 inline constexpr char16_t kApartmentNumberRe[] =
     u"apartment"                      // en
-    u"|interior"                      // es-MX
+    u"|interior|departamento"         // es-MX
     u"|n(u|ú)mero.*app?art(a|e)ment"  // es,fr,it
     u"|Wohnung"                       // de
     u"|квартир";                      // ru
@@ -105,7 +107,6 @@ inline constexpr char16_t kAddressLine2LabelRe[] =
     u"|주소";      // ko-KR
 inline constexpr char16_t kAddressLinesExtraRe[] =
     u"address.*line[3-9]|address[3-9]|addr[3-9]|street|line[3-9]"
-    u"|municipio"           // es
     u"|batiment|residence"  // fr-FR
     u"|indirizzo[3-9]";     // it-IT
 inline constexpr char16_t kAddressLookupRe[] = u"lookup";
@@ -154,11 +155,11 @@ inline constexpr char16_t kCityRe[] =
     u"city|town"
     u"|\\bort\\b|stadt"                                  // de-DE
     u"|suburb"                                           // en-AU
-    u"|ciudad|provincia|localidad|poblacion"             // es
+    u"|ciudad|localidad|poblacion"                       // es
     u"|ville|commune"                                    // fr-FR
     u"|localita"                                         // it-IT
     u"|市区町村"                                         // ja-JP
-    u"|cidade|município"                                 // pt-BR, pt-PT
+    u"|cidade"                                           // pt-BR
     u"|Город|Насел(е|ё)нный.?пункт"                      // ru
     u"|市"                                               // zh-CN
     u"|分區"                                             // zh-TW
@@ -195,16 +196,15 @@ inline constexpr char16_t kOverflowAndLandmarkRe[] =
 
 inline constexpr char16_t kLandmarkRe[] =
     u"landmark"
-    u"|(?:ponto|complemento).*ref[êe]r[êe]ncia"  // pt-BR, pt-PT
-    u"|punto.*referencia";                       // es
+    u"|ref[êe]r[êe]ncia";  // es-MX, pt-BR
 
 inline constexpr char16_t kBetweenStreetsRe[] =
     u"(cross|between).*street"
     u"|entre.*calle";  // es
 
 inline constexpr char16_t kAdminLevel2Re[] =
-    u"municipio"                  // pt
-    u"|municipio|delegaci[oó]n";  // es
+    u"município"                  // pt
+    u"|municipio|delegaci[oó]n";  // es-MX
 
 /////////////////////////////////////////////////////////////////////////////
 // search_field.cc

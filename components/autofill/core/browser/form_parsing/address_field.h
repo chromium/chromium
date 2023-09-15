@@ -69,10 +69,12 @@ class AddressField : public FormField {
                     PatternSource pattern_source);
 
   bool ParseAddress(AutofillScanner* scanner,
+                    const GeoIpCountryCode& client_country,
                     const LanguageCode& page_language,
                     PatternSource pattern_source);
 
   bool ParseAddressFieldSequence(AutofillScanner* scanner,
+                                 const GeoIpCountryCode& client_country,
                                  const LanguageCode& page_language,
                                  PatternSource pattern_source);
 
@@ -97,6 +99,7 @@ class AddressField : public FormField {
   // dependent locality, city, state, country, zip, landmark, between streets,
   // admin level 2 or none of those.
   bool ParseAddressField(AutofillScanner* scanner,
+                         const GeoIpCountryCode& client_country,
                          const LanguageCode& page_language,
                          PatternSource pattern_source);
 
@@ -169,6 +172,7 @@ class AddressField : public FormField {
   raw_ptr<LogManager> log_manager_;
 
   raw_ptr<AutofillField> company_ = nullptr;
+  raw_ptr<AutofillField> street_location_ = nullptr;
   raw_ptr<AutofillField> street_name_ = nullptr;
   raw_ptr<AutofillField> house_number_ = nullptr;
   raw_ptr<AutofillField> address1_ = nullptr;

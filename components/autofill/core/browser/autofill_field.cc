@@ -46,7 +46,8 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
     base::MakeFixedFlatSet<std::pair<ServerFieldType, HtmlFieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel1},
          {ADDRESS_HOME_ADMIN_LEVEL2, HtmlFieldType::kAddressLevel2},
-         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLevel2},
+         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLine2},
+         {ADDRESS_HOME_APT_NUM, HtmlFieldType::kAddressLine3},
          {ADDRESS_HOME_BETWEEN_STREETS, HtmlFieldType::kAddressLevel2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel1},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLevel2},
@@ -66,6 +67,7 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
     base::MakeFixedFlatSet<std::pair<ServerFieldType, ServerFieldType>>(
         {{ADDRESS_HOME_ADMIN_LEVEL2, ADDRESS_HOME_CITY},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE3},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_HOUSE_NUMBER},
          {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_STREET_ADDRESS},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY},

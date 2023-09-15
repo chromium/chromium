@@ -14,6 +14,17 @@
       }
     ]
   },
+  "ADDRESS_HOME_STREET_LOCATION": {
+    "es": [
+      {
+        "positive_pattern": "calle y número",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "SEARCH"]
+      }
+    ]
+  },
   "ADDRESS_HOME_STREET_NAME": {
     "en" : [
       {
@@ -53,7 +64,7 @@
     ],
     "pt" : [
       {
-        "positive_pattern": "rua|avenida|endere[çc]o|logradouro",
+        "positive_pattern": "rua|avenida|endere[çc]o|logradouro|dirección",
         "positive_score": 1.1,
         "negative_pattern": "(do |de )endere[çc]o",
         "match_field_attributes": ["LABEL", "NAME"],
@@ -73,7 +84,7 @@
 	],
     "es": [
       {
-        "positive_pattern": "interior|número.*apartamento",
+        "positive_pattern": "interior|número.*apartamento|departamento",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -648,15 +659,6 @@
         "match_field_input_types": ["TEXT"]
       }
     ],
-    "es": [
-      {
-        "positive_pattern": "municipio",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
-      }
-    ],
     "fr": [
       {
         "positive_pattern": "batiment|residence",
@@ -1016,7 +1018,7 @@
     ],
     "es": [
       {
-        "positive_pattern": "ciudad|provincia|localidad|poblacion",
+        "positive_pattern": "ciudad|localidad|poblacion",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1052,7 +1054,7 @@
     ],
     "pt": [
       {
-        "positive_pattern": "cidade|município",
+        "positive_pattern": "cidade",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1277,7 +1279,7 @@
     ],
     "pt": [
       {
-        "positive_pattern": "(?:ponto|complemento).*ref[êe]r[êe]ncia",
+        "positive_pattern": "ref[êe]r[êe]ncia",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1286,7 +1288,7 @@
     ],
     "es": [
       {
-        "positive_pattern": "punto.*referencia",
+        "positive_pattern": "ref[êe]r[êe]ncia",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1317,7 +1319,7 @@
   "ADMIN_LEVEL_2": {
     "pt": [
       {
-        "positive_pattern": "municipio",
+        "positive_pattern": "município",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

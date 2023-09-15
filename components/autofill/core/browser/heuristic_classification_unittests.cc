@@ -333,13 +333,23 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   if (const std::string* label = field_dict.FindString("label_attr")) {
     field.label = base::UTF8ToUTF16(*label);
   }
+  // Token list taken from
+  // out/*/gen/third_party/blink/renderer/core/input_type_names.cc
+  // and extended by textarea.
+  constexpr std::string_view valid_control_types[] = {
+      "button",   "checkbox", "color",  "date",  "datetime", "datetime-local",
+      "email",    "file",     "hidden", "image", "month",    "number",
+      "password", "radio",    "range",  "reset", "search",   "submit",
+      "tel",      "text",     "time",   "url",   "week",     "textarea"};
   if (const std::string* type = field_dict.FindString("type_attr")) {
     if (*type == "select") {
       field.form_control_type = "select-one";
     } else if (*type == "input") {
       field.form_control_type = "text";
-    } else {
+    } else if (base::Contains(valid_control_types, *type)) {
       field.form_control_type = *type;
+    } else {
+      field.form_control_type = "text";
     }
   }
   if (const std::string* autocomplete =
@@ -526,9 +536,11 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableExpirationDateImprovements,
       // Allow local heuristics to take precedence.
       features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+      features::kAutofillLocalHeuristicsOverrides,
       // Other improvements.
       features::kAutofillEnableZipOnlyAddressForms,
-      features::kAutofillDefaultToCityAndNumber};
+      features::kAutofillDefaultToCityAndNumber,
+      features::kAutofillPreferLabelsInSomeCountries};
   std::vector<base::test::FeatureRef> disabled_features = {};
 
   auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {

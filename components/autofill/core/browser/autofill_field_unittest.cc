@@ -359,7 +359,11 @@ TEST_P(AutofillLocalHeuristicsOverridesTest,
       {test::CreateFieldPrediction(test_case.server_type)});
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            test_case.heuristic_type);
-  EXPECT_EQ(test_case.expected_result, field.ComputedType().GetStorableType());
+  EXPECT_EQ(test_case.expected_result, field.ComputedType().GetStorableType())
+      << "html_field_type: " << test_case.html_field_type
+      << ", server_type: " << test_case.server_type
+      << ", heuristic_type: " << test_case.heuristic_type
+      << ", expected_result: " << test_case.expected_result;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -387,7 +391,7 @@ INSTANTIATE_TEST_SUITE_P(
             .heuristic_type = ADDRESS_HOME_ADMIN_LEVEL2,
             .expected_result = ADDRESS_HOME_ADMIN_LEVEL2},
         AutofillLocalHeuristicsOverridesParams{
-            .html_field_type = HtmlFieldType::kAddressLevel2,
+            .html_field_type = HtmlFieldType::kAddressLine2,
             .server_type = ADDRESS_HOME_STREET_ADDRESS,
             .heuristic_type = ADDRESS_HOME_APT_NUM,
             .expected_result = ADDRESS_HOME_APT_NUM},

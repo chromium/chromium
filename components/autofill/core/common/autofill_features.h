@@ -180,6 +180,8 @@ BASE_DECLARE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPopupUseLatencyInformationForAcceptThreshold);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillPreferLabelsInSomeCountries);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPreventOverridingPrefilledValues);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillProbableFormSubmissionInBrowser);

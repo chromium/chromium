@@ -3,7 +3,7 @@ NAME_LAST | ln | Sobrenome: |  | fn_1
 COMPANY_NAME | cm | Empresa: |  | fn_1
 ADDRESS_HOME_HOUSE_NUMBER | hn | Número da residência: |  | fn_1
 ADDRESS_HOME_STREET_NAME | sn | Endereço: |  | fn_1
-ADDRESS_HOME_CITY | ct | Município: |  | fn_1
+ADDRESS_HOME_CITY | ct | Cidade: |  | fn_1
 ADDRESS_HOME_ZIP | zc | CEP: |  | fn_1
 ADDRESS_HOME_STATE | st | Estado: |  | fn_1
 EMAIL_ADDRESS | em | Email: |  | fn_1
