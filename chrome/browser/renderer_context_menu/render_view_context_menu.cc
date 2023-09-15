@@ -803,8 +803,7 @@ RenderViewContextMenu::RenderViewContextMenu(
           autofill::PersonalDataManagerFactory::GetForProfile(GetProfile()),
           this,
           &menu_model_,
-          GetBrowser(),
-          std::make_unique<ScopedNewBadgeTracker>(GetProfile())) {
+          GetBrowser()) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,

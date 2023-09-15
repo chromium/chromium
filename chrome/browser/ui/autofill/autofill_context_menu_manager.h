@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
@@ -38,12 +37,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // Returns true if the given id is one generated for autofill context menu.
   static bool IsAutofillCustomCommandId(CommandId command_id);
 
-  AutofillContextMenuManager(
-      PersonalDataManager* personal_data_manager,
-      RenderViewContextMenuBase* delegate,
-      ui::SimpleMenuModel* menu_model,
-      Browser* browser,
-      std::unique_ptr<ScopedNewBadgeTracker> new_badge_tracker);
+  AutofillContextMenuManager(PersonalDataManager* personal_data_manager,
+                             RenderViewContextMenuBase* delegate,
+                             ui::SimpleMenuModel* menu_model,
+                             Browser* browser);
   ~AutofillContextMenuManager() override;
   AutofillContextMenuManager(const AutofillContextMenuManager&) = delete;
   AutofillContextMenuManager& operator=(const AutofillContextMenuManager&) =
@@ -91,8 +88,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   const raw_ptr<RenderViewContextMenuBase> delegate_;
   const raw_ptr<Browser> browser_;
   content::ContextMenuParams params_;
-
-  std::unique_ptr<ScopedNewBadgeTracker> new_badge_tracker_;
 };
 
 }  // namespace autofill

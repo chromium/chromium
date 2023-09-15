@@ -38,8 +38,7 @@ class AutofillContextMenuManagerFeedbackUILacrosBrowserTest
     render_view_context_menu_->Init();
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            nullptr, render_view_context_menu_.get(), nullptr, nullptr,
-            std::make_unique<ScopedNewBadgeTracker>(browser()->profile()));
+            nullptr, render_view_context_menu_.get(), nullptr, nullptr);
 
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                  true);
