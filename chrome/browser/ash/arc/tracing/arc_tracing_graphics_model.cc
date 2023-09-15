@@ -46,7 +46,6 @@ constexpr char kArgumentAppId[] = "app_id";
 constexpr char kArgumentBufferId[] = "buffer_id";
 
 constexpr char kKeyActivity[] = "activity";
-constexpr char kKeyAndroid[] = "android";
 constexpr char kKeyBuffers[] = "buffers";
 constexpr char kKeyChrome[] = "chrome";
 constexpr char kKeyDuration[] = "duration";
@@ -69,14 +68,8 @@ constexpr char kReleaseBufferQuery[] =
 constexpr char kDequeueBufferQuery[] = "android:dequeueBuffer";
 constexpr char kQueueBufferQuery[] = "android:queueBuffer";
 
-constexpr char kHandleMessageRefreshQuery[] =
-    "android:onMessageReceived/android:handleMessageRefresh";
-constexpr char kHandleMessageInvalidateQuery[] =
-    "android:onMessageReceived/android:handleMessageInvalidate";
 constexpr char kChromeTopEventsQuery[] =
     "viz,benchmark:Graphics.Pipeline.DrawAndSwap";
-constexpr char kSurfaceFlingerVsyncHandlerQuery[] = "android:HW_VSYNC_0|*";
-constexpr char kArcVsyncTimestampQuery[] = "android:ARC_VSYNC|*";
 
 constexpr char kExoSurfaceAttachMatcher[] = "exo:Surface::Attach";
 
@@ -691,79 +684,6 @@ void GetChromeTopLevelEvents(const ArcTracingModel& common_model,
            BufferEventType::kChromeOSJank);
 }
 
-// Helper that extracts top level Android events, such as refresh, vsync.
-void GetAndroidTopEvents(const ArcTracingModel& common_model,
-                         ArcTracingGraphicsModel::EventsContainer* result) {
-  result->buffer_events().resize(1);
-  for (const ArcTracingEvent* event :
-       common_model.Select(kHandleMessageRefreshQuery)) {
-    GetEventMapper().Produce(*event, &result->buffer_events()[0]);
-  }
-  for (const ArcTracingEvent* event :
-       common_model.Select(kHandleMessageInvalidateQuery)) {
-    GetEventMapper().Produce(*event, &result->buffer_events()[0]);
-  }
-
-  const BufferGraphicsEventMapper::MappingRule
-      mapArcTimestampTraceEventToVsyncTimestamp(
-          std::make_unique<ArcTracingEventMatcher>(kArcVsyncTimestampQuery),
-          BufferEventType::kVsyncTimestamp, BufferEventType::kNone,
-          base::BindRepeating([](const ArcTracingEventMatcher& matcher,
-                                 const ArcTracingEvent& event) {
-            // kVsyncTimestamp is special in that we get the actual/ideal
-            // vsync timestamp which is provided as extra metadata encoded in
-            // the event name string, rather than looking at the the timestamp
-            // at which the event was recorded.
-            absl::optional<int64_t> timestamp =
-                matcher.ReadAndroidEventInt64(event);
-
-            // The encoded int64 timestamp is in nanoseconds. Convert to
-            // microseconds as that is what the event timestamps are in.
-            return timestamp ? (*timestamp / 1000) : event.GetTimestamp();
-          }));
-  bool hasArcVsyncTimestampEvents = false;
-  for (const ArcTracingEvent* event :
-       common_model.Select(kArcVsyncTimestampQuery)) {
-    if (mapArcTimestampTraceEventToVsyncTimestamp.Produce(
-            *event, &result->global_events())) {
-      hasArcVsyncTimestampEvents = true;
-    }
-  }
-
-  if (!hasArcVsyncTimestampEvents) {
-    // For backwards compatibility, if there are no events that match
-    // kArcVsyncTimestampQuery, we use the timestamp of the events that match
-    // kSurfaceFlingerVsyncHandlerQuery as the kVsyncTimestamp event, though
-    // this does not accurately represent the vsync event timestamp.
-    const BufferGraphicsEventMapper::MappingRule
-        mapVsyncHandlerTraceToVsyncTimestamp(
-            std::make_unique<ArcTracingEventMatcher>(
-                kSurfaceFlingerVsyncHandlerQuery),
-            BufferEventType::kVsyncTimestamp, BufferEventType::kNone);
-
-    for (const ArcTracingEvent* event :
-         common_model.Select(kSurfaceFlingerVsyncHandlerQuery))
-      mapVsyncHandlerTraceToVsyncTimestamp.Produce(*event,
-                                                   &result->global_events());
-  }
-
-  const BufferGraphicsEventMapper::MappingRule
-      mapVsyncHandlerTraceToVsyncHandlerEvent(
-          std::make_unique<ArcTracingEventMatcher>(
-              kSurfaceFlingerVsyncHandlerQuery),
-          BufferEventType::kSurfaceFlingerVsyncHandler, BufferEventType::kNone);
-  for (const ArcTracingEvent* event :
-       common_model.Select(kSurfaceFlingerVsyncHandlerQuery))
-    mapVsyncHandlerTraceToVsyncHandlerEvent.Produce(*event,
-                                                    &result->global_events());
-
-  SortBufferEventsByTimestamp(&result->buffer_events()[0]);
-
-  AddJanks(result, BufferEventType::kSurfaceFlingerCompositionStart,
-           BufferEventType::kSurfaceFlingerCompositionJank);
-  SortBufferEventsByTimestamp(&result->global_events());
-}
-
 // Helper that serializes events |events| to the |base::Value::List|.
 base::Value::List SerializeEvents(
     const ArcTracingGraphicsModel::BufferEvents& events) {
@@ -1052,13 +972,6 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model) {
       return false;
   }
 
-  GetAndroidTopEvents(common_model, &android_top_level_);
-  if (android_top_level_.buffer_events().empty()) {
-    LOG(ERROR) << "No Android events";
-    if (!skip_structure_validation_)
-      return false;
-  }
-
   system_model_.CopyFrom(common_model.system_model());
 
   VsyncTrim();
@@ -1078,13 +991,10 @@ void ArcTracingGraphicsModel::NormalizeTimestamps() {
     all_buffers.emplace_back(&view.second.global_events());
   }
 
-  std::vector<EventsContainer*> containers{&android_top_level_,
-                                           &chrome_top_level_};
-  for (EventsContainer* container : containers) {
-    for (auto& buffer : container->buffer_events())
-      all_buffers.emplace_back(&buffer);
-    all_buffers.emplace_back(&container->global_events());
+  for (auto& buffer : chrome_top_level_.buffer_events()) {
+    all_buffers.emplace_back(&buffer);
   }
+  all_buffers.emplace_back(&chrome_top_level_.global_events());
 
   uint64_t min = std::numeric_limits<uint64_t>::max();
   uint64_t max = std::numeric_limits<uint64_t>::min();
@@ -1125,7 +1035,6 @@ void ArcTracingGraphicsModel::NormalizeTimestamps() {
 
 void ArcTracingGraphicsModel::Reset() {
   chrome_top_level_.Reset();
-  android_top_level_.Reset();
   view_buffers_.clear();
   chrome_buffer_id_to_task_id_.clear();
   system_model_.Reset();
@@ -1139,13 +1048,6 @@ void ArcTracingGraphicsModel::Reset() {
 void ArcTracingGraphicsModel::VsyncTrim() {
   int64_t trim_timestamp = -1;
 
-  for (const auto& it : android_top_level_.global_events()) {
-    if (it.type == BufferEventType::kVsyncTimestamp) {
-      trim_timestamp = it.timestamp;
-      break;
-    }
-  }
-
   if (trim_timestamp < 0) {
     LOG(ERROR) << "VSYNC event was not found, could not trim.";
     return;
@@ -1153,9 +1055,6 @@ void ArcTracingGraphicsModel::VsyncTrim() {
 
   TrimEventsContainer(&chrome_top_level_, trim_timestamp,
                       {BufferEventType::kChromeOSDraw});
-  TrimEventsContainer(&android_top_level_, trim_timestamp,
-                      {BufferEventType::kSurfaceFlingerInvalidationStart,
-                       BufferEventType::kSurfaceFlingerCompositionStart});
   for (auto& view_buffer : view_buffers_) {
     TrimEventsContainer(&view_buffer.second, trim_timestamp,
                         {BufferEventType::kBufferQueueDequeueStart,
@@ -1184,9 +1083,6 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
     view_list.Append(std::move(view_value));
   }
   root.Set(kKeyViews, std::move(view_list));
-
-  // Android top events.
-  root.Set(kKeyAndroid, SerializeEventsContainer(android_top_level_));
 
   // Chrome top events
   root.Set(kKeyChrome, SerializeEventsContainer(chrome_top_level_));
@@ -1258,9 +1154,6 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
         return false;
     }
   }
-
-  if (!LoadEventsContainer(root.FindDict(kKeyAndroid), &android_top_level_))
-    return false;
 
   if (!LoadEventsContainer(root.FindDict(kKeyChrome), &chrome_top_level_))
     return false;

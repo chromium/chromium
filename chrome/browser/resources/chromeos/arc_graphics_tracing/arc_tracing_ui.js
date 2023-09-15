@@ -521,7 +521,6 @@ class EventBands {
     this.charts = [];
     this.globalEvents = [];
     this.tooltips = [];
-    this.vsyncEvents = null;
     this.resolution = resolution;
     this.minTimestamp = minTimestamp;
     this.maxTimestamp = maxTimestamp;
@@ -950,16 +949,6 @@ class EventBands {
     this.globalEvents.push(events);
   }
 
-  /**
-   * Sets VSYNC events and adds them as a global events.
-   *
-   * @param {Events} VSYNC events to set.
-   */
-  setVSync(events) {
-    this.addGlobal(events);
-    this.vsyncEvents = events;
-  }
-
   /** Initializes tooltip support by observing mouse events */
   setTooltip_() {
     this.tooltip = $('arc-event-band-tooltip');
@@ -1096,23 +1085,6 @@ class EventBands {
     }
   }
 
-  /**
-   * Returns timestamp of the last VSYNC event happened before or on given
-   * |eventTimestamp|.
-   *
-   * @param {number} eventTimestamp.
-   */
-  getVSyncTimestamp_(eventTimestamp) {
-    if (!this.vsyncEvents) {
-      return null;
-    }
-    const vsyncEventIndex = this.vsyncEvents.getLastBefore(eventTimestamp);
-    if (vsyncEventIndex < 0) {
-      return null;
-    }
-    return this.vsyncEvents.events[vsyncEventIndex][1];
-  }
-
 
   /**
    * Adds time information for |eventTimestamp| to the tooltip. Global time is
@@ -1125,13 +1097,7 @@ class EventBands {
    * @returns {number} vertical position of the next element.
    */
   addTimeInfoToTooltip_(svg, yOffset, eventTimestamp) {
-    const vsyncTimestamp = this.getVSyncTimestamp_(eventTimestamp);
-
-    let text = timestampToMsText(eventTimestamp) + ' ms';
-    if (vsyncTimestamp) {
-      text += ', +' + timestampToMsText(eventTimestamp - vsyncTimestamp) +
-          ' since last vsync';
-    }
+    const text = timestampToMsText(eventTimestamp) + ' ms';
 
     yOffset += this.lineHeight;
     SVG.addText(svg, this.horizontalGap, yOffset, this.fontSize, text);
@@ -1569,11 +1535,6 @@ class CpuDetailedInfoView extends DetailedInfoView {
       }
       bands.addBandSeparator(2 /* padding */);
     }
-
-    const vsyncEvents = new Events(
-        overviewBand.model.android.global_events, 406 /* kVsyncTimestamp */,
-        406 /* kVsyncTimestamp */);
-    bands.setVSync(vsyncEvents);
 
     // Add center and boundary lines.
     const kTimeMark = 10000;

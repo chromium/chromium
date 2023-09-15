@@ -26,7 +26,6 @@ class ArcTracingModel;
 // view, which is defined by Activity name and Android task id.
 // View events are kept separately per individual view and each view may own
 // multiple graphics buffers. Following is the structure of events:
-// |android_top_level_| - top level rendering events from Android
 // |chrome_top_level_| - top level rendering events from Chrome.
 // |view_buffers_| - map views to buffer events.
 // -- view1
@@ -191,10 +190,6 @@ class ArcTracingGraphicsModel {
 
   const ViewMap& view_buffers() const { return view_buffers_; }
 
-  const EventsContainer& android_top_level() const {
-    return android_top_level_;
-  }
-
   const EventsContainer& chrome_top_level() const { return chrome_top_level_; }
 
   ArcSystemModel& system_model() { return system_model_; }
@@ -229,7 +224,6 @@ class ArcTracingGraphicsModel {
   ViewMap view_buffers_;
   // To avoid overlapping events are stored interlaced.
   EventsContainer chrome_top_level_;
-  EventsContainer android_top_level_;
   // Total duration of this model.
   uint32_t duration_ = 0;
   // Title of the traced app.

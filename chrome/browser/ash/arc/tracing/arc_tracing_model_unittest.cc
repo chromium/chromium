@@ -134,7 +134,6 @@ std::unique_ptr<ArcTracingGraphicsModel> LoadGraphicsModel(
 // Ensures |model1| is equal to |model2|.
 void EnsureGraphicsModelsEqual(const ArcTracingGraphicsModel& model1,
                                const ArcTracingGraphicsModel& model2) {
-  EXPECT_EQ(model1.android_top_level(), model2.android_top_level());
   EXPECT_EQ(model1.chrome_top_level(), model2.chrome_top_level());
   EXPECT_EQ(model1.view_buffers(), model2.view_buffers());
   EXPECT_EQ(model1.system_model(), model2.system_model());
@@ -193,25 +192,6 @@ TEST_F(ArcTracingModelTest, TopLevel) {
   // Make sure we can create graphics model.
   ArcTracingGraphicsModel graphics_model;
   ASSERT_TRUE(graphics_model.Build(model));
-
-  ASSERT_EQ(1U, graphics_model.android_top_level().buffer_events().size());
-  EXPECT_TRUE(ValidateGrahpicsEvents(
-      graphics_model.android_top_level().buffer_events()[0],
-      {GraphicsEventType::kSurfaceFlingerInvalidationStart,
-       GraphicsEventType::kSurfaceFlingerInvalidationDone,
-       GraphicsEventType::kSurfaceFlingerCompositionStart,
-       GraphicsEventType::kSurfaceFlingerCompositionDone}));
-  EXPECT_TRUE(
-      ValidateGrahpicsEvents(graphics_model.android_top_level().global_events(),
-                             {GraphicsEventType::kSurfaceFlingerVsyncHandler,
-                              GraphicsEventType::kSurfaceFlingerCompositionJank,
-                              GraphicsEventType::kVsyncTimestamp}));
-  ASSERT_FALSE(graphics_model.android_top_level().global_events().empty());
-  // Check trimmed by VSYNC.
-  EXPECT_EQ(GraphicsEventType::kSurfaceFlingerVsyncHandler,
-            graphics_model.android_top_level().global_events()[0].type);
-  EXPECT_EQ(0U,
-            graphics_model.android_top_level().global_events()[0].timestamp);
 
   EXPECT_EQ(2U, graphics_model.chrome_top_level().buffer_events().size());
   for (const auto& chrome_top_level_band :
