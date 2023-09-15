@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/sync/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -39,7 +38,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 67;
+const int kCurrentVersionNumber = 68;
 const int kCompatibleVersionNumber = 16;
 
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
@@ -98,7 +97,6 @@ HistoryDatabase::HistoryDatabase(
            // value, tells us how much memory the cache will use maximum.
            // 1000 * 4kB = 4MB
            .cache_size = 1000}),
-      typed_url_metadata_db_(&db_, &meta_table_),
       history_metadata_db_(&db_, &meta_table_) {}
 
 HistoryDatabase::~HistoryDatabase() = default;
@@ -129,11 +127,8 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
     return LogInitFailure(InitStep::META_TABLE_INIT);
   if (!CreateURLTable(false) || !InitVisitTable() ||
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
-      !InitSegmentTables() || !typed_url_metadata_db_.Init() ||
-      !InitVisitAnnotationsTables() || !CreateVisitedLinkTable()) {
-    return LogInitFailure(InitStep::CREATE_TABLES);
-  }
-  if (!history_metadata_db_.Init()) {
+      !InitSegmentTables() || !InitVisitAnnotationsTables() ||
+      !CreateVisitedLinkTable() || !history_metadata_db_.Init()) {
     return LogInitFailure(InitStep::CREATE_TABLES);
   }
   CreateMainURLIndex();
@@ -527,10 +522,6 @@ void HistoryDatabase::SetKnownToSyncVisitsExist(bool exist) {
   meta_table_.SetValue(kKnownToSyncVisitsExist, exist ? 1 : 0);
 }
 
-TypedURLSyncMetadataDatabase* HistoryDatabase::GetTypedURLMetadataDB() {
-  return &typed_url_metadata_db_;
-}
-
 HistorySyncMetadataDatabase* HistoryDatabase::GetHistoryMetadataDB() {
   return &history_metadata_db_;
 }
@@ -776,13 +767,8 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   }
 
   if (cur_version == 40) {
-    std::vector<URLID> visited_url_rowids_sorted;
-    if (!GetAllVisitedURLRowidsForMigrationToVersion40(
-            &visited_url_rowids_sorted) ||
-        !typed_url_metadata_db_.CleanOrphanedMetadataForMigrationToVersion40(
-            visited_url_rowids_sorted)) {
-      return LogMigrationFailure(40);
-    }
+    // The migration to version 40 concerned Sync metadata for TypedURLs, which
+    // doesn't exist anymore in current versions (68+). So nothing to do here.
     cur_version++;
     // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
     std::ignore = meta_table_.SetVersionNumber(cur_version);
@@ -1002,6 +988,15 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
     std::ignore = meta_table_.SetVersionNumber(cur_version);
   }
 
+  if (cur_version == 67) {
+    if (!MigrateRemoveTypedUrlMetadata()) {
+      return LogMigrationFailure(67);
+    }
+    cur_version++;
+    // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+    std::ignore = meta_table_.SetVersionNumber(cur_version);
+  }
+
   // =========================       ^^ new migration code goes here ^^
   // ADDING NEW MIGRATION CODE
   // =========================
@@ -1043,5 +1038,15 @@ void HistoryDatabase::MigrateTimeEpoch() {
       "WHERE id IN (SELECT id FROM segment_usage WHERE time_slot > 0);");
 }
 #endif
+
+bool HistoryDatabase::MigrateRemoveTypedUrlMetadata() {
+  if (!meta_table_.DeleteKey("typed_url_model_type_state")) {
+    return false;
+  }
+  if (!db_.Execute("DROP TABLE IF EXISTS typed_url_sync_metadata;")) {
+    return false;
+  }
+  return true;
+}
 
 }  // namespace history
