@@ -61,6 +61,8 @@ struct VideoDecoderTraits {
 
   mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder;
 
+  base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager;
+
   VideoDecoderTraits(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -75,7 +77,8 @@ struct VideoDecoderTraits {
       GetConfigCacheCB get_cached_configs_cb,
       GetCommandBufferStubCB get_command_buffer_stub_cb,
       AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder);
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+      base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager);
   ~VideoDecoderTraits();
 };
 

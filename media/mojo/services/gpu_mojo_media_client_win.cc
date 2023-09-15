@@ -24,13 +24,10 @@ namespace media {
 namespace {
 
 D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback(
-    scoped_refptr<gpu::SharedContextState> shared_context_state) {
+    ComD3D11Device d3d11_device) {
   return base::BindRepeating(
-      [](scoped_refptr<gpu::SharedContextState> shared_context_state) {
-        return shared_context_state ? shared_context_state->GetD3D11Device()
-                                    : ComD3D11Device();
-      },
-      std::move(shared_context_state));
+      [](ComD3D11Device d3d11_device) { return d3d11_device; },
+      std::move(d3d11_device));
 }
 
 }  // namespace
@@ -46,22 +43,15 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
   for (const auto& output_desc : dxgi_info->output_descs)
     hdr_enabled |= output_desc->hdr_enabled;
 
-  auto* stub = traits.get_command_buffer_stub_cb.Run();
-  if (!stub) {
-    return nullptr;
-  }
-
-  gpu::ContextResult result;
-  auto shared_context_state =
-      stub->channel()->gpu_channel_manager()->GetSharedContextState(&result);
-  if (!shared_context_state) {
-    return nullptr;
+  ComD3D11Device d3d11_device;
+  if (traits.media_gpu_channel_manager) {
+    d3d11_device = traits.media_gpu_channel_manager->d3d11_device();
   }
 
   return D3D11VideoDecoder::Create(
       traits.gpu_task_runner, traits.media_log->Clone(), traits.gpu_preferences,
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
-      GetD3D11DeviceCallback(std::move(shared_context_state)),
+      GetD3D11DeviceCallback(std::move(d3d11_device)),
       traits.get_cached_configs_cb.Run(), hdr_enabled);
 }
 
@@ -90,15 +80,13 @@ GetPlatformSupportedVideoDecoderConfigs(
       return supported_configs;
     }
 
-    gpu::ContextResult result;
-    auto shared_context_state =
-        manager.get()->channel_manager()->GetSharedContextState(&result);
-    if (!shared_context_state) {
+    auto d3d11_device = manager.get()->d3d11_device();
+    if (!d3d11_device) {
       return supported_configs;
     }
     supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
         gpu_preferences, gpu_workarounds,
-        GetD3D11DeviceCallback(std::move(shared_context_state)));
+        GetD3D11DeviceCallback(std::move(d3d11_device)));
   }
   return supported_configs;
 }

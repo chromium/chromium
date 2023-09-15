@@ -85,21 +85,12 @@ void GpuServiceFactory::RunMediaService(
         base::BindOnce(
             [](base::WeakPtr<media::MediaGpuChannelManager> manager) {
               CHECK(manager);
-              auto* channel_manager = manager->channel_manager();
-              if (!channel_manager) {
-                return;
+              if (auto device = manager->d3d11_device()) {
+                Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
+                auto hr = device->QueryInterface(IID_PPV_ARGS(&multi_threaded));
+                CHECK(SUCCEEDED(hr));
+                multi_threaded->SetMultithreadProtected(TRUE);
               }
-              gpu::ContextResult result;
-              auto shared_context_state =
-                  channel_manager->GetSharedContextState(&result);
-              auto device = shared_context_state->GetD3D11Device();
-              if (!device) {
-                return;
-              }
-              Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
-              auto hr = device->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-              CHECK(SUCCEEDED(hr));
-              multi_threaded->SetMultithreadProtected(TRUE);
             },
             media_gpu_channel_manager_));
 #endif

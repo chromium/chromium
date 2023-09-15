@@ -90,7 +90,8 @@ VideoDecoderTraits::VideoDecoderTraits(
     GetConfigCacheCB get_cached_configs_cb,
     GetCommandBufferStubCB get_command_buffer_stub_cb,
     AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+    base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager)
     : task_runner(std::move(task_runner)),
       gpu_task_runner(std::move(gpu_task_runner)),
       media_log(std::move(media_log)),
@@ -104,7 +105,8 @@ VideoDecoderTraits::VideoDecoderTraits(
       get_cached_configs_cb(std::move(get_cached_configs_cb)),
       get_command_buffer_stub_cb(std::move(get_command_buffer_stub_cb)),
       android_overlay_factory_cb(std::move(android_overlay_factory_cb)),
-      oop_video_decoder(std::move(oop_video_decoder)) {}
+      oop_video_decoder(std::move(oop_video_decoder)),
+      media_gpu_channel_manager(media_gpu_channel_manager) {}
 
 GpuMojoMediaClient::GpuMojoMediaClient(
     const gpu::GpuPreferences& gpu_preferences,
@@ -249,7 +251,8 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       // so this bound method will not outlive |this|
       base::BindRepeating(&GpuMojoMediaClient::GetSupportedVideoDecoderConfigs,
                           base::Unretained(this)),
-      get_stub_cb, android_overlay_factory_cb_, std::move(oop_video_decoder));
+      get_stub_cb, android_overlay_factory_cb_, std::move(oop_video_decoder),
+      media_gpu_channel_manager_);
 
   return CreatePlatformVideoDecoder(traits);
 }
