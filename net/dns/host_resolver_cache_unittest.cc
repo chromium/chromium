@@ -32,6 +32,7 @@ namespace net {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Ne;
 using ::testing::Optional;
@@ -1924,6 +1925,161 @@ TEST_F(HostResolverCacheTest, EvictLatestResult) {
   EXPECT_EQ(cache.LookupStale(kName3, anonymization_key), absl::nullopt);
 }
 
-}  // namespace
+TEST_F(HostResolverCacheTest, SerializeAndDeserialize) {
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
+  const std::string kName = "foo.test";
+  const std::vector<IPEndPoint> kEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  const base::Time kExpiration = clock_.Now() + base::Hours(2);
+  auto result = std::make_unique<HostResolverInternalDataResult>(
+      kName, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+      kExpiration, HostResolverInternalResult::Source::kDns, kEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
 
+  base::Value value = cache.Serialize();
+  EXPECT_EQ(value.GetList().size(), 1u);
+
+  HostResolverCache restored_cache(kMaxResults, clock_, tick_clock_);
+  EXPECT_TRUE(restored_cache.RestoreFromValue(value));
+
+  // Expect restored result to be stale by generation.
+  EXPECT_THAT(restored_cache.LookupStale(kName, anonymization_key),
+              Optional(IsStale(
+                  ExpectHostResolverInternalDataResult(
+                      kName, DnsQueryType::AAAA,
+                      HostResolverInternalResult::Source::kDns,
+                      Eq(absl::nullopt), Optional(kExpiration), kEndpoints),
+                  absl::nullopt, true)));
+}
+
+TEST_F(HostResolverCacheTest, TransientAnonymizationKeyNotSerialized) {
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
+  const std::string kName = "foo.test";
+  const std::vector<IPEndPoint> kEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  const base::Time kExpiration = clock_.Now() + base::Hours(2);
+  auto result = std::make_unique<HostResolverInternalDataResult>(
+      kName, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+      kExpiration, HostResolverInternalResult::Source::kDns, kEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  const auto anonymization_key = NetworkAnonymizationKey::CreateTransient();
+  cache.Set(std::move(result), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  base::Value value = cache.Serialize();
+  EXPECT_TRUE(value.GetList().empty());
+}
+
+TEST_F(HostResolverCacheTest, DeserializePrefersExistingResults) {
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
+  const std::string kName = "foo.test";
+  const std::vector<IPEndPoint> kRestoredEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  const base::Time kExpiration = clock_.Now() + base::Hours(2);
+  auto result = std::make_unique<HostResolverInternalDataResult>(
+      kName, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+      kExpiration, HostResolverInternalResult::Source::kDns, kRestoredEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  base::Value value = cache.Serialize();
+  EXPECT_EQ(value.GetList().size(), 1u);
+
+  HostResolverCache restored_cache(kMaxResults, clock_, tick_clock_);
+
+  const std::vector<IPEndPoint> kEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::3").value(), /*port=*/0)};
+  result = std::make_unique<HostResolverInternalDataResult>(
+      kName, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+      kExpiration, HostResolverInternalResult::Source::kDns, kEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  restored_cache.Set(std::move(result), anonymization_key,
+                     HostResolverSource::DNS,
+                     /*secure=*/false);
+
+  EXPECT_TRUE(restored_cache.RestoreFromValue(value));
+
+  // Expect pre-restoration result.
+  EXPECT_THAT(
+      restored_cache.LookupStale(kName, anonymization_key),
+      Optional(IsNotStale(ExpectHostResolverInternalDataResult(
+          kName, DnsQueryType::AAAA, HostResolverInternalResult::Source::kDns,
+          Ne(absl::nullopt), Optional(kExpiration), kEndpoints))));
+}
+
+TEST_F(HostResolverCacheTest, DeserializeStopsBeforeEviction) {
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
+  const std::string kName1 = "foo1.test";
+  const std::vector<IPEndPoint> kRestoredEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  const base::Time kExpiration = clock_.Now() + base::Hours(2);
+  auto result = std::make_unique<HostResolverInternalDataResult>(
+      kName1, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+      kExpiration, HostResolverInternalResult::Source::kDns, kRestoredEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  base::Value value = cache.Serialize();
+  EXPECT_EQ(value.GetList().size(), 1u);
+
+  HostResolverCache restored_cache(1, clock_, tick_clock_);
+
+  const std::string kName2 = "foo2.test";
+  const std::vector<IPEndPoint> kEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("2001:DB8::3").value(), /*port=*/0)};
+  result = std::make_unique<HostResolverInternalDataResult>(
+      kName2, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+      kExpiration, HostResolverInternalResult::Source::kDns, kEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  restored_cache.Set(std::move(result), anonymization_key,
+                     HostResolverSource::DNS,
+                     /*secure=*/false);
+
+  EXPECT_TRUE(restored_cache.RestoreFromValue(value));
+
+  // Expect only pre-restoration result.
+  EXPECT_EQ(restored_cache.LookupStale(kName1, anonymization_key),
+            absl::nullopt);
+  EXPECT_THAT(
+      restored_cache.LookupStale(kName2, anonymization_key),
+      Optional(IsNotStale(ExpectHostResolverInternalDataResult(
+          kName2, DnsQueryType::AAAA, HostResolverInternalResult::Source::kDns,
+          Ne(absl::nullopt), Optional(kExpiration), kEndpoints))));
+}
+
+TEST_F(HostResolverCacheTest, SerializeForLogging) {
+  HostResolverCache cache(kMaxResults, clock_, tick_clock_);
+  const std::string kName = "foo.test";
+  const std::vector<IPEndPoint> kEndpoints = {
+      IPEndPoint(IPAddress::FromIPLiteral("::1").value(), /*port=*/0)};
+  const base::Time kExpiration = clock_.Now() + base::Hours(2);
+  auto result = std::make_unique<HostResolverInternalDataResult>(
+      kName, DnsQueryType::AAAA, tick_clock_.NowTicks() + base::Hours(2),
+      kExpiration, HostResolverInternalResult::Source::kDns, kEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+  const NetworkAnonymizationKey anonymization_key;
+  cache.Set(std::move(result), anonymization_key, HostResolverSource::DNS,
+            /*secure=*/false);
+
+  base::Value value = cache.SerializeForLogging();
+  EXPECT_TRUE(value.is_dict());
+
+  EXPECT_FALSE(cache.RestoreFromValue(value));
+}
+
+}  // namespace
 }  // namespace net

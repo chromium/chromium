@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -24,6 +25,18 @@
 #include "url/url_canon_stdstring.h"
 
 namespace net {
+
+namespace {
+
+constexpr base::StringPiece kNikKey = "network_anonymization_key";
+constexpr base::StringPiece kSourceKey = "source";
+constexpr base::StringPiece kSecureKey = "secure";
+constexpr base::StringPiece kResultKey = "result";
+constexpr base::StringPiece kStalenessGenerationKey = "staleness_generation";
+constexpr base::StringPiece kMaxEntriesKey = "max_entries";
+constexpr base::StringPiece kEntriesKey = "entries";
+
+}  // namespace
 
 HostResolverCache::Key::~Key() = default;
 
@@ -147,30 +160,94 @@ void HostResolverCache::Set(
     const NetworkAnonymizationKey& network_anonymization_key,
     HostResolverSource source,
     bool secure) {
-  DCHECK(result);
-  // Result must have at least a timed expiration to be a cacheable result.
-  DCHECK(result->timed_expiration().has_value());
-
-  std::vector<EntryMap::const_iterator> matches =
-      LookupInternal(result->domain_name(), network_anonymization_key,
-                     result->query_type(), source, secure);
-
-  for (const EntryMap::const_iterator& match : matches) {
-    entries_.erase(match);
-  }
-
-  std::string domain_name = result->domain_name();
-  entries_.emplace(
-      Key(std::move(domain_name), network_anonymization_key),
-      Entry(std::move(result), source, secure, staleness_generation_));
-
-  if (entries_.size() > max_entries_) {
-    EvictEntries();
-  }
+  Set(std::move(result), network_anonymization_key, source, secure,
+      /*replace_existing=*/true, staleness_generation_);
 }
 
 void HostResolverCache::MakeAllResultsStale() {
   ++staleness_generation_;
+}
+
+base::Value HostResolverCache::Serialize() const {
+  // Do not serialize any entries without a persistable anonymization key
+  // because it is required to store and restore entries with the correct
+  // annonymization key. A non-persistable anonymization key is typically used
+  // for short-lived contexts, and associated entries are not expected to be
+  // useful after persistence to disk anyway.
+  return SerializeEntries(/*serialize_staleness_generation=*/false,
+                          /*require_persistable_anonymization_key=*/true);
+}
+
+bool HostResolverCache::RestoreFromValue(const base::Value& value) {
+  const base::Value::List* list = value.GetIfList();
+  if (!list) {
+    return false;
+  }
+
+  for (const base::Value& list_value : *list) {
+    // Simply stop on reaching max size rather than attempting to figure out if
+    // any current entries should be evicted over the deserialized entries.
+    if (entries_.size() == max_entries_) {
+      return true;
+    }
+
+    const base::Value::Dict* dict = list_value.GetIfDict();
+    if (!dict) {
+      return false;
+    }
+
+    const base::Value* anonymization_key_value = dict->Find(kNikKey);
+    NetworkAnonymizationKey anonymization_key;
+    if (!anonymization_key_value ||
+        !NetworkAnonymizationKey::FromValue(*anonymization_key_value,
+                                            &anonymization_key)) {
+      return false;
+    }
+
+    const base::Value* source_value = dict->Find(kSourceKey);
+    absl::optional<HostResolverSource> source =
+        source_value == nullptr ? absl::nullopt
+                                : HostResolverSourceFromValue(*source_value);
+    if (!source.has_value()) {
+      return false;
+    }
+
+    absl::optional<bool> secure = dict->FindBool(kSecureKey);
+    if (!secure.has_value()) {
+      return false;
+    }
+
+    const base::Value* result_value = dict->Find(kResultKey);
+    std::unique_ptr<HostResolverInternalResult> result =
+        result_value == nullptr
+            ? nullptr
+            : HostResolverInternalResult::FromValue(*result_value);
+    if (!result || !result->timed_expiration().has_value()) {
+      return false;
+    }
+
+    // `staleness_generation_ - 1` to make entry stale-by-generation.
+    Set(std::move(result), anonymization_key, source.value(), secure.value(),
+        /*replace_existing=*/false, staleness_generation_ - 1);
+  }
+
+  CHECK_LE(entries_.size(), max_entries_);
+  return true;
+}
+
+base::Value HostResolverCache::SerializeForLogging() const {
+  base::Value::Dict dict;
+
+  dict.Set(kMaxEntriesKey, base::checked_cast<int>(max_entries_));
+  dict.Set(kStalenessGenerationKey, staleness_generation_);
+
+  // Include entries with non-persistable anonymization keys, so the log can
+  // contain all entries. Restoring from this serialization is not supported.
+  dict.Set(kEntriesKey,
+           SerializeEntries(/*serialize_staleness_generation=*/true,
+                            /*require_persistable_anonymization_key=*/false));
+
+  return base::Value(std::move(dict));
 }
 
 HostResolverCache::Entry::Entry(
@@ -265,6 +342,40 @@ HostResolverCache::LookupInternal(
   return matches;
 }
 
+void HostResolverCache::Set(
+    std::unique_ptr<HostResolverInternalResult> result,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    HostResolverSource source,
+    bool secure,
+    bool replace_existing,
+    int staleness_generation) {
+  DCHECK(result);
+  // Result must have at least a timed expiration to be a cacheable result.
+  DCHECK(result->timed_expiration().has_value());
+
+  std::vector<EntryMap::const_iterator> matches =
+      LookupInternal(result->domain_name(), network_anonymization_key,
+                     result->query_type(), source, secure);
+
+  if (!matches.empty() && !replace_existing) {
+    // Matches already present that are not to be replaced.
+    return;
+  }
+
+  for (const EntryMap::const_iterator& match : matches) {
+    entries_.erase(match);
+  }
+
+  std::string domain_name = result->domain_name();
+  entries_.emplace(
+      Key(std::move(domain_name), network_anonymization_key),
+      Entry(std::move(result), source, secure, staleness_generation));
+
+  if (entries_.size() > max_entries_) {
+    EvictEntries();
+  }
+}
+
 // Remove all stale entries, or if none stale, the soonest-to-expire,
 // least-secure entry.
 void HostResolverCache::EvictEntries() {
@@ -302,6 +413,43 @@ void HostResolverCache::EvictEntries() {
   }
 
   CHECK_LE(entries_.size(), max_entries_);
+}
+
+base::Value HostResolverCache::SerializeEntries(
+    bool serialize_staleness_generation,
+    bool require_persistable_anonymization_key) const {
+  base::Value::List list;
+
+  for (const auto& [key, entry] : entries_) {
+    base::Value::Dict dict;
+
+    if (serialize_staleness_generation) {
+      dict.Set(kStalenessGenerationKey, entry.staleness_generation);
+    }
+
+    base::Value anonymization_key_value;
+    if (!key.network_anonymization_key.ToValue(&anonymization_key_value)) {
+      if (require_persistable_anonymization_key) {
+        continue;
+      } else {
+        // If the caller doesn't care about anonymization keys that can be
+        // serialized and restored, construct a serialization just for the sake
+        // of logging information.
+        anonymization_key_value =
+            base::Value("Non-persistable network anonymization key: " +
+                        key.network_anonymization_key.ToDebugString());
+      }
+    }
+
+    dict.Set(kNikKey, std::move(anonymization_key_value));
+    dict.Set(kSourceKey, ToValue(entry.source));
+    dict.Set(kSecureKey, entry.secure);
+    dict.Set(kResultKey, entry.result->ToValue());
+
+    list.Append(std::move(dict));
+  }
+
+  return base::Value(std::move(list));
 }
 
 }  // namespace net

@@ -31,6 +31,7 @@ source_set("public") {
     "doh_provider_entry.h",
     "host_resolver_results.cc",
     "host_resolver_results.h",
+    "host_resolver_source.cc",
     "host_resolver_source.h",
     "mdns_listener_update_type.h",
     "resolve_error_info.cc",

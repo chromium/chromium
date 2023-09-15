@@ -548,6 +548,18 @@ fuzzer_test("net_dns_hosts_parse_fuzzer") {
   dict = "//net/data/fuzzer_dictionaries/net_dns_hosts_parse_fuzzer.dict"
 }
 
+fuzzer_test("net_dns_host_resolver_cache_fuzzer") {
+  sources = [ "host_resolver_cache_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//net",
+    "//net:net_fuzzer_test_support",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+}
+
 fuzzer_test("net_dns_https_record_rdata_fuzzer") {
   sources = [ "https_record_rdata_fuzzer.cc" ]
   deps = [

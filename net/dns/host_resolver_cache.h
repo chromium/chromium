@@ -19,6 +19,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/public/dns_query_type.h"
@@ -116,6 +117,34 @@ class NET_EXPORT HostResolverCache final {
   // network.
   void MakeAllResultsStale();
 
+  // Serialization to later be deserialized. Only serializes the results likely
+  // to still be of value after serialization and deserialization, that is that
+  // results with a transient anonymization key are not included.
+  //
+  // Used to implement cronet::HostCachePersistenceManager, but no assumptions
+  // are made here that this is Cronet-only functionality.
+  base::Value Serialize() const;
+
+  // Deserialize value received from Serialize(). Results already contained in
+  // the cache are preferred, thus deserialized results are ignored if any
+  // previous result entries would match the same criteria, and deserialization
+  // stops on reaching max size, rather than evicting anything. Deserialized
+  // results are also always considered stale by generation.
+  //
+  // Returns false if `value` is malformed to be deserialized.
+  //
+  // Used to implement cronet::HostCachePersistenceManager, but no assumptions
+  // are made here that this is Cronet-only functionality.
+  bool RestoreFromValue(const base::Value& value);
+
+  // Serialize for output to debug logs, e.g. netlog. Serializes all results,
+  // including those with transient anonymization keys, and also serializes
+  // cache-wide data. Incompatible with base::Values returned from Serialize(),
+  // and cannot be used in RestoreFromValue().
+  base::Value SerializeForLogging() const;
+
+  bool AtMaxSizeForTesting() const { return entries_.size() >= max_entries_; }
+
  private:
   struct Key {
     ~Key();
@@ -189,7 +218,23 @@ class NET_EXPORT HostResolverCache final {
       HostResolverSource source,
       absl::optional<bool> secure) const;
 
+  void Set(std::unique_ptr<HostResolverInternalResult> result,
+           const NetworkAnonymizationKey& network_anonymization_key,
+           HostResolverSource source,
+           bool secure,
+           bool replace_existing,
+           int staleness_generation);
+
   void EvictEntries();
+
+  // If `require_persistable_anonymization_key` is true, will not serialize
+  // any entries that do not have an anonymization key that supports
+  // serialization and restoration. If false, will serialize all entries, but
+  // the result may contain anonymization keys that are malformed for
+  // restoration.
+  base::Value SerializeEntries(
+      bool serialize_staleness_generation,
+      bool require_persistable_anonymization_key) const;
 
   EntryMap entries_;
   size_t max_entries_;

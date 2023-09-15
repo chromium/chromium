@@ -7,24 +7,29 @@
 
 #include <iterator>
 
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace net {
 
 // Enumeration to specify the allowed results source for HostResolver
 // requests.
+//
+// Integer values used for (de)serialization. Do not renumber.
 enum class HostResolverSource {
   // Resolver will pick an appropriate source. Results could come from DNS,
   // MulticastDNS, HOSTS file, etc.
-  ANY,
+  ANY = 0,
 
   // Results will only be retrieved from the system or OS, eg via the
   // getaddrinfo() system call.
-  SYSTEM,
+  SYSTEM = 1,
 
   // Results will only come from DNS queries.
-  DNS,
+  DNS = 2,
 
   // Results will only come from Multicast DNS queries.
-  MULTICAST_DNS,
+  MULTICAST_DNS = 3,
 
   // No external sources will be used. Results will only come from fast local
   // sources that are available no matter the source setting, e.g. cache, hosts
@@ -32,10 +37,16 @@ enum class HostResolverSource {
   // to finish synchronously. Resolves with this settings will return
   // ERR_NAME_NOT_RESOLVED if an asynchronous IPv6 reachability probe needs to
   // be done.
-  LOCAL_ONLY,
+  LOCAL_ONLY = 4,
 
   MAX = LOCAL_ONLY
 };
+
+base::Value ToValue(HostResolverSource source);
+
+// absl::nullopt if `value` is malformed for deserialization.
+absl::optional<HostResolverSource> HostResolverSourceFromValue(
+    const base::Value& value);
 
 const HostResolverSource kHostResolverSources[] = {
     HostResolverSource::ANY, HostResolverSource::SYSTEM,
