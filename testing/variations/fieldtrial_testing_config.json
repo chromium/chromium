@@ -10748,17 +10748,12 @@
                     ]
                 },
                 {
-                    "name": "Control_20230315",
-                    "disable_features": [
-                        "SupportSearchSuggestionForPrerender2"
-                    ]
-                },
-                {
                     "name": "HoldbackPrerenderDSE_20230315",
                     "params": {
                         "implementation_type": "use_prefetch"
                     },
                     "enable_features": [
+                        "Prerender2Holdback",
                         "SupportSearchSuggestionForPrerender2"
                     ]
                 },
