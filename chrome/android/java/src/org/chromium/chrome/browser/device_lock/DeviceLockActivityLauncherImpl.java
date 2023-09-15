@@ -11,10 +11,9 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
-import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -75,7 +74,7 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
                         }
                     });
         } else {
-            ReauthenticatorBridge.create(DeviceAuthRequester.DEVICE_LOCK_PAGE)
+            DeviceLockCoordinator.createDeviceLockAuthenticatorBridge()
                     .reauthenticate((authSucceeded) -> {
                         if (authSucceeded) {
                             callback.run();

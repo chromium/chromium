@@ -90,10 +90,31 @@ public class DeviceLockDialogControllerTest {
     @Test
     @SmallTest
     public void testDeviceLockLauncher_showAndHideDialog() {
-        DeviceLockDialogController deviceLockDialogController = new DeviceLockDialogController(
-                ()
-                        -> mDeviceLockReady.set(true),
-                () -> mDeviceLockRefused.set(true), null, mActivity, mModalDialogManager, null);
+        DeviceLockDialogController deviceLockDialogController =
+                new DeviceLockDialogController(()
+                                                       -> mDeviceLockReady.set(true),
+                        ()
+                                -> mDeviceLockRefused.set(true),
+                        null, mActivity, mModalDialogManager, null, true);
+        assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
+
+        deviceLockDialogController.showDialog();
+        verify(mModalDialogManager, times(1)).showDialog(any(), anyInt(), anyInt());
+
+        deviceLockDialogController.hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        verify(mModalDialogManager, times(1))
+                .dismissDialog(any(), eq(DialogDismissalCause.POSITIVE_BUTTON_CLICKED));
+    }
+
+    @Test
+    @SmallTest
+    public void testDeviceLockLauncher_showAndHideDialog_deviceLockReauthenticationNotRequired() {
+        DeviceLockDialogController deviceLockDialogController =
+                new DeviceLockDialogController(()
+                                                       -> mDeviceLockReady.set(true),
+                        ()
+                                -> mDeviceLockRefused.set(true),
+                        null, mActivity, mModalDialogManager, null, false);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.showDialog();
@@ -107,10 +128,12 @@ public class DeviceLockDialogControllerTest {
     @Test
     @SmallTest
     public void testDeviceLockLauncher_onDeviceLockReady() {
-        DeviceLockDialogController deviceLockDialogController = new DeviceLockDialogController(
-                ()
-                        -> mDeviceLockReady.set(true),
-                () -> mDeviceLockRefused.set(true), null, mActivity, mModalDialogManager, null);
+        DeviceLockDialogController deviceLockDialogController =
+                new DeviceLockDialogController(()
+                                                       -> mDeviceLockReady.set(true),
+                        ()
+                                -> mDeviceLockRefused.set(true),
+                        null, mActivity, mModalDialogManager, null, true);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.setView(mView);
@@ -124,10 +147,12 @@ public class DeviceLockDialogControllerTest {
     @Test
     @SmallTest
     public void testDeviceLockLauncher_onDeviceLockRefused() {
-        DeviceLockDialogController deviceLockDialogController = new DeviceLockDialogController(
-                ()
-                        -> mDeviceLockReady.set(true),
-                () -> mDeviceLockRefused.set(true), null, mActivity, mModalDialogManager, null);
+        DeviceLockDialogController deviceLockDialogController =
+                new DeviceLockDialogController(()
+                                                       -> mDeviceLockReady.set(true),
+                        ()
+                                -> mDeviceLockRefused.set(true),
+                        null, mActivity, mModalDialogManager, null, true);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.setView(mView);

@@ -52,14 +52,23 @@ public class DeviceLockDialogController implements DeviceLockCoordinator.Delegat
      *        Missing Device Lock dialog.
      * @param account The account that will be used for the reauthentication challenge, or null
      *        if reauthentication is not needed.
+     * @param requireDeviceLockReauthentication Whether or not the reauthentication of the device
+     *        lock credentials should be required (if a device lock is already present).
      */
     public DeviceLockDialogController(Runnable onDeviceLockReady, Runnable onDeviceLockRefused,
             WindowAndroid windowAndroid, Activity activity,
-            @NonNull ModalDialogManager modalDialogManager, @Nullable Account account) {
+            @NonNull ModalDialogManager modalDialogManager, @Nullable Account account,
+            boolean requireDeviceLockReauthentication) {
         mOnDeviceLockReady = onDeviceLockReady;
         mOnDeviceLockRefused = onDeviceLockRefused;
         mModalDialogManager = modalDialogManager;
-        mDeviceLockCoordinator = new DeviceLockCoordinator(this, windowAndroid, activity, account);
+        if (requireDeviceLockReauthentication) {
+            mDeviceLockCoordinator =
+                    new DeviceLockCoordinator(this, windowAndroid, activity, account);
+        } else {
+            mDeviceLockCoordinator = new DeviceLockCoordinator(this, windowAndroid,
+                    /* deviceLockAuthenticatorBridge */ null, activity, account);
+        }
     }
 
     /**

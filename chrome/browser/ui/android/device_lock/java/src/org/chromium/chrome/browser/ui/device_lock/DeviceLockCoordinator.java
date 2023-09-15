@@ -43,7 +43,7 @@ public class DeviceLockCoordinator {
     private final DeviceLockMediator mMediator;
     private final DeviceLockView mView;
     private final WindowAndroid mWindowAndroid;
-    private final ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
+    private final @Nullable ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     /**
@@ -61,13 +61,11 @@ public class DeviceLockCoordinator {
      */
     public DeviceLockCoordinator(Delegate delegate, WindowAndroid windowAndroid, Activity activity,
             @Nullable Account account) {
-        this(delegate, windowAndroid,
-                ReauthenticatorBridge.create(DeviceAuthRequester.DEVICE_LOCK_PAGE), activity,
-                account);
+        this(delegate, windowAndroid, createDeviceLockAuthenticatorBridge(), activity, account);
     }
 
     protected DeviceLockCoordinator(Delegate delegate, WindowAndroid windowAndroid,
-            ReauthenticatorBridge deviceLockAuthenticatorBridge, Activity activity,
+            @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge, Activity activity,
             @Nullable Account account) {
         mView = DeviceLockView.create(LayoutInflater.from(activity));
         mWindowAndroid = windowAndroid;
@@ -77,6 +75,13 @@ public class DeviceLockCoordinator {
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, DeviceLockViewBinder::bind);
         delegate.setView(mView);
+    }
+
+    /**
+     * Get a {@link ReauthenticatorBridge} for the Device Lock page.
+     */
+    public static ReauthenticatorBridge createDeviceLockAuthenticatorBridge() {
+        return ReauthenticatorBridge.create(DeviceAuthRequester.DEVICE_LOCK_PAGE);
     }
 
     /**

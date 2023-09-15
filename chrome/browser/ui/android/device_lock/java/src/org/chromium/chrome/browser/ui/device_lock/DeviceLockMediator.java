@@ -47,18 +47,19 @@ public class DeviceLockMediator {
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final @Nullable Account mAccount;
-    private final ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
+    private final @Nullable ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
     private final AccountReauthenticationUtils mAccountReauthenticationUtils;
 
     public DeviceLockMediator(DeviceLockCoordinator.Delegate delegate, WindowAndroid windowAndroid,
-            ReauthenticatorBridge deviceLockAuthenticatorBridge, Activity activity,
+            @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge, Activity activity,
             @Nullable Account account) {
         this(delegate, windowAndroid, deviceLockAuthenticatorBridge,
                 new AccountReauthenticationUtils(), activity, account);
     }
 
     protected DeviceLockMediator(DeviceLockCoordinator.Delegate delegate,
-            WindowAndroid windowAndroid, ReauthenticatorBridge deviceLockAuthenticatorBridge,
+            WindowAndroid windowAndroid,
+            @Nullable ReauthenticatorBridge deviceLockAuthenticatorBridge,
             AccountReauthenticationUtils accountReauthenticationUtils, Activity activity,
             @Nullable Account account) {
         mDelegate = delegate;
@@ -127,6 +128,11 @@ public class DeviceLockMediator {
     }
 
     private void triggerDeviceLockChallenge(Runnable onSuccess) {
+        // If the authenticator bridge is null, then reauthentication is not required here.
+        if (mDeviceLockAuthenticatorBridge == null) {
+            onSuccess.run();
+            return;
+        }
         mDeviceLockAuthenticatorBridge.reauthenticate((authSucceeded) -> {
             if (authSucceeded) {
                 onSuccess.run();
