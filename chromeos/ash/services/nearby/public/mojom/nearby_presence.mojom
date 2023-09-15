@@ -69,6 +69,15 @@ enum ActionType {
   kLastAction,
 };
 
+
+// A mojo conversion of the PublicCredentialType which is defined in
+// //third_party/nearby/src/internal/platform/implementation/credential_callbacks.h.
+// This definition should be kept consistent with the afformentioned file.
+enum PublicCredentialType {
+  kLocalPublicCredential = 1,
+  kRemotePublicCredential = 2,
+};
+
 // Presence Device information to specify the device information when a device
 // is found/lost/changed during a scan.
 struct PresenceDevice {

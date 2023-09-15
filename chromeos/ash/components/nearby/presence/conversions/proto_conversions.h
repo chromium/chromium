@@ -12,6 +12,7 @@
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/local_credential.pb.h"
 #include "third_party/nearby/internal/proto/metadata.pb.h"
+#include "third_party/nearby/src/internal/platform/implementation/credential_callbacks.h"
 
 namespace ash::nearby::presence::proto {
 
@@ -25,6 +26,8 @@ namespace ash::nearby::presence::proto {
 
 mojom::PresenceDeviceType DeviceTypeToMojom(
     ::nearby::internal::DeviceType device_type);
+mojom::PublicCredentialType PublicCredentialTypeToMojom(
+    ::nearby::presence::PublicCredentialType public_credential_type);
 mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata);
 mojom::PrivateKeyPtr PrivateKeyToMojom(
     ::nearby::internal::LocalCredential::PrivateKey private_key);
