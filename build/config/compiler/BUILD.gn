@@ -1054,7 +1054,7 @@ config("thinlto_optimize_default") {
       rustflags = [ "-Clinker-plugin-lto=yes" ]
     } else {
       # Don't include bitcode if it won't be used.
-      rustflags += [ "-Cembed-bitcode=no" ]
+      rustflags = [ "-Cembed-bitcode=no" ]
     }
   }
 }
@@ -1088,7 +1088,7 @@ config("thinlto_optimize_max") {
       rustflags = [ "-Clinker-plugin-lto=yes" ]
     } else {
       # Don't include bitcode if it won't be used.
-      rustflags += [ "-Cembed-bitcode=no" ]
+      rustflags = [ "-Cembed-bitcode=no" ]
     }
   }
 }
