@@ -38,3 +38,16 @@ export enum States {
   ASYNC_SCANNING = 'ASYNC_SCANNING',
   PROMPT_FOR_SCANNING = 'PROMPT_FOR_SCANNING',
 }
+
+/**
+ * The UI pattern for displaying a download. Computed from DangerType and other
+ * properties of the download and user's profile.
+ */
+export enum DisplayType {
+  NORMAL,
+  DANGEROUS,
+  SUSPICIOUS,
+  UNVERIFIED,
+  INSECURE,
+  ERROR,
+}

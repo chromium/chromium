@@ -21,6 +21,7 @@
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_query.h"
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,6 +40,10 @@
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#endif
 
 using content::BrowserContext;
 using content::DownloadManager;
@@ -96,6 +101,23 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
   // Don't return a danger type string if it is NOT_DANGEROUS,
   // MAYBE_DANGEROUS_CONTENT, or USER_VALIDATED, or ALLOWLISTED_BY_POLICY.
   return "";
+}
+
+downloads::mojom::SafeBrowsingState GetSafeBrowsingState(Profile* profile) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  safe_browsing::SafeBrowsingState state =
+      safe_browsing::GetSafeBrowsingState(*profile->GetPrefs());
+  switch (state) {
+    case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
+      return downloads::mojom::SafeBrowsingState::kNoSafeBrowsing;
+    case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
+      return downloads::mojom::SafeBrowsingState::kStandardProtection;
+    case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
+      return downloads::mojom::SafeBrowsingState::kStandardProtection;
+  }
+#else
+  return downloads::mojom::SafeBrowsingState::kNoSafeBrowsing;
+#endif
 }
 
 // TODO(dbeam): if useful elsewhere, move to base/i18n/time_formatting.h?
@@ -371,6 +393,16 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       base::UTF16ToUTF8(download_model.GetShowInFolderText());
   file_value->retry = retry;
   file_value->state = state;
+
+  file_value->safe_browsing_state =
+      GetSafeBrowsingState(download_model.profile());
+  file_value->has_safe_browsing_verdict =
+      WasSafeBrowsingVerdictObtained(download_item);
+  // If there is no safe browsing protection, the item should not have a safe
+  // browsing verdict.
+  CHECK(!file_value->has_safe_browsing_verdict ||
+        file_value->safe_browsing_state !=
+            downloads::mojom::SafeBrowsingState::kNoSafeBrowsing);
 
   return file_value;
 }

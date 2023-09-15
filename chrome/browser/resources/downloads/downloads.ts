@@ -9,7 +9,7 @@ export {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 export {BrowserProxy} from './browser_proxy.js';
 export {DangerType, States} from './constants.js';
 export {MojomData} from './data.js';
-export {PageCallbackRouter, PageHandlerInterface, PageRemote} from './downloads.mojom-webui.js';
+export {PageCallbackRouter, PageHandlerInterface, PageRemote, SafeBrowsingState} from './downloads.mojom-webui.js';
 export {IconLoader, IconLoaderImpl} from './icon_loader.js';
 export {DownloadsItemElement} from './item.js';
 export {DownloadsManagerElement} from './manager.js';

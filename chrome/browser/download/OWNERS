@@ -9,3 +9,4 @@ per-file insecure_download_blocking*=jdeblasio@chromium.org
 # For UI changes.
 per-file download_item_model*=chlily@chromium.org
 per-file download_ui_model*=chlily@chromium.org
+per-file download_ui_safe_browsing_util*=chlily@chromium.org

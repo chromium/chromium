@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DangerType, IconLoader, MojomData, PageCallbackRouter, PageHandlerInterface, PageRemote, States} from 'chrome://downloads/downloads.js';
+import {DangerType, IconLoader, MojomData, PageCallbackRouter, PageHandlerInterface, PageRemote, SafeBrowsingState, States} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -108,6 +108,8 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         total: -1,
         url: stringToMojoUrl('http://permission.site'),
         displayUrl: stringToMojoString16('http://permission.site'),
+        safeBrowsingState: SafeBrowsingState.kStandardProtection,
+        hasSafeBrowsingVerdict: true,
       },
       config || {});
 }

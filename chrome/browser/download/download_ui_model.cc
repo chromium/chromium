@@ -16,7 +16,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_commands.h"
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -44,10 +46,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/views/vector_icons.h"
-#endif
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #endif
 
 using download::DownloadItem;
@@ -152,37 +150,6 @@ std::u16string FailStateDescription(FailState fail_state) {
   status_text = l10n_util::GetStringUTF16(string_id);
 
   return status_text;
-}
-
-// Returns whether the download item had a download protection verdict. If it
-// did not, we should call it "unverified" rather than "suspicious".
-bool WasSafeBrowsingVerdictObtained(const download::DownloadItem* item) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  return item &&
-         safe_browsing::DownloadProtectionService::HasDownloadProtectionVerdict(
-             item);
-#else
-  return false;
-#endif
-}
-
-// If this returns true, the warning should say "unverified" instead of
-// "suspicious".
-bool ShouldShowWarningForNoSafeBrowsing(Profile* profile) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  return safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
-         safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
-#else
-  return true;
-#endif
-}
-
-bool CanUserTurnOnSafeBrowsing(Profile* profile) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  return !safe_browsing::IsSafeBrowsingPolicyManaged(*profile->GetPrefs());
-#else
-  return false;
-#endif
 }
 
 }  // namespace

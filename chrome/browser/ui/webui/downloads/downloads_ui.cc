@@ -91,7 +91,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"statusRemoved", IDS_DOWNLOAD_FILE_REMOVED},
 
       // Dangerous file.
-      {"dangerFileDesc", IDS_BLOCK_REASON_GENERIC_DOWNLOAD},
       {"dangerSave", IDS_CONFIRM_DOWNLOAD},
       {"dangerRestore", IDS_CONFIRM_DOWNLOAD_RESTORE},
       {"dangerDiscard", IDS_DISCARD_DOWNLOAD},
@@ -123,20 +122,15 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"undo", IDS_DOWNLOAD_UNDO},
+      {"controlKeepDangerous", IDS_DOWNLOAD_KEEP_DANGEROUS_FILE},
+      {"controlKeepSuspicious", IDS_DOWNLOAD_KEEP_SUSPICIOUS_FILE},
+      {"controlKeepUnverified", IDS_DOWNLOAD_KEEP_UNVERIFIED_FILE},
+      {"controlKeepInsecure", IDS_DOWNLOAD_KEEP_INSECURE_FILE},
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddLocalizedString("dangerDownloadDesc",
-                             IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
-  source->AddLocalizedString(
-      "dangerUncommonDesc",
-      requests_ap_verdicts
-          ? IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION
-          : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD);
-  source->AddLocalizedString("dangerSettingsDesc",
-                             IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
-  source->AddLocalizedString("insecureDownloadDesc",
-                             IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
+  // TODO(crbug.com/1202691): This string should have been cleaned up and is not
+  // actually in use.
   source->AddLocalizedString("accountCompromiseDownloadDesc",
                              IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
 
@@ -168,6 +162,34 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       safe_browsing::kImprovedDownloadPageWarnings);
   source->AddBoolean("improvedDownloadWarningsUX",
                      improved_download_warnings_ux);
+  source->AddLocalizedString("dangerFileDesc",
+                             improved_download_warnings_ux
+                                 ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_FILETYPE
+                                 : IDS_BLOCK_REASON_GENERIC_DOWNLOAD);
+  source->AddLocalizedString("dangerDownloadDesc",
+                             improved_download_warnings_ux
+                                 ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS
+                                 : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
+  source->AddLocalizedString(
+      "dangerUncommonDesc",
+      requests_ap_verdicts
+          ? IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION
+          : (improved_download_warnings_ux
+                 ? IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON
+                 : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD));
+  source->AddLocalizedString(
+      "dangerSettingsDesc", improved_download_warnings_ux
+                                ? IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED
+                                : IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
+  source->AddLocalizedString("insecureDownloadDesc",
+                             improved_download_warnings_ux
+                                 ? IDS_BLOCK_DOWNLOAD_REASON_INSECURE
+                                 : IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
+  source->AddLocalizedString(
+      "noSafeBrowsingDesc",
+      IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING);
+  source->AddLocalizedString("controlDeleteFromHistory",
+                             IDS_DOWNLOAD_DELETE_FROM_HISTORY);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html

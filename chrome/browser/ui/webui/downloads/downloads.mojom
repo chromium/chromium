@@ -7,6 +7,13 @@ module downloads.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
+// This corresponds to safe_browsing::SafeBrowsingState.
+enum SafeBrowsingState {
+  kNoSafeBrowsing,
+  kStandardProtection,
+  kEnhancedProtection,
+};
+
 // This is the information associated with a download used for rendering in the
 // UI.
 struct Data {
@@ -25,6 +32,7 @@ struct Data {
   int64 total;
   string by_ext_id;
   string by_ext_name;
+  // TODO(chlily): This should be an enum, not a string.
   string danger_type;
   string date_string;
   string file_name;
@@ -40,6 +48,7 @@ struct Data {
   // indicate the download needs confirmation before initiating. After
   // confirmation, the state will indicate the download is in progress, complete
   // or cancelled.
+  // TODO(chlily): This should be an enum, not a string.
   string state;
   // The URL of the download item. Present if this field is populated with the
   // original URL. Omitted if the URL should not be clickable on the downloads
@@ -48,6 +57,13 @@ struct Data {
   // The display string for the URL in the UI. May be truncated/elided from the
   // original URL, and IDN domains may be converted to Unicode.
   mojo_base.mojom.String16 display_url;
+  // Safe Browsing protection level of the profile in which the item was
+  // downloaded. Used to determine whether to show a special warning message.
+  SafeBrowsingState safe_browsing_state;
+  // Whether the download had a Safe Browsing verdict. This is used to determine
+  // whether to call a file type warning "suspicious" or "unverified". If the
+  // safe browsing state is kNoSafeBrowsing, this should always be false.
+  bool has_safe_browsing_verdict;
 };
 
 interface PageHandlerFactory {

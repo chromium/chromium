@@ -18,6 +18,7 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -28,9 +29,9 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {DangerType, States} from './constants.js';
+import {DangerType, DisplayType, States} from './constants.js';
 import {MojomData} from './data.js';
-import {PageHandlerInterface} from './downloads.mojom-webui.js';
+import {PageHandlerInterface, SafeBrowsingState} from './downloads.mojom-webui.js';
 import {IconLoaderImpl} from './icon_loader.js';
 import {getTemplate} from './item.html.js';
 
@@ -44,7 +45,7 @@ export interface DownloadsItemElement {
   };
 }
 
-const DownloadsItemElementBase = FocusRowMixin(PolymerElement);
+const DownloadsItemElementBase = I18nMixin(FocusRowMixin(PolymerElement));
 
 export class DownloadsItemElement extends DownloadsItemElementBase {
   static get is() {
@@ -159,6 +160,14 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: false,
       },
 
+      displayType_: {
+        computed: 'computeDisplayType_(data.isInsecure, data.state,' +
+            'data.dangerType, data.safeBrowsingState,' +
+            'data.hasSafeBrowsingVerdict)',
+        type: DisplayType,
+        value: DisplayType.NORMAL,
+      },
+
       updateDeepScanningUx_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('updateDeepScanningUX'),
@@ -178,7 +187,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       // TODO(dbeam): this gets called way more when I observe data.byExtId
       // and data.byExtName directly. Why?
       'observeControlledBy_(controlledBy_)',
-      'observeIsDangerous_(isDangerous_, data)',
+      'observeDisplayType_(displayType_, isDangerous_, data.*)',
       'restoreFocusAfterCancelIfNeeded_(data)',
     ];
   }
@@ -194,6 +203,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private showProgress_: boolean;
   private useFileIcon_: boolean;
   private restoreFocusAfterCancel_: boolean = false;
+  private displayType_: DisplayType;
   private updateDeepScanningUx_: boolean;
   private improvedDownloadWarningsUx_: boolean;
   private completelyOnDisk_: boolean;
@@ -313,6 +323,73 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         this.data.state === States.ASYNC_SCANNING;
   }
 
+  private computeDisplayType_(): DisplayType {
+    // Most downloads are normal. If we don't have data, don't assume danger.
+    if (!this.data) {
+      return DisplayType.NORMAL;
+    }
+
+    if (this.data.isInsecure || this.data.state === States.INSECURE) {
+      return DisplayType.INSECURE;
+    }
+
+    if (this.data.state === States.ASYNC_SCANNING ||
+        this.data.state === States.PROMPT_FOR_SCANNING) {
+      return DisplayType.SUSPICIOUS;
+    }
+
+    // Enterprise AP verdicts.
+    if ((loadTimeData.getBoolean('requestsApVerdicts') &&
+         this.data.dangerType === DangerType.UNCOMMON_CONTENT) ||
+        this.data.dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
+      return DisplayType.SUSPICIOUS;
+    }
+
+    switch (this.data.dangerType) {
+      // Mimics logic in download_ui_model.cc for downloads with danger_type
+      // DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE.
+      case DangerType.DANGEROUS_FILE:
+        return this.data.safeBrowsingState ===
+                SafeBrowsingState.kNoSafeBrowsing ?
+            DisplayType.UNVERIFIED :
+            (this.data.hasSafeBrowsingVerdict ? DisplayType.SUSPICIOUS :
+                                                DisplayType.UNVERIFIED);
+
+      case DangerType.DANGEROUS_URL:
+      case DangerType.DANGEROUS_CONTENT:
+      case DangerType.DANGEROUS_HOST:
+      case DangerType.DANGEROUS_ACCOUNT_COMPROMISE:
+      case DangerType.POTENTIALLY_UNWANTED:
+      case DangerType.DEEP_SCANNED_OPENED_DANGEROUS:
+        return DisplayType.DANGEROUS;
+
+      case DangerType.UNCOMMON_CONTENT:
+      case DangerType.DEEP_SCANNED_FAILED:
+        return DisplayType.SUSPICIOUS;
+
+      case DangerType.SENSITIVE_CONTENT_BLOCK:
+      case DangerType.BLOCKED_TOO_LARGE:
+      case DangerType.BLOCKED_PASSWORD_PROTECTED:
+        return DisplayType.ERROR;
+    }
+
+    return DisplayType.NORMAL;
+  }
+
+  private computeSaveDangerousLabel_(): string {
+    switch (this.displayType_) {
+      case DisplayType.DANGEROUS:
+        return this.i18n('controlKeepDangerous');
+      case DisplayType.SUSPICIOUS:
+        return this.i18n('controlKeepSuspicious');
+      case DisplayType.UNVERIFIED:
+        return this.i18n('controlKeepUnverified');
+      case DisplayType.INSECURE:
+        return this.i18n('controlKeepInsecure');
+    }
+    return '';
+  }
+
   private computeDescription_(): string {
     if (!this.data) {
       return '';
@@ -340,7 +417,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case States.DANGEROUS:
         switch (data.dangerType) {
           case DangerType.DANGEROUS_FILE:
-            return loadTimeData.getString('dangerFileDesc');
+            return data.safeBrowsingState ===
+                    SafeBrowsingState.kNoSafeBrowsing ?
+                loadTimeData.getString('noSafeBrowsingDesc') :
+                loadTimeData.getString('dangerFileDesc');
 
           case DangerType.DANGEROUS_URL:
           case DangerType.DANGEROUS_CONTENT:
@@ -356,6 +436,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
           case DangerType.SENSITIVE_CONTENT_WARNING:
             return loadTimeData.getString('sensitiveContentWarningDesc');
 
+          // TODO(crbug.com/1202691): This string should have been cleaned up
+          // and is not actually in use.
           case DangerType.DANGEROUS_ACCOUNT_COMPROMISE:
             return loadTimeData.getString('accountCompromiseDownloadDesc');
         }
@@ -383,8 +465,36 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return '';
   }
 
+  private iconAndDescriptionColor_(): string {
+    if (this.improvedDownloadWarningsUx_) {
+      switch (this.displayType_) {
+        case DisplayType.DANGEROUS:
+        case DisplayType.ERROR:
+          return 'red';
+        case DisplayType.INSECURE:
+        case DisplayType.UNVERIFIED:
+        case DisplayType.SUSPICIOUS:
+          return 'grey';
+      }
+    }
+    return '';
+  }
+
   private computeIcon_(): string {
     if (this.data) {
+      if (this.improvedDownloadWarningsUx_) {
+        switch (this.displayType_) {
+          case DisplayType.DANGEROUS:
+            return 'downloads:dangerous';
+          case DisplayType.INSECURE:
+          case DisplayType.UNVERIFIED:
+          case DisplayType.SUSPICIOUS:
+            return 'cr:warning';
+          case DisplayType.ERROR:
+            return 'cr:error';
+        }
+      }
+
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.UNCOMMON_CONTENT) ||
@@ -425,6 +535,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private computeIconColor_(): string {
     if (this.data) {
+      if (this.improvedDownloadWarningsUx_) {
+        return this.iconAndDescriptionColor_();
+      }
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.UNCOMMON_CONTENT) ||
@@ -584,7 +697,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
-  private observeIsDangerous_() {
+  private observeDisplayType_() {
     const removeFileUrlLinks = () => {
       this.$.url.removeAttribute('href');
       this.$['file-link'].removeAttribute('href');
@@ -594,29 +707,42 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return;
     }
 
-    const OVERRIDDEN_ICON_TYPES = [
-      DangerType.SENSITIVE_CONTENT_BLOCK,
-      DangerType.BLOCKED_TOO_LARGE,
-      DangerType.BLOCKED_PASSWORD_PROTECTED,
-      DangerType.DEEP_SCANNED_FAILED,
-    ];
+    // Returns whether to use the file icon, and additionally clears file url
+    // links if necessary.
+    const mayUseFileIcon = () => {
+      if (this.improvedDownloadWarningsUx_) {
+        const use = this.displayType_ === DisplayType.NORMAL;
+        if (!use) {
+          removeFileUrlLinks();
+        }
+        return use;
+      }
 
-    // Handle various dangerous cases.
-    if (this.isDangerous_) {
-      removeFileUrlLinks();
-      this.useFileIcon_ = false;
-      return;
-    }
-    if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType as DangerType)) {
-      this.useFileIcon_ = false;
-      return;
-    }
-    if (this.data.state === States.ASYNC_SCANNING) {
-      this.useFileIcon_ = false;
-      return;
-    }
-    if (this.data.state === States.PROMPT_FOR_SCANNING) {
-      this.useFileIcon_ = false;
+      // Handle various dangerous cases.
+      const OVERRIDDEN_ICON_TYPES = [
+        DangerType.SENSITIVE_CONTENT_BLOCK,
+        DangerType.BLOCKED_TOO_LARGE,
+        DangerType.BLOCKED_PASSWORD_PROTECTED,
+        DangerType.DEEP_SCANNED_FAILED,
+      ];
+      if (this.isDangerous_) {
+        removeFileUrlLinks();
+        return false;
+      }
+      if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType as DangerType)) {
+        return false;
+      }
+      if (this.data.state === States.ASYNC_SCANNING) {
+        return false;
+      }
+      if (this.data.state === States.PROMPT_FOR_SCANNING) {
+        return false;
+      }
+      return true;
+    };
+
+    this.useFileIcon_ = mayUseFileIcon();
+    if (!this.useFileIcon_) {
       return;
     }
 
@@ -633,7 +759,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         .then(success => {
           if (path === this.data.filePath &&
               this.data.state !== States.ASYNC_SCANNING) {
-            this.useFileIcon_ = success;
+            // Check again if we may use the file icon, to avoid a race between
+            // loading the icon and determining the proper danger type.
+            this.useFileIcon_ = mayUseFileIcon() && success;
           }
         });
   }

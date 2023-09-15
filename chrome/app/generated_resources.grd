@@ -2457,6 +2457,26 @@ are declared in tools/grit/grit_rule.gni.
         Open anyway
       </message>
 
+      <message name="IDS_DOWNLOAD_KEEP_DANGEROUS_FILE"
+               desc="On the downloads page, the label for the button to download a dangerous file despite its danger.">
+        Download dangerous file
+      </message>
+      <message name="IDS_DOWNLOAD_KEEP_SUSPICIOUS_FILE"
+               desc="On the downloads page, the label for the button to download a suspicious file despite its danger.">
+        Download suspicious file
+      </message>
+      <message name="IDS_DOWNLOAD_KEEP_UNVERIFIED_FILE"
+               desc="On the downloads page, the label for the button to download an unverified file despite its danger.">
+        Download unverified file
+      </message>
+      <message name="IDS_DOWNLOAD_KEEP_INSECURE_FILE"
+               desc="On the downloads page, the label for the button to download an insecure file despite its danger.">
+        Download insecure file
+      </message>
+      <message name="IDS_DOWNLOAD_DELETE_FROM_HISTORY"
+               desc="On the downloads page, the label for the button to remove a downloaded file from the history.">
+        Delete from history
+      </message>
 
       <!-- Download Alerts for Accessibility -->
       <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT"

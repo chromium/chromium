@@ -729,6 +729,32 @@ Permissions you've already given to websites and apps may apply to this account.
         Chromium recommends scanning this file because it may be dangerous.
       </message>
 
+      <!-- chrome://downloads page dangerous file description strings -->
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_FILETYPE"
+               desc="On the chrome://downloads page, the description shown for a blocked file with a dangerous filetype.">
+        Chromium blocked this download because the file type isn't commonly downloaded and it may be dangerous
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is dangerous.">
+        Chromium blocked this download because the file is dangerous
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is uncommon.">
+        Chromium blocked this download because the file isn't commonly downloaded and it may be dangerous
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is potentially unwanted.">
+        Chromium blocked this download because the file is deceptive and may make unexpected changes to your device
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_INSECURE"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is insecure.">
+        Chromium blocked this download because the site isn't using a secure connection and the file may have been tampered with
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING"
+               desc="On the chrome://downloads page, the description shown for a blocked file that could not be verified because Safe Browsing is off.">
+        Chromium blocked this download because you turned Safe Browsing off and the file can't be verified
+      </message>
+
       <!-- Abandon in-progress downloads confirmation dialog -->
       <if expr="not is_macosx">
         <message name="IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE" desc="Message on a dialog shown when the user closes the browser while one or more downloads are in progress. This string is shown on Windows, ChromeOS, and Linux, which all use 'Exit' to refer to closing a browser.">

@@ -13,9 +13,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -88,6 +90,10 @@ class DownloadsListTracker
                            CreateDownloadData_UrlFormatting_Idn);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_UrlFormatting_VeryLong);
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_SafeBrowsing);
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
   struct StartTimeComparator {
     bool operator()(const download::DownloadItem* a,

@@ -459,6 +459,8 @@ static_library("browser") {
     "download/download_ui_controller.h",
     "download/download_ui_model.cc",
     "download/download_ui_model.h",
+    "download/download_ui_safe_browsing_util.cc",
+    "download/download_ui_safe_browsing_util.h",
     "download/drag_download_item.h",
     "download/insecure_download_blocking.cc",
     "download/insecure_download_blocking.h",

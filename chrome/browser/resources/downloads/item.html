@@ -156,6 +156,26 @@
     }
   }
 
+  .description[description-color='red'] {
+    color: var(--google-red-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .description[description-color='red'] {
+      color: var(--google-red-300);
+    }
+  }
+
+  .description[description-color='grey'] {
+    color: var(--google-grey-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .description[description-color='grey'] {
+      color: var(--google-grey-500);
+    }
+  }
+
   #name,
   #file-link,
   #url {
@@ -209,7 +229,7 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .is-active .description {
+    .is-active .description[description-color=''] {
       color: #616161;
     }
   }
@@ -295,11 +315,14 @@
   <div id="file-icon-wrapper" class="icon-wrapper" aria-hidden="true">
     <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
     icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-    useFileIcon_, updateDeepScanningUx_)]]">
-    <iron-icon class="icon" icon$="[[computeIcon_(
-        isDangerous_, data.dangerType, useFileIcon_, updateDeepScanningUx_)]]"
-        hidden="[[useFileIcon_]]" icon-color$="[[computeIconColor_(isDangerous_,
-        data.dangerType, useFileIcon_)]]"></iron-icon>
+    useFileIcon_, updateDeepScanningUx_, improvedDownloadWarningsUx_,
+    displayType_)]]">
+    <iron-icon class="icon" hidden="[[useFileIcon_]]"
+        icon$="[[computeIcon_(isDangerous_, data.dangerType, useFileIcon_,
+            updateDeepScanningUx_, improvedDownloadWarningsUx_, displayType_)]]"
+        icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
+            useFileIcon_, updateDeepScanningUx_, improvedDownloadWarningsUx_,
+            displayType_)]]"></iron-icon>
   </div>
 
   <div id="details">
@@ -323,13 +346,18 @@
     </div>
 
     <div class="description" role="gridcell"
-        hidden$="[[!computeDescriptionVisible_(data.*)]]">
+        description-color$="[[iconAndDescriptionColor_(displayType_,
+            improvedDownloadWarningsUx_)]]"
+        hidden$="[[!computeDescriptionVisible_(data.*, displayType_,
+            updateDeepScanningUx_, improvedDownloadWarningsUx_)]">
       [[computeDescription_(
           data.state,
           data.dangerType,
           data.fileName,
           data.progressStatusText,
-          updateDeepScanningUx_)]]
+          displayType_,
+          updateDeepScanningUx_,
+          improvedDownloadWarningsUx_)]]
     </div>
 
     <div class="description" role="gridcell"
@@ -428,33 +456,51 @@
         </template>
 
         <template is="dom-if" if="[[!isReviewable_]]">
-          <!-- Dangerous file types (e.g. .exe, .jar). -->
-          <template is="dom-if" if="[[!isMalware_]]">
+          <!-- ImprovedDownloadPageWarnings UX -->
+          <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
             <span role="gridcell">
               <cr-button on-click="onDiscardDangerousClick_"
                   class="action-button" focus-row-control
-                  focus-type="discard">$i18n{dangerDiscard}</cr-button>
+                  focus-type="discard">$i18n{controlDeleteFromHistory}
+              </cr-button>
             </span>
             <span role="gridcell">
               <cr-button on-click="onSaveDangerousClick_" focus-row-control
-                  focus-type="save">
-                $i18n{dangerSave}</cr-button>
+                  focus-type="save">[[computeSaveDangerousLabel_(displayType_)]]
+              </cr-button>
             </span>
           </template>
 
-          <!-- Things that safe browsing has determined to be dangerous. -->
-          <template is="dom-if" if="[[isMalware_]]">
-            <span role="gridcell">
-              <cr-button on-click="onDiscardDangerousClick_"
-                  class="action-button"
-                  focus-row-control focus-type="discard">
-                $i18n{controlRemoveFromList}</cr-button>
-            </span>
-            <span role="gridcell">
-              <cr-button on-click="onSaveDangerousClick_" focus-row-control
-                  focus-type="save">
-                $i18n{dangerRestore}</cr-button>
-            </span>
+          <!-- Old UX -->
+          <template is="dom-if" if="[[!improvedDownloadWarningsUx_]]">
+            <!-- Dangerous file types (e.g. .exe, .jar). -->
+            <template is="dom-if" if="[[!isMalware_]]">
+              <span role="gridcell">
+                <cr-button on-click="onDiscardDangerousClick_"
+                    class="action-button" focus-row-control
+                    focus-type="discard">$i18n{dangerDiscard}</cr-button>
+              </span>
+              <span role="gridcell">
+                <cr-button on-click="onSaveDangerousClick_" focus-row-control
+                    focus-type="save">
+                  $i18n{dangerSave}</cr-button>
+              </span>
+            </template>
+
+            <!-- Things that safe browsing has determined to be dangerous. -->
+            <template is="dom-if" if="[[isMalware_]]">
+              <span role="gridcell">
+                <cr-button on-click="onDiscardDangerousClick_"
+                    class="action-button"
+                    focus-row-control focus-type="discard">
+                  $i18n{controlRemoveFromList}</cr-button>
+              </span>
+              <span role="gridcell">
+                <cr-button on-click="onSaveDangerousClick_" focus-row-control
+                    focus-type="save">
+                  $i18n{dangerRestore}</cr-button>
+              </span>
+            </template>
           </template>
         </template>
       </div>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, States} from 'chrome://downloads/downloads.js';
+import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, SafeBrowsingState, States} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -150,6 +150,210 @@ suite('item tests', function() {
     assertEquals('cr:info', item.shadowRoot!.querySelector('iron-icon')!.icon);
     assertTrue(item.$['file-icon'].hidden);
   });
+
+  test(
+      'icon overridden by display type for improvedDownloadWarningsUX',
+      async () => {
+        loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+        const item = document.createElement('downloads-item');
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        document.body.appendChild(item);
+        testIconLoader.setShouldIconsLoad(true);
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.SENSITIVE_CONTENT_BLOCK,
+                 }));
+
+        assertEquals(
+            'cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'red',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   isInsecure: true,
+                 }));
+
+        assertEquals(
+            'cr:warning', item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_FILE,
+                   safeBrowsingState: SafeBrowsingState.kNoSafeBrowsing,
+                 }));
+
+        assertEquals(
+            'cr:warning', item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_FILE,
+                   safeBrowsingState: SafeBrowsingState.kEnhancedProtection,
+                   hasSafeBrowsingVerdict: true,
+                 }));
+
+        assertEquals(
+            'cr:warning', item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_FILE,
+                   safeBrowsingState: SafeBrowsingState.kStandardProtection,
+                   hasSafeBrowsingVerdict: false,
+                 }));
+
+        assertEquals(
+            'cr:warning', item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DEEP_SCANNED_FAILED,
+                 }));
+
+        assertEquals(
+            'cr:warning', item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_URL,
+                 }));
+
+        assertEquals(
+            'downloads:dangerous',
+            item.shadowRoot!.querySelector('iron-icon')!.icon);
+        assertTrue(item.$['file-icon'].hidden);
+        assertEquals(
+            'red',
+            item.shadowRoot!.querySelector('iron-icon')!.getAttribute(
+                'icon-color'));
+      });
+
+  test(
+      'description color set by display type for improvedDownloadWarningsUX',
+      async () => {
+        loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+        const item = document.createElement('downloads-item');
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        document.body.appendChild(item);
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.SENSITIVE_CONTENT_BLOCK,
+                 }));
+
+        assertEquals(
+            'red',
+            item.shadowRoot!.querySelector('.description')!.getAttribute(
+                'description-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   isInsecure: true,
+                 }));
+
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('.description')!.getAttribute(
+                'description-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_FILE,
+                   safeBrowsingState: SafeBrowsingState.kNoSafeBrowsing,
+                 }));
+
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('.description')!.getAttribute(
+                'description-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_FILE,
+                   safeBrowsingState: SafeBrowsingState.kEnhancedProtection,
+                   hasSafeBrowsingVerdict: true,
+                 }));
+
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('.description')!.getAttribute(
+                'description-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_FILE,
+                   safeBrowsingState: SafeBrowsingState.kStandardProtection,
+                   hasSafeBrowsingVerdict: false,
+                 }));
+
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('.description')!.getAttribute(
+                'description-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DEEP_SCANNED_FAILED,
+                 }));
+
+        assertEquals(
+            'grey',
+            item.shadowRoot!.querySelector('.description')!.getAttribute(
+                'description-color'));
+
+        item.set('data', createDownload({
+                   filePath: 'unique1',
+                   hideDate: false,
+                   dangerType: DangerType.DANGEROUS_URL,
+                 }));
+
+        assertEquals(
+            'red',
+            item.shadowRoot!.querySelector('.description')!.getAttribute(
+                'description-color'));
+      });
 
   test('open now button allowed by load time data', async () => {
     loadTimeData.overrideValues(
