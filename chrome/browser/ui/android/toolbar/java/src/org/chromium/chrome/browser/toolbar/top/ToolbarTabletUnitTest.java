@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -339,6 +341,35 @@ public final class ToolbarTabletUnitTest {
         Assert.assertEquals("Tooltip text for Save Offline button is not as expected",
                 mActivity.getResources().getString(R.string.download_page),
                 mSaveOfflineButton.getTooltipText());
+    }
+
+    @Test
+    public void testStatusViewHoverAction() {
+        StatusView statusViewSpy = spy(mToolbarTablet.findViewById(R.id.location_bar_status));
+        // Do NOT show status view tooltip and background when status icon is NOT visible.
+        when(statusViewSpy.isSearchEngineStatusIconVisible()).thenReturn(false);
+        statusViewSpy.setHoverActionOnVisibilityChange();
+        Assert.assertEquals("Tooltip text for Status view is not as expected", null,
+                statusViewSpy.getTooltipText());
+        Assert.assertEquals("Background for Status view is not as expected", null,
+                statusViewSpy.getBackground());
+
+        // Show status view tooltip and background when status icon is visible.
+        when(statusViewSpy.isSearchEngineStatusIconVisible()).thenReturn(true);
+        statusViewSpy.setHoverActionOnVisibilityChange();
+        Assert.assertEquals("Tooltip text for Status view is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_menu_info),
+                statusViewSpy.getTooltipText());
+        Assert.assertNotEquals("Background for Status view is not as expected", null,
+                statusViewSpy.getBackground());
+
+        // Only show status view tooltip when verbose status text is visible.
+        statusViewSpy.setVerboseStatusTextVisible(true);
+        Assert.assertEquals("Tooltip text for Status view is not as expected",
+                mActivity.getResources().getString(R.string.accessibility_menu_info),
+                statusViewSpy.getTooltipText());
+        Assert.assertEquals("Background for Status view is not as expected", null,
+                statusViewSpy.getBackground());
     }
 
     @Test
