@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
@@ -93,6 +94,16 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
       AutofillSuggestionTriggerSource trigger_source,
       bool is_all_server_suggestions = false);
 
+  // Returns the last targeted server field types to be filled. This is used
+  // by group filling to keep users in the same granularity level by filtering
+  // out fields that do not match the last targeted fields group granularity.
+  // For example, if users choose to fill every address field, we will store
+  // these fields so that in a next iteration, when the user clicks, say a name
+  // field only fields that are of group name are filled, therefore staying at a
+  // group filling level.
+  absl::optional<ServerFieldTypeSet> GetLastServerFieldTypesToFillForSection(
+      const Section& section) const;
+
   // Returns true if there is a screen reader installed on the machine.
   virtual bool HasActiveScreenReader() const;
 
@@ -171,6 +182,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // The current form and field selected by Autofill.
   FormData query_form_;
   FormFieldData query_field_;
+
+  // Stores the last `AutofillTriggerDetails::field_types_to_fill`.
+  // We key this information by form section to guarantee granular filling
+  // side effects are specific are not "leaked" to other forms.
+  base::flat_map<Section, ServerFieldTypeSet>
+      last_field_types_to_fill_for_address_form_section_;
 
   // The bounds of the form field that user is interacting with.
   gfx::RectF element_bounds_;

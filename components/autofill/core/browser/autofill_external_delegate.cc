@@ -195,6 +195,17 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
 }
 
+absl::optional<ServerFieldTypeSet>
+AutofillExternalDelegate::GetLastServerFieldTypesToFillForSection(
+    const Section& section) const {
+  if (auto it =
+          last_field_types_to_fill_for_address_form_section_.find(section);
+      it != last_field_types_to_fill_for_address_form_section_.end()) {
+    return it->second;
+  }
+  return absl::nullopt;
+}
+
 bool AutofillExternalDelegate::HasActiveScreenReader() const {
   // Note: This always returns false if ChromeVox is in use because
   // AXPlatformNodes are not used on the ChromeOS platform.
