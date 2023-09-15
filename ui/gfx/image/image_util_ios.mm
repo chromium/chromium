@@ -129,4 +129,10 @@ Image ImageFrom1xJPEGEncodedData(const unsigned char* input,
 }
 #endif  // BUILDFLAG(USE_BLINK)
 
+Image ResizedImage(const Image& image, const gfx::Size& size) {
+  UIImage* ui_image =
+      ResizeUIImage(image.ToUIImage(), size.ToCGSize(),
+       /*preserve_aspect_ratio=*/NO, /*trim_to_fit=*/NO);
+  return Image(ui_image);
+}
 }  // end namespace gfx
