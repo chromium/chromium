@@ -34,6 +34,9 @@ class TestAccountsUtil {
 
   virtual ~TestAccountsUtil();
   bool Init(const base::FilePath& config_path);
+
+  // Returns true and writes `out_account` selected by `name` or returns false
+  // when the account doesn't exist.
   bool GetAccount(const std::string& name, TestAccount& out_account) const;
 
  private:
