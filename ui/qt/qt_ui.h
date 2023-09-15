@@ -107,6 +107,8 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   // `shim_` is alive.
   CmdLineArgs cmd_line_;
 
+  int qt_version_ = 0;
+
   // Cached default font settings.
   std::string font_family_;
   int font_size_pixels_ = 0;

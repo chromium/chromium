@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/scoped_environment_variable_override.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_canvas.h"
@@ -60,15 +61,6 @@ void* LoadLibrary(const base::FilePath& path) {
   return dlopen(path.value().c_str(), RTLD_NOW | RTLD_GLOBAL);
 }
 
-void* LoadLibraryOrFallback(const base::FilePath& path,
-                            const char* preferred,
-                            const char* fallback) {
-  if (void* library = LoadLibrary(path.Append(preferred))) {
-    return library;
-  }
-  return LoadLibrary(path.Append(fallback));
-}
-
 bool PreferQt6() {
   auto* cmd = base::CommandLine::ForCurrentProcess();
   if (cmd->HasSwitch(kQtVersionFlag)) {
@@ -93,7 +85,7 @@ bool PreferQt6() {
   return desktop == base::nix::DESKTOP_ENVIRONMENT_KDE6;
 }
 
-int QtWeightToCssWeight(int weight) {
+int Qt5WeightToCssWeight(int weight) {
   struct {
     int qt_weight;
     int css_weight;
@@ -231,10 +223,16 @@ bool QtUi::Initialize() {
   if (!base::PathService::Get(base::DIR_MODULE, &path)) {
     return false;
   }
-  void* libqt_shim =
-      PreferQt6()
-          ? LoadLibraryOrFallback(path, "libqt6_shim.so", "libqt5_shim.so")
-          : LoadLibraryOrFallback(path, "libqt5_shim.so", "libqt6_shim.so");
+  void* libqt_shim = nullptr;
+  auto load_libqt_shim = [&](int qt_version) -> bool {
+    auto file_name = base::StringPrintf("libqt%d_shim.so", qt_version);
+    if ((libqt_shim = LoadLibrary(path.Append(file_name)))) {
+      qt_version_ = qt_version;
+    }
+    return libqt_shim;
+  };
+  PreferQt6() ? load_libqt_shim(6) || load_libqt_shim(5)
+              : load_libqt_shim(5) || load_libqt_shim(6);
   if (!libqt_shim) {
     return false;
   }
@@ -461,7 +459,8 @@ void QtUi::FontChanged() {
     font_size_pixels_ = std::round(font_size_points_ * kPointToPixelRatio);
   }
   font_style_ = desc.is_italic ? gfx::Font::ITALIC : gfx::Font::NORMAL;
-  font_weight_ = QtWeightToCssWeight(desc.weight);
+  font_weight_ =
+      qt_version_ == 5 ? Qt5WeightToCssWeight(desc.weight) : desc.weight;
 
   gfx::FontRenderParamsQuery query;
   query.families = {font_family_};
