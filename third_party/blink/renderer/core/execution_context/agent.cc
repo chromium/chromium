@@ -31,7 +31,8 @@ Agent::Agent(v8::Isolate* isolate,
              std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
              bool is_origin_agent_cluster,
              bool origin_agent_cluster_left_as_default)
-    : rejected_promises_(RejectedPromises::Create()),
+    : isolate_(isolate),
+      rejected_promises_(RejectedPromises::Create()),
       event_loop_(base::AdoptRef(
           new scheduler::EventLoop(this, isolate, std::move(microtask_queue)))),
       cluster_id_(cluster_id),
