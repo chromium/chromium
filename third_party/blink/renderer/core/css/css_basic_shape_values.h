@@ -127,10 +127,10 @@ class CSSBasicShapeInsetValue final : public CSSValue {
  public:
   CSSBasicShapeInsetValue() : CSSValue(kBasicShapeInsetClass) {}
 
-  CSSPrimitiveValue* Top() const { return top_.Get(); }
-  CSSPrimitiveValue* Right() const { return right_.Get(); }
-  CSSPrimitiveValue* Bottom() const { return bottom_.Get(); }
-  CSSPrimitiveValue* Left() const { return left_.Get(); }
+  CSSValue* Top() const { return top_.Get(); }
+  CSSValue* Right() const { return right_.Get(); }
+  CSSValue* Bottom() const { return bottom_.Get(); }
+  CSSValue* Left() const { return left_.Get(); }
 
   CSSValuePair* TopLeftRadius() const { return top_left_radius_.Get(); }
   CSSValuePair* TopRightRadius() const { return top_right_radius_.Get(); }
@@ -138,33 +138,32 @@ class CSSBasicShapeInsetValue final : public CSSValue {
   CSSValuePair* BottomLeftRadius() const { return bottom_left_radius_.Get(); }
 
   // TODO(sashab): Remove these and pass them as arguments in the constructor.
-  void SetTop(CSSPrimitiveValue* top) { top_ = top; }
-  void SetRight(CSSPrimitiveValue* right) { right_ = right; }
-  void SetBottom(CSSPrimitiveValue* bottom) { bottom_ = bottom; }
-  void SetLeft(CSSPrimitiveValue* left) { left_ = left; }
+  void SetTop(CSSValue* top) { top_ = top; }
+  void SetRight(CSSValue* right) { right_ = right; }
+  void SetBottom(CSSValue* bottom) { bottom_ = bottom; }
+  void SetLeft(CSSValue* left) { left_ = left; }
 
-  void UpdateShapeSize4Values(CSSPrimitiveValue* top,
-                              CSSPrimitiveValue* right,
-                              CSSPrimitiveValue* bottom,
-                              CSSPrimitiveValue* left) {
+  void UpdateShapeSize4Values(CSSValue* top,
+                              CSSValue* right,
+                              CSSValue* bottom,
+                              CSSValue* left) {
     SetTop(top);
     SetRight(right);
     SetBottom(bottom);
     SetLeft(left);
   }
 
-  void UpdateShapeSize1Value(CSSPrimitiveValue* value1) {
+  void UpdateShapeSize1Value(CSSValue* value1) {
     UpdateShapeSize4Values(value1, value1, value1, value1);
   }
 
-  void UpdateShapeSize2Values(CSSPrimitiveValue* value1,
-                              CSSPrimitiveValue* value2) {
+  void UpdateShapeSize2Values(CSSValue* value1, CSSValue* value2) {
     UpdateShapeSize4Values(value1, value2, value1, value2);
   }
 
-  void UpdateShapeSize3Values(CSSPrimitiveValue* value1,
-                              CSSPrimitiveValue* value2,
-                              CSSPrimitiveValue* value3) {
+  void UpdateShapeSize3Values(CSSValue* value1,
+                              CSSValue* value2,
+                              CSSValue* value3) {
     UpdateShapeSize4Values(value1, value2, value3, value2);
   }
 
@@ -183,10 +182,10 @@ class CSSBasicShapeInsetValue final : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<CSSPrimitiveValue> top_;
-  Member<CSSPrimitiveValue> right_;
-  Member<CSSPrimitiveValue> bottom_;
-  Member<CSSPrimitiveValue> left_;
+  Member<CSSValue> top_;
+  Member<CSSValue> right_;
+  Member<CSSValue> bottom_;
+  Member<CSSValue> left_;
 
   Member<CSSValuePair> top_left_radius_;
   Member<CSSValuePair> top_right_radius_;

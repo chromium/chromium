@@ -316,6 +316,8 @@ class PLATFORM_EXPORT Length {
 
   Length SubtractFromOneHundredPercent() const;
 
+  Length Add(const Length& other) const;
+
   Length Zoom(double factor) const;
 
   String ToString() const;

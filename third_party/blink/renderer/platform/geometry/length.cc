@@ -162,6 +162,27 @@ Length Length::SubtractFromOneHundredPercent() const {
   return Length::Fixed(result->Pixels());
 }
 
+Length Length::Add(const Length& other) const {
+  CHECK(IsSpecified());
+  if (IsFixed() && other.IsFixed()) {
+    return Length::Fixed(Pixels() + other.Pixels());
+  }
+  if (IsPercent() && other.IsPercent()) {
+    return Length::Percent(Percent() + other.Percent());
+  }
+
+  scoped_refptr<const CalculationValue> result =
+      AsCalculationValue()->Add(*other.AsCalculationValue());
+  if (result->IsExpression() ||
+      (result->Pixels() != 0 && result->Percent() != 0)) {
+    return Length(std::move(result));
+  }
+  if (result->Percent()) {
+    return Length::Percent(result->Percent());
+  }
+  return Length::Fixed(result->Pixels());
+}
+
 Length Length::Zoom(double factor) const {
   switch (GetType()) {
     case kFixed:

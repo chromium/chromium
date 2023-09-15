@@ -4379,6 +4379,12 @@
       status: "stable",
     },
     {
+      // Update xywh()/rect() computed value to use inset() per the spec:
+      // https://drafts.csswg.org/css-shapes-1/#basic-shape-computed-values
+      name: "XYWHAndRectComputedValue",
+      status: "stable",
+    },
+    {
       // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12
       // frames, which should trigger a zero-copy path in the tab capture code.
       name: "ZeroCopyTabCapture",

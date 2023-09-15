@@ -245,43 +245,99 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
     case BasicShape::kBasicShapeRectType: {
       const BasicShapeRect* rect = To<BasicShapeRect>(basic_shape);
 
-      auto get_length = [&](const Length& length) -> CSSValue* {
-        if (length.GetType() == Length::kAuto) {
-          return CSSIdentifierValue::Create(CSSValueID::kAuto);
-        }
+      if (!RuntimeEnabledFeatures::XYWHAndRectComputedValueEnabled()) {
+        auto get_length = [&](const Length& length) -> CSSValue* {
+          if (length.GetType() == Length::kAuto) {
+            return CSSIdentifierValue::Create(CSSValueID::kAuto);
+          }
 
+          return CSSPrimitiveValue::CreateFromLength(length,
+                                                     style.EffectiveZoom());
+        };
+
+        CSSValue* top = get_length(rect->Top());
+        CSSValue* right = get_length(rect->Right());
+        CSSValue* bottom = get_length(rect->Bottom());
+        CSSValue* left = get_length(rect->Left());
+
+        cssvalue::CSSBasicShapeRectValue* rect_value =
+            MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(
+                top, right, bottom, left);
+        InitializeBorderRadius(rect_value, style, rect);
+        return rect_value;
+      }
+
+      cssvalue::CSSBasicShapeInsetValue* inset_value =
+          MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>();
+
+      // Spec: All <basic-shape-rect> functions compute to the equivalent
+      // inset() function. NOTE: Given `rect(t r b l)`, the equivalent function
+      // is `inset(t calc(100% - r) calc(100% - b) l)`.
+      // See: https://drafts.csswg.org/css-shapes/#basic-shape-computed-values
+      auto get_inset_length = [&](Length length,
+                                  bool is_right_or_bottom) -> CSSValue* {
+        // Auto values coincide with the corresponding edge of the reference
+        // box (https://drafts.csswg.org/css-shapes/#funcdef-basic-shape-rect),
+        // so the inset of any auto value will be 0.
+        if (length.GetType() == Length::kAuto) {
+          return CSSNumericLiteralValue::Create(
+              0, CSSPrimitiveValue::UnitType::kPercentage);
+        }
+        if (is_right_or_bottom) {
+          length = length.SubtractFromOneHundredPercent();
+        }
         return CSSPrimitiveValue::CreateFromLength(length,
                                                    style.EffectiveZoom());
       };
-
-      CSSValue* top = get_length(rect->Top());
-      CSSValue* right = get_length(rect->Right());
-      CSSValue* bottom = get_length(rect->Bottom());
-      CSSValue* left = get_length(rect->Left());
-
-      cssvalue::CSSBasicShapeRectValue* rect_value =
-          MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(top, right,
-                                                                 bottom, left);
-      InitializeBorderRadius(rect_value, style, rect);
-      return rect_value;
+      inset_value->SetTop(get_inset_length(rect->Top(), false));
+      inset_value->SetRight(get_inset_length(rect->Right(), true));
+      inset_value->SetBottom(get_inset_length(rect->Bottom(), true));
+      inset_value->SetLeft(get_inset_length(rect->Left(), false));
+      InitializeBorderRadius(inset_value, style, rect);
+      return inset_value;
     }
     case BasicShape::kBasicShapeXYWHType: {
       const BasicShapeXYWH* rect = To<BasicShapeXYWH>(basic_shape);
 
-      CSSValue* x =
-          CSSPrimitiveValue::CreateFromLength(rect->X(), style.EffectiveZoom());
-      CSSValue* y =
-          CSSPrimitiveValue::CreateFromLength(rect->Y(), style.EffectiveZoom());
-      CSSValue* width = CSSPrimitiveValue::CreateFromLength(
-          rect->Width(), style.EffectiveZoom());
-      CSSValue* height = CSSPrimitiveValue::CreateFromLength(
-          rect->Height(), style.EffectiveZoom());
+      if (!RuntimeEnabledFeatures::XYWHAndRectComputedValueEnabled()) {
+        CSSValue* x = CSSPrimitiveValue::CreateFromLength(
+            rect->X(), style.EffectiveZoom());
+        CSSValue* y = CSSPrimitiveValue::CreateFromLength(
+            rect->Y(), style.EffectiveZoom());
+        CSSValue* width = CSSPrimitiveValue::CreateFromLength(
+            rect->Width(), style.EffectiveZoom());
+        CSSValue* height = CSSPrimitiveValue::CreateFromLength(
+            rect->Height(), style.EffectiveZoom());
 
-      cssvalue::CSSBasicShapeRectValue* rect_value =
-          MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(x, y, width,
-                                                                 height);
-      InitializeBorderRadius(rect_value, style, rect);
-      return rect_value;
+        cssvalue::CSSBasicShapeRectValue* rect_value =
+            MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(x, y, width,
+                                                                   height);
+        InitializeBorderRadius(rect_value, style, rect);
+        return rect_value;
+      }
+
+      cssvalue::CSSBasicShapeInsetValue* inset_value =
+          MakeGarbageCollected<cssvalue::CSSBasicShapeInsetValue>();
+
+      // Spec: All <basic-shape-rect> functions compute to the equivalent
+      // inset() function. NOTE: Given `xywh(x y w h)`, the equivalent function
+      // is `inset(y calc(100% - x - w) calc(100% - y - h) x)`.
+      // See: https://drafts.csswg.org/css-shapes/#basic-shape-computed-values
+      // and https://github.com/w3c/csswg-drafts/issues/9053
+      inset_value->SetTop(CSSPrimitiveValue::CreateFromLength(
+          rect->Y(), style.EffectiveZoom()));
+      // calc(100% - (x + w)) = calc(100% - x - w).
+      inset_value->SetRight(CSSPrimitiveValue::CreateFromLength(
+          rect->X().Add(rect->Width()).SubtractFromOneHundredPercent(),
+          style.EffectiveZoom()));
+      // calc(100% - (y + h)) = calc(100% - y - h).
+      inset_value->SetBottom(CSSPrimitiveValue::CreateFromLength(
+          rect->Y().Add(rect->Height()).SubtractFromOneHundredPercent(),
+          style.EffectiveZoom()));
+      inset_value->SetLeft(CSSPrimitiveValue::CreateFromLength(
+          rect->X(), style.EffectiveZoom()));
+      InitializeBorderRadius(inset_value, style, rect);
+      return inset_value;
     }
     default:
       return nullptr;
@@ -424,10 +480,14 @@ scoped_refptr<BasicShape> BasicShapeForValue(
                      basic_shape_value)) {
     scoped_refptr<BasicShapeInset> rect = BasicShapeInset::Create();
 
-    rect->SetTop(ConvertToLength(state, inset_value->Top()));
-    rect->SetRight(ConvertToLength(state, inset_value->Right()));
-    rect->SetBottom(ConvertToLength(state, inset_value->Bottom()));
-    rect->SetLeft(ConvertToLength(state, inset_value->Left()));
+    rect->SetTop(
+        ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Top())));
+    rect->SetRight(
+        ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Right())));
+    rect->SetBottom(
+        ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Bottom())));
+    rect->SetLeft(
+        ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Left())));
 
     InitializeBorderRadius(rect.get(), state, *inset_value);
     basic_shape = std::move(rect);
