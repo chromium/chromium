@@ -14,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
 #include "components/nacl/common/pnacl_types.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -23,7 +23,6 @@
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 
-using base::NumberToString;
 namespace {
 
 void CloseDiskCacheEntry(disk_cache::Entry* entry) { entry->Close(); }
@@ -414,38 +413,32 @@ int PnaclTranslationCache::Size() {
 // static
 std::string PnaclTranslationCache::GetKey(const nacl::PnaclCacheInfo& info) {
   if (!info.pexe_url.is_valid() || info.abi_version < 0 || info.opt_level < 0 ||
-      info.extra_flags.size() > 512)
+      info.extra_flags.size() > 512) {
     return std::string();
-  std::string retval("ABI:");
-  retval += NumberToString(info.abi_version) + ";" +
-            "opt:" + NumberToString(info.opt_level) +
-            (info.use_subzero ? "subzero;" : ";") + "URL:";
-  // Filter the username, password, and ref components from the URL
+  }
+
+  // Filter the username, password, and ref components from the URL.
   GURL::Replacements replacements;
   replacements.ClearUsername();
   replacements.ClearPassword();
   replacements.ClearRef();
-  GURL key_url(info.pexe_url.ReplaceComponents(replacements));
-  retval += key_url.spec() + ";";
-  // You would think that there is already code to format base::Time values
-  // somewhere, but I haven't found it yet. In any case, doing it ourselves
-  // here means we can keep the format stable.
+  const GURL key_url = info.pexe_url.ReplaceComponents(replacements);
+
   base::Time::Exploded exploded;
   info.last_modified.UTCExplode(&exploded);
   if (info.last_modified.is_null() || !exploded.HasValidValues()) {
     memset(&exploded, 0, sizeof(exploded));
   }
-  retval += "modified:" + NumberToString(exploded.year) + ":" +
-            NumberToString(exploded.month) + ":" +
-            NumberToString(exploded.day_of_month) + ":" +
-            NumberToString(exploded.hour) + ":" +
-            NumberToString(exploded.minute) + ":" +
-            NumberToString(exploded.second) + ":" +
-            NumberToString(exploded.millisecond) + ":UTC;";
-  retval += "etag:" + info.etag + ";";
-  retval += "sandbox:" + info.sandbox_isa + ";";
-  retval += "extra_flags:" + info.extra_flags + ";";
-  return retval;
+  const std::string timestamp = base::StringPrintf(
+      "%d:%d:%d:%d:%d:%d:%d:UTC", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second,
+      exploded.millisecond);
+
+  return base::StringPrintf(
+      "ABI:%d;opt:%d%s;URL:%s;modified:%s;etag:%s;sandbox:%s;extra_flags:%s;",
+      info.abi_version, info.opt_level, info.use_subzero ? "subzero" : "",
+      key_url.spec().c_str(), timestamp.c_str(), info.etag.c_str(),
+      info.sandbox_isa.c_str(), info.extra_flags.c_str());
 }
 
 int PnaclTranslationCache::DoomEntriesBetween(base::Time initial,
