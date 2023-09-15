@@ -104,7 +104,9 @@ enum class Result {
   kRemoveServerCvc_Failure = 251,
   kClearServerCvcs_Success = 260,
   kClearServerCvcs_Failure = 261,
-  kMaxValue = kClearServerCvcs_Failure,
+  kUpdateCreditCardCvc_Success = 270,
+  kUpdateCreditCardCvc_Failure = 271,
+  kMaxValue = kUpdateCreditCardCvc_Failure,
 };
 
 // Reports the success or failure of various operations on the database via UMA.
@@ -523,6 +525,19 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateCreditCard(
   }
   ReportResult(Result::kUpdateCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateLocalCvc(
+    const std::string& guid,
+    const std::u16string& cvc,
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (AutofillTable::FromWebDatabase(db)->UpdateLocalCvc(guid, cvc)) {
+    ReportResult(Result::kUpdateCreditCardCvc_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kUpdateCreditCardCvc_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveCreditCard(

@@ -1242,6 +1242,27 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveCreditCards) {
   ExpectSameElements(cards, personal_data_->GetCreditCards());
 }
 
+// Test that UpdateLocalCvc function working as expected.
+TEST_F(PersonalDataManagerTest, UpdateLocalCvc) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard credit_card = test::GetCreditCard();
+  const std::u16string kCvc = u"111";
+  credit_card.set_cvc(kCvc);
+  PersonalDataProfileTaskWaiter add_waiter(*personal_data_);
+  personal_data_->AddCreditCard(credit_card);
+  std::move(add_waiter).Wait();
+  ASSERT_EQ(personal_data_->GetLocalCreditCards().size(), 1U);
+  EXPECT_EQ(personal_data_->GetLocalCreditCards()[0]->cvc(), kCvc);
+
+  const std::u16string kNewCvc = u"222";
+  PersonalDataProfileTaskWaiter update_waiter(*personal_data_);
+  personal_data_->UpdateLocalCvc(credit_card.guid(), kNewCvc);
+  std::move(update_waiter).Wait();
+  ASSERT_EQ(personal_data_->GetLocalCreditCards().size(), 1U);
+  EXPECT_EQ(personal_data_->GetLocalCreditCards()[0]->cvc(), kNewCvc);
+}
+
 // Test that verify add, update, remove server cvc function working as expected.
 TEST_F(PersonalDataManagerTest, ServerCvc) {
   const std::u16string kCvc = u"111";

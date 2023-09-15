@@ -269,6 +269,10 @@ class PersonalDataManager : public KeyedService,
   // can only be used on local credit cards.
   virtual void UpdateCreditCard(const CreditCard& credit_card);
 
+  // Updates a local CVC in the web database.
+  virtual void UpdateLocalCvc(const std::string& guid,
+                              const std::u16string& cvc);
+
   // Adds |credit_card| to the web database as a full server card.
   virtual void AddFullServerCreditCard(const CreditCard& credit_card);
 

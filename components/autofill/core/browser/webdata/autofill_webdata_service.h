@@ -140,6 +140,9 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Schedules a task to update credit card in the web database.
   void UpdateCreditCard(const CreditCard& credit_card);
 
+  // Schedules a task to update a local CVC in the web database.
+  void UpdateLocalCvc(const std::string& guid, const std::u16string& cvc);
+
   // Schedules a task to remove a credit card from the web database.
   // |guid| is identifier of the credit card to remove.
   void RemoveCreditCard(const std::string& guid);

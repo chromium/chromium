@@ -650,16 +650,16 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindString16(index++, credit_card.nickname());
 }
 
-void BindLocalStoredCvcToStatement(const CreditCard& credit_card,
+void BindLocalStoredCvcToStatement(const std::string& guid,
+                                   const std::u16string& cvc,
                                    const base::Time& modification_date,
                                    sql::Statement* s,
                                    const AutofillTableEncryptor& encryptor) {
-  CHECK(credit_card.record_type() == CreditCard::RecordType::kLocalCard);
-  DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
+  CHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   int index = 0;
-  s->BindString(index++, credit_card.guid());
+  s->BindString(index++, guid);
 
-  BindEncryptedValueToColumn(s, index++, credit_card.cvc(), encryptor);
+  BindEncryptedValueToColumn(s, index++, cvc, encryptor);
   s->BindInt64(index++, modification_date.ToTimeT());
 }
 
@@ -1923,39 +1923,6 @@ void AutofillTable::SetServerProfilesAndMetadata(
   transaction.Commit();
 }
 
-// Update `cvc` in `kLocalStoredCvcTable` if `old_local_cvc` is different than
-// `credit_card.cvc`. Return value indicates if `kLocalStoredCvcTable` got
-// updated or not.
-bool UpdateCreditCardCvc(sql::Database* db,
-                         const CreditCard& credit_card,
-                         const std::u16string& old_local_cvc,
-                         const AutofillTableEncryptor& encryptor) {
-  if (old_local_cvc == credit_card.cvc()) {
-    return false;
-  }
-  if (credit_card.cvc().empty()) {
-    // Delete the CVC record if the new CVC is empty.
-    return DeleteWhereColumnEq(db, kLocalStoredCvcTable, kGuid,
-                               credit_card.guid());
-  }
-  sql::Statement cvc_statement;
-  // If existing card doesn't have CVC, we will insert CVC into
-  // `kLocalStoredCvcTable` table. If existing card does have CVC, we will
-  // update CVC for `kLocalStoredCvcTable` table.
-  if (old_local_cvc.empty()) {
-    InsertBuilder(db, cvc_statement, kLocalStoredCvcTable,
-                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
-  } else {
-    UpdateBuilder(db, cvc_statement, kLocalStoredCvcTable,
-                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
-  }
-  BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
-                                &cvc_statement, encryptor);
-  bool cvc_result = cvc_statement.Run();
-  CHECK(db->GetLastChangeCount() > 0);
-  return cvc_result;
-}
-
 void AutofillTable::SetServerProfiles(
     const std::vector<AutofillProfile>& profiles) {
   SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
@@ -2062,8 +2029,9 @@ bool AutofillTable::AddCreditCard(const CreditCard& credit_card) {
     sql::Statement cvc_statement;
     InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
                   {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
-    BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
-                                  &cvc_statement, *autofill_table_encryptor_);
+    BindLocalStoredCvcToStatement(credit_card.guid(), credit_card.cvc(),
+                                  AutofillClock::Now(), &cvc_statement,
+                                  *autofill_table_encryptor_);
     cvc_statement.Run();
   }
 
@@ -2081,8 +2049,7 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   bool cvc_result = false;
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableCvcStorageAndFilling)) {
-    cvc_result = UpdateCreditCardCvc(db_, credit_card, old_credit_card->cvc(),
-                                     *autofill_table_encryptor_);
+    cvc_result = UpdateLocalCvc(credit_card.guid(), credit_card.cvc());
   }
 
   // If only cvc is updated, we don't need to update credit_card table
@@ -2104,6 +2071,35 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   CHECK(db_->GetLastChangeCount() > 0);
 
   return cvc_result || card_result;
+}
+
+bool AutofillTable::UpdateLocalCvc(const std::string& guid,
+                                   const std::u16string& cvc) {
+  std::unique_ptr<CreditCard> old_credit_card = GetCreditCard(guid);
+  CHECK(old_credit_card);
+  if (old_credit_card->cvc() == cvc) {
+    return false;
+  }
+  if (cvc.empty()) {
+    // Delete the CVC record if the new CVC is empty.
+    return DeleteWhereColumnEq(db_, kLocalStoredCvcTable, kGuid, guid);
+  }
+  sql::Statement cvc_statement;
+  // If existing card doesn't have CVC, we will insert CVC into
+  // `kLocalStoredCvcTable` table. If existing card does have CVC, we will
+  // update CVC for `kLocalStoredCvcTable` table.
+  if (old_credit_card->cvc().empty()) {
+    InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
+  } else {
+    UpdateBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
+  }
+  BindLocalStoredCvcToStatement(guid, cvc, AutofillClock::Now(), &cvc_statement,
+                                *autofill_table_encryptor_);
+  bool cvc_result = cvc_statement.Run();
+  CHECK(db_->GetLastChangeCount() > 0);
+  return cvc_result;
 }
 
 bool AutofillTable::RemoveCreditCard(const std::string& guid) {

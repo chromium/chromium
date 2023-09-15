@@ -723,6 +723,10 @@ class AutofillTable : public WebDatabaseTable,
   // Updates the database values for the specified credit card.
   bool UpdateCreditCard(const CreditCard& credit_card);
 
+  // Update the CVC in the `kLocalStoredCvcTable` for the given `guid`. Return
+  // value indicates if `kLocalStoredCvcTable` got updated or not.
+  bool UpdateLocalCvc(const std::string& guid, const std::u16string& cvc);
+
   // Removes a row from the credit_cards table.  |guid| is the identifier of the
   // credit card to remove.
   bool RemoveCreditCard(const std::string& guid);

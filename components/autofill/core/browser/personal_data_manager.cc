@@ -1050,6 +1050,21 @@ void PersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   Refresh();
 }
 
+void PersonalDataManager::UpdateLocalCvc(const std::string& guid,
+                                         const std::u16string& cvc) {
+  if (!database_helper_->GetLocalDatabase()) {
+    return;
+  }
+
+  CreditCard* existing_credit_card = GetCreditCardByGUID(guid);
+  if (!existing_credit_card) {
+    return;
+  }
+
+  database_helper_->GetLocalDatabase()->UpdateLocalCvc(guid, cvc);
+  Refresh();
+}
+
 void PersonalDataManager::AddFullServerCreditCard(
     const CreditCard& credit_card) {
   DCHECK_EQ(CreditCard::RecordType::kFullServerCard, credit_card.record_type());
