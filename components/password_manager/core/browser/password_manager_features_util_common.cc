@@ -54,6 +54,8 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
     return false;
   }
   DCHECK(sync_service);
+  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // See ConsentLevel::kSync documentation for details.
   if (sync_service->IsSyncFeatureEnabled()) {
     return false;
   }
@@ -83,6 +85,9 @@ bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service) {
   // `sync_service` is null in incognito mode, or if --disable-sync was
   // specified on the command-line.
+  // TODO(crbug.com/1462978): Delete the !IsSyncFeatureEnabled() check when
+  // ConsentLevel::kSync is deleted. See ConsentLevel::kSync documentation for
+  // details.
   return sync_service && !sync_service->IsSyncFeatureEnabled() &&
          (IsOptedInForAccountStorage(pref_service, sync_service) ||
           internal::IsUserEligibleForAccountStorage(sync_service));
@@ -98,6 +103,8 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     return PasswordAccountStorageUserState::kSignedOutUser;
   }
 
+  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // See ConsentLevel::kSync documentation for details.
   if (sync_service->IsSyncFeatureEnabled()) {
     return PasswordAccountStorageUserState::kSyncUser;
   }
