@@ -111,7 +111,7 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 @end
 
 // To ease the use of generics with the diffable data source, define a Snapshot
-// type
+// type.
 typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     DiffableDataSource;
 typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
@@ -419,7 +419,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   [self updateSuggestedActionsSection];
 
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
-    // Reconfigure all items.
+    // Reconfigure all tabs.
     Snapshot* snapshot = self.diffableDataSource.snapshot;
     [snapshot reconfigureItemsWithIdentifiers:snapshot.itemIdentifiers];
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -797,7 +797,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 #pragma mark - UICollectionView Diffable Data Source Helpers
 
 - (void)reloadCollectionViewData {
-  Snapshot* snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
+  Snapshot* snapshot = [[Snapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
   for (TabSwitcherItem* item in self.items) {
     GridItemIdentifier* itemIdentifier =
@@ -1618,19 +1618,41 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
-  if ([self indexOfItemWithID:itemID] == NSNotFound)
+- (void)replaceItemID:(NSString*)existingItemID
+             withItem:(TabSwitcherItem*)newItem {
+  NSUInteger index = [self indexOfItemWithID:existingItemID];
+  if (index == NSNotFound) {
     return;
-  // Consistency check: `item`'s ID is either `itemID` or not in `items`.
-  DCHECK([item.identifier isEqualToString:itemID] ||
-         [self indexOfItemWithID:item.identifier] == NSNotFound);
-  NSUInteger index = [self indexOfItemWithID:itemID];
-  self.items[index] = item;
-  GridCell* cell = base::apple::ObjCCastStrict<GridCell>(
-      [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
-  // `cell` may be nil if it is scrolled offscreen.
-  if (cell) {
-    [self configureCell:cell withItem:item atIndex:index];
+  }
+  // Consistency check: `newItem`'s ID is either `existingItemID` or not in
+  // `self.items`.
+  DCHECK([newItem.identifier isEqualToString:existingItemID] ||
+         [self indexOfItemWithID:newItem.identifier] == NSNotFound);
+  TabSwitcherItem* existingItem = self.items[index];
+  self.items[index] = newItem;
+
+  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+    Snapshot* snapshot = self.diffableDataSource.snapshot;
+    GridItemIdentifier* existingItemIdentifier =
+        [GridItemIdentifier tabIdentifier:existingItem];
+    if ([existingItemID isEqualToString:newItem.identifier]) {
+      [snapshot reconfigureItemsWithIdentifiers:@[ existingItemIdentifier ]];
+    } else {
+      // Add the new item before the existing item.
+      GridItemIdentifier* newItemIdentifier =
+          [GridItemIdentifier tabIdentifier:newItem];
+      [snapshot insertItemsWithIdentifiers:@[ newItemIdentifier ]
+                  beforeItemWithIdentifier:existingItemIdentifier];
+      [snapshot deleteItemsWithIdentifiers:@[ existingItemIdentifier ]];
+    }
+    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  } else {
+    GridCell* cell = base::apple::ObjCCastStrict<GridCell>(
+        [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
+    // `cell` may be nil if it is scrolled offscreen.
+    if (cell) {
+      [self configureCell:cell withItem:newItem atIndex:index];
+    }
   }
 }
 
