@@ -39,6 +39,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -369,7 +370,8 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
       CrossOriginIsolationHeader::GetCrossOriginOpenerPolicy(extension);
 
   if (WebAccessibleResourcesInfo::IsResourceWebAccessible(
-          &extension, resource_path, request.request_initiator)) {
+          &extension, resource_path,
+          base::OptionalToPtr(request.request_initiator))) {
     *send_cors_header = true;
   }
 
@@ -739,12 +741,12 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         request_.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
                 .scheme() == kExtensionScheme) {
       // Surface opaque origin for web accessible resource verification.
-      auto origin = url::Origin::Create(
+      const auto origin = url::Origin::Create(
           request_.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
               .GetURL());
       bool is_web_accessible_resource =
           WebAccessibleResourcesInfo::IsResourceWebAccessible(
-              extension.get(), request_.url.path(), origin);
+              extension.get(), request_.url.path(), &origin);
       base::UmaHistogramBoolean(
           "Extensions.SandboxedPageLoad.IsWebAccessibleResource",
           is_web_accessible_resource);

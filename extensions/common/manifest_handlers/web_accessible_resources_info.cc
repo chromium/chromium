@@ -170,7 +170,7 @@ WebAccessibleResourcesInfo::~WebAccessibleResourcesInfo() = default;
 bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const Extension* extension,
     const std::string& relative_path,
-    const absl::optional<url::Origin>& initiator_origin) {
+    const url::Origin* initiator_origin) {
   GURL initiator_url;
   if (initiator_origin) {
     if (initiator_origin->opaque()) {

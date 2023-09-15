@@ -73,7 +73,7 @@ bool ResourceRequestPolicy::CanRequestResource(
     const GURL& resource_url,
     blink::WebLocalFrame* frame,
     ui::PageTransition transition_type,
-    const absl::optional<url::Origin>& initiator_origin) {
+    const url::Origin* initiator_origin) {
   CHECK(resource_url.SchemeIs(kExtensionScheme));
 
   GURL frame_url = frame->GetDocument().Url();

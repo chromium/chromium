@@ -29,7 +29,8 @@ class WebAccessibleResourcesManifestTest : public ChromeManifestTest {
 };
 
 TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
-  auto example_origin = url::Origin::Create(GURL("https://example.com/test"));
+  const auto example_origin =
+      url::Origin::Create(GURL("https://example.com/test"));
 
   // No web_accessible_resources.
   scoped_refptr<Extension> none(
@@ -37,7 +38,7 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
   EXPECT_FALSE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(none.get()));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      none.get(), "test", example_origin));
+      none.get(), "test", &example_origin));
 
   // web_accessible_resources: ["test"].
   scoped_refptr<Extension> single(
@@ -45,9 +46,9 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(single.get()));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      single.get(), "test", example_origin));
+      single.get(), "test", &example_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      single.get(), "other", example_origin));
+      single.get(), "other", &example_origin));
 
   // web_accessible_resources: ["*"].
   scoped_refptr<Extension> wildcard(
@@ -55,9 +56,9 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(wildcard.get()));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard.get(), "anything", example_origin));
+      wildcard.get(), "anything", &example_origin));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard.get(), "path/anything", example_origin));
+      wildcard.get(), "path/anything", &example_origin));
 
   // web_accessible_resources: ["path/*.ext"].
   scoped_refptr<Extension> pattern(
@@ -65,11 +66,11 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(pattern.get()));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      pattern.get(), "path/anything.ext", example_origin));
+      pattern.get(), "path/anything.ext", &example_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      pattern.get(), "anything.ext", example_origin));
+      pattern.get(), "anything.ext", &example_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      pattern.get(), "path/anything.badext", example_origin));
+      pattern.get(), "path/anything.badext", &example_origin));
 }
 
 // Tests valid configurations of the web_accessible_resources key in manifest
@@ -268,14 +269,16 @@ TEST_F(WebAccessibleResourcesManifestTest,
     ])")));
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
+  const auto allowed_origin =
+      url::Origin::Create(GURL("https://allowed.example"));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension.get(), "test",
-      url::Origin::Create(GURL("https://allowed.example"))));
+      extension.get(), "test", &allowed_origin));
+  const auto error_origin = url::Origin::Create(GURL("http://error.example"));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension.get(), "test",
-      url::Origin::Create(GURL("http://error.example"))));
+      extension.get(), "test", &error_origin));
+  const auto empty_origin = url::Origin::Create(GURL());
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension.get(), "test", url::Origin::Create(GURL())));
+      extension.get(), "test", &empty_origin));
 }
 
 // Error if V2 uses is keyed to anything other than array of string.
@@ -326,24 +329,24 @@ TEST_F(WebAccessibleResourcesManifestTest,
       LoadAndExpectSuccess(get_manifest_data());
   scoped_refptr<const Extension> extension_caller =
       LoadAndExpectSuccess(get_manifest_data(extension_callee->id()));
-  auto caller_origin = url::Origin::Create(extension_caller->url());
+  const auto caller_origin = url::Origin::Create(extension_caller->url());
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension_caller.get(), "test", caller_origin));
+      extension_caller.get(), "test", &caller_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension_caller.get(), "inaccessible", caller_origin));
+      extension_caller.get(), "inaccessible", &caller_origin));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension_callee.get(), "test", caller_origin));
+      extension_callee.get(), "test", &caller_origin));
 
   // Test web accessible resource access by specifying an extension wildcard.
   scoped_refptr<const Extension> wildcard_extension =
       LoadAndExpectSuccess(get_manifest_data("*"));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard_extension.get(), "test", caller_origin));
-  auto web_origin = url::Origin::Create(GURL("http://example.com"));
+      wildcard_extension.get(), "test", &caller_origin));
+  const auto web_origin = url::Origin::Create(GURL("http://example.com"));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard_extension.get(), "test", web_origin));
+      wildcard_extension.get(), "test", &web_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard_extension.get(), "inaccessible", caller_origin));
+      wildcard_extension.get(), "inaccessible", &caller_origin));
 }
 
 // Tests wildcards of matches.
@@ -371,6 +374,8 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesWildcard) {
     }
       // clang-format on
   };
+  const auto allowed_origin =
+      url::Origin::Create(GURL("https://allowed.example"));
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
     scoped_refptr<Extension> extension(LoadAndExpectSuccess(
@@ -378,8 +383,7 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesWildcard) {
     EXPECT_TRUE(
         WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
     EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-        extension.get(), "test",
-        url::Origin::Create(GURL("https://allowed.example"))));
+        extension.get(), "test", &allowed_origin));
   }
 }
 
@@ -400,10 +404,10 @@ TEST_F(WebAccessibleResourcesManifestTest, MatchFromInitiator) {
         WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
 
     // Verify behavior of web accessible resources.
-    auto origin = url::Origin::Create(GURL(initiator_string));
+    const auto origin = url::Origin::Create(GURL(initiator_string));
     EXPECT_EQ(expected_accessible,
               WebAccessibleResourcesInfo::IsResourceWebAccessible(
-                  extension.get(), "web_accessible_resource.html", origin));
+                  extension.get(), "web_accessible_resource.html", &origin));
   };
 
   struct {

@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_context.h"
@@ -1404,10 +1405,9 @@ bool WebRequestProxyingURLLoaderFactory::InProgressRequest::IsRedirectSafe(
         ExtensionRegistry::Get(factory_->browser_context_)
             ->enabled_extensions()
             .GetByID(to_url.host());
-    if (!extension)
-      return false;
-    return WebAccessibleResourcesInfo::IsResourceWebAccessible(
-        extension, to_url.path(), original_initiator_);
+    return extension && WebAccessibleResourcesInfo::IsResourceWebAccessible(
+                            extension, to_url.path(),
+                            base::OptionalToPtr(original_initiator_));
   }
   return content::IsSafeRedirectTarget(from_url, to_url);
 }

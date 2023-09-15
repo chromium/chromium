@@ -1785,7 +1785,7 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
       return false;
     // TODO(solomonkinard): Use initiator_origin and add tests.
     if (extensions::WebAccessibleResourcesInfo::IsResourceWebAccessible(
-            extension, to_url.path(), absl::optional<url::Origin>())) {
+            extension, to_url.path(), nullptr)) {
       return true;
     }
     return extension->guid() == from_url.host();

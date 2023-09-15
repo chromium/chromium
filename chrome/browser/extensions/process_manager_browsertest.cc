@@ -1382,7 +1382,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Navigate to the "extension 1" page with two iframes.
   auto url = extension1->url().Resolve("two_iframes.html");
   NavigateToURL(url);
-  auto initiator_origin = absl::optional<url::Origin>(url::Origin::Create(url));
+  const auto initiator_origin = url::Origin::Create(url);
 
   ProcessManager* pm = ProcessManager::Get(profile());
   content::WebContents* tab =
@@ -1393,7 +1393,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // should work.
   GURL extension2_empty = extension2->url().Resolve("/empty.html");
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2, extension2_empty.path(), initiator_origin));
+      extension2, extension2_empty.path(), &initiator_origin));
   {
     content::RenderFrameDeletedObserver frame_deleted_observer(
         ChildFrameAt(main_frame, 0));
@@ -1410,7 +1410,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // able to navigate to extension2's manifest.json.
   GURL extension2_manifest = extension2->url().Resolve("/manifest.json");
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2, extension2_manifest.path(), initiator_origin));
+      extension2, extension2_manifest.path(), &initiator_origin));
   {
     content::TestNavigationObserver nav_observer(tab, 1);
     EXPECT_TRUE(
