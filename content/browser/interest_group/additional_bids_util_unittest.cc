@@ -100,6 +100,11 @@ const char kSig2Base64[] =
     "kSz0go9iax9KNBuMTLjWoUHQvcxnus8I5DIJXZcGCUH66hKOSQVz4qRXe6U7AK4jr2HpX6Q5vQ"
     "ebt0kxUt1p3Q==";
 
+// Version that requires forgiving decoder to accept.
+const char kSig2Base64Sloppy[] =
+    " kSz0go9iax9KNBuMTLjWoUHQvcxnus8I5DIJXZcGCUH66hKOSQVz4qRXe6U7AK4jr2HpX6Q5v"
+    "Qebt0kxUt1p3Q";
+
 const char kPretendBid[] = "Hi, I am a JSON bid.";
 
 class AdditionalBidsUtilTest : public testing::Test {
@@ -984,25 +989,32 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG7) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeBasicSignedBid) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
-  auto result =
-      DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
-  ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_EQ(kPretendBid, result->additional_bid_json);
-  ASSERT_EQ(2u, result->signatures.size());
-  ASSERT_EQ(sizeof(kKey1) - 1, result->signatures[0].key.size());
-  ASSERT_EQ(sizeof(kSig1) - 1, result->signatures[0].signature.size());
-  EXPECT_EQ(0,
-            memcmp(kKey1, result->signatures[0].key.data(), sizeof(kKey1) - 1));
-  EXPECT_EQ(0, memcmp(kSig1, result->signatures[0].signature.data(),
-                      sizeof(kSig1) - 1));
+  for (bool require_forgiving_base64 : {false, true}) {
+    SCOPED_TRACE(require_forgiving_base64);
+    base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+    if (require_forgiving_base64) {
+      *((*signed_bid_dict.FindList("signatures"))[1].GetDict().FindString(
+          "signature")) = kSig2Base64Sloppy;
+    }
+    auto result =
+        DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
+    ASSERT_TRUE(result.has_value()) << result.error();
+    EXPECT_EQ(kPretendBid, result->additional_bid_json);
+    ASSERT_EQ(2u, result->signatures.size());
+    ASSERT_EQ(sizeof(kKey1) - 1, result->signatures[0].key.size());
+    ASSERT_EQ(sizeof(kSig1) - 1, result->signatures[0].signature.size());
+    EXPECT_EQ(
+        0, memcmp(kKey1, result->signatures[0].key.data(), sizeof(kKey1) - 1));
+    EXPECT_EQ(0, memcmp(kSig1, result->signatures[0].signature.data(),
+                        sizeof(kSig1) - 1));
 
-  ASSERT_EQ(sizeof(kKey2) - 1, result->signatures[1].key.size());
-  ASSERT_EQ(sizeof(kSig2) - 1, result->signatures[1].signature.size());
-  EXPECT_EQ(0,
-            memcmp(kKey2, result->signatures[1].key.data(), sizeof(kKey2) - 1));
-  EXPECT_EQ(0, memcmp(kSig2, result->signatures[1].signature.data(),
-                      sizeof(kSig2) - 1));
+    ASSERT_EQ(sizeof(kKey2) - 1, result->signatures[1].key.size());
+    ASSERT_EQ(sizeof(kSig2) - 1, result->signatures[1].signature.size());
+    EXPECT_EQ(
+        0, memcmp(kKey2, result->signatures[1].key.data(), sizeof(kKey2) - 1));
+    EXPECT_EQ(0, memcmp(kSig2, result->signatures[1].signature.data(),
+                        sizeof(kSig2) - 1));
+  }
 }
 
 TEST_F(AdditionalBidsUtilTest, SignedNotDict) {

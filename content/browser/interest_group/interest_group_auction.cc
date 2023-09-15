@@ -3553,7 +3553,8 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
 
   for (const auto& encoded_signed_bid : encoded_signed_additional_bids_) {
     std::string signed_additional_bid_data;
-    if (!base::Base64Decode(encoded_signed_bid, &signed_additional_bid_data)) {
+    if (!base::Base64Decode(encoded_signed_bid, &signed_additional_bid_data,
+                            base::Base64DecodePolicy::kForgiving)) {
       errors_.push_back(base::StrCat(
           {"Ignoring signed additional bid on auction with seller '",
            config_->seller.Serialize(), "' due to invalid base64."}));

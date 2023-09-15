@@ -1540,7 +1540,9 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   }
 
   void AttachInterestGroupObserver() {
-    DCHECK(!observer_);
+    if (observer_) {
+      manager_->RemoveInterestGroupObserver(observer_.get());
+    }
     observer_ = std::make_unique<TestInterestGroupObserver>();
     manager_->AddInterestGroupObserver(observer_.get());
   }
@@ -4282,14 +4284,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       0xc5, 0x37, 0xe6, 0xf1, 0x70, 0x3c, 0x47, 0xf9, 0x4f, 0x86};
   constexpr char kAdditionalBidKeyBase64[] =
       "EA/fR/uU8VNqT3w/2ic4P6Azdaj1J8U35vFwPEf5T4Y=";
+  constexpr char kAdditionalBidKeySloppyBase64[] =
+      " EA/fR/uU8VNqT3w/2ic4P6Azdaj1J8U35vFwPEf5T4Y";
 
   GURL url = https_server_->GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);
-  ASSERT_TRUE(NavigateToURL(shell(), url));
-  AttachInterestGroupObserver();
 
-  EXPECT_EQ("done",
-            EvalJs(shell(), JsReplace(R"(
+  for (bool require_forgiving_base64 : {false, true}) {
+    SCOPED_TRACE(require_forgiving_base64);
+    AttachInterestGroupObserver();
+
+    ASSERT_TRUE(NavigateToURL(shell(), url));
+
+    EXPECT_EQ("done",
+              EvalJs(shell(), JsReplace(R"(
 (async function() {
   try {
     await navigator.joinAdInterestGroup(
@@ -4304,15 +4312,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())",
-                                      origin, kAdditionalBidKeyBase64)));
-  WaitForAccessObserved({
-      {TestInterestGroupObserver::kJoin, origin, "cars"},
-  });
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
-  ASSERT_TRUE(group.additional_bid_key.has_value());
-  EXPECT_EQ(*group.additional_bid_key, kAdditionalBidKey);
+                                        origin,
+                                        require_forgiving_base64
+                                            ? kAdditionalBidKeySloppyBase64
+                                            : kAdditionalBidKeyBase64)));
+    WaitForAccessObserved({
+        {TestInterestGroupObserver::kJoin, origin, "cars"},
+    });
+    std::vector<StorageInterestGroup> groups =
+        GetInterestGroupsForOwner(origin);
+    ASSERT_EQ(groups.size(), 1u);
+    const blink::InterestGroup& group = groups[0].interest_group;
+    ASSERT_TRUE(group.additional_bid_key.has_value());
+    EXPECT_EQ(*group.additional_bid_key, kAdditionalBidKey);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

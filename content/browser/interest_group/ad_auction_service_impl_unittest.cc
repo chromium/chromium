@@ -1458,8 +1458,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 
 // The server JSON updates additionalBidKey for negative interest groups.
 TEST_F(AdAuctionServiceImplTest, UpdateAdditionalBidKey) {
+  // Extra whitespace here to show base64 decode is forgiving.
   network_responder_->RegisterUpdateResponse(
-      kUpdateUrlPath, base::StringPrintf(R"({"additionalBidKey": "%s"})",
+      kUpdateUrlPath, base::StringPrintf(R"({"additionalBidKey": "%s "})",
                                          kAdditionalBidKey2Base64));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
