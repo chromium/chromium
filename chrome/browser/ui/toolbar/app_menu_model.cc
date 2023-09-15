@@ -906,6 +906,14 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_BOOKMARK_ALL_TABS);
       break;
+      // Search companion.
+    case IDC_SHOW_SEARCH_COMPANION:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowSearchCompanion", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_SEARCH_COMPANION);
+      break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
       CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||

@@ -14708,7 +14708,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WrenchMenu.TimeToAction.{Action}" units="units"
+<histogram name="WrenchMenu.TimeToAction.{Action}" units="ms"
     expires_after="2023-10-01">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
@@ -14776,6 +14776,7 @@ regressions. -->
     <variant name="ShowKaleidoscope"/>
     <variant name="ShowPasswordManager"/>
     <variant name="ShowPaymentMethods"/>
+    <variant name="ShowSearchCompanion"/>
     <variant name="ShowSigninWhenPaused"/>
     <variant name="ShowSyncSettings"/>
     <variant name="ShowTranslate"/>
