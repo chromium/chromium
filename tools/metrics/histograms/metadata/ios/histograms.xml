@@ -744,16 +744,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.EnterTabSwitcherSnapshotResult"
-    enum="EnterTabSwitcherSnapshotResult" expires_after="2021-08-01">
-  <owner>edchin@chromium.org</owner>
-  <owner>justincohen@chromium.org</owner>
-  <summary>
-    Tracks the result of snapshotting when the user enters the tab switcher.
-    Recorded whenever the user enters the tab switcher.
-  </summary>
-</histogram>
-
 <histogram name="IOS.ExperienceKitCalendar.Present"
     enum="ExperienceKitCalendarTypes" expires_after="2024-03-10">
   <owner>djean@chromium.org</owner>
@@ -1906,7 +1896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageLoadedSnapshotResult" enum="PageLoadedSnapshotResult"
-    expires_after="2021-08-01">
+    expires_after="2024-03-01">
   <owner>edchin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>

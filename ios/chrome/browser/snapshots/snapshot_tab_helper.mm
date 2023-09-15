@@ -6,7 +6,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
-#import "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
@@ -128,7 +128,7 @@ void SnapshotTabHelper::PageLoaded(
     case web::PageLoadCompletionStatus::FAILURE:
       // Only log histogram for when a stale snapshot needs to be replaced.
       if (was_loading_during_last_snapshot_) {
-        UMA_HISTOGRAM_ENUMERATION(
+        base::UmaHistogramEnumeration(
             "IOS.PageLoadedSnapshotResult",
             PageLoadedSnapshotResult::
                 kSnapshotNotAttemptedBecausePageLoadFailed);
@@ -148,16 +148,14 @@ void SnapshotTabHelper::PageLoaded(
               ^(UIImage* snapshot) {
                 // Only log histogram for when a stale snapshot needs to be
                 // replaced.
-                if (!was_loading)
+                if (!was_loading) {
                   return;
-                PageLoadedSnapshotResult snapshotResult =
-                    PageLoadedSnapshotResult::kSnapshotSucceeded;
-                if (!snapshot) {
-                  snapshotResult =
-                      PageLoadedSnapshotResult::kSnapshotAttemptedAndFailed;
                 }
-                UMA_HISTOGRAM_ENUMERATION("IOS.PageLoadedSnapshotResult",
-                                          snapshotResult);
+                base::UmaHistogramEnumeration(
+                    "IOS.PageLoadedSnapshotResult",
+                    snapshot ? PageLoadedSnapshotResult::kSnapshotSucceeded
+                             : PageLoadedSnapshotResult::
+                                   kSnapshotAttemptedAndFailed);
               }),
           base::Seconds(1));
       break;
