@@ -7,11 +7,11 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
-#include "ash/system/unified/feature_tile.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -33,6 +33,72 @@
 
 namespace arc::input_overlay {
 
+// `ActionLabelButton` is the entry point to `ButtonActionLabel`.
+// ------------------------------
+// ||"Button label"           > |
+// ||"Unassigned"               |
+//  -----------------------------
+class ButtonOptionsMenu::ActionLabelButton : public views::Button {
+ public:
+  ActionLabelButton(DisplayOverlayController* controller, Action* action)
+      : Button(base::BindRepeating(
+            &ActionLabelButton::OnButtonLabelAssignmentPressed,
+            base::Unretained(this))),
+        controller_(controller),
+        action_(action) {
+    Init();
+  }
+
+  void SetSubtitle(std::u16string subtitle) {
+    label_name_tag_->SetSubtitle(subtitle);
+  }
+
+  void set_action(Action* action) { action_ = action; }
+
+ private:
+  void Init() {
+    // TODO(b/279117180): Replace with proper accessible name.
+    SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+    SetUseDefaultFillLayout(true);
+    auto* container = AddChildView(std::make_unique<ash::RoundedContainer>());
+    container->SetBorderInsets(gfx::Insets::VH(14, 16));
+    container->SetBackground(
+        views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
+    container->SetLayoutManager(std::make_unique<views::TableLayout>())
+        ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
+                    /*v_align=*/views::LayoutAlignment::kCenter,
+                    /*horizontal_resize=*/1.0f,
+                    /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                    /*fixed_width=*/0, /*min_width=*/0)
+        .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
+                   /*v_align=*/views::LayoutAlignment::kCenter,
+                   /*horizontal_resize=*/1.0f,
+                   /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
+                   /*fixed_width=*/0, /*min_width=*/0)
+        .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
+
+    // TODO(b/274690042): Replace placeholder text with localized strings.
+    label_name_tag_ =
+        container->AddChildView(NameTag::CreateNameTag(u"Button label"));
+    label_name_tag_->SetSubtitle(GetActionNameAtIndex(
+        controller_->action_name_list(), action_->name_label_index()));
+    label_name_tag_->SetState(/*is_error=*/false, u"");
+    container->AddChildView(std::make_unique<views::ImageView>(
+        ui::ImageModel::FromVectorIcon(ash::kQuickSettingsRightArrowIcon,
+                                       cros_tokens::kCrosSysOnSurface)));
+  }
+
+  void OnButtonLabelAssignmentPressed() {
+    controller_->OnButtonOptionsMenuButtonLabelPressed(action_);
+  }
+
+  raw_ptr<DisplayOverlayController> controller_ = nullptr;
+  raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
+
+  raw_ptr<NameTag> label_name_tag_ = nullptr;
+};
+
 ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
                                      Action* action)
     : TouchInjectorObserver(), controller_(controller), action_(action) {
@@ -52,7 +118,10 @@ void ButtonOptionsMenu::Init() {
   AddEditTitle();
   AddActionSelection();
   AddActionEdit();
-  AddActionNameLabel();
+  action_label_button_ =
+      AddChildView(std::make_unique<ActionLabelButton>(controller_, action_));
+  action_label_button_->SetProperty(views::kMarginsKey,
+                                    gfx::Insets::TLBR(8, 0, 0, 0));
 }
 
 void ButtonOptionsMenu::AddHeader() {
@@ -160,36 +229,6 @@ void ButtonOptionsMenu::AddActionEdit() {
           controller_, action_, key_name_tag_, /*set_title=*/false));
 }
 
-void ButtonOptionsMenu::AddActionNameLabel() {
-  // ------------------------------
-  // ||"Button label"           > |
-  // ||"Unassigned"               |
-  //  -----------------------------
-  auto* container = AddChildView(std::make_unique<ash::RoundedContainer>());
-  container->SetUseDefaultFillLayout(true);
-  container->SetBorderInsets(gfx::Insets::VH(14, 16));
-
-  action_name_tile_ =
-      container->AddChildView(std::make_unique<ash::FeatureTile>(
-          base::BindRepeating(
-              &ButtonOptionsMenu::OnButtonLabelAssignmentPressed,
-              base::Unretained(this)),
-          /*is_togglable=*/false));
-  action_name_tile_->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
-  action_name_tile_->SetAccessibleName(
-      // TODO(b/279117180): Replace placeholder names with a11y strings.
-      l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  action_name_tile_->SetLabel(u"Button label");
-  action_name_tile_->SetSubLabel(GetActionNameAtIndex(
-      controller_->action_name_list(), action_->name_label_index()));
-  action_name_tile_->SetSubLabelVisibility(true);
-  action_name_tile_->CreateDecorativeDrillInArrow();
-  action_name_tile_->SetBackground(
-      views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  action_name_tile_->SetVisible(true);
-}
-
 void ButtonOptionsMenu::OnTrashButtonPressed() {
   controller_->RemoveAction(action_);
 }
@@ -216,6 +255,7 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   DCHECK_EQ(action_, action);
   action_ = new_action;
   button_group_->set_action(new_action);
+  action_label_button_->set_action(new_action);
   action_edit_container_->RemoveChildViewT(labels_view_);
   labels_view_ =
       action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
@@ -231,7 +271,7 @@ void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
 
 void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
   if (action_ == &action) {
-    action_name_tile_->SetSubLabel(GetActionNameAtIndex(
+    action_label_button_->SetSubtitle(GetActionNameAtIndex(
         controller_->action_name_list(), action_->name_label_index()));
   }
 }

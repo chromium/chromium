@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
 
 namespace ash {
-class FeatureTile;
 class RoundedContainer;
 }  // namespace ash
 
@@ -55,6 +54,8 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
 
+  class ActionLabelButton;
+
   void Init();
 
   // Add UI components.
@@ -62,7 +63,6 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   void AddEditTitle();
   void AddActionEdit();
   void AddActionSelection();
-  void AddActionNameLabel();
 
   // Functions related to buttons.
   void OnTrashButtonPressed();
@@ -84,7 +84,7 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   raw_ptr<ash::RoundedContainer> action_edit_container_ = nullptr;
   raw_ptr<EditLabels, DisableDanglingPtrDetection> labels_view_ = nullptr;
   raw_ptr<NameTag> key_name_tag_ = nullptr;
-  raw_ptr<ash::FeatureTile> action_name_tile_ = nullptr;
+  raw_ptr<ActionLabelButton> action_label_button_ = nullptr;
 };
 
 }  // namespace arc::input_overlay
