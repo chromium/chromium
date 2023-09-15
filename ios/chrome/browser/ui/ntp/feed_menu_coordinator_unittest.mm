@@ -154,20 +154,6 @@ TEST_F(FeedMenuCoordinatorTest, SignedIn) {
   OpenFeedMenu();
   ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM,
                   UIAlertActionStyleDestructive},
-                 {IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM},
-                 {IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM},
-                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM},
-                 {IDS_APP_CANCEL, UIAlertActionStyleCancel}});
-}
-
-// Tests the menu actions when the user is signed-in.
-TEST_F(FeedMenuCoordinatorTest, SignedInFollowFeedEnabled) {
-  scoped_feature_list_.InitWithFeatures({kEnableWebChannels}, {});
-  SetFeedEnabled(true);
-  SignInFakeIdentity();
-  OpenFeedMenu();
-  ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM,
-                  UIAlertActionStyleDestructive},
                  {IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM},
                  {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM},
                  {IDS_APP_CANCEL, UIAlertActionStyleCancel}});
