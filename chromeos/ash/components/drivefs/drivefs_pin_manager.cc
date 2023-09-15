@@ -1080,10 +1080,6 @@ void PinManager::Complete(const Stage stage) {
 
   switch (stage) {
     case Stage::kSuccess:
-      // This log line is currently used in a tast test to ensure file
-      // enumeration has completed before proceeding to the CHOOBE screen.
-      // Please do not remove it or change its level without updating the
-      // corresponding test.
       VLOG(1) << "Finished with success";
       break;
 
