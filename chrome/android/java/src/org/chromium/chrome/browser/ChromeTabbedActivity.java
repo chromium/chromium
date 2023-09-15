@@ -2702,6 +2702,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (isStartSurfaceRefactorEnabled() && ReturnToChromeUtil.isStartSurfaceEnabled(this)
                 && state != StartSurfaceState.SHOWING_TABSWITCHER
                 && !getTabModelSelector().isIncognitoSelected()) {
+            // The NTP is attempting to show Start Surface after it was turned off previously due to
+            // accessibility state change without a cold restart. If the supplier is null the
+            // browser is in a weird state. Bail out to a normal NTP or last tab. This logic can be
+            // removed once Start Surface with accessibility support is launched.
+            // See crbug.com/1473947.
+            if (mStartSurfaceSupplier.get() == null) {
+                if (getTabModelSelector().getCurrentModel().getCount() == 0) {
+                    getCurrentTabCreator().launchNTP();
+                } else {
+                    mLayoutManager.showLayout(LayoutType.BROWSING, true);
+                }
+                return;
+            }
+
             layoutTypeToShow = LayoutType.START_SURFACE;
             if (state == StartSurfaceState.SHOWING_PREVIOUS) {
                 ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
