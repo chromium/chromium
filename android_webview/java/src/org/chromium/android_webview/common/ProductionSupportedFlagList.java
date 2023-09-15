@@ -180,6 +180,10 @@ public final class ProductionSupportedFlagList {
                     "When enabled, form submissions are reported to AutofillManager iff the form "
                             + "global ids match."),
             Flag.baseFeature(
+                    AndroidAutofillFeatures.ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID_NAME,
+                    "Enables communicating visibility changes of form fields of a form in an "
+                            + "ongoing Autofill session to Android AutofillManager."),
+            Flag.baseFeature(
                     AndroidAutofillFeatures
                             .ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME,
                     "When enabled, Android Autofill ViewStructures contain an additional "

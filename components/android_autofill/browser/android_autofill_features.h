@@ -11,6 +11,8 @@ namespace autofill::features {
 
 BASE_DECLARE_FEATURE(kAndroidAutofillFormSubmissionCheckById);
 
+BASE_DECLARE_FEATURE(kAndroidAutofillSupportVisibilityChanges);
+
 BASE_DECLARE_FEATURE(kAndroidAutofillViewStructureWithFormHierarchyLayer);
 
 }  // namespace autofill::features
