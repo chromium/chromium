@@ -98,28 +98,26 @@ IOSContentSizeCategory IOSContentSizeCategoryForCurrentUIContentSizeCategory() {
 
 }  // namespace
 
-FontSizeTabHelper::~FontSizeTabHelper() {
-  // Remove observer in destructor because `this` is captured by the usingBlock
-  // in calling [NSNotificationCenter.defaultCenter
-  // addObserverForName:object:queue:usingBlock] in constructor.
-  [NSNotificationCenter.defaultCenter
-      removeObserver:content_size_did_change_observer_];
-}
-
 FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {
+    : web_state_(web_state), weak_factory_(this) {
   DCHECK(ios::provider::IsTextZoomEnabled());
   web_state->AddObserver(this);
   FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
   feature->GetWebFramesManager(web_state)->AddObserver(this);
-  content_size_did_change_observer_ = [NSNotificationCenter.defaultCenter
+
+  base::WeakPtr<FontSizeTabHelper> weak_this = weak_factory_.GetWeakPtr();
+  [NSNotificationCenter.defaultCenter
       addObserverForName:UIContentSizeCategoryDidChangeNotification
                   object:nil
                    queue:nil
               usingBlock:^(NSNotification* note) {
-                SetPageFontSize(GetFontSize());
+                if (weak_this) {
+                  weak_this->SetPageFontSize(GetFontSize());
+                }
               }];
 }
+
+FontSizeTabHelper::~FontSizeTabHelper() {}
 
 // static
 void FontSizeTabHelper::RegisterBrowserStatePrefs(

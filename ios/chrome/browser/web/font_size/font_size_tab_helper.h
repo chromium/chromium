@@ -115,16 +115,14 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
                                web::WebFrame* web_frame) override;
 
-  // Observer id returned by registering at NSNotificationCenter.
-  id content_size_did_change_observer_ = nil;
-
   // WebState this tab helper is attached to.
   web::WebState* web_state_ = nullptr;
-
   // Whether the Text Zoom UI is active
   bool text_zoom_ui_active_ = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<FontSizeTabHelper> weak_factory_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_
