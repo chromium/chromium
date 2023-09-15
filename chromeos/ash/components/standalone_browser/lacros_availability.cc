@@ -61,8 +61,10 @@ bool IsGoogleInternal(const user_manager::User* user) {
     return false;
   }
 
-  return gaia::IsGoogleInternalAccountEmail(
-      user->GetAccountId().GetUserEmail());
+  base::StringPiece email = user->GetAccountId().GetUserEmail();
+  return gaia::IsGoogleInternalAccountEmail(email) ||
+         gaia::ExtractDomainName(gaia::SanitizeEmail(email)) ==
+             "managedchrome.com";
 }
 
 LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(

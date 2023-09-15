@@ -53,7 +53,7 @@ LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     base::StringPiece policy_value);
 
 // Returns true if the given user's profile is associated with a google internal
-// account.
+// account. This includes @managedchrome.com accounts.
 // TODO(andreaorru): conceptually, this is an internal utility function
 // and should not be exported. Currently, `crosapi::browser_util` still
 // depends on it. Remove once the IsLacrosEnabled* refactoring is complete.
