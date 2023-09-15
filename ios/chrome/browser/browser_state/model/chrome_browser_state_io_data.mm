@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
+#import "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
 
 #import <stddef.h>
 
@@ -30,7 +30,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/proxy_config/ios/proxy_service_factory.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/content_settings/cookie_settings_factory.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/accept_language_pref_watcher.h"
@@ -72,8 +72,9 @@ void NotifyContextGettersOfShutdownOnIO(
         ChromeBrowserStateIOData::IOSChromeURLRequestContextGetterVector>
         getters) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  for (auto& chrome_context_getter : *getters)
+  for (auto& chrome_context_getter : *getters) {
     chrome_context_getter->NotifyContextShuttingDown();
+  }
 }
 
 }  // namespace
@@ -120,8 +121,9 @@ ChromeBrowserStateIOData::ChromeBrowserStateIOData(
 }
 
 ChromeBrowserStateIOData::~ChromeBrowserStateIOData() {
-  if (web::WebThread::IsThreadInitialized(web::WebThread::IO))
+  if (web::WebThread::IsThreadInitialized(web::WebThread::IO)) {
     DCHECK_CURRENTLY_ON(web::WebThread::IO);
+  }
 
   if (main_request_context_) {
     main_request_context_->transport_security_state()->SetReportSender(nullptr);
@@ -281,6 +283,7 @@ void ChromeBrowserStateIOData::ShutdownOnUIThread(
   }
 
   bool posted = web::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
-  if (!posted)
+  if (!posted) {
     delete this;
+  }
 }

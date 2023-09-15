@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_H_
-#define IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_H_
+#define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_H_
 
 #include <memory>
 
 #include "base/task/sequenced_task_runner.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_impl_io_data.h"
+#include "ios/chrome/browser/browser_state/model/chrome_browser_state_impl_io_data.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace policy {
 class SchemaRegistry;
 class UserCloudPolicyManager;
-}
+}  // namespace policy
 
 namespace sync_preferences {
 class PrefServiceSyncable;
@@ -109,4 +109,4 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   // components/keyed_service/ios/browser_state_keyed_service_factory.*
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_H_

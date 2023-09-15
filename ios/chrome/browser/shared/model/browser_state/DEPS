@@ -10,7 +10,7 @@ specific_include_rules = {
   ],
   "test_chrome_browser_state.*": [
     "+ios/chrome/browser/policy",
-    "+ios/chrome/browser/browser_state",
+    "+ios/chrome/browser/browser_state/model",
     "+ios/chrome/browser/prefs",
     "+ios/chrome/browser/supervised_user",
   ],

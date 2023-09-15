@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
+#include "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/cookies/cookie_store.h"

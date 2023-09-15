@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/browser_state/chrome_browser_state_io_data.h",
+  "+ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h",
 ]
 
 specific_include_rules = {

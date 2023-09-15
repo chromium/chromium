@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
+#import "ios/chrome/browser/browser_state/model/off_the_record_chrome_browser_state_impl.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -42,8 +42,9 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
 OffTheRecordChromeBrowserStateImpl::~OffTheRecordChromeBrowserStateImpl() {
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
-  if (pref_proxy_config_tracker_)
+  if (pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_->DetachFromPrefService();
+  }
 
   const base::TimeDelta duration = base::Time::Now() - start_time_;
   base::UmaHistogramCustomCounts("Profile.Incognito.Lifetime",

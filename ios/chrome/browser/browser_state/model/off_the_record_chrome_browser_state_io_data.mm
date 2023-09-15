@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_io_data.h"
+#import "ios/chrome/browser/browser_state/model/off_the_record_chrome_browser_state_io_data.h"
 
 #import <UIKit/UIKit.h>
 
@@ -14,8 +14,8 @@
 #import "base/functional/callback_helpers.h"
 #import "components/net_log/chrome_net_log.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/browser_state/constants.h"
-#import "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/browser_state/model/constants.h"
+#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -57,8 +57,9 @@ void OffTheRecordChromeBrowserStateIOData::Handle::DoomIncognitoCache() {
         net::HttpCache* cache = getter->GetURLRequestContext()
                                     ->http_transaction_factory()
                                     ->GetCache();
-        if (!cache->GetCurrentBackend())
+        if (!cache->GetCurrentBackend()) {
           return;
+        }
         cache->GetCurrentBackend()->DoomAllEntries(base::DoNothing());
       }));
 }
@@ -102,8 +103,9 @@ OffTheRecordChromeBrowserStateIOData::Handle::io_data() const {
 }
 
 void OffTheRecordChromeBrowserStateIOData::Handle::LazyInitialize() const {
-  if (initialized_)
+  if (initialized_) {
     return;
+  }
 
   // Set initialized_ to true at the beginning in case any of the objects
   // below try to get the ResourceContext pointer.
@@ -123,8 +125,9 @@ std::unique_ptr<
 OffTheRecordChromeBrowserStateIOData::Handle::GetAllContextGetters() {
   std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters(
       new IOSChromeURLRequestContextGetterVector());
-  if (main_request_context_getter_.get())
+  if (main_request_context_getter_.get()) {
     context_getters->push_back(main_request_context_getter_);
+  }
 
   return context_getters;
 }

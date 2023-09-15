@@ -10,7 +10,7 @@ source_set("upgrade") {
     "upgrade_center_browser_agent.mm",
   ]
   deps = [
-    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browser_state/model",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/ui/util",

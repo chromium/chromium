@@ -23,7 +23,7 @@ source_set("ios_thread") {
   ]
 }
 
-source_set("browser_state") {
+source_set("model") {
   sources = [
     "browser_state_keyed_service_factories.h",
     "browser_state_keyed_service_factories.mm",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_IMPL_H_
-#define IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_MANAGER_IMPL_H_
+#define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_MANAGER_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -53,4 +53,4 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager {
   std::unique_ptr<BrowserStateInfoCache> browser_state_info_cache_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_MANAGER_IMPL_H_

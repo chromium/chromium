@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IO_DATA_H_
-#define IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IO_DATA_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IO_DATA_H_
+#define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IO_DATA_H_
 
 #include <map>
 #include <memory>
@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_member.h"
-#include "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
+#include "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/net/net_types.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_cache.h"
@@ -188,4 +188,4 @@ class ChromeBrowserStateIOData {
   const ChromeBrowserStateType browser_state_type_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IO_DATA_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IO_DATA_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state_impl_io_data.h"
+#import "ios/chrome/browser/browser_state/model/chrome_browser_state_impl_io_data.h"
 
 #import <memory>
 #import <set>
@@ -19,8 +19,8 @@
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_filter.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/browser_state/constants.h"
-#import "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/browser_state/model/constants.h"
+#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/net/http_server_properties_factory.h"
 #import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
@@ -112,8 +112,9 @@ void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
 
 void ChromeBrowserStateImplIOData::Handle::LazyInitialize() const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  if (initialized_)
+  if (initialized_) {
     return;
+  }
 
   // Set initialized_ to true at the beginning in case any of the objects
   // below try to get the ResourceContext pointer.
@@ -129,11 +130,13 @@ ChromeBrowserStateImplIOData::Handle::GetAllContextGetters() {
       new IOSChromeURLRequestContextGetterVector());
 
   iter = app_request_context_getter_map_.begin();
-  for (; iter != app_request_context_getter_map_.end(); ++iter)
+  for (; iter != app_request_context_getter_map_.end(); ++iter) {
     context_getters->push_back(iter->second);
+  }
 
-  if (main_request_context_getter_.get())
+  if (main_request_context_getter_.get()) {
     context_getters->push_back(main_request_context_getter_);
+  }
 
   return context_getters;
 }

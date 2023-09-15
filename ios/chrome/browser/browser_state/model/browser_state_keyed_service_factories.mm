@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"

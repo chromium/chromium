@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
-#define IOS_CHROME_BROWSER_BROWSER_STATE_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
+#define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
 
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
+#include "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
 #include "ios/chrome/browser/net/net_types.h"
 
 class ChromeBrowserState;
@@ -93,4 +93,4 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
   base::FilePath cookie_path_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_

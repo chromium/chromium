@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state_impl.h"
+#import "ios/chrome/browser/browser_state/model/chrome_browser_state_impl.h"
 
 #import <utility>
 
@@ -33,8 +33,8 @@
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/browser_state/constants.h"
-#import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
+#import "ios/chrome/browser/browser_state/model/constants.h"
+#import "ios/chrome/browser/browser_state/model/off_the_record_chrome_browser_state_impl.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
@@ -62,17 +62,20 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
   // thread.
   base::ScopedAllowBlocking allow_blocking_to_create_directory;
 
-  if (!base::PathExists(path) && !base::CreateDirectory(path))
+  if (!base::PathExists(path) && !base::CreateDirectory(path)) {
     return false;
+  }
   // Create the directory for the OTR stash state now, even though it won't
   // necessarily be needed: the OTR browser state itself is created
   // synchronously on an as-needed basis on the UI thread, so creation of its
   // stash state directory cannot easily be done at that point.
-  if (!base::PathExists(otr_path) && !base::CreateDirectory(otr_path))
+  if (!base::PathExists(otr_path) && !base::CreateDirectory(otr_path)) {
     return false;
+  }
   base::apple::SetBackupExclusion(otr_path);
-  if (!base::PathExists(cache_path) && !base::CreateDirectory(cache_path))
+  if (!base::PathExists(cache_path) && !base::CreateDirectory(cache_path)) {
     return false;
+  }
   return true;
 }
 
@@ -190,16 +193,18 @@ ChromeBrowserStateImpl::~ChromeBrowserStateImpl() {
   // because of interdependencies. Ideally the order for shutting down the
   // objects should be backward of their declaration in class attributes.
 
-  if (pref_proxy_config_tracker_)
+  if (pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_->DetachFromPrefService();
+  }
 
   // Here, (1) the browser state services may
   // depend on `policy_connector_` and `user_cloud_policy_manager_`, and (2)
   // `policy_connector_` depends on `user_cloud_policy_manager_`. The
   // dependencies have to be shut down backward.
   policy_connector_->Shutdown();
-  if (user_cloud_policy_manager_)
+  if (user_cloud_policy_manager_) {
     user_cloud_policy_manager_->Shutdown();
+  }
 
   DestroyOffTheRecordChromeBrowserState();
 }

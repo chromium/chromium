@@ -51,7 +51,7 @@
 #import "components/variations/variations_ids_provider.h"
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/application_context/model/application_context_impl.h"
-#import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/flags/about_flags.h"

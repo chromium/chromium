@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
-#define IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
+#define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_store.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
+#include "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
 #include "ios/chrome/browser/net/net_types.h"
 
 class ChromeBrowserState;
@@ -135,4 +135,4 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   int app_cache_max_size_;
 };
 
-#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/chrome_browser_state_manager_impl.h"
+#import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
 
 #import <stdint.h>
 #import <utility>
@@ -20,9 +20,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/active_state_manager.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state_impl.h"
-#import "ios/chrome/browser/browser_state/constants.h"
-#import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
+#import "ios/chrome/browser/browser_state/model/chrome_browser_state_impl.h"
+#import "ios/chrome/browser/browser_state/model/constants.h"
+#import "ios/chrome/browser/browser_state/model/off_the_record_chrome_browser_state_impl.h"
 #import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
@@ -48,8 +48,9 @@ int64_t ComputeFilesSize(const base::FilePath& directory,
   int64_t running_size = 0;
   base::FileEnumerator iter(directory, false, base::FileEnumerator::FILES,
                             pattern);
-  while (!iter.Next().empty())
+  while (!iter.Next().empty()) {
     running_size += iter.GetInfo().GetSize();
+  }
   return running_size;
 }
 
@@ -114,13 +115,15 @@ ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {
   for (const auto& pair : browser_states_) {
     ChromeBrowserStateImpl* browser_state = pair.second.get();
     ActiveStateManager::FromBrowserState(browser_state)->SetActive(false);
-    if (!browser_state->HasOffTheRecordChromeBrowserState())
+    if (!browser_state->HasOffTheRecordChromeBrowserState()) {
       continue;
+    }
 
     web::BrowserState* otr_browser_state =
         browser_state->GetOffTheRecordChromeBrowserState();
-    if (!ActiveStateManager::ExistsForBrowserState(otr_browser_state))
+    if (!ActiveStateManager::ExistsForBrowserState(otr_browser_state)) {
       continue;
+    }
     ActiveStateManager::FromBrowserState(otr_browser_state)->SetActive(false);
   }
 }
@@ -165,8 +168,9 @@ base::FilePath ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDir(
   DCHECK(local_state);
   std::string last_used_browser_state_name =
       local_state->GetString(prefs::kBrowserStateLastUsed);
-  if (last_used_browser_state_name.empty())
+  if (last_used_browser_state_name.empty()) {
     last_used_browser_state_name = kIOSChromeInitialBrowserState;
+  }
   return user_data_dir.AppendASCII(last_used_browser_state_name);
 }
 
@@ -182,8 +186,9 @@ ChromeBrowserStateManagerImpl::GetBrowserStateInfoCache() {
 std::vector<ChromeBrowserState*>
 ChromeBrowserStateManagerImpl::GetLoadedBrowserStates() {
   std::vector<ChromeBrowserState*> loaded_browser_states;
-  for (const auto& pair : browser_states_)
+  for (const auto& pair : browser_states_) {
     loaded_browser_states.push_back(pair.second.get());
+  }
   return loaded_browser_states;
 }
 
@@ -236,8 +241,9 @@ void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
     ChromeBrowserState* browser_state) {
   DCHECK(!browser_state->IsOffTheRecord());
   BrowserStateInfoCache* cache = GetBrowserStateInfoCache();
-  if (browser_state->GetStatePath().DirName() != cache->GetUserDataDir())
+  if (browser_state->GetStatePath().DirName() != cache->GetUserDataDir()) {
     return;
+  }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
