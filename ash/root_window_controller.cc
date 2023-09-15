@@ -1178,15 +1178,6 @@ void RootWindowController::CreateContainers() {
   wallpaper_container->SetLayoutManager(
       std::make_unique<FillLayoutManager>(wallpaper_container));
 
-  if (features::AreGlanceablesEnabled()) {
-    aura::Window* glanceables_container =
-        CreateContainer(kShellWindowId_GlanceablesContainer,
-                        "GlanceablesContainer", magnified_container);
-    glanceables_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
-    glanceables_container->SetLayoutManager(
-        std::make_unique<FillLayoutManager>(glanceables_container));
-  }
-
   aura::Window* non_lock_screen_containers =
       CreateContainer(kShellWindowId_NonLockScreenContainersContainer,
                       "NonLockScreenContainersContainer", magnified_container);

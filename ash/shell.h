@@ -156,7 +156,6 @@ class FocusModeController;
 class FrameThrottlingController;
 class FullscreenMagnifierController;
 class GeolocationController;
-class GlanceablesController;
 class GlanceablesV2Controller;
 class ColorEnhancementController;
 class HoldingSpaceController;
@@ -559,9 +558,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   GeolocationController* geolocation_controller() {
     return geolocation_controller_.get();
-  }
-  GlanceablesController* glanceables_controller() {
-    return glanceables_controller_.get();
   }
   GlanceablesV2Controller* glanceables_v2_controller() {
     return glanceables_v2_controller_.get();
@@ -987,7 +983,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FocusModeController> focus_mode_controller_;
   std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<BootingAnimationController> booting_animation_controller_;
-  std::unique_ptr<GlanceablesController> glanceables_controller_;
   std::unique_ptr<GlanceablesV2Controller> glanceables_v2_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<PowerPrefs> power_prefs_;

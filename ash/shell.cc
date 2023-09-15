@@ -75,7 +75,6 @@
 #include "ash/frame/snap_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
-#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/hud_display/hud_display.h"
@@ -792,11 +791,6 @@ Shell::~Shell() {
   // Accelerometer file reader stops listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StopListenToTabletModeController();
 
-  if (features::AreGlanceablesEnabled()) {
-    // Close all glanceables so that all widgets are destroyed.
-    glanceables_controller_->DestroyUi();
-  }
-
   // Destroy |ambient_controller_| before |assistant_controller_|.
   ambient_controller_.reset();
 
@@ -885,9 +879,6 @@ Shell::~Shell() {
   // Close all widgets (including the shelf) and destroy all window containers.
   CloseAllRootWindowChildWindows();
 
-  // Glanceables has a dependency on `tablet_mode_controller_`. Should be
-  // destroyed first to remove the tablet mode observer.
-  glanceables_controller_.reset();
   glanceables_v2_controller_.reset();
 
   multitask_menu_nudge_delegate_.reset();
@@ -1665,10 +1656,6 @@ void Shell::Init(
   if (features::IsDisplayAlignmentAssistanceEnabled()) {
     display_alignment_controller_ =
         std::make_unique<DisplayAlignmentController>();
-  }
-
-  if (features::AreGlanceablesEnabled()) {
-    glanceables_controller_ = std::make_unique<GlanceablesController>();
   }
 
   if (features::AreGlanceablesV2Enabled() ||

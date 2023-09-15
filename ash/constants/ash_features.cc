@@ -1280,9 +1280,6 @@ BASE_FEATURE(kGalleryAppPdfEditNotification,
 const base::FeatureParam<std::string> kGalleryAppPdfEditNotificationText{
     &kGalleryAppPdfEditNotification, "text", ""};
 
-// Enable glanceables on login.
-BASE_FEATURE(kGlanceables, "Glanceables", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables glanceables on time management surface.
 BASE_FEATURE(kGlanceablesV2,
              "GlanceablesV2",
@@ -3384,10 +3381,6 @@ bool IsGifRecordingEnabled() {
 
 bool IsGifRenderingEnabled() {
   return base::FeatureList::IsEnabled(kGifRendering);
-}
-
-bool AreGlanceablesEnabled() {
-  return base::FeatureList::IsEnabled(kGlanceables);
 }
 
 bool AreGlanceablesV2Enabled() {
