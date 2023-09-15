@@ -99,7 +99,7 @@ BASE_FEATURE(kAlwaysReinstallSystemWebApps,
 // mouse.
 BASE_FEATURE(kAllowScrollSettings,
              "AllowScrollSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the support for suppressing text messages is enabled.
 BASE_FEATURE(kSuppressTextMessages,
