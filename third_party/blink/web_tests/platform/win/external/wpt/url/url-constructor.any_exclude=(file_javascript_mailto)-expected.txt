@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 674 tests; 499 PASS, 175 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 674 tests; 509 PASS, 165 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -232,9 +232,7 @@ PASS Parsing: <http://ExAmPlE.CoM> against <http://other.com/>
 FAIL Parsing: <http://example example.com> against <http://other.com/> assert_throws_js: function "function() {
           new URL(expected.input, base);
         }" did not throw
-FAIL Parsing: <http://Goo%20 goo%7C|.com> against <http://other.com/> assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://Goo%20 goo%7C|.com> against <http://other.com/>
 PASS Parsing: <http://[]> against <http://other.com/>
 PASS Parsing: <http://[:]> against <http://other.com/>
 FAIL Parsing: <http://GOO 　goo.com> against <http://other.com/> assert_throws_js: function "function() {
@@ -435,18 +433,12 @@ FAIL Parsing: <http://a b/> without base assert_throws_js: function "function() 
           new URL(expected.input, base);
         }" did not throw
 PASS Parsing: <http://a%b/> without base
-FAIL Parsing: <http://a<b> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <http://a>b> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://a<b> without base
+PASS Parsing: <http://a>b> without base
 PASS Parsing: <http://a[b/> without base
 PASS Parsing: <http://a]b/> without base
 PASS Parsing: <http://a^b> without base
-FAIL Parsing: <http://a|b/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://a|b/> without base
 PASS Parsing: <http://ab/> without base
 PASS Parsing: <http://ho	st/> without base
 PASS Parsing: <http://ho
@@ -487,30 +479,20 @@ PASS Parsing: <http://ho%1Fst/> without base
 FAIL Parsing: <http://ho%20st/> without base assert_throws_js: function "function() {
           new URL(expected.input, base);
         }" did not throw
-FAIL Parsing: <http://ho%23st/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://ho%23st/> without base
 PASS Parsing: <http://ho%25st/> without base
 PASS Parsing: <http://ho%2Fst/> without base
 PASS Parsing: <http://ho%3Ast/> without base
-FAIL Parsing: <http://ho%3Cst/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <http://ho%3Est/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://ho%3Cst/> without base
+PASS Parsing: <http://ho%3Est/> without base
 PASS Parsing: <http://ho%3Fst/> without base
-FAIL Parsing: <http://ho%40st/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://ho%40st/> without base
 PASS Parsing: <http://ho%5Bst/> without base
 PASS Parsing: <http://ho%5Cst/> without base
 PASS Parsing: <http://ho%5Dst/> without base
-FAIL Parsing: <http://ho%7Cst/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <http://ho%7Cst/> without base
 PASS Parsing: <http://ho%7Fst/> without base
-FAIL Parsing: <http://!"$&'()*+,-.;=_`{}~/> without base Failed to construct 'URL': Invalid URL
+FAIL Parsing: <http://!"$&'()*+,-.;=_`{}~/> without base assert_equals: href expected "http://!\"$&'()*+,-.;=_`{}~/" but got "http://!\"$&'()%2A+,-.;=_`{}~/"
 FAIL Parsing: <sc://!"$%&'()*+,-.;=_`{}~/> without base assert_equals: host expected "%01%02%03%04%05%06%07%08%0B%0C%0E%0F%10%11%12%13%14%15%16%17%18%19%1A%1B%1C%1D%1E%1F%7F!\"$%&'()*+,-.;=_`{}~" but got ""
 PASS Parsing: <ftp://example.com%80/> without base
 PASS Parsing: <ftp://example.com%A0/> without base
@@ -558,9 +540,7 @@ PASS Parsing: <http://256.256.256.256> against <http://other.com/>
 PASS Parsing: <https://0x.0x.0> without base
 PASS Parsing: <https://0x100000000/test> without base
 PASS Parsing: <https://256.0.0.1/test> without base
-FAIL Parsing: <https://%43%7C/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <https://%43%7C/> without base
 FAIL Parsing: <asdf://%43|/> without base assert_throws_js: function "function() {
           new URL(expected.input, base);
         }" did not throw
@@ -680,7 +660,7 @@ FAIL Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> without base assert_equ
 FAIL Parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> without base assert_equals: href expected "foo://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://joe: !\"$%&'()*+,-.:;<=>@[\\]^_`{|}~@host/"
 FAIL Parsing: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> without base assert_equals: href expected "wss://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/" but got "wss://joe:%20!%22$%&%27()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/"
 FAIL Parsing: <foo://!"$%&'()*+,-.;=_`{}~/> without base assert_equals: host expected "!\"$%&'()*+,-.;=_`{}~" but got ""
-FAIL Parsing: <wss://!"$&'()*+,-.;=_`{}~/> without base Failed to construct 'URL': Invalid URL
+FAIL Parsing: <wss://!"$&'()*+,-.;=_`{}~/> without base assert_equals: href expected "wss://!\"$&'()*+,-.;=_`{}~/" but got "wss://!\"$&'()%2A+,-.;=_`{}~/"
 FAIL Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> without base assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\]^_%60%7B|%7D~" but got "foo://host/ !\"$%&'()*+,-./:;<=>@[\\]^_`{|}~"
 FAIL Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> without base assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
 FAIL Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> without base assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\]^_`{|}~"

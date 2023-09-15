@@ -3028,11 +3028,16 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    ->IsCanonical());
 
   // Separator in domain.
-  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
-                   "A", "B", ";x.y", "/path", base::Time(), base::Time(),
-                   base::Time(), base::Time(), false, false,
-                   CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
-                   ->IsCanonical());
+  //
+  // TODO(https://crbug.com/1416013): The character ';' is permitted in the URL
+  // host. That makes IsCanonical() return true here. However, previously,
+  // IsCanonical() used to false because ';' was a forbidden character. We need
+  // to verify whether this change is acceptable or not.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "B", ";x.y", "/path", base::Time(), base::Time(),
+                  base::Time(), base::Time(), false, false,
+                  CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW, false)
+                  ->IsCanonical());
 
   // Garbage in domain.
   EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(

@@ -1261,7 +1261,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
        GetUrlCollectionNoValueWhenInvalidUrl) {
   auto delegate = CreateDelegate();
   const absl::optional<api::passwords_private::UrlCollection> urls =
-      delegate->GetUrlCollection("https://;/invalid");
+      delegate->GetUrlCollection("https://^/invalid");
   EXPECT_FALSE(urls.has_value());
 }
 

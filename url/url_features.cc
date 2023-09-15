@@ -30,6 +30,11 @@ BASE_FEATURE(kDontDecodeAsciiPercentEncodedURLPath,
              "DontDecodeAsciiPercentEncodedURLPath",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for https://crbug.com/1416013.
+BASE_FEATURE(kStandardCompliantHostCharacters,
+             "StandardCompliantHostCharacters",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsUsingIDNA2008NonTransitional() {
   // If the FeatureList isn't available yet, fall back to the feature's default
   // state. This may happen during early startup, see crbug.com/1441956.
@@ -50,6 +55,17 @@ bool IsUsingDontDecodeAsciiPercentEncodedURLPath() {
   }
 
   return base::FeatureList::IsEnabled(kDontDecodeAsciiPercentEncodedURLPath);
+}
+
+bool IsUsingStandardCompliantHostCharacters() {
+  // If the FeatureList isn't available yet, fall back to the feature's default
+  // state. This may happen during early startup, see crbug.com/1441956.
+  if (!base::FeatureList::GetInstance()) {
+    return kStandardCompliantHostCharacters.default_state ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+
+  return base::FeatureList::IsEnabled(kStandardCompliantHostCharacters);
 }
 
 bool IsRecordingIDNA2008Metrics() {

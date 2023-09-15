@@ -15,6 +15,7 @@ namespace net {
 namespace {
 
 TEST(DnsAliasUtilityTest, FixUpDnsAliases) {
+  // TODO(https://crbug.com/1416013) ' ' (0x20: SPACE) should not be escaped.
   const std::set<std::string> kAliases = {
       "localhost", "1.2.3.4", "a.com",     "",           "test",
       "0",         "[::1]",   "::1",       "-www.e.com", "alias.com",
@@ -25,7 +26,7 @@ TEST(DnsAliasUtilityTest, FixUpDnsAliases) {
       "f__g",      "h"};
   const std::set<std::string> kExpectedFixedUpAliases = {
       "a.com",   "test",    "-www.e.com", "alias.com", "s%20.de", "www-1",
-      "2a",      "a-",      "b_o.org",    "a%2Cb%2Cc", "a.b.com", "c.org",
+      "2a",      "a-",      "b_o.org",    "a,b,c",     "a.b.com", "c.org",
       "123.tld", "d-e.net", "f__g",       "h"};
 
   std::set<std::string> fixed_up_aliases =

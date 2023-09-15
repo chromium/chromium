@@ -108,6 +108,9 @@ suite('<bookmarks-edit-dialog>', function() {
     assertFalse(dialog.validateUrl());
 
     dialog.$.url.value = '~~~example.com~~~';
+    assertTrue(dialog.validateUrl());
+
+    dialog.$.url.value = '^^^example.com^^^';
     assertFalse(dialog.validateUrl());
   });
 

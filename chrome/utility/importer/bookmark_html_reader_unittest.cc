@@ -158,7 +158,7 @@ TEST(BookmarkHTMLReaderTest, CanImportURLAsSearchEngineTest) {
        "http://www.example.{searchTerms}.test.{searchTerms}.com/"},
       // Illegal characters in the host get escaped.
       {"http://www.test&test.%s.com", true,
-       "http://www.test%26test.{searchTerms}.com/"},
+       "http://www.test&test.{searchTerms}.com/"},
       {"http://www.example.com?q=%s&foo=bar", true,
        "http://www.example.com/?q={searchTerms}&foo=bar"},
       {"http://www.example.com/%s/?q=%s&foo=bar", true,

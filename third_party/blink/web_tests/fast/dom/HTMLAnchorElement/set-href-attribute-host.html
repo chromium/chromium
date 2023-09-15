@@ -85,9 +85,8 @@ shouldBe("a.href", "'https://www.otherdom:8080/path/'");
 // Strip the \r in the authority
 debug("Set host to a malformed URL");
 a.href = "https:/\rww.my@domain.com:8080/path/";
-a.host = "www.other!domain.com:15";
-// TODO(crbug.com/1065667): other browsers (Firefox 88, Safari 14) don't percent-encode '!'
-shouldBe("a.href", "'https://ww.my@www.other%21domain.com:15/path/'");
+a.host = "www.other^domain.com:15";
+shouldBe("a.href", "'https://ww.my@domain.com:8080/path/'");
 
 // IE8 throws an "Object Error" exception.
 // Firefox 3.5.2 accepts this but throws an exception later
@@ -104,9 +103,8 @@ debug("Exception: " + e.description);
 // IE8 throws a security exception if the host contains '@'
 debug("Set host to URL containing username and ..");
 a.href = "https://rwwmy@domain.com:8080/pa..th/";
-a.host = "www.other!domain.com:25";
-// TODO(crbug.com/1065667): other browsers (Firefox 88, Safari 14) don't percent-encode '!'
-shouldBe("a.href", "'https://rwwmy@www.other%21domain.com:25/pa..th/'");
+a.host = "www.other^domain.com:25";
+shouldBe("a.href", "'https://rwwmy@domain.com:8080/pa..th/'");
 
 // Both IE8 and Firefox append the hosts, instead of rejecting, per
 // http://dev.w3.org/html5/spec/infrastructure.html#url-decomposition-idl-attributes .

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 126 tests; 70 PASS, 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 tests; 74 PASS, 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL Parsing: <file:/example.com/> against <http://example.org/foo/bar> assert_equals: href expected "file:///example.com/" but got "file://example.com/"
 PASS Parsing: <file://example:1/> without base
@@ -32,18 +32,10 @@ FAIL Parsing: <file:a> against <http://www.example.com/test> assert_equals: href
 PASS Parsing: <file:///C%3A/> without base
 PASS Parsing: <file:///C%7C/> without base
 PASS Parsing: <file://%43%3A> without base
-FAIL Parsing: <file://%43%7C> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <file://%43|> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <file://C%7C> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
-FAIL Parsing: <file://%43%7C/> without base assert_throws_js: function "function() {
-          new URL(expected.input, base);
-        }" did not throw
+PASS Parsing: <file://%43%7C> without base
+PASS Parsing: <file://%43|> without base
+PASS Parsing: <file://C%7C> without base
+PASS Parsing: <file://%43%7C/> without base
 PASS Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/tmpvar/jsdom/test/level2/html/files/anchor.html>
 PASS Parsing: <..> against <file:///C:/>
 PASS Parsing: <..> against <file:///>
@@ -63,7 +55,7 @@ PASS Parsing: <file:#x> against <file:///test?test#test>
 FAIL Parsing: <file:\\//> without base assert_equals: href expected "file:////" but got "file:///"
 FAIL Parsing: <file:\\\\> without base assert_equals: href expected "file:////" but got "file:///"
 FAIL Parsing: <file:\\\\?fox> without base Failed to construct 'URL': Invalid URL
-FAIL Parsing: <file:\\\\#guppy> without base assert_equals: href expected "file:////#guppy" but got "file://%23guppy/"
+FAIL Parsing: <file:\\\\#guppy> without base Failed to construct 'URL': Invalid URL
 PASS Parsing: <file://spider///> without base
 FAIL Parsing: <file:\\localhost//> without base assert_equals: href expected "file:////" but got "file://localhost//"
 PASS Parsing: <file:///localhost//cat> without base
@@ -106,7 +98,7 @@ PASS Parsing: <file:/C|/> without base
 PASS Parsing: <file://C|/> without base
 PASS Parsing: <file:> without base
 FAIL Parsing: <file:?q=v> without base Failed to construct 'URL': Invalid URL
-FAIL Parsing: <file:#frag> without base assert_equals: href expected "file:///#frag" but got "file://%23frag/"
+FAIL Parsing: <file:#frag> without base Failed to construct 'URL': Invalid URL
 PASS Parsing: <file:///Y:> without base
 PASS Parsing: <file:///Y:/> without base
 PASS Parsing: <file:///./Y> without base

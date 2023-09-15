@@ -59,25 +59,28 @@ TEST(DatabaseIdentifierTest, CreateIdentifierFromOrigin) {
 // This tests the encoding of a hostname including every character in the range
 // [\x1f, \x80].
 TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
+  // clang-format off
   struct Case {
     std::string hostname;
     std::string expected;
     bool shouldRoundTrip;
   } cases[] = {
     {"x\x1Fx", "__0", false},
+    // TODO(https://crbug.com/1416013) SPACE (0x20) should not be escaped.
     {"x\x20x", "http_x%20x_0", false},
-    {"x\x21x", "http_x%21x_0", false},
-    {"x\x22x", "http_x%22x_0", false},
+    {"x\x21x", "http_x!x_0", false},
+    {"x\x22x", "http_x\"x_0", false},
     {"x\x23x", "http_x_0", false},  // 'x#x', the # and following are ignored.
-    {"x\x24x", "http_x%24x_0", false},
+    {"x\x24x", "http_x$x_0", false},
     {"x\x25x", "__0", false},
-    {"x\x26x", "http_x%26x_0", false},
-    {"x\x27x", "http_x%27x_0", false},
-    {"x\x28x", "http_x%28x_0", false},
-    {"x\x29x", "http_x%29x_0", false},
+    {"x\x26x", "http_x&x_0", false},
+    {"x\x27x", "http_x'x_0", false},
+    {"x\x28x", "http_x(x_0", false},
+    {"x\x29x", "http_x)x_0", false},
+    // TODO(https://crbug.com/1416013) ASTERISK (0x2A) should not be escaped.
     {"x\x2ax", "http_x%2ax_0", false},
     {"x\x2bx", "http_x+x_0", false},
-    {"x\x2cx", "http_x%2cx_0", false},
+    {"x\x2cx", "http_x,x_0", false},
     {"x\x2dx", "http_x-x_0", true},
     {"x\x2ex", "http_x.x_0", true},
     {"x\x2fx", "http_x_0", false},  // 'x/x', the / and following are ignored.
@@ -92,10 +95,10 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     {"x\x38x", "http_x8x_0", true},
     {"x\x39x", "http_x9x_0", true},
     {"x\x3ax", "__0", false},
-    {"x\x3bx", "__0", false},
-    {"x\x3cx", "http_x%3cx_0", false},
-    {"x\x3dx", "http_x%3dx_0", false},
-    {"x\x3ex", "http_x%3ex_0", false},
+    {"x\x3bx", "http_x;x_0", false},
+    {"x\x3cx", "__0", false},
+    {"x\x3dx", "http_x=x_0", false},
+    {"x\x3ex", "__0", false},
     {"x\x3fx", "http_x_0", false},  // 'x?x', the ? and following are ignored.
     {"x\x40x", "http_x_0", false},  // 'x@x', the @ and following are ignored.
     {"x\x41x", "http_xax_0", true},
@@ -129,7 +132,7 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     {"x\x5dx", "__0", false},
     {"x\x5ex", "__0", false},
     {"x\x5fx", "http_x_x_0", true},
-    {"x\x60x", "http_x%60x_0", false},
+    {"x\x60x", "http_x`x_0", false},
     {"x\x61x", "http_xax_0", true},
     {"x\x62x", "http_xbx_0", true},
     {"x\x63x", "http_xcx_0", true},
@@ -156,13 +159,14 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     {"x\x78x", "http_xxx_0", true},
     {"x\x79x", "http_xyx_0", true},
     {"x\x7ax", "http_xzx_0", true},
-    {"x\x7bx", "http_x%7bx_0", false},
-    {"x\x7cx", "http_x%7cx_0", false},
-    {"x\x7dx", "http_x%7dx_0", false},
-    {"x\x7ex", "__0", false},
+    {"x\x7bx", "http_x{x_0", false},
+    {"x\x7cx", "__0", false},
+    {"x\x7dx", "http_x}x_0", false},
+    {"x\x7ex", "http_x~x_0", false},
     {"x\x7fx", "__0", false},
     {"x\x80x", "__0", false},
   };
+  // clang-format on
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     GURL origin_url("http://" + cases[i].hostname);
@@ -204,6 +208,7 @@ TEST(DatabaseIdentifierTest, ExtractOriginDataFromIdentifier) {
     bool expected_unique;
   };
 
+  // clang-format off
   IdentifierTestCase valid_cases[] = {
     {"http_google.com_0",
      "http", "google.com", 0, GURL("http://google.com"), false},
@@ -226,8 +231,14 @@ TEST(DatabaseIdentifierTest, ExtractOriginDataFromIdentifier) {
      "http", "xn--n3h.unicode.com", 0,
       GURL("http://xn--n3h.unicode.com"), false},
     {"http_dot.com_0", "http", "dot.com", 0, GURL("http://dot.com"), false},
-    {"http_escaped%3Dfun.com_0", "http", "escaped%3dfun.com", 0,
-      GURL("http://escaped%3dfun.com"), false},
+    {"http_escaped=fun.com_0", "http", "escaped=fun.com", 0,
+      GURL("http://escaped=fun.com"), false},
+    // Currently, SPACE (%20) and ASTERISK (%2A) are exceptions.
+    // See https://crbug.com/1416013 for details.
+    {"http_escaped%20fun.com_0", "http", "escaped%20fun.com", 0,
+      GURL("http://escaped%20fun.com"), false},
+    {"http_escaped%2Afun.com_0", "http", "escaped%2afun.com", 0,
+      GURL("http://escaped%2afun.com"), false},
     {"http_[__1]_8080",
      "http", "[::1]", 8080, GURL("http://[::1]:8080"), false},
     {"http_[3ffe_2a00_100_7031__1]_0",
@@ -236,6 +247,7 @@ TEST(DatabaseIdentifierTest, ExtractOriginDataFromIdentifier) {
     {"http_[__ffff_8190_3426]_0",
      "http", "[::ffff:8190:3426]", 0, GURL("http://[::ffff:8190:3426]"), false},
   };
+  // clang-format on
 
   for (const auto& valid_case : valid_cases) {
     DatabaseIdentifier identifier = DatabaseIdentifier::Parse(valid_case.str);

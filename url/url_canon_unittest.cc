@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <stddef.h>
+#include <string_view>
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -315,13 +316,19 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(URLCanonHostTest, Host) {
   bool use_idna_non_transitional = IsUsingIDNA2008NonTransitional();
 
+  // clang-format off
   IPAddressCase host_cases[] = {
       // Basic canonicalization, uppercase should be converted to lowercase.
       {"GoOgLe.CoM", L"GoOgLe.CoM", "google.com", Component(0, 10),
        CanonHostInfo::NEUTRAL, -1, ""},
-      // Spaces and some other characters should be escaped.
-      {"Goo%20 goo%7C|.com", L"Goo%20 goo%7C|.com", "goo%20%20goo%7C%7C.com",
-       Component(0, 22), CanonHostInfo::NEUTRAL, -1, ""},
+      // TODO(https://crbug.com/1416013): Update the test after SPACE is
+      // correctly handled.
+      {"Goo%20 goo.com", L"Goo%20 goo.com", "goo%20%20goo.com",
+       Component(0, 16), CanonHostInfo::NEUTRAL, -1, ""},
+      // TODO(https://crbug.com/1416013): Update the test after ASTERISK is
+      // correctly handled.
+      {"Goo%2a*goo.com", L"Goo%2a*goo.com", "goo%2A%2Agoo.com",
+       Component(0, 16), CanonHostInfo::NEUTRAL, -1, ""},
       // Exciting different types of spaces!
       {NULL, L"GOO\x00a0\x3000goo.com", "goo%20%20goo.com", Component(0, 16),
        CanonHostInfo::NEUTRAL, -1, ""},
@@ -437,7 +444,7 @@ TEST_P(URLCanonHostTest, Host) {
       // Fullwidth exclamation mark is disallowed. UTS 46, table 4, row (b)
       // However, we do allow this at the moment because we don't use
       // STD3 rules and canonicalize full-width ASCII to ASCII.
-      {"wow\xef\xbc\x81", L"wow\xff01", "wow%21", Component(0, 6),
+      {"wow\xef\xbc\x81", L"wow\xff01", "wow!", Component(0, 4),
        CanonHostInfo::NEUTRAL, -1, ""},
       // U+2132 (turned capital F) is disallowed. UTS 46, table 4, row (c)
       // Allowed in IDNA 2003, but the mapping changed after Unicode 3.2
@@ -575,7 +582,7 @@ TEST_P(URLCanonHostTest, Host) {
       // before punycode string was created. I.e.
       // if '(' is escaped after punycode is created we would get xn--%28-8tb
       // (incorrect).
-      {"\xd1\x82(", L"\x0442(", "xn--%28-7ed", Component(0, 11),
+      {"\xd1\x82(", L"\x0442(", "xn--(-8tb", Component(0, 9),
        CanonHostInfo::NEUTRAL, -1, ""},
       // Address with all hexadecimal characters with leading number of 1<<32
       // or greater and should return NEUTRAL rather than BROKEN if not all
@@ -597,6 +604,7 @@ TEST_P(URLCanonHostTest, Host) {
       {"xn--m\xc3\xbcnchen", L"xn--m\xfcnchen", "xn--m%C3%BCnchen",
        Component(0, 16), CanonHostInfo::BROKEN, -1, ""},
   };
+  // clang-format on
 
   // CanonicalizeHost() non-verbose.
   std::string out_str;
@@ -701,6 +709,57 @@ TEST_P(URLCanonHostTest, Host) {
                   host_info.num_ipv4_components);
       }
     }
+  }
+}
+
+TEST(URLCanonTest, HostPuncutationChar) {
+  // '%' is not tested here. '%' is used for percent-escaping.
+  const std::string_view allowed_host_chars[] = {
+      "!", "\"", "$", "&", "'", "(", ")", "+", ",",
+      "-", ".",  ";", "=", "_", "`", "{", "}", "~",
+  };
+
+  const std::string_view forbidden_host_chars[] = {
+      "#", "/", ":", "<", ">", "?", "@", "[", "\\", "]", "^", "|",
+  };
+
+  // Standard non-compliant characters which are escaped. See
+  // https://crbug.com/1416013.
+  struct EscapedCharTestCase {
+    std::string_view input;
+    std::string_view expected;
+  } escaped_host_chars[] = {{" ", "%20"}, {"*", "%2A"}};
+
+  for (const std::string_view input : allowed_host_chars) {
+    std::string out_str;
+    Component in_comp(0, input.size());
+    Component out_comp;
+    StdStringCanonOutput output(&out_str);
+    bool success = CanonicalizeHost(input.data(), in_comp, &output, &out_comp);
+    EXPECT_TRUE(success) << "Input: " << input;
+    output.Complete();
+    EXPECT_EQ(out_str, input) << "Input: " << input;
+  }
+
+  for (const std::string_view input : forbidden_host_chars) {
+    std::string out_str;
+    Component in_comp(0, input.size());
+    Component out_comp;
+    StdStringCanonOutput output(&out_str);
+    EXPECT_FALSE(CanonicalizeHost(input.data(), in_comp, &output, &out_comp))
+        << "Input: " << input;
+  }
+
+  for (const auto& c : escaped_host_chars) {
+    std::string out_str;
+    Component in_comp(0, c.input.size());
+    Component out_comp;
+    StdStringCanonOutput output(&out_str);
+    bool success =
+        CanonicalizeHost(c.input.data(), in_comp, &output, &out_comp);
+    EXPECT_TRUE(success) << "Input: " << c.input;
+    output.Complete();
+    EXPECT_EQ(out_str, c.expected) << "Input: " << c.input;
   }
 }
 
@@ -1564,24 +1623,14 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
   // The individual component canonicalize tests should have caught the cases
   // for each of those components. Here, we just need to test that the various
   // parts are included or excluded properly, and have the correct separators.
+  // clang-format off
   struct URLCase {
     const char* input;
     const char* expected;
     bool expected_success;
   } cases[] = {
-      {"http://www.google.com/foo?bar=baz#",
-       "http://www.google.com/foo?bar=baz#", true},
-      {"http://[www.google.com]/", "http://[www.google.com]/", false},
-      {"ht\ttp:@www.google.com:80/;p?#", "ht%09tp://www.google.com:80/;p?#",
-       false},
-      {"http:////////user:@google.com:99?foo", "http://user@google.com:99/?foo",
-       true},
-      {"www.google.com", ":www.google.com/", false},
-      {"http://192.0x00A80001", "http://192.168.0.1/", true},
-      {"http://www/foo%2Ehtml", "http://www/foo.html", true},
-      {"http://user:pass@/", "http://user:pass@/", false},
-      {"http://%25DOMAIN:foobar@foodomain.com/",
-       "http://%25DOMAIN:foobar@foodomain.com/", true},
+    {"http://www.google.com/foo?bar=baz#", "http://www.google.com/foo?bar=baz#",
+     true},
 
       // Backslashes should get converted to forward slashes.
       {"http:\\\\www.google.com\\foo", "http://www.google.com/foo", true},
@@ -1618,11 +1667,12 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
       // ICU will convert to an ASCII one, generating "%81".
       {"ws:)W\x1eW\xef\xb9\xaa"
        "81:80/",
-       "ws://%29w%1ew%81/", false},
+       "ws://)w%1ew%81/", false},
       // Regression test for the last_invalid_percent_index bug described in
       // https://crbug.com/1080890#c10.
       {R"(HTTP:S/5%\../>%41)", "http://s/%3E%41", true},
   };
+  // clang-format on
 
   for (size_t i = 0; i < std::size(cases); i++) {
     int url_len = static_cast<int>(strlen(cases[i].input));
@@ -2088,7 +2138,7 @@ TEST(URLCanonTest, CanonicalizeFileSystemURL) {
       {"filesystem:fiLe:///temporary", "filesystem:file:///temporary/", true},
       {"filesystem:File:///temporary/Bob?qUery#reF",
        "filesystem:file:///temporary/Bob?qUery#reF", true},
-      {"FilEsysteM:htTp:E=/.", "filesystem:http://e%3D//", false},
+      {"FilEsysteM:htTp:E=/.", "filesystem:http://e=//", false},
   };
 
   for (size_t i = 0; i < std::size(cases); i++) {

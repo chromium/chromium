@@ -266,7 +266,7 @@ PASS Origin parsing: <wow:%NBD> without base
 PASS Origin parsing: <wow:%1G> without base
 PASS Origin parsing: <wow:￿> without base
 PASS Origin parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> without base
-FAIL Origin parsing: <http://!"$&'()*+,-.;=_`{}~/> without base Failed to construct 'URL': Invalid URL
+FAIL Origin parsing: <http://!"$&'()*+,-.;=_`{}~/> without base assert_equals: origin expected "http://!\"$&'()*+,-.;=_`{}~" but got "http://!\"$&'()%2A+,-.;=_`{}~"
 PASS Origin parsing: <sc://!"$%&'()*+,-.;=_`{}~/> without base
 PASS Origin parsing: <ftp://%e2%98%83> without base
 PASS Origin parsing: <https://%e2%98%83> without base
@@ -341,7 +341,7 @@ PASS Origin parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> without base
 PASS Origin parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> without base
 PASS Origin parsing: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> without base
 PASS Origin parsing: <foo://!"$%&'()*+,-.;=_`{}~/> without base
-FAIL Origin parsing: <wss://!"$&'()*+,-.;=_`{}~/> without base Failed to construct 'URL': Invalid URL
+FAIL Origin parsing: <wss://!"$&'()*+,-.;=_`{}~/> without base assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got "wss://!\"$&'()%2A+,-.;=_`{}~"
 PASS Origin parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> without base
 PASS Origin parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> without base
 PASS Origin parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> without base

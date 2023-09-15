@@ -22,6 +22,10 @@ COMPONENT_EXPORT(URL) bool IsRecordingIDNA2008Metrics();
 // See url::kDontDecodeAsciiPercentEncodedURLPath for details.
 COMPONENT_EXPORT(URL) bool IsUsingDontDecodeAsciiPercentEncodedURLPath();
 
+// Returns true if kDontDecodeAsciiPercentEncodedURLPath feature is enabled.
+// See url::kStandardCompliantHostCharacters for details.
+COMPONENT_EXPORT(URL) bool IsUsingStandardCompliantHostCharacters();
+
 // Returns true if Chrome is enforcing the 4 part check for IPv4 embedded IPv6
 // addresses.
 COMPONENT_EXPORT(URL)
@@ -36,6 +40,12 @@ BASE_DECLARE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical);
 // automatically. See https://crbug.com/125231.
 COMPONENT_EXPORT(URL)
 BASE_DECLARE_FEATURE(kDontDecodeAsciiPercentEncodedURLPath);
+
+// When enabled, Chrome uses URL Standard compliant mode to
+// handle punctuation characters in URL host part.
+// https://crbug.com/1416013 for details.
+COMPONENT_EXPORT(URL)
+BASE_DECLARE_FEATURE(kStandardCompliantHostCharacters);
 
 }  // namespace url
 

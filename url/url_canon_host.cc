@@ -6,11 +6,14 @@
 #include "base/cpu_reduction_experiment.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
+#include "url/url_features.h"
 
 namespace url {
 
 namespace {
 
+// clang-format off
+//
 // For reference, here's what IE supports:
 // Key: 0 (disallowed: failure if present in the input)
 //      + (allowed either escaped or unescaped, and unmodified)
@@ -37,19 +40,15 @@ namespace {
 // I also didn't test if characters affecting HTML parsing are allowed
 // unescaped, e.g. (") or (#), which would indicate the beginning of the path.
 // Surprisingly, space is accepted in the input and always escaped.
-
+//
+// TODO(https://crbug.com/1416013): Remove the above historical reference
+// information once we are 100% standard compliant to the URL Standard.
+//
 // This table lists the canonical version of all characters we allow in the
 // input, with 0 indicating it is disallowed. We use the magic kEscapedHostChar
 // value to indicate that this character should be escaped. We are a little more
 // restrictive than IE, but less restrictive than Firefox.
 //
-// Note that we disallow the % character. We will allow it when part of an
-// escape sequence, of course, but this disallows "%25". Even though IE allows
-// it, allowing it would put us in a funny state. If there was an invalid
-// escape sequence like "%zz", we'll add "%25zz" to the output and fail.
-// Allowing percents means we'll succeed a second time, so validity would change
-// based on how many times you run the canonicalizer. We prefer to always report
-// the same vailidity, so reject this.
 const unsigned char kEsc = 0xff;
 const unsigned char kHostCharLookup[0x80] = {
 // 00-1f: all are invalid
@@ -67,6 +66,27 @@ const unsigned char kHostCharLookup[0x80] = {
    kEsc, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
 //   p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
     'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',kEsc,kEsc,kEsc,  0 ,  0 };
+
+// The following table is used when kStandardCompliantHostCharLookup feature is
+// enabled. See https://crbug.com/1416013 for details. At present, ' ' (SPACE)
+// and '*' (asterisk) are still non-compliant to the URL Standard.
+const unsigned char kStandardCompliantHostCharLookup[0x80] = {
+// 00-1f: all are invalid
+     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+//  ' '   !    "    #    $    %    &    '    (    )    *    +    ,    -    .    /
+    kEsc,'!', '"',  0,  '$',  0,  '&', '\'','(', ')', kEsc, '+', ',', '-', '.',  0,
+//   0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ?
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';' , 0,  '=',  0,   0,
+//   @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
+     0,  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+//   P    Q    R    S    T    U    V    W    X    Y    Z    [    \    ]    ^    _
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '[',  0,  ']',  0,  '_',
+//   `    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
+    '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+//   p    q    r    s    t    u    v    w    x    y    z    {    |    }    ~
+    'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{',  0, '}',  '~',  0 };
+// clang-format on
 
 // RFC1034 maximum FQDN length.
 constexpr size_t kMaxHostLength = 253;
@@ -149,7 +169,12 @@ bool DoSimpleHost(const INCHAR* host,
 
     if (source < 0x80) {
       // We have ASCII input, we can use our lookup table.
-      unsigned char replacement = kHostCharLookup[source];
+      unsigned char replacement;
+      if (url::IsUsingStandardCompliantHostCharacters()) {
+        replacement = kStandardCompliantHostCharLookup[source];
+      } else {
+        replacement = kHostCharLookup[source];
+      }
       if (!replacement) {
         // Invalid character, add it as percent-escaped and mark as failed.
         AppendEscapedChar(source, output);
