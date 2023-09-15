@@ -472,8 +472,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the result of whether users agree to send hardware data through the
     settings screen on unmanaged ChromeOS Flex devices. This metric is logged
-    when “ChromeOS Flex hardware support and stability” setting is enabled or
-    disabled.
+    when &quot;ChromeOS Flex hardware support and stability&quot; setting is
+    enabled or disabled.
   </summary>
 </histogram>
 
