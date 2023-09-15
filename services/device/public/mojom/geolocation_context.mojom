@@ -7,17 +7,20 @@ module device.mojom;
 import "services/device/public/mojom/geolocation.mojom";
 import "services/device/public/mojom/geoposition.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 // GeolocationContext provides methods to bind Geolocation instance and to
 // set/clear overrides of geoposition that will apply to all Geolocation
 // instances created by this context.
 interface GeolocationContext {
-  // Creates a Geolocation instance that is bound to the |request|.
-  // The |url| is the URL of the top-level frame which the |request| from,
-  // it is only used for |InstalledWebappGeolocationContext| to separate request
-  // from different Trusted Web Activity client apps.
+  // Creates a Geolocation instance bound to `receiver`.
+  // `requesting_url` is the URL of the top-level frame that made the request.
   BindGeolocation(pending_receiver<Geolocation> receiver,
-                  url.mojom.Url url);
+                  url.mojom.Url requesting_url);
+
+  // Called when an origin has lost permission to access geolocation.
+  // Unbinds all Geolocation instances that were bound from the origin.
+  OnPermissionRevoked(url.mojom.Origin origin);
 
   // Enables geolocation override. This method can be used to trigger possible
   // location-specific behavior in GeolocationImpl created by this

@@ -13,8 +13,10 @@
 namespace device {
 
 GeolocationImpl::GeolocationImpl(mojo::PendingReceiver<Geolocation> receiver,
+                                 const GURL& requesting_url,
                                  GeolocationContext* context)
     : receiver_(this, std::move(receiver)),
+      url_(requesting_url),
       context_(context),
       high_accuracy_(false) {
   DCHECK(context_);
@@ -106,6 +108,17 @@ void GeolocationImpl::SetOverride(const mojom::GeopositionResult& result) {
 void GeolocationImpl::ClearOverride() {
   position_override_.reset();
   StartListeningForUpdates();
+}
+
+void GeolocationImpl::OnPermissionRevoked() {
+  if (!position_callback_.is_null()) {
+    std::move(position_callback_)
+        .Run(mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+            mojom::GeopositionErrorCode::kPermissionDenied,
+            /*error_message=*/"User denied Geolocation",
+            /*error_technical=*/"")));
+  }
+  position_callback_.Reset();
 }
 
 void GeolocationImpl::OnConnectionError() {

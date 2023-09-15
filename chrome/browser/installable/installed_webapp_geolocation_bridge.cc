@@ -96,6 +96,18 @@ void InstalledWebappGeolocationBridge::ClearOverride() {
   StartListeningForUpdates();
 }
 
+void InstalledWebappGeolocationBridge::OnPermissionRevoked() {
+  if (!position_callback_.is_null()) {
+    std::move(position_callback_)
+        .Run(device::mojom::GeopositionResult::NewError(
+            device::mojom::GeopositionError::New(
+                device::mojom::GeopositionErrorCode::kPermissionDenied,
+                /*error_message=*/"User denied Geolocation",
+                /*error_technical=*/"")));
+  }
+  position_callback_.Reset();
+}
+
 void InstalledWebappGeolocationBridge::OnConnectionError() {
   context_->OnConnectionError(this);
 

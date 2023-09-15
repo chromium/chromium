@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "url/gurl.h"
 
 namespace device {
 
@@ -20,6 +21,7 @@ class GeolocationImpl : public mojom::Geolocation {
  public:
   // |context| must outlive this object.
   GeolocationImpl(mojo::PendingReceiver<mojom::Geolocation> receiver,
+                  const GURL& requesting_url,
                   GeolocationContext* context);
 
   GeolocationImpl(const GeolocationImpl&) = delete;
@@ -38,6 +40,12 @@ class GeolocationImpl : public mojom::Geolocation {
   void SetOverride(const mojom::GeopositionResult& result);
   void ClearOverride();
 
+  // Invokes any pending position callback with a permission denied error.
+  // Called by GeolocationContext when permission is lost.
+  void OnPermissionRevoked();
+
+  const GURL& url() { return url_; }
+
  private:
   // mojom::Geolocation:
   void SetHighAccuracy(bool high_accuracy) override;
@@ -50,6 +58,9 @@ class GeolocationImpl : public mojom::Geolocation {
 
   // The binding between this object and the other end of the pipe.
   mojo::Receiver<mojom::Geolocation> receiver_;
+
+  // The requesting URL.
+  const GURL url_;
 
   // Owns this object.
   raw_ptr<GeolocationContext> context_;

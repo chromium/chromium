@@ -8,11 +8,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom.h"
+#include "url/origin.h"
 
 namespace blink {
 namespace mojom {
@@ -69,6 +71,9 @@ class CONTENT_EXPORT GeolocationServiceImpl
       bool user_gesture,
       CreateGeolocationCallback callback) override;
 
+  void HandlePermissionStatusChange(
+      blink::mojom::PermissionStatus permission_status);
+
  private:
   // Creates the Geolocation Service.
   void CreateGeolocationWithPermissionStatus(
@@ -78,6 +83,14 @@ class CONTENT_EXPORT GeolocationServiceImpl
 
   raw_ptr<device::mojom::GeolocationContext, DanglingUntriaged>
       geolocation_context_;
+
+  // Used to subscribe to permission status changes.
+  PermissionController::SubscriptionId subscription_id_;
+
+  // Tracks the origin for which a granted permission is being observed. Used to
+  // terminate access upon permission revocation.
+  url::Origin requesting_origin_;
+
   // Note: |render_frame_host_| owns |this| instance.
   const raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
@@ -87,6 +100,8 @@ class CONTENT_EXPORT GeolocationServiceImpl
   mojo::ReceiverSet<blink::mojom::GeolocationService,
                     std::unique_ptr<GeolocationServiceImplContext>>
       receiver_set_;
+
+  base::WeakPtrFactory<GeolocationServiceImpl> weak_factory_{this};
 };
 
 }  // namespace content
