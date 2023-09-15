@@ -1991,6 +1991,7 @@
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />مشکلی پیش آمد و <ph name="DEVICE_OS" /> نصب نشد.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />برای راهنمایی بیشتر، از g.co/flex/InstallErrors بازدید کنید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">با نگه داشتن شارژ باتری روی حدود ۸۰٪، طول عمر باتری را افزایش می‌دهد. پیش‌از آنکه شارژر را به‌طور معمول از برق جدا کنید، شارژ باتری کامل می‌شود.</translation>
+<translation id="2532146950330687938">درحال آماده کردن دستگاه…</translation>
 <translation id="2532198298278778531">‏مدیریت «ساناد امن» در تنظیمات ChromeOS Flex</translation>
 <translation id="2532589005999780174">حالت کنتراست بالا</translation>
 <translation id="2533649878691950253">اجازه دسترسی به مکان دقیق شما به این سایت داده نشد چون شما معمولاً این اجازه را اعطا نمی‌کنید</translation>
@@ -2137,7 +2138,6 @@
 <translation id="2658941648214598230">محتوای اصلی نشان داده شود؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ویژگی‌ها براساس دستگاه متفاوت است</translation>
 <translation id="2659971421398561408">‏تغییر اندازه دیسک Crostini</translation>
-<translation id="2660309468936690885">‏<ph name="RECIPIENT_NAME" /> اکنون می‌تواند هنگام ورود به سیستم <ph name="WEBSITE" /> بااستفاده از «مدیر گذرواژه Google» ، نام کاربری و گذرواژه شما را به‌کار ببرد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">رویداد</translation>
 <translation id="266079277508604648">‏چاپگر متصل نشد. بررسی کنید چاپگر روشن و ازطریق Wi-Fi یا USB به Chromebook متصل باشد.</translation>
 <translation id="2661315027005813059">صفحه حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2261,7 +2261,6 @@
 <translation id="2743387203779672305">کپی در بریده‌دان</translation>
 <translation id="274362947316498129">برنامه‌ای می‌خواهد به <ph name="DEVICE_NAME" /> دسترسی داشته باشد. برای موافقت با دسترسی، کلید حریم خصوصی <ph name="DEVICE_NAME" /> را خاموش کنید.</translation>
 <translation id="2745080116229976798">‏وابستگی مشروط Microsoft</translation>
-<translation id="2749026027885331579">‏اکنون اعضای خانواده‌تان می‌توانند هنگام ورود به سیستم <ph name="WEBSITE" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">ورود به سیستم <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">سیم‌کارت</translation>
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
@@ -5567,7 +5566,6 @@
 <translation id="5481273127572794904">اجازه ندارد چند فایل را به‌طور خودکار بارگیری کند</translation>
 <translation id="5481941284378890518">افزودن چاپگرهای اطراف</translation>
 <translation id="5484181871714116891">‏وقتی روشن باشد، گذرکلیدها در iCloud Keychain ایجاد می‌شود و در دستگاه‌های Apple شما دردسترس قرار می‌گیرد. وقتی خاموش باشد، گذرکلیدها در نمایه Chrome شما در این دستگاه ایجاد می‌شود.</translation>
-<translation id="5484462543003267273">مدیریت خانواده</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را امروز برگردانید. <ph name="LINK_BEGIN" />دیدن جزئیات<ph name="LINK_END" />}one{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}other{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">افزودن برنامه</translation>
 <translation id="5485435764083510385">زبان برگزیده زیرنویس ناشنوایان</translation>
@@ -5755,6 +5753,7 @@
 <translation id="5627086634964711283">این برنامه افزودنی همچنین صفحه‌ای را که هنگام کلیک کردن روی دکمه اصلی نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5627676517703583263">‏با Chrome هوشمندانه مرور کنید</translation>
 <translation id="5627832140542566187">جهت نمایشگر</translation>
+<translation id="5628434207686266338">تنظیم گذرواژه دستگاه</translation>
 <translation id="562935524653278697">سرپرست شما همگام‌سازی نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیماتتان را غیرفعال کرده است.</translation>
 <translation id="5631017369956619646">‏میزان مصرف CPU</translation>
 <translation id="5631272057151918206">با این کار، حداکثر <ph name="OFFLINE_STORAGE_SIZE" /> از فضای استفاده‌شده توسط فایل‌های آفلاین برداشته می‌شود. بعضی‌از فایل‌ها همچنان به‌صورت آفلاین دردسترس خواهند بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>

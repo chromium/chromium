@@ -2140,7 +2140,6 @@
 <translation id="2658941648214598230">要顯示原始內容嗎？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />提供的功能因裝置而異</translation>
 <translation id="2659971421398561408">調整 Crostini 磁碟大小</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" />現在透過「Google 密碼管理工具」登入 <ph name="WEBSITE" /> 時，可以使用你的使用者名稱和密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="266079277508604648">無法連接打印機。請確認打印機已開啟，並已透過 Wi-Fi 或 USB 連接至您的 Chromebook。</translation>
 <translation id="2661315027005813059">向前/返回快取中的頁面：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2264,7 +2263,6 @@
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="274362947316498129">一個應用程式正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請將<ph name="DEVICE_NAME" />的私隱開關切換至關閉。</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
-<translation id="2749026027885331579">家庭成員現在透過「Google 密碼管理工具」登入 <ph name="WEBSITE" /> 時，可以使用你的使用者名稱和密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">檢查拼字及文法</translation>
@@ -5566,7 +5564,6 @@
 <translation id="5481273127572794904">不允許自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的打印機</translation>
 <translation id="5484181871714116891">開啟後，系統會在「iCloud 鑰匙圈」中建立密鑰，方便你在 Apple 裝置上使用。關閉後，系統會在此裝置的 Chrome 設定檔中建立密鑰。</translation>
-<translation id="5484462543003267273">管理家庭群組</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您備份資料，並在 {NUM_DAYS} 天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
 <translation id="5485435764083510385">偏好的字幕語言</translation>
@@ -6332,7 +6329,7 @@
 <translation id="6104796831253957966">打印機序列已滿</translation>
 <translation id="6104929924898022309">使用搜尋鍵變更功能鍵的行為</translation>
 <translation id="6106167152849320869">如果亦在上一個步驟中選擇傳送診斷和使用情況資料，系統會針對已安裝的應用程式收集此資料。</translation>
-<translation id="6111718295497931251">移除 Google 雲端硬碟存取權</translation>
+<translation id="6111718295497931251">移除「Google 雲端硬碟」存取權</translation>
 <translation id="6111972606040028426">啟用「Google 助理」</translation>
 <translation id="6112294629795967147">輕觸即可調整大小</translation>
 <translation id="6112727384379533756">新增票證</translation>
@@ -9496,7 +9493,7 @@
 <translation id="8680251145628383637">登入即可從任何裝置取得自己的書籤、記錄、密碼和其他設定。您亦會自動登入至各種 Google 服務。</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>
 <translation id="8682730193597992579">已連接 <ph name="PRINTER_NAME" /> 並準備就緒</translation>
-<translation id="8684471948980641888">允許透過計量付費網路進行同步處理</translation>
+<translation id="8684471948980641888">允許透過按用量收費的網絡進行同步</translation>
 <translation id="8685540043423825702">你的 Chrome 個人檔案</translation>
 <translation id="8686142379631285985">以 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> 的身份登入</translation>
 <translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>

@@ -1981,6 +1981,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Произошла ошибка. Не удалось установить <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Узнайте больше на странице g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Продлевает срок службы батареи, удерживая заряд на уровне 80 %. Полностью устройство заряжается только к тому времени, когда вы обычно отключаете его от источника питания.</translation>
+<translation id="2532146950330687938">Подготовка устройства…</translation>
 <translation id="2532198298278778531">Управление безопасным DNS-сервером в настройках Chrome OS Flex</translation>
 <translation id="2532589005999780174">Режим высокой контрастности</translation>
 <translation id="2533649878691950253">Этому сайту запрещен доступ к вашему точному местоположению, так как вы обычно задаете такие настройки.</translation>
@@ -2127,7 +2128,6 @@
 <translation id="2658941648214598230">Показать оригинальный контент?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Набор доступных функций зависит от устройства.</translation>
 <translation id="2659971421398561408">Изменить размер диска Crostini</translation>
-<translation id="2660309468936690885">Теперь <ph name="RECIPIENT_NAME" /> может при помощи Google Менеджера паролей использовать ваши имя пользователя и пароль для входа на сайте <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Событие</translation>
 <translation id="266079277508604648">Не удается установить соединение с принтером. Убедитесь, что он включен и подключен к устройству Chromebook через Wi-Fi или USB.</translation>
 <translation id="2661315027005813059">Страница возвратного кеша: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2251,7 +2251,6 @@
 <translation id="2743387203779672305">Скопировать в буфер</translation>
 <translation id="274362947316498129">Приложение пытается получить доступ к устройству "<ph name="DEVICE_NAME" />". Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="2745080116229976798">Квалифицированное подчинение Microsoft</translation>
-<translation id="2749026027885331579">Участники вашей семейной группы теперь могут при помощи Google Менеджера паролей использовать ваши имя пользователя и пароль для входа на сайте <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Войти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
@@ -5556,7 +5555,6 @@
 <translation id="5481273127572794904">Запретить сайтам автоматически скачивать несколько файлов</translation>
 <translation id="5481941284378890518">Добавить ближайшие принтеры</translation>
 <translation id="5484181871714116891">Если параметр включен, ключи доступа создаются в службе "Связка ключей iCloud" и доступны на всех ваших устройствах Apple. Если параметр отключен, ключи доступа создаются в профиле Chrome на этом устройстве.</translation>
-<translation id="5484462543003267273">Настройки семейной группы</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> сегодня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}one{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}few{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}many{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}other{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Установить приложение</translation>
 <translation id="5485435764083510385">Предпочитаемый язык субтитров</translation>
@@ -5744,6 +5742,7 @@
 <translation id="5627086634964711283">Кроме того, расширение изменило страницу, которая отображается при нажатии кнопки "Главная страница".</translation>
 <translation id="5627676517703583263">Умный браузер Chrome</translation>
 <translation id="5627832140542566187">Ориентация дисплея</translation>
+<translation id="5628434207686266338">Задайте пароль устройства</translation>
 <translation id="562935524653278697">Ваш администратор отключил синхронизацию закладок, истории, паролей и настроек.</translation>
 <translation id="5631017369956619646">Использование процессора</translation>
 <translation id="5631272057151918206">На устройстве освободится <ph name="OFFLINE_STORAGE_SIZE" />. Некоторые файлы по-прежнему будут доступны в офлайн-режиме. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>

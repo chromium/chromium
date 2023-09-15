@@ -540,6 +540,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2071692954027939183">Pemberitahuan disekat secara automatik kerana biasanya anda tidak membenarkan pemberitahuan</translation>
 <translation id="2071852865256799872">Penyemak imbas anda diuruskan oleh organisasi anda dan profil anda diuruskan oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Fesyen &amp; gaya</translation>
+<translation id="2075497153347571252">Pentadbir anda telah menyekat <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="20817612488360358">Tetapan proksi sistem telah sedia untuk digunakan tetapi konfigurasi proksi jelas juga telah ditentukan.</translation>
 <translation id="2082238445998314030">Hasil carian <ph name="RESULT_NUMBER" /> daripada <ph name="TOTAL_RESULTS" /></translation>
@@ -684,6 +685,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2366689192918515749">Daging &amp; Makanan Laut</translation>
 <translation id="2367567093518048410">Tahap</translation>
 <translation id="23703388716193220">Peralatan Golf</translation>
+<translation id="2374629208601905275">Berdasarkan undang-undang di rantau anda, Chrome meminta anda memilih enjin carian lalai anda. Enjin carian ini popular di rantau anda dan ditunjukkan dalam tertib rawak.</translation>
 <translation id="2378084239755710604">Simpan kad ditutup.</translation>
 <translation id="2380886658946992094">Perundangan</translation>
 <translation id="2383455408879745299">Peribadikan alatan kebolehaksesan anda dalam tetapan Chrome</translation>
@@ -899,6 +901,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2879694782644540289">gunakan kunci skrin anda untuk mengisikan kata laluan</translation>
 <translation id="2881276955470682203">Simpan kad?</translation>
 <translation id="2882949212241984732">Lipatan dua pintu</translation>
+<translation id="2891963978019740012">Enjin Carian anda dalam Chrome</translation>
 <translation id="2893773853358652045">Gulungan Keempat</translation>
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2902312830803030883">Lagi tindakan</translation>
@@ -1162,6 +1165,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3427342743765426898">&amp;Buat Semula Edit</translation>
 <translation id="342781501876943858">Chromium mengesyorkan penetapan semula kata laluan jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="3428151540071562330">Satu atau beberapa URI templat pelayan DnsOverHttpsTemplates URI tidak sah dan tidak akan digunakan.</translation>
+<translation id="3429817405364886479">Sahkan enjin carian anda</translation>
 <translation id="3431216045099978607">Tekan |<ph name="ACCELERATOR" />| untuk keluar daripada skrin penuh dan melihat muat turun.</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3433111389595862568">Perisian Kerjasama &amp; Persidangan</translation>
@@ -1881,6 +1885,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4885256590493466218">Buat bayaran menggunakan <ph name="CARD_DETAIL" /> semasa daftar keluar</translation>
 <translation id="4887406273302438710">Lindungi kata laluan dengan Windows Hello</translation>
 <translation id="4888600795924685526">Kajian bahasa asing</translation>
+<translation id="4890070067176768718">Pentadbir anda telah membenarkan <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Belakang</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpik</translation>
@@ -1914,6 +1919,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4957080528849277028">Butang lihat sejarah Chrome anda, aktifkan untuk melihat dan mengurus sejarah penyemakan imbas anda dalam tetapan Chrome</translation>
 <translation id="4958444002117714549">Kembangkan senarai</translation>
 <translation id="4960068118612257147">Anda boleh membuat perubahan dalam tetapan privasi iklan Chrome</translation>
+<translation id="4960203958361543136">Pilih Enjin Carian Anda</translation>
 <translation id="4964505745997821360">Insurans kesihatan</translation>
 <translation id="4968522289500246572">Apl ini direka bentuk untuk peranti mudah alih dan mungkin tidak dapat diubah saiz dengan betul. Apl ini mungkin mengalami isu atau dimulakan semula.</translation>
 <translation id="4968665849807487749">Boleh meminta untuk mengurus tetingkap pada semua paparan anda</translation>
@@ -2096,6 +2102,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5323043727018853753">Kandungan terbenam dibenarkan</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Penyemak imbas anda tidak diurus</translation>
+<translation id="5331585574693522196">Tetapkan sebagai Lalai</translation>
 <translation id="5332219387342487447">Kaedah Penghantaran</translation>
 <translation id="5332769172018416402">Tanya dalam mesej</translation>
 <translation id="5334013548165032829">Log sistem terperinci</translation>
@@ -2327,6 +2334,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5830698870816298009">penggunaan &amp; pergerakan kamera</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5838278095973806738">Anda tidak seharusnya memasukkan sebarang maklumat sensitif pada tapak ini (contohnya, kata laluan atau maklumat kad kredit) kerana maklumat ini boleh dicuri oleh penyerang.</translation>
+<translation id="5838732667866024867">Anda boleh menggunakan anak panah ke kiri/kanan untuk menyemak perubahan harga pada graf</translation>
 <translation id="5840318881868981258">Dalam Google Account anda, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Simpan dalam akaun?</translation>
 <translation id="5847181246682413476">Bekalan Elektrik</translation>
@@ -2535,6 +2543,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6287197303017372967">Dapatkan arah menuju destinasi anda dengan bimbingan sepanjang jalan menggunakan ciri navigasi.</translation>
 <translation id="628877850550444614">Diskaun ditemukan</translation>
 <translation id="6289939620939689042">Warna Halaman</translation>
+<translation id="6292819926564202163">Enjin carian anda dalam Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
@@ -2770,6 +2779,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6770747695101757579">Keras (Kapas)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Pinjaman komersil</translation>
+<translation id="6785990323398321538">Anda boleh menukar enjin carian anda pada bila-bila masa dalam tetapan Chrome.</translation>
 <translation id="6786145470008421571">Sampul 6 x 9 inci</translation>
 <translation id="67862343314499040">Ungu Lembayung</translation>
 <translation id="6786747875388722282">Pelanjutan</translation>
@@ -2841,6 +2851,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6917795328362592458">Kata laluan yang baru anda gunakan ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Password Manager mengesyorkan agar anda menyemak kata laluan yang disimpan.</translation>
 <translation id="6925267999184670015">Amerika Utara B+</translation>
 <translation id="692638818576287323">Kenderaan Komersil</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Enjin carian lalai anda membolehkan anda membuat carian pada web dan menguasakan ciri Chrome<ph name="END_BOLD" /> seperti membuat carian daripada bar alamat dan imej pada halaman web. Ciri mungkin tidak tersedia jika enjin carian anda tidak menyokong ciri tersebut.</translation>
 <translation id="6934672428414710184">Nama ini daripada Akaun Google anda</translation>
 <translation id="6935082727755903526">Pekerjaan Perakaunan &amp; Kewangan</translation>
 <translation id="6936976777388162184">Ini ialah peranti yang dihimpunkan dan tidak boleh didaftarkan dengan Peningkatan Kios dan Papan Tanda.</translation>
@@ -3228,6 +3239,7 @@ Butiran tambahan:
 <translation id="765676359832457558">Sembunyikan tetapan lanjutan...</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659327900411729175">Sampul Kaku 8</translation>
+<translation id="7659880963341457291">Sahkan Enjin Carian Anda</translation>
 <translation id="766014026101194726">{0,plural, =1{Pemuatan naik fail ini disekat oleh dasar pentadbir}other{Pemuatan naik # fail disekat oleh dasar pentadbir}}</translation>
 <translation id="7662298039739062396">Tetapan dikawal oleh sambungan</translation>
 <translation id="7663736086183791259">Sijil <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3299,6 +3311,7 @@ Butiran tambahan:
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7785790577395078482">tablet ini</translation>
 <translation id="7786368602962652765">Medan yang diperlukan kosong. Isi sebelum menyimpan.</translation>
+<translation id="7786432318297177736">Enjin carian ini ditunjukkan dalam tertib rawak. Anda boleh menukar enjin carian lalai anda pada bila-bila masa dalam tetapan.</translation>
 <translation id="7786912885126430740">Semak keluar lebih pantas apabila CVC anda disimpan</translation>
 <translation id="7790488044432570133">Laman yang anda lawati boleh meminta maklumat daripada Chrome untuk membantu laman mengukur prestasi iklan. Chrome membenarkan laman mengumpulkan jenis data yang terhad, seperti masa hari iklan dipaparkan kepada anda.</translation>
 <translation id="7791011319128895129">Belum dilancarkan</translation>

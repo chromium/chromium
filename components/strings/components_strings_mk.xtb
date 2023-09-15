@@ -540,6 +540,7 @@
 <translation id="2071692954027939183">Известувањата беа блокирани автоматски бидејќи обично не ги дозволувате</translation>
 <translation id="2071852865256799872">Со вашиот прелистувач управува вашата организација, а со вашиот профил управува <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Мода и стил</translation>
+<translation id="2075497153347571252">Вашиот администратор блокирал <ph name="PERMISSION" /> на <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="20817612488360358">Поставките на прокси на системот се поставени да се користат, но назначена е и јасна конфигурација на прокси.</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> од <ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1881,7 @@
 <translation id="4885256590493466218">Платете со <ph name="CARD_DETAIL" /> при наплатата</translation>
 <translation id="4887406273302438710">Заштитете ги лозинките со Windows Hello</translation>
 <translation id="4888600795924685526">Учење странски јазици</translation>
+<translation id="4890070067176768718">Вашиот администратор дозволил <ph name="PERMISSION" /> на <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Заден дел</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпијада</translation>
@@ -2326,6 +2328,7 @@
 <translation id="5830698870816298009">користење и движење на камерата</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5838278095973806738">Не треба да внесувате чувствителни информации на овој сајт (на пример, лозинки или кредитни картички), затоа што може да ги украдат напаѓачи.</translation>
+<translation id="5838732667866024867">Може да ги користите стрелката налево и стрелката надесно за да ги прегледате промените на цените во графиконот</translation>
 <translation id="5840318881868981258">Во вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Дали да се зачува во сметката?</translation>
 <translation id="5847181246682413476">Напојувања</translation>

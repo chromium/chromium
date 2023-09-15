@@ -2139,7 +2139,6 @@
 <translation id="2658941648214598230">मूळ आशय दाखवायचा का?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />वैशिष्ट्ये डिव्हाइसनुसार बदलतात</translation>
 <translation id="2659971421398561408">Crostini डिस्कचा आकार बदला</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> हे <ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">इव्‍हेंट</translation>
 <translation id="266079277508604648">प्रिंटरशी कनेक्ट करू शकत नाही. प्रिंटर सुरू आहे का आणि तो वाय-फाय किंवा USB ने तुमच्या Chromebook शी कनेक्ट केला आहे का ते तपासा.</translation>
 <translation id="2661315027005813059">बॅक/फॉरवर्ड कॅशे केलेले पेज: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2263,7 +2262,6 @@
 <translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="274362947316498129">अ‍ॅप <ph name="DEVICE_NAME" /> अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेसला अनुमती देण्यासाठी <ph name="DEVICE_NAME" /> चा गोपनीयता स्विच बंद करा.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">तुमचे कुटुंब सदस्य हे <ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मध्ये साइन इन करा</translation>
 <translation id="2749836841884031656">सिम</translation>
 <translation id="2749881179542288782">शुद्धलेखनासह व्याकरण तपासा</translation>
@@ -5567,7 +5565,6 @@
 <translation id="5481273127572794904">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती नाही</translation>
 <translation id="5481941284378890518">जवळपासचे प्रिंटर जोडा</translation>
 <translation id="5484181871714116891">सुरू असताना, पासकी या iCloud Keychain मध्ये तयार केल्या जातात आणि तुमच्या सर्व Apple डिव्हाइसवर उपलब्ध असतात. बंद असताना, पासकी या डिव्हाइसवरील तुमच्या Chrome प्रोफाइलमध्ये तयार केल्या जातात.</translation>
-<translation id="5484462543003267273">कुटुंब व्यवस्थापित करा</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> आज परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}other{<ph name="MANAGER" /> नुसार, तुम्ही तुमच्या डेटाचा बॅकअप घेणे आणि हे <ph name="DEVICE_TYPE" /> {NUM_DAYS} दिवसांच्या आत परत करणे आवश्यक आहे. <ph name="LINK_BEGIN" />तपशील पहा<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ॲप्लिकेशन जोडा</translation>
 <translation id="5485435764083510385">कॅप्शनची प्राधान्य दिलेली भाषा</translation>
@@ -6337,6 +6334,7 @@
 <translation id="6104796831253957966">प्रिंटरची क्यू भरली आहे</translation>
 <translation id="6104929924898022309">फंक्शन कीचे वर्तन बदलण्यासाठी शोध की वापरा</translation>
 <translation id="6106167152849320869">मागील पायरीमध्ये तुम्ही निदान आणि वापर डेटा पाठवणेदेखील निवडले असल्यास, इंस्टॉल केलेल्या अ‍ॅप्ससाठी हा डेटा गोळा केला जाईल.</translation>
+<translation id="6111718295497931251">Google Drive अ‍ॅक्सेस काढून टाका</translation>
 <translation id="6111972606040028426">Google Assistant सुरू करा</translation>
 <translation id="6112294629795967147">आकार बदलण्यासाठी स्पर्श करा</translation>
 <translation id="6112727384379533756">तिकीट जोडा</translation>

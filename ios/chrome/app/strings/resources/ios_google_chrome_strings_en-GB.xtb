@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1105362920864247682">Clear browsing data in Chrome.</translation>
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Keep using the Chrome data in your Google Account.</translation>
 <translation id="1282031177488366470">Help improve Chrome's features and performance</translation>
@@ -56,6 +57,7 @@ Things to consider:
 <translation id="2736805085127235148">Chrome notifications are currently turned off in your device settings.</translation>
 <translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
 <translation id="2840432500933227975">Open Chrome Settings in iOS, then tap on 'Browser Default APP' and select Chrome.</translation>
+<translation id="2868822340714096138">Clear browsing data in Chrome</translation>
 <translation id="2869959624320573933">Sign In to Chrome</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Select <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>

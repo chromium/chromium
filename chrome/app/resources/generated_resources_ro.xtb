@@ -2126,7 +2126,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2658941648214598230">Afișezi conținutul original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funcțiile variază în funcție de dispozitiv</translation>
 <translation id="2659971421398561408">Redimensionarea discului în Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> îți poate folosi numele de utilizator și parola când folosește Managerul de parole Google pentru a se conecta la <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Eveniment</translation>
 <translation id="266079277508604648">Nu se poate conecta imprimanta. Asigură-te că este pornită și conectată la Chromebook prin Wi-Fi sau USB.</translation>
 <translation id="2661315027005813059">Pagină din memoria cache înainte-înapoi: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2250,7 +2249,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="274362947316498129">O aplicație încearcă să acceseze <ph name="DEVICE_NAME" />. Dezactivează comutatorul de confidențialitate <ph name="DEVICE_NAME" /> pentru a permite accesul.</translation>
 <translation id="2745080116229976798">Subordonare calificată Microsoft</translation>
-<translation id="2749026027885331579">Membrii familiei îți pot folosi acum numele de utilizator și parola când folosesc Managerul de parole Google pentru a se conecta la <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Conectează-te la <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Verificare gramaticală și ortografică</translation>
@@ -5555,7 +5553,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5481273127572794904">Nu au permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="5481941284378890518">Adaugă imprimantele din apropiere</translation>
 <translation id="5484181871714116891">Când opțiunea este activată, cheile de acces se creează în iCloud Keychain și sunt disponibile pe dispozitivele Apple. Când opțiunea este dezactivată, cheile de acces se creează în profilul Chrome pe acest dispozitiv.</translation>
-<translation id="5484462543003267273">Gestionează familia</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi azi acest <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}few{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi acest <ph name="DEVICE_TYPE" /> în {NUM_DAYS} zile. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}other{<ph name="MANAGER" /> solicită să faci backup datelor și să returnezi acest <ph name="DEVICE_TYPE" /> în {NUM_DAYS} de zile. <ph name="LINK_BEGIN" />Vezi detaliile<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Adaugă o aplicație</translation>
 <translation id="5485435764083510385">Limba preferată pentru subtitrări</translation>

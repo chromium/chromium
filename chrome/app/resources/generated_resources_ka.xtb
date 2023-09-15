@@ -2126,7 +2126,6 @@
 <translation id="2658941648214598230">გსურთ ორიგინალი კონტენტის ჩვენება?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ფუნქციები განსხვავდება მოწყობილობების მიხედვით</translation>
 <translation id="2659971421398561408">Crostini-ს დისკის ზომის შეცვლა</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" />-ს ახლა შეუძლია თქვენი მომხმარებლის სახლისა და პაროლის გამოყენება, როცა <ph name="WEBSITE" />-ში შესასვლელად Google პაროლების მმართველით ისარგებლებს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">მოვლენა</translation>
 <translation id="266079277508604648">პრინტერთან დაკავშირება ვერ მოხერხდა. დარწმუნდით, რომ პრინტერი ჩართულია და დაკავშირებულია თქვენს Chromebook-თან Wi-Fi ქსელის ან USB-ის მეშვეობით.</translation>
 <translation id="2661315027005813059">ქეშირებული გვერდი უკან-წინ გადასვლის შესაძლებლობით: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2250,7 +2249,6 @@
 <translation id="2743387203779672305">კოპირება გაცვლის ბუფერში</translation>
 <translation id="274362947316498129">აპი ცდილობს წვდომას <ph name="DEVICE_NAME" />-ზე. წვდომის დასაშვებად გამორთეთ <ph name="DEVICE_NAME" />-ის კონფიდენციალურობის გადამრთველი.</translation>
 <translation id="2745080116229976798">Microsoft-ის კვალიფიცირებული სუბორდინაცია</translation>
-<translation id="2749026027885331579">თქვენს ოჯახის წევრებს ახლა შეუძლიათ თქვენი მომხმარებლის სახლისა და პაროლის გამოყენება, როცა <ph name="WEBSITE" />-ში შესასვლელად Google პაროლების მმართველით ისარგებლებენ. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">შედით <ph name="PRODUCT_NAME" />-ში</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">გრამატიკისა და მართლწერის შემოწმება</translation>
@@ -5555,7 +5553,6 @@
 <translation id="5481273127572794904">რამდენიმე ფაილის ავტომატურად ჩამოტვირთვა დაუშვებელია</translation>
 <translation id="5481941284378890518">ახლომახლო პრინტერების დამატება</translation>
 <translation id="5484181871714116891">ჩართვის შემთხვევაში, წვდომის გასაღებები შეიქმნება iCloud Keychain-ში და ხელმისაწვდომი იქნება თქვენს Apple მოწყობილობებში. გამორთვის შემთხვევაში, წვდომის გასაღებები შეიქმნება თქვენს Chrome პროფილში ამ მოწყობილობაზე.</translation>
-<translation id="5484462543003267273">ოჯახის მართვა</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას დღესვე. <ph name="LINK_BEGIN" />დეტალების ნახვა<ph name="LINK_END" />}other{<ph name="MANAGER" /> ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას {NUM_DAYS} დღის განმავლობაში. <ph name="LINK_BEGIN" />დეტალურად<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">აპის დამატება</translation>
 <translation id="5485435764083510385">სუბტიტრების სასურველი ენა</translation>

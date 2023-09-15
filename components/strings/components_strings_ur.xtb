@@ -541,6 +541,7 @@
 <translation id="2071692954027939183">اطلاعات کو خودکار طور پر مسدود کر دیا گیا کیونکہ آپ عموماً انہیں اجازت نہیں دیتے ہیں</translation>
 <translation id="2071852865256799872">آپ کے براؤزر کا نظم آپ کی تنظیم کرتی ہے اور آپ کی پروفائل کا نظم <ph name="PROFILE_DOMAIN" /> کرتا ہے</translation>
 <translation id="2072275792380684364">فیشن اور اسٹائل</translation>
+<translation id="2075497153347571252">آپ کے منتظم نے <ph name="ORIGIN" /> پر <ph name="PERMISSION" /> کو مسدود کر دیا ہے</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="20817612488360358">سسٹم پراکسی کی ترتیبات استعمال کیے جانے کیلئے سیٹ ہیں لیکن ایک واضح پراکسی کنفیگریشن بھی متعین کی گئی ہے۔</translation>
 <translation id="2082238445998314030">نتیجہ <ph name="RESULT_NUMBER" /> از <ph name="TOTAL_RESULTS" /></translation>
@@ -1882,6 +1883,7 @@
 <translation id="4885256590493466218">چیک آؤٹ کرنے پر <ph name="CARD_DETAIL" /> سے ادائیگی کریں۔</translation>
 <translation id="4887406273302438710">‏Windows Hello کے ساتھ پاس ورڈز کی حفاظت کریں</translation>
 <translation id="4888600795924685526">غیر ملکی زبان کا مطالعہ</translation>
+<translation id="4890070067176768718">آپ کے منتظم نے <ph name="ORIGIN" /> پر <ph name="PERMISSION" /> کی اجازت دی ہے</translation>
 <translation id="4892518386797173871">پیچھے</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">اولمپکس</translation>
@@ -2328,6 +2330,7 @@
 <translation id="5830698870816298009">کیمرے کا استعمال اور نقل و حرکت</translation>
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5838278095973806738">اس سائٹ پر آپ کو کوئی حساس معلومات (مثلاً، پاس ورڈز یا کریڈٹ کارڈز) درج نہیں کرنا چاہیے، کیوںکہ اسے حملہ آور چوری کر سکتے ہیں۔</translation>
+<translation id="5838732667866024867">آپ گراف پر قیمت کی تبدیلیوں کا جائزہ لینے کے لیے بائیں/دائیں تیر کا استعمال کر سکتے ہیں</translation>
 <translation id="5840318881868981258">‏آپ کے Google اکاؤنٹ میں، <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">اکاؤنٹ میں محفوظ کریں؟</translation>
 <translation id="5847181246682413476">پاور سپلائیز</translation>

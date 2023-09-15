@@ -540,6 +540,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2071692954027939183">Genelde izin vermediğiniz için bildirimler otomatik olarak engellendi</translation>
 <translation id="2071852865256799872">Tarayıcınızın yönetimi kuruluşunuz tarafından, profilinizin yönetimi ise <ph name="PROFILE_DOMAIN" /> tarafından yapılıyor</translation>
 <translation id="2072275792380684364">Moda ve stil</translation>
+<translation id="2075497153347571252">Yöneticiniz <ph name="ORIGIN" /> sitesinde <ph name="PERMISSION" /> iznini engelledi</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="20817612488360358">Sistem proxy ayarları kullanılmak üzere ayarlandı, ancak açık bir proxy yapılandırması da belirtildi.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> sonuçtan <ph name="RESULT_NUMBER" /> numaralı sonuç</translation>
@@ -1880,6 +1881,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4885256590493466218">Ödeme sırasında <ph name="CARD_DETAIL" /> ile ödeyin</translation>
 <translation id="4887406273302438710">Windows Hello ile şifreleri koruma</translation>
 <translation id="4888600795924685526">Yabancı dil eğitimi</translation>
+<translation id="4890070067176768718">Yöneticiniz <ph name="ORIGIN" /> sitesinde <ph name="PERMISSION" /> iznini verdi</translation>
 <translation id="4892518386797173871">Arka</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiyatlar</translation>
@@ -2326,6 +2328,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5830698870816298009">kamera kullanma ve hareket ettirme</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5838278095973806738">Bu sitede hiçbir hassas bilginizi (örneğin şifrelerinizi veya kredi kartı bilgilerinizi) girmemelisiniz. Aksi takdirde bu bilgiler saldırganlar tarafından çalınabilir.</translation>
+<translation id="5838732667866024867">Grafikteki fiyat değişikliklerini incelemek için sol/sağ oku kullanabilirsiniz</translation>
 <translation id="5840318881868981258">Google Hesabınızda, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Hesaba kaydedilsin mi?</translation>
 <translation id="5847181246682413476">Güç Kaynakları</translation>

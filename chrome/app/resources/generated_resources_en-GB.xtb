@@ -1994,6 +1994,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Something went wrong and <ph name="DEVICE_OS" /> couldn’t be installed.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />For more help, visit: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Extends battery life by keeping your battery around 80%. Battery will fully charge before you typically disconnect from power.</translation>
+<translation id="2532146950330687938">Getting the device ready…</translation>
 <translation id="2532198298278778531">Manage Secure DNS in Chrome OS Flex settings</translation>
 <translation id="2532589005999780174">High contrast mode</translation>
 <translation id="2533649878691950253">This site was blocked from knowing your precise location because you usually don't allow this</translation>
@@ -2140,7 +2141,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2658941648214598230">Show original content?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Features vary by device</translation>
 <translation id="2659971421398561408">Crostini disk resize</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> can now use your username and password when they use Google Password Manager to sign in to <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Event</translation>
 <translation id="266079277508604648">Can’t connect to printer. Check that the printer is turned on and is connected to your Chromebook by Wi-Fi or USB.</translation>
 <translation id="2661315027005813059">Back-forward cached page: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2264,7 +2264,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="274362947316498129">An app is trying to access <ph name="DEVICE_NAME" />. Turn off <ph name="DEVICE_NAME" /> privacy switch to allow access.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Sign in to <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
@@ -5570,7 +5569,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5481273127572794904">Not allowed to automatically download multiple files</translation>
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5484181871714116891">When on, passkeys are created in iCloud Keychain and are available across your Apple devices. When off, passkeys are created in your Chrome profile on this device.</translation>
-<translation id="5484462543003267273">Manage family</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Add app</translation>
 <translation id="5485435764083510385">Preferred caption language</translation>
@@ -5758,6 +5756,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5627086634964711283">It also controls what page is shown when you click the Home button.</translation>
 <translation id="5627676517703583263">Browse smart with Chrome</translation>
 <translation id="5627832140542566187">Display orientation</translation>
+<translation id="5628434207686266338">Set device password</translation>
 <translation id="562935524653278697">Your administrator has disabled syncing of your bookmarks, history, passwords and other settings.</translation>
 <translation id="5631017369956619646">CPU Usage</translation>
 <translation id="5631272057151918206">This will remove up to <ph name="OFFLINE_STORAGE_SIZE" /> of space used by your offline files. Some files will still be available offline. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>

@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> λογαριασμοί χρησιμοποιούν τον ίδιο κωδικό πρόσβασης</translation>
 <translation id="2050196510205866090">{count,plural, =1{Διατίθεται {count} αποθηκευμένος τρόπος πληρωμής επάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένοι τρόποι πληρωμής επάνω από το πληκτρολόγιο.}}</translation>
 <translation id="2055515971416882518">Ανοίξτε τις Ρυθμίσεις.</translation>
+<translation id="2059166748188874810">Δήμος</translation>
 <translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
@@ -313,6 +314,7 @@
 <translation id="2738375676495545665">Απόκρυψη της επιλογής Τι νέο υπάρχει</translation>
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
 <translation id="2749231692441336879">Παρακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Λογαριασμοί σε αυτήν τη συσκευή</translation>
 <translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="2772667768515195373">Μπορείτε να χρησιμοποιήσετε τις αποθηκευμένες διευθύνσεις σε όλα τα προϊόντα Google. Αυτή η διεύθυνση έχει αποθηκευτεί στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Ανώνυμη αναζήτηση</translation>
@@ -477,6 +479,7 @@
 <translation id="3587885837929752825">Ο οργανισμός σας περιορίζει το περιεχόμενο που μπορείτε να αποθηκεύσετε στον Λογαριασμό σας Google.</translation>
 <translation id="3588820906588687999">Άνοιγμα εικόνας σε νέα καρτέλα</translation>
 <translation id="3595252146048399851">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
+<translation id="3599500618468205645">Απόκρυψη της επιλογής Παρακολούθηση <ph name="DOMAIN_NAME" /></translation>
 <translation id="3603009562372709545">Αντιγραφή διεύθυνσης URL συνδέσμου</translation>
 <translation id="3607167657931203000">Δεδομένα Αυτόματης συμπλήρωσης</translation>
 <translation id="3609785682760573515">Συγχρονισμός…</translation>
@@ -487,6 +490,7 @@
 <translation id="3646736009628185125">Το μέλος της οικογένειάς σας δεν μπορεί να λάβει κωδικούς πρόσβασης αυτήν τη στιγμή. Ζητήστε από το μέλος να ενημερώσει το Chrome και να συγχρονίσει τους κωδικούς πρόσβασής του. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Διαθέσιμο προφίλ διαμόρφωσης</translation>
 <translation id="3670030362669914947">Αριθμός</translation>
+<translation id="3680970647557344817">Απόκρυψη της επιλογής Επεξεργασία σελιδοδείκτη</translation>
 <translation id="368329460027487650">Αποσυνδεθήκατε. Ανοίγει επιλογές για σύνδεση.</translation>
 <translation id="3688815115226493214">Προτάσεις καρτελών</translation>
 <translation id="3700134753671613714">Συνδεθείτε για να μεταφέρετε τους σελιδοδείκτες σας σε όλες τις συσκευές σας</translation>
@@ -636,6 +640,7 @@
 <translation id="4592368184551360546">Πληκτρολόγιο</translation>
 <translation id="4601095002996233687">Λεπτομερείς σαρώσεις σε βάθος για ύποπτες λήψεις.</translation>
 <translation id="4606247758155004938">Η διαχείριση του προγράμματος περιήγησής σας πραγματοποιείται από τον οργανισμό σας.</translation>
+<translation id="4611811151908969241">Απόκρυψη της επιλογής Κατάργηση παρακολούθησης <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Αναζήτηση με το Google</translation>
 <translation id="4616391354457235490">Αναίρεση</translation>
 <translation id="4619564267100705184">Επαλήθευση ταυτότητας</translation>
@@ -1058,6 +1063,7 @@
 <translation id="6753469262000681876">Λειτουργία κλειδώματος</translation>
 <translation id="6760509555861141183">Επιστροφή στην καρτέλα Πρόσφατα</translation>
 <translation id="6762812039470893796">Αποεπιλογή όλων</translation>
+<translation id="6771287014037609247">Να παρακολουθούνται πάντα τα εντοπισμένα πακέτα</translation>
 <translation id="6780034285637185932">Ταχυδρομικός κώδικας</translation>
 <translation id="6781260999953472352">Ενεργοποίηση συγχρονισμού;</translation>
 <translation id="6781405765516175232">Για επιλογές διαδρομής, πατήστε Λήψη οδηγιών.</translation>
@@ -1230,6 +1236,7 @@
 <translation id="778855399387580014">Ξεκινήστε μια αναζήτηση σε μια νέα καρτέλα Chrome.</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="7807060072011926525">Παρέχεται από την Google</translation>
+<translation id="78146569776629510">Λήψεις</translation>
 <translation id="7839985698273989086">Σελίδα εκτός σύνδεσης</translation>
 <translation id="7840771868269352570">Τα στοιχεία που επιλέξατε θα καταργηθούν.</translation>
 <translation id="7845466610722898">Εμφάνιση λίστας ανάγνωσης</translation>
@@ -1408,6 +1415,7 @@
 <translation id="8780076847684176174">{count,plural, =1{Έλεγχος καρτέλας…}other{Έλεγχος όλων των καρτελών…}}</translation>
 <translation id="8787968206789828143">Αναζήτηση στον ιστό</translation>
 <translation id="8792626944327216835">μικρόφωνο</translation>
+<translation id="8793366654064127924">Να γίνεται ερώτηση κάθε φορά</translation>
 <translation id="8803639129939845298">Ασφαλές</translation>
 <translation id="8806823403540278281">Ο οργανισμός σας απαιτεί οι περιηγήσεις σας να είναι ιδιωτικές. Οι καρτέλες δεν αποθηκεύονται στην Κατάσταση ανώνυμης περιήγησης.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -1421,6 +1429,7 @@
 <translation id="8849001918648564819">Κρυφή</translation>
 <translation id="8855242995793521265">Δεν επιβραδύνει αισθητά το πρόγραμμα περιήγησης ή τη συσκευή σας.</translation>
 <translation id="8855781063981781621">Για να απενεργοποιήσετε τη Λειτουργία κλειδώματος στο Chrome, απενεργοποιήστε τη στο iPad.</translation>
+<translation id="886335568110896118">Απόκρυψη της επιλογής Αίτημα ιστοτόπου για κινητά</translation>
 <translation id="8863431381414769983">Λάβετε οδηγίες και τοπικές πληροφορίες από τους Χάρτες Google</translation>
 <translation id="8865415417596392024">Δεδομένα Chrome στον λογαριασμό σας</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} καρτέλα}other{{count} καρτέλες}}</translation>

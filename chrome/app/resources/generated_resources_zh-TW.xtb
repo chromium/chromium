@@ -2125,7 +2125,6 @@
 <translation id="2658941648214598230">要顯示原始內容嗎？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />功能會因裝置而異</translation>
 <translation id="2659971421398561408">調整 Crostini 磁碟大小</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" />透過 Google 密碼管理工具登入 <ph name="WEBSITE" /> 時，現在可以使用你的使用者名稱和密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="266079277508604648">無法連上印表機。請確認印表機已開啟，且已透過 Wi-Fi 或 USB 連上 Chromebook。</translation>
 <translation id="2661315027005813059">往返快取頁面：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2249,7 +2248,6 @@
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="274362947316498129">一個應用程式正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請關閉<ph name="DEVICE_NAME" />隱私權切換鈕。</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
-<translation id="2749026027885331579">家庭成員透過 Google 密碼管理工具登入 <ph name="WEBSITE" /> 時，現在可以使用你的使用者名稱和密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">檢查拼字及文法</translation>
@@ -5553,7 +5551,6 @@
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5484181871714116891">開啟之後，系統會在 iCloud 鑰匙圈中建立密碼金鑰，方便你在 Apple 裝置上使用。如果關閉，系統會在這部裝置的 Chrome 設定檔中建立密碼金鑰。</translation>
-<translation id="5484462543003267273">管理家庭群組</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在 {NUM_DAYS} 天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
 <translation id="5485435764083510385">偏好的字幕語言</translation>

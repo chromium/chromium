@@ -313,6 +313,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="2738375676495545665">Piilota "Uutta"</translation>
 <translation id="2747003861858887689">Edellinen kenttä</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> seurannassa</translation>
+<translation id="2754492786623500387">Tämän laitteen tilit</translation>
 <translation id="2762000892062317888">äsken</translation>
 <translation id="2772667768515195373">Voit käyttää tallennettuja osoitteita kaikissa Google-tuotteissa. Osoite on tallennettu Google-tilillesi, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Incognito-haku</translation>
@@ -1229,6 +1230,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="778855399387580014">Aloita haku Chrome-välilehdellä.</translation>
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="7807060072011926525">Googlen tarjoama</translation>
+<translation id="78146569776629510">Lataukset</translation>
 <translation id="7839985698273989086">Offline-sivu</translation>
 <translation id="7840771868269352570">Valitut kohteet poistetaan</translation>
 <translation id="7845466610722898">Näytä lukulista</translation>

@@ -1979,6 +1979,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Arazoren bat izan da eta ezin izan da instalatu <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Laguntza gehiago behar baduzu, joan g.co/flex/InstallErrors helbidera.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Bateria gutxi gorabehera % 80an mantentzen du haren iraupena luzatzeko. Bateria guztiz kargatuko da korrontetik deskonektatu aurretik.</translation>
+<translation id="2532146950330687938">Gailua prestatzen…</translation>
 <translation id="2532198298278778531">Kudeatu DNS segurua ChromeOS Flex-en ezarpenetan</translation>
 <translation id="2532589005999780174">Kontraste handiko modua</translation>
 <translation id="2533649878691950253">Webgune honi blokeatu egin zaio zure kokapen zehatza hautemateko aukera, normalean ez duzulako ematen</translation>
@@ -2125,7 +2126,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2658941648214598230">Jatorrizko edukia ikusi nahi duzu?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Gailuaren araberakoak dira eginbideak</translation>
 <translation id="2659971421398561408">Crostini-ren diskoaren tamaina aldatzea</translation>
-<translation id="2660309468936690885">Orain, <ph name="RECIPIENT_NAME" /> erabiltzaileak zure erabiltzaile-izena eta pasahitza erabil ditzake <ph name="WEBSITE" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabilenean. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Gertaera</translation>
 <translation id="266079277508604648">Ezin da konektatu inprimagailura. Egiaztatu piztuta dagoela eta Chromebook-era Wi-Fi edo USB bidez konektatuta dagoela.</translation>
 <translation id="2661315027005813059">Aurreko orria cachean gordetzeko eginbidean gordetako orria: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2249,7 +2249,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="274362947316498129">Aplikazio bat <ph name="DEVICE_NAME" /> atzitu nahian dabil. Sarbidea emateko, desaktibatu <ph name="DEVICE_NAME" />ren pribatutasun-etengailua.</translation>
 <translation id="2745080116229976798">Microsoft menderakuntza mugatua</translation>
-<translation id="2749026027885331579">Orain, zure familiako kideek zure erabiltzaile-izena eta pasahitza erabil ditzakete <ph name="WEBSITE" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabiltenean. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Hasi saioa <ph name="PRODUCT_NAME" />-n</translation>
 <translation id="2749836841884031656">SIMa</translation>
 <translation id="2749881179542288782">Zuzendu gramatika eta ortografia</translation>
@@ -5554,7 +5553,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5481273127572794904">Ezin dituzte hainbat fitxategi deskargatu automatikoki</translation>
 <translation id="5481941284378890518">Gehitu inguruko inprimagailuak</translation>
 <translation id="5484181871714116891">Aktibatuta dagoenean, sarbide-gakoak iCloud Keychain-en sortzen dira eta zure Apple-ko gailu guztietan erabilgarri daude. Desaktibatuta dagoenean, sarbide-gakoak gailu honetako Chrome-ko profilean sortzen dira.</translation>
-<translation id="5484462543003267273">Kudeatu familia</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Gaur datuen babeskopiak egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="MANAGER" /> domeinuak. <ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}other{{NUM_DAYS} eguneko epean datuen babeskopia egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="MANAGER" /> domeinuak. <ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Gehitu aplikazioa</translation>
 <translation id="5485435764083510385">Azpitituluen hizkuntza hobetsia</translation>
@@ -5740,6 +5738,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5627086634964711283">Omnibox-eko Hasiera botoia sakatzean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="5627676517703583263">Arakatu sarea modu adimendunean Chrome-rekin</translation>
 <translation id="5627832140542566187">Pantailaren orientazioa</translation>
+<translation id="5628434207686266338">Ezarri gailuaren pasahitza</translation>
 <translation id="562935524653278697">Laster-marken, historiaren, pasahitzen eta bestelako ezarpen batzuen sinkronizazioa desgaitu du administratzaileak.</translation>
 <translation id="5631017369956619646">PUZren erabilera</translation>
 <translation id="5631272057151918206">Konexiorik gabe erabilgarri dituzun fitxategiek hartzen dituzten <ph name="OFFLINE_STORAGE_SIZE" /> berreskuratuko dituzu gehienez ere. Fitxategi batzuek konexiorik gabe erabilgarri egoten jarraituko dute. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -6320,6 +6319,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6104796831253957966">Beteta dago inprimagailuaren ilara</translation>
 <translation id="6104929924898022309">Erabili bilaketa-tekla funtzio-teklen portaera aldatzeko</translation>
 <translation id="6106167152849320869">Aurreko urratsean datu diagnostiko- eta erabilera-datuak bidaltzea ere aukeratu baduzu, instalatutako aplikazioei buruzko datu hauek bilduko dira.</translation>
+<translation id="6111718295497931251">Kendu Google Drive erabiltzeko baimena</translation>
 <translation id="6111972606040028426">Gaitu Google-ren Laguntzailea</translation>
 <translation id="6112294629795967147">Sakatu tamaina aldatzeko</translation>
 <translation id="6112727384379533756">Gehitu txartel bat</translation>

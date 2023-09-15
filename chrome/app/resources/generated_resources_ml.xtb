@@ -766,6 +766,7 @@
 <translation id="1604432177629086300">പ്രിന്റ് ചെയ്യാനായില്ല. പ്രിന്റർ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1604567162047669454">വിഷ്വൽ ലേഔട്ട് സിമാന്റിക്‌സ് തിരിച്ചറിയുക</translation>
 <translation id="1604774728851271529">Linux അപ്‍ഗ്രേഡ് ചെയ്യാൻ നിങ്ങൾക്കൊരു നെറ്റ്‌വർക്ക് കണക്ഷൻ വേണം. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="1605148987885002237">കീബോർഡും ഇൻപുട്ടുകളും</translation>
 <translation id="1605744057217831567">എല്ലാ സൈറ്റ് ഡാറ്റയും അനുമതികളും കാണുക</translation>
 <translation id="1606077700029460857">മൗസ് ക്രമീകരണം മാറ്റുക</translation>
 <translation id="1606307079840340755">നിങ്ങളുടെ Passpoint ദാതാവിനെ ഈ ഉപകരണത്തിൽ നിന്ന് മാത്രമേ നീക്കം ചെയ്യൂ. നിങ്ങളുടെ സബ്‌സ്‌ക്രിപ്‌ഷനിൽ മാറ്റങ്ങൾ വരുത്താൻ, സബ്‌സ്‌ക്രിപ്‌ഷൻ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
@@ -1224,6 +1225,7 @@
 <translation id="1956050014111002555">ഫയലില്‍ ഒന്നിലധികം സാക്‍ഷ്യപ്ത്രങ്ങള്‍ അടങ്ങിയിരിക്കുന്നു, അതിലൊന്നും ഇറക്കുമതി ചെയ്തില്ല:</translation>
 <translation id="1956167375087861299">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യുന്നതിന് ഐഡന്റിഫയറുകൾ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
 <translation id="1956390763342388273">"<ph name="FOLDER_PATH" />" ഫോൾഡറിൽ നിന്നുള്ള എല്ലാ ഫയലുകളും ഇത് അപ്‌ലോഡ് ചെയ്യും. നിങ്ങൾ സൈറ്റിനെ വിശ്വസിക്കുന്നുവെങ്കിൽ മാത്രം ഇത് ചെയ്യുക.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 വിപുലീകരണം അവലോകനം ചെയ്തു}other{{NUM_EXTENSIONS} വിപുലീകരണങ്ങൾ അവലോകനം ചെയ്തു}}</translation>
 <translation id="1959421829481337178">നിങ്ങളുടെ സേവനദാതാവ് നൽകിയ സജീവമാക്കൽ കോഡ് നൽകുക.</translation>
 <translation id="1962233722219655970">ഈ പേജ് നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ പ്രവർത്തിക്കാത്ത ഒരു നേറ്റീവ് ക്ലയന്റ് ആപ്പ് ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1963976881984600709">സ്‌റ്റാൻഡേർഡ് പരിരക്ഷ</translation>
@@ -1933,6 +1935,7 @@
 <translation id="2492461744635776704">സര്‍ട്ടിഫിക്കറ്റ് സൈനിംഗ് അഭ്യർത്ഥന തയ്യാറാക്കുന്നു</translation>
 <translation id="249330843868392562">ടെക്‌സ്‌റ്റ്-ടു-സ്‌പീച്ച് ക്രമീകരണം തുറക്കുക</translation>
 <translation id="2494555621641843783">Steam ഇൻസ്റ്റാൾ ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="2495141202137516054">നിങ്ങളുടെ Drive-ൽ നിന്ന്</translation>
 <translation id="2495524171012645395">അടുത്തിടെ കണ്ട റെസിപ്പികൾ</translation>
 <translation id="2496180316473517155">ബ്രൗസിംഗ് ചരിത്രം</translation>
 <translation id="2497229222757901769">മൗസിന്റെ വേഗത</translation>
@@ -2125,7 +2128,6 @@
 <translation id="2658941648214598230">ഒറിജിനൽ ഉള്ളടക്കം കാണിക്കണോ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ഉപകരണത്തിന് അനുസരിച്ച് ഫീച്ചറുകൾ വ്യത്യാസപ്പെടും</translation>
 <translation id="2659971421398561408">Crostini ഡിസ്ക് വലുപ്പം മാറ്റൽ</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> എന്നയാൾക്ക് ഇപ്പോൾ, <ph name="WEBSITE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ഇവന്റ്</translation>
 <translation id="266079277508604648">പ്രിന്‍റർ കണക്റ്റ് ചെയ്യാനാവുന്നില്ല. പ്രിന്‍റർ ഓണാണോ എന്നും വൈഫൈയോ USB-യോ ഉപയോഗിച്ച് Chromebook-ലേക്ക് കണക്റ്റ് ചെയ്‌‌തിട്ടുണ്ടോ എന്നും പരിശോധിക്കുക.</translation>
 <translation id="2661315027005813059">ബാക്ക്-ഫോർവേഡ് കാഷെ പേജ്: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2237,6 +2239,7 @@
 <translation id="2738771556149464852">അതിനുശേഷമല്ല</translation>
 <translation id="2739191690716947896">ഡീബഗ് ചെയ്യുക</translation>
 <translation id="2739240477418971307">നിങ്ങളുടെ ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ മാറ്റുക</translation>
+<translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> വഴി ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="274029851662193272">താഴ്ന്ന് നിൽക്കുന്നത്</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2740876196999178364">ഈ പാസ്‌കീകൾ ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ. അവ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചിട്ടില്ല.</translation>
@@ -2249,7 +2252,6 @@
 <translation id="2743387203779672305">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തുക</translation>
 <translation id="274362947316498129">ഒരു ആപ്പ് <ph name="DEVICE_NAME" /> ആക്‌സസ് ചെയ്യാൻ ശ്രമിക്കുന്നു. ആക്‌സസ് നൽകാൻ <ph name="DEVICE_NAME" /> സ്വകാര്യതാ സ്വിച്ച് ഓഫാക്കുക.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">നിങ്ങളുടെ കുടുംബാംഗങ്ങൾക്ക് ഇപ്പോൾ, <ph name="WEBSITE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> എന്നതിലേയ്‍ക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2749836841884031656">സിം</translation>
 <translation id="2749881179542288782">സ്‌പെല്ലിംഗിനൊപ്പം വ്യാകരണവും പരിശോധിക്കുക</translation>
@@ -3195,6 +3197,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ഓഡിയോ മ്യൂട്ടുചെയ്‌തു</translation>
 <translation id="3537881477201137177">ഇത് പിന്നീട് ക്രമീകരണത്തിൽ പരിഷ്‌കരിക്കാനാകും</translation>
 <translation id="3538066758857505094">Linux അൺഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിൽ പിശക്. വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> വഴി നെറ്റ്‌വർക്കൊന്നും ലഭ്യമല്ല</translation>
 <translation id="354060433403403521">AC അഡാപ്റ്റർ</translation>
 <translation id="354068948465830244">ഇതിന് സൈറ്റ് ഡാറ്റ വായിക്കാനും മാറ്റാനുമാവും</translation>
 <translation id="3541823293333232175">അസൈൻ ചെയ്‌തു</translation>
@@ -5553,7 +5556,6 @@
 <translation id="5481273127572794904">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="5481941284378890518">സമീപത്തുള്ള പ്രിന്ററുകൾ ചേർക്കുക</translation>
 <translation id="5484181871714116891">ഓണായിരിക്കുമ്പോൾ, പാസ്‌കീകൾ iCloud കീചെയിനിൽ സൃഷ്‌ടിക്കുകയും നിങ്ങളുടെ Apple ഉപകരണങ്ങളിൽ ഉടനീളം ലഭ്യമാകുകയും ചെയ്യും. ഓഫായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ Chrome പ്രൊഫൈലിൽ പാസ്‌കീകൾ സൃഷ്‌ടിക്കപ്പെടും.</translation>
-<translation id="5484462543003267273">കുടുംബ ഗ്രൂപ്പ് മാനേജ് ചെയ്യുക</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഈ <ph name="DEVICE_TYPE" /> ഇന്ന് തന്നെ തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. <ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}other{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് {NUM_DAYS} ദിവസത്തിനുള്ളിൽ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ആപ്പ് ചേർക്കുക</translation>
 <translation id="5485435764083510385">മുൻഗണന നൽകുന്ന അടിക്കുറിപ്പിന്റെ ഭാഷ</translation>
@@ -6403,6 +6405,7 @@
 <translation id="6169967265765719844">Steam-ലൂടെ ഇൻസ്റ്റാൾ ചെയ്ത ഗെയിമുകൾക്കും ആപ്പുകൾക്കുമുള്ള അനുമതികൾ <ph name="LINK_BEGIN" />Steam ആപ്പ് ക്രമീകരണത്തിൽ<ph name="LINK_END" /> മാനേജ് ചെയ്യാം.</translation>
 <translation id="6170470584681422115">സാന്‍ഡ്‌വിച്ച്‌</translation>
 <translation id="6170498031581934115">ADB ഡീബഗ് ചെയ്യൽ പ്രവർത്തനക്ഷമമാക്കാനായില്ല. ക്രമീകരണത്തിലേക്ക് പോയി വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="6170675927290506430">അറിയിപ്പ് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="6171779718418683144">സന്ദർശിക്കുമ്പോഴെല്ലാം ചോദിക്കുക</translation>
 <translation id="617213288191670920">ഭാഷകളൊന്നും ചേർത്തിട്ടില്ല</translation>
 <translation id="6173623053897475761">നിങ്ങളുടെ പിൻ വീണ്ടും ടൈപ്പ് ചെയ്യുക</translation>
@@ -6412,6 +6415,7 @@
 <translation id="6177412385419165772">നീക്കം ചെയ്യുന്നു...</translation>
 <translation id="6178664161104547336">ഒരു സര്‍ട്ടിഫിക്കറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6178682841350631965">നിങ്ങളുടെ സൈൻ ഇൻ ഡാറ്റ അപ്ഡേറ്റ് ചെയ്തു</translation>
+<translation id="6179830757749383456">ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="BROWSER_DOMAIN" /> ആണ്, പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_DOMAIN" /> ആണ്</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{വിപുലീകരണം നീക്കം ചെയ്യണോ?}other{# വിപുലീകരണങ്ങൾ നീക്കം ചെയ്യണോ?}}</translation>
 <translation id="6180510783007738939">ലൈൻ ടൂൾ</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> എന്നതിനായി ഏത് പാസ്‌കീ ഉപയോഗിക്കാനാണ് നിങ്ങൾ ആഗ്രഹിക്കുന്നത്?</translation>
@@ -6530,6 +6534,7 @@
 <translation id="6271348838875430303">തിരുത്തിയത് പഴയപടിയാക്കി</translation>
 <translation id="6271824294945464304">പാസ്‌വേഡ് പങ്കിടുന്നു</translation>
 <translation id="6273677812470008672">നിലവാരം</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> എന്നതിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="6274202259872570803">സ്ക്രീൻകാസ്റ്റ്</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> എന്ന പ്രോക്‌സി സെർവറിന് ഉപയോക്തൃനാമവും പാസ്‌വേഡും ആവശ്യമാണ്.</translation>
 <translation id="6277105963844135994">നെറ്റ്‌വർക്കിന്റെ സമയപരിധി കഴിഞ്ഞു</translation>
@@ -6547,6 +6552,7 @@
 <translation id="6285120108426285413">സാധാരണ <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാറില്ല, അത് അപകടകരമാകാനും ഇടയുണ്ട്.</translation>
 <translation id="6285770818046456882">നിങ്ങളുമായി പങ്കിടുന്ന ഉപകരണം, കൈമാറ്റം റദ്ദാക്കി</translation>
 <translation id="628726841779494414">പ്രിന്റർ ക്രമീകരണത്തിൽ നിങ്ങളുടെ പ്രിന്ററുകൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="6287828400772161253">Android ഫോൺ (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">പങ്കിടുന്ന ഉപകരണങ്ങളൊന്നും സമീപത്ത് ലഭ്യമല്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">സജീവമാക്കൽ കോഡ് പരിശോധിച്ചുറപ്പിക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="6291741848715722067">സ്ഥിരീകരണ കോഡ്</translation>
@@ -8552,6 +8558,7 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> നായി കാത്തിരിക്കുന്നു...</translation>
 <translation id="7926423016278357561">ഇത് ഞാൻ അല്ല.</translation>
 <translation id="7926975587469166629">കാർഡിന്റെ വിളിപ്പേര്</translation>
+<translation id="7927610604078150317">വലുപ്പം: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">മുമ്പേ തന്നെ ഈ പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടോ?</translation>
 <translation id="7929962904089429003">മെനു തുറക്കുക</translation>
 <translation id="7930294771522048157">സംരക്ഷിച്ച പേയ്മെന്റ് രീതികൾ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -9864,6 +9871,7 @@
 <translation id="8986362086234534611">മറന്നു</translation>
 <translation id="8986494364107987395">Google ലേക്ക് സ്വയമേവ ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോര്‍ട്ടുകളും അയയ്ക്കുക</translation>
 <translation id="8987305927843254629">ഓരോ വ്യക്തിക്കും അവരുടെ അനുഭവം വ്യക്തിപരമാക്കാനും ഡാറ്റ സ്വകാര്യമായി സൂക്ഷിക്കാനും കഴിയും.</translation>
+<translation id="8987321822984361516">ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് ഒരു സ്ഥാപനമാണ്, പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_DOMAIN" /> ആണ്</translation>
 <translation id="8987927404178983737">മാസം</translation>
 <translation id="8988539543012086784">ഈ പേജ് <ph name="BOOKMARK_FOLDER" /> എന്നതിൽ സംരക്ഷിച്ചു</translation>
 <translation id="8989359959810288806">ടെതറിംഗ് നില റീഫ്രഷ് ചെയ്യുക</translation>
@@ -9882,6 +9890,7 @@
 <translation id="8999027165951679951">നിഷ്ക്രിയ ടാബ്: <ph name="MEMORY_SAVINGS" /> ഇടമുണ്ടാക്കി</translation>
 <translation id="8999560016882908256">വിഭാഗ വാക്യഘടനാ പിശക്: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ വലത് വശത്തുള്ള ഫിംഗർപ്രിന്റ് സെൻസറിൽ സ്‌പർശിക്കുക. നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ഡാറ്റ <ph name="DEVICE_TYPE" /> എന്നതിൽ സുരക്ഷിതമായി സംഭരിക്കുന്നു, ഒരിക്കലും അതിൽ നിന്ന് പുറത്ത് പോകില്ല.</translation>
+<translation id="9000532564152265066">എല്ലാ ടാബുകളും</translation>
 <translation id="9003185744423389627">ഡിവൈസ് മാനേജ്‌മെന്റ് സെർവറിലേക്കുള്ള കണക്ഷൻ, '<ph name="STATUS_TEXT" />' എന്ന സ്റ്റാറ്റസോടെ <ph name="FAILURE_TIME" />-ന് പരാജയപ്പെട്ടു</translation>
 <translation id="90033698482696970">ലഭ്യമായ eSIM പ്രൊഫൈലുകൾക്കായി സ്വയമേവ സ്കാൻ ചെയ്യണോ?</translation>
 <translation id="9003647077635673607">എല്ലാ വെബ്‌സൈറ്റുകളിലും അനുവദിക്കുക</translation>

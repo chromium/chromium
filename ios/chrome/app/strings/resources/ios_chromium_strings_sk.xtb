@@ -92,6 +92,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="4736424910885271643">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia vymazané</translation>
 <translation id="4790638144988730920">Naďalej používajte údaje prehliadača Chromium vo svojom účte Google.</translation>
 <translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
+<translation id="4935539884203837577">Chromium dokáže rozpoznať čísla zásielok, ktoré zadáte, a sledovať príslušné zásielky na stránke na novej karte, pričom vám zároveň môže pomáhať pri iných nákupoch, ktoré v ňom uskutočňujete.</translation>
 <translation id="4985291216379576555">Offline, Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4996471330284142407">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Chromium, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
@@ -114,6 +115,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="5688047395118852662">Na tejto karte sa vám zobrazujú návrhy, ako využívať Chromium naplno.</translation>
 <translation id="5700709190537129682">Chromium nemôže skontrolovať heslá</translation>
 <translation id="5777187867430702742">Stránka prehliadača Chromium</translation>
+<translation id="584303319228224680">Automatické sledovanie zásielok v prehliadači Chromium</translation>
 <translation id="5889847953983052353">Keď túto možnosť zapnete:
 <ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať prehliadač Chromium pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
 

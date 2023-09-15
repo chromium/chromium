@@ -685,6 +685,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2366689192918515749">Mėsa ir jūrų gėrybės</translation>
 <translation id="2367567093518048410">Lygis</translation>
 <translation id="23703388716193220">Golfo įranga</translation>
+<translation id="2374629208601905275">Atsižvelgdama į jūsų regiono įstatymus, „Chrome“ prašo pasirinkti numatytąjį paieškos variklį. Šie paieškos varikliai populiarūs jūsų regione ir rodomi atsitiktine tvarka.</translation>
 <translation id="2378084239755710604">Išsaugota kortelė uždaryta.</translation>
 <translation id="2380886658946992094">Teisinis</translation>
 <translation id="2383455408879745299">Suasmeninkite pritaikomumo įrankius „Chrome“ nustatymuose</translation>
@@ -900,6 +901,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2879694782644540289">naudoti ekrano užraktą slaptažodžiams užpildyti</translation>
 <translation id="2881276955470682203">Išsaugoti kortelę?</translation>
 <translation id="2882949212241984732">Perlenkimas viduryje su dviem atvartais</translation>
+<translation id="2891963978019740012">Paieškos variklis naršyklėje „Chrome“</translation>
 <translation id="2893773853358652045">Ketvirtas ritinėlis</translation>
 <translation id="2900528713135656174">Sukurti įvykį</translation>
 <translation id="2902312830803030883">Daugiau veiksmų</translation>
@@ -1164,6 +1166,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3427342743765426898">&amp;Redaguoti dar kartą</translation>
 <translation id="342781501876943858">„Chromium“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="3428151540071562330">Vienas arba keli „DnsOverHttpsTemplates“ serverio šablono URI yra netinkami ir nebus naudojami.</translation>
+<translation id="3429817405364886479">Paieškos variklio patvirtinimas</translation>
 <translation id="3431216045099978607">Paspauskite „|<ph name="ACCELERATOR" />|“, jei norite išeiti iš viso ekrano režimo ir peržiūrėti atsisiuntimą.</translation>
 <translation id="3432601291244612633">Uždaryti puslapį</translation>
 <translation id="3433111389595862568">Bendradarbiavimo ir konferencijų programinė įranga</translation>
@@ -1916,6 +1919,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4957080528849277028">Mygtukas „Peržiūrėti „Chrome“ istoriją“; suaktyvinkite, kad galėtumėte peržiūrėti ir tvarkyti naršymo istoriją „Chrome“ nustatymuose</translation>
 <translation id="4958444002117714549">Išskleisti sąrašą</translation>
 <translation id="4960068118612257147">Galite atlikti „Chrome“ skelbimų privatumo nustatymų pakeitimus</translation>
+<translation id="4960203958361543136">Paieškos variklio pasirinkimas</translation>
 <translation id="4964505745997821360">Sveikatos draudimas</translation>
 <translation id="4968522289500246572">Ši programa sukurta mobiliesiems įrenginiams, todėl jos dydis gali būti pakeistas netinkamai. Programoje gali kilti problemų arba ji gali būti paleista iš naujo.</translation>
 <translation id="4968665849807487749">Gali būti prašoma tvarkyti langus visuose ekranuose</translation>
@@ -2098,6 +2102,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5323043727018853753">Įterptas turinys leidžiamas</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> iš <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Jūsų naršyklė nėra tvarkoma</translation>
+<translation id="5331585574693522196">Nustatyti kaip numatytąjį</translation>
 <translation id="5332219387342487447">Pristatymo metodas</translation>
 <translation id="5332769172018416402">Klausti pranešimu</translation>
 <translation id="5334013548165032829">Išsamūs sistemos žurnalai</translation>
@@ -2538,6 +2543,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6287197303017372967">Gaukite nuoseklias nuorodas į kelionės tikslą naudodami navigacijos funkciją.</translation>
 <translation id="628877850550444614">Rasta nuolaida</translation>
 <translation id="6289939620939689042">Puslapio spalva</translation>
+<translation id="6292819926564202163">Paieškos variklis naršyklėje „Chrome“</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Kortelės patvirtinimo kodas CVC:</translation>
 <translation id="6295855836753816081">Išsaugoma...</translation>
@@ -2773,6 +2779,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6770747695101757579">Popierius (medvilninis)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Komercinės paskolos</translation>
+<translation id="6785990323398321538">Paieškos variklį galite bet kada pakeisti „Chrome“ nustatymuose.</translation>
 <translation id="6786145470008421571">6 x 9 col. vokas</translation>
 <translation id="67862343314499040">Violetinė</translation>
 <translation id="6786747875388722282">Plėtiniai</translation>
@@ -2844,6 +2851,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6917795328362592458">Slaptažodis, kurį ką tik naudojote, buvo rastas duomenų saugos pažeidime. Siekiant užtikrinti paskyrų saugumą, Slaptažodžių tvarkyklė rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="6925267999184670015">Šiaurės Amerikos B+</translation>
 <translation id="692638818576287323">Komerciniai automobiliai</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Naudodami numatytąjį paieškos variklį galite ieškoti žiniatinklyje ir naudoti „Chrome“ funkcijas<ph name="END_BOLD" />, pvz., paiešką iš adreso juostos ir vaizdų tinklalapiuose. Funkcija gali būti nepasiekiama, jei paieškos variklis jos nepalaiko.</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>
 <translation id="6935082727755903526">Apskaitos ir finansiniai darbai</translation>
 <translation id="6936976777388162184">Tai yra grupės įrenginys, kurio negalima užregistruoti naudojant viešojo terminalo ir ženklų naujovinimą.</translation>
@@ -3231,6 +3239,7 @@ Papildoma išsami informacija:
 <translation id="765676359832457558">Slėpti išplėstinius nustatymus...</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7659327900411729175">„Kaku 8“ vokas</translation>
+<translation id="7659880963341457291">Paieškos variklio patvirtinimas</translation>
 <translation id="766014026101194726">{0,plural, =1{Pagal administratoriaus politiką neleidžiama įkelti šio failo}one{Pagal administratoriaus politiką neleidžiama įkelti # failo}few{Pagal administratoriaus politiką neleidžiama įkelti # failų}many{Pagal administratoriaus politiką neleidžiama įkelti # failo}other{Pagal administratoriaus politiką neleidžiama įkelti # failų}}</translation>
 <translation id="7662298039739062396">Nustatymas valdomas pagal plėtinį</translation>
 <translation id="7663736086183791259">Sertifikatas <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3302,6 +3311,7 @@ Papildoma išsami informacija:
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7785790577395078482">šį planšetinį kompiuterį</translation>
 <translation id="7786368602962652765">Būtinas laukas tuščias. Užpildykite jį prieš išsaugodami.</translation>
+<translation id="7786432318297177736">Šie paieškos varikliai rodomi atsitiktine tvarka. Numatytąjį nustatymą galite bet kada pakeisti nustatymuose.</translation>
 <translation id="7786912885126430740">Sparčiau atsiskaitykite naudodami išsaugotus kortelės saugos kodus (CVC)</translation>
 <translation id="7790488044432570133">Svetainės, kuriose lankotės, gali prašyti „Chrome“ pateikti informacijos, padedančios įvertinti skelbimų našumą. „Chrome“ leidžia svetainėms rinkti tam tikrų tipų duomenis, pvz., dienos laiką, kada skelbimas buvo jums rodomas.</translation>
 <translation id="7791011319128895129">Neišleista</translation>

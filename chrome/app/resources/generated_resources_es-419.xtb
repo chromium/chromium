@@ -2122,7 +2122,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2658941648214598230">¿Deseas mostrar el contenido original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Las funciones varían según el dispositivo</translation>
 <translation id="2659971421398561408">Cambiar el tamaño de la partición del disco para Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> ahora puede usar tu nombre de usuario y contraseña cuando usa el Administrador de contraseñas de Google para acceder a <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">No se puede establecer conexión con la impresora. Comprueba que esté encendida y conectada a la Chromebook mediante Wi-Fi o USB.</translation>
 <translation id="2661315027005813059">Página en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2246,7 +2245,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2743387203779672305">Copiar al portapapeles</translation>
 <translation id="274362947316498129">Una app intenta acceder al dispositivo <ph name="DEVICE_NAME" />. Para permitir el acceso, desactiva el interruptor de privacidad del dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="2745080116229976798">Subordinación certificada de Microsoft</translation>
-<translation id="2749026027885331579">Los miembros de tu familia ahora pueden usar tu nombre de usuario y contraseña cuando usan el Administrador de contraseñas de Google para acceder a <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Iniciar sesión en <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Controlar la gramática con la ortografía</translation>
@@ -3311,7 +3309,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3637203148990213388">Cuentas adicionales</translation>
 <translation id="3639220004740062347">Salir del modo de lectura</translation>
 <translation id="3640214691812501263">¿Quieres agregar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
-<translation id="3640347231390550691">Protege tus contraseñas contra la suplantación de identidad (phishing).</translation>
+<translation id="3640347231390550691">Protege tus contraseñas contra la práctica de phishing.</translation>
 <translation id="3640613767643722554">Enséñale al Asistente a reconocer tu voz</translation>
 <translation id="3641456520301071208">Los sitios pueden solicitar tu ubicación.</translation>
 <translation id="3642070413432681490">Marcar con un círculo el cursor</translation>
@@ -4309,7 +4307,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4426490308207168518">Comparte comentarios o informa un problema</translation>
 <translation id="4426508677408162512">Todos los favoritos</translation>
 <translation id="4426513927906544654">Obtener recomendaciones de contenido</translation>
-<translation id="4427306783828095590">La protección mejorada permite bloquear mejor la suplantación de identidad (phishing) y el software malicioso.</translation>
+<translation id="4427306783828095590">La protección mejorada permite bloquear mejor la práctica de phishing y el software malicioso.</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación…</translation>
 <translation id="4429163740524851942">Diseño del teclado físico</translation>
 <translation id="4430019312045809116">Volumen</translation>
@@ -5551,7 +5549,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5481273127572794904">No puede descargar múltiples archivos de forma automática</translation>
 <translation id="5481941284378890518">Agregar impresoras cercanas</translation>
 <translation id="5484181871714116891">Si activas esta opción, las llaves de acceso se crean en el llavero de iCloud y están disponibles en todos tus dispositivos Apple. Si la desactivas, se crean las llaves de acceso en tu perfil de Chrome en este dispositivo.</translation>
-<translation id="5484462543003267273">Administrar familia</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> hoy mismo. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Agregar app</translation>
 <translation id="5485435764083510385">Idioma preferido de subtítulos</translation>
@@ -6320,6 +6317,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6104796831253957966">La cola de la impresora está completa</translation>
 <translation id="6104929924898022309">Usar la tecla de búsqueda para cambiar el comportamiento de las teclas de función</translation>
 <translation id="6106167152849320869">Si además elegiste enviar datos de uso y diagnóstico en el paso anterior, se recopilarán estos datos para las apps instaladas.</translation>
+<translation id="6111718295497931251">Quitar el acceso a Google Drive</translation>
 <translation id="6111972606040028426">Habilitar el Asistente de Google</translation>
 <translation id="6112294629795967147">Tocar para cambiar el tamaño</translation>
 <translation id="6112727384379533756">Agregar un ticket</translation>

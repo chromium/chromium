@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
 <translation id="3478750326643748149">Ocultar "Aproveite o Chromium ao máximo"</translation>
+<translation id="3554027294407525061">Limpar dados de navegação no Chromium.</translation>
 <translation id="3567399274263440288">Para aproveitar o Chromium ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava usando o Chromium e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
@@ -98,6 +99,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 <translation id="5042011327527167688">Toque em "Abrir com o Google Maps no Chromium".</translation>
 <translation id="5044871537677053278">O Chromium detecta endereços e usa o Google Maps para mostrar rotas e informações locais.</translation>
 <translation id="5048795749726991615">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chromium</translation>
+<translation id="5076601183701536878">Limpar dados de navegação no Chromium</translation>
 <translation id="5131565040785979529">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e como o Chromium é usado.</translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
 <translation id="5213683223491576284">Abre o Gerenciador de senhas no Chromium.</translation>

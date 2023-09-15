@@ -1995,6 +1995,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Нешто тргна наопаку и <ph name="DEVICE_OS" /> не можеше да се инсталира.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако ви треба уште помош, одете на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Го продолжува траењето на батеријата така што ја одржува батеријата на околу 80 %. Обично батеријата е целосно полна пред да ја исклучите од полначот.</translation>
+<translation id="2532146950330687938">Уредот се подготвува…</translation>
 <translation id="2532198298278778531">Управувајте со „Безбеден DNS“ во поставките за ChromeOS Flex</translation>
 <translation id="2532589005999780174">Режим на висок контраст</translation>
 <translation id="2533649878691950253">Сајтов е блокиран за да не ја знае вашата прецизна локација бидејќи обично не го дозволувате ова</translation>
@@ -2141,7 +2142,6 @@
 <translation id="2658941648214598230">Да се прикажуваат оригинални содржини?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Функциите се разликуваат во зависност од уредот</translation>
 <translation id="2659971421398561408">Промена на големината на дискот за Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> може да ги користи вашите корисничко име и лозинка при користење Google Password Manager за да се најави на <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Настан</translation>
 <translation id="266079277508604648">Не може да се поврзе печатач. Проверете дали печатачот е вклучен и дали е поврзан со вашиот Chromebook преку Wi-Fi или USB.</translation>
 <translation id="2661315027005813059">Страница за кеш за движење наназад/нанапред: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2265,7 +2265,6 @@
 <translation id="2743387203779672305">Копирај на клип-табла</translation>
 <translation id="274362947316498129">Апликација се обидува да пристапи до <ph name="DEVICE_NAME" />. Исклучете го прекинувачот за приватност на <ph name="DEVICE_NAME" /> за да дозволите пристап.</translation>
 <translation id="2745080116229976798">Квалификувана подреденост на Microsoft</translation>
-<translation id="2749026027885331579">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за да се најават на <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Најави се на <ph name="PRODUCT_NAME" />…</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Провери граматика со правопис</translation>
@@ -5571,7 +5570,6 @@
 <translation id="5481273127572794904">Не им е дозволено автоматски да преземаат повеќе датотеки</translation>
 <translation id="5481941284378890518">Додај печатачи во близина</translation>
 <translation id="5484181871714116891">Кога е вклучено, криптографските клучеви се создаваат во iCloud Keychain и се достапни на вашите уреди од Apple. Кога е исклучено, криптографските клучеви се создаваат во вашиот профил на Chrome на овој уред.</translation>
-<translation id="5484462543003267273">Управувајте со семејната група</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> денес. <ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}one{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} ден.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}other{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} дена.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Додај апликација</translation>
 <translation id="5485435764083510385">Претпочитан јазик на титловите</translation>
@@ -5759,6 +5757,7 @@
 <translation id="5627086634964711283">Контролира и која страница се прикажува кога ќе кликнете на копчето Почеток.</translation>
 <translation id="5627676517703583263">Прелистувајте паметно со Chrome</translation>
 <translation id="5627832140542566187">Ориентација на екранот</translation>
+<translation id="5628434207686266338">Поставете лозинка за уредот</translation>
 <translation id="562935524653278697">Администраторот ја оневозможил синхронизацијата на обележувачите, историјата, лозинките и другите поставки.</translation>
 <translation id="5631017369956619646">Употреба на ЦПУ</translation>
 <translation id="5631272057151918206">Со ова ќе се отстрани простор до <ph name="OFFLINE_STORAGE_SIZE" /> што го користат офлајн датотеките. Некои датотеки и понатаму ќе бидат достапни офлајн. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -6340,6 +6339,7 @@
 <translation id="6104796831253957966">Редицата на печатачот е полна</translation>
 <translation id="6104929924898022309">Користете го копчето за пребарување за променување на однесувањето на функциските копчиња</translation>
 <translation id="6106167152849320869">Ако избравте и да испраќате дијагностички и податоци за користењето во претходниот чекор, податоциве ќе се прибираат за инсталирани апликации.</translation>
+<translation id="6111718295497931251">Отстранете го пристапот до Google Drive</translation>
 <translation id="6111972606040028426">Овозможете го „Помошникот на Google“</translation>
 <translation id="6112294629795967147">Допрете за да ја промените големината</translation>
 <translation id="6112727384379533756">Додајте билет</translation>

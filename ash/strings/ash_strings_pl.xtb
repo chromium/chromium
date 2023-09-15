@@ -740,6 +740,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4028481283645788203">Dla większego bezpieczeństwa musisz podać hasło</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + strzałka w lewo</translation>
+<translation id="4039699481424758547">Aby zrobić zrzut ekranu okna: <ph name="WINDOW_TITLE" />, naciśnij Enter</translation>
 <translation id="4042660782729322247">Udostępniasz ekran</translation>
 <translation id="404437169852192935">Zakończono aktualizacje</translation>
 <translation id="4049230407053723315">Szybkie ustawienia</translation>
@@ -1964,6 +1965,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9211490828691860325">Wszystkie biurka</translation>
 <translation id="9211681782751733685">Czas pozostały do pełnego naładowania baterii: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Ustaw tapetę</translation>
+<translation id="9216699844945104164">Aby nagrać okno: <ph name="WINDOW_TITLE" />, naciśnij Enter</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="921989828232331238">Twój rodzic zablokował urządzenie na cały dzień</translation>
 <translation id="9220525904950070496">Usuń konto</translation>

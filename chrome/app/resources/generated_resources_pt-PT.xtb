@@ -2126,7 +2126,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2658941648214598230">Quer mostrar o conteúdo original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> As funcionalidades variam consoante o dispositivo.</translation>
 <translation id="2659971421398561408">Redimensionamento de disco do Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> já pode usar o seu nome de utilizador e palavra-passe quando usar o Gestor de Palavras-passe da Google para iniciar sessão em <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">Não é possível ligar à impressora. Verifique se a impressora está ligada e associada ao Chromebook por Wi-Fi ou USB.</translation>
 <translation id="2661315027005813059">Página na cache para a frente/para trás: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2250,7 +2249,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2743387203779672305">Copiar para a área de transferência</translation>
 <translation id="274362947316498129">Uma app está a tentar aceder à <ph name="DEVICE_NAME" />. Desative o interruptor de privacidade da <ph name="DEVICE_NAME" /> para permitir o acesso.</translation>
 <translation id="2745080116229976798">Subordinação qualificada Microsoft</translation>
-<translation id="2749026027885331579">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usarem o Gestor de Palavras-passe da Google para iniciarem sessão em <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Iniciar sessão no <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Rever gramática com a ortografia</translation>
@@ -5556,7 +5554,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5481273127572794904">Sem autorização para transferir vários ficheiros automaticamente</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5484181871714116891">Quando a opção está ativada, as chaves de acesso são criadas no Porta-chaves iCloud e estão disponíveis nos seus dispositivos Apple. Quando a opção está desativada, as chaves de acesso são criadas no seu perfil do Chrome neste dispositivo.</translation>
-<translation id="5484462543003267273">Faça a gestão da família</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}other{<ph name="MANAGER" /> requer que faça uma cópia de segurança dos seus dados e devolva este <ph name="DEVICE_TYPE" /> dentro de {NUM_DAYS} dias. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Adicionar app</translation>
 <translation id="5485435764083510385">Idioma das legendas preferido</translation>

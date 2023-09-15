@@ -60,7 +60,7 @@
 <translation id="3344973607274501920">Chromium nije mogao provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="3472200483164753384">Nije podržano na Chromium Canaryju</translation>
 <translation id="3478750326643748149">Sakrijte "Iskoristite sve prednosti Chromiuma"</translation>
-<translation id="3554027294407525061">Brisanje podataka o pregledavanju u Chromiumu.</translation>
+<translation id="3554027294407525061">Brisanje podataka o pregledanju u Chromiumu.</translation>
 <translation id="3567399274263440288">Da iskoristite sve prednosti Chromiuma, prijavite se na Chromium pomoću Google računa.</translation>
 <translation id="3639997914391704523">Chromium može provjeravati vaše lozinke kada se prijavljujete pomoću Google računa.</translation>
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> je koristio Chromium i ostavio je oznake, lozinke i ostale postavke na ovom uređaju.</translation>
@@ -93,13 +93,14 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma
 <translation id="4736424910885271643">Računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromiuma obrisati s ovog uređaja</translation>
 <translation id="4790638144988730920">Nastavite koristiti podatke Chromiuma na Google računu.</translation>
 <translation id="4828317641996116749">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
+<translation id="4935539884203837577">Chromium može otkriti evidencijske brojeve koje unesete i pratiti vaše pakete na stranici Nova kartica te istodobno pomoći drugim doživljajima kupnje na Chromiumu.</translation>
 <translation id="4985291216379576555">Van mreže, Chromium ne može provjeravati ima li ažuriranja</translation>
 <translation id="4996471330284142407">Obavite više s jednostavnim i sigurnim Chromiumom koji je brži nego ikad.</translation>
 <translation id="4999538639245140991">Pošto se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromiuma će se izbrisati s ovog uređaja. Vaši podaci će ostati na vašem Google računu.</translation>
 <translation id="5042011327527167688">Dodirnite "Pregledajte putem Google Mapa u Chromiumu".</translation>
-<translation id="5044871537677053278">Chromium otkriva adrese i upotrebljava Google karte kako bi vam pružio upute i lokalne informacije.</translation>
+<translation id="5044871537677053278">Chromium otkriva adrese i koristi Google Mape da vam daje smjernice i lokalne informacije.</translation>
 <translation id="5048795749726991615">Da lako dobijete sačuvane lozinke u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
-<translation id="5076601183701536878">Brisanje podataka o pregledavanju u Chromiumu</translation>
+<translation id="5076601183701536878">Obriši podatke o pregledanju u Chromiumu</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na kojem ste prijavljeni i načinom na koji koristite Chromium.</translation>
 <translation id="5171868502429358653">Prijavite se u Chromium</translation>
 <translation id="5213683223491576284">Otvara Upravitelj lozinki u Chromiumu.</translation>
@@ -116,6 +117,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromiuma
 <translation id="5688047395118852662">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše lozinke</translation>
 <translation id="5777187867430702742">Stranica Chromiuma</translation>
+<translation id="584303319228224680">Automatsko praćenje paketa na Chromiumu</translation>
 <translation id="5889847953983052353">Kada je uključeno:
 <ph name="BEGIN_INDENT" />  • Pomažete da Chromium postane bolji za osobe koje ga koriste na isti način kao vi.<ph name="END_INDENT" />
 

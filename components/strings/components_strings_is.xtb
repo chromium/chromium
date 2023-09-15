@@ -540,6 +540,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2071692954027939183">Lokað var sjálfkrafa á tilkynningar því þú leyfir þær yfirleitt ekki</translation>
 <translation id="2071852865256799872">Vafranum þínum er stjórnað af fyrirtækinu þínu og prófílnum þínum er stjórnað af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Tíska og stíll</translation>
+<translation id="2075497153347571252">Stjórnandinn lokaði á <ph name="PERMISSION" /> á <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="20817612488360358">Valið er að nota proxy-stillingar kerfis en skýr proxy-stilling er einnig tilgreind.</translation>
 <translation id="2082238445998314030">Niðurstaða <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1881,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4885256590493466218">Greiddu með <ph name="CARD_DETAIL" /> þegar þú gengur frá kaupunum</translation>
 <translation id="4887406273302438710">Verndaðu aðgangsorð með Windows Hello</translation>
 <translation id="4888600795924685526">Tungumálanám</translation>
+<translation id="4890070067176768718">Stjórnandinn leyfði <ph name="PERMISSION" /> á <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Aftari</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Ólympíuleikar</translation>
@@ -2326,6 +2328,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5830698870816298009">notkun og hreyfing myndavélar</translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5838278095973806738">Þú ættir ekki að færa inn neinar viðkvæmar upplýsingar á þessu vefsvæði (t.d. aðgangsorð eða kreditkortanúmer) því að tölvuþrjótar gætu stolið þeim.</translation>
+<translation id="5838732667866024867">Þú getur notað ör til hægri/vinstri til að yfirfara verðbreytingar á myndritinu</translation>
 <translation id="5840318881868981258">Á Google-reikningnum þínum, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vista á reikningi?</translation>
 <translation id="5847181246682413476">Aflgjafar</translation>

@@ -540,6 +540,7 @@
 <translation id="2071692954027939183">सूचना आपोआप ब्लॉक केल्या होत्या कारण तुम्ही सहसा त्यांना अनुमती देत नाही</translation>
 <translation id="2071852865256799872">तुमची संस्था तुमचा ब्राउझर व्यवस्थापित करते आणि <ph name="PROFILE_DOMAIN" />तुमची प्रोफाइल व्यवस्थापित करते</translation>
 <translation id="2072275792380684364">फॅशन आणि स्टाइल</translation>
+<translation id="2075497153347571252">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="ORIGIN" /> वर <ph name="PERMISSION" /> ब्लॉक केला आहे</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="20817612488360358">सिस्टम प्रॉक्सी सेटिंग्ज वापरण्‍यास सेट करण्‍यात आल्या परंतु एक सुस्पष्‍ट प्रॉक्सी कॉंफिगरेशन देखील निर्दिष्‍ट करण्‍यात आले.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
@@ -1879,6 +1880,7 @@
 <translation id="4885256590493466218">चेकआउट करताना <ph name="CARD_DETAIL" /> वापरून पेमेंट करा</translation>
 <translation id="4887406273302438710">Windows Hello सह पासवर्ड संरक्षित करा</translation>
 <translation id="4888600795924685526">विदेशी भाषा शिकणे</translation>
+<translation id="4890070067176768718">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="ORIGIN" /> वर <ph name="PERMISSION" /> ला अनुमती दिली आहे</translation>
 <translation id="4892518386797173871">मागील</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ऑलिंपिक</translation>
@@ -2325,6 +2327,7 @@
 <translation id="5830698870816298009">कॅमेराचा वापर आणि त्याची हालचाल</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5838278095973806738">या साइटवर कोणतीही संवेदनशील माहिती (उदाहरणार्थ, पासवर्ड किंवा क्रेडिट कार्ड) एंटर करू नका, कारण आक्रमणकर्ते ती चोरू शकतात.</translation>
+<translation id="5838732667866024867">किमतीमधील बदल आलेखावर पाहण्यासाठी तुम्ही लेफ्ट/राइट अ‍ॅरो वापरू शकता</translation>
 <translation id="5840318881868981258">तुमच्या Google खाते मध्ये, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">खात्यामध्ये सेव्ह करायचा आहे काt?</translation>
 <translation id="5847181246682413476">वीज पुरवठ्याच्या वस्तू</translation>

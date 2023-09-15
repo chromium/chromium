@@ -2140,7 +2140,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2658941648214598230">Түпнуска мазмун көрсөтүлсүнбү?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Функциялар түзмөккө жараша ар кандай болушу мүмкүн</translation>
 <translation id="2659971421398561408">Crostini дискинин өлчөмүн өзгөртүү</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> эми <ph name="WEBSITE" /> вебсайтына Сырсөздөрдү башкаргычтын жардамы менен кирүүдө колдонуучу атыңызды жана сырсөзүңүздү колдоно алат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Иш-чара</translation>
 <translation id="266079277508604648">Принтерге туташпай жатат. Принтер күйгүзүлүп, Chromebook'уңузга Wi-Fi же USB кабель аркылуу туташканын текшериңиз.</translation>
 <translation id="2661315027005813059">Кештелген барак: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2264,7 +2263,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2743387203779672305">Алмашуу буферине көчүрүү</translation>
 <translation id="274362947316498129">Колдонмо <ph name="DEVICE_NAME" /> камерасын пайдаланууга аракет кылып жатат. Уруксат берүү үчүн <ph name="DEVICE_NAME" /> камерасынын купуялык которгучун өчүрүңүз.</translation>
 <translation id="2745080116229976798">Microsoft Квалификациялык көз карандылык</translation>
-<translation id="2749026027885331579">Үй-бүлөлүк тобуңуздун мүчөлөрү эми <ph name="WEBSITE" /> вебсайтына Сырсөздөрдү башкаргычтын жардамы менен кирүүдө колдонуучу атыңызды жана сырсөзүңүздү колдоно алат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> кириңиз</translation>
 <translation id="2749836841884031656">SIM-карта</translation>
 <translation id="2749881179542288782">Орфография менен грамматиканы айкалыштырып текшерүү</translation>
@@ -5570,7 +5568,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5481273127572794904">Бир нече файлды автоматтык түрдө жүктөп ала албайт</translation>
 <translation id="5481941284378890518">Жакын жердеги принтерлерди кошуу</translation>
 <translation id="5484181871714116891">Бул параметр күйүп турганда, киргизүүчү ачкычтар iCloud Keychain'де түзүлүп, Apple түзмөктөрүңүздө жеткиликтүү болот. Ал эми өчүп турганда, киргизүүчү ачкычтар бул түзмөктөгү Chrome профилиңизде түзүлөт.</translation>
-<translation id="5484462543003267273">Үй-бүлөнү тескөө</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> дайын-даректериңиздин камдык көчүрмөсүн сактап, бул <ph name="DEVICE_TYPE" /> түзмөгүн бүгүн кайтарууну талап кылууда. <ph name="LINK_BEGIN" />Чоо-жайын көрүү<ph name="LINK_END" />}other{<ph name="MANAGER" /> маалыматтын камдык көчүрмөсүн сактап, бул <ph name="DEVICE_TYPE" /> түзмөгүн {NUM_DAYS} күндүн ичинде кайтарууну талап кылууда.<ph name="LINK_BEGIN" />Чоо-жайын көрүү<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Колдонмо кошуу</translation>
 <translation id="5485435764083510385">Коштомо жазуулар үчүн тандалган тил</translation>
@@ -6339,6 +6336,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6104796831253957966">Принтерге кезек толуп калды</translation>
 <translation id="6104929924898022309">Функция баскычтарынын аракетин өзгөртүү үчүн издөө баскычын колдонуңуз</translation>
 <translation id="6106167152849320869">Мурунку кадамда мүчүлүштүктөрдү аныктоо маалыматын жана колдонуу статистикасын жөнөтүүнү тандасаңыз, бул дайын-даректер орнотулган колдонмолор үчүн чогултулат.</translation>
+<translation id="6111718295497931251">Google Drive'ды колдонуу мүмкүнчүлүгүн өчүрүү</translation>
 <translation id="6111972606040028426">Google Жардамчыны иштетүү</translation>
 <translation id="6112294629795967147">Өлчөмүн өзгөртүү үчүн басуу</translation>
 <translation id="6112727384379533756">Билет кошуу</translation>

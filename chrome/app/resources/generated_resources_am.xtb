@@ -1988,6 +1988,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />የሆነ ችግር ተፈጥሯል እና <ph name="DEVICE_OS" /> ሊጫን አልቻለም።<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ተጨማሪ እገዛ ለማግኘት የሚከተለውን ይጎብኙ፦ g.co/flex/InstallErrors።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">ባትሪዎን 80% ገደማ ላይ በማቆየት የባትሪ ዕድሜን ያራዝመዋል። በተለምዶ ከኃይል ከማለያየትዎ በፊት ባትሪው ሙሉ በሙሉ ይሞላል።</translation>
+<translation id="2532146950330687938">መሣሪያውን በማዘጋጀት ላይ...</translation>
 <translation id="2532198298278778531">በChromeOS Flex ቅንብሮች ውስጥ ደህንነቱ የተጠበቀ ዲኤንኤስን ያቀናብሩ</translation>
 <translation id="2532589005999780174">ባለከፍተኛ ንፅፅር ሁነታ</translation>
 <translation id="2533649878691950253">እርስዎ ይህን አብዛኛው ጊዜ ስለማይፈቅዱ ይህ ጣቢያ ትክክለኛ አካባቢዎን እንዳያውቅ ታግዷል</translation>
@@ -2134,7 +2135,6 @@
 <translation id="2658941648214598230">የመጀመሪያው ይዘት ይታይ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ባህሪዎች እንደየመሣሪያው ይለያያሉ</translation>
 <translation id="2659971421398561408">የCrostini ዲስክ መጠን መቀየር</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> ወደ <ph name="WEBSITE" /> በመለያ ለመግባት Google የይለፍ ቃል አስተዳዳሪን ሲጠቀሙ አሁን የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል መጠቀም ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ክስተት</translation>
 <translation id="266079277508604648">ከአታሚ ጋር መገናኘት አልተቻለም። አታሚው መብራቱንና በWi-Fi ወይም በዩኤስቢ ከእርስዎ Chromebook ጋር መገናኘቱን ያረጋግጡ።</translation>
 <translation id="2661315027005813059">የጀርባ/ፊት መሸጎጫ ገፅ፦<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2258,7 +2258,6 @@
 <translation id="2743387203779672305">ወደ ቅንጥብ ሰሌዳ ገልብጥ</translation>
 <translation id="274362947316498129">አንድ መተግበሪያ <ph name="DEVICE_NAME" />ን ለመድረስ እየሞከረ ነው። መዳረሻን ለመፍቀድ የ<ph name="DEVICE_NAME" /> የግላዊነት መቀያየሪያን ያጥፉ።</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">የእርስዎ የቤተሰብ አባላት አሁን ወደ <ph name="WEBSITE" /> በመለያ ለመግባት Google የይለፍ ቃል አስተዳዳሪን ሲጠቀሙ አሁን የእርስዎን የተጠቃሚ ስም እና የይለፍ ቃል መጠቀም ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> ውስጥ ይግቡ</translation>
 <translation id="2749836841884031656">ሲም</translation>
 <translation id="2749881179542288782">ሰዋሰው እና ሆሄ አርም</translation>
@@ -5561,7 +5560,6 @@
 <translation id="5481273127572794904">ብዙ ፋይሎችን በራስ-ሰር ለማውረድ አልተፈቀደም</translation>
 <translation id="5481941284378890518">አቅራቢያ ያሉ አታሚዎችን አክል</translation>
 <translation id="5484181871714116891">በሚበራበት ጊዜ የይለፍ ቁልፎች በiCloud Keychain ውስጥ ይፈጠራሉ እና በመላው የApple መሣሪያዎችዎ ላይ ይገኛሉ። በሚጠፋበት ጊዜ የይለፍ ቁልፎች በዚህ መሣሪያ ላይ ባለው የChrome መገለጫዎ ውስጥ ይፈጠራሉ።</translation>
-<translation id="5484462543003267273">ቤተሰብን ያስተዳድሩ</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> የውሂብዎን ምትኬ እንዲያስቀምጡና እና ይህን <ph name="DEVICE_TYPE" /> ዛሬ እንዲመልሱት ይፈልግብዎታል። <ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}one{<ph name="MANAGER" /> በ{NUM_DAYS} ቀኖች ውስጥ የውሂብዎን ምትኬ እንዲያስቀምጡ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱት ይፈልግብዎታል። <ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}other{<ph name="MANAGER" /> በ{NUM_DAYS} ቀኖች ውስጥ የውሂብዎን ምትኬ እንዲያስቀምጡ እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱት ይፈልግብዎታል። <ph name="LINK_BEGIN" />ዝርዝሮችን ይመልከቱ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">መተግበሪያ አክል</translation>
 <translation id="5485435764083510385">የተመረጠ የመግለጫ ጽሁፍ ቋንቋ</translation>
@@ -5749,6 +5747,7 @@
 <translation id="5627086634964711283">እንዲሁም የመነሻ አዝራሩን ጠቅ ሲያደርጉት ምን ገፅ እንደሚታይ ይቆጣጠራል።</translation>
 <translation id="5627676517703583263">ከChrome ጋር በዘመናዊ መንገድ ያስሱ</translation>
 <translation id="5627832140542566187">የማሳያ አቀማመጥ</translation>
+<translation id="5628434207686266338">የመሣሪያ የይለፍ ቃልን ያቀናብሩ</translation>
 <translation id="562935524653278697">የእርስዎ አስተዳዳሪ የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ስምረትን አሰናክለዋል።</translation>
 <translation id="5631017369956619646">የሲፒዩ አጠቃቀም</translation>
 <translation id="5631272057151918206">ይህ በእርስዎ ከመስመር ውጭ በሆኑ ፋይሎችዎ ጥቅም ላይ የዋለውን እስከ <ph name="OFFLINE_STORAGE_SIZE" /> የሚደርሰውን ቦታ ያስወግዳል። አንዳንድ ፋይሎች አሁንም ከመስመር ውጭ ይገኛሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>

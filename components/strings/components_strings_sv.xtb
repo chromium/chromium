@@ -540,6 +540,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2071692954027939183">Aviseringar blockerades automatiskt eftersom du vanligtvis inte tillåter dem</translation>
 <translation id="2071852865256799872">Din webbläsare hanteras av din organisation och din profil hanteras av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Mode och styling</translation>
+<translation id="2075497153347571252">Administratören har blockerat <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="20817612488360358">Datorns proxyinställningar är inställda på att användas, men det finns också en explicit proxykonfiguration.</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1881,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4885256590493466218">Betala med <ph name="CARD_DETAIL" /> i kassan</translation>
 <translation id="4887406273302438710">Skydda lösenord med Windows Hello</translation>
 <translation id="4888600795924685526">Språkstudier</translation>
+<translation id="4890070067176768718">Administratören har tillåtit <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Bakre</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympiska spelen</translation>
@@ -2326,6 +2328,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5830698870816298009">använda och röra kameran</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5838278095973806738">Du bör inte ange några känsliga uppgifter på den här webbplatsen (till exempel lösenord eller kreditkortsuppgifter) eftersom hackare kan stjäla dem.</translation>
+<translation id="5838732667866024867">Du kan se prisändringarna i diagrammet med hjälp av vänster-/högerpil</translation>
 <translation id="5840318881868981258">I Google-kontot <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vill du spara i kontot?</translation>
 <translation id="5847181246682413476">Kraftförsörjning</translation>

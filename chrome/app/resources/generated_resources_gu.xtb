@@ -2123,7 +2123,6 @@
 <translation id="2658941648214598230">ઑરિજિનલ કન્ટેન્ટ બતાવીએ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ઉપકરણ અનુસાર સુવિધાઓ બદલાય છે</translation>
 <translation id="2659971421398561408">Crostini ડિસ્કનું કદ બદલો</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> જ્યારે <ph name="WEBSITE" />માં સાઇન ઇન કરવા માટે Google Password Managerનો ઉપયોગ કરે છે ત્યારે તેઓ હવે તમારા વપરાશકર્તાનું નામ અને પાસવર્ડનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ઇવેન્ટ</translation>
 <translation id="266079277508604648">પ્રિન્ટર સાથે કનેક્ટ કરી શકાતું નથી. તપાસો કે પ્રિન્ટર ચાલુ કરેલ છે અને વાઇ-ફાઇ અથવા USB દ્વારા તમારી Chromebook સાથે કનેક્ટ કરેલ છે.</translation>
 <translation id="2661315027005813059">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલું પેજ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2247,7 +2246,6 @@
 <translation id="2743387203779672305">ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="274362947316498129">કોઈ ઍપ <ph name="DEVICE_NAME" /> ઍક્સેસ કરવાનો પ્રયાસ કરી રહી છે. ઍક્સેસની મંજૂરી આપવા માટે, <ph name="DEVICE_NAME" />ની પ્રાઇવસીનું સ્વિચ બંધ કરો.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">કુટુંબના સભ્યો જ્યારે <ph name="WEBSITE" />માં સાઇન ઇન કરવા માટે Google Password Managerનો ઉપયોગ કરે છે ત્યારે તેઓ હવે તમારા વપરાશકર્તાનામ અને પાસવર્ડનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> પર સાઇન ઇન કરો</translation>
 <translation id="2749836841884031656">સિમ</translation>
 <translation id="2749881179542288782">જોડણી સાથે વ્યાકરણ તપાસો</translation>
@@ -5552,7 +5550,6 @@
 <translation id="5481273127572794904">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી નથી</translation>
 <translation id="5481941284378890518">નજીકના પ્રિન્ટર્સ ઉમેરો</translation>
 <translation id="5484181871714116891">જ્યારે ચાલુ હોય, ત્યારે પાસકી iCloud કીચેનમાં બનાવવામાં આવે છે અને તમારા તમામ Apple ડિવાઇસ પર ઉપલબ્ધ છે. જ્યારે બંધ હોય, ત્યારે આ ડિવાઇસ પર તમારી Chrome પ્રોફાઇલમાં પાસકી બનાવવામાં આવે છે.</translation>
-<translation id="5484462543003267273">કુટુંબ મેનેજ કરો</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે આજે તમારા ડેટાનું બૅકઅપ લો અને આ <ph name="DEVICE_TYPE" /> પરત કરો. <ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}one{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લો અને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસમાં પરત કરો. <ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}other{<ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લો અને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસમાં પરત કરો. <ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ઍપ્લિકેશન ઉમેરો</translation>
 <translation id="5485435764083510385">કૅપ્શનની પસંદગીની ભાષા</translation>
@@ -6323,6 +6320,7 @@ USB ડિવાઇસ</translation>
 <translation id="6104796831253957966">પ્રિન્ટરની કતારમાં ઘણી બધી ફાઇલો છે</translation>
 <translation id="6104929924898022309">ફંક્શન કીની વર્તણૂંક બદલવા માટે શોધ કીનો ઉપયોગ કરો</translation>
 <translation id="6106167152849320869">જો તમે પાછળના પગલાંમાં ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા મોકલવાનું પણ પસંદ કર્યું હોય, તો આ ડેટા ઇન્સ્ટૉલ કરેલી ઍપ માટે એકત્રિત કરવામાં આવશે.</translation>
+<translation id="6111718295497931251">Google Driveનો ઍક્સેસ કાઢી નાખો</translation>
 <translation id="6111972606040028426">Google Assistant ચાલુ કરો</translation>
 <translation id="6112294629795967147">કદ બદલવા માટે સ્પર્શ કરો</translation>
 <translation id="6112727384379533756">ટિકિટ ઉમેરો</translation>

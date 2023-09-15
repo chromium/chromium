@@ -2126,7 +2126,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2658941648214598230">Mostrare il contenuto originale?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Le funzionalità variano in base al dispositivo</translation>
 <translation id="2659971421398561408">Ridimensionamento del disco Crostini</translation>
-<translation id="2660309468936690885">Ora <ph name="RECIPIENT_NAME" /> può usare il tuo nome utente e la tua password quando usa Gestore delle password di Google per accedere a <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">Impossibile connettere la stampante. Verifica che sia accesa e collegata al Chromebook tramite Wi-Fi o USB.</translation>
 <translation id="2661315027005813059">Pagina memorizzata nella cache back-forward: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2250,7 +2249,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2743387203779672305">Copia negli appunti</translation>
 <translation id="274362947316498129">Un'app sta tentando di accedere alla <ph name="DEVICE_NAME" />. Disattiva l'opzione relativa alla privacy della <ph name="DEVICE_NAME" /> per consentire l'accesso.</translation>
 <translation id="2745080116229976798">Subordinazione qualificata Microsoft</translation>
-<translation id="2749026027885331579">I membri del tuo gruppo Famiglia ora possono utilizzare il tuo nome utente e la tua password quando utilizzano Gestore delle password di Google per accedere a <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Accedi a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Controllo ortografia e grammatica</translation>
@@ -5555,7 +5553,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
 <translation id="5484181871714116891">Se attivate, le passkey vengono create nel portachiavi iCloud e sono disponibili su tutti i tuoi dispositivi Apple. Se l'opzione è disattivata, le passkey vengono create nel tuo profilo Chrome su questo dispositivo.</translation>
-<translation id="5484462543003267273">Gestisci gruppo Famiglia</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> oggi stesso. <ph name="LINK_BEGIN" />Visualizza dettagli<ph name="LINK_END" />}other{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> entro {NUM_DAYS} giorni. <ph name="LINK_BEGIN" />Visualizza dettagli<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Aggiungi app</translation>
 <translation id="5485435764083510385">Lingua preferita per i sottotitoli codificati</translation>

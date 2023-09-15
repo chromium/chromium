@@ -1977,6 +1977,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />କିଛି ତ୍ରୁଟି ହୋଇଛି ଏବଂ <ph name="DEVICE_OS" />କୁ ଇନଷ୍ଟଲ କରାଯାଇପାରିଲା ନାହିଁ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ଅଧିକ ସାହାଯ୍ୟ ପାଇଁ, ଏଠାକୁ ଭିଜିଟ କରନ୍ତୁ: g.co/flex/InstallErrors।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">ଆପଣଙ୍କ ବ୍ୟାଟେରୀକୁ ପ୍ରାୟ 80%ରେ ରଖି ବ୍ୟାଟେରୀ ଲାଇଫକୁ ବଢ଼ାଏ। ଆପଣ ସାଧାରଣତଃ ପାୱାରରୁ ଡିସକନେକ୍ଟ କରିବା ପୂର୍ବରୁ ବ୍ୟାଟେରୀ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଚାର୍ଜ ହେବ।</translation>
+<translation id="2532146950330687938">ଡିଭାଇସକୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି...</translation>
 <translation id="2532198298278778531">ChromeOS Flex ସେଟିଂସରେ ସୁରକ୍ଷିତ DNSକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2532589005999780174">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍</translation>
 <translation id="2533649878691950253">ଆପଣ ସାଧାରଣତଃ ଏହି ସାଇଟକୁ ଅନୁମତି ଦେଉନଥିବା ଯୋଗୁଁ ଏହାକୁ ଆପଣଙ୍କ ସଠିକ୍ ଲୋକେସନ୍ ଜାଣିବାରୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
@@ -2123,7 +2124,6 @@
 <translation id="2658941648214598230">ମୂଳ ବିଷୟବସ୍ତୁ ଦେଖାନ୍ତୁ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> ଫିଚରଗୁଡ଼ିକ ଡିଭାଇସ୍ ଅନୁସାରେ ଭିନ୍ନ ହୋଇପାରେ</translation>
 <translation id="2659971421398561408">Crostini ଡିସ୍କ ରିସାଇଜ୍</translation>
-<translation id="2660309468936690885"><ph name="WEBSITE" />ରେ ସାଇନ ଇନ କରିବାକୁ <ph name="RECIPIENT_NAME" /> Google Password Manager ବ୍ୟବହାର କଲେ ସେ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିପାରିବେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ଇଭେଣ୍ଟ</translation>
 <translation id="266079277508604648">ପ୍ରିଣ୍ଟର୍‌ରେ ସଂଯୋଗ କରିପାରିବ ନାହିଁ। ଏହା ଯାଞ୍ଚ କରନ୍ତୁ ଯେ ପ୍ରିଣ୍ଟର୍‌ ଚାଲୁ ଅଛି ଏବଂ Wi-Fi କିମ୍ବା USB ଦ୍ୱାରା ଆପଣଙ୍କର Chromebookରେ ସଂଯୋଗ କରାଯାଇଛି।</translation>
 <translation id="2661315027005813059">ବ୍ୟାକ୍/ଫରୱାର୍ଡ୍ କ୍ୟାଶ୍ ପୃଷ୍ଠା: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2247,7 +2247,6 @@
 <translation id="2743387203779672305">କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରନ୍ତୁ</translation>
 <translation id="274362947316498129">ଏକ ଆପ <ph name="DEVICE_NAME" />କୁ ଆକ୍ସେସ କରିବା ପାଇଁ ଚେଷ୍ଟା କରୁଛି। ଆକ୍ସେସ କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ <ph name="DEVICE_NAME" /> ଗୋପନୀୟତା ସ୍ୱିଚକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579"><ph name="WEBSITE" />ରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣଙ୍କ ପରିବାରର ସଦସ୍ୟମାନେ Google Password Manager ବ୍ୟବହାର କଲେ ସେମାନେ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିପାରିବେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />ରେ ସାଇନ୍‍ ଇନ୍‍ କରନ୍ତୁ</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ବନାନ ସହିତ ବ୍ୟାକରଣର ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -5552,7 +5551,6 @@
 <translation id="5481273127572794904">ଏକାଧିକ ଫାଇଲକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଉନଲୋଡ୍ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5481941284378890518">ନିକଟସ୍ଥ ପ୍ରିଣ୍ଟର୍‌ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5484181871714116891">ଏହା ଚାଲୁ ଥିଲେ, iCloud କୀଚେନରେ ପାସଗୁଡ଼ିକୁ ତିଆରି କରାଯାଇଥାଏ ଏବଂ ସେଗୁଡ଼ିକ ଆପଣଙ୍କର ସମଗ୍ର Apple ଡିଭାଇସରେ ଉପଲବ୍ଧ ହୋଇଥାଏ। ଏହା ବନ୍ଦ ଥିଲେ, ଏହି ଡିଭାଇସରେ ଥିବା ଆପଣଙ୍କ Chrome ପ୍ରୋଫାଇଲରେ ପାସଗୁଡ଼ିକୁ ତିଆରି କରାଯାଇଥାଏ।</translation>
-<translation id="5484462543003267273">ପରିବାର ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{ଆପଣ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇ ଏହି <ph name="DEVICE_TYPE" />କୁ ଆଜି ଫେରସ୍ତ କରନ୍ତୁ ବୋଲି <ph name="MANAGER" /> ଆବଶ୍ୟକ କରେ। <ph name="LINK_BEGIN" />ବିବରଣୀ ଦେଖନ୍ତୁ<ph name="LINK_END" />}other{ଆପଣ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇ ଏହି <ph name="DEVICE_TYPE" />କୁ {NUM_DAYS} ଦିନ ଭିତରେ ଫେରସ୍ତ କରନ୍ତୁ ବୋଲି <ph name="MANAGER" /> ଆବଶ୍ୟକ କରେ। <ph name="LINK_BEGIN" />ବିବରଣୀ ଦେଖନ୍ତୁ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ଆପ୍‌ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5485435764083510385">ପସନ୍ଦର କେପସନ ଭାଷା</translation>
@@ -5738,6 +5736,7 @@
 <translation id="5627086634964711283">ଆପଣ ହୋମ୍ ବଟନ୍‍‍ରେ କ୍ଲିକ୍ କରିଲେ କେଉଁ ପୃଷ୍ଠାଟି ଦେଖାଯିବ, ଏହା ତାହା ମଧ୍ୟ ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="5627676517703583263">Chromeରେ ସ୍ମାର୍ଟ ପଦ୍ଧତିରେ ବ୍ରାଉଜ୍‍ କରନ୍ତୁ</translation>
 <translation id="5627832140542566187">ଡିସପ୍ଲେ ଓରିଏଣ୍ଟେସନ୍</translation>
+<translation id="5628434207686266338">ଡିଭାଇସ ପାସୱାର୍ଡ ସେଟ କରନ୍ତୁ</translation>
 <translation id="562935524653278697">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକ ଆପଣଙ୍କ ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସ୍‌ର ସିଙ୍କ୍‌ ଅକ୍ଷମ କରିଛନ୍ତି।</translation>
 <translation id="5631017369956619646">CPU ବ୍ୟବହାର</translation>
 <translation id="5631272057151918206">ଏହା ଆପଣଙ୍କ ଅଫଲାଇନ ଫାଇଲଗୁଡ଼ିକ ଦ୍ୱାରା ବ୍ୟବହୃତ <ph name="OFFLINE_STORAGE_SIZE" /> ପର୍ଯ୍ୟନ୍ତ ସ୍ପେସକୁ କାଢ଼ି ଦେବ। କିଛି ଫାଇଲ ଏବେ ବି ଅଫଲାଇନରେ ଉପଲବ୍ଧ ହେବ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>

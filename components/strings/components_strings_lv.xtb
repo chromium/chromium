@@ -540,6 +540,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2071692954027939183">Paziņojumi tika automātiski bloķēti, jo jūs tos parasti neatļaujat.</translation>
 <translation id="2071852865256799872">Pārlūku pārvalda jūsu organizācija, un jūsu profilu pārvalda <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Mode un stils</translation>
+<translation id="2075497153347571252">Jūsu administrators ir vietnē <ph name="ORIGIN" /> bloķējis atļauju “<ph name="PERMISSION" />”</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="20817612488360358">Ir iestatīta datora starpniekserveru iestatījumu lietošana, bet ir norādīta arī atklāta starpniekservera konfigurācija.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultāts no <ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1880,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4885256590493466218">Maksājiet ar karti <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Paroļu aizsardzība, izmantojot Windows Hello</translation>
 <translation id="4888600795924685526">Svešvalodu mācības</translation>
+<translation id="4890070067176768718">Jūsu administrators ir piešķīris vietnei <ph name="ORIGIN" /> atļauju “<ph name="PERMISSION" />”</translation>
 <translation id="4892518386797173871">Aizmugurējā</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiskās spēles</translation>
@@ -2325,6 +2327,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5830698870816298009">Kameras lietojums un kustība</translation>
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5838278095973806738">Neievadiet šajā vietnē sensitīvu informāciju (piemēram, paroles vai kredītkartes), jo to var nozagt uzbrucēji.</translation>
+<translation id="5838732667866024867">Lai izpētītu cenu izmaiņas diagrammā, varat izmantot kreiso un labo bultiņu</translation>
 <translation id="5840318881868981258">Jūsu Google kontā: <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vai saglabāt kontā?</translation>
 <translation id="5847181246682413476">Energoapgāde</translation>

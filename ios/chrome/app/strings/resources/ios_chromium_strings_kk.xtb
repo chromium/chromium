@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Chromium сіздің құпия сөздеріңізді тексере алмады. Интернет байланысын тексеріп көріңіз.</translation>
 <translation id="3472200483164753384">Chromium Canary-де қолдау көрсетілмейді.</translation>
 <translation id="3478750326643748149">"Chromium мүмкіндіктерін барынша пайдалану" картасын жасыру</translation>
+<translation id="3554027294407525061">Chromium-дегі браузерді пайдалану деректерін тазалау.</translation>
 <translation id="3567399274263440288">Chromium-ді барынша пайдалану үшін оған Google аккаунтыңызбен кіріңіз.</translation>
 <translation id="3639997914391704523">Google аккаунтыңызбен кіргенде, Chromium сіздің құпия сөздеріңізді тексере алады.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium браузерін қолданған еді, сондықтан осы құрылғыда оның бетбелгілері, құпия сөздері және басқа да параметрлері қалып қойды.</translation>
@@ -96,7 +97,9 @@
 <translation id="4996471330284142407">Қарапайым, қауіпсіз әрі ең жылдам Chromium-мен жұмыс өнімділігін арттырыңыз.</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> басқаратын аккаунттан шықсаңыз, Chromium деректеріңіз құрылғыдан жойылады. Деректеріңіз Google аккаунтында қалады.</translation>
 <translation id="5042011327527167688">"Chromium-да Google Maps көмегімен көру" түймесін түртіңіз.</translation>
+<translation id="5044871537677053278">Бағыттар мен жергілікті ақпаратты беру үшін Chromium браузері мекенжайларды анықтайды және Google Maps пайдаланады.</translation>
 <translation id="5048795749726991615">Сақталған құпия сөздерді басқа қолданбаларда оңай алу үшін автотолтыруға Chromium браузерін пайдаланыңыз.</translation>
+<translation id="5076601183701536878">Chromium-дегі браузерді пайдалану деректерін тазалау</translation>
 <translation id="5131565040785979529">Ұйымыңыз (<ph name="DOMAIN" />) сіз кірген аккаунт пен Chromium-ді пайдалану жолын басқарады.</translation>
 <translation id="5171868502429358653">Chromium-ге кіріңіз</translation>
 <translation id="5213683223491576284">Chromium-нен "Password Manager" бөлімін ашады.</translation>

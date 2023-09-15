@@ -740,6 +740,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4028481283645788203">Potrebna je lozinka za dodatnu sigurnost</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> i strelica ulijevo</translation>
+<translation id="4039699481424758547">Pritisnite Enter da biste snimili snimku zaslona prozora: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Trenutno dijelite ekran</translation>
 <translation id="404437169852192935">Ažuriranja su okončana</translation>
 <translation id="4049230407053723315">Brze postavke</translation>
@@ -1850,7 +1851,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8703634754197148428">Započni snimanje. Nakon početka snimanja, koristite Alt + Shift + L da se krećete do police i pronađete dugme za zaustavljanje snimanja</translation>
 <translation id="8704155109538237473">Fokusirajte prozor slike u slici</translation>
 <translation id="870917907284186124">Uključite/isključite diktiranje (pišite glasom)</translation>
-<translation id="8714138378966541668">Zaključao davatelj usluga</translation>
+<translation id="8714138378966541668">Zaključao je pružalac usluga</translation>
 <translation id="8717459106217102612">Odabira prethodnu riječ ili slovo</translation>
 <translation id="8721053961083920564">Uključivanje/isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Snimanje cijelog ekrana</translation>
@@ -1965,6 +1966,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="9211681782751733685">Preostalo je još <ph name="TIME_REMAINING" /> do potpune napunjenosti baterije</translation>
 <translation id="9215934040295798075">Postavi pozadinsku sliku</translation>
+<translation id="9216699844945104164">Pritisnite Enter za snimanje prozora: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="921989828232331238">Roditelj je zaključao uređaj za danas</translation>
 <translation id="9220525904950070496">Ukloni račun</translation>

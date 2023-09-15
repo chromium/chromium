@@ -1979,6 +1979,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Սխալի պատճառով չհաջողվեց տեղադրել <ph name="DEVICE_OS" />-ը։<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Լրացուցիչ օգնության համար այցելեք g.co/flex/InstallErrors էջ։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Երկարացնում է մարտկոցի աշխատաժամանակը՝ լիցքը պահելով մոտ 80%-ի մակարդակում։ Մարտկոցն ամբողջությամբ լիցքավորված կլինի մինչև այն պահը, երբ դուք սովորաբար անջատում եք սարքը հոսանքից։</translation>
+<translation id="2532146950330687938">Սարքը շուտով պատրաստ կլինի...</translation>
 <translation id="2532198298278778531">Ապահով DNS սերվերի կառավարում ChromeOS Flex-ի կարգավորումներում</translation>
 <translation id="2532589005999780174">Բարձր ցայտունության ռեժիմ</translation>
 <translation id="2533649878691950253">Ձեր ճշգրիտ տեղադրության տվյալների հասանելիությունն արգելափակված է այս կայքի համար, քանի որ դուք սովորաբար ընտրում եք նման կարգավորումներ։</translation>
@@ -2125,7 +2126,6 @@
 <translation id="2658941648214598230">Ցույց տա՞լ սկզբնական բովանդակությունը</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Տարբեր սարքերում գործառույթները կարող են տարբեր լինել</translation>
 <translation id="2659971421398561408">Սկավառակի չափի փոխում Crostini-ում</translation>
-<translation id="2660309468936690885">Այժմ <ph name="RECIPIENT_NAME" /> օգտատերը կարող է օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք է գործում <ph name="WEBSITE" /> կայքում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Իրադարձություն</translation>
 <translation id="266079277508604648">Չհաջողվեց միանալ տպիչին: Ստուգեք՝ արդյոք տպիչը սնուցվում է հոսանքից և միացված է Chromebook-ին Wi-Fi-ի կամ USB-ի միջոցով:</translation>
 <translation id="2661315027005813059">Հետադարձ քեշի էջ` <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2249,7 +2249,6 @@
 <translation id="2743387203779672305">Պատճենել սեղմատախտակին</translation>
 <translation id="274362947316498129">Հավելվածը փորձում է օգտագործել <ph name="DEVICE_NAME" />ը։ Թույլատրելու համար անջատեք <ph name="DEVICE_NAME" />ի գաղտնիության փոխանջատիչը։</translation>
 <translation id="2745080116229976798">Microsoft որակավորված ստորակարգություն</translation>
-<translation id="2749026027885331579">Այժմ ձեր ընտանիքի անդամները կարող են օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք են գործում <ph name="WEBSITE" /> կայքում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Մուտք գործել <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
@@ -5557,7 +5556,6 @@
 <translation id="5481273127572794904">Չի թույլատրվում ավտոմատ ներբեռնել մի քանի ֆայլ</translation>
 <translation id="5481941284378890518">Ավելացնել մոտակա տպիչներ</translation>
 <translation id="5484181871714116891">Երբ այս գործառույթը միացված է, անցաբառերը ստեղծվում են iCloud Keychain-ում և հասանելի են ձեր բոլոր Apple սարքերում։ Անջատելու դեպքում անցաբառերը ստեղծվում են Chrome-ի պրոֆիլում այս սարքում։</translation>
-<translation id="5484462543003267273">Կառավարել ընտանեկան խումբը</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է պահուստավորեք ձեր տվյալները և այսօր վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։ <ph name="LINK_BEGIN" />Դիտել մանրամասները<ph name="LINK_END" />}one{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Դիտել մանրամասները<ph name="LINK_END" />}other{Գործող կանոնի համաձայն (աղբյուրը՝ <ph name="MANAGER" />)՝ դուք պետք է պահուստավորեք ձեր տվյալները և {NUM_DAYS} օրվա ընթացքում վերադարձնեք այս <ph name="DEVICE_TYPE" /> սարքը։<ph name="LINK_BEGIN" />Դիտել մանրամասները<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ավելացնել հավելված</translation>
 <translation id="5485435764083510385">Ենթագրերի նախընտրած լեզու</translation>
@@ -5743,6 +5741,7 @@
 <translation id="5627086634964711283">Այն նաև վերահսկում է, թե ինչ էջ պետք է ցուցադրվի Սկիզբ կոճակը սեղմելիս:</translation>
 <translation id="5627676517703583263">Որոնեք ավելին Chrome-ի օգնությամբ</translation>
 <translation id="5627832140542566187">Էկրանի դիրքավորումը</translation>
+<translation id="5628434207686266338">Սահմանեք սարքի գաղտնաբառը</translation>
 <translation id="562935524653278697">Ադմինիստրատորն անջատել է ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և մյուս կարգավորումների համաժամացումը:</translation>
 <translation id="5631017369956619646">CPU-ի օգտագործումը</translation>
 <translation id="5631272057151918206">Կազատվի մինչև <ph name="OFFLINE_STORAGE_SIZE" /> տարածք, որն օգտագործվում է ձեր օֆլայն ֆայլերի կողմից։ Որոշ ֆայլեր դեռ հասանելի կլինեն անցանց։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -6323,6 +6322,7 @@
 <translation id="6104796831253957966">Տպիչի հերթացանկը լցված է</translation>
 <translation id="6104929924898022309">Օգտագործել որոնման ստեղնը՝ գործառական ստեղների գործողությունները փոխելու համար</translation>
 <translation id="6106167152849320869">Եթե նախորդ քայլում նաև որոշեք ուղարկել դիագնոստիկ և օգտագործման տվյալներ, ապա կհավաքվեն տեղադրված հավելվածների այս տվյալները։</translation>
+<translation id="6111718295497931251">Հեռացնել Google Drive-ի օգտագործման թույլտվությունը</translation>
 <translation id="6111972606040028426">Միացնել Google Օգնականը</translation>
 <translation id="6112294629795967147">Հպեք՝ չափը փոխելու համար</translation>
 <translation id="6112727384379533756">Ավելացնել տոմս</translation>

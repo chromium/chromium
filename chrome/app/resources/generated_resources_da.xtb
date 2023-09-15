@@ -1995,6 +1995,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Der opstod en fejl, og <ph name="DEVICE_OS" /> kunne ikke installeres.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan få yderligere hjælp på g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Forlænger batteritiden ved at holde batteriet på omkring 80 %. Batteriet vil blive ladet helt op, inden du normalt afbryder forbindelsen til strømforsyningen.</translation>
+<translation id="2532146950330687938">Enheden gøres klar…</translation>
 <translation id="2532198298278778531">Administrer Sikkert DNS i indstillingerne for ChromeOS Flex</translation>
 <translation id="2532589005999780174">Tilstanden Høj kontrast</translation>
 <translation id="2533649878691950253">Dette websites adgang til din præcise placering blev blokeret, fordi du normalt ikke tillader denne adgang</translation>
@@ -2141,7 +2142,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2658941648214598230">Vil du se det oprindelige indhold?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funktionerne varierer afhængigt af enheden</translation>
 <translation id="2659971421398561408">Vælg en anden størrelse på disken i Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> kan nu bruge dit brugernavn og din adgangskode, når vedkommende bruger Google Adgangskodeadministrator til at logge ind på <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Hændelse</translation>
 <translation id="266079277508604648">Der kan ikke oprettes forbindelse til printeren. Tjek, at printeren er tændt og tilsluttet din Chromebook via Wi-Fi eller USB.</translation>
 <translation id="2661315027005813059">Side i back/forward-cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2265,7 +2265,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2743387203779672305">Kopiér til udklipsholderen</translation>
 <translation id="274362947316498129">En app forsøger at få adgang til <ph name="DEVICE_NAME" />. Slå privatlivskontakten for <ph name="DEVICE_NAME" /> fra for at give adgang.</translation>
 <translation id="2745080116229976798">Microsoft-kvalificeret delegering</translation>
-<translation id="2749026027885331579">Dine familiemedlemmer kan nu bruge dit brugernavn og din adgangskode, når de bruger Google Adgangskodeadministrator til at logge ind på <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Log ind på <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kontrollér grammatik med stavning</translation>
@@ -5571,7 +5570,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
 <translation id="5484181871714116891">Når denne indstilling er aktiveret, oprettes der adgangsnøgler i iCloud-nøglering, og nøglerne vil være tilgængelige på dine Apple-enheder. Når denne indstilling er deaktiveret, oprettes der adgangsnøgler på din Chrome-profil på denne enhed.</translation>
-<translation id="5484462543003267273">Administrer familie</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}one{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}other{<ph name="MANAGER" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage.<ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Tilføj app</translation>
 <translation id="5485435764083510385">Foretrukket sprog til undertekster</translation>
@@ -5759,6 +5757,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5627086634964711283">Den styrer også, hvilken side der vises, når du klikker på knappen Startside.</translation>
 <translation id="5627676517703583263">Smart browsing med Chrome</translation>
 <translation id="5627832140542566187">Visningsretning</translation>
+<translation id="5628434207686266338">Angiv en adgangskode til enheden</translation>
 <translation id="562935524653278697">Din administrator har deaktiveret synkroniseringen af bogmærker, historik, adgangskoder og andre indstillinger.</translation>
 <translation id="5631017369956619646">CPU-forbrug</translation>
 <translation id="5631272057151918206">Dette frigør op til <ph name="OFFLINE_STORAGE_SIZE" /> plads, som bruges af dine offlinefiler. Nogle filer vil stadig være tilgængelige offline. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -6340,6 +6339,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6104796831253957966">Printerkøen er fuld</translation>
 <translation id="6104929924898022309">Brug søgetasten til at ændre, hvordan funktionstasterne fungerer</translation>
 <translation id="6106167152849320869">Hvis du også valgte at sende diagnostik- og brugsdata i forrige trin, indsamles disse data for installerede apps.</translation>
+<translation id="6111718295497931251">Fjern adgangen til Google Drev</translation>
 <translation id="6111972606040028426">Aktivér Google Assistent</translation>
 <translation id="6112294629795967147">Tryk for at vælge en anden størrelse</translation>
 <translation id="6112727384379533756">Tilføj en billet</translation>

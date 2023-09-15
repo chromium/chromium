@@ -2126,7 +2126,6 @@
 <translation id="2658941648214598230">แสดงเนื้อหาต้นฉบับไหม</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ฟีเจอร์แตกต่างกันไปตามอุปกรณ์</translation>
 <translation id="2659971421398561408">การปรับขนาดดิสก์ใน Crostini</translation>
-<translation id="2660309468936690885">ตอนนี้ <ph name="RECIPIENT_NAME" /> สามารถใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="WEBSITE" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">กิจกรรม</translation>
 <translation id="266079277508604648">เชื่อมต่อเครื่องพิมพ์ไม่ได้ โปรดตรวจสอบว่าเครื่องพิมพ์เปิดอยู่และเชื่อมต่อกับ Chromebook ผ่าน Wi-Fi หรือ USB</translation>
 <translation id="2661315027005813059">หน้าแคชย้อนหลัง: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2250,7 +2249,6 @@
 <translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
 <translation id="274362947316498129">มีแอปพยายามเข้าถึง "<ph name="DEVICE_NAME" />" ปิดสวิตช์ความเป็นส่วนตัวของ "<ph name="DEVICE_NAME" />" เพื่ออนุญาตการเข้าถึง</translation>
 <translation id="2745080116229976798">ตัวย่อยที่เหมาะสมของ Microsoft</translation>
-<translation id="2749026027885331579">ตอนนี้สมาชิกในครอบครัวสามารถใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="WEBSITE" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">ลงชื่อเข้าใช้ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ตรวจสอบไวยากรณ์และตัวสะกด</translation>
@@ -5555,7 +5553,6 @@
 <translation id="5481273127572794904">ไม่ได้รับอนุญาตให้ดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="5481941284378890518">เพิ่มเครื่องพิมพ์ที่อยู่ใกล้เคียง</translation>
 <translation id="5484181871714116891">เมื่อเปิด ระบบจะสร้างพาสคีย์ในพวงกุญแจ iCloud เพื่อให้พร้อมใช้งานในอุปกรณ์ Apple เมื่อปิด ระบบจะสร้างพาสคีย์ในโปรไฟล์ Chrome ในอุปกรณ์นี้</translation>
-<translation id="5484462543003267273">จัดการครอบครัว</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้วันนี้ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}other{<ph name="MANAGER" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน {NUM_DAYS} วัน <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">เพิ่มแอป</translation>
 <translation id="5485435764083510385">ภาษาที่ต้องการสำหรับคำบรรยาย</translation>

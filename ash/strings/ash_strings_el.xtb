@@ -740,6 +740,7 @@
 <translation id="4028481283645788203">Απαιτείται κωδικός πρόσβασης για περισσότερη ασφάλεια.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + αριστερό βέλος</translation>
+<translation id="4039699481424758547">Πατήστε Enter για λήψη στιγμιότυπου οθόνης του παραθύρου: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Μοιράζεστε την οθόνη σας</translation>
 <translation id="404437169852192935">Οι ενημερώσεις σταμάτησαν</translation>
 <translation id="4049230407053723315">Γρήγορες ρυθμίσεις</translation>
@@ -1850,6 +1851,7 @@
 <translation id="8703634754197148428">Έναρξη εγγραφής. Μόλις ξεκινήσει η εγγραφή, χρησιμοποιήστε τα πλήκτρα Alt + Shift + L για να πλοηγηθείτε στο ράφι και να βρείτε το κουμπί διακοπής εγγραφής.</translation>
 <translation id="8704155109538237473">Εστίαση στο παράθυρο picture-in-picture</translation>
 <translation id="870917907284186124">Ενεργοποίηση/απενεργοποίηση υπαγόρευσης (πληκτρολόγηση με τη φωνή σας)</translation>
+<translation id="8714138378966541668">Κλειδώθηκε από τον πάροχο</translation>
 <translation id="8717459106217102612">Επιλογή προηγούμενης λέξης ή γράμματος</translation>
 <translation id="8721053961083920564">Εναλλαγή έντασης ήχου. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Λήψη ολόκληρης της οθόνης</translation>
@@ -1964,6 +1966,7 @@
 <translation id="9211490828691860325">Όλα τα γραφεία</translation>
 <translation id="9211681782751733685">Απομένουν <ph name="TIME_REMAINING" /> έως την πλήρη φόρτιση της μπαταρίας.</translation>
 <translation id="9215934040295798075">Ορισμός ταπετσαρίας</translation>
+<translation id="9216699844945104164">Πατήστε Enter για εγγραφή του παραθύρου: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="921989828232331238">Ο γονέας σας κλείδωσε τη συσκευή σας για σήμερα</translation>
 <translation id="9220525904950070496">Κατάργηση λογαριασμού</translation>

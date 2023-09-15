@@ -685,6 +685,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2366689192918515749">Mięso i owoce morza</translation>
 <translation id="2367567093518048410">Poziom</translation>
 <translation id="23703388716193220">Sprzęt golfowy</translation>
+<translation id="2374629208601905275">Zgodnie z przepisami prawa obowiązującymi w Twoim regionie Chrome prosi Cię o wybranie domyślnej wyszukiwarki. Te wyszukiwarki są popularne w Twoim regionie. Pokazujemy je w kolejności losowej.</translation>
 <translation id="2378084239755710604">Zapisywanie karty zostało zamknięte.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Spersonalizuj narzędzia ułatwień dostępu w ustawieniach Chrome</translation>
@@ -900,6 +901,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2879694782644540289">używać blokady ekranu do wypełniania haseł</translation>
 <translation id="2881276955470682203">Czy zapisać kartę?</translation>
 <translation id="2882949212241984732">Podwójne składanie do środka</translation>
+<translation id="2891963978019740012">Twoja wyszukiwarka w Chrome</translation>
 <translation id="2893773853358652045">Rolka 4</translation>
 <translation id="2900528713135656174">Utwórz wydarzenie</translation>
 <translation id="2902312830803030883">Więcej czynności</translation>
@@ -1163,6 +1165,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3427342743765426898">&amp;Ponów edycję</translation>
 <translation id="342781501876943858">Chromium zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
 <translation id="3428151540071562330">Co najmniej jeden identyfikator URI szablonu serwera DnsOverHttpsTemplates jest nieprawidłowy i nie zostanie użyty.</translation>
+<translation id="3429817405364886479">Potwierdź swoją wyszukiwarkę</translation>
 <translation id="3431216045099978607">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij |<ph name="ACCELERATOR" />|.</translation>
 <translation id="3432601291244612633">Zamknij stronę</translation>
 <translation id="3433111389595862568">Oprogramowanie do współpracy i rozmów wideo</translation>
@@ -1915,6 +1918,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4957080528849277028">Przycisk Wyświetl historię Chrome; aktywuj, aby wyświetlić swoją historię przeglądania i zarządzać nią w ustawieniach Chrome</translation>
 <translation id="4958444002117714549">Rozwiń listę</translation>
 <translation id="4960068118612257147">Możesz wprowadzić zmiany w ustawieniach Chrome dotyczących prywatności w reklamach</translation>
+<translation id="4960203958361543136">Wybierz wyszukiwarkę</translation>
 <translation id="4964505745997821360">Ubezpieczenia zdrowotne</translation>
 <translation id="4968522289500246572">Ta aplikacja jest przeznaczona na urządzenia mobilne i po zmianie rozmiaru może sprawiać problemy. Może uruchamiać się ponownie lub działać nieprawidłowo.</translation>
 <translation id="4968665849807487749">Strona może prosić o zgodę na zarządzanie oknami na wszystkich wyświetlaczach</translation>
@@ -2097,6 +2101,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5323043727018853753">Umieszczona treść jest dozwolona</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> z <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Twoja przeglądarka nie jest zarządzana</translation>
+<translation id="5331585574693522196">Ustaw jako domyślną</translation>
 <translation id="5332219387342487447">Metoda wysyłki</translation>
 <translation id="5332769172018416402">Poproś w wiadomości</translation>
 <translation id="5334013548165032829">Szczegółowe dzienniki systemowe</translation>
@@ -2537,6 +2542,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6287197303017372967">Korzystaj ze szczegółowych wskazówek dojazdu dostępnych w funkcji nawigacji.</translation>
 <translation id="628877850550444614">Znaleziono rabat</translation>
 <translation id="6289939620939689042">Kolor strony</translation>
+<translation id="6292819926564202163">Twoja wyszukiwarka w Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Kod CVC:</translation>
 <translation id="6295855836753816081">Zapisuję…</translation>
@@ -2772,6 +2778,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6770747695101757579">Papier (bawełna)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Pożyczki komercyjne</translation>
+<translation id="6785990323398321538">W każdej chwili możesz zmienić wyszukiwarkę w ustawieniach Chrome.</translation>
 <translation id="6786145470008421571">Koperta 6 x 9 cali</translation>
 <translation id="67862343314499040">Fioletowy</translation>
 <translation id="6786747875388722282">Rozszerzenia</translation>
@@ -2843,6 +2850,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6917795328362592458">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
 <translation id="6925267999184670015">B+ (Ameryka Północna)</translation>
 <translation id="692638818576287323">Samochody dla firm</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Domyślna wyszukiwarka umożliwia wyszukiwanie w internecie i obsługuje funkcje Chrome<ph name="END_BOLD" />, takie jak wyszukiwanie na pasku adresu i wyszukiwanie za pomocą obrazów na stronach internetowych. Funkcja może być niedostępna, jeśli Twoja wyszukiwarka jej nie obsługuje.</translation>
 <translation id="6934672428414710184">To imię i nazwisko pochodzi z Twojego konta Google</translation>
 <translation id="6935082727755903526">Praca w księgowości i finansach</translation>
 <translation id="6936976777388162184">To urządzenie jest dołączone do pakietu i nie można go zarejestrować w ramach Licencji na kioski i znaki.</translation>
@@ -3230,6 +3238,7 @@ Dodatkowe informacje:
 <translation id="765676359832457558">Ukryj ustawienia zaawansowane...</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7659327900411729175">Koperta Kaku 8</translation>
+<translation id="7659880963341457291">Potwierdź swoją wyszukiwarkę</translation>
 <translation id="766014026101194726">{0,plural, =1{Przesyłanie tego pliku jest zablokowane przez zasady administratora}few{Przesyłanie # plików jest zablokowane przez zasady administratora}many{Przesyłanie # plików jest zablokowane przez zasady administratora}other{Przesyłanie # pliku jest zablokowane przez zasady administratora}}</translation>
 <translation id="7662298039739062396">Ustawienie kontrolowane przez rozszerzenie</translation>
 <translation id="7663736086183791259">Certyfikat <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3301,6 +3310,7 @@ Dodatkowe informacje:
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7785790577395078482">tego tabletu</translation>
 <translation id="7786368602962652765">Wymagane pole jest puste. Wypełnij je przed zapisaniem.</translation>
+<translation id="7786432318297177736">Te wyszukiwarki pokazujemy w kolejności losowej. W każdej chwili możesz zmienić domyślną wartość w ustawieniach.</translation>
 <translation id="7786912885126430740">Realizuj płatności szybciej dzięki zapisanym kodom CVC</translation>
 <translation id="7790488044432570133">Odwiedzane przez Ciebie witryny mogą prosić Chrome o informacje, które pomagają w pomiarze skuteczności wyświetlanych w nich reklam. Chrome pozwala witrynom gromadzić tylko niektóre typy danych, np. dotyczące pory dnia, kiedy reklama została wyświetlona.</translation>
 <translation id="7791011319128895129">Nieopublikowana</translation>

@@ -93,6 +93,7 @@
 <translation id="4736424910885271643">Налогом управља <ph name="HOSTED_DOMAIN" />, па ће се Chromium подаци обрисати са овог уређаја</translation>
 <translation id="4790638144988730920">Наставите да користите Chromium податке на Google налогу.</translation>
 <translation id="4828317641996116749">Chromium није успео да провери све лозинке. Пробајте поново касније.</translation>
+<translation id="4935539884203837577">Chromium може да открије бројеве за праћење које уносите и да прати пакете на страници нове картице, а да истовремено помаже друге доживљаје куповине из Chromium-а.</translation>
 <translation id="4985291216379576555">Офлајн сте. Chromium не може да тражи ажурирања.</translation>
 <translation id="4996471330284142407">Урадите више помоћу још једноставнијег, безбеднијег и бржег Chromium-а.</translation>
 <translation id="4999538639245140991">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chromium податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
@@ -116,6 +117,7 @@
 <translation id="5688047395118852662">Ова картица вам приказује предлоге о томе како да искористите Chromium-а на најбољи начин.</translation>
 <translation id="5700709190537129682">Chromium не може да вам проверава лозинке</translation>
 <translation id="5777187867430702742">Chromium страница</translation>
+<translation id="584303319228224680">Аутоматски пратите пакете у Chromium-у</translation>
 <translation id="5889847953983052353">Када је ово укључено:
 <ph name="BEGIN_INDENT" /> • Помозите да побољшамо Chromium за људе који га користе као ви.<ph name="END_INDENT" />
 

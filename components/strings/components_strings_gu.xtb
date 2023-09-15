@@ -540,6 +540,7 @@
 <translation id="2071692954027939183">નોટિફિકેશન ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવ્યા હતા કારણ કે તમે સામાન્ય રીતે તેમને મંજૂરી આપતા નથી</translation>
 <translation id="2071852865256799872">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે અને <ph name="PROFILE_DOMAIN" /> દ્વારા તમારી પ્રોફાઇલ મેનેજ કરવામાં આવે છે</translation>
 <translation id="2072275792380684364">ફેશન અને સ્ટાઇલ</translation>
+<translation id="2075497153347571252">તમારા ઍડમિન દ્વારા <ph name="ORIGIN" /> પર <ph name="PERMISSION" />ની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="20817612488360358">સિસ્ટમ પ્રૉક્સી સેટિંગ ઉપયોગમાં લેવા માટે સેટ છે પણ એક સ્પષ્ટ પ્રૉક્સી ગોઠવણીનો પણ ઉલ્લેખ કરાયેલો છે.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> માંથી <ph name="RESULT_NUMBER" /> પરિણામ</translation>
@@ -1880,6 +1881,7 @@
 <translation id="4885256590493466218">ચેકઆઉટ કરતી વખતે <ph name="CARD_DETAIL" /> વડે ચુકવણી કરો</translation>
 <translation id="4887406273302438710">Windows Hello વડે પાસવર્ડની સુરક્ષા કરો</translation>
 <translation id="4888600795924685526">વિદેશી ભાષાનો અભ્યાસ</translation>
+<translation id="4890070067176768718">તમારા ઍડમિન દ્વારા <ph name="ORIGIN" /> પર <ph name="PERMISSION" />ની સુવિધાને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="4892518386797173871">પાછળ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ઑલિમ્પિક</translation>
@@ -2326,6 +2328,7 @@
 <translation id="5830698870816298009">કૅમેરાનો ઉપયોગ અને હિલચાલ</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5838278095973806738">તમારે આ સાઇટ પર કોઈપણ સંવેદનશીલ માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ્સ અથવા ક્રેડિટ કાર્ડ્સ) દાખલ કરવી જોઈએ નહીં, કારણ કે તે હુમલાખોર દ્વારા ચોરવામાં આવી શકે છે.</translation>
+<translation id="5838732667866024867">કિંમતમાં થયેલા ફેરફારોનો રિવ્યૂ કરવા માટે તમે ગ્રાફ પર, ડાબી/જમણી ઍરો કીનો ઉપયોગ કરી શકો છો</translation>
 <translation id="5840318881868981258">તમારા Google એકાઉન્ટમાં, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">એકાઉન્ટમાં સાચવીએ?</translation>
 <translation id="5847181246682413476">પાવર સપ્લાય</translation>

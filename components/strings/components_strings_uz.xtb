@@ -539,6 +539,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2071692954027939183">Odatda ruxsat bermasligingiz uchun bildirishnomalar avtomatik bloklanadi</translation>
 <translation id="2071852865256799872">Brauzeringiz tashkilotingiz boshqaruvida va profilingiz <ph name="PROFILE_DOMAIN" /> domenida boshqariladi</translation>
 <translation id="2072275792380684364">Moda va uslub</translation>
+<translation id="2075497153347571252">Administrator <ph name="ORIGIN" /> saytida <ph name="PERMISSION" />ni taqiqlagan</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="20817612488360358">Tizim proksi-server sozlamalari yoniq, lekin uning sozlamalari aniq belgilangan.</translation>
 <translation id="2082238445998314030">Natija: <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
@@ -1875,6 +1876,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4885256590493466218">Hisob-kitob vaqtida <ph name="CARD_DETAIL" /> bilan toʻlang</translation>
 <translation id="4887406273302438710">Parollarni Windows Hello yordamida himoyalash</translation>
 <translation id="4888600795924685526">Chet tillarini oʻrganish</translation>
+<translation id="4890070067176768718">Administrator <ph name="ORIGIN" /> saytida <ph name="PERMISSION" />ga ruxsat bergan</translation>
 <translation id="4892518386797173871">Orqasi</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiada</translation>
@@ -2321,6 +2323,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5830698870816298009">kameradan foydalanish va siljitish</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5838278095973806738">Bu saytda muhim ma’lumotlaringizni (parollar va bank kartalar kabi) kiritmasligingiz kerak, chunki firibgarlar tomonidan o‘g‘irlanishi mumkin.</translation>
+<translation id="5838732667866024867">Grafik tasvirda narx oʻzgarishlarini koʻrib chiqish uchun chap/oʻng strelkadan foydalanishingiz mumkin</translation>
 <translation id="5840318881868981258"><ph name="ACCOUNT" /> Google hisobingizda</translation>
 <translation id="5841338463993781099">Hisobda saqlansinmi?</translation>
 <translation id="5847181246682413476">Quvvatlash jihozlari</translation>

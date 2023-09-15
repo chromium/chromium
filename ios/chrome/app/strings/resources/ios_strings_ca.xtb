@@ -313,6 +313,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2738375676495545665">Amaga l'opció Novetats</translation>
 <translation id="2747003861858887689">Camp anterior</translation>
 <translation id="2749231692441336879">Segueixes <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Comptes d'aquest dispositiu</translation>
 <translation id="2762000892062317888">ara mateix</translation>
 <translation id="2772667768515195373">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça s'ha desat al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Cerca d'incògnit</translation>
@@ -1229,6 +1230,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="778855399387580014">Inicia una cerca en una pestanya nova de Chrome.</translation>
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="7807060072011926525">Proporcionat per Google</translation>
+<translation id="78146569776629510">Baixades</translation>
 <translation id="7839985698273989086">Pàgina sense connexió</translation>
 <translation id="7840771868269352570">Els elements seleccionats se suprimiran.</translation>
 <translation id="7845466610722898">Mostra la llista de lectura</translation>

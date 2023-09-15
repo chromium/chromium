@@ -1995,6 +1995,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Algo deu errado na instalação do <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para receber mais ajuda, acesse: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Mantém sua bateria em cerca de 80% para aumentar a vida útil dela. A bateria será totalmente carregada antes do horário em que você costuma tirar o dispositivo da tomada.</translation>
+<translation id="2532146950330687938">Preparando o dispositivo…</translation>
 <translation id="2532198298278778531">Gerencie o DNS seguro nas configurações do ChromeOS Flex</translation>
 <translation id="2532589005999780174">Modo de alto contraste</translation>
 <translation id="2533649878691950253">Este site foi impedido de saber seu local exato porque você normalmente não permite esse acesso</translation>
@@ -2141,7 +2142,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2658941648214598230">Mostrar conteúdo original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Os recursos variam de acordo com o dispositivo</translation>
 <translation id="2659971421398561408">Redimensionamento de disco do Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> agora pode usar seu nome de usuário e sua senha ao usar o Gerenciador de senhas do Google para fazer login em <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">Não é possível conectar a impressora. Verifique se ela está ligada e conectada ao seu Chromebook por Wi-Fi ou USB.</translation>
 <translation id="2661315027005813059">Página em cache de avanço e retorno: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2265,7 +2265,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2743387203779672305">Copiar para área de transferência</translation>
 <translation id="274362947316498129">Um app está tentando acessar este dispositivo: <ph name="DEVICE_NAME" />. Desative a chave de privacidade do dispositivo <ph name="DEVICE_NAME" /> para permitir o acesso.</translation>
 <translation id="2745080116229976798">Subordinação qualificada da Microsoft</translation>
-<translation id="2749026027885331579">Os membros da sua família agora podem usar seu nome de usuário e sua senha quando usarem o Gerenciador de senhas do Google para fazer login em <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Fazer login no <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">Chip</translation>
 <translation id="2749881179542288782">Verificar a gramática com a ortografia</translation>
@@ -5571,7 +5570,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5481273127572794904">Bloquear o download automático de vários arquivos</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5484181871714116891">Quando ativadas, as chaves de acesso serão criadas com as Chaves do iCloud e ficarão disponíveis nos seus dispositivos Apple. Quando desativadas, as chaves de acesso serão criadas no seu perfil do Chrome nesse dispositivo.</translation>
-<translation id="5484462543003267273">Gerenciar família</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}one{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}other{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Adicionar aplicativo</translation>
 <translation id="5485435764083510385">Idioma preferido para legendas</translation>
@@ -5760,6 +5758,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5627086634964711283">Controla também qual página deve ser exibida quando você clica no botão "Página inicial".</translation>
 <translation id="5627676517703583263">Navegue com inteligência com o Chrome</translation>
 <translation id="5627832140542566187">Orientação da tela</translation>
+<translation id="5628434207686266338">Defina a senha do dispositivo</translation>
 <translation id="562935524653278697">Seu administrador desativou a sincronização dos seus favoritos, histórico, senhas e outras configurações.</translation>
 <translation id="5631017369956619646">Uso da CPU</translation>
 <translation id="5631272057151918206">Essa ação removerá até <ph name="OFFLINE_STORAGE_SIZE" /> do espaço usado pelos seus arquivos off-line. Alguns arquivos ainda vão estar disponíveis off-line. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>

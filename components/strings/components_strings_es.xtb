@@ -540,6 +540,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2071692954027939183">Se han bloqueado automáticamente las notificaciones porque no las sueles permitir.</translation>
 <translation id="2071852865256799872">Tu organización gestiona tu navegador, y <ph name="PROFILE_DOMAIN" /> gestiona tu perfil</translation>
 <translation id="2072275792380684364">Moda y estilo</translation>
+<translation id="2075497153347571252">Tu administrador ha bloqueado el permiso de <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración del proxy del sistema, pero también se han especificado ajustes de proxy explícitos.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1881,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4885256590493466218">Paga con <ph name="CARD_DETAIL" /> al tramitar la compra.</translation>
 <translation id="4887406273302438710">Protege tus contraseñas con Windows Hello</translation>
 <translation id="4888600795924685526">Estudios de lenguas extranjeras</translation>
+<translation id="4890070067176768718">Tu administrador ha concedido el permiso de <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Parte trasera</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> y <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiadas</translation>
@@ -2326,6 +2328,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5838278095973806738">No deberías introducir información confidencial en este sitio web (por ejemplo, contraseñas o tarjetas de crédito) porque los atacantes podrían robarla.</translation>
+<translation id="5838732667866024867">Puedes usar la flecha hacia la izquierda o hacia la derecha para consultar los cambios de precio en el gráfico</translation>
 <translation id="5840318881868981258">En tu cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">¿Guardar en la cuenta?</translation>
 <translation id="5847181246682413476">Adaptadores de corriente</translation>

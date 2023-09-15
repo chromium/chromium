@@ -2136,7 +2136,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2658941648214598230">Vil du at det opprinnelige innholdet skal vises?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funksjonene varierer fra enhet til enhet</translation>
 <translation id="2659971421398561408">Endre diskstørrelsen for Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> kan nå bruke brukernavnet og passordet ditt når hen bruker Google Passordlagring til å logge på <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Aktivitet</translation>
 <translation id="266079277508604648">Kan ikke koble til skriveren. Kontroller at skriveren er slått på og koblet til Chromebooken din via Wifi eller USB.</translation>
 <translation id="2661315027005813059">Side i frem-og-tilbake-bufferen: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2260,7 +2259,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2743387203779672305">Kopiér til utklippstavlen</translation>
 <translation id="274362947316498129">En app prøver å få tilgang til <ph name="DEVICE_NAME" />. Slå av personvernbryteren for <ph name="DEVICE_NAME" /> for å gi tilgang.</translation>
 <translation id="2745080116229976798">Microsoft kvalifisert underordning</translation>
-<translation id="2749026027885331579">Nå kan familiemedlemmene dine bruke brukernavnet og passordet ditt når de bruker Google Passordlagring til å logge på <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Logg på <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM-kort</translation>
 <translation id="2749881179542288782">Kontroller·grammatikk·og·staving</translation>
@@ -5562,7 +5560,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5481273127572794904">Nettsteder som ikke har lov til å laste ned flere filer automatisk</translation>
 <translation id="5481941284378890518">Legg til skrivere i nærheten</translation>
 <translation id="5484181871714116891">Når dette er på, opprettes passnøkler i iCloud-nøkkelringen og blir tilgjengelige på Apple-enhetene dine. Når dette er av, opprettes passnøkler i Chrome-profilen din på denne enheten.</translation>
-<translation id="5484462543003267273">Administrer familien</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}other{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Legg til appen</translation>
 <translation id="5485435764083510385">Foretrukket språk for teksting</translation>

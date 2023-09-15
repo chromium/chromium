@@ -771,6 +771,7 @@
 <translation id="1604432177629086300">प्रिंट नहीं किया जा सका. प्रिंटर की जांच करें और फिर से कोशिश करें</translation>
 <translation id="1604567162047669454">विज़ुअल लेआउट सिमैंटिक पहचानें</translation>
 <translation id="1604774728851271529">Linux को अपग्रेड करने के लिए, इंटरनेट से कनेक्ट होना ज़रूरी है. इंटरनेट से कनेक्ट करें और फिर से कोशिश करें.</translation>
+<translation id="1605148987885002237">कीबोर्ड और इनपुट</translation>
 <translation id="1605744057217831567">सभी साइटों का डेटा और अनुमतियां देखें</translation>
 <translation id="1606077700029460857">माउस की सेटिंग बदलें</translation>
 <translation id="1606307079840340755">आपका पासपॉइंट देने वाली कंपनी को सिर्फ़ इस डिवाइस से हटाया जाएगा. अपनी सदस्यता में बदलाव करने के लिए, सदस्यता देने वाली कंपनी से संपर्क करें.</translation>
@@ -1238,6 +1239,7 @@
 <translation id="1956050014111002555">फ़ाइल में एकाधिक प्रमाणपत्र थे, जिनमें से किसी को भी आयात नहीं किया गया था:</translation>
 <translation id="1956167375087861299">सुरक्षित कॉन्टेंट दिखाने के लिए, पहचानकर्ताओं को इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="1956390763342388273">यह "<ph name="FOLDER_PATH" />" से सभी फ़ाइलों को अपलोड कर देगा. ऐसा तभी करें जब आपको साइट पर विश्वास हो.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 एक्सटेंशन की समीक्षा की गई}one{{NUM_EXTENSIONS} एक्सटेंशन की समीक्षा की गई}other{{NUM_EXTENSIONS} एक्सटेंशन की समीक्षा की गई}}</translation>
 <translation id="1959421829481337178">कृपया मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिला ऐक्टिवेशन कोड डालें.</translation>
 <translation id="1962233722219655970">यह पेज एक ऐसे नेटिव क्लाइंट का उपयोग करता है जो आपके कंप्यूटर पर काम नहीं करता.</translation>
 <translation id="1963976881984600709">मानक सुरक्षा मोड</translation>
@@ -1950,6 +1952,7 @@
 <translation id="2492461744635776704">अनुरोध किए गए प्रमाणपत्र पर हस्ताक्षर की तैयारी हो रही है</translation>
 <translation id="249330843868392562">लिखाई को बोली में बदलने की सेटिंग खोलें</translation>
 <translation id="2494555621641843783">Steam को इंस्टॉल नहीं किया जा सकता</translation>
+<translation id="2495141202137516054">आपकी Drive से</translation>
 <translation id="2495524171012645395">हाल में देखी गई रेसिपी</translation>
 <translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
 <translation id="2497229222757901769">माउस की गति</translation>
@@ -2142,7 +2145,6 @@
 <translation id="2658941648214598230">क्या आप मूल कॉन्टेंट दिखाना चाहते हैं?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />डिवाइस के हिसाब से सुविधाएं अलग-अलग हो सकती हैं</translation>
 <translation id="2659971421398561408">Crostini में डिस्क का साइज़ बदलना</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" />, Google Password Manager का इस्तेमाल करके <ph name="WEBSITE" /> में साइन इन करने के लिए, अब आपके उपयोगकर्ता नाम और पासवर्ड का इस्तेमाल कर सकते/सकती हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">इवेंट</translation>
 <translation id="266079277508604648">प्रिंटर से कनेक्ट नहीं किया जा सका. जांचें  कि प्रिंटर चालू है और वाई-फ़ाई या यूएसबी के ज़रिए आपके Chromebook से कनेक्ट किया हुआ है.</translation>
 <translation id="2661315027005813059">बैक/फ़ॉरवर्ड कैश मेमोरी में सेव किया गया पेज: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2254,6 +2256,7 @@
 <translation id="2738771556149464852">बाद में नहीं</translation>
 <translation id="2739191690716947896">डीबग</translation>
 <translation id="2739240477418971307">अपनी सुलभता सेटिंग बदलें</translation>
+<translation id="2739331588276254426"><ph name="HOST_DEVICE_NAME" /> के ज़रिए इंटरनेट से कनेक्ट किया गया</translation>
 <translation id="274029851662193272">छोटे आकार में</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2740876196999178364">ये पासकी सिर्फ़ इस डिवाइस पर सेव की गई हैं. इन्हें आपके Google खाते में सेव नहीं किया गया है.</translation>
@@ -2266,7 +2269,6 @@
 <translation id="2743387203779672305">क्लिपबोर्ड में कॉपी करें</translation>
 <translation id="274362947316498129">कोई ऐप्लिकेशन आपके <ph name="DEVICE_NAME" /> को ऐक्सेस करने की कोशिश कर रहा है. ऐक्सेस करने की अनुमति देने के लिए, <ph name="DEVICE_NAME" /> के प्राइवसी स्विच को बंद करें.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">आपके परिवार के सदस्य Google Password Manager का इस्तेमाल करके <ph name="WEBSITE" /> में साइन इन करने के लिए, अब आपके उपयोगकर्ता नाम और पासवर्ड का इस्तेमाल कर सकते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> में साइन इन करें</translation>
 <translation id="2749836841884031656">सिम</translation>
 <translation id="2749881179542288782">स्पेलिंग के साथ व्याकरण की जाँच करें</translation>
@@ -3212,6 +3214,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ऑडियो म्यूट किया गया</translation>
 <translation id="3537881477201137177">इसे 'सेटिंग' में जाकर बाद में बदला जा सकता है</translation>
 <translation id="3538066758857505094">Linux अनइंस्टॉल करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
+<translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> के ज़रिए इटरनेट कनेक्ट नहीं है</translation>
 <translation id="354060433403403521">AC अडैप्टर</translation>
 <translation id="354068948465830244">यह साइट डेटा पढ़ सकता है और बदल सकता है</translation>
 <translation id="3541823293333232175">असाइन किया गया</translation>
@@ -4195,6 +4198,7 @@
 <translation id="4322394346347055525">अन्य टैब बंद करें</translation>
 <translation id="4324577459193912240">फ़ाइल अधूरी है</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> अनइंस्टॉल हो रहा है...</translation>
+<translation id="4325433082696797523">स्टोरेज और पावर</translation>
 <translation id="4326146840124313313">Chrome की सबसे मज़बूत सुरक्षा की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
 <translation id="4326484226728068206">आपके कार्ट में मौजूद आइटम के लिए <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> पर <ph name="DISCOUNT_TEXT" /> मिल रहा है, <ph name="RELATIVE_TIME" /> देखा गया</translation>
 <translation id="4330191372652740264">आइस वॉटर</translation>
@@ -5570,7 +5574,6 @@
 <translation id="5481273127572794904">एक से ज़्यादा फ़ाइलों को अपने-आप डाउनलोड करने की अनुमति नहीं है</translation>
 <translation id="5481941284378890518">आस-पास के प्रिंटर जोड़ें</translation>
 <translation id="5484181871714116891">चालू होने पर, iCloud Keychain में पासकी बनाई जाती हैं और आपके सभी Apple डिवाइसों पर उपलब्ध होती हैं. बंद होने पर, इस डिवाइस पर आपकी Chrome प्रोफ़ाइल में पासकी बनाई जाती हैं.</translation>
-<translation id="5484462543003267273">फ़ैमिली ग्रुप मैनेज करें</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को आज ही लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}one{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}other{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ऐप्लिकेशन जोड़ें</translation>
 <translation id="5485435764083510385">कैप्शन की पसंदीदा भाषा</translation>
@@ -6418,6 +6421,7 @@
 <translation id="6169967265765719844">Steam के ज़रिए इंस्टॉल किए गए गेम और ऐप्लिकेशन की अनुमतियां, <ph name="LINK_BEGIN" />Steam ऐप्लिकेशन की सेटिंग<ph name="LINK_END" /> में जाकर मैनेज की जा सकती हैं.</translation>
 <translation id="6170470584681422115">सैंडविच</translation>
 <translation id="6170498031581934115">ADB डीबग करने की सुविधा चालू नहीं हो सकी. 'सेटिंग' पर जाएं और फिर से कोशिश करें.</translation>
+<translation id="6170675927290506430">सूचना सेटिंग पर जाएं</translation>
 <translation id="6171779718418683144">हर बार वेबसाइट पर आने के लिए पूछें</translation>
 <translation id="617213288191670920">कोई भाषा नहीं जोड़ी गई</translation>
 <translation id="6173623053897475761">अपना पिन दोबारा लिखें</translation>
@@ -6427,6 +6431,7 @@
 <translation id="6177412385419165772">हटाया जा रहा है...</translation>
 <translation id="6178664161104547336">किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6178682841350631965">आपने साइन इन करने के लिए जो डेटा डाला है, वह अपडेट हो गया</translation>
+<translation id="6179830757749383456">ब्राउज़र को <ph name="BROWSER_DOMAIN" /> मैनेज करता है और प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{क्या आपको एक्सटेंशन हटाना है?}one{क्या आपको # एक्सटेंशन हटाना है?}other{क्या आपको # एक्सटेंशन हटाने हैं?}}</translation>
 <translation id="6180510783007738939">लाइन खींचने का टूल</translation>
 <translation id="6180550893222597997">आपको <ph name="APP_NAME" /> के लिए किस पासकी का इस्तेमाल करना है?</translation>
@@ -6545,6 +6550,7 @@
 <translation id="6271348838875430303">शब्द में किए गए सुधार को पहले जैसा कर दिया गया है</translation>
 <translation id="6271824294945464304">पासवर्ड शेयर किया जा रहा है</translation>
 <translation id="6273677812470008672">गुणवत्ता</translation>
+<translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> से कनेक्ट किया जा रहा है</translation>
 <translation id="6274202259872570803">स्क्रीनकास्ट</translation>
 <translation id="6276210637549544171">प्रॉक्सी सर्वर <ph name="PROXY_SERVER" /> के लिए, उपयोगकर्ता नाम और पासवर्ड डालना ज़रूरी है.</translation>
 <translation id="6277105963844135994">नेटवर्क समय खत्म</translation>
@@ -6562,6 +6568,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> को आमतौर पर डाउनलोड नहीं किया जाता और यह खतरनाक हो सकता है.</translation>
 <translation id="6285770818046456882">आपके साथ शेयर करने वाले डिवाइस ने ट्रांसफ़र रद्द कर दिया है</translation>
 <translation id="628726841779494414">प्रिंटर की सेटिंग में जाकर, अपने प्रिंटर मैनेज करें</translation>
+<translation id="6287828400772161253">Android फ़ोन (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">आस-पास शेयर करने वाला कोई भी डिवाइस उपलब्ध नहीं है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">ऐक्टिवेशन कोड की पुष्टि की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="6291741848715722067">पुष्टि करने वाला कोड</translation>
@@ -8568,6 +8575,7 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> की प्रतीक्षा कर रहा है...</translation>
 <translation id="7926423016278357561">यह मैं नहीं था/थी.</translation>
 <translation id="7926975587469166629">कार्ड का कोई दूसरा नाम</translation>
+<translation id="7927610604078150317">साइज़: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">क्या आपने पहले ही यह पासवर्ड बदल दिया है?</translation>
 <translation id="7929962904089429003">मेन्यू खोलें</translation>
 <translation id="7930294771522048157">सेव किए गए पेमेंट के तरीके यहां दिखेंगे</translation>
@@ -9881,6 +9889,7 @@
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8986494364107987395">इस्तेमाल के आंकड़े और खराबी रिपोर्ट अपने आप Google को भेजें</translation>
 <translation id="8987305927843254629">हर व्यक्ति अपने अनुभव को पसंद के हिसाब से बना सकता है और डेटा को निजी रख सकता है.</translation>
+<translation id="8987321822984361516">ब्राउज़र को कोई संगठन मैनेज करता है और प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
 <translation id="8987927404178983737">माह</translation>
 <translation id="8988539543012086784">यह पेज <ph name="BOOKMARK_FOLDER" /> में सेव किया गया है</translation>
 <translation id="8989359959810288806">टेदरिंग का स्टेटस रीफ़्रेश करें</translation>
@@ -9899,6 +9908,7 @@
 <translation id="8999027165951679951">इनऐक्टिव टैब: <ph name="MEMORY_SAVINGS" /> मेमोरी खाली की गई</translation>
 <translation id="8999560016882908256">सेक्शन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">अपने <ph name="DEVICE_TYPE" /> की दाईं ओर मौजूद फ़िंगरप्रिंट सेंसर को छुएं. आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
+<translation id="9000532564152265066">सभी टैब</translation>
 <translation id="9003185744423389627"><ph name="FAILURE_TIME" /> पर '<ph name="STATUS_TEXT" />' की वजह से, डिवाइस मैनेजमेंट सर्वर से कनेक्ट नहीं किया जा सका</translation>
 <translation id="90033698482696970">क्या आपको उपलब्ध ई-सिम प्रोफ़ाइलों को अपने-आप स्कैन करना है?</translation>
 <translation id="9003647077635673607">सभी वेबसाइटों पर अनुमति दें</translation>

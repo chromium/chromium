@@ -313,6 +313,7 @@
 <translation id="2738375676495545665">Скрыть раздел "Что нового"</translation>
 <translation id="2747003861858887689">Предыдущее поле</translation>
 <translation id="2749231692441336879">Вы подписались на "<ph name="CHANNEL_NAME" />".</translation>
+<translation id="2754492786623500387">Аккаунты на этом устройстве</translation>
 <translation id="2762000892062317888">только что</translation>
 <translation id="2772667768515195373">Этот адрес сохранен в вашем аккаунте Google (<ph name="USER_EMAIL" />). Сохраненные адреса можно использовать в разных продуктах Google.</translation>
 <translation id="2773292004659987824">Поиск в режиме инкогнито</translation>
@@ -1229,6 +1230,7 @@
 <translation id="778855399387580014">Запускайте поиск в новой вкладке Chrome.</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7807060072011926525">Данные от Google</translation>
+<translation id="78146569776629510">Скачанные файлы</translation>
 <translation id="7839985698273989086">Офлайн-версия страницы</translation>
 <translation id="7840771868269352570">Выбранные элементы будут удалены</translation>
 <translation id="7845466610722898">Показать список для чтения</translation>

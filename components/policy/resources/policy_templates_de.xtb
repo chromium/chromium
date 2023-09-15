@@ -2068,6 +2068,14 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
 <translation id="2839294585867804686">Einstellungen für Netzwerkfreigaben</translation>
 <translation id="2841911109921764691">Rechte Maustaste auf dem Anmeldebildschirm als primäre Taste festlegen</translation>
 <translation id="284288632677954003">Die URL einer XML-Datei mit URLs, die grundsätzlich keinen Browserwechsel auslösen sollen.</translation>
+<translation id="28458742190197992">Mit dieser Richtlinie wird festgelegt, ob in <ph name="PRODUCT_NAME" /> Cloud-Berichte für ein bestimmtes verwaltetes Profil erstellt werden.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Daten erhoben oder hochgeladen.
+Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hochgeladen.
+
+Der Bericht enthält Status- und Nutzungsinformationen zum Profil, darunter die Betriebssystemversion, die Browserversion, die installierten Erweiterungen und alle angewandten Richtlinien.
+
+Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</translation>
 <translation id="2846689894646472396">Häufigkeit der Prüfung auf Netzwerkereignisse in Millisekunden.</translation>
 <translation id="2847788524147474533">Richtlinien für Plattformgeräte haben Vorrang vor Richtlinien für Cloud-Rechner</translation>
 <translation id="2849275596224278787">Optionen für Bedienungshilfen im Taskleistenmenü des Anmeldebildschirms ausblenden</translation>
@@ -5502,6 +5510,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       ECH ist ein Protokoll, das ständig weiterentwickelt wird. Die Implementierung von <ph name="PRODUCT_NAME" /> kann sich also ändern. Diese Richtlinie ist daher eine vorübergehende Maßnahme, um die ursprüngliche experimentelle Implementierung zu steuern. Sie wird durch eine endgültige Lösung ersetzt, wenn die Entwicklung des Protokolls abgeschlossen ist.</translation>
 <translation id="5939656968921014919">Entwicklermodus für isolierte Apps deaktivieren</translation>
+<translation id="5939873071468124100">Schränkt Konten ein, die die <ph name="MICROSOFT_ONE_DRIVE_NAME" />-Integration verwenden können</translation>
 <translation id="5945312246863177268">Verhindert, dass Nutzer auf eine Phone Hub-Benachrichtigung klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5946082169633555022">Beta-Kanal</translation>
 <translation id="5946329690214660966">Benutzerdefinierten Zeitplan zum Prüfen auf Updates festlegen</translation>
@@ -5564,6 +5573,16 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="6019162469732742754">Automatischen Modus verwenden</translation>
 <translation id="6019606564278029236">Zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit geöffneten Fenstern interagieren können</translation>
+<translation id="602038990586229155">Mit dieser Richtlinie wird festgelegt, ob Nutzer Anfragen zur Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> zur Bestätigung an die Google Admin-Konsole senden dürfen.
+
+Wenn die Richtlinie „<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert ist, wird sie ignoriert. Anfragen zur Installation von Erweiterungen können dann weder erstellt noch hochgeladen werden.
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, können Anfragen zur Installation von Erweiterungen weder erstellt noch hochgeladen werden.
+Wenn diese Richtlinie aktiviert ist, können Anfragen zur Installation von Erweiterungen erstellt und in der Google Admin-Konsole hochgeladen werden.
+
+Anfragen zur Installation von Erweiterungen werden erstellt, wenn Nutzer versuchen, eine Erweiterung zu installieren, die weder von „<ph name="EXTENSION_INSTALL_ALLOWLIST" />“ noch von „<ph name="EXTENSION_SETTINGS" />“ zugelassen wurde.
+
+Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit „<ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />“ registriert ist.
+Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="6022948604095165524">Aktion beim Start</translation>
 <translation id="602318745029752898">Stimmen für die Sprachausgabe bei Enhanced Network in der Funktion „Vorlesen“ zulassen</translation>
 <translation id="6026722971789064331">Verwendung der File System API zum Schreiben steuern</translation>
@@ -6449,6 +6468,13 @@ Diese Richtlinie wird in Zukunft aus <ph name="PRODUCT_NAME" /> entfernt.</trans
       Wenn die Richtlinie aktiviert ist, ist die Funktion „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist „Schnellinfo“ deaktiviert.
       Ist die Richtlinie nicht konfiguriert, können Nutzer entscheiden, ob die Funktion „Schnellinfo“ aktiviert oder deaktiviert sein soll.</translation>
+<translation id="6712624291905573620">Mit dieser Richtlinie wird festgelegt, ob in <ph name="PRODUCT_NAME" /> Cloud-Berichte erstellt werden. Dabei werden Daten zum Betrieb des Browsers in die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hochgeladen.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine Daten erhoben oder hochgeladen.
+Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> hochgeladen.
+
+Sie wird für <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit „<ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />“ registriert ist.
+Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="6720330829631914048">Zahl der seit Beginn des Tages verstrichenen Stunden (im 24-Stunden-Format).</translation>
 <translation id="6721252203593581486">WebSQL ist im Zusammenhang mit Drittanbietern (z. B. websiteübergreifende iFrames) ab M97 standardmäßig deaktiviert und wird in M101 vollständig entfernt.
           Wenn diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, bleibt WebSQL im Zusammenhang mit Drittanbietern deaktiviert.
@@ -7949,6 +7975,13 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8062375903420954294">Mit dieser Richtlinie kannst du einschränken, welche IP-Adressen und Schnittstellen WebRTC bei der Suche nach der bestmöglichen Verbindung verwenden kann. Weitere Informationen findest du unter RFC 8828 Abschnitt 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Wenn diese Richtlinie nicht konfiguriert ist, werden standardmäßig alle verfügbaren Schnittstellen verwendet.</translation>
 <translation id="8062485064082966327">Einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="8071371098891664137">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.</translation>
+<translation id="8072934771584553388">Mit dieser Richtlinie können Administratoren einschränken, welche Konten sich für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> anmelden dürfen, wenn „<ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" />“ aktiviert ist.
+
+Wenn diese Richtlinie nicht konfiguriert oder auf einen leeren Wert festgelegt ist, kann jedes Konto zur Anmeldung verwendet werden.
+
+Wenn für diese Richtlinie ein Domainname oder eine Mandanten-ID festgelegt ist (siehe https://learn.microsoft.com/de-de/azure/active-directory/develop/v2-protocols#endpoints), können nur Konten mit diesem Domainnamen oder dieser Mandanten-ID zur Anmeldung verwendet werden.
+
+Wird die Einschränkung geändert, werden Nutzer möglicherweise von ihrem <ph name="MICROSOFT_ONE_DRIVE_NAME" />-Konto abgemeldet, wenn es nicht der neuen Einschränkung entspricht.</translation>
 <translation id="8076521374016204899">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.
 
       Wenn die Richtlinie deaktiviert ist, können Nutzer den Bildschirm nicht sperren, sondern sich lediglich von der Nutzersitzung abmelden.</translation>
@@ -8589,6 +8622,12 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wenn sie auf "true" gesetzt ist, können diese Tabs deaktiviert werden. Durch die Deaktivierung von Tabs werden CPU, Akku und Arbeitsspeicher entlastet. Bei <ph name="PRODUCT_NAME" /> wird eine Heuristik genutzt, um Tabs zu erkennen, die zwar im Hintergrund ausgeführt werden, jedoch aktiviert bleiben sollten, weil auf ihnen beispielsweise Benachrichtigungen angezeigt, Ton wiedergegeben oder Videos gestreamt werden. Webentwickler können die Deaktivierung ihrer Website auch unterbinden (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Wenn die Richtlinie auf "false" gesetzt ist, werden Tabs nicht deaktiviert.</translation>
+<translation id="8612188068319977428">Diese Richtlinie legt die Häufigkeit fest, mit der Chrome-Statusberichte hochgeladen werden.
+
+Dazu zählen auch Berichte, die durch „<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" />“ aktiviert sind.
+
+Ist diese Richtlinie nicht konfiguriert, werden Berichte alle 24 Stunden hochgeladen.
+Wenn die Richtlinie konfiguriert ist, wird durch sie die Anzahl der Stunden zwischen den Uploads von Berichten festgelegt.</translation>
 <translation id="8619748440665904084">Import von Autofill-Daten für Formulare bei der ersten Ausführung deaktivieren</translation>
 <translation id="8623672932476443039">Wenn die Richtlinie aktiviert ist, können Nutzer den Entwicklermodus für isolierte Apps nutzen.
       Ist sie deaktiviert, können Nutzer diese Funktion nicht nutzen.

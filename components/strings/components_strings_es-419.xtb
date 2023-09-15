@@ -540,6 +540,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
 <translation id="2071852865256799872">Tu organización administra el navegador y <ph name="PROFILE_DOMAIN" /> administra tu perfil</translation>
 <translation id="2072275792380684364">Moda y estilo</translation>
+<translation id="2075497153347571252">Tu administrador bloqueó <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración de proxy del sistema, pero también se ha especificado una configuración explícita de proxy.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -1881,6 +1882,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4885256590493466218">Pagar con <ph name="CARD_DETAIL" /> en la confirmación de la compra</translation>
 <translation id="4887406273302438710">Protege las contraseñas con Windows Hello</translation>
 <translation id="4888600795924685526">Estudio de idiomas extranjeros</translation>
+<translation id="4890070067176768718">Tu administrador permitió <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Parte trasera</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Juegos olímpicos</translation>
@@ -2327,6 +2329,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5838278095973806738">No debes ingresar información confidencial en este sitio (p. ej., contraseñas o tarjetas de crédito), ya que los atacantes podrían robarla.</translation>
+<translation id="5838732667866024867">Puedes usar la flecha hacia la izquierda o la derecha para revisar los cambios de precio en el gráfico</translation>
 <translation id="5840318881868981258">En tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">¿Quieres guardarla en la cuenta?</translation>
 <translation id="5847181246682413476">Fuentes de alimentación</translation>
@@ -3849,7 +3852,7 @@ Detalles adicionales:
 <translation id="8971063699422889582">El certificado del servidor ha caducado.</translation>
 <translation id="8975012916872825179">Incluye información, como números de teléfono, direcciones de correo electrónico y direcciones de envío</translation>
 <translation id="8975263830901772334">Nombres de los archivos que imprimes</translation>
-<translation id="8978053250194585037">Recientemente, la navegación segura de Google <ph name="BEGIN_LINK" />detectó un intento de suplantación de identidad (phishing)<ph name="END_LINK" /> en <ph name="SITE" />. Los sitios de suplantación de identidad imitan a otros sitios web para engañarte.</translation>
+<translation id="8978053250194585037">Recientemente, la navegación segura de Google <ph name="BEGIN_LINK" />detectó un intento de phishing<ph name="END_LINK" /> en <ph name="SITE" />. Los sitios de suplantación de identidad imitan a otros sitios web para engañarte.</translation>
 <translation id="8983369100812962543">Ahora puedes cambiar el tamaño de la app.</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para ver tu historial de navegación en Chrome</translation>
 <translation id="8987663052629670333">Servicios de impresión de fotos</translation>

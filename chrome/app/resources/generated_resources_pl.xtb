@@ -769,6 +769,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1604432177629086300">Nie udało się wydrukować. Sprawdź drukarkę i spróbuj jeszcze raz.</translation>
 <translation id="1604567162047669454">Rozpoznawanie semantyki układu graficznego</translation>
 <translation id="1604774728851271529">Aby zaktualizować Linuksa, musisz mieć połączenie sieciowe. Połącz się z internetem i spróbuj ponownie.</translation>
+<translation id="1605148987885002237">Klawiatura i metody wprowadzania</translation>
 <translation id="1605744057217831567">Zobacz wszystkie dane witryn i ich uprawnienia</translation>
 <translation id="1606077700029460857">Zmień ustawienia myszy</translation>
 <translation id="1606307079840340755">Twój dostawca protokołu Passpoint zostanie usunięty tylko z tego urządzenia. Aby wprowadzić zmiany w subskrypcji, skontaktuj się z jej dostawcą.</translation>
@@ -1223,6 +1224,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1956050014111002555">Plik zawierał wiele certyfikatów, z których żaden nie został zaimportowany:</translation>
 <translation id="1956167375087861299">Nie mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
 <translation id="1956390763342388273">Spowoduje to przesłanie wszystkich plików z folderu „<ph name="FOLDER_PATH" />”. Zdecyduj się na ten krok tylko, jeśli ufasz witrynie.</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{Sprawdzono 1 rozszerzenie}few{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}many{Sprawdzono {NUM_EXTENSIONS} rozszerzeń}other{Sprawdzono {NUM_EXTENSIONS} rozszerzenia}}</translation>
 <translation id="1959421829481337178">Wpisz kod aktywacyjny podany przez operatora.</translation>
 <translation id="1962233722219655970">Ta strona używa aplikacji klienta natywnego, która nie działa na Twoim komputerze.</translation>
 <translation id="1963976881984600709">Standardowa ochrona</translation>
@@ -1920,6 +1922,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2492461744635776704">Przygotowuję żądanie podpisania certyfikatu</translation>
 <translation id="249330843868392562">Otwórz ustawienia zamiany tekstu na mowę</translation>
 <translation id="2494555621641843783">Nie udało się zainstalować Steam</translation>
+<translation id="2495141202137516054">Z Twojego Dysku</translation>
 <translation id="2495524171012645395">Ostatnio przeglądane przepisy</translation>
 <translation id="2496180316473517155">Historia przeglądania</translation>
 <translation id="2497229222757901769">Szybkość myszy</translation>
@@ -2110,7 +2113,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2658941648214598230">Pokazać oryginalną zawartość?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Dostępne funkcje zależą od urządzenia</translation>
 <translation id="2659971421398561408">Zmiana rozmiaru dysku Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> może teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="WEBSITE" /> za pomocą Menedżera haseł Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Wydarzenie</translation>
 <translation id="266079277508604648">Nie można połączyć z drukarką. Upewnij się, że drukarka jest włączona i podłączona do Chromebooka przez Wi-Fi lub USB.</translation>
 <translation id="2661315027005813059">Strona w pamięci podręcznej stanu strony internetowej: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2222,6 +2224,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2738771556149464852">Nie później niż</translation>
 <translation id="2739191690716947896">Debugowanie</translation>
 <translation id="2739240477418971307">Zmiana ustawień ułatwień dostępu</translation>
+<translation id="2739331588276254426">Połączenie z internetem przez: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="274029851662193272">Obniżony</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Te klucze dostępu są zapisywane tylko na tym urządzeniu. Nie są one zapisywane na Twoim koncie Google.</translation>
@@ -2234,7 +2237,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2743387203779672305">Skopiuj do schowka</translation>
 <translation id="274362947316498129">Aplikacja próbuje uzyskać dostęp do: <ph name="DEVICE_NAME" />. Aby na to zezwolić, wyłącz przełącznik prywatności urządzenia <ph name="DEVICE_NAME" />.</translation>
 <translation id="2745080116229976798">Subordynacja kwalifikowana firmy Microsoft</translation>
-<translation id="2749026027885331579">Członkowie grupy rodzinnej mogą teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="WEBSITE" /> za pomocą Menedżera haseł Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Zaloguj się w <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Sprawdzaj gramatykę razem z pisownią</translation>
@@ -3180,6 +3182,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> – dźwięk wyciszony</translation>
 <translation id="3537881477201137177">Można to później zmienić w Ustawieniach</translation>
 <translation id="3538066758857505094">Błąd podczas odinstalowywania Linuksa. Spróbuj ponownie.</translation>
+<translation id="3540173484406326944">Brak sieci z urządzenia <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">Zasilacz</translation>
 <translation id="354068948465830244">Może odczytywać i modyfikować dane witryn</translation>
 <translation id="3541823293333232175">Przypisano</translation>
@@ -5538,7 +5541,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5481273127572794904">Nie zezwolono na automatyczne pobieranie wielu plików</translation>
 <translation id="5481941284378890518">Dodaj drukarki znalezione w pobliżu</translation>
 <translation id="5484181871714116891">Gdy opcja jest włączona, klucze dostępu są tworzone w pęku kluczy iCloud i są dostępne na wszystkich urządzeniach Apple. Gdy opcja jest wyłączona, klucze dostępu są tworzone w profilu Chrome na tym urządzeniu.</translation>
-<translation id="5484462543003267273">Zarządzaj grupą rodzinną</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) dzisiaj. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}few{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) w ciągu {NUM_DAYS} dni. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}many{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) w ciągu {NUM_DAYS} dni. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}other{<ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia (<ph name="DEVICE_TYPE" />) w ciągu {NUM_DAYS} dnia. <ph name="LINK_BEGIN" />Zobacz szczegóły<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Dodaj aplikację</translation>
 <translation id="5485435764083510385">Preferowany język napisów</translation>
@@ -6386,6 +6388,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6169967265765719844">Uprawnieniami gier i aplikacji zainstalowanych za pomocą aplikacji Steam można zarządzać w <ph name="LINK_BEGIN" />jej ustawieniach<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Kanapka</translation>
 <translation id="6170498031581934115">Nie udało sie włączyć debugowania ADB. Otwórz Ustawienia i spróbuj ponownie.</translation>
+<translation id="6170675927290506430">Otwórz ustawienia powiadomień</translation>
 <translation id="6171779718418683144">Pytaj przy każdej wizycie</translation>
 <translation id="617213288191670920">Nie dodano języków</translation>
 <translation id="6173623053897475761">Wpisz ponownie kod PIN</translation>
@@ -6395,6 +6398,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6177412385419165772">Usuwam…</translation>
 <translation id="6178664161104547336">Wybór certyfikatu</translation>
 <translation id="6178682841350631965">Twoje dane logowania zostały zaktualizowane</translation>
+<translation id="6179830757749383456">Przeglądarka zarządzana przez <ph name="BROWSER_DOMAIN" />, profil zarządzany przez <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Usunąć rozszerzenie?}few{Usunąć # rozszerzenia?}many{Usunąć # rozszerzeń?}other{Usunąć # rozszerzenia?}}</translation>
 <translation id="6180510783007738939">Narzędzie Linia</translation>
 <translation id="6180550893222597997">Którego klucza chcesz używać dla aplikacji <ph name="APP_NAME" />?</translation>
@@ -6513,6 +6517,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6271348838875430303">korekta cofnięta</translation>
 <translation id="6271824294945464304">Udostępnij hasło</translation>
 <translation id="6273677812470008672">Jakość</translation>
+<translation id="6274089201566806618">Łączę z: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Serwer proxy <ph name="PROXY_SERVER" /> wymaga nazwy użytkownika i hasła.</translation>
 <translation id="6277105963844135994">Przekroczono czas oczekiwania na sieć</translation>
@@ -6530,6 +6535,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6285120108426285413">Plik <ph name="FILE_NAME" /> jest rzadko pobierany i może być niebezpieczny.</translation>
 <translation id="6285770818046456882">Urządzenie udostępniające Ci dane anulowało przesyłanie</translation>
 <translation id="628726841779494414">Zarządzaj drukarkami w ustawieniach drukarek</translation>
+<translation id="6287828400772161253">Telefon z Androidem (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">W pobliżu nie ma dostępnych urządzeń udostępniających dane. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">Sprawdzam kod aktywacyjny. Może to potrwać kilka minut.</translation>
 <translation id="6291741848715722067">Kod potwierdzenia</translation>
@@ -8537,6 +8543,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7925285046818567682">Czekam na <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">To nie ja.</translation>
 <translation id="7926975587469166629">Nazwa karty</translation>
+<translation id="7927610604078150317">Rozmiar: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Hasło zostało już zmienione?</translation>
 <translation id="7929962904089429003">Otwórz menu</translation>
 <translation id="7930294771522048157">Tutaj pojawią się zapisane formy płatności</translation>
@@ -9850,6 +9857,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8986362086234534611">Zapomnij</translation>
 <translation id="8986494364107987395">Automatycznie przesyłaj do Google statystyki użytkowania i raporty o awariach</translation>
 <translation id="8987305927843254629">Każda osoba może spersonalizować działanie urządzenia i zachować prywatność swoich danych.</translation>
+<translation id="8987321822984361516">Przeglądarka zarządzana przez organizację, profil zarządzany przez <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987927404178983737">Miesiąc</translation>
 <translation id="8988539543012086784">Ta strona jest zapisana w folderze <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Aktualizuj stan tetheringu</translation>
@@ -9868,6 +9876,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8999027165951679951">Nieaktywna karta: zwolniono <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">Błąd składni sekcji: <ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">Dotknij czytnika linii papilarnych po prawej stronie urządzenia <ph name="DEVICE_TYPE" />. Odcisk palca jest przechowywany w bezpieczny sposób i jest dostępny tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000532564152265066">Wszystkie karty</translation>
 <translation id="9003185744423389627">Nie udało się połączyć z serwerem zarządzania urządzeniami (stan „<ph name="STATUS_TEXT" />” o godzinie „<ph name="FAILURE_TIME" />”)</translation>
 <translation id="90033698482696970">Automatycznie skanować pod kątem dostępnych profili eSIM?</translation>
 <translation id="9003647077635673607">Zezwól we wszystkich witrynach</translation>

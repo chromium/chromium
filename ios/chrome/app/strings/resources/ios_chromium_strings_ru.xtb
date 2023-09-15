@@ -60,6 +60,7 @@
 <translation id="3344973607274501920">Не удается проверить пароли в браузере Chromium. Проверьте подключение к Интернету.</translation>
 <translation id="3472200483164753384">Проверка не поддерживается в Chromium Canary.</translation>
 <translation id="3478750326643748149">Скрыть карточку "Максимально эффективная работа с Chromium"</translation>
+<translation id="3554027294407525061">Удалить данные о работе в браузере.</translation>
 <translation id="3567399274263440288">Чтобы пользоваться всеми возможностями браузера Chromium, войдите в аккаунт Google.</translation>
 <translation id="3639997914391704523">Chromium сможет проверить ваши пароли, если вы войдете в аккаунт Google.</translation>
 <translation id="3650632991272923014">Пользователь <ph name="USER_EMAIL1" />, который работал с Chromium на этом устройстве, не удалил свои закладки, пароли и другие настройки</translation>
@@ -98,6 +99,7 @@
 <translation id="5042011327527167688">Нажмите "Посмотреть на Google Картах в Chromium".</translation>
 <translation id="5044871537677053278">Chromium определяет адреса и использует Google Карты, чтобы прокладывать маршруты и показывать полезную информацию</translation>
 <translation id="5048795749726991615">Чтобы легко вводить сохраненные пароли в других приложениях, укажите значение Chromium для параметра "Автозаполнение".</translation>
+<translation id="5076601183701536878">Удалить данные о работе в Chromium</translation>
 <translation id="5131565040785979529">Аккаунтом, в который вы вошли, и использованием Chromium управляет ваша организация (<ph name="DOMAIN" />).</translation>
 <translation id="5171868502429358653">Вход в Chromium</translation>
 <translation id="5213683223491576284">Открывает Менеджер паролей в Chromium.</translation>

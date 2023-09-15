@@ -540,6 +540,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2071692954027939183">Automatikoki blokeatu dira jakinarazpenak, normalean ez dituzulako onartzen</translation>
 <translation id="2071852865256799872">Zure erakundeak kudeatzen du arakatzailea, eta zure profila, aldiz, <ph name="PROFILE_DOMAIN" /> domeinuak</translation>
 <translation id="2072275792380684364">Moda eta estiloa</translation>
+<translation id="2075497153347571252">Administratzaileak <ph name="PERMISSION" /> blokeatu du <ph name="ORIGIN" /> webgunean</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="20817612488360358">Erabiltzeko ezarri dira sistemaren proxy-ezarpenak, baina proxy-konfigurazio esplizitu bat ere zehaztu da.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /> emaitza</translation>
@@ -1876,6 +1877,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4885256590493466218">Ordaintzerakoan, erabili <ph name="CARD_DETAIL" /> txartela</translation>
 <translation id="4887406273302438710">Babestu pasahitzak Windows Hello erabilita</translation>
 <translation id="4888600795924685526">Atzerriko hizkuntzen ikasketa</translation>
+<translation id="4890070067176768718">Administratzaileak <ph name="PERMISSION" /> erabiltzeko baimena eman du <ph name="ORIGIN" /> webgunean</translation>
 <translation id="4892518386797173871">Atzealdea</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olinpiar Jokoak</translation>
@@ -2322,6 +2324,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5830698870816298009">kameraren erabilera eta mugimendua</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5838278095973806738">Ez zenuke kontuzko informaziorik (adibidez, pasahitzak edo kreditu-txartelak) eman behar webgune honetan, erasotzaileek lapur lezaketelako.</translation>
+<translation id="5838732667866024867">Grafikoko prezio-aldaketak berrikusteko, erabili ezkerrera eta eskuinera egiteko geziak</translation>
 <translation id="5840318881868981258">Zure Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="5841338463993781099">Kontuan gorde nahi duzu?</translation>
 <translation id="5847181246682413476">Elikatze-iturriak</translation>

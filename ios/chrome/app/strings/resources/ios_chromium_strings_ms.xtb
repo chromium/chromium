@@ -93,10 +93,12 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam
 <translation id="4736424910885271643">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chromium anda akan dikosongkan daripada peranti ini</translation>
 <translation id="4790638144988730920">Kekal menggunakan data Chromium dalam Google Account anda.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
+<translation id="4935539884203837577">Chromium boleh mengesan nombor penjejakan yang anda input dan menjejaki pakej anda pada Halaman Tab Baharu sambil membantu pengalaman beli-belah yang lain daripada Chromium.</translation>
 <translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="4996471330284142407">Selesaikan lebih banyak tugas dengan Chromium yang mudah, selamat dan lebih pantas berbanding dahulu.</translation>
 <translation id="4999538639245140991">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Akaun Google anda.</translation>
 <translation id="5042011327527167688">Ketik “Paparkan dengan Google Maps pada Chromium”.</translation>
+<translation id="5044871537677053278">Chromium mengesan alamat dan menggunakan Google Maps untuk memberi anda arah dan maklumat setempat.</translation>
 <translation id="5048795749726991615">Untuk mendapatkan kata laluan anda yang disimpan dalam apl anda yang lain dengan mudah, gunakan Chromium untuk AutoLengkap</translation>
 <translation id="5076601183701536878">Kosongkan Data Semakan Imbas dalam Chromium</translation>
 <translation id="5131565040785979529">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chromium digunakan.</translation>
@@ -115,6 +117,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam
 <translation id="5688047395118852662">Kad ini menunjukkan cadangan tentang cara memanfaatkan Chromium sepenuhnya.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat menyemak kata laluan anda</translation>
 <translation id="5777187867430702742">Halaman Chromium</translation>
+<translation id="584303319228224680">Jejaki Pakej Anda pada Chromium secara automatik</translation>
 <translation id="5889847953983052353">Apabila dihidupkan:
 <ph name="BEGIN_INDENT" />  • Bantu jadikan Chromium lebih baik untuk orang yang menggunakan ciri ini seperti anda.<ph name="END_INDENT" />
 

@@ -2120,7 +2120,6 @@
 <translation id="2658941648214598230">元のコンテンツを表示しますか？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />機能はデバイスによって異なります</translation>
 <translation id="2659971421398561408">Crostini のディスクサイズ変更</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> さんが Google パスワード マネージャーを使用して <ph name="WEBSITE" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="266079277508604648">プリンタに接続できません。プリンタの電源が入っていて、Wi-Fi または USB 経由で Chromebook に接続されていることを確認してください。</translation>
 <translation id="2661315027005813059">バックフォワード キャッシュのページ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2244,7 +2243,6 @@
 <translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="274362947316498129">アプリが <ph name="DEVICE_NAME" /> にアクセスしようとしています。アクセスを許可するには、<ph name="DEVICE_NAME" /> のプライバシー スイッチをオフにしてください。</translation>
 <translation id="2745080116229976798">Microsoft 限定従属</translation>
-<translation id="2749026027885331579">ファミリー メンバーが Google パスワード マネージャーを使用して <ph name="WEBSITE" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> にログイン</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">スペルと一緒に文法をチェック</translation>
@@ -5545,7 +5543,6 @@
 <translation id="5481273127572794904">複数のファイルの自動ダウンロードを許可しないサイト</translation>
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
 <translation id="5484181871714116891">オンにした場合、パスキーが iCloud キーチェーンで作成され、Apple デバイスで使用できるようになります。オフにした場合、パスキーはこのデバイスの Chrome プロフィールで作成されます。</translation>
-<translation id="5484462543003267273">ファミリーを管理</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}other{<ph name="MANAGER" /> が、データをバックアップして、{NUM_DAYS} 日以内にこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">アプリを追加</translation>
 <translation id="5485435764083510385">優先する字幕の言語</translation>

@@ -2141,7 +2141,6 @@
 <translation id="2658941648214598230">আসল কন্টেন্ট দেখবেন?</translation>
 <translation id="2659381484350128933">ডিভাইসের উপর নির্ভর করে <ph name="FOOTNOTE_POINTER" /> বৈশিষ্ট্যের পরিবর্তন হবে</translation>
 <translation id="2659971421398561408">Crostini ডিস্কের সাইজ পরিবর্তন করা</translation>
-<translation id="2660309468936690885">Google Password Manager ব্যবহার করে <ph name="WEBSITE" />-এ সাইন-ইন করার জন্য <ph name="RECIPIENT_NAME" /> আপনার ব্যবহারকারীর নাম ও পাসওয়ার্ডের ব্যবহার এখন করতে পারবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ইভেন্ট</translation>
 <translation id="266079277508604648">প্রিন্টারটি সংযুক্ত করা যায়নি। প্রিন্টারটি চালু আছে কিনা এবং ওয়াই-ফাই অথবা USB এর মাধ্যমে Chromebook-এর সাথে সংযুক্ত আছে কিনা দেখে নিন।</translation>
 <translation id="2661315027005813059">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা পেজ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2265,7 +2264,6 @@
 <translation id="2743387203779672305">ক্লিপবোর্ডে কপি করুন</translation>
 <translation id="274362947316498129">কোনও অ্যাপ <ph name="DEVICE_NAME" /> অ্যাক্সেস করা চেষ্টা করছে। অ্যাক্সেস করার অনুমতি দিতে, <ph name="DEVICE_NAME" />-এর প্রাইভেসি সুইচ বন্ধ করে দিন।</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">Google Password Manager ব্যবহার করে <ph name="WEBSITE" />-এ সাইন-ইন করার জন্য আপনার পরিবারের সদস্য এখন ব্যবহারকারীর নাম ও পাসওয়ার্ডের ব্যবহার করতে পারবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />এ সাইন-ইন করুন</translation>
 <translation id="2749836841884031656">সিম (SIM)</translation>
 <translation id="2749881179542288782">বানান সহ ব্যাকরণ চেক করুন</translation>
@@ -5572,7 +5570,6 @@
 <translation id="5481273127572794904">একাধিক ফাইল অটোমেটিক ডাউনলোড করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="5481941284378890518">আশেপাশের প্রিন্টারগুলি যোগ করুন</translation>
 <translation id="5484181871714116891">চালু হলে, iCloud Keychain-এ পাসকী তৈরি করা হয় এবং আপনার সমস্ত Apple ডিভাইসে উপলভ্য হয়। বন্ধ হলে, এই ডিভাইসে আপনার Chrome প্রোফাইলে পাসকী তৈরি করা হয়।</translation>
-<translation id="5484462543003267273">ফ্যামিলি গ্রুপ ম্যানেজ করুন</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> আজই ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিবরণ দেখুন<ph name="LINK_END" />}one{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}other{<ph name="MANAGER" /> আপনাকে {NUM_DAYS} দিনের মধ্যে ডেটার ব্যাকআপ নিতে ও এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে। <ph name="LINK_BEGIN" />বিস্তারিত দেখুন<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">অ্যাপ্লিকেশান যোগ করুন</translation>
 <translation id="5485435764083510385">ক্যাপশনের জন্য পছন্দের ভাষা</translation>
@@ -6342,6 +6339,7 @@
 <translation id="6104796831253957966">প্রিন্টারের সারি ভরে গেছে</translation>
 <translation id="6104929924898022309">ফাংশন 'কী'-এর অ্যাক্টিভিটি পরিবর্তন করতে সার্চ 'কী' ব্যবহার করুন</translation>
 <translation id="6106167152849320869">এছাড়া, পূর্ববর্তী ধাপে আপনি ডায়াগনস্টিকস এবং ব্যবহারের ডেটা পাঠানোর বিষয়টি বেছে নিলে, ইনস্টল করা অ্যাপের জন্য এই ডেটা সংগ্রহ করা হবে।</translation>
+<translation id="6111718295497931251">Google Drive-এর অ্যাক্সেস সরিয়ে দিন</translation>
 <translation id="6111972606040028426">Google Assistant অ্যাপ চালু করুন</translation>
 <translation id="6112294629795967147">সাইজ পরিবর্তন করতে টাচ করুন</translation>
 <translation id="6112727384379533756">একটি টিকিট যোগ করুন</translation>

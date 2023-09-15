@@ -740,6 +740,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4028481283645788203">Treba da unesete lozinku radi dodatne bezbednosti</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + strelica ulevo</translation>
+<translation id="4039699481424758547">Pritisnite Enter da biste napravili snimak ekrana prozora: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Delite ekran</translation>
 <translation id="404437169852192935">Ažuriranja su završena</translation>
 <translation id="4049230407053723315">Brza podešavanja</translation>
@@ -1966,6 +1967,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="9211681782751733685">Još <ph name="TIME_REMAINING" /> i baterija će se u potpunosti napuniti.</translation>
 <translation id="9215934040295798075">Podesi pozadinu</translation>
+<translation id="9216699844945104164">Pritisnite Enter da biste snimili prozor:<ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="921989828232331238">Roditelj je zaključao ovaj uređaj za danas</translation>
 <translation id="9220525904950070496">Uklanjanje naloga</translation>

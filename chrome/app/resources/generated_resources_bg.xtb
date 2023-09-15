@@ -2137,7 +2137,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2658941648214598230">Да се покаже ли оригиналното съдържание?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Функциите варират според устройството</translation>
 <translation id="2659971421398561408">Промяна на размера на диска за Crostini</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> вече може да използва потребителското име и паролата ви, когато ползва Google Мениджър на пароли за вход в(ъв) <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Събитие</translation>
 <translation id="266079277508604648">Не може да се установи връзка с принтера. Уверете се, че е включен и е свързан с вашия Chromebook чрез Wi-Fi или USB.</translation>
 <translation id="2661315027005813059">Страница, съхранена в кеша за назад/напред: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2261,7 +2260,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2743387203779672305">Копиране в буферната памет</translation>
 <translation id="274362947316498129">Приложение се опитва да осъществи достъп до <ph name="DEVICE_NAME" />. За да разрешите достъп, изключете превключвателя за поверителност на <ph name="DEVICE_NAME" />.</translation>
 <translation id="2745080116229976798">Удостоверена субординация от Microsoft</translation>
-<translation id="2749026027885331579">Членовете на семейството ви вече могат да използват потребителското име и паролата ви, когато ползват Google Мениджър на пароли за вход в(ъв) <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Вход в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM карта</translation>
 <translation id="2749881179542288782">Проверка на граматиката заедно с правописа</translation>
@@ -5568,7 +5566,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5481273127572794904">Сайтове без разрешение за автоматично изтегляне на няколко файла</translation>
 <translation id="5481941284378890518">Добавяне на принтери в близост</translation>
 <translation id="5484181871714116891">Когато опцията е включена, ключовете за достъп се създават в iCloud Keychain и са налице на всичките ви устройства от Apple. Когато опцията е изключена, ключовете за достъп се създават в потребителския ви профил в Chrome на това устройство.</translation>
-<translation id="5484462543003267273">Управление на семейството</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> днес. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}other{<ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" /> в рамките на {NUM_DAYS} дни. <ph name="LINK_BEGIN" />Вижте подробности<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Добавяне на приложението</translation>
 <translation id="5485435764083510385">Предпочитан език на надписите</translation>

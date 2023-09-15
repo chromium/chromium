@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1105362920864247682">Ryd browserdata i Chrome.</translation>
 <translation id="1143896152279775643">Din adgangskode gemmes i Google Adgangskodeadministrator for <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Fortsæt med at bruge Chrome-dataene på din Google-konto.</translation>
 <translation id="1282031177488366470">Hjælp med at forbedre Chromes funktioner og effektivitet</translation>
@@ -56,6 +57,7 @@ Vær opmærksom på følgende:
 <translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2840432500933227975">Åbn Chrome-indstillingerne i iOS, tryk på "Standardbrowserapp", og vælg Chrome.</translation>
+<translation id="2868822340714096138">Ryd browserdata i Chrome</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2876628302275096482">Se, <ph name="BEGIN_LINK" />hvordan Chrome beskytter dine data<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -136,6 +138,7 @@ Vær opmærksom på følgende:
 <translation id="6247557882553405851">Google Adgangskodeadministrator</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6427126399757991875">Din organisation konfigurerer Chrome...</translation>
+<translation id="6545449117344801102">Chrome registrerer adresser og bruger Google Maps til at give dig rutevejledninger og lokale oplysninger.</translation>
 <translation id="6600954340915313787">Kopieret til Chrome</translation>
 <translation id="6634107063912726160">Når du er logget ud, synkroniserer Chrome ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
 <translation id="6646696210740573446">Sender en sløret del af webadressen til Google via en privatlivsbeskyttende server, som skjuler din IP-adresse. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Google.</translation>

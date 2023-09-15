@@ -197,6 +197,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="2049727122989709386"><ph name="COUNT" /> akaun menggunakan kata laluan yang sama</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count} kaedah pembayaran yang disimpan tersedia di sebelah atas papan kekunci anda.}other{{count} kaedah pembayaran yang disimpan tersedia di sebelah atas papan kekunci anda.}}</translation>
 <translation id="2055515971416882518">Buka "Tetapan".</translation>
+<translation id="2059166748188874810">Perbandaran</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
@@ -478,6 +479,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3587885837929752825">Organisasi anda mengehadkan perkara yang boleh anda simpan dalam Google Account anda.</translation>
 <translation id="3588820906588687999">Buka Imej dalam Tab Baharu</translation>
 <translation id="3595252146048399851">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa. Google mungkin memeribadikan Carian dan perkhidmatan lain berdasarkan sejarah anda.</translation>
+<translation id="3599500618468205645">Sembunyikan Ikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="3603009562372709545">Salin URL Paut</translation>
 <translation id="3607167657931203000">Autolengkap Data</translation>
 <translation id="3609785682760573515">Menyegerakkan...</translation>
@@ -488,6 +490,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3646736009628185125">Ahli keluarga anda tidak boleh menerima kata laluan sekarang. Minta mereka mengemaskinikan Chrome dan menyegerakkan kata laluan mereka. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Profil Konfigurasi Tersedia</translation>
 <translation id="3670030362669914947">Nombor</translation>
+<translation id="3680970647557344817">Sembunyikan Edit Penanda Halaman</translation>
 <translation id="368329460027487650">Dilog keluar. Membuka pilihan untuk log masuk.</translation>
 <translation id="3688815115226493214">Cadangan Tab</translation>
 <translation id="3700134753671613714">Log masuk untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
@@ -637,6 +640,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4592368184551360546">Papan kekunci</translation>
 <translation id="4601095002996233687">Imbasan secara mendalam untuk muat turun yang mencurigakan.</translation>
 <translation id="4606247758155004938">Penyemak imbas anda diurus oleh organisasi anda.</translation>
+<translation id="4611811151908969241">Sembunyikan Berhenti Mengikuti <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Mencari dengan Google</translation>
 <translation id="4616391354457235490">Buat asal</translation>
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
@@ -1058,6 +1062,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6753469262000681876">Mod Kunci Semua</translation>
 <translation id="6760509555861141183">Kembali ke Tab Baru-baru Ini</translation>
 <translation id="6762812039470893796">Nyahpilih Semua</translation>
+<translation id="6771287014037609247">Sentiasa Menjejaki Pakej Yang Dikesan</translation>
 <translation id="6780034285637185932">Poskod</translation>
 <translation id="6781260999953472352">Hidupkan Penyegerakan?</translation>
 <translation id="6781405765516175232">Untuk pilihan laluan, ketik “Dapatkan Arah”.</translation>
@@ -1409,6 +1414,7 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="8780076847684176174">{count,plural, =1{Semak tab...}other{Semak semua tab...}}</translation>
 <translation id="8787968206789828143">Cari di Web</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8793366654064127924">Tanya saya Setiap Kali</translation>
 <translation id="8803639129939845298">Selamat</translation>
 <translation id="8806823403540278281">Organisasi anda menghendaki anda menyemak imbas secara peribadi. Tab tidak disimpan dalam Mod inkognito.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="8849001918648564819">Disembunyikan</translation>
 <translation id="8855242995793521265">Tidak memperlahankan penyemak imbas atau peranti dengan ketara.</translation>
 <translation id="8855781063981781621">Untuk melumpuhkan Mod Kunci Semua dalam Chrome, matikan mod tersebut pada iPad anda.</translation>
+<translation id="886335568110896118">Sembunyikan Minta Laman Mudah Alih</translation>
 <translation id="8863431381414769983">Dapatkan arah dan maklumat setempat daripada Google Maps</translation>
 <translation id="8865415417596392024">Data Chrome dalam akaun anda</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tab}}</translation>

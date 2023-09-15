@@ -1990,6 +1990,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Алдаа гарсан бөгөөд <ph name="DEVICE_OS" />-г суулгаж чадсангүй.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Илүү их тусламж авах бол дараахад зочилно уу: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Таны батарейг 80% орчимд байлгаснаар батарейн ажиллах хугацааг уртасгадаг. Батарей ихэвчлэн таныг тэжээлээс салгахаас өмнө бүрэн цэнэглэгдэнэ.</translation>
+<translation id="2532146950330687938">Төхөөрөмжийг бэлдэж байна...</translation>
 <translation id="2532198298278778531">ChromeOS Flex-н тохиргоо хэсэгт Аюулгүй DNS-г удирдана уу</translation>
 <translation id="2532589005999780174">Тодосгогч горим</translation>
 <translation id="2533649878691950253">Та ихэвчлэн нарийвчилсан байршлаа зөвшөөрдөггүй тул энэ сайтыг үүнийг мэдэхийг блоклосон</translation>
@@ -2136,7 +2137,6 @@
 <translation id="2658941648214598230">Эх контентыг харуулах уу?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Төхөөрөмжөөс хамаарч онцлогууд өөр байна</translation>
 <translation id="2659971421398561408">Crostini-н дискийн хэмжээг өөрчлөх</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> одоо Google Password Manager-г ашиглан <ph name="WEBSITE" />-д нэвтрэх үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Үйл явдал</translation>
 <translation id="266079277508604648">Хэвлэгчийг холбох боломжгүй байна. Хэвлэгчийг асаасан болон таны Chromebook-д Wi-Fi эсвэл USB-р холбогдсон эсэхийг шалгана уу.</translation>
 <translation id="2661315027005813059">Back/Forward Cache хийсэн хуудас: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2260,7 +2260,6 @@
 <translation id="2743387203779672305">Завсрын түр санах самбар луу хуулах</translation>
 <translation id="274362947316498129">Апп <ph name="DEVICE_NAME" />-д хандахаар оролдож байна. Хандалтыг зөвшөөрөхийн тулд <ph name="DEVICE_NAME" />-н нууцлалын сэлгүүрийг унтраана уу.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">Танай гэр бүлийн гишүүд одоо Google Password Manager-г ашиглан <ph name="WEBSITE" />-д нэвтрэх үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> руу нэвтрэх</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Зөв бичих дүрмийн алдааг шалгах</translation>
@@ -5565,7 +5564,6 @@
 <translation id="5481273127572794904">Автоматаар олон файл татахыг зөвшөөрөөгүй</translation>
 <translation id="5481941284378890518">Ойролцоох хэвлэгчийг нэмэх</translation>
 <translation id="5484181871714116891">Асаалттай үед iCloud Keychain-д нэвтрэх түлхүүрүүд үүсгэдэг бөгөөд таны Apple төхөөрөмжүүдэд боломжтой байна. Унтраалттай үед энэ төхөөрөмж дээрх таны Chrome профайлд нэвтрэх түлхүүрүүдийг үүсгэдэг.</translation>
-<translation id="5484462543003267273">Гэр бүлийг удирдах</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> танаас өнөөдөр өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна. <ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}other{<ph name="MANAGER" /> танаас {NUM_DAYS} хоногийн дотор өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна. <ph name="LINK_BEGIN" />Дэлгэрэнгүй мэдээллийг харах<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Апп нэмэх</translation>
 <translation id="5485435764083510385">Тайлбарын илүүд үзсэн хэл</translation>
@@ -5754,6 +5752,7 @@
 <translation id="5627086634964711283">Энэ нь мөн таныг Home товчин дээр дарах үед гарч ирдэг хуудсыг хянаж байдаг.</translation>
 <translation id="5627676517703583263">Chrome-р ухаалаг хайгаарай</translation>
 <translation id="5627832140542566187">Дэлгэцийн чиглэл</translation>
+<translation id="5628434207686266338">Төхөөрөмжийн нууц үг тохируулах</translation>
 <translation id="562935524653278697">Таны админ хавчуурга, түүх, нууц үг болон бусад тохиргоог синк хийхийг цуцалсан.</translation>
 <translation id="5631017369956619646">CPU-ийн хэрэглээ</translation>
 <translation id="5631272057151918206">Энэ нь таны офлайн файлуудын ашигладаг орон зайнаас <ph name="OFFLINE_STORAGE_SIZE" /> хүртэлхийг хасна. Зарим файл офлайн үед боломжтой хэвээр байх болно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>

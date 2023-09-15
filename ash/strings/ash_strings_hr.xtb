@@ -739,6 +739,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4028481283645788203">Radi dodatne sigurnosti potrebna je zaporka</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + strelica lijevo</translation>
+<translation id="4039699481424758547">Pritisnite Enter da biste snimili snimku zaslona prozora: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Dijelite zaslon</translation>
 <translation id="404437169852192935">Ažuriranja su završila</translation>
 <translation id="4049230407053723315">Brze postavke</translation>
@@ -1964,6 +1965,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="9211681782751733685">Baterija će se napuniti za <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Postavi pozadinu</translation>
+<translation id="9216699844945104164">Pritisnite Enter za snimanje prozora: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="921989828232331238">Tvoj je roditelj zaključao ovaj uređaj za danas</translation>
 <translation id="9220525904950070496">Uklanjanje računa</translation>

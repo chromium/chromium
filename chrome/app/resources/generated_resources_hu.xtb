@@ -2140,7 +2140,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2658941648214598230">Eredeti tartalom megjelenítése?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />A funkciók eszköztől függően eltérők lehetnek</translation>
 <translation id="2659971421398561408">Crostini-lemez átméretezése</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> mostantól használhatja az Ön felhasználónevét és jelszavát, amikor a Google Jelszókezelővel jelentkezik be a(z) <ph name="WEBSITE" /> oldalon. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="2660779039299703961">Esemény</translation>
 <translation id="266079277508604648">Nem sikerült csatlakozni a nyomtatóhoz. Ellenőrizze, hogy be van-e kapcsolva a nyomtató, és hogy csatlakozik-e a Chromebookhoz Wi-Fi-n vagy USB-n keresztül.</translation>
 <translation id="2661315027005813059">Előre-vissza gyorsítótárazott oldal: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2264,7 +2263,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2743387203779672305">Másolás a vágólapra</translation>
 <translation id="274362947316498129">Az egyik alkalmazás hozzá szeretne férni a következőhöz: <ph name="DEVICE_NAME" />. A hozzáférés engedélyezéséhez kapcsolja ki a(z) <ph name="DEVICE_NAME" /> adatvédelmi kapcsolóját.</translation>
 <translation id="2745080116229976798">Microsoft minősített altanúsítvány-kibocsátók</translation>
-<translation id="2749026027885331579">A családtagok mostantól használhatják az Ön felhasználónevét és jelszavát, amikor a Google Jelszókezelővel jelentkeznek be a(z) <ph name="WEBSITE" /> oldalon. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="2749756011735116528">Bejelentkezés a <ph name="PRODUCT_NAME" />-ba</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Nyelvhelyesség és helyesírás ellenőrzése</translation>
@@ -5570,7 +5568,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5481273127572794904">Nem tölthetnek le automatikusan egyszerre több fájlt</translation>
 <translation id="5481941284378890518">Közeli nyomtatók hozzáadása</translation>
 <translation id="5484181871714116891">Ha be van kapcsolva, az azonosítókulcsokat az iCloud-kulcskarikában hozza létre a rendszer, és hozzáférhetők az Apple-eszközökön. Ha ki van kapcsolva, a rendszer az Ön Chrome-profiljában hozza létre az azonosítókulcsokat ezen az eszközön.</translation>
-<translation id="5484462543003267273">Családkezelés</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{A(z) <ph name="MANAGER" /> megköveteli, hogy készítsen biztonsági másolatot az adatairól, és küldje vissza ezt az eszközt (<ph name="DEVICE_TYPE" />) a mai napon. <ph name="LINK_BEGIN" />Részletek megtekintése<ph name="LINK_END" />.}other{A(z) <ph name="MANAGER" /> megköveteli, hogy biztonsági másolatot készítsen adatairól, és küldje vissza ezt az eszközt (<ph name="DEVICE_TYPE" />) {NUM_DAYS} napon belül. <ph name="LINK_BEGIN" />Részletek megtekintése<ph name="LINK_END" />.}}</translation>
 <translation id="5485102783864353244">Alkalmazás hozzáadása</translation>
 <translation id="5485435764083510385">Felirat előnyben részesített nyelve</translation>

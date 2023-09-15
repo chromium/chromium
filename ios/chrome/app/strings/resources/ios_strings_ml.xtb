@@ -197,6 +197,7 @@
 <translation id="2049727122989709386"><ph name="COUNT" /> അക്കൗണ്ടുകൾ ഒരേ പാസ്‌വേഡ് ഉപയോഗിക്കുന്നു</translation>
 <translation id="2050196510205866090">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പേയ്മെന്റ് രീതി ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പേയ്മെന്റ് രീതികൾ ലഭ്യമാണ്.}}</translation>
 <translation id="2055515971416882518">"ക്രമീകരണം" തുറക്കുക.</translation>
+<translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="2074131957428911366">എന്തൊക്കെ സമന്വയിക്കണമെന്നത് <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് എപ്പോഴും തിരഞ്ഞെടുക്കാം.</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കാനാകുന്ന കാര്യങ്ങൾ നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു.</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="3595252146048399851">എന്തൊക്കെ സമന്വയിപ്പിക്കണമെന്ന് നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> തിരഞ്ഞെടുക്കാം. നിങ്ങളുടെ ചരിത്രത്തെ അടിസ്ഥാനമാക്കി, Search, മറ്റ് സേവനങ്ങൾ എന്നിവ Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
+<translation id="3599500618468205645">'<ph name="DOMAIN_NAME" /> ഫോളോ ചെയ്യുക' മറയ്ക്കുക</translation>
 <translation id="3603009562372709545">ലിങ്ക് URL പകർത്തുക</translation>
 <translation id="3607167657931203000">സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="3609785682760573515">സമന്വയിപ്പിക്കുന്നു...</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">നിങ്ങളുടെ കുടുംബാംഗത്തിന് ഇപ്പോൾ പാസ്‌വേഡുകൾ സ്വീകരിക്കാനാകില്ല. Chrome അപ്‌ഡേറ്റ് ചെയ്‌ത് അവരുടെ പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കാൻ അവരോട് ആവശ്യപ്പെടുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">കോൺഫിഗറേഷൻ പ്രൊഫൈൽ ലഭ്യമാണ്</translation>
 <translation id="3670030362669914947">നമ്പർ</translation>
+<translation id="3680970647557344817">'ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക' മറയ്‌ക്കുക</translation>
 <translation id="368329460027487650">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുന്നു.</translation>
 <translation id="3688815115226493214">ടാബ് നിർദ്ദേശങ്ങൾ</translation>
 <translation id="3700134753671613714">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലുമുള്ള ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യുക.</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">കീബോഡ്</translation>
 <translation id="4601095002996233687">സംശയാസ്പദമായ ഡൗൺലോഡുകൾക്കായി വിശദമായ സ്കാനുകൾ.</translation>
 <translation id="4606247758155004938">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമാണ്.</translation>
+<translation id="4611811151908969241">'<ph name="DOMAIN_NAME" /> അൺഫോളോ ചെയ്യുക' മറയ്ക്കുക</translation>
 <translation id="461440297010471931">Google ഉപയോഗിച്ച് തിരയുന്നു</translation>
 <translation id="4616391354457235490">പഴയപടിയാക്കുക</translation>
 <translation id="4619564267100705184">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -1058,6 +1062,7 @@
 <translation id="6753469262000681876">ലോക്ക്‌ഡൌൺ മോഡ്</translation>
 <translation id="6760509555861141183">ഏറ്റവും അവസാനം തുറന്ന ടാബിലേക്ക് മടങ്ങുക</translation>
 <translation id="6762812039470893796">എല്ലാം തിരഞ്ഞെടുത്തത് മാറ്റുക</translation>
+<translation id="6771287014037609247">കണ്ടെത്തിയ പാക്കേജുകൾ എപ്പോഴും ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="6780034285637185932">തപാൽ കോഡ്</translation>
 <translation id="6781260999953472352">സമന്വയം ഓണാക്കണോ?</translation>
 <translation id="6781405765516175232">വഴി ഓപ്ഷനുകൾക്ക് “വഴികൾ നേടുക” ടാപ്പ് ചെയ്യുക.</translation>
@@ -1409,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{ടാബ് അവലോകനം ചെയ്യുക...}other{എല്ലാ ടാബുകളും അവലോകനം ചെയ്യുക...}}</translation>
 <translation id="8787968206789828143">വെബിൽ തിരയുക</translation>
 <translation id="8792626944327216835">മൈക്രോഫോൺ</translation>
+<translation id="8793366654064127924">എന്നോട് എപ്പോഴും ചോദിക്കുക</translation>
 <translation id="8803639129939845298">സുരക്ഷിതം</translation>
 <translation id="8806823403540278281">സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു. അദൃശ്യ മോഡിൽ ടാബുകൾ സംരക്ഷിച്ചിട്ടില്ല.
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@
 <translation id="8849001918648564819">മറച്ചിരിക്കുന്നു</translation>
 <translation id="8855242995793521265">നിങ്ങളുടെ ബ്രൗസറിന്റെയോ ഉപകരണത്തിന്റെയോ വേഗത പ്രകടമായി കുറയ്ക്കുന്നില്ല.</translation>
 <translation id="8855781063981781621">Chrome-ൽ ലോക്ക്ഡൗൺ മോഡ് പ്രവർത്തനരഹിതമാക്കാൻ നിങ്ങളുടെ iPad-ൽ അത് ഓഫാക്കുക.</translation>
+<translation id="886335568110896118">'മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക' മറയ്ക്കുക</translation>
 <translation id="8863431381414769983">Google Maps-ൽ നിന്ന് വഴികളും പ്രാദേശിക വിവരങ്ങളും നേടുക</translation>
 <translation id="8865415417596392024">നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ടാബ്}other{{count} ടാബുകൾ}}</translation>

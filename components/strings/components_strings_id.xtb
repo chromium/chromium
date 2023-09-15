@@ -541,6 +541,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2071692954027939183">Notifikasi otomatis diblokir karena Anda biasanya tidak mengizinkannya</translation>
 <translation id="2071852865256799872">Browser dikelola oleh organisasi Anda dan profil Anda dikelola oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Fashion &amp; gaya</translation>
+<translation id="2075497153347571252">Administrator Anda telah memblokir <ph name="PERMISSION" /> di <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="20817612488360358">Setelan proxy sistem disetel untuk digunakan namun konfigurasi proxy eksplisit juga ditentukan.</translation>
 <translation id="2082238445998314030">Hasil <ph name="RESULT_NUMBER" /> dari <ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1881,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4885256590493466218">Bayar dengan <ph name="CARD_DETAIL" /> saat checkout</translation>
 <translation id="4887406273302438710">Lindungi sandi dengan Windows Hello</translation>
 <translation id="4888600795924685526">Studi bahasa asing</translation>
+<translation id="4890070067176768718">Administrator Anda telah mengizinkan <ph name="PERMISSION" /> di <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Belakang</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiade</translation>
@@ -2326,6 +2328,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5830698870816298009">penggunaan &amp; gerakan kamera</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5838278095973806738">Jangan masukkan informasi sensitif apa pun di situs ini (misalnya, sandi atau kartu kredit), karena penyerang dapat mencurinya.</translation>
+<translation id="5838732667866024867">Anda dapat menggunakan panah kiri/kanan untuk meninjau perubahan harga pada grafik</translation>
 <translation id="5840318881868981258">Di Akun Google Anda, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Simpan di akun?</translation>
 <translation id="5847181246682413476">Catu Daya Listrik</translation>

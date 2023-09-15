@@ -197,6 +197,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="2049727122989709386">Viaceré účty (<ph name="COUNT" />) používajú rovnaké heslo</translation>
 <translation id="2050196510205866090">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložený spôsob platby.}few{Nad klávesnicou sú k dispozícii {count} uložené spôsoby platby.}many{{count} saved payment methods available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených spôsobov platby.}}</translation>
 <translation id="2055515971416882518">Otvorte Nastavenia.</translation>
+<translation id="2059166748188874810">Správna jednotka</translation>
 <translation id="2073572773299281212">Aktívne pred <ph name="DAYS" /> dňami</translation>
 <translation id="2074131957428911366">Položky, ktoré chcete synchronizovať, môžete vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Späť</translation>
@@ -477,6 +478,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3587885837929752825">Vaša organizácia obmedzuje, čo môžete uložiť vo svojom účte Google.</translation>
 <translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
 <translation id="3595252146048399851">Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
+<translation id="3599500618468205645">Skryť položku Sledovať <ph name="DOMAIN_NAME" /></translation>
 <translation id="3603009562372709545">Kopírovať webovú adresu odkazu</translation>
 <translation id="3607167657931203000">Údaje automatického dopĺňania</translation>
 <translation id="3609785682760573515">Prebieha synchronizácia...</translation>
@@ -487,6 +489,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3646736009628185125">Člen vašej rodiny nemôže momentálne dostávať heslá. Požiadajte ho, aby aktualizoval Chrome a synchronizoval svoje heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">K dispozícii je profil konfigurácie</translation>
 <translation id="3670030362669914947">Číslo</translation>
+<translation id="3680970647557344817">Skryť položku Upraviť záložku</translation>
 <translation id="368329460027487650">Účet je odhlásený. Otvoria sa možnosti na prihlásenie.</translation>
 <translation id="3688815115226493214">Návrhy kariet</translation>
 <translation id="3700134753671613714">Ak chcete mať záložky vo všetkých svojich zariadeniach, prihláste sa.</translation>
@@ -636,6 +639,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4592368184551360546">Klávesnica</translation>
 <translation id="4601095002996233687">Hĺbkové kontroly s cieľom nájsť podozrivé stiahnuté súbory.</translation>
 <translation id="4606247758155004938">Prehliadač spravuje vaša organizácia.</translation>
+<translation id="4611811151908969241">Skryť položku Prestať sledovať <ph name="DOMAIN_NAME" /></translation>
 <translation id="461440297010471931">Vyhľadávate pomocou Googlu</translation>
 <translation id="4616391354457235490">Vrátiť späť</translation>
 <translation id="4619564267100705184">Overte, že ste to vy</translation>
@@ -1057,6 +1061,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6753469262000681876">Režim silnej zámky</translation>
 <translation id="6760509555861141183">Návrat na poslednú kartu</translation>
 <translation id="6762812039470893796">Zrušiť výber všetkého</translation>
+<translation id="6771287014037609247">Vždy sledovať rozpoznané zásielky</translation>
 <translation id="6780034285637185932">PSČ</translation>
 <translation id="6781260999953472352">Chcete zapnúť synchronizáciu?</translation>
 <translation id="6781405765516175232">Ak si chcete zobraziť možnosti trás, klepnite na Získať trasy.</translation>
@@ -1407,6 +1412,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8780076847684176174">{count,plural, =1{Skontrolovať kartu…}few{Skontrolovať všetky karty…}many{Skontrolovať všetky karty…}other{Skontrolovať všetky karty…}}</translation>
 <translation id="8787968206789828143">Hľadať na internete</translation>
 <translation id="8792626944327216835">mikrofón</translation>
+<translation id="8793366654064127924">Vždy sa opýtať</translation>
 <translation id="8803639129939845298">Zabezpečené</translation>
 <translation id="8806823403540278281">Vaša organizácia vyžaduje, aby ste prehliadali v režime inkognito. Karty sa v režime inkognito neukladajú.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -1420,6 +1426,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8849001918648564819">Skryté</translation>
 <translation id="8855242995793521265">Prehliadač ani zariadenie výrazne nespomalí.</translation>
 <translation id="8855781063981781621">Ak chcete režim silnej zámky v Chrome deaktivovať, vypnite ho vo svojom iPade.</translation>
+<translation id="886335568110896118">Skryť položku Vyžiadať mobilný web</translation>
 <translation id="8863431381414769983">Získavajte trasy a miestne informácie z Máp Google</translation>
 <translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} karta}few{{count} karty}many{{count} Tabs}other{{count} kariet}}</translation>

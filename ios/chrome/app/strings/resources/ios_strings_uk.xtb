@@ -197,6 +197,7 @@
 <translation id="2049727122989709386">Кілька облікових записів (<ph name="COUNT" />) використовують такий самий пароль</translation>
 <translation id="2050196510205866090">{count,plural, =1{Над клавіатурою показується {count} збережений спосіб оплати.}one{Над клавіатурою показується {count} збережений спосіб оплати.}few{Над клавіатурою показуються {count} збережені способи оплати.}many{Над клавіатурою показуються {count} збережених способів оплати.}other{Над клавіатурою показуються {count} збереженого способу оплати.}}</translation>
 <translation id="2055515971416882518">Відкрийте "Налаштування".</translation>
+<translation id="2059166748188874810">Муніципалітет</translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
@@ -478,6 +479,7 @@
 <translation id="3587885837929752825">Ваша організація обмежила дані, які можна зберігати в обліковому записі Google.</translation>
 <translation id="3588820906588687999">Відкрити зображення в новій вкладці</translation>
 <translation id="3595252146048399851">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />. Google може персоналізувати Пошук та інші сервіси на основі вашої історії.</translation>
+<translation id="3599500618468205645">Сховати опцію "Підписатися на <ph name="DOMAIN_NAME" />"</translation>
 <translation id="3603009562372709545">Копіювати URL-адресу посилання</translation>
 <translation id="3607167657931203000">Дані автозаповнення</translation>
 <translation id="3609785682760573515">Синхронізація…</translation>
@@ -488,6 +490,7 @@
 <translation id="3646736009628185125">Зараз учасник вашої сімейної групи не може отримувати паролі. Попросіть його оновити Chrome і синхронізувати паролі. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Доступний профіль конфігурації</translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="3680970647557344817">Сховати опцію "Редагувати закладку"</translation>
 <translation id="368329460027487650">Ви вийшли. Натисніть, щоб переглянути параметри входу.</translation>
 <translation id="3688815115226493214">Пропозиції щодо вкладок</translation>
 <translation id="3700134753671613714">Увійдіть в обліковий запис, щоб мати доступ до закладок на всіх своїх пристроях.</translation>
@@ -637,6 +640,7 @@
 <translation id="4592368184551360546">Клавіатура</translation>
 <translation id="4601095002996233687">Ретельна перевірка підозрілих завантажень.</translation>
 <translation id="4606247758155004938">Веб-переглядачем керує ваша організація.</translation>
+<translation id="4611811151908969241">Сховати опцію "Скасувати підписку на <ph name="DOMAIN_NAME" />"</translation>
 <translation id="461440297010471931">Пошук у Google</translation>
 <translation id="4616391354457235490">Відмінити</translation>
 <translation id="4619564267100705184">Підтвердити особу</translation>
@@ -1058,6 +1062,7 @@
 <translation id="6753469262000681876">Режим блокування входу</translation>
 <translation id="6760509555861141183">Повернутися на останню вкладку</translation>
 <translation id="6762812039470893796">Не вибирати нічого</translation>
+<translation id="6771287014037609247">Завжди відстежувати виявлені посилки</translation>
 <translation id="6780034285637185932">Поштовий індекс</translation>
 <translation id="6781260999953472352">Увімкнути синхронізацію?</translation>
 <translation id="6781405765516175232">Щоб переглянути варіанти маршруту, натисніть "Прокласти маршрут".</translation>
@@ -1409,6 +1414,7 @@
 <translation id="8780076847684176174">{count,plural, =1{Переглянути вкладку…}one{Переглянути всі вкладки…}few{Переглянути всі вкладки…}many{Переглянути всі вкладки…}other{Переглянути всі вкладки…}}</translation>
 <translation id="8787968206789828143">Шукати в Інтернеті</translation>
 <translation id="8792626944327216835">мікрофон</translation>
+<translation id="8793366654064127924">Запитувати щоразу</translation>
 <translation id="8803639129939845298">Безпечно</translation>
 <translation id="8806823403540278281">Адміністратор вашої організації вимагає, щоб ви переглядали веб-сторінки конфіденційно. Вкладки в режимі анонімного перегляду не зберігаються.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@
 <translation id="8849001918648564819">Приховано</translation>
 <translation id="8855242995793521265">Не сповільнює роботу веб-переглядача або пристрою.</translation>
 <translation id="8855781063981781621">Щоб вимкнути режим блокування входу в Chrome, відключіть його на своєму пристрої iPad.</translation>
+<translation id="886335568110896118">Сховати опцію "Мобільний сайт"</translation>
 <translation id="8863431381414769983">Прокладайте маршрути й отримуйте місцеву інформацію з Карт Google</translation>
 <translation id="8865415417596392024">Дані Chrome у вашому обліковому записі</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>

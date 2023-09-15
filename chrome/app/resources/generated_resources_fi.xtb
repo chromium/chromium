@@ -1993,6 +1993,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Jotain meni pieleen, ja asennus ei onnistunut: <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Katso lisäohjeita osoitteesta g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Pidentää akunkestoa pitämällä akun varauksen noin 80 %:ssa. Akku latautuu yleensä kokonaan, ennen kuin kytket sen pois virrasta.</translation>
+<translation id="2532146950330687938">Valmistellaan laitetta…</translation>
 <translation id="2532198298278778531">Ylläpidä suojattua DNS:ää ChromeOS Flexin asetuksista</translation>
 <translation id="2532589005999780174">Suuri kontrasti -tila</translation>
 <translation id="2533649878691950253">Tämä sivusto ei saanut tietää tarkkaa sijaintiasi, koska et yleensä ole sallinut sitä</translation>
@@ -2139,7 +2140,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2658941648214598230">Näytetäänkö alkuperäinen sisältö?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Ominaisuudet vaihtelevat laitteen mukaan</translation>
 <translation id="2659971421398561408">Crostini-levyn koon muutos</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> voi nyt käyttää käyttäjätunnustasi ja salasanaasi, kun hän kirjautuu osoitteeseen <ph name="WEBSITE" /> Googlen Salasanojen avulla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Tapahtuma</translation>
 <translation id="266079277508604648">Tulostimeen yhdistäminen epäonnistui. Tarkista, että tulostin on päällä ja yhteydessä Chromebookiin Wi-Fi-yhteydellä tai USB:llä.</translation>
 <translation id="2661315027005813059">Siirtymisvälimuistissa oleva sivu: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2263,7 +2263,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2743387203779672305">Kopioi leikepöydälle</translation>
 <translation id="274362947316498129">Sovellus yrittää käyttää tätä: <ph name="DEVICE_NAME" />. Jotta <ph name="DEVICE_NAME" /> on käytettävissä, laita sen yksityisyysvalinta pois päältä.</translation>
 <translation id="2745080116229976798">Microsoftin kelpaava alistaminen</translation>
-<translation id="2749026027885331579">Perheenjäsenesi voivat nyt käyttää käyttäjätunnustasi ja salasanaasi, kun he kirjautuvat osoitteeseen <ph name="WEBSITE" /> Googlen Salasanojen avulla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Kirjaudu sisään tuotteeseen <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Tarkista kielioppi oikeinkirjoituksen yhteydessä</translation>
@@ -5566,7 +5565,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5481273127572794904">Useiden tiedostojen automaattinen lataaminen kielletty</translation>
 <translation id="5481941284378890518">Lisää lähellä olevia tulostimia</translation>
 <translation id="5484181871714116891">Kun asetus on päällä, avainkoodit luodaan iCloud-avainnippuun ja ovat saatavilla kaikilla Apple-laitteilla. Kun asetus on pois päältä, avainkoodit luodaan tämän laitteen Chrome-profiiliin.</translation>
-<translation id="5484462543003267273">Ylläpidä perhettä</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> edellyttää, että varmuuskopioit datasi ja palautat laitteen (<ph name="DEVICE_TYPE" />) tänään. <ph name="LINK_BEGIN" />Näytä tiedot<ph name="LINK_END" />}other{<ph name="MANAGER" /> edellyttää, että varmuuskopioit datasi ja palautat laitteen (<ph name="DEVICE_TYPE" />) {NUM_DAYS} päivän sisällä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Lisää sovellus</translation>
 <translation id="5485435764083510385">Ensisijainen tekstityskieli</translation>
@@ -5754,6 +5752,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5627086634964711283">Määrittää myös Etusivu-painikkeella avattavan sivun.</translation>
 <translation id="5627676517703583263">Selaa älykkäästi Chromella.</translation>
 <translation id="5627832140542566187">Näytön suunta</translation>
+<translation id="5628434207686266338">Laitteen salasanan valitseminen</translation>
 <translation id="562935524653278697">Järjestelmänvalvoja on poistanut käytöstä kirjanmerkkien, historian, salasanojen ja muiden asetusten synkronoinnin.</translation>
 <translation id="5631017369956619646">Suorittimen käyttö</translation>
 <translation id="5631272057151918206">Tämä poistaa enintään <ph name="OFFLINE_STORAGE_SIZE" /> tilaa offline-tiedostoistasi. Osa tiedostoista on edelleen käytettävissä offline-tilassa. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>

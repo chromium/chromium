@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1105362920864247682">Rensa webbinformation i Chrome.</translation>
 <translation id="1143896152279775643">Lösenordet sparas med Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Fortsätt använda Chrome-data i Google-kontot.</translation>
 <translation id="1282031177488366470">Bidra till att förbättra Chromes funktioner och prestanda</translation>
@@ -56,6 +57,7 @@ Tänk på detta:
 <translation id="2736805085127235148">Chrome-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2840432500933227975">Öppna Chrome-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chrome.</translation>
+<translation id="2868822340714096138">Rensa webbinformation i Chrome</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Välj <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -136,6 +138,7 @@ Tänk på detta:
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6427126399757991875">Organisationen konfigurerar Chrome …</translation>
+<translation id="6545449117344801102">Chrome identifierar adresser och använder Google Maps för att ge dig vägbeskrivningar och lokal information.</translation>
 <translation id="6600954340915313787">Kopierat till Chrome</translation>
 <translation id="6634107063912726160">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chrome. Data som redan har synkroniserats finns kvar i kontot.</translation>
 <translation id="6646696210740573446">En obfuskerad del av webbadressen skickas till Google via en integritetsserver som döljer din IP-adress. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Google tillsammans med delar av sidinnehållet.</translation>

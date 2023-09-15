@@ -540,6 +540,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2071692954027939183">Der blev automatisk blokeret notifikationer, da du som regel ikke tillader notifikationer</translation>
 <translation id="2071852865256799872">Din browser administreres af din organisation, og din profil administreres af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Mode og stil</translation>
+<translation id="2075497153347571252">Din administrator har blokeret <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="20817612488360358">Indstillingerne for systemproxy er angivet at blive brugt, men en eksplicit proxykonfiguration er også angivet.</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
@@ -1880,6 +1881,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4885256590493466218">Betal med <ph name="CARD_DETAIL" /> ved kassen</translation>
 <translation id="4887406273302438710">Beskyt adgangskoder med Windows Hello</translation>
 <translation id="4888600795924685526">Fremmedsprogsundervisning</translation>
+<translation id="4890070067176768718">Din administrator har tilladt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Bagest</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">OL</translation>
@@ -2326,6 +2328,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5830698870816298009">kamerabrug og -bevægelse</translation>
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5838278095973806738">Du bør ikke indtaste følsomme oplysninger på dette website (f.eks. adgangskoder eller kreditkortoplysninger), da de kan blive stjålet af hackere.</translation>
+<translation id="5838732667866024867">Du kan bruge venstre-/højrepilen til at gennemgå prisændringerne i grafen</translation>
 <translation id="5840318881868981258">På din Google-konto, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Vil du gemme adressen på din konto?</translation>
 <translation id="5847181246682413476">Strømforsyningsenheder</translation>

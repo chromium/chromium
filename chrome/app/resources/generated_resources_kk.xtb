@@ -1976,6 +1976,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Бірдеңе дұрыс болмады. <ph name="DEVICE_OS" /> орнатылмады.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Қосымша анықтама үшін мына бетке өтіңіз: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Батарея зарядын шамамен 80% деңгейінде ұстап, оның жұмысын ұзартады. Құрылғыны қуат көзінен ажыратқанға дейін, батарея толық зарядталып тұрады.</translation>
+<translation id="2532146950330687938">Құрылғы әзірленіп жатыр...</translation>
 <translation id="2532198298278778531">ChromeOS Flex параметрлерінде қауіпсіз DNS функциясын басқару</translation>
 <translation id="2532589005999780174">Жоғары контраст режимі</translation>
 <translation id="2533649878691950253">Бұл сайттың нақты локацияңызды анықтауына тыйым салынған, себебі әдетте сіз оған рұқсат бермейсіз.</translation>
@@ -2122,7 +2123,6 @@
 <translation id="2658941648214598230">Бастапқы контент көрсетілсін бе?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Мүмкіндіктер әр құрылғыда әр түрлі болады</translation>
 <translation id="2659971421398561408">Crostini дискісінің көлемін өзгерту</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> <ph name="WEBSITE" /> веб-сайтына кіру үшін Google Password Manager қызметін қолданған кезде, енді пайдаланушы атыңыз бен құпия сөзіңізді де пайдалана алады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Оқиға</translation>
 <translation id="266079277508604648">Принтермен байланыс орнату мүмкін емес. Принтердің қосулы әрі Wi-Fi желісі не USB арқылы Chromebook ноутбугіне жалғаулы тұрғанын тексеріңіз.</translation>
 <translation id="2661315027005813059">Алға-артқа өту кэшінде сақталған бет: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2246,7 +2246,6 @@
 <translation id="2743387203779672305">Буферге көшіру</translation>
 <translation id="274362947316498129">Қолданба <ph name="DEVICE_NAME" /> құрылғысын пайдаланғысы келіп тұр. Пайдалануға рұқсат беру үшін <ph name="DEVICE_NAME" /> құпиялық ауыстырғышын өшіріңіз.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">Отбасыңыздың мүшелері <ph name="WEBSITE" /> веб-сайтына кіру үшін Google Password Manager қызметін қолданған кезде, енді пайдаланушы атыңыз бен құпия сөзіңізді де пайдалана алады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> өніміне кіру</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Емлемен грамматиканы тексеру</translation>
@@ -5551,7 +5550,6 @@
 <translation id="5481273127572794904">Бірнеше файлды автоматты түрде жүктеп алуға рұқсаты жоқтар</translation>
 <translation id="5481941284378890518">Маңайдағы принтерлерді енгізу</translation>
 <translation id="5484181871714116891">Қосылса, кіру кілттері iCloud кілттер жинағында жасалады және Apple құрылғыларыңызда қолжетімді болады. Өшірілсе, кіру кілттері осы құрылғыдағы Chrome профиліңізде жасалады.</translation>
-<translation id="5484462543003267273">Отбасын басқару</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> деректердің сақтық көшірмесін жасап, <ph name="DEVICE_TYPE" /> құрылғысын бүгін қайтаруыңызды талап етеді. <ph name="LINK_BEGIN" />Мәліметтерді көру<ph name="LINK_END" />}other{<ph name="MANAGER" /> деректердің сақтық көшірмесін жасап, <ph name="DEVICE_TYPE" /> құрылғысын {NUM_DAYS} күн ішінде қайтаруыңызды талап етеді. <ph name="LINK_BEGIN" />Мәліметтерді көру<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Қолданба қосу</translation>
 <translation id="5485435764083510385">Қажетті жазу тілі</translation>
@@ -5737,6 +5735,7 @@
 <translation id="5627086634964711283">Сонымен қатар ол "Негізгі бет" түймесі басылғанда қайсы бет көрсетілетінін бақылайды.</translation>
 <translation id="5627676517703583263">Chrome браузерімен зерделі шолу</translation>
 <translation id="5627832140542566187">Дисплей бағдары</translation>
+<translation id="5628434207686266338">Құрылғы құпия сөзін орнату</translation>
 <translation id="562935524653278697">Әкімшіңіз бетбелгілерді, тарихты, құпия сөздерді және басқа параметрлерді синхрондау мүмкіндігін бөгеген.</translation>
 <translation id="5631017369956619646">Орталық процессорды пайдалану</translation>
 <translation id="5631272057151918206">Офлайн файлдарыңызға пайдаланылатын орыннан <ph name="OFFLINE_STORAGE_SIZE" /> дейін өшіріледі. Кейбір файлдар офлайн режимде әлі де қолжетімді болады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
@@ -6317,6 +6316,7 @@
 <translation id="6104796831253957966">Принтер кезегі толы.</translation>
 <translation id="6104929924898022309">Функция пернелерінің әрекетін өзгерту үшін іздеу пернесін пайдалану</translation>
 <translation id="6106167152849320869">Алдыңғы қадамда диагностика мен пайдалану туралы деректі жіберуді таңдасаңыз, орнатылған қолданбалар үшін осы деректер жиналады.</translation>
+<translation id="6111718295497931251">Google Drive қызметін пайдалану рұқсатын өшіру</translation>
 <translation id="6111972606040028426">Google Assistant қолданбасын қосу</translation>
 <translation id="6112294629795967147">Өлшемін өзгерту үшін түртіңіз</translation>
 <translation id="6112727384379533756">Билет қосу</translation>

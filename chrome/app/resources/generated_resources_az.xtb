@@ -2124,7 +2124,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2658941648214598230">Orijinal kontent göstərilsin?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funksiyalar cihaza görə dəyişir</translation>
 <translation id="2659971421398561408">Crostini disk ölçüsünün dəyişdirilməsi</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> Google Parol Meneceri ilə <ph name="WEBSITE" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Tədbir</translation>
 <translation id="266079277508604648">Printeri qoşmaq mümkün deyil. Printerin aktiv olmasını, Wi-Fi və ya USB ilə Chromebook'a qoşulu olub-olmamasını yoxlayın.</translation>
 <translation id="2661315027005813059">Geri/İrəli Keşlənmiş Səhifə: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2248,7 +2247,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2743387203779672305">Buferə kopyalayın</translation>
 <translation id="274362947316498129">Tətbiq <ph name="DEVICE_NAME" /> cihazına giriş etməyə çalışır. Girişə icazə vermək üçün <ph name="DEVICE_NAME" /> məxfilik keçiricisini deaktiv edin.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">Ailə üzvləriniz Google Parol Meneceri ilə <ph name="WEBSITE" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> məhsuluna daxil olun</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Qrammatikanı Orfoqrafiya ilə yoxlayın</translation>
@@ -5551,7 +5549,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5481273127572794904">Çoxsaylı faylların avtomatik endirilməsinə icazə verilmədi</translation>
 <translation id="5481941284378890518">Yaxınlıqdakı Printerləri əlavə edin</translation>
 <translation id="5484181871714116891">Aktiv olduqda giriş açarları iCloud Keychain-də yaradılır və Apple cihazlarında əlçatan olur. Deaktiv olduqda giriş açarları bu cihazdakı Chrome profilində yaradılır.</translation>
-<translation id="5484462543003267273">Ailəni idarə edin</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> bugün datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}other{<ph name="MANAGER" /> {NUM_DAYS} gün ərzində datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Tətbiq əlavə edin</translation>
 <translation id="5485435764083510385">Tərcih edilən altyazı dili</translation>

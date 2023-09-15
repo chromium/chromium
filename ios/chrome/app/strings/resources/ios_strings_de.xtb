@@ -308,8 +308,10 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="271033894570825754">Neu</translation>
 <translation id="2712127207578915686">Fehler beim Öffnen der Datei</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
+<translation id="2738375676495545665">„Das ist neu“ ausblenden</translation>
 <translation id="2747003861858887689">Vorheriges Feld</translation>
 <translation id="2749231692441336879">Du folgst <ph name="CHANNEL_NAME" /></translation>
+<translation id="2754492786623500387">Konten auf diesem Gerät</translation>
 <translation id="2762000892062317888">gerade eben</translation>
 <translation id="2772667768515195373">Du kannst gespeicherte Adressen in allen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
 <translation id="2773292004659987824">Inkognitosuche</translation>
@@ -490,8 +492,10 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {EMAIL}.}other{{COUNT} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Als ungelesen markieren</translation>
 <translation id="371230970611282515">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor diese eintreten.</translation>
+<translation id="371398631992790800">Lesezeichen ausblenden</translation>
 <translation id="37207012422556617">Trends bei Suchanfragen</translation>
 <translation id="3740397331642243698">Öffnet die eingegebenen URLs in Google Chrome im Inkognitomodus.</translation>
+<translation id="374357899112510277">Downloads ausblenden</translation>
 <translation id="3745190878148784130">„Text zoomen“ ausblenden</translation>
 <translation id="3762232513783804601">Für dein iPad entwickelt</translation>
 <translation id="3768725474733206671">Zuletzt geschlossenen Tab wieder öffnen</translation>
@@ -845,6 +849,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="581659025233126501">Synchronisierung aktivieren</translation>
 <translation id="5817176759448082654">Passwortcheck</translation>
 <translation id="5819208479324046259">Verwaltet von <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="5827650163984030263">Passwortmanager ausblenden</translation>
 <translation id="5833643789537100742">Du kannst Passwörter, Zahlungsmethoden und Adressen in Chrome speichern, um sie später automatisch ausfüllen zu lassen.</translation>
 <translation id="5834415013958049700">Aus Lens kopiertes Bild</translation>
 <translation id="5844284118433003733">Wenn du angemeldet bist, werden diese Daten mit deinem Google-Konto verknüpft, um dich in allen Google-Diensten besser zu schützen, wie beispielsweise nach einem Sicherheitsvorfall in Gmail.</translation>
@@ -1223,6 +1228,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="778855399387580014">Eine Suche in einem neuen Chrome-Tab starten.</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7807060072011926525">Von Google bereitgestellt</translation>
+<translation id="78146569776629510">Downloads</translation>
 <translation id="7839985698273989086">Offlineseite</translation>
 <translation id="7840771868269352570">Die ausgewählten Elemente werden entfernt.</translation>
 <translation id="7845466610722898">Leseliste anzeigen</translation>
@@ -1314,6 +1320,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8286036467436129157">Anmelden</translation>
 <translation id="8299417921174340354">Du musst zuerst einen Sicherheitscode auf deinem Gerät einrichten, um Passwörter zu verwenden.</translation>
 <translation id="8299613349954694191">Öffnet einen Inkognitotab zum anonymen Surfen im Web.</translation>
+<translation id="8311853334103696030">„Preis beobachten“ ausblenden</translation>
 <translation id="8316944564970119719">Website und Passwort eingeben und dann auf „Speichern“ klicken</translation>
 <translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8328777765163860529">Alle schließen</translation>
@@ -1366,6 +1373,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8588404856427128947">Aus</translation>
 <translation id="8591976964826315682">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="8605219856220328675">Tab schließen.</translation>
+<translation id="8613883225817609844">„Letzte Tabs“ ausblenden</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
 <translation id="8626393685701737946">Du kannst unter Einstellungen &gt; Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
@@ -1470,6 +1478,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="9120217828624527905">Zur Übersetzung der ganzen Seite wechseln</translation>
 <translation id="9124387962554796433">Mithilfe deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren.</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
+<translation id="9144931028079269381">Leseliste ausblenden</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9157836665414082580">Dialogfelder unterdrücken</translation>
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Ausfüllen von Passwörtern</translation>

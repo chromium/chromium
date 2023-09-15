@@ -540,6 +540,7 @@
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2071852865256799872">您的浏览器由贵组织管理，您的个人资料由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2072275792380684364">时尚潮流</translation>
+<translation id="2075497153347571252">您的管理员已禁止 <ph name="ORIGIN" /> 使用<ph name="PERMISSION" /></translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="20817612488360358">已设置为使用系统代理设置，但同时指定了一个明确的代理配置。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
@@ -1876,6 +1877,7 @@
 <translation id="4885256590493466218">结帐时使用 <ph name="CARD_DETAIL" /> 付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保护密码</translation>
 <translation id="4888600795924685526">外语学习</translation>
+<translation id="4890070067176768718">您的管理员已允许 <ph name="ORIGIN" /> 使用<ph name="PERMISSION" /></translation>
 <translation id="4892518386797173871">后方</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奥运会</translation>
@@ -2322,6 +2324,7 @@
 <translation id="5830698870816298009">使用和移动摄像头</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5838278095973806738">请勿在此网站上输入任何敏感信息（例如密码或信用卡信息），因为攻击者可能会盗取这些信息。</translation>
+<translation id="5838732667866024867">您可以使用向左/向右箭头在图表中查看价格变动</translation>
 <translation id="5840318881868981258">在您的 Google 账号 <ph name="ACCOUNT" /> 中更新</translation>
 <translation id="5841338463993781099">要保存到账号吗？</translation>
 <translation id="5847181246682413476">电力供应</translation>

@@ -540,6 +540,7 @@
 <translation id="2071692954027939183">Апавяшчэнні былі заблакіраваны аўтаматычна, бо звычайна вы не даяце дазволу на іх паказ</translation>
 <translation id="2071852865256799872">Вашым браўзерам кіруе ваша арганізацыя, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Стыль i мода</translation>
+<translation id="2075497153347571252">Адміністратар заблакіраваў дазвол "<ph name="PERMISSION" />" для сайта <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="20817612488360358">Сістэмныя налады проксі зададзены для выкарыстання, але яўная канфігурацыя проксі таксама вызначана.</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
@@ -1879,6 +1880,7 @@
 <translation id="4885256590493466218">Аплаціць карткай <ph name="CARD_DETAIL" /> пры афармленні заказу</translation>
 <translation id="4887406273302438710">Абараніце паролі з дапамогай Windows Hello</translation>
 <translation id="4888600795924685526">Вывучэнне замежных моў</translation>
+<translation id="4890070067176768718">Адміністратар уключыў дазвол "<ph name="PERMISSION" />" для сайта <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Задні</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Алімпійскія гульні</translation>
@@ -2325,6 +2327,7 @@
 <translation id="5830698870816298009">выкарыстоўванне і рух камеры</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5838278095973806738">Раім не ўводзіць на гэтым сайце ніякай канфідэнцыяльнай інфармацыі (пароляў, даных крэдытных картак і інш.), бо гэту інфармацыю могуць украсці зламыснікі.</translation>
+<translation id="5838732667866024867">Каб на графіку паглядзець, як змяняліся цэны, выкарыстоўвайце стрэлкі ўлева і ўправа</translation>
 <translation id="5840318881868981258">Ва Уліковым запісе Google <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">Захаваць ва ўліковым запісе?</translation>
 <translation id="5847181246682413476">Крыніцы сілкавання</translation>

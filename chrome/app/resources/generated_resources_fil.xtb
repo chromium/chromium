@@ -2142,7 +2142,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2658941648214598230">Ipakita ang orihinal na content?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Nag-iiba-iba ang feature depende sa device</translation>
 <translation id="2659971421398561408">Pag-resize ng disk ng Crostini</translation>
-<translation id="2660309468936690885">Magagamit na ni <ph name="RECIPIENT_NAME" /> ang iyong username at password kapag ginamit niya ang Google Password Manager para mag-sign in sa <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Kaganapan</translation>
 <translation id="266079277508604648">Hindi makakonekta sa printer. Tiyaking naka-on ang printer at nakakonekta ito sa iyong Chromebook sa pamamagitan ng Wi-Fi o USB.</translation>
 <translation id="2661315027005813059">Back/Forward Cached na Page: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2266,7 +2265,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2743387203779672305">Kopyahin sa clipboard</translation>
 <translation id="274362947316498129">May app na sumusubok na i-access ang <ph name="DEVICE_NAME" />. I-off ang switch ng privacy ng <ph name="DEVICE_NAME" /> para payagan ang access.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">Magagamit na ng mga miyembro ng pamilya mo ang iyong username at password kapag ginamit nila ang Google Password Manager para mag-sign in sa <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Mag-sign in sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
@@ -5572,7 +5570,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5481273127572794904">Hindi pinapayagang awtomatikong mag-download ng maraming file</translation>
 <translation id="5481941284378890518">Magdagdag ng Mga Printer na Nasa Malapit</translation>
 <translation id="5484181871714116891">Kapag naka-on, sa iCloud Keychain gagawin ang mga passkey at magiging available ang mga ito sa iyong mga Apple device. Kapag naka-off, gagawin ang mga passkey sa iyong profile sa Chrome sa device na ito.</translation>
-<translation id="5484462543003267273">Pamahalaan ang pamilya</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Hinihiling sa iyo ng <ph name="MANAGER" /> na i-back up ang data mo at ibalik ang <ph name="DEVICE_TYPE" /> na ito ngayong araw. <ph name="LINK_BEGIN" />Tingnan ang mga detalye<ph name="LINK_END" />}one{Hinihiling sa iyo ng <ph name="MANAGER" /> na i-back up ang data mo at ibalik ang <ph name="DEVICE_TYPE" /> na ito sa loob ng {NUM_DAYS} araw. <ph name="LINK_BEGIN" />Tingnan ang mga detalye<ph name="LINK_END" />}other{Hinihiling sa iyo ng <ph name="MANAGER" /> na i-back up ang data mo at ibalik ang <ph name="DEVICE_TYPE" /> na ito sa loob ng {NUM_DAYS} na araw. <ph name="LINK_BEGIN" />Tingnan ang mga detalye<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Magdagdag ng app</translation>
 <translation id="5485435764083510385">Gustong wika ng caption</translation>
@@ -6342,6 +6339,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6104796831253957966">Puno ang queue ng printer</translation>
 <translation id="6104929924898022309">Gamitin ang key sa paghahanap para baguhin ang gawi ng mga function key</translation>
 <translation id="6106167152849320869">Kung pinili mo ring magpadala ng data ng diagnostic at paggamit sa nakaraang hakbang, kokolektahin ang data na ito para sa mga naka-install na app.</translation>
+<translation id="6111718295497931251">Alisin ang access sa Google Drive</translation>
 <translation id="6111972606040028426">I-enable ang Google Assistant</translation>
 <translation id="6112294629795967147">Pindutin para i-resize</translation>
 <translation id="6112727384379533756">Magdagdag ng ticket</translation>

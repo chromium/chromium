@@ -6104,6 +6104,16 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6477685422297715670">键盘背光颜色：绿色</translation>
 <translation id="6478258366184919502">登录和屏幕来源</translation>
 <translation id="6478261301433199402">通过设置此政策，您可以指定用户的 <ph name="PLUGIN_VM_NAME" /> 映像。此政策应指定为一个 JSON 格式字符串：使用 <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> 指明相应映像的下载位置，并使用 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> 指定用于验证下载内容是否完整的 SHA-256 哈希值。</translation>
+<translation id="6478975565604106426"><ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本即将被弃用。这类脚本是否会触发取决于 <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />。目前，政策默认允许触发这类脚本，但后续会逐步更改为默认禁止触发这类脚本，而且网站必须使用 <ph name="PERMISSIONS_POLICY_NAME" /> 标头明确启用此类脚本。这项企业政策可用于将默认设置强制保留为启用状态，这样就可以避免脚本被逐步弃用。
+
+网页可能需要依赖 <ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本来保存数据，或向服务器发出用户会话结束的信号。我们不建议采用这种做法，因为这样做不可靠，并且会因禁止使用 <ph name="PRODUCT_NAME" /> 而影响性能。尽管有推荐使用的替代方案，但 <ph name="UNLOAD_EVENT_NAME" /> 事件已经使用了很久，有些应用可能仍会依赖这类事件。
+
+如果此政策设为 false 或未设置，那么 <ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本会根据弃用安排被逐步弃用，而且未设置 <ph name="PERMISSIONS_POLICY_NAME" /> 标头的网站将停止触发“unload”事件。
+
+如果此政策设为 true，<ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本将默认继续正常运行。
+
+注意：在 M117 中，此政策的默认值错误地记录成了“true”。unload 事件在 M117 中未发生变化，而且日后也不会改变，所以此政策在该版本中没有任何影响。
+</translation>
 <translation id="6481245670325946423">允许使用无头模式</translation>
 <translation id="648158446793103284">通过设置此政策，您可允许用户从您为 <ph name="PRODUCT_OS_NAME" /> 会话指定的输入法中选择其一。
 

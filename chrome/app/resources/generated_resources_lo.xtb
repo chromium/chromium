@@ -2140,7 +2140,6 @@
 <translation id="2658941648214598230">ສະແດງເນື້ອຫາຕົ້ນສະບັບບໍ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ຄຸນສົມບັດແຕກຕ່າງກັນຕາມແຕ່ລະອຸປະກອນ</translation>
 <translation id="2659971421398561408">ການປັບຂະໜາດດິສ Crostini</translation>
-<translation id="2660309468936690885">ຕອນນີ້ <ph name="RECIPIENT_NAME" /> ສາມາດໃຊ້ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ເຂົາເຈົ້າໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ເພື່ອເຂົ້າສູ່ລະບົບຫາ <ph name="WEBSITE" /> ໄດ້ແລ້ວ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ເຫດ​ການ</translation>
 <translation id="266079277508604648">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຄື່ອງພິມໄດ້. ກະລຸນາກວດເບິ່ງວ່າເຄື່ອງພິມເປີດຢູ່ ແລະ ເຊື່ອມຕໍ່ກັບ Chromebook ຂອງທ່ານຜ່ານ Wi-Fi ຫຼື USB ຫຼືບໍ່.</translation>
 <translation id="2661315027005813059">ໜ້າແຄສຍ້ອນຫຼັງ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2264,7 +2263,6 @@
 <translation id="2743387203779672305">ກັອບປີ້ໄປໃສ່ຄລິບບອດ</translation>
 <translation id="274362947316498129">ມີແອັບກຳລັງພະຍາຍາມເຂົ້າເຖິງ <ph name="DEVICE_NAME" /> ຢູ່. ກະລຸນາປິດສະວິດຄວາມເປັນສ່ວນຕົວ <ph name="DEVICE_NAME" /> ເພື່ອອະນຸຍາດສິດເຂົ້າເຖິງ.</translation>
 <translation id="2745080116229976798">ອັນທີ່​ສຳຄັນ​ນ້ອຍ​ກວ່າ​ທີ່​​ເຂົ້າ​ເກນ​ຄຸນສົມບັດ​ຂອງ Microsoft</translation>
-<translation id="2749026027885331579">ຕອນນີ້ສະມາຊິກຄອບຄົວຂອງທ່ານສາມາດໃຊ້ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ເຂົາເຈົ້າໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ເພື່ອເຂົ້າສູ່ລະບົບຫາ <ph name="WEBSITE" /> ໄດ້ແລ້ວ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">ລົງຊື່ເຂົ້າ​ໃຊ້ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ກວດເບິ່ງໄວຍະກອນກັບການສະກົດຄໍາ</translation>
@@ -5569,7 +5567,6 @@
 <translation id="5481273127572794904">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5481941284378890518">ເພີ່ມເຄື່ອງພິມທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="5484181871714116891">ເມື່ອເປີດໃຊ້, ກະແຈຜ່ານຈະຖືກສ້າງໃນ iCloud Keychain ແລະ ສາມາດໃຊ້ໄດ້ໃນອຸປະກອນ Apple ຕ່າງໆຂອງທ່ານ. ເມື່ອປິດໄວ້, ກະແຈຜ່ານຈະຖືກສ້າງໃນໂປຣໄຟລ໌ Chrome ຂອງທ່ານຢູ່ອຸປະກອນນີ້.</translation>
-<translation id="5484462543003267273">ຈັດການຄອບຄົວ</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນໃນມື້ນີ້. <ph name="LINK_BEGIN" />ເບິ່ງລາຍລະອຽດ<ph name="LINK_END" />}other{<ph name="MANAGER" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນພາຍໃນ {NUM_DAYS} ມື້. <ph name="LINK_BEGIN" />ເບິ່ງລາຍລະອຽດ<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ເພີ່ມ​ແອັບ</translation>
 <translation id="5485435764083510385">ພາສາທີ່ຕ້ອງການສຳລັບຄຳບັນຍາຍ</translation>

@@ -1992,6 +1992,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />ఏదో తప్పు జరిగింది, <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />మరింత సహాయం కోసం, ఈ సైట్‌ను సందర్శించండి: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">మీ బ్యాటరీని సుమారు 80% వద్ద ఉంచి బ్యాటరీ జీవితకాలాన్ని పొడిగిస్తుంది. మీరు సాధారణంగా పవర్ నుండి డిస్‌కనెక్ట్ చేయడానికి ముందే బ్యాటరీ పూర్తిగా ఛార్జ్ అవుతుంది.</translation>
+<translation id="2532146950330687938">పరికరం సిద్ధమవుతోంది...</translation>
 <translation id="2532198298278778531">ChromeOS Flex సెట్టింగ్‌లలో సురక్షిత DNSను మేనేజ్ చేయండి</translation>
 <translation id="2532589005999780174">అధిక కాంట్రాస్ట్ మోడ్</translation>
 <translation id="2533649878691950253">మీ ఖచ్చితమైన లొకేషన్‌ను తెలుసుకోకుండా ఈ సైట్ బ్లాక్ చేయబడింది, ఎందుకంటే మీరు దీన్ని అనుమతించరు</translation>
@@ -2138,7 +2139,6 @@
 <translation id="2658941648214598230">అసలు కంటెంట్‌ను చూపించాలనుకుంటున్నారా?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />పరికరాన్ని బట్టి ఫీచర్‌లు మారతాయి</translation>
 <translation id="2659971421398561408">Crostini డిస్క్ సైజ్‌ మార్పు</translation>
-<translation id="2660309468936690885"><ph name="WEBSITE" />‌కు సైన్ ఇన్ చేయడానికి <ph name="RECIPIENT_NAME" /> Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ఈవెంట్</translation>
 <translation id="266079277508604648">ప్రింటర్‌కు కనెక్ట్ చేయడం సాధ్యం కాలేదు. ప్రింటర్‌ని ఆన్ చేసినట్లు, దానిని Wi-Fi లేదా USB ద్వారా మీ Chromebookకి కనెక్ట్ చేసినట్లు నిర్ధారించుకోండి.</translation>
 <translation id="2661315027005813059">వెనుకకు-ముందుకు కాష్ పేజీ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2262,7 +2262,6 @@
 <translation id="2743387203779672305">క్లిప్‌బోర్డ్‌కు కాపీ చేయి</translation>
 <translation id="274362947316498129"><ph name="DEVICE_NAME" />‌ను యాక్సెస్ చేయడానికి ఒక యాప్ ట్రై చేస్తోంది. యాక్సెస్‌ను అనుమతించడానికి <ph name="DEVICE_NAME" /> గోప్యతా స్విచ్‌ను ఆఫ్ చేయండి.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">మీ ఫ్యామిలీ మెంబర్‌లు <ph name="WEBSITE" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />కు సైన్ ఇన్ చేయండి</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">స్పెల్ చెక్‌తో పాటు వ్యాకరణాన్ని కూడా చెక్ చేయండి</translation>
@@ -5568,7 +5567,6 @@
 <translation id="5481273127572794904">ఆటోమేటిక్‌గా అనేక ఫైళ్లను డౌన్‌లోడ్ చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="5481941284378890518">సమీప ప్రింటర్‌లను జోడించండి</translation>
 <translation id="5484181871714116891">టోగుల్ ఆన్ చేసినప్పుడు, పాస్-కీలు iCloud కీచైన్‌లో క్రియేట్ చేయబడతాయి, ఇంకా అవి మీ Apple పరికరాలలో అందుబాటులో ఉంటాయి. టోగుల్ ఆఫ్ చేసినప్పుడు, ఈ పరికరంలోని మీ Chrome ప్రొఫైల్‌లో పాస్-కీలు క్రియేట్ చేయబడతాయి.</translation>
-<translation id="5484462543003267273">ఫ్యామిలీని మేనేజ్ చేయండి</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈరోజే ఈ <ph name="DEVICE_TYPE" />ను రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}other{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ను {NUM_DAYS} రోజులలోపు రిటర్న్ చేయాల్సి ఉంటుంది. <ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">యాప్‌ను జోడించండి</translation>
 <translation id="5485435764083510385">ప్రాధాన్యత గల క్యాప్షన్ భాష</translation>
@@ -5756,6 +5754,7 @@
 <translation id="5627086634964711283">ఇది, హోమ్ బటన్‌ను క్లిక్ చేసేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
 <translation id="5627676517703583263">Chromeతో స్మార్ట్‌గా బ్రౌజ్ చేయండి</translation>
 <translation id="5627832140542566187">డిస్‌ప్లే ఓరియంటేషన్</translation>
+<translation id="5628434207686266338">పరికర పాస్‌వర్డ్‌ను సెట్ చేయండి</translation>
 <translation id="562935524653278697">మీ నిర్వాహకుడు మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల సింక్‌ను నిలిపివేశారు.</translation>
 <translation id="5631017369956619646">CPU ఉపయోగం</translation>
 <translation id="5631272057151918206">ఇది మీ ఆఫ్‌లైన్ ఫైల్స్ ఉపయోగించే గరిష్ఠంగా <ph name="OFFLINE_STORAGE_SIZE" /> స్పేస్‌ను తీసివేస్తుంది. కొన్ని ఫైల్స్ ఇప్పటికీ ఆఫ్‌లైన్‌లో అందుబాటులో ఉంటాయి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>

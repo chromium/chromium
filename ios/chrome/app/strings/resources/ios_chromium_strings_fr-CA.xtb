@@ -88,6 +88,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chromi
 <translation id="4996471330284142407">Faites-en plus avec le navigateur Chromium : simple, sécuritaire et plus rapide que jamais.</translation>
 <translation id="4999538639245140991">Puisque vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil. Toutefois, vos données resteront dans votre compte Google.</translation>
 <translation id="5042011327527167688">Touchez « Afficher avec Google Maps dans Chromium ».</translation>
+<translation id="5044871537677053278">Chromium détecte les adresses et utilise Google Maps pour vous fournir des itinéraires et des informations locales.</translation>
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applications, utilisez Chromium pour le remplissage automatique</translation>
 <translation id="5131565040785979529">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chromium est utilisé.</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>

@@ -2123,7 +2123,6 @@
 <translation id="2658941648214598230">मूल सामग्री देखाउने हो?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />डिभाइसअनुसार सुविधा फरक हुन्छन्</translation>
 <translation id="2659971421398561408">Crostini का लागि छुट्याइएको डिस्कको आकार बदल्ने</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> अब Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="WEBSITE" /> मा साइन इन गर्न तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">घटना</translation>
 <translation id="266079277508604648">प्रिन्टरमा जडान गर्न सकिएन। उक्त प्रिन्टर सक्रिय अवस्थामा हुनुका साथै त्यसलाई Wi-Fi वा USB मार्फत तपाईंको Chromebook सँग जडान गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="2661315027005813059">ब्याक/फर्वार्ड क्यास गरिएको पेज: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2247,7 +2246,6 @@
 <translation id="2743387203779672305">क्लिपबोर्डमा प्रतिलिपि बनाउँनुहोस्</translation>
 <translation id="274362947316498129">कुनै एपले <ph name="DEVICE_NAME" /> प्रयोग गर्न खोज्दै छ। उक्त एपलाई <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति दिन क्यामेराको गोपनीयता स्विच अफ गर्नुहोस्।</translation>
 <translation id="2745080116229976798">Microsoft मर्यादित पराधीन</translation>
-<translation id="2749026027885331579">तपाईंका परिवारका सदस्य अब Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="WEBSITE" /> मा साइन इन गर्न तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">व्याकरणसँगै हिज्जे पनि जाँच्नुहोस्</translation>
@@ -5552,7 +5550,6 @@
 <translation id="5481273127572794904">धेरै फाइलहरू स्वतः डाउनलोड गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="5481941284378890518">नजिकैका प्रिन्टरहरू थप्नुहोस्</translation>
 <translation id="5484181871714116891">टगल अन हुँदा पासकीहरू iCloud Keychain मा बनाइन्छन् र तपाईंका Apple डिभाइसहरूमा उपलब्ध हुन्छन्। टगल अफ हुँदा पासकीहरू यो डिभाइसमा तपाईंको Chrome प्रोफाइलमा बनाइन्छन्।</translation>
-<translation id="5484462543003267273">पारिवारिक समूह व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का अनुसार तपाईंले आजै आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" />}other{<ph name="MANAGER" /> का अनुसार तपाईंले {NUM_DAYS} दिनभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">एप थप्नुहोस्</translation>
 <translation id="5485435764083510385">क्याप्सनको रुचाइएको भाषा</translation>

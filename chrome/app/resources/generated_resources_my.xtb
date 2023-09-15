@@ -2139,7 +2139,6 @@
 <translation id="2658941648214598230">မူရင်းအကြောင်းအရာကို ပြရမလား။</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />စက်ပစ္စည်းအလိုက် ဝန်ဆောင်မှုများ ကွဲပြားနိုင်သည်</translation>
 <translation id="2659971421398561408">Crostini ဒစ်ခ်အရွယ်အစား ပြောင်းရန်</translation>
-<translation id="2660309468936690885"><ph name="WEBSITE" /> သို့ လက်မှတ်ထိုးဝင်ရန် Google Password Manager သုံးသောအခါ <ph name="RECIPIENT_NAME" /> သည် သင်၏ အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ယခုသုံးနိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ဖြစ်ရပ်</translation>
 <translation id="266079277508604648">ပရင်တာကို ချိတ်ဆက်၍မရပါ။ ပရင်တာကို ဖွင့်ထားပြီး သင့် Chromebook သို့ Wi-Fi သို့မဟုတ် USB မှတစ်ဆင့် ချိတ်ဆက်ထားခြင်းရှိမရှိ စစ်ဆေးပါ။</translation>
 <translation id="2661315027005813059">ရှေ့/နောက် ကက်ရှ်သိမ်းထားသော စာမျက်နှာ- <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2263,7 +2262,6 @@
 <translation id="2743387203779672305">ကလစ်ဘုဒ်သို့ ကူးယူရန်</translation>
 <translation id="274362947316498129">အက်ပ်တစ်ခုက <ph name="DEVICE_NAME" /> ကို သုံးရန် ကြိုးစားနေသည်။ သုံးခွင့်ပြုရန် <ph name="DEVICE_NAME" /> ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ခလုတ်ကို ပိတ်ပါ။</translation>
 <translation id="2745080116229976798">Microsoft အရည်သွေးမှီ အမိန့်လိုက်နာမှု</translation>
-<translation id="2749026027885331579"><ph name="WEBSITE" /> သို့ လက်မှတ်ထိုးဝင်ရန် Google Password Manager သုံးသောအခါ မိသားစုဝင်များသည် သင်၏ အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ယခုသုံးနိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />သို့ လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="2749836841884031656">ဆင်းမ်ကတ်</translation>
 <translation id="2749881179542288782">သဒ္ဒါကို စာလုံးပေါင်းနှင့်အတူ စစ်ကြည့်ရန်</translation>
@@ -5568,7 +5566,6 @@
 <translation id="5481273127572794904">ဖိုင်အများအပြား အလိုအလျောက်ဒေါင်းလုဒ်လုပ်ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="5481941284378890518">အနီးတဝိုက်ရှိ ပုံနှိပ်စက်များကို ထည့်ပါ</translation>
 <translation id="5484181871714116891">ဖွင့်ထားပါက iCloud Keychain တွင် လျှို့ဝှက်ကီးများကို ပြုလုပ်ပြီး သင်၏ Apple စက်များတွင် သုံးနိုင်သည်။ ပိတ်ထားပါက ဤစက်ပေါ်ရှိ သင့် Chrome ပရိုဖိုင်တွင် လျှို့ဝှက်ကီးများကို ပြုလုပ်ပါသည်။</translation>
-<translation id="5484462543003267273">မိသားစု စီမံခန့်ခွဲရန်</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{သင့်ဒေတာများ အရန်သိမ်းပြီး ဤ <ph name="DEVICE_TYPE" /> ကို ယနေ့ပြန်ပို့ရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ <ph name="LINK_BEGIN" />အသေးစိတ် ကြည့်ရန်<ph name="LINK_END" />}other{သင့်ဒေတာများ အရန်သိမ်းပြီး ဤ <ph name="DEVICE_TYPE" /> ကို {NUM_DAYS} ရက်အတွင်း ပြန်ပို့ရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ <ph name="LINK_BEGIN" />အသေးစိတ် ကြည့်ရန်<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">အပ်ဖ်ပေါင်းထည့်မည်</translation>
 <translation id="5485435764083510385">ဦးစားပေး စာတန်းဘာသာစကား</translation>

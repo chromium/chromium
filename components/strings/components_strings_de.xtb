@@ -389,6 +389,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1733762317901693627">Selbst Websites, die normalerweise sicher sind, werden manchmal gehackt. Besuche diese <ph name="BEGIN_LINK" />unsichere Website<ph name="END_LINK" /> nur, wenn du dir über die Risiken im Klaren bist.</translation>
 <translation id="1734864079702812349">American Express</translation>
 <translation id="1734878702283171397">Setze dich mit dem Systemadministrator in Verbindung.</translation>
+<translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, gültig bis: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1741613555002899862">Muss angegeben werden und ein gültiger String sein, wenn "DnsOverHttpsMode" auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist.</translation>
 <translation id="1743393865165844832">Bettwaren und -wäsche</translation>
@@ -539,6 +540,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da du sie normalerweise nicht zulässt</translation>
 <translation id="2071852865256799872">Dein Browser wird von deiner Organisation verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2072275792380684364">Mode</translation>
+<translation id="2075497153347571252">Dein Administrator hat <ph name="PERMISSION" /> auf <ph name="ORIGIN" /> blockiert</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="20817612488360358">Die System-Proxy-Einstellungen sind zur Verwendung angegeben, gleichzeitig wurde aber auch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="2082238445998314030">Ergebnis <ph name="RESULT_NUMBER" /> von <ph name="TOTAL_RESULTS" /></translation>
@@ -683,6 +685,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2366689192918515749">Fleisch und Meeresfrüchte</translation>
 <translation id="2367567093518048410">Ebene</translation>
 <translation id="23703388716193220">Golfausrüstung</translation>
+<translation id="2378084239755710604">„Karte speichern“ geschlossen.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Bedienungshilfen in den Chrome-Einstellungen personalisieren</translation>
 <translation id="2384307209577226199">Unternehmensstandard</translation>
@@ -1876,6 +1879,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4885256590493466218">An der Kasse mit <ph name="CARD_DETAIL" /> zahlen</translation>
 <translation id="4887406273302438710">Passwörter mit Windows Hello schützen</translation>
 <translation id="4888600795924685526">Fremdsprachenunterricht</translation>
+<translation id="4890070067176768718">Dein Administrator hat <ph name="PERMISSION" /> auf <ph name="ORIGIN" /> zugelassen</translation>
 <translation id="4892518386797173871">Hinten</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympische Spiele</translation>
@@ -2247,6 +2251,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5653432653077411130">Wasserversorgung und -aufbereitung</translation>
 <translation id="5654927323611874862">ID für hochgeladenen Absturzbericht:</translation>
 <translation id="5659593005791499971">E-Mail</translation>
+<translation id="5660122698869360728">Ein neuer intelligenter Ordner, in dem du alle deine Shoppingseiten an einem einzigen Ort speichern und beispielsweise automatisch Preise beobachten und Preisinformationen abrufen kannst.</translation>
 <translation id="5663955426505430495">Der Administrator dieses Geräts hat Erweiterungen für zusätzliche Funktionen installiert. Diese Erweiterungen können auf einige deiner Daten zugreifen.</translation>
 <translation id="5666606186680807225">Strände und Inseln</translation>
 <translation id="5667827081946850877">Hörbücher</translation>
@@ -2259,6 +2264,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5689199277474810259">Als JSON exportieren</translation>
 <translation id="5689516760719285838">Standort</translation>
 <translation id="569000877158168851">Der Wert von "DnsOverHttpsTemplates" ist nicht relevant und wird nicht verwendet, es sei denn, die Richtlinie "DnsOverHttpsMode" ist auf <ph name="SECURE_DNS_MODE_AUTOMATIC" /> oder <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt.</translation>
+<translation id="5691848789297492617">„Karte speichern“ ist vollständig geöffnet.</translation>
 <translation id="5695542892312572833">Möchtest du zum Bestätigen und Abschließen deines Kaufs Windows Hello verwenden?</translation>
 <translation id="5699628521141772782">Molkereiprodukte und Eier</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
@@ -2320,6 +2326,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5830698870816298009">Kamera verwenden und bewegen</translation>
 <translation id="583281660410589416">Unbekannt</translation>
 <translation id="5838278095973806738">Du solltest keine vertraulichen Informationen wie Passwörter oder Kreditkartennummern auf dieser Website eingeben, da sie von Angreifern gestohlen werden könnten.</translation>
+<translation id="5838732667866024867">Mit dem Links-/Rechtspfeil kannst du Preisänderungen über das Diagramm überprüfen</translation>
 <translation id="5840318881868981258">In meinem Google-Konto, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">In Konto speichern?</translation>
 <translation id="5847181246682413476">Stromversorgung</translation>
@@ -3010,6 +3017,7 @@ Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="7256634549594854023">Hinteres Fach</translation>
 <translation id="725866823122871198">Es kann keine private Verbindung zu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hergestellt werden, weil Datum und Uhrzeit deines Computers falsch sind (<ph name="DATE_AND_TIME" />).</translation>
+<translation id="7260075294900977274">Ein neuer intelligenter Ordner, in dem du alle deine Shoppingseiten an einem einzigen Ort speichern und beispielsweise automatisch Preise beobachten und Preisinformationen abrufen kannst</translation>
 <translation id="7265608370113700582">Die Adresse ist nur auf diesem Gerät verfügbar</translation>
 <translation id="7275334191706090484">Verwaltete Lesezeichen</translation>
 <translation id="7277998515889183784">Kosmetikartikel</translation>
@@ -3234,6 +3242,7 @@ Weitere Details:
 <translation id="7676643023259824263">Nach Text aus Zwischenablage suchen: <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Browserverlauf in den Chrome-Einstellungen anzeigen und verwalten</translation>
 <translation id="7679947978757153706">Baseball</translation>
+<translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, gültig bis: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7681273392938116652">Fantasy Sport</translation>
 <translation id="7682287625158474539">Versand</translation>
 <translation id="7682451652090915298">Rugby</translation>
@@ -3311,6 +3320,7 @@ Weitere Details:
 <translation id="7822611063308883975">Tragbare Spielekonsolen</translation>
 <translation id="7825558994363763489">Mikrowellen</translation>
 <translation id="782886543891417279">Unter Umständen musst du die Anmeldeseite des verwendeten WLAN-Netzwerken (<ph name="WIFI_NAME" />) aufrufen.</translation>
+<translation id="7831993212387676366">Was ist die Einkaufsliste?</translation>
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>

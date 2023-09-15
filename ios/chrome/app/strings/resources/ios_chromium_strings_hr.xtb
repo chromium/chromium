@@ -93,6 +93,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="4736424910885271643">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, pa će se vaši podaci iz Chromiuma izbrisati s ovog uređaja</translation>
 <translation id="4790638144988730920">Nastavite upotrebljavati podatke iz Chromiuma na svom Google računu.</translation>
 <translation id="4828317641996116749">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovo kasnije.</translation>
+<translation id="4935539884203837577">Chromium može otkriti evidencijske brojeve koje unesete i pratiti vaše pakete na stranici Nova kartica te istodobno pomoći drugim doživljajima kupnje na Chromiumu.</translation>
 <translation id="4985291216379576555">Chromium ne može provjeriti ima li ažuriranja jer ste offline</translation>
 <translation id="4996471330284142407">Veća učinkovitost uz Chromium, jednostavniji, sigurniji i brži nego ikad.</translation>
 <translation id="4999538639245140991">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromiuma izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
@@ -116,6 +117,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="5688047395118852662">Na ovoj se kartici prikazuju prijedlozi o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše zaporke</translation>
 <translation id="5777187867430702742">Chromiumova stranica</translation>
+<translation id="584303319228224680">Automatsko praćenje paketa na Chromiumu</translation>
 <translation id="5889847953983052353">Kad je uključeno:
 <ph name="BEGIN_INDENT" /> • Pomozite poboljšati Chromium za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
 

@@ -1992,6 +1992,7 @@
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />কিবা ভুল হৈছে আৰু <ph name="DEVICE_OS" /> ইনষ্টল কৰিব পৰা নগ’ল।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />অধিক সহায় পাবলৈ ইয়ালৈ যাওক: g.co/flex/InstallErrors।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">আপোনাৰ বেটাৰী প্ৰায় ৮০% ৰাখি বেটাৰীৰ জীৱনকাল বৃদ্ধি কৰক। আপুনি সাধাৰণতে পাৱাৰ পৰা সংযোগ বিচ্ছিন্ন কৰাৰ পূৰ্বে বেটাৰীটো সম্পূৰ্ণৰূপে চাৰ্জ হ’ব।</translation>
+<translation id="2532146950330687938">ডিভাইচটো সাজু কৰি থকা হৈছে...</translation>
 <translation id="2532198298278778531">ChromeOS Flexৰ ছেটিঙত সুৰক্ষিত DNS পৰিচালনা কৰক</translation>
 <translation id="2532589005999780174">হাই কনট্ৰাষ্ট ম’ড</translation>
 <translation id="2533649878691950253">এই ছাইটটোক আপোনাৰ সঠিক অৱস্থান জনাৰ পৰা অৱৰোধ কৰা হৈছে কিয়নো আপুনি সাধাৰণতে ইয়াৰ অনুমতি নিদিয়ে</translation>
@@ -2138,7 +2139,6 @@
 <translation id="2658941648214598230">মূল সমল দেখুৱাব নেকি?</translation>
 <translation id="2659381484350128933">ডিভাইচ অনুসৰি <ph name="FOOTNOTE_POINTER" /> সুবিধাসমূহ বিভিন্ন হয়</translation>
 <translation id="2659971421398561408">Crostini ডিস্কৰ আকাৰ সলনি কৰা</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" />এ <ph name="WEBSITE" />ত ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰাৰ সময়ত তেওঁ আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড এতিয়া ব্যৱহাৰ কৰিব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">অনুষ্ঠান</translation>
 <translation id="266079277508604648">প্ৰিণ্টাৰৰ সৈতে সংযোগ কৰিব নোৱাৰি। প্ৰিণ্টাৰটো অন কৰা আছেনে আৰু ই ৱাই-ফাই বা ইউ.এছ.বি.ৰ জৰিয়তে আপোনাৰ Chromebookত সংযোগ হৈ আছেনে নাই চাওক।</translation>
 <translation id="2661315027005813059">বেক-ফৰৱাৰ্ড কেশ্বৰ পৃষ্ঠা: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2262,7 +2262,6 @@
 <translation id="2743387203779672305">ক্লিপব'ৰ্ডত প্ৰতিলিপি কৰক</translation>
 <translation id="274362947316498129">এটা এপে <ph name="DEVICE_NAME" /> এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ <ph name="DEVICE_NAME" />ৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579">আপোনাৰ পৰিয়ালৰ সদস্যসকলে <ph name="WEBSITE" />ত ছাইন ইন কৰিবলৈ Google Password Manager ব্যৱহাৰ কৰাৰ সময়ত তেওঁলোকে আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড এতিয়া ব্যৱহাৰ কৰিব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />ত ছাইন ইন কৰক</translation>
 <translation id="2749836841884031656">ছিম</translation>
 <translation id="2749881179542288782">বানান আৰু ব্যাকৰণত থকা ভুলবোৰ চাওক</translation>
@@ -5567,7 +5566,6 @@
 <translation id="5481273127572794904">স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ অনুমতি নাই</translation>
 <translation id="5481941284378890518">নিকটৱৰ্তী প্ৰিণ্টাৰ যোগ কৰক</translation>
 <translation id="5484181871714116891">অন কৰা থাকিলে, পাছকীসমূহ iCloud কীচেইনত সৃষ্টি কৰা হয় আৰু আপোনাৰ সমগ্ৰ Apple ডিভাইচত উপলব্ধ হয়। অফ কৰা থাকিলে পাছকীসমূহ এই ডিভাইচটোত আপোনাৰ Chrome প্ৰ’ফাইলত সৃষ্টি কৰা হয়।</translation>
-<translation id="5484462543003267273">পৰিয়াল পৰিচালনা কৰক</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱাৰ আৰু এই <ph name="DEVICE_TYPE" />টো আজি উভতাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}one{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}other{<ph name="MANAGER" />ৰ বাবে আপুনি নিজৰ ডেটাৰ বেক আপ লোৱা আৰু {NUM_DAYS} দিনৰ ভিতৰত এই <ph name="DEVICE_TYPE" />টো ঘূৰাই দিয়াৰ আৱশ্যক। <ph name="LINK_BEGIN" />সবিশেষ চাওক<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">এপ্ যোগ কৰক</translation>
 <translation id="5485435764083510385">অগ্ৰাধিকাৰপ্ৰাপ্ত কেপশ্বনৰ ভাষা</translation>
@@ -5755,6 +5753,7 @@
 <translation id="5627086634964711283">আপুনি গৃহপৃষ্ঠাৰ বুটামত ক্লিক কৰিলে কি পৃষ্ঠা দেখুওৱা হ'ব সেয়াও নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="5627676517703583263">Chromeৰ জৰিয়তে স্মার্ট পদ্ধতিৰে ব্ৰাউজ কৰক</translation>
 <translation id="5627832140542566187">ডিছপ্লে’ৰ দিশ</translation>
+<translation id="5628434207686266338">ডিভাইচৰ পাছৱৰ্ড ছেট কৰক</translation>
 <translation id="562935524653278697">আপোনাৰ প্ৰশাসকে আপোনাৰ বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিংসমূহ ছিংক কৰা সুবিধাটো অক্ষম কৰিছে।</translation>
 <translation id="5631017369956619646">চিপিইউৰ ব্যৱহাৰ</translation>
 <translation id="5631272057151918206">ই আপোনাৰ অফলাইন ফাইলসমূহে ব্যৱহাৰ কৰি থকা <ph name="OFFLINE_STORAGE_SIZE" /> পৰ্যন্ত স্থান আঁতৰাব। কিছুমান ফাইল তথাপি অফলাইনত উপলব্ধ হ’ব। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>

@@ -1997,6 +1997,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Prišlo je do napake. Sistema <ph name="DEVICE_OS" /> ni bilo mogoče namestiti.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Če potrebujete dodatno pomoč, obiščite g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">Podaljša čas delovanja baterije tako, da drži bateriji pri približno 80 odstotkih. Baterija se popolnoma napolni, preden napravo običajno izklopite iz napajanja.</translation>
+<translation id="2532146950330687938">Pripravljanje naprave …</translation>
 <translation id="2532198298278778531">Upravljanje varnega DNS-ja v nastavitvah sistema ChromeOS Flex</translation>
 <translation id="2532589005999780174">Visokokontrastni način</translation>
 <translation id="2533649878691950253">Temu spletnemu mestu je onemogočen dostop do vaše natančne lokacije, ker običajno tega ne dovolite.</translation>
@@ -2143,7 +2144,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2658941648214598230">Želite prikazati izvirno vsebino?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funkcije se razlikujejo glede na napravo</translation>
 <translation id="2659971421398561408">Sprememba velikosti diska v Crostiniju</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> lahko zdaj uporabi vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Dogodek</translation>
 <translation id="266079277508604648">Ni se mogoče povezati s tiskalnikom. Preverite, ali je tiskalnik vklopljen in povezan s Chromebookom prek omrežja Wi-Fi ali z USB-jem.</translation>
 <translation id="2661315027005813059">Stran v predpomnilniku za hitro obnovitev strani: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2267,7 +2267,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2743387203779672305">Kopiraj v odložišče</translation>
 <translation id="274362947316498129">Aplikacija poskuša dostopati do naprave <ph name="DEVICE_NAME" />. Če želite omogočiti dostop, izklopite zasebnost naprave <ph name="DEVICE_NAME" />.</translation>
 <translation id="2745080116229976798">Microsoftova kvalificirana podrejenost</translation>
-<translation id="2749026027885331579">Družinski člani lahko zdaj uporabijo vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Prijavite se v storitev <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Preverjanje slovnice in črkovanja</translation>
@@ -5573,7 +5572,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5481273127572794904">Ni dovoljeno samodejno prenesti več datotek</translation>
 <translation id="5481941284378890518">Dodajanje tiskalnikov v bližini</translation>
 <translation id="5484181871714116891">Če je vklopljeno, se ključi za dostop ustvarijo v storitvi iCloud Keychain in so na voljo v napravah Apple. Če je izklopljeno, se ključi za dostop ustvarijo v profilu v Chromu v tej napravi.</translation>
-<translation id="5484462543003267273">Upravljanje družine</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva, da naredite varnostno kopijo podatkov in vrnete to napravo <ph name="DEVICE_TYPE" /> še danes. <ph name="LINK_BEGIN" />Ogled podrobnosti<ph name="LINK_END" />}one{<ph name="MANAGER" /> zahteva, da naredite varnostno kopijo podatkov in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dnevu. <ph name="LINK_BEGIN" />Ogled podrobnosti<ph name="LINK_END" />}two{<ph name="MANAGER" /> zahteva, da naredite varnostno kopijo podatkov in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dnevih. <ph name="LINK_BEGIN" />Ogled podrobnosti<ph name="LINK_END" />}few{<ph name="MANAGER" /> zahteva, da naredite varnostno kopijo podatkov in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dneh. <ph name="LINK_BEGIN" />Ogled podrobnosti<ph name="LINK_END" />}other{<ph name="MANAGER" /> zahteva, da naredite varnostno kopijo podatkov in vrnete to napravo <ph name="DEVICE_TYPE" /> v {NUM_DAYS} dneh. <ph name="LINK_BEGIN" />Ogled podrobnosti<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Dodaj aplikacijo</translation>
 <translation id="5485435764083510385">Prednostni jezik podnapisov</translation>
@@ -5763,6 +5761,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5627086634964711283">Določa tudi, katera stran je prikazana, ko kliknete gumb za domačo stran.</translation>
 <translation id="5627676517703583263">Pametno brskanje s Chromom</translation>
 <translation id="5627832140542566187">Postavitev zaslona</translation>
+<translation id="5628434207686266338">Nastavitev gesla za napravo</translation>
 <translation id="562935524653278697">Skrbnik je onemogočil sinhroniziranje zaznamkov, zgodovine, gesel in drugih nastavitev.</translation>
 <translation id="5631017369956619646">Uporaba CPE</translation>
 <translation id="5631272057151918206">S tem boste sprostili do <ph name="OFFLINE_STORAGE_SIZE" /> prostora, ki ga uporabljajo datoteke brez povezave. Nekatere datoteke bodo še vedno na voljo brez povezave. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>

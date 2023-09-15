@@ -2140,7 +2140,6 @@
 <translation id="2658941648214598230">அசல் உள்ளடக்கத்தைக் காட்டவா?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />சாதனத்திற்கேற்ப அம்சங்கள் மாறுபடலாம்</translation>
 <translation id="2659971421398561408">Crostini டிஸ்க் அளவை மாற்று</translation>
-<translation id="2660309468936690885"><ph name="WEBSITE" /> தளத்தில் இனி Google Password Managerரைப் பயன்படுத்தி <ph name="RECIPIENT_NAME" /> உள்நுழையும்போது உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் அவர் பயன்படுத்தலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">நிகழ்வு</translation>
 <translation id="266079277508604648">பிரிண்டருடன் இணைக்க முடியவில்லை. பிரிண்டர் இயக்கப்பட்டு, வைஃபை அல்லது USB மூலம் அது உங்கள் Chromebook உடன் இணைக்கப்பட்டுள்ளதா எனச் சரிபார்க்கவும்.</translation>
 <translation id="2661315027005813059">‘முன் பின் பக்கங்களைத் தற்காலிகமாகச் சேமித்தல்’ அம்சத்தில் சேமிக்கப்பட்ட பக்கம்: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2264,7 +2263,6 @@
 <translation id="2743387203779672305">கிளிப்போர்டுக்கு நகலெடு</translation>
 <translation id="274362947316498129">ஒரு ஆப்ஸ் <ph name="DEVICE_NAME" /> ஐ அணுக முயல்கிறது. அணுகலை வழங்க <ph name="DEVICE_NAME" /> தனியுரிமை ஸ்விட்ச்சை முடக்கவும்.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
-<translation id="2749026027885331579"><ph name="WEBSITE" /> தளத்தில் இனி Google Password Managerரைப் பயன்படுத்தி உங்கள் குடும்ப உறுப்பினர்கள் உள்நுழையும்போது உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் அவர்கள் பயன்படுத்தலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> இல் உள்நுழையவும்</translation>
 <translation id="2749836841884031656">சிம்</translation>
 <translation id="2749881179542288782">இலக்கணம் மற்றும் எழுத்துப்பிழை சரிபார்</translation>
@@ -5570,7 +5568,6 @@
 <translation id="5481273127572794904">பல ஃபைல்களைத் தானாகவே பதிவிறக்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="5481941284378890518">அருகிலுள்ள பிரிண்டர்களைச் சேர்</translation>
 <translation id="5484181871714116891">இது இயக்கப்பட்டிருந்தால், iCloud Keychainனில் கடவுச்சாவிகள் உருவாக்கப்பட்டு உங்கள் Apple சாதனங்கள் அனைத்திலும் கிடைக்கும். இது முடக்கப்பட்டிருந்தால், இந்தச் சாதனத்திலுள்ள உங்கள் Chrome சுயவிவரத்தில் கடவுச்சாவிகள் உருவாக்கப்படும்.</translation>
-<translation id="5484462543003267273">குடும்பக் குழுவை நிர்வகியுங்கள்</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை இன்றே திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}other{உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை {NUM_DAYS} நாட்களுக்குள் திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">பயன்பாட்டைச் சேர்</translation>
 <translation id="5485435764083510385">வசனங்களுக்கான விருப்ப மொழி</translation>
@@ -6340,6 +6337,7 @@
 <translation id="6104796831253957966">பிரிண்டர் வரிசை நிரம்பிவிட்டது</translation>
 <translation id="6104929924898022309">ஃபங்க்ஷன் பட்டன்களின் செயல்பாட்டை மாற்ற தேடல் விசையைப் பயன்படுத்து</translation>
 <translation id="6106167152849320869">பிழை கண்டறிதல் தரவையும் உபயோகத் தரவையும் அனுப்ப முந்தைய படியில் தேர்வுசெய்திருந்தால் நிறுவப்பட்ட ஆப்ஸ்களுக்கான இந்தத் தரவு சேகரிக்கப்படும்.</translation>
+<translation id="6111718295497931251">Google Drive அணுகலை அகற்று</translation>
 <translation id="6111972606040028426">Google Assistantடை இயக்கு</translation>
 <translation id="6112294629795967147">அளவை மாற்ற, தொடவும்</translation>
 <translation id="6112727384379533756">டிக்கெட்டைச் சேர்</translation>

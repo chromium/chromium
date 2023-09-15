@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1105362920864247682">Browserdaten in Chrome löschen.</translation>
 <translation id="1143896152279775643">Dein Passwort wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="1180362651362502943">Chrome-Daten in deinem Google-Konto weiterhin verwenden.</translation>
 <translation id="1282031177488366470">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
@@ -56,6 +57,7 @@ Wichtige Hinweise:
 <translation id="2736805085127235148">Chrome-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
 <translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="2840432500933227975">Öffne die Chrome-Einstellungen unter iOS, tippe auf „Standard-Browser-App“ und wähle „Chrome“ aus.</translation>
+<translation id="2868822340714096138">Browserdaten in Chrome löschen</translation>
 <translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Wähle <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
@@ -136,6 +138,7 @@ Wichtige Hinweise:
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6427126399757991875">Deine Organisation richtet Chrome ein…</translation>
+<translation id="6545449117344801102">Chrome erkennt Adressen über Google Maps, um dir Wegbeschreibungen und lokale Informationen bereitzustellen.</translation>
 <translation id="6600954340915313787">In Chrome kopiert</translation>
 <translation id="6634107063912726160">Wenn du dich abmeldest, synchronisiert Chrome keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="6646696210740573446">Sendet einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs und Teile von Seiteninhalten an Google senden.</translation>

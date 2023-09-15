@@ -2131,7 +2131,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2658941648214598230">Kas näidata originaalsisu?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funktsioonid erinevad seadmeti</translation>
 <translation id="2659971421398561408">Crostini ketta suuruse muutmine</translation>
-<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> saab nüüd kasutada teie kasutajanime ja parooli, kui ta kasutab saidile <ph name="WEBSITE" /> sisselogimiseks Google'i paroolihaldurit. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Sündmus</translation>
 <translation id="266079277508604648">Printeriga ei saa ühendada. Kontrollige, kas printer on sisse lülitatud ja teie Chromebookiga WiFi või USB kaudu ühendatud.</translation>
 <translation id="2661315027005813059">Vahemälu tagasi-edasiliikumiseks lehel: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2255,7 +2254,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2743387203779672305">Kopeeri lõikelauale</translation>
 <translation id="274362947316498129">Rakendus üritab seadmele <ph name="DEVICE_NAME" /> juurde pääseda. Juurdepääsu lubamiseks lülitage seadme <ph name="DEVICE_NAME" /> privaatsuse lüliti välja.</translation>
 <translation id="2745080116229976798">Microsofti piiratud subordinatsioon</translation>
-<translation id="2749026027885331579">Teie pereliikmed saavad nüüd kasutada teie kasutajanime ja parooli, kui nad kasutavad Google'i paroolihaldurit saidile <ph name="WEBSITE" /> sisselogimiseks. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Logi sisse teenusesse <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kontrolli grammatikat õigekirjakontrolliga</translation>
@@ -5560,7 +5558,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5481273127572794904">Pole lubatud automaatselt mitut faili alla laadida</translation>
 <translation id="5481941284378890518">Läheduses olevate printerite lubamine</translation>
 <translation id="5484181871714116891">Kui see on sisse lülitatud, luuakse pääsuvõtmed iCloud Keychainis ja need on saadaval kõigis teie Apple'i seadmetes. Kui see on välja lülitatud, luuakse pääsuvõtmed selles seadmes teie Chrome'i profiilis.</translation>
-<translation id="5484462543003267273">Halda peret</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> nõuab, et varundaksite oma andmed ja tagastaksite seadme <ph name="DEVICE_TYPE" /> täna. <ph name="LINK_BEGIN" />Kuva üksikasjad<ph name="LINK_END" />}other{<ph name="MANAGER" /> nõuab, et varundaksite oma andmed ja tagastaksite seadme <ph name="DEVICE_TYPE" /> {NUM_DAYS} päeva jooksul. <ph name="LINK_BEGIN" />Kuva üksikasjad<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Lisa rakendus</translation>
 <translation id="5485435764083510385">Eelistatud subtiitrite keel</translation>

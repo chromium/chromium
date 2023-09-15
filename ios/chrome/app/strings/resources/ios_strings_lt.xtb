@@ -197,6 +197,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2049727122989709386"><ph name="COUNT" /> pask. naudojamas toks pat slaptažodis</translation>
 <translation id="2050196510205866090">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas mokėjimo metodas.}one{Virš klaviatūros pasiekiamas {count} išsaugotas mokėjimo metodas.}few{Virš klaviatūros pasiekiami {count} išsaugoti mokėjimo metodai.}many{Virš klaviatūros pasiekiama {count} išsaugoto mokėjimo metodo.}other{Virš klaviatūros pasiekiama {count} išsaugotų mokėjimo metodų.}}</translation>
 <translation id="2055515971416882518">Atidarykite skiltį „Nustatymai“.</translation>
+<translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2073572773299281212">Aktyvus prieš <ph name="DAYS" /> d.</translation>
 <translation id="2074131957428911366">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
@@ -478,6 +479,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3587885837929752825">Jūsų organizacija riboja, ką galite išsaugoti savo „Google“ paskyroje.</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
 <translation id="3595252146048399851">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
+<translation id="3599500618468205645">Slėpti parinktį „Stebėti <ph name="DOMAIN_NAME" />“</translation>
 <translation id="3603009562372709545">Kopijuoti nuorodos URL</translation>
 <translation id="3607167657931203000">Autom. pild. duom.</translation>
 <translation id="3609785682760573515">Sinchronizuojama...</translation>
@@ -488,6 +490,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3646736009628185125">Šeimos grupės narys šiuo metu negali gauti slaptažodžių. Paprašykite atnaujinti „Chrome“ ir sinchronizuoti slaptažodžius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">Pasiekiamas konfigūracijos profilis</translation>
 <translation id="3670030362669914947">Numeris</translation>
+<translation id="3680970647557344817">Slėpti parinktį „Redaguoti žymę“</translation>
 <translation id="368329460027487650">Atsijungta. Atidaromos prisijungimo parinktys.</translation>
 <translation id="3688815115226493214">Skirtukų pasiūlymai</translation>
 <translation id="3700134753671613714">Prisijunkite, kad pasiektumėte žymes visuose įrenginiuose.</translation>
@@ -637,6 +640,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4592368184551360546">Klaviatūra</translation>
 <translation id="4601095002996233687">Nuodugnus įtartinų atsisiuntimų nuskaitymas.</translation>
 <translation id="4606247758155004938">Jūsų naršyklę tvarko jūsų organizacija.</translation>
+<translation id="4611811151908969241">Slėpti parinktį „Nebestebėti <ph name="DOMAIN_NAME" />“</translation>
 <translation id="461440297010471931">Ieškoma naudojant „Google“</translation>
 <translation id="4616391354457235490">Anuliuoti</translation>
 <translation id="4619564267100705184">Patvirtinti tapatybę</translation>
@@ -1058,6 +1062,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6753469262000681876">Užrakinimo režimas</translation>
 <translation id="6760509555861141183">Grįžti į naujausią skirtuką</translation>
 <translation id="6762812039470893796">Panaikinti visus pasirinkimus</translation>
+<translation id="6771287014037609247">Visada stebėti aptiktus paketus</translation>
 <translation id="6780034285637185932">Pašto kodas</translation>
 <translation id="6781260999953472352">Įjungti sinchronizavimą?</translation>
 <translation id="6781405765516175232">Norėdami pamatyti maršruto parinktis, palieskite „Gauti nuorodų“.</translation>
@@ -1409,6 +1414,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8780076847684176174">{count,plural, =1{Peržiūrėti skirtuką...}one{Peržiūrėti visus skirtukus...}few{Peržiūrėti visus skirtukus...}many{Peržiūrėti visus skirtukus...}other{Peržiūrėti visus skirtukus...}}</translation>
 <translation id="8787968206789828143">Paieškos žiniatinklyje</translation>
 <translation id="8792626944327216835">mikrofonas</translation>
+<translation id="8793366654064127924">Klausti kiekvieną kartą</translation>
 <translation id="8803639129939845298">Saugūs</translation>
 <translation id="8806823403540278281">Jūsų organizacija reikalauja, kad naršytumėte privačiai. Skirtukai nesaugomi inkognito režimu.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -1422,6 +1428,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8849001918648564819">Paslėpta</translation>
 <translation id="8855242995793521265">Pastebimai nesulėtėja naršyklės arba įrenginio veikimas.</translation>
 <translation id="8855781063981781621">Jei norite išjungti užrakinimo režimą naršyklėje „Chrome“, išjunkite jį „iPad“ įrenginyje.</translation>
+<translation id="886335568110896118">Slėpti parinktį „Pateikti užklausą dėl svetainės mobiliesiems“</translation>
 <translation id="8863431381414769983">Gauti nuorodas ir vietinę informaciją iš „Google“ žemėlapių</translation>
 <translation id="8865415417596392024">„Chrome“ duomenys jūsų paskyroje</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} skirtukas}one{{count} skirtukas}few{{count} skirtukai}many{{count} skirtuko}other{{count} skirtukų}}</translation>

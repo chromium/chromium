@@ -5548,7 +5548,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5478520208448702555">Les sites peuvent ouvrir une fenêtre d'incrustation d'image lorsque vous passez à un autre onglet</translation>
 <translation id="5481273127572794904">Non autorisés à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
-<translation id="5484462543003267273">Gérer la famille</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}one{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}other{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ajouter une application</translation>
 <translation id="5485435764083510385">Langue préférée des légendes</translation>
@@ -6317,6 +6316,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6104796831253957966">La file d'attente de l'imprimante est pleine</translation>
 <translation id="6104929924898022309">Utilisez la touche de recherche pour modifier le comportement des touches de fonction</translation>
 <translation id="6106167152849320869">Si vous avez également choisi d'envoyer des données de diagnostic et d'utilisation à l'étape précédente, ces données seront collectées pour les applications installées.</translation>
+<translation id="6111718295497931251">Retirer l'accès à Google Disque</translation>
 <translation id="6111972606040028426">Activer l'Assistant Google</translation>
 <translation id="6112294629795967147">Touchez pour redimensionner</translation>
 <translation id="6112727384379533756">Ajouter un ticket</translation>

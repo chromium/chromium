@@ -1993,6 +1993,7 @@
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />משהו השתבש ולא ניתן היה להתקין את <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />עזרה נוספת זמינה בכתובת g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">הארכת חיי הסוללה על ידי שמירת רמת הטעינה סביב 80%. הסוללה תיטען במלואה לפני ניתוק המטען מהחשמל.</translation>
+<translation id="2532146950330687938">המכשיר בתהליך הגדרה…</translation>
 <translation id="2532198298278778531">‏ניהול ה-DNS המאובטח בהגדרות של ChromeOS Flex</translation>
 <translation id="2532589005999780174">מצב ניגודיות גבוהה</translation>
 <translation id="2533649878691950253">הגישה של האתר הזה למיקום המדויק שלך חסומה כי בחרת פעמים רבות לא לאשר אותה.</translation>
@@ -2139,7 +2140,6 @@
 <translation id="2658941648214598230">להציג את התוכן המקורי?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />במכשירים שונים יש תכונות שונות</translation>
 <translation id="2659971421398561408">‏שינוי הגודל של שטח האחסון של Crostini בכונן</translation>
-<translation id="2660309468936690885">‏עכשיו יש ל<ph name="RECIPIENT_NAME" /> אפשרות להשתמש בשם המשתמש ובסיסמה שלך במסגרת השימוש במנהל הסיסמאות של Google כדי להיכנס אל <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">אירוע</translation>
 <translation id="266079277508604648">‏לא ניתן להתחבר אל המדפסת. יש לוודא שהמדפסת פועלת ומחוברת אל ה-Chromebook דרך רשת ה-Wi-Fi או בחיבור USB.</translation>
 <translation id="2661315027005813059">הדף השמור במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2264,7 +2264,6 @@
 <translation id="2743387203779672305">העתקה ללוח</translation>
 <translation id="274362947316498129">אפליקציה כלשהי מנסה לגשת אל <ph name="DEVICE_NAME" />. כדי לאפשר גישה, צריך להשבית את מתג הפרטיות של <ph name="DEVICE_NAME" />.</translation>
 <translation id="2745080116229976798">‏שעבוד מוגדר של Microsoft</translation>
-<translation id="2749026027885331579">‏עכשיו החברים בקבוצה המשפחתית יכולים להשתמש בשם המשתמש ובסיסמה שלך כשהם משתמשים במנהל הסיסמאות של Google כדי להיכנס אל <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">כניסה אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">בדיקת דקדוק עם איות</translation>
@@ -5570,7 +5569,6 @@
 <translation id="5481273127572794904">לא מורשים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="5481941284378890518">הוספת מדפסות קרובות</translation>
 <translation id="5484181871714116891">‏כשההגדרה מופעלת, מפתחות הגישה נוצרים ב'צרור המפתחות של iCloud' וזמינים בכל מכשירי Apple. כשההגדרה מושבתת, מפתחות הגישה נוצרים בפרופיל Chrome במכשיר הזה.</translation>
-<translation id="5484462543003267273">לניהול הקבוצה המשפחתית</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> היום. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}one{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}two{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך יומיים ({NUM_DAYS}). <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}other{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">התקנת האפליקציה</translation>
 <translation id="5485435764083510385">שפת הכתוביות המועדפת</translation>
@@ -5758,6 +5756,7 @@
 <translation id="5627086634964711283">הגדרה זו גם קובעת איזה דף מוצג כשלוחצים על הלחצן 'דף הבית'.</translation>
 <translation id="5627676517703583263">‏גלישה חכמה עם Chrome</translation>
 <translation id="5627832140542566187">כיוון המסך</translation>
+<translation id="5628434207686266338">הגדרת סיסמה למכשיר</translation>
 <translation id="562935524653278697">מנהל המערכת השבית את הסנכרון של סימניות, היסטוריה, סיסמאות והגדרות אחרות שלך.</translation>
 <translation id="5631017369956619646">שימוש במעבד</translation>
 <translation id="5631272057151918206">הפעולה הזו תפנה מקום אחסון בנפח של עד <ph name="OFFLINE_STORAGE_SIZE" /> שמשמש את הקבצים שלך במצב אופליין. חלק מהקבצים עדיין יהיו זמינים במצב אופליין. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>

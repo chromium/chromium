@@ -6204,6 +6204,16 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
 <translation id="6477685422297715670">Klavye arka ışığı yeşil</translation>
 <translation id="6478258366184919502">Giriş ve ekran kaynakları</translation>
 <translation id="6478261301433199402">Politika ayarlanırsa bir kullanıcı için <ph name="PLUGIN_VM_NAME" /> resmi belirlenir. Bu politikayı, <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> ve resmin indirme işleminin bütünlüğünü doğrulamak için bir SHA-256 karması olacak şekilde indirileceği yeri belirten <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> ile bir JSON biçimi dize olarak belirleyin.</translation>
+<translation id="6478975565604106426"><ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicilerin desteği sonlandırılıyor. Bu işleyicilerin tetiklenip tetiklenmemesi <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" /> politikasına bağlıdır. Şu anda politika bunlara varsayılan olarak izin vermektedir. Gelecekte, kademeli bir şekilde varsayılan olarak izin verilmeyecek ve sitelerin, <ph name="PERMISSIONS_POLICY_NAME" /> başlıklarını kullanarak bunları açıkça etkinleştirmesi gerekecek. Bu kurumsal politika, varsayılan ayarı etkin olarak kalmaya zorlayarak desteğin kademeli olarak sonlandırılmasını devre dışı bırakmak için kullanılabilir.
+ 
+Sayfalar, verileri kaydetmek veya bir kullanıcı oturumunun sonlandırıldığını sunucuya bildirmek için <ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicileri kullanabilir. Güvenilir olmadığı ve <ph name="PRODUCT_NAME" /> kullanımını engelleyerek performansı etkilediği için bu kullanım önerilmez. Önerilen alternatifler mevcut olsa da <ph name="UNLOAD_EVENT_NAME" /> etkinliği uzun süredir kullanılmaktadır. Bazı uygulamalar bunu kullanmaya devam edebilir.
+
+Bu politika, Yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicilerin, desteği sonlandırma süreci doğrultusunda kademeli olarak desteği sonlandırılır ve <ph name="PERMISSIONS_POLICY_NAME" /> başlığını ayarlamayan siteler, "kaldırma" etkinliklerini tetiklemeyi bırakır.
+
+Bu politika, Doğru değerine ayarlanırsa <ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyiciler varsayılan olarak çalışmaya devam eder.
+
+NOT: Bu politikanın varsayılan değeri M117 dokümanında hatalı bir şekilde "true" (doğru) olarak belirtilmiştir. M117'de kaldırma etkinliği değişmedi ve değişmeyecek. Dolayısıyla, bu politikanın o sürümde etkisi yoktur.
+</translation>
 <translation id="6481245670325946423">Gözetimsiz Mod'un kullanılmasına izin ver</translation>
 <translation id="648158446793103284">Politikanın ayarlanması, belirttiğiniz <ph name="PRODUCT_OS_NAME" /> oturumu için kullanıcıların giriş yöntemlerinden birini seçmesine izin verir.
 

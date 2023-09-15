@@ -1981,6 +1981,7 @@
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />کچھ غلط ہو گیا اور <ph name="DEVICE_OS" /> انسٹال نہیں کیا جا سکا۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />مزید مدد کے ليے، ملاحظہ کریں: g.co/flex/InstallErrors۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2532144599248877204">آپ کی بیٹری کو تقریباً %80 رکھ کر بیٹری لائف بڑھاتا ہے۔ عام طور پر آپ کے پاور سے غیر منسلک ہونے سے پہلے بیٹری مکمل طور پر چارج ہو جائے گی۔</translation>
+<translation id="2532146950330687938">آلہ کو تیار کیا جا رہا ہے...</translation>
 <translation id="2532198298278778531">‏ChromeOS Flex کی ترتیبات میں محفوظ DNS کا نظم کریں</translation>
 <translation id="2532589005999780174">زیادہ تضاد وضع</translation>
 <translation id="2533649878691950253">اس سائٹ کو آپ کا قطعی مقام جاننے سے روک دیا گیا تھا کیونکہ آپ عام طور پر اس کی اجازت نہیں دیتے ہیں</translation>
@@ -2127,7 +2128,6 @@
 <translation id="2658941648214598230">اصل مواد دکھائیں؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />خصوصیات آلہ کے لحاظ سے مختلف ہوتی ہیں</translation>
 <translation id="2659971421398561408">‏Crostini کی ڈسک کی سائز تبدیل کریں</translation>
-<translation id="2660309468936690885">‏<ph name="RECIPIENT_NAME" /> Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="WEBSITE" /> میں سائن ان کرنے کے لیے اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">ایونٹ</translation>
 <translation id="266079277508604648">‏پرنٹر سے منسلک نہیں ہو سکا۔ چیک کریں کہ پرنٹر آن ہے اور Wi-Fi یا USB کے ذریعے آپ کے Chromebook سے منسلک ہے۔</translation>
 <translation id="2661315027005813059">بیک/فارورڈ کیش کردہ صفحہ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2251,7 +2251,6 @@
 <translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
 <translation id="274362947316498129">ایک ایپ <ph name="DEVICE_NAME" /> تک رسائی حاصل کرنے کی کوشش کر رہی ہے۔ رسائی کی اجازت دینے کے لیے <ph name="DEVICE_NAME" /> رازداری کا سوئچ آف کریں۔</translation>
 <translation id="2745080116229976798">‏Microsoft کوالیفائڈ سب آرڈینیشن</translation>
-<translation id="2749026027885331579">‏آپ کے فیملی ممبرز Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="WEBSITE" /> میں سائن ان کرنے کے لیے اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> میں سائن ان کریں</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ہجے کے ساتھ گرامر چیک کریں</translation>
@@ -5555,7 +5554,6 @@
 <translation id="5481273127572794904">خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کی اجازت نہیں ہے</translation>
 <translation id="5481941284378890518">قریبی پرنٹرز کو شامل کریں</translation>
 <translation id="5484181871714116891">‏آن ہونے پر، پاس کیز iCloud Keychain میں تخلیق ہوتی ہیں اور آپ کے Apple آلات پر دستیاب ہوتی ہیں۔ آف ہونے پر، اس آلہ پر آپ کی Chrome پروفائل میں پاس کیز تخلیق کی جاتی ہیں۔</translation>
-<translation id="5484462543003267273">فیملی کا نظم کریں</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو آج ہی واپس کرنے کا تقاضہ کرتا ہے۔ <ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}other{<ph name="MANAGER" /> آپ سے اپنے ڈیٹا کا بیک اپ لیںے اور اس <ph name="DEVICE_TYPE" /> کو {NUM_DAYS} دن کے اندر واپس کرنے کا تقاضہ کرتا ہے۔<ph name="LINK_BEGIN" />تفصیلات دیکھیں<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ایپ شامل کریں</translation>
 <translation id="5485435764083510385">کیپشن کی ترجیحی زبان</translation>
@@ -5743,6 +5741,7 @@
 <translation id="5627086634964711283">یہ آپ کی جانب سے ہوم بٹن کلک کرنے پر دکھائی دینے والے صفحہ کو بھی کنٹرول کرتا ہے۔</translation>
 <translation id="5627676517703583263">‏Chrome کے ساتھ اسمارٹ براؤز کا لطف اٹھائیں</translation>
 <translation id="5627832140542566187">ڈسپلے کی سمت بندی</translation>
+<translation id="5628434207686266338">آلہ کا پاس ورڈ سیٹ کریں</translation>
 <translation id="562935524653278697">آپ کے منتظم نے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی مطابقت پذیری غیر فعال کر دی ہے۔</translation>
 <translation id="5631017369956619646">‏CPU کا استعمال</translation>
 <translation id="5631272057151918206">اس سے آپ کی آف لائن فائلز کے ذریعے استعمال کردہ <ph name="OFFLINE_STORAGE_SIZE" /> تک کی اسپیس ہٹ جائے گی۔ کچھ فائلز اب بھی آف لائن دستیاب رہیں گی۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -6324,6 +6323,7 @@
 <translation id="6104796831253957966">پرنٹر کی قطار فُل ہے</translation>
 <translation id="6104929924898022309">فنکشن کلیدوں کے رویے کو تبدیل کرنے کے لیے تلاش کی کلید کا استعمال کریں</translation>
 <translation id="6106167152849320869">اگر آپ گزشتہ مرحلے میں ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا بھی انتخاب کرتے ہیں تو یہ ڈیٹا انسٹال شدہ ایپس کے لیے جمع کیا جائے گا۔</translation>
+<translation id="6111718295497931251">‏Google Drive تک رسائی کو ہٹائیں</translation>
 <translation id="6111972606040028426">‏Google اسسٹنٹ کو فعال کریں</translation>
 <translation id="6112294629795967147">سائز تبدیل کرنے کے لیے ٹچ کریں</translation>
 <translation id="6112727384379533756">ٹکٹ شامل کریں</translation>

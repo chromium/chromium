@@ -541,6 +541,7 @@
 <translation id="2071692954027939183">আপনি সাধারণত বিজ্ঞপ্তি অনুমোদন না করার জন্য অটোমেটিক ব্লক হয়ে গেছে</translation>
 <translation id="2071852865256799872">আপনার প্রতিষ্ঠান আপনার ব্রাউজার ম্যানেজ করে এবং <ph name="PROFILE_DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="2072275792380684364">ফ্যাশন ও স্টাইল</translation>
+<translation id="2075497153347571252">আপনার অ্যাডমিনিস্ট্রেটর <ph name="ORIGIN" />-এ <ph name="PERMISSION" /> সম্পর্কিত অনুমতি ব্লক করেছেন</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="20817612488360358">সিস্টেম প্রক্সি সেটিংস ব্যবহার করার জন্য সেট আছে কিন্তু একটি সুনির্দিষ্ট প্রক্সি কনফিগারেশনও নির্দিষ্ট করা আছে৷</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> এর মধ্যে <ph name="RESULT_NUMBER" /> টি ফলাফল</translation>
@@ -1881,6 +1882,7 @@
 <translation id="4885256590493466218">চেক-আউট করার সময় <ph name="CARD_DETAIL" /> দিয়ে পেমেন্ট করুন</translation>
 <translation id="4887406273302438710">Windows Hello-এর মাধ্যমে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="4888600795924685526">বিদেশী ভাষা শিক্ষা</translation>
+<translation id="4890070067176768718">আপনার অ্যাডমিনিস্ট্রেটর <ph name="ORIGIN" />-এ <ph name="PERMISSION" /> সম্পর্কিত অনুমতি দিয়েছেন</translation>
 <translation id="4892518386797173871">রিয়ার</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">অলিম্পিক</translation>
@@ -2327,6 +2329,7 @@
 <translation id="5830698870816298009">ক্যামেরার ব্যবহার এবং গতিবিধি</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5838278095973806738">এই সাইটে আপনার কোনো সংবেদনশীল তথ্য দেওয়া উচিত হবে না (উদাহরণস্বরূপ, পাসওয়ার্ড বা ক্রেডিট কার্ড) কারণ আক্রমণকারীরা এগুলি চুরি করতে পারে।</translation>
+<translation id="5838732667866024867">গ্রাফে দামের পরিবর্তন পর্যালোচনা করতে বাঁ/ডানদিকের তীরচিহ্ন ব্যবহার করতে পারবেন</translation>
 <translation id="5840318881868981258">আপনার Google অ্যাকাউন্টে, <ph name="ACCOUNT" /></translation>
 <translation id="5841338463993781099">অ্যাকাউন্টে সেভ করবেন?</translation>
 <translation id="5847181246682413476">ইলেকট্রিক সাপ্লাই</translation>
