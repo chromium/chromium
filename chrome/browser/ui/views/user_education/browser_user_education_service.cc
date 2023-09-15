@@ -442,10 +442,11 @@ void MaybeRegisterChromeFeaturePromos(
       kToolbarSidePanelButtonElementId, IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO));
 
   // kIPHCompanionSidePanelFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
       feature_engagement::kIPHCompanionSidePanelFeature,
-      kSidePanelCompanionToolbarButtonElementId,
-      IDS_SIDE_PANEL_COMPANION_PROMO));
+      kSidePanelCompanionToolbarButtonElementId, IDS_SIDE_PANEL_COMPANION_PROMO,
+      IDS_SIDE_PANEL_COMPANION_PROMO_SCREEN_READER,
+      FeaturePromoSpecification::AcceleratorInfo()));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // kIPHSwitchProfileFeature:

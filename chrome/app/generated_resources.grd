@@ -8274,8 +8274,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP" desc="The tooltip for the companion feature toolbar button.">
         Google Search side panel
       </message>
-      <message name="IDS_SIDE_PANEL_COMPANION_PROMO" desc="Text shown on promotional UI appearing next to the pinned companion button, which excourages users to try the feature.">
-        Get additional useful info as you explore this page
+      <message name="IDS_SIDE_PANEL_COMPANION_PROMO" desc="Text shown on promotional UI appearing next to the pinned companion button, which encourages users to try the feature.">
+        Get a page summary, related searches, and other useful info about this page
+      </message>
+      <message name="IDS_SIDE_PANEL_COMPANION_PROMO_SCREEN_READER" is_accessibility_with_no_ui="true" desc="Screen reader announcement on the promotional UI appearing next to the pinned companion button, which excourages users to try the feature.">
+        To get a page summary, related searches, and other useful info about this page, select Google Search side panel button in the toolbar
       </message>
       <message name="IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_FIRST_LINE" desc="Text shown on the side panel for the companion feature when there is a network or other navigation error. The texts informs the user the panel can not be loaded.">
         Can't load this panel right now

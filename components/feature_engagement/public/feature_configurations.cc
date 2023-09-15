@@ -369,7 +369,9 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+
     // Show the promo up to 3 times a year.
     config->trigger = EventConfig("iph_companion_side_panel_trigger",
                                   Comparator(LESS_THAN, 3), 360, 360);
