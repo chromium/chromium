@@ -16,12 +16,23 @@ android_library("safe_browsing_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":jni_headers",
+    ":sb_java_features_srcjar",
+  ]
+
   sources = [
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandler.java",
     "java/src/org/chromium/components/safe_browsing/SafetyNetApiHandler.java",
   ]
+}
+
+# Expose Safe Browsing feature flags to Java code
+java_cpp_features("sb_java_features_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "//components/safe_browsing/core/common/features.cc" ]
+  template = "java/src/org/chromium/components/safe_browsing/SafeBrowsingFeatures.java.tmpl"
 }
 
 fuzzable_proto_library("realtimeallowlist_proto") {
