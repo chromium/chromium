@@ -709,12 +709,6 @@ TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, AlwaysEnabled) {
   env().RunUntilIdle();
 }
 
-namespace {
-
-enum PrefState { kDefault, kDisabled, kEnabled };
-
-}  // namespace
-
 class FirstPartySetsPolicyServiceResumeThrottleTest
     : public FirstPartySetsPolicyServiceTest,
       public ::testing::WithParamInterface<bool> {
