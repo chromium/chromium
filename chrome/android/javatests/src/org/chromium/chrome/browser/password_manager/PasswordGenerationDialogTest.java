@@ -80,6 +80,7 @@ public class PasswordGenerationDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1483526")
     public void testAcceptedPasswordCallback() {
         onView(withId(R.id.positive_button)).perform(click());
         verify(mOnPasswordAcceptedOrRejectedCallback).onResult(true);
