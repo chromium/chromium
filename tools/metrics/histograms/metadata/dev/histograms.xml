@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.NumberOfDirectoriesTraversed"
-    units="count" expires_after="2024-01-21">
+    units="count" expires_after="2024-12-01">
   <owner>bmeurer@chromium.org</owner>
   <owner>hablich@chromium.org</owner>
   <summary>
@@ -595,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.NumberOfFilesLoaded" units="count"
-    expires_after="2024-01-21">
+    expires_after="2024-12-01">
   <owner>bmeurer@chromium.org</owner>
   <owner>hablich@chromium.org</owner>
   <summary>
@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Workspaces.PopulateWallClockTime" units="ms"
-    expires_after="M120">
+    expires_after="2024-12-01">
   <owner>bmeurer@chromium.org</owner>
   <owner>hablich@chromium.org</owner>
   <summary>
