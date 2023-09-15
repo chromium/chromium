@@ -36,28 +36,6 @@ class WizardContext {
     kEnterprise,
   };
 
-  enum class GaiaPath {
-    kDefault,
-    kChildSignup,
-    kChildSignin,
-    kReauth,
-  };
-
-  struct GaiaConfig {
-    // GAIA path to be loaded the next time GAIA Sign-in screen is shown.
-    // This is usually set just before showing the GAIA screen and reset
-    // to the default value when hiding the screen.
-    GaiaPath gaia_path = GaiaPath::kDefault;
-
-    // The GAIA path shown the last time the GAIA Sign-in screen was shown.
-    // This is set by the GAIA screen when hiding the screen.
-    GaiaPath last_gaia_path_shown = GaiaPath::kDefault;
-
-    // The account ID to be used in the next loading of GAIA webview.
-    // The value is reset to `EmptyAccountId()` when hiding the screen.
-    AccountId prefilled_account = EmptyAccountId();
-  };
-
   struct RecoverySetup {
     // Whether the recovery auth factor is supported. Used for metrics.
     bool is_supported = false;
@@ -148,7 +126,6 @@ class WizardContext {
   // another possible auth factor. Can be empty (if PIN is not supported).
   // In future will be replaced by AuthSession.
   std::unique_ptr<UserContext> extra_factors_auth_session;
-
   // Same as above, but the actual context is stored in AuthSessionStorage,
   // and the token can be used to retrieve it.
   absl::optional<AuthProofToken> extra_factors_token;
@@ -203,11 +180,6 @@ class WizardContext {
   // This flag helps us determine the reason when the reauth proof token is
   // missing and if we should ask the user to login again.
   bool gaia_reauth_token_fetch_error = false;
-
-  // Configuration for GAIA screen. If the configs needs to be updated, it
-  // should be updated before showing the GAIA screen. If the GAIA screen is
-  // already shown, a call to reload GAIA webview may be necessary.
-  GaiaConfig gaia_config;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.

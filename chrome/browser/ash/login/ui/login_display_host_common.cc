@@ -734,7 +734,8 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   if (!prefilled_account.is_valid()) {
     StartWizard(UserCreationView::kScreenId);
   } else {
-    wizard_context_->gaia_config.prefilled_account = prefilled_account;
+    GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
+    gaia_screen->LoadOnline(prefilled_account);
     StartWizard(GaiaView::kScreenId);
   }
 }

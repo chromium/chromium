@@ -179,11 +179,11 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
   cryptohome_.AddRecoveryFactor(test_user_.account_id);
 
   OpenGaiaDialog(test_user_.account_id);
-
   EXPECT_EQ(LoginDisplayHost::default_host()
-                ->GetWizardContext()
-                ->gaia_config.gaia_path,
-            WizardContext::GaiaPath::kReauth);
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kReauth);
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
@@ -206,10 +206,10 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
 
   OpenGaiaDialog(test_user_.account_id);
   EXPECT_EQ(LoginDisplayHost::default_host()
-                ->GetWizardContext()
-                ->gaia_config.gaia_path,
-            WizardContext::GaiaPath::kReauth);
-
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kReauth);
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
@@ -367,10 +367,10 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
 
   OpenGaiaDialog(test_user_.account_id);
   EXPECT_EQ(LoginDisplayHost::default_host()
-                ->GetWizardContext()
-                ->gaia_config.gaia_path,
-            WizardContext::GaiaPath::kReauth);
-
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kReauth);
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
@@ -392,10 +392,10 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, NoRecoveryFactor) {
 
   OpenGaiaDialog(test_user_.account_id);
   EXPECT_EQ(LoginDisplayHost::default_host()
-                ->GetWizardContext()
-                ->gaia_config.gaia_path,
-            WizardContext::GaiaPath::kReauth);
-
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kReauth);
   SetUpExitCallback();
   SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 

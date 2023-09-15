@@ -449,34 +449,26 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   }
 
   params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
-
-  WizardContext::GaiaPath gaia_path = WizardContext::GaiaPath::kDefault;
-  if (LoginDisplayHost::default_host()) {
-    gaia_path = LoginDisplayHost::default_host()
-                    ->GetWizardContext()
-                    ->gaia_config.gaia_path;
-  }
-
-  switch (gaia_path) {
-    case WizardContext::GaiaPath::kDefault:
+  switch (gaia_path_) {
+    case GaiaPath::kDefault:
       params.Set(
           "gaiaPath",
           GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(
               1));
       break;
-    case WizardContext::GaiaPath::kChildSignup:
+    case GaiaPath::kChildSignup:
       params.Set("gaiaPath", GaiaUrls::GetInstance()
                                  ->embedded_setup_chromeos_kid_signup_url()
                                  .path()
                                  .substr(1));
       break;
-    case WizardContext::GaiaPath::kChildSignin:
+    case GaiaPath::kChildSignin:
       params.Set("gaiaPath", GaiaUrls::GetInstance()
                                  ->embedded_setup_chromeos_kid_signin_url()
                                  .path()
                                  .substr(1));
       break;
-    case WizardContext::GaiaPath::kReauth:
+    case GaiaPath::kReauth:
       params.Set(
           "gaiaPath",
           GaiaUrls::GetInstance()->embedded_reauth_chromeos_url().path().substr(
@@ -1155,6 +1147,14 @@ void GaiaScreenHandler::Hide() {
   hidden_ = true;
   network_state_informer_->RemoveObserver(this);
   registrar_.RemoveAll();
+}
+
+void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
+  gaia_path_ = gaia_path;
+}
+
+GaiaScreenHandler::GaiaPath GaiaScreenHandler::GetGaiaPath() {
+  return gaia_path_;
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {

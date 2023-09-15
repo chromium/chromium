@@ -1039,7 +1039,8 @@ void LoginDisplayHostMojo::OnDeviceSettingsChanged() {
   }
 
   // Reload Gaia.
-  GetWizardController()->GetScreen<GaiaScreen>()->LoadOnlineGaia();
+  GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
+  gaia_screen->LoadOnline(EmptyAccountId());
 }
 
 }  // namespace ash

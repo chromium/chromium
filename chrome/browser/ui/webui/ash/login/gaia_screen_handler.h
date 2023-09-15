@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
@@ -46,6 +45,13 @@ class ErrorScreensHistogramHelper;
 
 class GaiaView : public base::SupportsWeakPtr<GaiaView> {
  public:
+  enum class GaiaPath {
+    kDefault,
+    kChildSignup,
+    kChildSignin,
+    kReauth,
+  };
+
   enum class GaiaLoginVariant {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -85,6 +91,10 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   // Shows Gaia screen.
   virtual void Show() = 0;
   virtual void Hide() = 0;
+  // Sets Gaia path for sign-in, child sign-in or child sign-up.
+  virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
+  // Returns the currently set Gaia path
+  virtual GaiaPath GetGaiaPath() = 0;
   // Show error UI at the end of Gaia flow when user is not allowlisted.
   virtual void ShowAllowlistCheckFailedError() = 0;
   // Reloads authenticator.
@@ -155,6 +165,8 @@ class GaiaScreenHandler
   void LoadGaiaAsync(const AccountId& account_id) override;
   void Show() override;
   void Hide() override;
+  void SetGaiaPath(GaiaPath gaia_path) override;
+  GaiaPath GetGaiaPath() override;
   void ShowAllowlistCheckFailedError() override;
   void ReloadGaiaAuthenticator() override;
   void SetReauthRequestToken(const std::string& reauth_request_token) override;
@@ -445,6 +457,8 @@ class GaiaScreenHandler
   // Whether the PIN dialog shown during the current authentication attempt was
   // canceled by the user.
   bool was_security_token_pin_canceled_ = false;
+
+  GaiaPath gaia_path_ = GaiaPath::kDefault;
 
   bool hidden_ = true;
 

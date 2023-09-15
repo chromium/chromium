@@ -357,6 +357,9 @@ class WizardController : public OobeUI::Observer {
   // `exit_reason` is the screen specific exit reason reported by the screen.
   void OnScreenExit(OobeScreenId screen, const std::string& exit_reason);
 
+  // Advances to Gaia login screen.
+  void AdvanceToSigninScreen();
+
   // Exit handlers:
   void OnWrongHWIDScreenExit();
   void OnHidDetectionScreenExit(HIDDetectionScreen::Result result);
