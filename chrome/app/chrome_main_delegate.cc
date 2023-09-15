@@ -1438,9 +1438,19 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #else
       chrome::DIR_INTERNAL_PLUGINS;
 #endif
+
+  int updated_components_dir =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      command_line.HasSwitch(switches::kEnableLacrosSharedComponentsDir)
+          ? static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR)
+          : static_cast<int>(chrome::DIR_USER_DATA);
+#else
+      chrome::DIR_USER_DATA;
+#endif
+
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
                                           alt_preinstalled_components_dir,
-                                          chrome::DIR_USER_DATA);
+                                          updated_components_dir);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
   // Android does InitLogging when library is loaded. Skip here.

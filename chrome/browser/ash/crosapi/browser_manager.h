@@ -348,6 +348,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Set true if Lacros uses resource file sharing.
     bool enable_resource_file_sharing = false;
 
+    // Set true if Lacros uses a shared components directory.
+    bool enable_shared_components_dir = false;
+
     // Any additional args to start lacros with.
     std::vector<std::string> lacros_additional_args;
   };

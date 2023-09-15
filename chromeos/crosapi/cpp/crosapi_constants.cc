@@ -16,6 +16,9 @@ const char kLacrosAppIdPrefix[] = "org.chromium.lacros.";
 // user data partition.
 const char kLacrosUserDataPath[] = "/home/chronos/user/lacros";
 
+// The default directory that contains Lacros files shared across users.
+const char kLacrosSharedDataPath[] = "/home/chronos/lacros_shared";
+
 // The file name of shared resource file.
 const char kSharedResourcesPackName[] = "resources_for_sharing.rspak";
 const char kSharedChrome100PercentPackName[] =

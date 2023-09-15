@@ -81,6 +81,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
@@ -372,6 +373,9 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
   }
 
   params.logfd = base::ScopedFD(fd);
+
+  params.enable_shared_components_dir =
+      base::FeatureList::IsEnabled(features::kLacrosSharedComponentsDir);
 
   params.enable_resource_file_sharing =
       base::FeatureList::IsEnabled(features::kLacrosResourcesFileSharing);
@@ -1313,6 +1317,12 @@ void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
     // run with enabling the feature as well since the feature is based on some
     // ash behavior(clear or move cached shared resource file at lacros launch).
     command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
+  }
+
+  if (params.enable_shared_components_dir) {
+    // Pass a flag to enable using a location shared across users for browser
+    // components.
+    command_line.AppendSwitch(switches::kEnableLacrosSharedComponentsDir);
   }
 
   LOG(WARNING) << "Launching lacros with command: "

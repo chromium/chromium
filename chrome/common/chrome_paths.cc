@@ -43,6 +43,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/command_line.h"
+#include "chrome/common/chrome_switches.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/lacros/lacros_paths.h"
 #endif
@@ -386,12 +388,22 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
       break;
 
-    case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM:
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur)) {
+    case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM: {
+      int components_dir =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kEnableLacrosSharedComponentsDir)
+              ? static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR)
+              : static_cast<int>(chrome::DIR_USER_DATA);
+#else
+          chrome::DIR_USER_DATA;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (!base::PathService::Get(components_dir, &cur)) {
         return false;
       }
       cur = cur.AppendASCII(kWidevineCdmBaseDirectory);
       break;
+    }
     case chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT:
       if (!base::PathService::Get(chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM,
                                   &cur)) {

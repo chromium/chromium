@@ -27,6 +27,13 @@ bool PathProvider(int key, base::FilePath* result) {
     case chromeos::lacros_paths::ASH_RESOURCES_DIR:
       *result = GetLacrosPaths().ash_resource_dir;
       return !result->empty();
+    case chromeos::lacros_paths::LACROS_SHARED_DIR:
+      if (base::SysInfo::IsRunningOnChromeOS()) {
+        *result = base::FilePath(crosapi::kLacrosSharedDataPath);
+      } else {
+        *result = base::GetHomeDir().Append(".config").Append("lacros");
+      }
+      return true;
     case chromeos::lacros_paths::USER_DATA_DIR:
       // The value for USER_DATA_DIR should be consistent with ash-side
       // UserDataDir defined in browser_util::GetUserDataDir().

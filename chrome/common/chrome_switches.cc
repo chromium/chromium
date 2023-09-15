@@ -269,6 +269,12 @@ const char kEnableExtensionActivityLogTesting[] =
 const char kEnableHangoutServicesExtensionForTesting[] =
     "enable-hangout-services-extension-for-testing";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Makes Lacros use a location shared across users for browser components.
+const char kEnableLacrosSharedComponentsDir[] =
+    "enable-lacros-shared-components-dir";
+#endif
+
 // Allows NaCl to run in all contexts (such as open web). Note that
 // kDisableNaCl disables NaCl in all contexts and takes precedence.
 const char kEnableNaCl[] = "enable-nacl";

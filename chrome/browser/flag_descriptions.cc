@@ -7137,6 +7137,12 @@ const char kLibAssistantV2MigrationName[] = "LibAssistant V2 migration";
 const char kLibAssistantV2MigrationDescription[] =
     "Enables loading LibAssistant V2 for Assistant on ChromeOS.";
 
+const char kLacrosSharedComponentsDirName[] =
+    "Place browser components in a shared location";
+const char kLacrosSharedComponentsDirDescription[] =
+    "When enabled, it causes Lacros to use a location shared across users for "
+    "browser components.";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

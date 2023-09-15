@@ -9600,8 +9600,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillMoveLegalTermsAndIconForNewCardEnrollment)},
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"lacros-shared-components-dir",
+     flag_descriptions::kLacrosSharedComponentsDirName,
+     flag_descriptions::kLacrosSharedComponentsDirDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kLacrosSharedComponentsDir)},
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"lacros-merge-icu-data-file",
      flag_descriptions::kLacrosMergeIcuDataFileName,
      flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS | kOsLacros,

@@ -21,6 +21,9 @@ enum {
   // Directory that contains ash's application assets.
   ASH_RESOURCES_DIR,
 
+  // Directory that contains Lacros files that are shared across users.
+  LACROS_SHARED_DIR,
+
   // Directory that contains user data in Lacros.
   USER_DATA_DIR,
 

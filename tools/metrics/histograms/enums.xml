@@ -67305,6 +67305,7 @@ from previous Chrome versions.
   <int value="1272699563" label="enable-hosted-mode"/>
   <int value="1272923911" label="NewMessageListView:disabled"/>
   <int value="1274277775" label="SimLockPolicy:disabled"/>
+  <int value="1274356506" label="LacrosSharedComponentsDir:disabled"/>
   <int value="1274717741" label="top-chrome-touch-ui"/>
   <int value="1275507565" label="OfflinePagesRenovations:enabled"/>
   <int value="1276120671" label="AutofillEnableOfferNotification:enabled"/>
@@ -68795,6 +68796,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-switch-access-multistep-automation"/>
   <int value="1993258379" label="enable-icon-ntp"/>
   <int value="1994431722" label="MaterialDesignUserMenu:disabled"/>
+  <int value="1994596820" label="LacrosSharedComponentsDir:enabled"/>
   <int value="1995045836"
       label="AutofillUpstreamAllowAllEmailDomains:disabled"/>
   <int value="1995322219" label="EmojiHandwritingVoiceInput:enabled"/>

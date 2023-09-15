@@ -4107,6 +4107,8 @@ extern const char kLibAssistantV2MigrationName[];
 extern const char kLibAssistantV2MigrationDescription[];
 // Prefer keeping this section sorted to adding new declarations down here.
 
+extern const char kLacrosSharedComponentsDirName[];
+extern const char kLacrosSharedComponentsDirDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
