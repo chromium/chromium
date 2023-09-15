@@ -12,7 +12,9 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/language_packs/diff.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash::language_packs {
@@ -70,6 +72,11 @@ bool IsHandwritingDlc(std::string_view dlc_id);
 // existing DLCs on device.
 base::flat_set<std::string> FilterHandwritingDlcsWithContent(
     const dlcservice::DlcsWithContent& dlcs_with_content);
+
+// Returns the list of DLC IDs that correspond to the input methods that are
+// currently enabled.
+base::flat_set<std::string> GetDlcIdsFromEnabledInputMethods(
+    input_method::InputMethodManager* input_method_manager);
 
 }  // namespace ash::language_packs
 

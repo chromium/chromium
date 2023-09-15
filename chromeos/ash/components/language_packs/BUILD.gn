@@ -49,6 +49,7 @@ source_set("unit_tests") {
     "//components/session_manager/core:core",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:test_support",
     "//ui/base/ime/ash",
   ]
   data = [

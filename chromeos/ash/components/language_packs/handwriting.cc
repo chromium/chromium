@@ -14,12 +14,15 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
+#include "chromeos/ash/components/language_packs/language_packs_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash::language_packs {
+
+using ::ash::input_method::InputMethodManager;
 
 base::flat_set<std::string> MapIdsToHandwritingLocales(
     base::span<const std::string> ids,
@@ -38,6 +41,7 @@ base::flat_set<std::string> MapIdsToHandwritingLocales(
   return handwriting_locales;
 }
 
+// TODO: b/294162606 - Move this code to the input_method codebase.
 absl::optional<std::string> MapEngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& engine_id) {
@@ -46,6 +50,7 @@ absl::optional<std::string> MapEngineIdToHandwritingLocale(
   return MapInputMethodIdToHandwritingLocale(util, input_method_id);
 }
 
+// TODO: b/294162606 - Move this code to the input_method codebase.
 absl::optional<std::string> MapInputMethodIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& input_method_id) {
@@ -98,6 +103,23 @@ base::flat_set<std::string> FilterHandwritingDlcsWithContent(
       dlc_ids.push_back(dlc_info.id());
     }
   }
+
+  return dlc_ids;
+}
+
+base::flat_set<std::string> GetDlcIdsFromEnabledInputMethods(
+    InputMethodManager* const input_method_manager) {
+  const std::vector<std::string>& input_method_ids =
+      input_method_manager->GetActiveIMEState()->GetEnabledInputMethodIds();
+
+  const base::flat_set<std::string> target_hwr_locales = MapThenFilterStrings(
+      input_method_ids,
+      base::BindRepeating(MapInputMethodIdToHandwritingLocale,
+                          input_method_manager->GetInputMethodUtil()));
+
+  const base::flat_set<std::string> dlc_ids = MapThenFilterStrings(
+      {target_hwr_locales.begin(), target_hwr_locales.end()},
+      base::BindRepeating(GetDlcIdForLanguagePack, kHandwritingFeatureId));
 
   return dlc_ids;
 }
