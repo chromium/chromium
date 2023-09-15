@@ -1,22 +1,22 @@
 [
     {
-        "duration": "123.0",
+        "duration": "105.0",
         "name": "speedometer2/Speedometer2"
     },
     {
-        "duration": "104.0",
+        "duration": "114.0",
         "name": "startup.mobile/cct:coldish:bbc"
     },
     {
-        "duration": "98.0",
+        "duration": "164.0",
         "name": "startup.mobile/intent:coldish:bbc"
     },
     {
-        "duration": "69.0",
+        "duration": "87.0",
         "name": "startup.mobile/intent:warm:bbc"
     },
     {
-        "duration": "104.0",
+        "duration": "112.0",
         "name": "startup.mobile/maps_pwa:with_http_cache"
     }
 ]

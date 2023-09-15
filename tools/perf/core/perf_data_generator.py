@@ -761,6 +761,18 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-go-wembley_webview-perf': {
+        'tests': [{
+            'isolate': 'performance_webview_test_suite',
+        }],
+        'platform': 'android-webview-google',
+        'dimension': {
+            'pool': 'chrome.tests.perf-webview',
+            'os': 'Android',
+            'device_type': 'wembley_2GB',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-new-pixel-perf': {
         'tests': [{
             'isolate':

@@ -511,9 +511,6 @@ _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
 _ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
-_ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS = PerfSuite(
-    [_GetBenchmarkConfig('startup.mobile'),
-     _GetBenchmarkConfig('speedometer2')])
 _ANDROID_PIXEL2_AAB_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile')])
 _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
@@ -762,10 +759,11 @@ ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
     'android',
     executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
-ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf',
-                                  'Android U',
-                                  _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS, 2,
-                                  'android')
+ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
+                                  _ANDROID_GO_BENCHMARK_CONFIGS, 20, 'android')
+ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(
+    'android-go-wembley_webview-perf', 'Android U',
+    _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
 ANDROID_NEW_PIXEL = PerfPlatform('android-new-pixel-perf',
                                  'Android T',
                                  PerfSuite([]),
