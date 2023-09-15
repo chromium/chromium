@@ -174,6 +174,8 @@ ios_web_view_sources = [
   "internal/cwv_x509_certificate.mm",
   "internal/cwv_x509_certificate_internal.h",
   "internal/ios_global_state_web_view_configuration.mm",
+  "internal/js_messaging/web_view_scripts_java_script_feature.h",
+  "internal/js_messaging/web_view_scripts_java_script_feature.mm",
   "internal/language/web_view_accept_languages_service_factory.h",
   "internal/language/web_view_accept_languages_service_factory.mm",
   "internal/language/web_view_language_model_manager_factory.h",

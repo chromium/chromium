@@ -9,8 +9,8 @@
 #import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
+#import "ios/web_view/internal/js_messaging/web_view_scripts_java_script_feature.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
-#import "ios/web_view/internal/web_view_early_page_script_provider.h"
 #import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/public/cwv_user_script.h"
 
@@ -83,9 +83,9 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
       [joinedAllFramesScript appendString:@"\n"];
     }
   }
-  ios_web_view::WebViewEarlyPageScriptProvider::FromBrowserState(
-      _configuration.browserState)
-      .SetScripts(joinedAllFramesScript, joinedMainFrameScript);
+  WebViewScriptsJavaScriptFeature::FromBrowserState(_configuration.browserState)
+      ->SetScripts(base::SysNSStringToUTF8(joinedAllFramesScript),
+                   base::SysNSStringToUTF8(joinedMainFrameScript));
 }
 
 - (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
