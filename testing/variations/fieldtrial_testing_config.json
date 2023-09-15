@@ -12796,6 +12796,11 @@
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForDesktopM1AdPrivacyPage"
+                    ],
+                    "disable_features": [
+                        "HappinessTrackingSurveysForDesktopM1AdMeasurementSubpage",
+                        "HappinessTrackingSurveysForDesktopM1FledgeSubpage",
+                        "HappinessTrackingSurveysForDesktopM1TopicsSubpage"
                     ]
                 },
                 {
@@ -12807,6 +12812,11 @@
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForDesktopM1TopicsSubpage"
+                    ],
+                    "disable_features": [
+                        "HappinessTrackingSurveysForDesktopM1AdMeasurementSubpage",
+                        "HappinessTrackingSurveysForDesktopM1AdPrivacyPage",
+                        "HappinessTrackingSurveysForDesktopM1FledgeSubpage"
                     ]
                 },
                 {
@@ -12818,6 +12828,11 @@
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForDesktopM1FledgeSubpage"
+                    ],
+                    "disable_features": [
+                        "HappinessTrackingSurveysForDesktopM1AdMeasurementSubpage",
+                        "HappinessTrackingSurveysForDesktopM1AdPrivacyPage",
+                        "HappinessTrackingSurveysForDesktopM1TopicsSubpage"
                     ]
                 },
                 {
@@ -12829,6 +12844,11 @@
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForDesktopM1AdMeasurementSubpage"
+                    ],
+                    "disable_features": [
+                        "HappinessTrackingSurveysForDesktopM1AdPrivacyPage",
+                        "HappinessTrackingSurveysForDesktopM1FledgeSubpage",
+                        "HappinessTrackingSurveysForDesktopM1TopicsSubpage"
                     ]
                 }
             ]
