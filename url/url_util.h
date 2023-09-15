@@ -309,6 +309,13 @@ void DecodeURLEscapeSequences(const char* input,
 COMPONENT_EXPORT(URL)
 void EncodeURIComponent(const char* input, int length, CanonOutput* output);
 
+// Returns true if `c` is a character that does not require escaping in
+// encodeURIComponent.
+// TODO(crbug.com/1481056): Remove this when event-level reportEvent is removed
+// (if it is still this function's only consumer).
+COMPONENT_EXPORT(URL)
+bool IsURIComponentChar(char c);
+
 }  // namespace url
 
 #endif  // URL_URL_UTIL_H_

@@ -14,6 +14,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/url_util.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -65,6 +66,21 @@ void RegisterAdMacroBindings::RegisterAdMacro(
       !args_converter.ConvertArg(1, "macroValue", macro_value)) {
     args_converter.TakeStatus().PropagateErrorsToV8(v8_helper);
     return;
+  }
+
+  auto ContainsDisallowedCharacters = [](const std::string& str) -> bool {
+    return base::ranges::any_of(
+        str, [](char c) { return !url::IsURIComponentChar(c) && c != '%'; });
+  };
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesM119Features)) {
+    if (ContainsDisallowedCharacters(macro_name) ||
+        ContainsDisallowedCharacters(macro_value)) {
+      args.GetIsolate()->ThrowException(
+          v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+              "registerAdMacro macro key and value must be URL-encoded")));
+    }
   }
 
   bindings->ad_macro_map_[macro_name] = macro_value;

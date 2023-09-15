@@ -760,6 +760,8 @@ BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
 // * Extra format for ad size macro substitution:
 //   ${AD_WIDTH} and ${AD_HEIGHT}, on top of the previous
 //   {%AD_WIDTH%} and {%AD_HEIGHT%}.
+// * Input validation (no disallowed URI component characters) in
+//   registerAdMacro keys and values.
 BASE_FEATURE(kFencedFramesM119Features,
              "FencedFramesM119Features",
              base::FEATURE_DISABLED_BY_DEFAULT);

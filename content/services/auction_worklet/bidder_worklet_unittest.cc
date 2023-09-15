@@ -9098,8 +9098,10 @@ TEST_F(BidderWorkletTest,
 class BidderWorkletAdMacroReportingEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletAdMacroReportingEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kAdAuctionReportingWithMacroApi);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kAdAuctionReportingWithMacroApi,
+                              blink::features::kFencedFramesM119Features},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -9150,6 +9152,18 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
       /*expected_ad_beacon_map=*/{},
       {{"uppercase", "ABC"}, {"lowercase", "abc"}});
 
+  // URL-encoded strings should be accepted.
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(registerAdMacro('URL_ENC_KEY', 'http%3A%2F%2Fpub%2Eexample%2Fpage');
+        registerAdMacro('http%3A%2F%2Fpub%2Eexample%2Fpage', 'URL_ENC_VAL');
+        registerAdMacro('URL_ENC_KEY_http%3A%2F', 'URL_ENC_VAL_http%3A%2F');
+      )",
+      /*expected_report_url=*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      {{"URL_ENC_KEY", "http%3A%2F%2Fpub%2Eexample%2Fpage"},
+       {"http%3A%2F%2Fpub%2Eexample%2Fpage", "URL_ENC_VAL"},
+       {"URL_ENC_KEY_http%3A%2F", "URL_ENC_VAL_http%3A%2F"}});
+
   // When called multiple times for a macro name, use the last valid call's
   // value.
   RunReportWinWithFunctionBodyExpectingResult(
@@ -9193,6 +9207,14 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest,
       {R"(registerAdMacro('123', {toString:{}});)",
        "https://url.test/:11 Uncaught TypeError: Cannot convert object to "
        "primitive value."},
+      // Invalid characters in macro key.
+      {R"(registerAdMacro('}${FOO', 'foo');)",
+       "https://url.test/:11 Uncaught TypeError: registerAdMacro macro key and "
+       "value must be URL-encoded."},
+      // Invalid characters in macro value.
+      {R"(registerAdMacro('MACRO_KEY', 'baz&foo=bar');)",
+       "https://url.test/:11 Uncaught TypeError: registerAdMacro macro key and "
+       "value must be URL-encoded."},
   };
   for (const auto& test_case : kTestCases) {
     RunReportWinWithFunctionBodyExpectingResult(

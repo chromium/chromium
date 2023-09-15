@@ -918,6 +918,10 @@ void EncodeURIComponent(const char* input, int length, CanonOutput* output) {
   }
 }
 
+bool IsURIComponentChar(char c) {
+  return IsComponentChar(c);
+}
+
 bool CompareSchemeComponent(const char* spec,
                             const Component& component,
                             const char* compare_to) {
