@@ -24,12 +24,6 @@ Element* LayoutTextControlSingleLine::ContainerElement() const {
       shadow_element_names::kIdTextFieldContainer);
 }
 
-Element* LayoutTextControlSingleLine::EditingViewPortElement() const {
-  NOT_DESTROYED();
-  return To<Element>(GetNode())->UserAgentShadowRoot()->getElementById(
-      shadow_element_names::kIdEditingViewPort);
-}
-
 bool LayoutTextControlSingleLine::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectTextControlSingleLine ||
          LayoutNGBlockFlow::IsOfType(type);

@@ -17,7 +17,6 @@ class LayoutTextControlSingleLine final : public LayoutNGBlockFlow {
  private:
   HTMLElement* InnerEditorElement() const;
   Element* ContainerElement() const;
-  Element* EditingViewPortElement() const;
 
   bool IsOfType(LayoutObjectType) const override;
 
