@@ -11,9 +11,11 @@
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,10 +27,13 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -49,6 +54,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -304,6 +310,15 @@ ExternalInstallOptions GetCustomAppIconInstallOptions(
   return options;
 }
 
+void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
+  ASSERT_OK_AND_ASSIGN(
+      auto result,
+      base::JSONReader::ReadAndReturnValueWithError(
+          pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
+  ASSERT_TRUE(result.is_list());
+  profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(result));
+}
+
 }  // namespace
 
 enum class TestLacrosParam { kLacrosDisabled, kLacrosEnabled };
@@ -498,15 +513,6 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 
   ScopedTestingLocalState testing_local_state_;
 
-  void SetWebAppSettingsListPref(const base::StringPiece pref) {
-    ASSERT_OK_AND_ASSIGN(
-        auto result,
-        base::JSONReader::ReadAndReturnValueWithError(
-            pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
-    ASSERT_TRUE(result.is_list());
-    profile()->GetPrefs()->Set(prefs::kWebAppSettings, std::move(result));
-  }
-
   void ValidateEmptyWebAppSettingsPolicy() {
     EXPECT_TRUE(policy_manager().settings_by_url_.empty());
     ASSERT_TRUE(policy_manager().default_settings_);
@@ -621,7 +627,8 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsInvalidDefaultConfiguration) {
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  SetWebAppSettingsListPref(kWebAppSettingInvalidDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(),
+                            kWebAppSettingInvalidDefaultConfiguration);
   loop.Run();
 
   ValidateEmptyWebAppSettingsPolicy();
@@ -646,7 +653,8 @@ TEST_P(WebAppPolicyManagerTest,
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  SetWebAppSettingsListPref(kWebAppSettingInvalidDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(),
+                            kWebAppSettingInvalidDefaultConfiguration);
   loop.Run();
 
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
@@ -684,7 +692,7 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsNoDefaultConfiguration) {
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  SetWebAppSettingsListPref(kWebAppSettingNoDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingNoDefaultConfiguration);
   loop.Run();
 
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
@@ -704,7 +712,7 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsWithDefaultConfiguration) {
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  SetWebAppSettingsListPref(kWebAppSettingWithDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingWithDefaultConfiguration);
   loop.Run();
 
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
@@ -1315,7 +1323,7 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  SetWebAppSettingsListPref(kWebAppSettingInitialConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingInitialConfiguration);
   loop.Run();
 
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
@@ -1325,7 +1333,7 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(1, mock_observer.GetOnWebAppSettingsPolicyChangedCalledCount());
 
-  SetWebAppSettingsListPref(kWebAppSettingWithDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingWithDefaultConfiguration);
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
@@ -1367,7 +1375,7 @@ TEST_P(WebAppPolicyManagerTest,
             RunOnOsLoginPolicy::kAllowed);
 
   // Now apply WebSettings policy
-  SetWebAppSettingsListPref(kWebAppSettingWithDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingWithDefaultConfiguration);
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kWindowedUrl),
             RunOnOsLoginPolicy::kRunWindowed);
   EXPECT_EQ(GetUrlRunOnOsLoginPolicy(kTabbedUrl), RunOnOsLoginPolicy::kAllowed);
@@ -1388,7 +1396,7 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   base::RunLoop settings_loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       settings_loop.QuitClosure());
-  SetWebAppSettingsListPref(kWebAppSettingWithDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingWithDefaultConfiguration);
   settings_loop.Run();
 
   EXPECT_EQ(1, mock_observer.GetOnWebAppSettingsPolicyChangedCalledCount());
@@ -1458,7 +1466,7 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
   base::RunLoop loop;
   policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
       loop.QuitClosure());
-  SetWebAppSettingsListPref(kWebAppSettingNoDefaultConfiguration);
+  SetWebAppSettingsListPref(profile(), kWebAppSettingNoDefaultConfiguration);
   loop.Run();
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1507,4 +1515,382 @@ INSTANTIATE_TEST_SUITE_P(WebAppPolicyManagerTestWithParams,
                            return test_name;
                          });
 
+class WebAppPolicyForceUnregistrationTest : public WebAppTest {
+ public:
+  WebAppPolicyForceUnregistrationTest() = default;
+  ~WebAppPolicyForceUnregistrationTest() override = default;
+
+  void SetUp() override {
+    WebAppTest::SetUp();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOsIntegrationSubManagers,
+          {{"stage", "execute_and_write_config"}}},
+         {web_app::kDesktopPWAsForceUnregisterOSIntegration, {}}},
+        /*disabled_features=*/{});
+
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      test_override_ =
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
+    }
+    provider_ = FakeWebAppProvider::Get(profile());
+
+    auto file_handler_manager =
+        std::make_unique<WebAppFileHandlerManager>(profile());
+    auto protocol_handler_manager =
+        std::make_unique<WebAppProtocolHandlerManager>(profile());
+    auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
+        profile(), file_handler_manager.get(), protocol_handler_manager.get());
+    auto os_integration_manager = std::make_unique<OsIntegrationManager>(
+        profile(), std::move(shortcut_manager), std::move(file_handler_manager),
+        std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
+
+    provider_->SetOsIntegrationManager(std::move(os_integration_manager));
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
+  void TearDown() override {
+    // Blocking required due to file operations in the shortcut override
+    // destructor.
+    test::UninstallAllWebApps(profile());
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      test_override_.reset();
+    }
+    provider_ = nullptr;
+    WebAppTest::TearDown();
+  }
+
+ protected:
+  WebAppProvider& provider() { return *provider_; }
+
+  SkBitmap CreateSolidColorIcon(int size, SkColor color) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(size, size);
+    bitmap.eraseColor(color);
+    return bitmap;
+  }
+
+  web_app::AppId InstallWebAppWithShortcuts(
+      std::map<SquareSizePx, SkBitmap> icon_map,
+      const GURL manifest_id) {
+    std::unique_ptr<WebAppInstallInfo> info =
+        std::make_unique<WebAppInstallInfo>();
+    info->start_url = manifest_id;
+    // The name of the app should also change, otherwise on Mac and Windows, the
+    // shortcuts are stored as name(1) and gets wiped out with name.
+    info->title = base::UTF8ToUTF16(manifest_id.host());
+    info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+    info->icon_bitmaps.any = std::move(icon_map);
+    info->manifest_id = manifest_id;
+    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    provider().scheduler().InstallFromInfoWithParams(
+        std::move(info), /*overwrite_existing_manifest_fields=*/true,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        result.GetCallback(), WebAppInstallParams());
+    bool success = result.Wait();
+    EXPECT_TRUE(success);
+    if (!success) {
+      return AppId();
+    }
+    EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
+              webapps::InstallResultCode::kSuccessNewInstall);
+    return result.Get<AppId>();
+  }
+
+  bool IsOsIntegrationAllowed() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    return true;
+#else
+    return false;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  }
+
+  const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
+
+ private:
+  raw_ptr<FakeWebAppProvider> provider_ = nullptr;
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
+      test_override_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WebAppPolicyForceUnregistrationTest,
+       RefreshPolicyTrueRemovesOsIntegration) {
+  if (!IsOsIntegrationAllowed()) {
+    GTEST_SKIP() << "OS integration execution does not work on this OS";
+  }
+
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id =
+      InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+
+  const char kWebAppSettingForceUnregisterApp[] = R"([
+    {
+      "manifest_id": "https://example.com/path/index.html",
+      "force_unregister_os_integration": true
+    }
+  ])";
+
+  base::test::TestFuture<void> test_future;
+  provider()
+      .policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          test_future.GetCallback());
+  SetWebAppSettingsListPref(profile(), kWebAppSettingForceUnregisterApp);
+  EXPECT_TRUE(test_future.Wait());
+
+  ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+}
+
+TEST_F(WebAppPolicyForceUnregistrationTest,
+       RefreshPolicyFalseDoesNotRemovesOsIntegration) {
+  if (!IsOsIntegrationAllowed()) {
+    GTEST_SKIP() << "OS integration execution does not work on this OS";
+  }
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id =
+      InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+
+  const char kWebAppSettingForceUnregisterApp[] = R"([
+    {
+      "manifest_id": "https://example.com/path/index.html",
+      "force_unregister_os_integration": false
+    }
+  ])";
+
+  base::test::TestFuture<void> test_future;
+  provider()
+      .policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          test_future.GetCallback());
+  SetWebAppSettingsListPref(profile(), kWebAppSettingForceUnregisterApp);
+  EXPECT_TRUE(test_future.Wait());
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+}
+
+TEST_F(WebAppPolicyForceUnregistrationTest,
+       OtherPoliciesDoNotAffectOsIntegration) {
+  if (!IsOsIntegrationAllowed()) {
+    GTEST_SKIP() << "OS integration execution does not work on this OS";
+  }
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id =
+      InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+
+  const char kWebAppSettingForceUnregisterApp[] = R"([
+    {
+      "manifest_id": "https://example.com/path/index.html",
+      "run_on_os_login": "allowed"
+    }
+  ])";
+
+  base::test::TestFuture<void> test_future;
+  provider()
+      .policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          test_future.GetCallback());
+  SetWebAppSettingsListPref(profile(), kWebAppSettingForceUnregisterApp);
+  EXPECT_TRUE(test_future.Wait());
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+}
+
+TEST_F(WebAppPolicyForceUnregistrationTest,
+       ManifestWildcardDoNotAffectOsIntegration) {
+  if (!IsOsIntegrationAllowed()) {
+    GTEST_SKIP() << "OS integration execution does not work on this OS";
+  }
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id =
+      InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
+  const std::string& app_name =
+      provider().registrar_unsafe().GetAppShortName(app_id);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+
+  const char kWebAppSettingForceUnregisterApp[] = R"([
+    {
+      "manifest_id": "*",
+      "force_unregister_os_integration": true
+    }
+  ])";
+
+  base::test::TestFuture<void> test_future;
+  provider()
+      .policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          test_future.GetCallback());
+  SetWebAppSettingsListPref(profile(), kWebAppSettingForceUnregisterApp);
+  EXPECT_TRUE(test_future.Wait());
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id, app_name));
+}
+
+// Do not call GTEST_SKIP() explicitly here since we do not perform any OS
+// integration in this test, and we just verify that the policy itself does not
+// work gracefully instead of crashing.
+TEST_F(WebAppPolicyForceUnregistrationTest,
+       ManifestIdDoesNotExistDoesNotCrash) {
+  const char kWebAppSettingForceUnregisterApp[] = R"([
+    {
+      "manifest_id": "https://unknown.app/",
+      "force_unregister_os_integration": true
+    }
+  ])";
+
+  base::test::TestFuture<void> test_future;
+  provider()
+      .policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          test_future.GetCallback());
+  SetWebAppSettingsListPref(profile(), kWebAppSettingForceUnregisterApp);
+  EXPECT_TRUE(test_future.Wait());
+}
+
+TEST_F(WebAppPolicyForceUnregistrationTest,
+       MultiAppOsIntegrationRemovalBothCorrect) {
+  if (!IsOsIntegrationAllowed()) {
+    GTEST_SKIP() << "OS integration execution does not work on this OS";
+  }
+  std::map<SquareSizePx, SkBitmap> icon_map1;
+  icon_map1[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map1[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id1 =
+      InstallWebAppWithShortcuts(std::move(icon_map1), kWebAppUrl);
+  const std::string& app_name1 =
+      provider().registrar_unsafe().GetAppShortName(app_id1);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id1, app_name1));
+
+  const GURL manifest_id2 = GURL("https://example_2.com/index.html");
+  std::map<SquareSizePx, SkBitmap> icon_map2;
+  icon_map2[icon_size::k24] =
+      CreateSolidColorIcon(icon_size::k24, SK_ColorGREEN);
+  icon_map2[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorCYAN);
+  const AppId& app_id2 =
+      InstallWebAppWithShortcuts(std::move(icon_map2), manifest_id2);
+  const std::string& app_name2 =
+      provider().registrar_unsafe().GetAppShortName(app_id2);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id2, app_name2));
+
+  const char kWebAppSettingForceUnregisterApp[] = R"([
+    {
+      "manifest_id": "https://example.com/path/index.html",
+      "force_unregister_os_integration": true
+    },
+    {
+      "manifest_id": "https://example_2.com/index.html",
+      "force_unregister_os_integration": true
+    }
+  ])";
+
+  base::test::TestFuture<void> test_future;
+  provider()
+      .policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          test_future.GetCallback());
+  SetWebAppSettingsListPref(profile(), kWebAppSettingForceUnregisterApp);
+  EXPECT_TRUE(test_future.Wait());
+
+  ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id1, app_name1));
+  ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id2, app_name2));
+}
+
+TEST_F(WebAppPolicyForceUnregistrationTest,
+       MultiAppOsIntegrationRemovalOneCorrect) {
+  if (!IsOsIntegrationAllowed()) {
+    GTEST_SKIP() << "OS integration execution does not work on this OS";
+  }
+  std::map<SquareSizePx, SkBitmap> icon_map1;
+  icon_map1[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
+  icon_map1[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const AppId& app_id1 =
+      InstallWebAppWithShortcuts(std::move(icon_map1), kWebAppUrl);
+  const std::string& app_name1 =
+      provider().registrar_unsafe().GetAppShortName(app_id1);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id1, app_name1));
+
+  const GURL manifest_id2 = GURL("https://example_2.com/index.html");
+  std::map<SquareSizePx, SkBitmap> icon_map2;
+  icon_map2[icon_size::k24] =
+      CreateSolidColorIcon(icon_size::k24, SK_ColorGREEN);
+  icon_map2[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorCYAN);
+  const AppId& app_id2 =
+      InstallWebAppWithShortcuts(std::move(icon_map2), manifest_id2);
+  const std::string& app_name2 =
+      provider().registrar_unsafe().GetAppShortName(app_id2);
+
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id2, app_name2));
+
+  // Have a typo in one for manifest_id of 2nd app, or have it be non-existent.
+  const char kWebAppSettingForceUnregisterApp[] = R"([
+    {
+      "manifest_id": "https://example.com/path/index.html",
+      "force_unregister_os_integration": true
+    },
+    {
+      "manifest_id": "https://example_2.com/invalid_index.html",
+      "force_unregister_os_integration": true
+    }
+  ])";
+
+  base::test::TestFuture<void> test_future;
+  provider()
+      .policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          test_future.GetCallback());
+  SetWebAppSettingsListPref(profile(), kWebAppSettingForceUnregisterApp);
+  EXPECT_TRUE(test_future.Wait());
+
+  ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id1, app_name1));
+  ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
+      profile(), app_id2, app_name2));
+}
 }  // namespace web_app
