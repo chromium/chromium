@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/test/block_cleanup_test.h"
@@ -193,12 +194,10 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
             SessionSyncServiceFactory::GetForBrowserState(
                 chrome_browser_state_.get()));
 
-    syncer::TestSyncService* sync_service =
-        static_cast<syncer::TestSyncService*>(
-            SyncServiceFactory::GetForBrowserState(
-                chrome_browser_state_.get()));
-    sync_service->SetSetupInProgress(!sync_enabled);
-    sync_service->SetHasSyncConsent(sync_completed);
+    sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
+    sync_service_->SetSetupInProgress(!sync_enabled);
+    sync_service_->SetHasSyncConsent(sync_completed);
 
     // Needed by SyncService's initialization, triggered during initialization
     // of SyncSetupServiceMock.
@@ -297,6 +296,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
 
+  syncer::TestSyncService* sync_service_;
   sync_sessions::SyncedSession sync_session_;
   std::vector<const sync_sessions::SyncedSession*> sessions_;
 
@@ -374,6 +374,25 @@ TEST_F(RecentTabsTableCoordinatorTest, TestLoadFaviconAfterDisconnect) {
                                                     inSection:section_index]];
     }
   }
+}
+
+// It's possible to tap on the history sync promo action button to show a new
+// history sync screen, while the dismiss animation is being played for the
+// previous History Sync screen.
+// This test verifies that there's no crash in this case.
+// See https://crbug.com/1470860.
+TEST_F(RecentTabsTableCoordinatorTest, TestReopenHistorySyncWhenPreviousShown) {
+  SetupSyncState(YES, NO, NO, NO);
+  // Disable history and tabs settings to ensure that the History Sync
+  // coordinator.
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /* sync_everything */ false, {});
+  CreateController();
+
+  id<RecentTabsPresentationDelegate> delegate =
+      static_cast<id<RecentTabsPresentationDelegate>>(coordinator_);
+  [delegate showHistorySyncOptInAfterDedicatedSignIn:NO];
+  [delegate showHistorySyncOptInAfterDedicatedSignIn:NO];
 }
 
 }  // namespace
