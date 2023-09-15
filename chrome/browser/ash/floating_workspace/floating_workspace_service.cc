@@ -34,8 +34,10 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
@@ -235,8 +237,13 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
       if (!first_uptodate_download_timeticks_.has_value()) {
         first_uptodate_download_timeticks_ = base::TimeTicks::Now();
       }
-      StopProgressBarNotification();
-      RestoreFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
+      if (!is_cache_ready_) {
+        should_launch_on_ready_ = true;
+        VLOG(1)
+            << "App cache is not ready. Don't restore floating workspace yet.";
+        return;
+      }
+      StopProgressBarAndRestoreFloatingWorkspace();
       break;
     }
     case syncer::SyncService::ModelTypeDownloadStatus::kError: {
@@ -322,6 +329,18 @@ void FloatingWorkspaceService::InitForV2(
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);
   }
+  // If we don't have an apps cache then we observe the wrapper to
+  // wait for it to be ready.
+  auto& apps_cache_wrapper = apps::AppRegistryCacheWrapper::Get();
+  DCHECK(&apps_cache_wrapper);
+  auto* apps_cache = apps_cache_wrapper.GetAppRegistryCache(
+      multi_user_util::GetAccountIdFromProfile(profile_));
+  if (apps_cache) {
+    app_cache_obs_.Observe(apps_cache);
+  } else {
+    app_cache_wrapper_obs_.Observe(&apps_cache_wrapper);
+  }
+  is_cache_ready_ = AreRequiredAppTypesInitialized();
   if (!floating_workspace_util::IsInternetConnected()) {
     SendNotification(kNotificationForNoNetworkConnection);
   } else {
@@ -475,6 +494,11 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
 void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
     std::unique_ptr<DeskTemplate> desk_template) {
   OnTemplateCaptured(absl::nullopt, std::move(desk_template));
+}
+
+void FloatingWorkspaceService::StopProgressBarAndRestoreFloatingWorkspace() {
+  StopProgressBarNotification();
+  RestoreFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
 }
 
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
@@ -853,6 +877,63 @@ void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
     VLOG(1) << "Another device uploaded a template, logging out.";
     chrome::AttemptUserExit();
   }
+}
+
+void FloatingWorkspaceService::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  // Set the cache readiness to false. If this is happening, then it's very
+  // likely the service will be destroyed soon.
+  is_cache_ready_ = false;
+  app_cache_obs_.Reset();
+}
+
+bool FloatingWorkspaceService::AreRequiredAppTypesInitialized() {
+  if (!app_cache_obs_.IsObserving()) {
+    return false;
+  }
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(
+          multi_user_util::GetAccountIdFromProfile(profile_));
+  DCHECK(cache);
+  const std::set<apps::AppType>& initialized_types =
+      cache->InitializedAppTypes();
+  if (!initialized_types.contains(apps::AppType::kWeb)) {
+    return false;
+  }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return (
+      initialized_types.contains(apps::AppType::kStandaloneBrowser) &&
+      initialized_types.contains(apps::AppType::kStandaloneBrowserChromeApp));
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return initialized_types.contains(apps::AppType::kChromeApp);
+#endif
+}
+
+void FloatingWorkspaceService::OnAppTypeInitialized(apps::AppType app_type) {
+  // If the cache is already ready we don't need to check for additional app
+  // type initialization.
+  if (is_cache_ready_) {
+    return;
+  }
+  is_cache_ready_ = AreRequiredAppTypesInitialized();
+  // If we're here it means that we have floating workspace template to be
+  // launched, but until this point the AppRegistryCache wasn't ready.
+  if (is_cache_ready_ && should_launch_on_ready_ && should_run_restore_) {
+    StopProgressBarAndRestoreFloatingWorkspace();
+  }
+}
+
+void FloatingWorkspaceService::OnAppRegistryCacheAdded(
+    const AccountId& account_id) {
+  if (account_id != multi_user_util::GetAccountIdFromProfile(profile_) ||
+      app_cache_obs_.IsObserving()) {
+    return;
+  }
+  auto* apps_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  app_cache_obs_.Observe(apps_cache);
+  is_cache_ready_ = AreRequiredAppTypesInitialized();
 }
 
 }  // namespace ash

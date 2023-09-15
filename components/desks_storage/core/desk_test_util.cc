@@ -74,6 +74,17 @@ void PopulateAdminTestAppRegistryCache(AccountId account_id,
   cache->SetAccountId(account_id);
 }
 
+void PopulateFloatingWorkspaceAppRegistryCache(AccountId account_id,
+                                               apps::AppRegistryCache* cache) {
+  PopulateAdminTestAppRegistryCache(account_id, cache);
+  std::vector<apps::AppPtr> deltas;
+  deltas.push_back(
+      MakeApp(kTestSwaAppId, "Test System Web App 1", apps::AppType::kWeb));
+  cache->OnApps(std::move(deltas), apps::AppType::kWeb,
+                /*should_notify_initialized=*/true);
+  cache->SetAccountId(account_id);
+}
+
 void AddAppIdToAppRegistryCache(AccountId account_id,
                                 apps::AppRegistryCache* cache,
                                 const char* app_id) {

@@ -11,16 +11,18 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "components/desks_storage/core/desk_model.h"
-#include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -58,9 +60,12 @@ enum class FloatingWorkspaceServiceNotificationType {
 // A keyed service to support floating workspace. Note that a periodical
 // task `CaptureAndUploadActiveDesk` will be dispatched during service
 // initialization.
-class FloatingWorkspaceService : public KeyedService,
-                                 public message_center::NotificationObserver,
-                                 public syncer::SyncServiceObserver {
+class FloatingWorkspaceService
+    : public KeyedService,
+      public message_center::NotificationObserver,
+      public syncer::SyncServiceObserver,
+      public apps::AppRegistryCache::Observer,
+      public apps::AppRegistryCacheWrapper::Observer {
  public:
   static FloatingWorkspaceService* GetForProfile(Profile* profile);
 
@@ -104,6 +109,14 @@ class FloatingWorkspaceService : public KeyedService,
   bool is_testing_ = false;
 
  private:
+  // AppRegistryCache::Observer
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+  void OnAppTypeInitialized(apps::AppType app_type) override;
+
+  // AppRegistryCacheWrapper::Observer
+  void OnAppRegistryCacheAdded(const AccountId& account_id) override;
+
   void InitForV1();
   void InitForV2(syncer::SyncService* sync_service,
                  desks_storage::DeskSyncService* desk_sync_service);
@@ -140,6 +153,11 @@ class FloatingWorkspaceService : public KeyedService,
   // Upload captured desk to chrome sync and record the randomly generated
   // UUID key to `floating_workspace_template_uuid_`.
   void CaptureAndUploadActiveDesk();
+
+  // Stops the progress bar and resumes the latest floating workspace. This is
+  // called when the app cache is ready and we have received `kUpToDate` from
+  // sync service.
+  void StopProgressBarAndRestoreFloatingWorkspace();
 
   // Restore last saved floating workspace desk for current user with
   // floating_workspace_template_uuid_.
@@ -205,6 +223,10 @@ class FloatingWorkspaceService : public KeyedService,
   // after this service was started.
   void MaybeSignOutOfCurrentSession();
 
+  // Updates the `is_cache_ready_` status if all the required app types are
+  // initialized.
+  bool AreRequiredAppTypesInitialized();
+
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
@@ -216,6 +238,12 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Flag to determine if we should run the restore.
   bool should_run_restore_ = true;
+
+  // Tells us whether or not the apps cache is ready.
+  bool is_cache_ready_ = false;
+
+  // Flag to tell us if we should launch on cache is ready.
+  bool should_launch_on_ready_ = false;
 
   // Time when the service is initialized.
   base::TimeTicks initialization_timeticks_;
@@ -256,6 +284,13 @@ class FloatingWorkspaceService : public KeyedService,
   std::unique_ptr<DeskTemplate> floating_workspace_template_to_restore_ =
       nullptr;
 
+  // scoped Observations
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_cache_obs_{this};
+  base::ScopedObservation<apps::AppRegistryCacheWrapper,
+                          apps::AppRegistryCacheWrapper::Observer>
+      app_cache_wrapper_obs_{this};
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};
 };

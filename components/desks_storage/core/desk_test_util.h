@@ -151,6 +151,10 @@ void AddAppIdToAppRegistryCache(AccountId account_id,
 void PopulateAdminTestAppRegistryCache(AccountId account_id,
                                        apps::AppRegistryCache* cache);
 
+// Similar to `PopulateAdminTestAppRegistryCache`, but includes web apps.
+void PopulateFloatingWorkspaceAppRegistryCache(AccountId account_id,
+                                               apps::AppRegistryCache* cache);
+
 }  // namespace desks_storage::desk_test_util
 
 #endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_TEST_UTIL_H_
