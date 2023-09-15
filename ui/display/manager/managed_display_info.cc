@@ -559,7 +559,8 @@ std::string ManagedDisplayInfo::ToString() const {
       "ManagedDisplayInfo[%lld] port_display_id=%lld, edid_display_id=%lld, "
       "native bounds=%s, size=%s, device-scale=%g, "
       "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
-      "panel_corners_radii=%s, panel_orientation=%s, detected=%s",
+      "panel_corners_radii=%s, panel_orientation=%s, detected=%s, "
+      "color_space=%s",
       static_cast<long long int>(id_),
       static_cast<long long int>(port_display_id_),
       static_cast<long long int>(edid_display_id_),
@@ -571,7 +572,8 @@ std::string ManagedDisplayInfo::ToString() const {
                                                              : "unknown",
       panel_corners_radii_.ToString().c_str(),
       PanelOrientationToString(panel_orientation_).c_str(),
-      detected_ ? "true" : "false");
+      detected_ ? "true" : "false",
+      display_color_spaces_.GetRasterColorSpace().ToString().c_str());
 
   return result;
 }
