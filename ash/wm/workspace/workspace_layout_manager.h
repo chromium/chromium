@@ -70,10 +70,6 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
                                intptr_t old) override;
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
 
   // wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,

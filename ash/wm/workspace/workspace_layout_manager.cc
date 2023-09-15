@@ -347,12 +347,6 @@ void WorkspaceLayoutManager::OnWindowDestroying(aura::Window* window) {
   Shell::Get()->desks_controller()->MaybeRemoveVisibleOnAllDesksWindow(window);
 }
 
-void WorkspaceLayoutManager::OnWindowBoundsChanged(
-    aura::Window* window,
-    const gfx::Rect& old_bounds,
-    const gfx::Rect& new_bounds,
-    ui::PropertyChangeReason reason) {}
-
 //////////////////////////////////////////////////////////////////////////////
 // WorkspaceLayoutManager, wm::ActivationChangeObserver implementation:
 
