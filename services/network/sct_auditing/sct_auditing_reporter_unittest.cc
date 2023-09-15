@@ -6,13 +6,13 @@
 
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "net/base/hash_value.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_context.h"
@@ -156,8 +156,8 @@ class SCTAuditingReporterTest : public testing::Test {
                 response_.status,
                 leaf_hash_base64,
                 log_id_base64,
-                base::TimeToISO8601(response_.ingested_until),
-                base::TimeToISO8601(response_.now),
+                base::TimeFormatAsIso8601(response_.ingested_until),
+                base::TimeFormatAsIso8601(response_.now),
             },
             nullptr));
   }

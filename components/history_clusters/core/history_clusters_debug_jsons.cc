@@ -10,10 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -103,7 +103,7 @@ base::Value::Dict GetDebugJSONDictForAnnotatedVisit(
 }  // namespace
 
 std::string GetDebugTime(const base::Time time) {
-  return time.is_null() ? "null" : base::TimeToISO8601(time);
+  return time.is_null() ? "null" : base::TimeFormatAsIso8601(time);
 }
 
 // Gets a loggable JSON representation of `visits`.

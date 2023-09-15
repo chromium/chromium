@@ -193,7 +193,13 @@ int64_t Time::ToRoundedDownMillisecondsSinceUnixEpoch() const {
 std::ostream& operator<<(std::ostream& os, Time time) {
   Time::Exploded exploded;
   time.UTCExplode(&exploded);
-  // Use StringPrintf because iostreams formatting is painful.
+  // Can't call `UnlocalizedTimeFormatWithPattern()`/`TimeFormatAsIso8601()`
+  // since `//base` can't depend on `//base:i18n`. Use `StringPrintf()` because
+  // iostreams formatting is painful.
+  //
+  // TODO(pkasting): Consider whether `operator<<()` should move to
+  // `base/i18n/time_formatting.h` -- would let us implement in terms of
+  // existing time formatting, but might be confusing.
   return os << StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%03d UTC",
                             exploded.year,
                             exploded.month,

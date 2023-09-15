@@ -5,9 +5,9 @@
 #include "content/browser/notifications/devtools_event_logging.h"
 
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time_to_iso8601.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_background_services_context.h"
 #include "content/public/browser/notification_database_data.h"
@@ -117,7 +117,8 @@ void LogNotificationScheduledEventToDevTools(
 
   std::move(callback).Run(
       /* event_name= */ "Notification scheduled",
-      {{"Show Trigger Timestamp", base::TimeToISO8601(show_trigger_timestamp)},
+      {{"Show Trigger Timestamp",
+        base::TimeFormatAsIso8601(show_trigger_timestamp)},
        {"Title", base::UTF16ToUTF8(data.notification_data.title)},
        {"Body", base::UTF16ToUTF8(data.notification_data.body)}});
 }

@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -25,8 +26,8 @@
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
 
@@ -38,18 +39,10 @@ const FilePath::CharType kDefaultOutputFile[] = FILE_PATH_LITERAL(
 
 // Converts the given epoch time in milliseconds to a date string in the ISO
 // 8601 format, without the timezone information.
-// TODO(xyzzyz): Find a good place in Chromium to put it and refactor all uses
-// to point to it.
+// TODO(pkasting): Consider using `TimeFormatAsIso8601()`, possibly modified.
 std::string FormatTimeAsIso8601(Time time) {
-  Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-  return StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d",
-                      exploded.year,
-                      exploded.month,
-                      exploded.day_of_month,
-                      exploded.hour,
-                      exploded.minute,
-                      exploded.second);
+  return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss",
+                                                icu::TimeZone::getGMT());
 }
 
 struct TestSuiteResultsAggregator {
@@ -471,11 +464,11 @@ bool TestResultsTracker::SaveSummaryAsJSON(
         if (test_result.process_num)
           test_result_value.Set("process_num", *test_result.process_num);
         if (test_result.timestamp) {
-          // The timestamp is formatted using TimeToISO8601 instead of
-          // FormatTimeAsIso8601 here for a better accuracy that the former
-          // method would include a fraction of second (and the Z suffix).
-          test_result_value.Set("timestamp",
-                                TimeToISO8601(*test_result.timestamp).c_str());
+          // The timestamp is formatted using TimeFormatAsIso8601 instead of
+          // FormatTimeAsIso8601 here for a better accuracy, since the former
+          // method includes fractions of a second.
+          test_result_value.Set(
+              "timestamp", TimeFormatAsIso8601(*test_result.timestamp).c_str());
         }
 
         bool lossless_snippet = false;

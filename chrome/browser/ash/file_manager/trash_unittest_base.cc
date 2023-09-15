@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 
 #include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -161,7 +161,7 @@ const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(
   return base::StrCat(
       {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
        relative_restore_path,
-       "\nDeletionDate=", base::TimeToISO8601(base::Time())});
+       "\nDeletionDate=", base::TimeFormatAsIso8601(base::Time())});
 }
 
 const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(

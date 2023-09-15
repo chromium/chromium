@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -16,7 +17,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
@@ -119,9 +119,9 @@ class RestoreToDestinationIOTaskTest : public TrashBaseTest {
   }
 
   std::string GenerateTrashInfoContents(const std::string& restore_file) {
-    return base::StrCat(
-        {"[Trash Info]\nPath=", "/Downloads/bar/", restore_file,
-         "\nDeletionDate=", base::TimeToISO8601(base::Time::UnixEpoch())});
+    return base::StrCat({"[Trash Info]\nPath=", "/Downloads/bar/", restore_file,
+                         "\nDeletionDate=",
+                         base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
   }
 
   // Maintains ownership of the in-process parsing service.

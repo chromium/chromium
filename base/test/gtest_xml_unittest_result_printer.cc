@@ -8,11 +8,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 
 namespace base {
 
@@ -145,21 +145,21 @@ void XmlUnitTestResultPrinter::OnTestStart(
   fprintf(output_file_.get(),
           "    <x-teststart name=\"%s\" classname=\"%s\" timestamp=\"%s\" />\n",
           test_info.name(), test_info.test_case_name(),
-          TimeToISO8601(Time::Now()).c_str());
+          TimeFormatAsIso8601(Time::Now()).c_str());
   fflush(output_file_);
 }
 
 void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
-  fprintf(
-      output_file_.get(),
-      "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
-      " classname=\"%s\" timestamp=\"%s\">\n",
-      test_info.name(),
-      static_cast<double>(test_info.result()->elapsed_time()) /
-          Time::kMillisecondsPerSecond,
-      test_info.test_case_name(),
-      TimeToISO8601(Time::FromJavaTime(test_info.result()->start_timestamp()))
-          .c_str());
+  fprintf(output_file_.get(),
+          "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
+          " classname=\"%s\" timestamp=\"%s\">\n",
+          test_info.name(),
+          static_cast<double>(test_info.result()->elapsed_time()) /
+              Time::kMillisecondsPerSecond,
+          test_info.test_case_name(),
+          TimeFormatAsIso8601(
+              Time::FromJavaTime(test_info.result()->start_timestamp()))
+              .c_str());
   if (test_info.result()->Failed()) {
     fprintf(output_file_.get(),
             "      <failure message=\"\" type=\"\"></failure>\n");

@@ -4,10 +4,10 @@
 
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
@@ -79,7 +79,7 @@ mojom::URLVisitPtr VisitToMojom(const TemplateURLService* template_url_service,
     visit_mojom->debug_info["interaction_state"] = base::NumberToString(
         history::ClusterVisit::InteractionStateToInt(visit.interaction_state));
     visit_mojom->debug_info["visit_time"] =
-        base::TimeToISO8601(visit.annotated_visit.visit_row.visit_time);
+        base::TimeFormatAsIso8601(visit.annotated_visit.visit_row.visit_time);
     visit_mojom->debug_info["foreground_duration"] =
         base::NumberToString(annotated_visit.context_annotations
                                  .total_foreground_duration.InSecondsF());

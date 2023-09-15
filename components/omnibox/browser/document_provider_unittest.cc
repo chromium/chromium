@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -16,7 +17,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -812,13 +812,13 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   // GenerateLastModifiedString should accept any parsable timestamp, but use
   // ISO8601 UTC timestamp strings since the service returns them in practice.
   EXPECT_EQ(FakeDocumentProvider::GenerateLastModifiedString(
-                base::TimeToISO8601(modified_today), local_now),
+                base::TimeFormatAsIso8601(modified_today), local_now),
             u"2:18\u202FAM");
   EXPECT_EQ(FakeDocumentProvider::GenerateLastModifiedString(
-                base::TimeToISO8601(modified_this_year), local_now),
+                base::TimeFormatAsIso8601(modified_this_year), local_now),
             u"Aug 19");
   EXPECT_EQ(FakeDocumentProvider::GenerateLastModifiedString(
-                base::TimeToISO8601(modified_last_year), local_now),
+                base::TimeFormatAsIso8601(modified_last_year), local_now),
             u"8/27/17");
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_WIN)

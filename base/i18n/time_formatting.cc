@@ -260,6 +260,12 @@ std::string UnlocalizedTimeFormatWithPattern(const Time& time,
   return output;
 }
 
+std::string TimeFormatAsIso8601(const Time& time) {
+  return UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+                                          icu::TimeZone::getGMT());
+}
+
+
 bool TimeDurationFormat(TimeDelta time,
                         DurationFormatWidth width,
                         std::u16string* out) {

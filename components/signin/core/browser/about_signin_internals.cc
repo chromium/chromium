@@ -12,10 +12,10 @@
 
 #include "base/command_line.h"
 #include "base/hash/hash.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -314,7 +314,7 @@ void AboutSigninInternals::NotifyTimedSigninFieldValueChanged(
          field_index < signin_status_.timed_signin_fields.size());
 
   base::Time now = base::Time::NowFromSystemTime();
-  std::string time_as_str = base::TimeToISO8601(now);
+  std::string time_as_str = base::TimeFormatAsIso8601(now);
   TimedSigninStatusValue timed_value(value, time_as_str);
 
   signin_status_.timed_signin_fields[field_index] = timed_value;
@@ -560,14 +560,15 @@ base::Value::Dict AboutSigninInternals::TokenInfo::ToValue() const {
     scopes_str += *it + "\n";
   }
   token_info.Set("scopes", scopes_str);
-  token_info.Set("request_time", base::TimeToISO8601(request_time));
+  token_info.Set("request_time", base::TimeFormatAsIso8601(request_time));
 
   if (removed_) {
     token_info.Set("status", "Token was revoked.");
   } else if (!receive_time.is_null()) {
     if (error == GoogleServiceAuthError::AuthErrorNone()) {
       bool token_expired = expiration_time < base::Time::Now();
-      std::string expiration_time_string = base::TimeToISO8601(expiration_time);
+      std::string expiration_time_string =
+          base::TimeFormatAsIso8601(expiration_time);
       if (expiration_time.is_null()) {
         token_expired = false;
         expiration_time_string = "Expiration time not available";
@@ -577,7 +578,7 @@ base::Value::Dict AboutSigninInternals::TokenInfo::ToValue() const {
       if (token_expired)
         expire_string = "Expired";
       base::StringAppendF(&status_str, "Received token at %s. %s at %s",
-                          base::TimeToISO8601(receive_time).c_str(),
+                          base::TimeFormatAsIso8601(receive_time).c_str(),
                           expire_string.c_str(),
                           expiration_time_string.c_str());
       // JS code looks for `Expired at` string in order to mark
@@ -730,7 +731,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
       base::Time next_retry_time =
           base::Time::NowFromSystemTime() + cookie_requests_delay;
       AddSectionEntry(detailed_info, "Cookie Manager Next Retry",
-                      base::TimeToISO8601(next_retry_time), "");
+                      base::TimeFormatAsIso8601(next_retry_time), "");
     }
 
     base::TimeDelta token_requests_delay =
@@ -741,7 +742,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
       base::Time next_retry_time =
           base::Time::NowFromSystemTime() + token_requests_delay;
       AddSectionEntry(detailed_info, "Token Service Next Retry",
-                      base::TimeToISO8601(next_retry_time), "");
+                      base::TimeFormatAsIso8601(next_retry_time), "");
     }
 
     AddSection(signin_info, std::move(detailed_info), "Last Signin Details");
@@ -793,7 +794,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
   for (const auto& event : refresh_token_events) {
     base::Value::Dict entry;
     entry.Set("accountId", event.account_id.ToString());
-    entry.Set("timestamp", base::TimeToISO8601(event.timestamp));
+    entry.Set("timestamp", base::TimeFormatAsIso8601(event.timestamp));
     entry.Set("type", event.GetTypeAsString());
     entry.Set("source", event.source);
     refresh_token_events_value.Append(std::move(entry));

@@ -27,6 +27,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/i18n/icu_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -1603,6 +1604,10 @@ bool TestLauncher::Init(CommandLine* command_line) {
 
   fprintf(stdout, "Using %zu parallel jobs.\n", parallel_jobs_);
   fflush(stdout);
+
+  if (!base::i18n::InitializeICU()) {
+    return false;
+  }
 
   CreateAndStartThreadPool(parallel_jobs_);
 

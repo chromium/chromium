@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -287,7 +287,7 @@ class DemoSetupTestBase : public OobeBaseTest {
   void SetFakeTimeForMultiTapDetector(base::Time fake_time) {
     const std::string query =
         base::StrCat({"MultiTapDetector.setFakeTimeForTests(new Date('",
-                      base::TimeToISO8601(fake_time), "'));"});
+                      base::TimeFormatAsIso8601(fake_time), "'));"});
     test::ExecuteOobeJS(query);
   }
 

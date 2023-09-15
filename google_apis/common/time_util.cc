@@ -7,12 +7,12 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 
 namespace google_apis {
 namespace util {
@@ -180,10 +180,8 @@ bool GetDateOnlyFromString(base::StringPiece raw_value,
 }
 
 std::string FormatTimeAsString(const base::Time& time) {
-  if (time.is_null())
-    return kNullTimeString;
-
-  return base::TimeToISO8601(time);
+  return time.is_null() ? std::string(kNullTimeString)
+                        : base::TimeFormatAsIso8601(time);
 }
 
 std::string FormatTimeAsStringLocaltime(const base::Time& time) {

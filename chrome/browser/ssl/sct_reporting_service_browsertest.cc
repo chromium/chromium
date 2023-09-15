@@ -9,6 +9,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -16,7 +17,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -358,7 +358,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
         base::Time::UnixEpoch() + base::Seconds(1640995200);
     base::Value::Dict response;
     response.Set("responseStatus", "OK");
-    response.Set("now", base::TimeToISO8601(server_time));
+    response.Set("now", base::TimeFormatAsIso8601(server_time));
 
     base::Value::List suffixes;
     for (const auto& suffix : suffix_list_) {
@@ -371,19 +371,19 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     {
       base::Value::Dict log_status;
       log_status.Set("logId", base::Base64Encode(kTestGoogleLogId));
-      log_status.Set("ingestedUntil", base::TimeToISO8601(server_time));
+      log_status.Set("ingestedUntil", base::TimeFormatAsIso8601(server_time));
       log_list.Append(std::move(log_status));
     }
     {
       base::Value::Dict log_status;
       log_status.Set("logId", base::Base64Encode(kTestNonGoogleLogId1));
-      log_status.Set("ingestedUntil", base::TimeToISO8601(server_time));
+      log_status.Set("ingestedUntil", base::TimeFormatAsIso8601(server_time));
       log_list.Append(std::move(log_status));
     }
     {
       base::Value::Dict log_status;
       log_status.Set("logId", base::Base64Encode(kTestNonGoogleLogId2));
-      log_status.Set("ingestedUntil", base::TimeToISO8601(server_time));
+      log_status.Set("ingestedUntil", base::TimeFormatAsIso8601(server_time));
       log_list.Append(std::move(log_status));
     }
     response.Set("logStatus", std::move(log_list));

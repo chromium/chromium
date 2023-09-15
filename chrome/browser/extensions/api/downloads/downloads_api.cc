@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -29,7 +30,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -345,7 +345,7 @@ base::Value::Dict DownloadItemToJSON(DownloadItem* download_item,
   item.can_resume = download_item->CanResume();
   item.paused = download_item->IsPaused();
   item.mime = download_item->GetMimeType();
-  item.start_time = base::TimeToISO8601(download_item->GetStartTime());
+  item.start_time = base::TimeFormatAsIso8601(download_item->GetStartTime());
   item.bytes_received = static_cast<double>(download_item->GetReceivedBytes());
   item.total_bytes = static_cast<double>(download_item->GetTotalBytes());
   item.incognito = browser_context->IsOffTheRecord();
@@ -355,12 +355,13 @@ base::Value::Dict DownloadItemToJSON(DownloadItem* download_item,
     item.error = ConvertInterruptReason(
         download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
   }
-  if (!download_item->GetEndTime().is_null())
-    item.end_time = base::TimeToISO8601(download_item->GetEndTime());
+  if (!download_item->GetEndTime().is_null()) {
+    item.end_time = base::TimeFormatAsIso8601(download_item->GetEndTime());
+  }
   base::TimeDelta time_remaining;
   if (download_item->TimeRemaining(&time_remaining)) {
     base::Time now = base::Time::Now();
-    item.estimated_end_time = base::TimeToISO8601(now + time_remaining);
+    item.estimated_end_time = base::TimeFormatAsIso8601(now + time_remaining);
   }
   DownloadedByExtension* by_ext = DownloadedByExtension::Get(download_item);
   if (by_ext) {

@@ -351,6 +351,12 @@ TEST(TimeFormattingTest, UnlocalizedTimeFormatWithPatternMicroseconds) {
                                        no_micros, "ss.SSSSSS''SSSSSS.ss"));
 }
 
+TEST(TimeFormattingTest, TimeFormatAsIso8601) {
+  Time time;
+  EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
+  EXPECT_EQ("2011-04-30T22:42:07.000Z", TimeFormatAsIso8601(time));
+}
+
 TEST(TimeFormattingTest, TimeDurationFormat) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   TimeDelta delta = Minutes(15 * 60 + 42);

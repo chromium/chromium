@@ -889,8 +889,6 @@ component("base") {
     "time/time_delta_from_string.h",
     "time/time_override.cc",
     "time/time_override.h",
-    "time/time_to_iso8601.cc",
-    "time/time_to_iso8601.h",
     "timer/elapsed_timer.cc",
     "timer/elapsed_timer.h",
     "timer/hi_res_timer_manager.h",

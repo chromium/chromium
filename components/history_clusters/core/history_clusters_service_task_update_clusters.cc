@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/time/time_to_iso8601.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/config.h"

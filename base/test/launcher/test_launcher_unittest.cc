@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/process/launch.h"
@@ -25,7 +26,6 @@
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/time/time_to_iso8601.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -896,16 +896,19 @@ TEST_F(ResultWatcherTest, PollCompletesQuickly) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n",
               "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\">\n", "    </testcase>\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\">\n",
+              "    </testcase>\n",
               "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now() + Milliseconds(500)).c_str(),
+              "\" />\n",
               "    <testcase name=\"C\" status=\"run\" time=\"0.500\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(), "\">\n",
-              "    </testcase>\n", "  </testsuite>\n", "</testsuites>\n"})));
+              TimeFormatAsIso8601(Time::Now() + Milliseconds(500)).c_str(),
+              "\">\n", "    </testcase>\n", "  </testsuite>\n",
+              "</testsuites>\n"})));
 
   MockResultWatcher result_watcher(result_file, 2);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
@@ -927,7 +930,7 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n"})));
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n"})));
 
   MockResultWatcher result_watcher(result_file, 10);
   size_t checks = 0;
@@ -943,7 +946,8 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
                       result_file,
                       StrCat({"    <testcase name=\"B\" status=\"run\" "
                               "time=\"40.000\" classname=\"A\" timestamp=\"",
-                              TimeToISO8601(Time::Now() - Seconds(45)).c_str(),
+                              TimeFormatAsIso8601(Time::Now() - Seconds(45))
+                                  .c_str(),
                               "\">\n", "    </testcase>\n"}));
                   checks++;
                   if (checks == 10) {
@@ -959,7 +963,8 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
                         result_file,
                         StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
                                 "timestamp=\"",
-                                TimeToISO8601(Time::Now() - Seconds(5)).c_str(),
+                                TimeFormatAsIso8601(Time::Now() - Seconds(5))
+                                    .c_str(),
                                 "\" />\n"}));
                   }
                 }),
@@ -987,7 +992,7 @@ TEST_F(ResultWatcherTest, PollTimeout) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n"})));
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n"})));
 
   MockResultWatcher result_watcher(result_file, 10);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
@@ -1010,10 +1015,10 @@ TEST_F(ResultWatcherTest, RetryIncompleteResultRead) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n",
               "    <testcase name=\"B\" status=\"run\" time=\"40.000\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\">\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\">\n",
               "      <summary>"})));
 
   MockResultWatcher result_watcher(result_file, 2);
@@ -1045,15 +1050,16 @@ TEST_F(ResultWatcherTest, PollWithClockJumpBackward) {
   Time time_before_change = Time::Now() + Hours(1);
   ASSERT_TRUE(AppendToFile(
       result_file,
-      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(time_before_change).c_str(), "\" />\n",
-              "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
-              "classname=\"A\" timestamp=\"",
-              TimeToISO8601(time_before_change).c_str(), "\">\n",
-              "    </testcase>\n",
-              "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(time_before_change + Milliseconds(500)).c_str(),
-              "\" />\n"})));
+      StrCat(
+          {"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+           TimeFormatAsIso8601(time_before_change).c_str(), "\" />\n",
+           "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
+           "classname=\"A\" timestamp=\"",
+           TimeFormatAsIso8601(time_before_change).c_str(), "\">\n",
+           "    </testcase>\n",
+           "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
+           TimeFormatAsIso8601(time_before_change + Milliseconds(500)).c_str(),
+           "\" />\n"})));
 
   MockResultWatcher result_watcher(result_file, 2);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
@@ -1077,12 +1083,13 @@ TEST_F(ResultWatcherTest, PollWithClockJumpForward) {
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n",
               "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
               "classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now()).c_str(), "\">\n", "    </testcase>\n",
+              TimeFormatAsIso8601(Time::Now()).c_str(), "\">\n",
+              "    </testcase>\n",
               "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
-              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(),
+              TimeFormatAsIso8601(Time::Now() + Milliseconds(500)).c_str(),
               "\" />\n"})));
   task_environment.AdvanceClock(Hours(1));
 

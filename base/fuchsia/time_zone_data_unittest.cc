@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/test/icu_test_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/uclean.h"
@@ -28,9 +29,13 @@ const char kRevisionFilePath[] = "/config/data/tzdata/revision.txt";
 
 class TimeZoneDataTest : public testing::Test {
  protected:
-  void SetUp() override { ResetIcu(); }
+  void TearDown() override {
+    ResetIcu();
 
-  void TearDown() override { ResetIcu(); }
+    // ICU must be set back up in case e.g. a log statement that formats times
+    // uses it.
+    test::InitializeICUForTesting();
+  }
 
   // Needed to enable loading of ICU config files that are different from what
   // is available in Chromium.  Both icu_util and ICU library keep internal
@@ -59,15 +64,17 @@ class TimeZoneDataTest : public testing::Test {
 // not be present, in which case we skip running this test.
 TEST_F(TimeZoneDataTest, CompareSystemRevisionWithExpected) {
   if (!base::PathExists(base::FilePath(kRevisionFilePath))) {
-    LOG(INFO) << "Skipped test because tzdata config is not present";
-    return;
+    GTEST_SKIP() << "Skipped test because tzdata config is not present";
   }
 
   // ResetIcu() ensures that time zone data is loaded from the default location.
+  // This is done after the GTEST_SKIP() call above, since that may output a
+  // timestamp that requires ICU to be set up.
+  ResetIcu();
 
   ASSERT_TRUE(InitializeICU());
   std::string expected;
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       base::ReadFileToString(base::FilePath(kRevisionFilePath), &expected));
   std::string actual;
   GetActualRevision(&actual);
@@ -82,9 +89,10 @@ TEST_F(TimeZoneDataTest, CompareSystemRevisionWithExpected) {
 // ICU library versions.
 TEST_F(TimeZoneDataTest, TestLoadingTimeZoneDataFromKnownConfigs) {
   ASSERT_TRUE(base::DirectoryExists(base::FilePath(kTzDataDirPath)));
+  ResetIcu();
   SetIcuTimeZoneDataDirForTesting(kTzDataDirPath);
 
-  EXPECT_TRUE(InitializeICU());
+  ASSERT_TRUE(InitializeICU());
   std::string actual;
   GetActualRevision(&actual);
   EXPECT_EQ("2019a", actual) << "If ICU no longer supports this tzdata "
@@ -92,9 +100,10 @@ TEST_F(TimeZoneDataTest, TestLoadingTimeZoneDataFromKnownConfigs) {
 }
 
 TEST_F(TimeZoneDataTest, DoesNotCrashWithInvalidPath) {
+  ResetIcu();
   SetIcuTimeZoneDataDirForTesting("/some/nonexistent/path");
 
-  EXPECT_TRUE(InitializeICU());
+  ASSERT_TRUE(InitializeICU());
   std::string actual;
   GetActualRevision(&actual);
   EXPECT_TRUE(

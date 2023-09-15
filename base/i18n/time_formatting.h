@@ -144,6 +144,9 @@ BASE_I18N_EXPORT std::string UnlocalizedTimeFormatWithPattern(
     StringPiece pattern,
     const icu::TimeZone* time_zone = nullptr);
 
+// Formats a time compliant to ISO 8601 in UTC, e.g. "2020-12-31T23:59:59.999Z".
+BASE_I18N_EXPORT std::string TimeFormatAsIso8601(const Time& time);
+
 // Formats a time duration of hours and minutes into various formats, e.g.,
 // "3:07" or "3 hours, 7 minutes", and returns true on success. See
 // DurationFormatWidth for details.
