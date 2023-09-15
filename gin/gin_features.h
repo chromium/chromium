@@ -67,6 +67,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptJsonParseWithSource);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptArrayBufferTransfer);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptCompileHintsMagic);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptIteratorHelpers);
+GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptPromiseWithResolvers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTailCall);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
 
