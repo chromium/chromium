@@ -105,7 +105,7 @@ TEST_F(ModuleBlocklistCacheUtilTest, CalculateTimeDateStamp) {
 
   base::Time time;
   ASSERT_TRUE(kChromeBirthday.HasValidValues());
-  ASSERT_TRUE(base::Time::FromUTCExploded(chrome_birthday, &time));
+  ASSERT_TRUE(base::Time::FromUTCExploded(kChromeBirthday, &time));
 
   // Ensure that CalculateTimeDateStamp() will always return the number of
   // hours between |time| and the Windows epoch.
