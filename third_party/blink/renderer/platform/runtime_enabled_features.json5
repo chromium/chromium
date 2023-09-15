@@ -464,7 +464,7 @@
       // 1. If event.preventDefault() is called, prompt cancel dialog.
       // 2. If event.returnValue is the empty string, do not prompt cancel dialog.
       name: "BeforeunloadEventCancelByPreventDefault",
-      status: "experimental",
+      status: "stable",
       public: true,
     },
     {
