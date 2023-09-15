@@ -395,6 +395,10 @@ void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(
   NOTIMPLEMENTED();
 }
 
+void FakeSkiaOutputSurface::CheckAsyncWorkCompletionForTesting() {
+  NOTIMPLEMENTED();
+}
+
 void FakeSkiaOutputSurface::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {

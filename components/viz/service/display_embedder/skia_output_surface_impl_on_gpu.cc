@@ -1890,6 +1890,10 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
     if (!InitializeForDawn()) {
       return false;
     }
+  } else if (is_using_graphite_metal()) {
+    if (!InitializeForMetal()) {
+      return false;
+    }
   } else {
     if (!InitializeForGL()) {
       return false;
@@ -2148,6 +2152,40 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   }
 #endif
   return !!output_device_;
+}
+
+bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
+#if !BUILDFLAG(IS_APPLE)
+  NOTREACHED_NORETURN();
+#else
+  if (dependency_->IsOffscreen()) {
+    output_device_ = std::make_unique<SkiaOutputDeviceOffscreen>(
+        context_state_, gfx::SurfaceOrigin::kTopLeft,
+        renderer_settings_.requires_alpha_channel,
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
+  } else {
+    gl::GLSurfaceFormat format;
+    presenter_ =
+        dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(), format);
+    CHECK(presenter_);
+
+#if BUILDFLAG(IS_MAC)
+    if (features::UseGpuVsync()) {
+      presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
+        std::make_unique<OutputPresenterGL>(
+            presenter_, dependency_, shared_image_factory_.get(),
+            shared_image_representation_factory_.get()),
+        dependency_, shared_image_representation_factory_.get(),
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
+  }
+
+  return true;
+#endif  // !BUILDFLAG(IS_APPLE)
 }
 
 bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
@@ -2448,12 +2486,7 @@ void SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion() {
   if (num_readbacks_pending_ == 0 || !MakeCurrent(/*need_framebuffer=*/false))
     return;
 
-  if (auto* graphite_context = context_state_->graphite_context()) {
-    graphite_context->checkAsyncWorkCompletion();
-  } else {
-    CHECK(gr_context());
-    gr_context()->checkAsyncWorkCompletion();
-  }
+  CheckAsyncWorkCompletion();
   ScheduleCheckReadbackCompletion();
 }
 
@@ -2652,6 +2685,15 @@ base::ScopedClosureRunner SkiaOutputSurfaceImplOnGpu::GetCacheBackBufferCb() {
   }
 
   return base::ScopedClosureRunner();
+}
+
+void SkiaOutputSurfaceImplOnGpu::CheckAsyncWorkCompletion() {
+  if (auto* graphite_context = context_state_->graphite_context()) {
+    graphite_context->checkAsyncWorkCompletion();
+  } else {
+    CHECK(gr_context());
+    gr_context()->checkAsyncWorkCompletion();
+  }
 }
 
 }  // namespace viz

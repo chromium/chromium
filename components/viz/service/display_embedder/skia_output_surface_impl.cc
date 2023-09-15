@@ -1389,6 +1389,15 @@ void SkiaOutputSurfaceImpl::ScheduleGpuTaskForTesting(
   FlushGpuTasks(SyncMode::kNoWait);
 }
 
+void SkiaOutputSurfaceImpl::CheckAsyncWorkCompletionForTesting() {
+  auto task =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CheckAsyncWorkCompletion,
+                     base::Unretained(impl_on_gpu_.get()));
+  EnqueueGpuTask(std::move(task), std::vector<gpu::SyncToken>(),
+                 /*make_current=*/false, /*need_framebuffer=*/false);
+  FlushGpuTasks(SyncMode::kNoWait);
+}
+
 void SkiaOutputSurfaceImpl::EnqueueGpuTask(
     GpuTask task,
     std::vector<gpu::SyncToken> sync_tokens,
@@ -1719,7 +1728,11 @@ void SkiaOutputSurfaceImpl::DestroySharedImage(const gpu::Mailbox& mailbox) {
 bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
   if (graphite_recorder_) {
     // TODO(crbug.com/1451789): Implement properly for Graphite.
+#if BUILDFLAG(IS_IOS)
+    return false;
+#else
     return true;
+#endif  // BUILDFLAG(IS_IOS)
   }
 
   return gr_context_thread_safe_

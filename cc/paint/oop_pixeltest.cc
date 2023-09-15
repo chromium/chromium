@@ -32,6 +32,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ipc/common/gpu_client_ids.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +51,9 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_implementation.h"
@@ -93,6 +97,19 @@ sk_sp<SkImage> MakeSkImage(const gfx::Size& size,
   canvas.drawRect(SkRect::MakeXYWH(10, 20, 30, 40), green);
 
   return SkImages::RasterFromBitmap(bitmap);
+}
+
+struct ReadPixelsContext {
+  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
+  bool finished = false;
+};
+
+void OnReadPixelsDone(
+    void* raw_ctx,
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+  ReadPixelsContext* context = reinterpret_cast<ReadPixelsContext*>(raw_ctx);
+  context->async_result = std::move(async_result);
+  context->finished = true;
 }
 
 constexpr size_t kCacheLimitBytes = 1024 * 1024;
@@ -637,6 +654,9 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // Allow large quantization error on Android.
   // TODO(https://crbug.com/1363056): Ensure higher precision for HDR images.
   constexpr float kEpsilon = 1 / 16.f;
+#elif BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/1476507): Allow larger errors on iOS as well.
+  constexpr float kEpsilon = 1 / 12.f;
 #else
   constexpr float kEpsilon = 1 / 32.f;
 #endif
@@ -797,7 +817,7 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
 
   auto actual = Raster(display_item_list, options);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Android has slight differences in color.
   FuzzyPixelOffByOneComparator comparator;
 #else
@@ -1620,6 +1640,13 @@ class OopTextBlobPixelTest
       public ::testing::WithParamInterface<TextBlobTestConfig> {
  public:
   void RunTest() {
+#if BUILDFLAG(IS_IOS)
+    if (GetFilterStrategy(GetParam()) != FilterStrategy::kNone) {
+      GTEST_SKIP() << " blur with decal tile mode currently fails on with "
+                      "SkiaGraphite and the metal backend in the simulator";
+    }
+#endif
+
     RasterOptions options;
     options.resource_size = gfx::Size(100, 100);
     options.content_size = options.resource_size;
@@ -1765,20 +1792,58 @@ class OopTextBlobPixelTest
     SkSurfaceProps surface_props =
         UseLcdText() ? skia::LegacyDisplayGlobals::GetSkSurfaceProps(0)
                      : SkSurfaceProps(0, kUnknown_SkPixelGeometry);
-    auto surface = SkSurfaces::RenderTarget(
-        context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
-        kTopLeft_GrSurfaceOrigin, &surface_props);
+    sk_sp<SkSurface> surface = nullptr;
+    if (context_state->gr_context()) {
+      surface = SkSurfaces::RenderTarget(
+          context_state->gr_context(), skgpu::Budgeted::kNo, image_info, 0,
+          kTopLeft_GrSurfaceOrigin, &surface_props);
+    } else if (context_state->graphite_context()) {
+      surface = SkSurfaces::RenderTarget(
+          context_state->gpu_main_graphite_recorder(), image_info,
+          skgpu::Mipmapped::kNo, &surface_props);
+    } else {
+      NOTREACHED();
+    }
 
     SkCanvas* canvas = surface->getCanvas();
     canvas->clear(SkColors::kBlack);
     DrawExpectedToCanvas(*canvas);
-    context_state->gr_context()->flushAndSubmit(surface.get(), GrSyncCpu::kNo);
 
     // Readback the expected image into `expected`.
     expected.allocPixels(image_info);
-    bool success = surface->readPixels(expected, 0, 0);
-    ASSERT_TRUE(success);
+    bool success = false;
+    if (context_state->gr_context()) {
+      context_state->gr_context()->flushAndSubmit(surface.get(),
+                                                  GrSyncCpu::kNo);
+      success = surface->readPixels(expected, 0, 0);
+    } else if (context_state->graphite_context()) {
+      ReadPixelsContext context;
+      const SkIRect src_rect =
+          SkIRect::MakeXYWH(0, 0, image_size.width(), image_size.height());
 
+      auto recording = context_state->gpu_main_graphite_recorder()->snap();
+      if (recording) {
+        skgpu::graphite::InsertRecordingInfo info = {};
+        info.fRecording = recording.get();
+        context_state->graphite_context()->insertRecording(info);
+      }
+      context_state->graphite_context()->asyncRescaleAndReadPixels(
+          surface.get(), image_info, src_rect, SkImage::RescaleGamma::kSrc,
+          SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
+
+      context_state->graphite_context()->submit(
+          skgpu::graphite::SyncToCpu::kYes);
+      CHECK(context.finished);
+
+      if (context.async_result) {
+        success = true;
+        SkPixmap pixmap(image_info, context.async_result->data(0),
+                        image_info.minRowBytes());
+        expected.writePixels(pixmap);
+      }
+    }
+
+    ASSERT_TRUE(success);
     waitable.Signal();
   }
 
@@ -2448,10 +2513,16 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
 
-    // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
-    // rounding.
     auto comparator =
+#if BUILDFLAG(IS_IOS)
+        // TODO(crbug.com/1476507): We have larger errors on the platform, but
+        // the images here still seem visually indistinguishable.
+        FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.5f);
+#else
+        // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
+        // rounding.
         FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.08f);
+#endif
     auto actual = Raster(display_item_list, options);
     ExpectEquals(actual, FILE_PATH_LITERAL("oop_path.png"), comparator);
   }

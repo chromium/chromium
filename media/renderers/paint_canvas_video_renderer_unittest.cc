@@ -1308,8 +1308,17 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly copy a RGBA shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1476625): R and B channels are currently inverted with
+// SkiaGraphite and metal.
+#define MAYBE_CopyVideoFrameTexturesToGLTextureRGBA \
+  DISABLED_CopyVideoFrameTexturesToGLTextureRGBA
+#else
+#define MAYBE_CopyVideoFrameTexturesToGLTextureRGBA \
+  CopyVideoFrameTexturesToGLTextureRGBA
+#endif  // BUILDFLAG(IS_IOS)
 TEST_F(PaintCanvasVideoRendererWithGLTest,
-       CopyVideoFrameTexturesToGLTextureRGBA) {
+       MAYBE_CopyVideoFrameTexturesToGLTextureRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
 
@@ -1322,8 +1331,17 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 // Checks that we correctly copy a RGBA shared image VideoFrame that needs read
 // lock fences, when using CopyVideoFrameYUVDataToGLTexture, including correct
 // cropping.
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1476625): R and B channels are currently inverted with
+// SkiaGraphite and metal.
+#define MAYBE_CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence \
+  DISABLED_CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence
+#else
+#define MAYBE_CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence \
+  CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence
+#endif  // BUILDFLAG(IS_IOS)
 TEST_F(PaintCanvasVideoRendererWithGLTest,
-       CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
+       MAYBE_CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
   frame->metadata().read_lock_fences_enabled = true;

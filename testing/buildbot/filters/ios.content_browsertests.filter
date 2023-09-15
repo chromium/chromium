@@ -205,6 +205,15 @@
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
 
+# TODO(crbug.com/1482922): These tests fail with SkiaGraphite and Metal backend.
+-AccessibilityCanvasActionBrowserTest.CanvasGetImage
+-AccessibilityCanvasActionBrowserTest.CanvasGetImageScale
+-MediaColorTest.Yuv422pH264
+-MediaColorTest.Yuv422pTheora
+-MediaColorTest.Yuv444pH264
+-MediaColorTest.Yuv444pTheora
+-MediaColorTest.Yuv444pVp9
+
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/0

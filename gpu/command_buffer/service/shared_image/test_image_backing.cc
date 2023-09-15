@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
@@ -147,6 +148,36 @@ class TestDawnImageRepresentation : public DawnImageRepresentation {
   }
 
   void EndAccess() override {}
+};
+
+class TestMetalSkiaGraphiteImageRepresentation
+    : public SkiaGraphiteImageRepresentation {
+ public:
+  TestMetalSkiaGraphiteImageRepresentation(SharedImageManager* manager,
+                                           SharedImageBacking* backing,
+                                           MemoryTypeTracker* tracker)
+      : SkiaGraphiteImageRepresentation(manager, backing, tracker) {}
+
+  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
+    return {};
+  }
+  void EndReadAccess() override {}
+
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
+      const SkSurfaceProps& surface_props,
+      const gfx::Rect& update_rect) override {
+    std::vector<sk_sp<SkSurface>> surfaces;
+    for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
+      auto plane_size = format().GetPlaneSize(plane, size());
+      surfaces.push_back(
+          SkSurfaces::Null(plane_size.width(), plane_size.height()));
+    }
+    return surfaces;
+  }
+  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override {
+    return {};
+  }
+  void EndWriteAccess() override {}
 };
 
 }  // namespace
@@ -314,6 +345,19 @@ std::unique_ptr<DawnImageRepresentation> TestImageBacking::ProduceDawn(
     wgpu::BackendType backend_type,
     std::vector<wgpu::TextureFormat> view_formats) {
   return std::make_unique<TestDawnImageRepresentation>(manager, this, tracker);
+}
+
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+TestImageBacking::ProduceSkiaGraphite(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+#if BUILDFLAG(SKIA_USE_METAL)
+  return std::make_unique<TestMetalSkiaGraphiteImageRepresentation>(
+      manager, this, tracker);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(SKIA_USE_METAL)
 }
 
 std::unique_ptr<OverlayImageRepresentation> TestImageBacking::ProduceOverlay(

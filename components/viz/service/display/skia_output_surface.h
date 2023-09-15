@@ -182,6 +182,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void ScheduleGpuTaskForTesting(
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) = 0;
+  // TODO(crbug.com/1474022): tests should not need to poll for async work
+  // completion.
+  virtual void CheckAsyncWorkCompletionForTesting() = 0;
 
   // Android specific, asks GLSurfaceEGLSurfaceControl to not detach child
   // surface controls during destruction. This is necessary for cases when we
