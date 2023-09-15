@@ -103,6 +103,13 @@ class EditingListTest : public OverlayViewTestBase {
                controller_->button_options_widget_->GetContentsView())
         ->action();
   }
+
+  bool EducationNudgeExists() {
+    auto* editing_list_ = GetEditingListWidget();
+    DCHECK(editing_list_);
+    return controller_->nudge_widgets_.find(editing_list_) !=
+           controller_->nudge_widgets_.end();
+  }
 };
 
 TEST_F(EditingListTest, TestAddNewAction) {
@@ -213,6 +220,18 @@ TEST_F(EditingListTest, TestReposition) {
       40);
   final_list_bounds = editing_list_widget->GetNativeWindow()->bounds();
   EXPECT_EQ(content_bounds_origin, final_list_bounds.origin());
+}
+
+TEST_F(EditingListTest, TestEducationNudge) {
+  // Education nudge only shows up when there is no active action in the list.
+  EXPECT_FALSE(EducationNudgeExists());
+  // Remove all actions.
+  for (const auto& action : touch_injector_->actions()) {
+    controller_->RemoveAction(action.get());
+  }
+  EXPECT_TRUE(EducationNudgeExists());
+  PressAddButton();
+  EXPECT_FALSE(EducationNudgeExists());
 }
 
 }  // namespace arc::input_overlay

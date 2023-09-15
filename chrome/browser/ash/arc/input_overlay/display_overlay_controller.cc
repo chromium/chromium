@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/nudge.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -49,6 +50,7 @@ constexpr char kButtonLabelList[] = "GameControlsButtonLabelList";
 constexpr char kButtonOptionsMenu[] = "GameControlsButtonOptionsMenu";
 constexpr char kEditingList[] = "GameControlsEditingList";
 constexpr char kInputMapping[] = "GameControlsInputMapping";
+constexpr char kEduationNudge[] = "GameControlsEducationNudge";
 
 std::unique_ptr<views::Widget> CreateTransientWidget(
     aura::Window* parent_window,
@@ -101,8 +103,8 @@ DisplayOverlayController::DisplayOverlayController(
     }
 
     AddOverlay(first_launch ? DisplayMode::kEducation : DisplayMode::kView);
-    ash::Shell::Get()->AddPreTargetHandler(this);
   }
+  ash::Shell::Get()->AddPreTargetHandler(this);
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
@@ -116,10 +118,9 @@ DisplayOverlayController::~DisplayOverlayController() {
     if (!ash::Shell::HasInstance()) {
       return;
     }
-
-    ash::Shell::Get()->RemovePreTargetHandler(this);
     RemoveOverlayIfAny();
   }
+  ash::Shell::Get()->RemovePreTargetHandler(this);
 }
 
 // For test:
@@ -217,6 +218,10 @@ gfx::Point DisplayOverlayController::CalculateNudgePosition(int nudge_width) {
   }
 
   return gfx::Point(x, y);
+}
+
+bool DisplayOverlayController::IsNudgeEmpty() {
+  return !nudge_view_ && nudge_widgets_.empty();
 }
 
 void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
@@ -513,6 +518,8 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     default:
       break;
   }
+
+  display_mode_ = mode;
 }
 
 absl::optional<gfx::Rect>
@@ -716,6 +723,38 @@ void DisplayOverlayController::OnButtonLabelListBackButtonPressed() {
   button_options_widget_->Show();
 }
 
+void DisplayOverlayController::AddNudgeWidget(views::View* anchor_view,
+                                              const std::u16string& text) {
+  auto* anchor_widget = anchor_view->GetWidget();
+  DCHECK(anchor_widget);
+
+  auto it = nudge_widgets_.find(anchor_widget);
+  views::Widget* nudge_widget_ptr;
+  if (it == nudge_widgets_.end()) {
+    auto nudge_widget = CreateTransientWidget(
+        touch_injector_->window(), /*widget_name=*/kEduationNudge,
+        /*accept_events=*/true, /*is_floating=*/true);
+    nudge_widget_ptr = nudge_widget.get();
+    nudge_widgets_.emplace(anchor_widget, std::move(nudge_widget));
+  } else {
+    nudge_widget_ptr = it->second.get();
+  }
+
+  nudge_widget_ptr->SetContentsView(
+      std::make_unique<Nudge>(this, anchor_view, text));
+  auto* window = nudge_widget_ptr->GetNativeWindow();
+  window->parent()->StackChildAtTop(window);
+  nudge_widget_ptr->Show();
+}
+
+void DisplayOverlayController::RemoveNudgeWidget(views::Widget* widget) {
+  auto it = nudge_widgets_.find(widget);
+  if (it != nudge_widgets_.end()) {
+    it->second->Close();
+    nudge_widgets_.erase(it);
+  }
+}
+
 void DisplayOverlayController::UpdateButtonOptionsMenuWidgetBounds(
     Action* action) {
   if (!button_options_widget_) {
@@ -764,7 +803,7 @@ void DisplayOverlayController::UpdateWidgetBoundsInRootWindow(
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
-  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
+  if ((display_mode_ == DisplayMode::kView && IsNudgeEmpty()) ||
       event->type() != ui::ET_MOUSE_PRESSED) {
     return;
   }
@@ -773,7 +812,7 @@ void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
-  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
+  if ((display_mode_ == DisplayMode::kView && IsNudgeEmpty()) ||
       event->type() != ui::ET_TOUCH_PRESSED) {
     return;
   }
@@ -909,33 +948,50 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  if (!message_ && !input_menu_view_ && !nudge_view_) {
-    return;
-  }
-
-  auto root_location = event.root_location();
-  // Convert the LocatedEvent root location to screen location.
-  auto origin =
-      touch_injector_->window()->GetRootWindow()->GetBoundsInScreen().origin();
-  root_location.Offset(origin.x(), origin.y());
-
-  if (message_) {
-    auto bounds = message_->GetBoundsInScreen();
-    if (!bounds.Contains(root_location)) {
-      RemoveEditMessage();
+  if (IsBeta()) {
+    if (nudge_widgets_.empty()) {
+      return;
     }
-  }
 
-  if (input_menu_view_) {
-    auto bounds = input_menu_view_->GetBoundsInScreen();
-    if (!bounds.Contains(root_location)) {
-      SetDisplayModeAlpha(DisplayMode::kView);
+    for (auto it = nudge_widgets_.begin(); it != nudge_widgets_.end();) {
+      auto nudge_bounds = it->second->GetNativeWindow()->bounds();
+      if (!nudge_bounds.Contains(event.root_location())) {
+        nudge_widgets_.erase(it);
+      } else {
+        it++;
+      }
     }
-  }
+  } else {
+    if (!message_ && !input_menu_view_ && !nudge_view_) {
+      return;
+    }
 
-  // Dismiss the nudge, regardless where the click was.
-  if (nudge_view_) {
-    OnNudgeDismissed();
+    auto root_location = event.root_location();
+    // Convert the LocatedEvent root location to screen location.
+    auto origin = touch_injector_->window()
+                      ->GetRootWindow()
+                      ->GetBoundsInScreen()
+                      .origin();
+    root_location.Offset(origin.x(), origin.y());
+
+    if (message_) {
+      auto bounds = message_->GetBoundsInScreen();
+      if (!bounds.Contains(root_location)) {
+        RemoveEditMessage();
+      }
+    }
+
+    if (input_menu_view_) {
+      auto bounds = input_menu_view_->GetBoundsInScreen();
+      if (!bounds.Contains(root_location)) {
+        SetDisplayModeAlpha(DisplayMode::kView);
+      }
+    }
+
+    // Dismiss the nudge, regardless where the click was.
+    if (nudge_view_) {
+      OnNudgeDismissed();
+    }
   }
 }
 
@@ -1041,8 +1097,8 @@ void DisplayOverlayController::AddEditingListWidget() {
   auto* window = editing_list_widget_->GetNativeWindow();
   window->parent()->StackChildAtTop(window);
 
-  UpdateEditingListWidgetBounds();
   editing_list_widget_->Show();
+  UpdateEditingListWidgetBounds();
 }
 
 void DisplayOverlayController::RemoveEditingListWidget() {

@@ -166,12 +166,13 @@ void EditingList::AddHeader(views::View* container) {
           ash::TypographyToken::kCrosTitle1,
           // TODO(b/274690042): Replace it with localized strings.
           u"Editing", cros_tokens::kCrosSysOnSurface));
-  header_container->AddChildView(std::make_unique<ash::IconButton>(
-      base::BindRepeating(&EditingList::OnAddButtonPressed,
-                          base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kGameControlsAddIcon,
-      // TODO(b/279117180): Update a11y string.
-      IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+  add_button_ =
+      header_container->AddChildView(std::make_unique<ash::IconButton>(
+          base::BindRepeating(&EditingList::OnAddButtonPressed,
+                              base::Unretained(this)),
+          ash::IconButton::Type::kMedium, &kGameControlsAddIcon,
+          // TODO(b/279117180): Update a11y string.
+          IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
 
 void EditingList::AddZeroStateContent() {
@@ -313,11 +314,20 @@ gfx::Size EditingList::CalculatePreferredSize() const {
   return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
 }
 
+void EditingList::VisibilityChanged(View* starting_from, bool is_visible) {
+  if (is_visible && is_zero_state_) {
+    // TODO(b/274690042): Replace it with localized strings.
+    controller_->AddNudgeWidget(add_button_, u"Add your first button here");
+  }
+}
+
 void EditingList::OnActionAdded(Action& action) {
   DCHECK(scroll_content_);
   if (controller_->GetActiveActionsSize() == 1u) {
     // Clear the zero-state.
     scroll_content_->RemoveAllChildViews();
+    controller_->RemoveNudgeWidget(GetWidget());
+    is_zero_state_ = false;
   }
   scroll_content_->AddChildView(
       std::make_unique<ActionViewListItem>(controller_, &action));
@@ -338,6 +348,8 @@ void EditingList::OnActionRemoved(const Action& action) {
   // Set to zero-state if it is empty.
   if (controller_->GetActiveActionsSize() == 0u) {
     AddZeroStateContent();
+    // TODO(b/274690042): Replace it with localized strings.
+    controller_->AddNudgeWidget(add_button_, u"Add your first button here");
   }
 
   UpdateWidget();

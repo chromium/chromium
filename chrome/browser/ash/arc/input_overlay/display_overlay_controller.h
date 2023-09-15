@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "ui/aura/window_observer.h"
@@ -109,6 +110,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveButtonLabelListWidget();
   void OnButtonLabelListBackButtonPressed();
 
+  void AddNudgeWidget(views::View* anchor_view, const std::u16string& text);
+  void RemoveNudgeWidget(views::Widget* widget);
+
   // Update widget bounds if the view content is changed or the app window
   // bounds are changed.
   void UpdateButtonOptionsMenuWidgetBounds(Action* action);
@@ -164,6 +168,8 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveNudgeView();
   void OnNudgeDismissed();
   gfx::Point CalculateNudgePosition(int nudge_width);
+
+  bool IsNudgeEmpty();
 
   void AddMenuEntryView(views::Widget* overlay_widget);
   void RemoveMenuEntryView();
@@ -265,6 +271,9 @@ class DisplayOverlayController : public ui::EventHandler,
   std::unique_ptr<views::Widget> editing_list_widget_;
   std::unique_ptr<views::Widget> button_options_widget_;
   std::unique_ptr<views::Widget> button_label_list_widget_;
+
+  // Each widget can associate with one education nudge widget.
+  base::flat_map<views::Widget*, std::unique_ptr<views::Widget>> nudge_widgets_;
 };
 
 }  // namespace arc::input_overlay
