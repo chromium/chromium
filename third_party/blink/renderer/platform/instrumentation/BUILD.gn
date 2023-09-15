@@ -8,8 +8,6 @@ blink_platform_sources("instrumentation") {
   sources = [
     "canvas_memory_dump_provider.cc",
     "canvas_memory_dump_provider.h",
-    "histogram.cc",
-    "histogram.h",
     "instance_counters.cc",
     "instance_counters.h",
     "instance_counters_memory_dump_provider.cc",
@@ -37,10 +35,29 @@ blink_platform_sources("instrumentation") {
 
   deps = [ "//services/service_manager/public/cpp" ]
   public_deps = [
+    ":histogram",
     "//components/performance_manager/public/mojom:mojom_blink",
     "//third_party/blink/renderer/platform/heap:heap",
   ]
   allow_circular_includes_from = public_deps
+}
+
+component("histogram") {
+  visibility = [ "//third_party/blink/renderer/platform/*" ]
+  output_name = "blink_histogram"
+
+  configs +=
+      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
+
+  sources = [
+    "histogram.cc",
+    "histogram.h",
+  ]
+  public_deps = [
+    "//base:base",
+    "//third_party/blink/renderer/platform:platform_export",
+    "//third_party/blink/renderer/platform/wtf:wtf",
+  ]
 }
 
 source_set("unit_tests") {

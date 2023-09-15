@@ -281,6 +281,25 @@ source_set("allow_discouraged_type") {
   visibility = [ "//third_party/blink/renderer/platform/*" ]
 }
 
+source_set("image_headers") {
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "//third_party/blink/renderer/platform/image-decoders/*" ]
+
+  sources = [
+    "graphics/bitmap_image_metrics.h",
+    "graphics/color_behavior.h",
+    "graphics/image_orientation_enum.h",
+    "graphics/paint/paint_image.h",
+  ]
+
+  public_deps = [
+    "//base:base",
+    "//cc/paint:paint",
+    "//third_party/blink/renderer/platform:platform_export",
+    "//third_party/blink/renderer/platform/wtf:wtf",
+  ]
+}
+
 component("platform") {
   visibility = []  # Allow re-assignment of list.
   visibility = [
@@ -1167,37 +1186,6 @@ component("platform") {
     "graphics/web_graphics_context_3d_video_frame_pool.cc",
     "graphics/web_graphics_context_3d_video_frame_pool.h",
     "heap_observer_set.h",
-    "image-decoders/bmp/bmp_image_decoder.cc",
-    "image-decoders/bmp/bmp_image_decoder.h",
-    "image-decoders/bmp/bmp_image_reader.cc",
-    "image-decoders/bmp/bmp_image_reader.h",
-    "image-decoders/exif_reader.cc",
-    "image-decoders/exif_reader.h",
-    "image-decoders/fast_shared_buffer_reader.cc",
-    "image-decoders/fast_shared_buffer_reader.h",
-    "image-decoders/gif/gif_image_decoder.cc",
-    "image-decoders/gif/gif_image_decoder.h",
-    "image-decoders/ico/ico_image_decoder.cc",
-    "image-decoders/ico/ico_image_decoder.h",
-    "image-decoders/image_animation.h",
-    "image-decoders/image_decoder.cc",
-    "image-decoders/image_decoder.h",
-    "image-decoders/image_frame.cc",
-    "image-decoders/image_frame.h",
-    "image-decoders/jpeg/jpeg_image_decoder.cc",
-    "image-decoders/jpeg/jpeg_image_decoder.h",
-    "image-decoders/png/png_image_decoder.cc",
-    "image-decoders/png/png_image_decoder.h",
-    "image-decoders/png/png_image_reader.cc",
-    "image-decoders/png/png_image_reader.h",
-    "image-decoders/rw_buffer.cc",
-    "image-decoders/rw_buffer.h",
-    "image-decoders/segment_reader.cc",
-    "image-decoders/segment_reader.h",
-    "image-decoders/segment_stream.cc",
-    "image-decoders/segment_stream.h",
-    "image-decoders/webp/webp_image_decoder.cc",
-    "image-decoders/webp/webp_image_decoder.h",
     "image-encoders/image_encoder.cc",
     "image-encoders/image_encoder.h",
     "image-encoders/image_encoder_utils.cc",
@@ -1679,6 +1667,7 @@ component("platform") {
     "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_blink",
     "//third_party/blink/renderer/platform/blob",
     "//third_party/blink/renderer/platform/heap",
+    "//third_party/blink/renderer/platform/image-decoders:image_decoders",
     "//third_party/blink/renderer/platform/instrumentation",
     "//third_party/blink/renderer/platform/loader",
     "//third_party/blink/renderer/platform/network",
@@ -1815,18 +1804,6 @@ component("platform") {
     sources += [ "text/apple/hyphenation_apple.cc" ]
   } else {
     sources += [ "text/hyphenation/hyphenation_null.cc" ]
-  }
-
-  if (enable_av1_decoder) {
-    sources += [
-      "image-decoders/avif/avif_image_decoder.cc",
-      "image-decoders/avif/avif_image_decoder.h",
-    ]
-
-    deps += [
-      "//third_party/libavif",
-      "//third_party/libavifinfo",
-    ]
   }
 
   if (current_cpu == "x86" || current_cpu == "x64") {

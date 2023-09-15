@@ -24,7 +24,7 @@ class PLATFORM_EXPORT RWBuffer {
  public:
   struct BufferHead;
   struct BufferBlock;
-  class ROIter {
+  class PLATFORM_EXPORT ROIter {
    public:
     explicit ROIter(RWBuffer*, size_t);
     size_t size() const;
