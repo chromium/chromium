@@ -416,6 +416,7 @@ ci.builder(
         short_name = "x86",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "woa-engprod@google.com",
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -445,6 +446,7 @@ ci.thin_tester(
         category = "tester|x86",
         short_name = "10",
     ),
+    contact_team_email = "woa-engprod@google.com",
 )
 
 ci.builder(
