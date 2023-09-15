@@ -620,8 +620,9 @@ base::TimeDelta Component::GetUpdateDuration() const {
 
 base::Value::Dict Component::MakeEventUpdateComplete() const {
   base::Value::Dict event;
-  event.Set("eventtype",
-            update_context_->is_install ? kEventInstall : kEventUpdate);
+  event.Set("eventtype", update_context_->is_install
+                             ? protocol_request::kEventInstall
+                             : protocol_request::kEventUpdate);
   event.Set("eventresult",
             static_cast<int>(state() == ComponentState::kUpdated));
   if (error_category() != ErrorCategory::kNone) {
@@ -664,7 +665,7 @@ base::Value::Dict Component::MakeEventUpdateComplete() const {
 base::Value::Dict Component::MakeEventDownloadMetrics(
     const CrxDownloader::DownloadMetrics& dm) const {
   base::Value::Dict event;
-  event.Set("eventtype", kEventDownload);
+  event.Set("eventtype", protocol_request::kEventDownload);
   event.Set("eventresult", static_cast<int>(dm.error == 0));
   event.Set("downloader", DownloaderToString(dm.downloader));
   if (dm.error) {
@@ -673,13 +674,16 @@ base::Value::Dict Component::MakeEventDownloadMetrics(
   event.Set("url", dm.url.spec());
 
   // -1 means that the  byte counts are not known.
-  if (dm.total_bytes != -1 && dm.total_bytes < kProtocolMaxInt) {
+  if (dm.total_bytes != -1 &&
+      dm.total_bytes < protocol_request::kProtocolMaxInt) {
     event.Set("total", static_cast<double>(dm.total_bytes));
   }
-  if (dm.downloaded_bytes != -1 && dm.total_bytes < kProtocolMaxInt) {
+  if (dm.downloaded_bytes != -1 &&
+      dm.total_bytes < protocol_request::kProtocolMaxInt) {
     event.Set("downloaded", static_cast<double>(dm.downloaded_bytes));
   }
-  if (dm.download_time_ms && dm.total_bytes < kProtocolMaxInt) {
+  if (dm.download_time_ms &&
+      dm.total_bytes < protocol_request::kProtocolMaxInt) {
     event.Set("download_time_ms", static_cast<double>(dm.download_time_ms));
   }
   CHECK(previous_version().IsValid());
@@ -693,7 +697,7 @@ base::Value::Dict Component::MakeEventDownloadMetrics(
 base::Value::Dict Component::MakeEventUninstalled() const {
   CHECK_EQ(state(), ComponentState::kUninstalled);
   base::Value::Dict event;
-  event.Set("eventtype", kEventUninstall);
+  event.Set("eventtype", protocol_request::kEventUninstall);
   event.Set("eventresult", 1);
   if (extra_code1()) {
     event.Set("extracode1", extra_code1());
@@ -708,7 +712,7 @@ base::Value::Dict Component::MakeEventUninstalled() const {
 base::Value::Dict Component::MakeEventRegistration() const {
   CHECK_EQ(state(), ComponentState::kRegistration);
   base::Value::Dict event;
-  event.Set("eventtype", kEventInstall);
+  event.Set("eventtype", protocol_request::kEventInstall);
   event.Set("eventresult", 1);
   if (error_code()) {
     event.Set("errorcode", error_code());
@@ -725,7 +729,7 @@ base::Value::Dict Component::MakeEventActionRun(bool succeeded,
                                                 int error_code,
                                                 int extra_code1) const {
   base::Value::Dict event;
-  event.Set("eventtype", kEventAction);
+  event.Set("eventtype", protocol_request::kEventAction);
   event.Set("eventresult", static_cast<int>(succeeded));
   if (error_code) {
     event.Set("errorcode", error_code);

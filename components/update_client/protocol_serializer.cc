@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_query_params.h"
 #include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -108,7 +109,7 @@ protocol_request::Request MakeProtocolRequest(
     const base::flat_map<std::string, std::string>& updater_state_attributes,
     std::vector<protocol_request::App> apps) {
   protocol_request::Request request;
-  request.protocol_version = kProtocolVersion;
+  request.protocol_version = protocol_request::kProtocolVersion;
   request.is_machine = is_machine;
 
   // Session id and request id.

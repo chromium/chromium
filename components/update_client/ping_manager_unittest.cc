@@ -424,9 +424,9 @@ TEST_P(PingManagerTest, SendPing) {
     download_metrics.url = GURL("http://host3/path3");
     download_metrics.downloader = CrxDownloader::DownloadMetrics::kBits;
     download_metrics.error = 0;
-    download_metrics.downloaded_bytes = kProtocolMaxInt;
-    download_metrics.total_bytes = kProtocolMaxInt - 1;
-    download_metrics.download_time_ms = kProtocolMaxInt - 2;
+    download_metrics.downloaded_bytes = protocol_request::kProtocolMaxInt;
+    download_metrics.total_bytes = protocol_request::kProtocolMaxInt - 1;
+    download_metrics.download_time_ms = protocol_request::kProtocolMaxInt - 2;
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
