@@ -506,6 +506,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesJourneysInfo", IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO},
       {"modulesHistoryWithDiscountInfo",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_WITH_DISCOUNT_INFO},
+      {"modulesHistoryResumeBrowsingTitle",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING},
+      {"modulesHistoryResumeBrowsingForTitle",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING_FOR},
       {"modulesThisTypeOfCardText",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_NAME},
       {"modulesJourneyDisable", IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT},
@@ -528,8 +532,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_SINGULAR},
       {"modulesJourneysCartTileLabelDefault",
        IDS_NTP_MODULES_QUEST_CART_TILE_LABEL_DEFAULT},
-      {"modulesJourneysResumeJourney",
-       IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING},
       {"modulesMoreActions", IDS_NTP_MODULES_MORE_ACTIONS},
 
       // Middle slot promo.
