@@ -303,12 +303,17 @@ class ModelTypeWorker : public UpdateHandler,
   // Copies |pending_invalidations_| vector to |model_type_state_|.
   void UpdateModelTypeStateInvalidations();
 
-  // Encrypt the specifics and hide the title if necessary.
+  // Encrypts the specifics and hides the title if necessary.
   void EncryptPasswordSpecificsData(CommitRequestDataList* request_data_list);
 
   // Encrypts password sharing invitation using cross user sharing encryption.
   void EncryptOutgoingPasswordSharingInvitations(
       CommitRequestDataList* request_data_list);
+
+  // Encrypts the specifics, must be called only when encryption is enabled.
+  // Note that Passwords and OutgoingPasswordSharingInvitations have their own
+  // encryption scheme.
+  void EncryptSpecifics(CommitRequestDataList* request_data_list);
 
   // The (up to kMaxPayloads) most recent invalidations received since the last
   // successful sync cycle.

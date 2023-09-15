@@ -12,19 +12,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/nigori/cryptographer.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
-#include "components/sync/test/fake_cryptographer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -253,8 +247,6 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
 
-  FakeCryptographer cryptographer;
-
   FailedCommitResponseDataList actual_error_response_list;
 
   auto on_commit_response_callback = base::BindOnce(
@@ -270,7 +262,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   CommitContributionImpl contribution(
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       std::move(on_commit_response_callback),
-      /*on_full_commit_failure_callback=*/base::NullCallback(), &cryptographer,
+      /*on_full_commit_failure_callback=*/base::NullCallback(),
       PassphraseType::kCustomPassphrase,
       /*only_commit_specifics=*/false);
 
@@ -311,8 +303,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
   CommitContributionImpl contribution(
       BOOKMARKS, sync_pb::DataTypeContext(), CommitRequestDataList(),
       /*on_commit_response_callback=*/base::NullCallback(),
-      on_commit_failure_callback.Get(), /*cryptographer=*/nullptr,
-      PassphraseType::kKeystorePassphrase,
+      on_commit_failure_callback.Get(), PassphraseType::kKeystorePassphrase,
       /*only_commit_specifics=*/false);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);

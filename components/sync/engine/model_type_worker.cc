@@ -836,6 +836,8 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     EncryptOutgoingPasswordSharingInvitations(&response);
   } else if (type_ == PASSWORDS) {
     EncryptPasswordSpecificsData(&response);
+  } else if (encryption_enabled_) {
+    EncryptSpecifics(&response);
   }
 
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
@@ -849,8 +851,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      encryption_enabled_ ? cryptographer_.get() : nullptr, passphrase_type_,
-      CommitOnlyTypes().Has(type_));
+      passphrase_type_, CommitOnlyTypes().Has(type_));
 }
 
 bool ModelTypeWorker::HasLocalChanges() const {
@@ -1397,6 +1398,29 @@ void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
     } else {
       DLOG(ERROR) << "Failed to encrypt outgoing password sharing invitation";
     }
+  }
+}
+
+void ModelTypeWorker::EncryptSpecifics(
+    CommitRequestDataList* request_data_list) {
+  CHECK(cryptographer_);
+  CHECK(encryption_enabled_);
+  CHECK_NE(type_, PASSWORDS);
+  CHECK_NE(type_, OUTGOING_PASSWORD_SHARING_INVITATION);
+
+  for (std::unique_ptr<CommitRequestData>& request_data : *request_data_list) {
+    EntityData* entity_data = request_data->entity.get();
+    entity_data->name = "encrypted";
+    if (entity_data->is_deleted()) {
+      // EntityData::is_deleted() means that the specifics is empty, so nothing
+      // to encrypt.
+      continue;
+    }
+    sync_pb::EntitySpecifics encrypted_specifics;
+    // TODO(crbug.com/1468523): Log encryption result.
+    cryptographer_->Encrypt(entity_data->specifics,
+                            encrypted_specifics.mutable_encrypted());
+    entity_data->specifics.CopyFrom(encrypted_specifics);
   }
 }
 

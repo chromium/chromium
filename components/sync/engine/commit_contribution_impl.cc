@@ -17,7 +17,6 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
-#include "components/sync/engine/model_type_worker.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -61,14 +60,12 @@ CommitContributionImpl::CommitContributionImpl(
                             const FailedCommitResponseDataList&)>
         on_commit_response_callback,
     base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback,
-    Cryptographer* cryptographer,
     PassphraseType passphrase_type,
     bool only_commit_specifics)
     : type_(type),
       on_commit_response_callback_(std::move(on_commit_response_callback)),
       on_full_commit_failure_callback_(
           std::move(on_full_commit_failure_callback)),
-      cryptographer_(cryptographer),
       passphrase_type_(passphrase_type),
       context_(context),
       commit_requests_(std::move(commit_requests)),
@@ -89,7 +86,10 @@ void CommitContributionImpl::AddToCommitMessage(
     sync_pb::SyncEntity* sync_entity = commit_message->add_entries();
     if (only_commit_specifics_) {
       DCHECK(!commit_request->entity->is_deleted());
-      DCHECK(!cryptographer_);
+
+      // Commit-only data types must never be encrypted.
+      CHECK(!commit_request->entity->specifics.has_encrypted());
+
       // Only send specifics to server for commit-only types.
       sync_entity->mutable_specifics()->CopyFrom(
           commit_request->entity->specifics);
@@ -215,7 +215,6 @@ void CommitContributionImpl::PopulateCommitProto(
     const CommitRequestData& commit_entity,
     sync_pb::SyncEntity* commit_proto) {
   const EntityData& entity_data = *commit_entity.entity;
-  DCHECK(!entity_data.specifics.has_encrypted());
 
   commit_proto->set_id_string(entity_data.id);
 
@@ -270,19 +269,6 @@ void CommitContributionImpl::AdjustCommitProto(
       commit_proto->set_id_string(
           base::Uuid::GenerateRandomV4().AsLowercaseString());
     }
-  }
-
-  // Passwords have different encryption scheme, see ModelTypeWorker.
-  // TODO(crbug.com/1468523): migrate encryption to ModelTypeWorker.
-  if (cryptographer_ && !commit_proto->specifics().has_password()) {
-    if (commit_proto->has_specifics()) {
-      sync_pb::EntitySpecifics encrypted_specifics;
-      bool result = cryptographer_->Encrypt(
-          commit_proto->specifics(), encrypted_specifics.mutable_encrypted());
-      DCHECK(result);
-      commit_proto->mutable_specifics()->CopyFrom(encrypted_specifics);
-    }
-    commit_proto->set_name("encrypted");
   }
 
   // See crbug.com/915133: Certain versions of Chrome (e.g. M71) handle corrupt
