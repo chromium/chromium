@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
@@ -161,7 +162,13 @@ class CrossFadeObserver : public aura::WindowObserver,
   }
 
   // ui::ImplicitAnimationObserver:
-  void OnImplicitAnimationsCompleted() override { delete this; }
+  void OnImplicitAnimationsCompleted() override {
+    if (auto* resize_shadow_controller =
+            Shell::Get()->resize_shadow_controller()) {
+      resize_shadow_controller->OnCrossFadeAnimationCompleted(window_);
+    }
+    delete this;
+  }
 
  protected:
   void StopAnimating() {

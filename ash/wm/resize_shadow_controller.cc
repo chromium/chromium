@@ -72,6 +72,13 @@ void ResizeShadowController::HideAllShadows() {
   }
 }
 
+void ResizeShadowController::OnCrossFadeAnimationCompleted(
+    aura::Window* window) {
+  if (auto* shadow = GetShadowForWindow(window)) {
+    shadow->ReparentLayer();
+  }
+}
+
 void ResizeShadowController::RemoveAllShadows() {
   windows_observation_.RemoveAllObservations();
   window_shadows_.clear();

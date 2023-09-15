@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -17,15 +18,22 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_manager.h"
 
@@ -572,6 +580,61 @@ TEST_F(ResizeShadowAndCursorTest, NoCrashOnRootWindowChange) {
                   ->color_provider_source()
                   ->observers_for_testing()
                   .HasObserver(GetShadow()));
+}
+
+// Tests if the resize shadow is beneath window when float the window by
+// multi-task menu.
+TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
+  // Create a resizable test window whose size should be larger than the normal
+  // floating window size.
+  auto test_window =
+      CreateAppWindow(/*bounds_in_screen=*/gfx::Rect(10, 10, 800, 600));
+
+  // Create a resize shadow for the native window.
+  auto* resize_shadow_controller = Shell::Get()->resize_shadow_controller();
+  resize_shadow_controller->ShowShadow(test_window.get());
+  auto* resize_shadow =
+      resize_shadow_controller->GetShadowForWindowForTest(test_window.get());
+  EXPECT_TRUE(resize_shadow);
+
+  // Open multi-task menu by hovering on the resize button.
+  // TODO(b/300668220): Extract this block into a helper.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "MultitaskMenuBubbleWidget");
+  chromeos::FrameCaptionButtonContainerView::TestApi test_api(
+      NonClientFrameViewAsh::Get(test_window.get())
+          ->GetHeaderView()
+          ->caption_button_container());
+  auto* size_button =
+      static_cast<chromeos::FrameSizeButton*>(test_api.size_button());
+  size_button->ShowMultitaskMenu(
+      chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
+  waiter.WaitIfNeededAndGet();
+
+  // Click on the floating window option.
+  ui::ScopedAnimationDurationScaleMode zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* menu_view = static_cast<chromeos::MultitaskMenu*>(
+                        size_button->multitask_menu_widget_for_testing()
+                            ->widget_delegate()
+                            ->AsDialogDelegate())
+                        ->multitask_menu_view();
+  LeftClickOn(chromeos::MultitaskMenuViewTestApi(menu_view).GetFloatButton());
+  EXPECT_TRUE(WindowState::Get(test_window.get())->IsFloated());
+
+  // Check if the resize shadow layer is beneath the window layer. We check
+  // their positions in their parent layer's children container. The highest
+  // index is the topmost.
+  auto* shadow_layer = resize_shadow->GetLayerForTest();
+  auto parent_children = shadow_layer->parent()->children();
+  auto* window_layer = test_window->layer();
+
+  auto shadow_iter =
+      std::find(parent_children.begin(), parent_children.end(), shadow_layer);
+  auto window_iter =
+      std::find(parent_children.begin(), parent_children.end(), window_layer);
+  EXPECT_LT(std::distance(parent_children.begin(), shadow_iter),
+            std::distance(parent_children.begin(), window_iter));
 }
 
 }  // namespace ash
