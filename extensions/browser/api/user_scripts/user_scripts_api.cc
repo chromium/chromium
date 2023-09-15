@@ -192,8 +192,7 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
       base::BindOnce(&UserScriptsRegisterFunction::OnUserScriptFilesValidated,
                      this));
 
-  // Balanced in `OnUserScriptFilesValidated()` or
-  // `OnUserScriptFilesValidated()`.
+  // Balanced in `OnUserScriptFilesValidated()` or `OnUserScriptsRegistered()`.
   AddRef();
   return RespondLater();
 }
