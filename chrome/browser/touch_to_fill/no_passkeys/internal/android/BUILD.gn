@@ -19,7 +19,12 @@ android_library("java") {
   ]
 
   srcjar_deps = [ ":jni" ]
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/no_passkeys/NoPasskeysBottomSheetMediator.java",
+  ]
 
   resources_package = "org.chromium.chrome.browser.touch_to_fill.no_passkeys"
 }

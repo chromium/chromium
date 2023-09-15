@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
  * JNI wrapper for C++ NoPasskeysBottomSheetBridge. Delegates calls from native to Java.
  */
 class NoPasskeysBottomSheetBridge {
+    private final NoPasskeysBottomSheetCoordinator mNoPasskeysSheet;
     private long mNativeBridge;
 
     @CalledByNative
@@ -33,19 +34,18 @@ class NoPasskeysBottomSheetBridge {
             WeakReference<Context> context,
             WeakReference<BottomSheetController> bottomSheetController) {
         mNativeBridge = nativeNoPasskeysBottomSheetBridge;
-        // TODO(crbug/1481495): Implement.
+        mNoPasskeysSheet = new NoPasskeysBottomSheetCoordinator(
+                context, bottomSheetController, this::onDismissed);
     }
 
     @CalledByNative
     void show(String origin) {
-        // TODO(crbug/1481495): Implement instead of immediate dismissal.
-        dismiss();
+        mNoPasskeysSheet.show(origin);
     }
 
     @CalledByNative
     void dismiss() {
-        // TODO(crbug/1481495): Implement instead of immediate dismissal.
-        onDismissed();
+        mNoPasskeysSheet.destroy();
         mNativeBridge = 0;
     }
 
