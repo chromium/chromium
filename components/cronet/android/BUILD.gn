@@ -930,6 +930,7 @@ shared_library("cronet_tests") {
 android_resources("cronet_test_apk_resources") {
   testonly = true
   sources = [
+    "test/res/raw/quicroot.pem",
     "test/res/values/strings.xml",
     "test/res/xml/network_security_config.xml",
     "test/smoketests/res/native/values/strings.xml",

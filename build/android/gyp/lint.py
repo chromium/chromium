@@ -30,6 +30,7 @@ _DISABLED_ALWAYS = [
     "LintBaseline",  # Don't warn about using baseline.xml files.
     "MissingInflatedId",  # False positives https://crbug.com/1394222
     "MissingApplicationIcon",  # False positive for non-production targets.
+    "NetworkSecurityConfig",  # Breaks on library certificates b/269783280.
     "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
     "Typos",  # Strings are committed in English first and later translated.
