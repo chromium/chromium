@@ -14,6 +14,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -133,12 +134,11 @@ class PrerenderTestHelper {
                    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   void AddPrerenderAsync(const GURL& prerendering_url,
                          int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
-  void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
-                                       const std::string& target_hint);
-
-  // Adds multiple URLs to the speculation rules at the same time. This function
-  // doesn't wait for the completion of prerendering.
-  void AddMultiplePrerenderAsync(const std::vector<GURL>& prerendering_urls);
+  void AddPrerendersAsync(
+      const std::vector<GURL>& prerendering_urls,
+      absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+      const std::string& target_hint,
+      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
   // Starts prerendering and returns a PrerenderHandle that should be kept alive
   // until prerender activation. Note that it returns before the completion of

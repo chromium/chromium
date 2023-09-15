@@ -31,26 +31,61 @@ constexpr char kAddSpeculationRuleScript[] = R"({
     const script = document.createElement('script');
     script.type = 'speculationrules';
     script.text = `{
-      "prerender": [{
-        "source": "list",
-        "urls": [$1]
-      }]
+      "prerender": [{ $1 }]
     }`;
     document.head.appendChild(script);
   })";
 
-constexpr char kAddSpeculationRuleWithTargetHintScript[] = R"({
-    const script = document.createElement('script');
-    script.type = 'speculationrules';
-    script.text = `{
-      "prerender": [{
-        "source": "list",
-        "urls": [$1],
-        "target_hint": $2
-      }]
-    }`;
-    document.head.appendChild(script);
-  })";
+std::string ConvertEagernessToString(
+    blink::mojom::SpeculationEagerness eagerness) {
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kEager:
+      return "eager";
+    case blink::mojom::SpeculationEagerness::kModerate:
+      return "moderate";
+    case blink::mojom::SpeculationEagerness::kConservative:
+      return "conservative";
+  }
+}
+
+// Builds <script type="speculationrules"> element for prerendering.
+std::string BuildScriptElementSpeculationRules(
+    const std::vector<GURL>& prerendering_urls,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+    const std::string& target_hint) {
+  std::stringstream ss;
+
+  // Add source filed.
+  ss << R"("source": "list", )";
+
+  // Concatenate the given URLs with a comma separator.
+  std::stringstream urls_ss;
+  for (size_t i = 0; i < prerendering_urls.size(); i++) {
+    // Wrap the url with double quotes.
+    urls_ss << base::StringPrintf(R"("%s")",
+                                  prerendering_urls[i].spec().c_str());
+    if (i + 1 < prerendering_urls.size()) {
+      urls_ss << ", ";
+    }
+  }
+  // Add urls fields.
+  ss << base::StringPrintf(R"("urls": [ %s ])", urls_ss.str().c_str());
+
+  // Add eagerness field.
+  if (eagerness.has_value()) {
+    ss << base::StringPrintf(
+        R"(, "eagerness": "%s")",
+        ConvertEagernessToString(eagerness.value()).c_str());
+  }
+
+  // Add target_hint field.
+  if (!target_hint.empty()) {
+    ss << base::StringPrintf(R"(, "target_hint": "%s")", target_hint.c_str());
+  }
+
+  return base::ReplaceStringPlaceholders(kAddSpeculationRuleScript, {ss.str()},
+                                         nullptr);
+}
 
 PrerenderHostRegistry& GetPrerenderHostRegistry(WebContents* web_contents) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -319,10 +354,24 @@ int PrerenderTestHelper::AddPrerender(const GURL& prerendering_url,
 
 void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url,
                                             int32_t world_id) {
-  TRACE_EVENT("test", "PrerenderTestHelper::AddPrerenderAsync",
-              "prerendering_url", prerendering_url);
+  AddPrerendersAsync({prerendering_url}, absl::nullopt, std::string(),
+                     world_id);
+}
+
+void PrerenderTestHelper::AddPrerendersAsync(
+    const std::vector<GURL>& prerendering_urls,
+    absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+    const std::string& target_hint,
+    int32_t world_id) {
+  TRACE_EVENT("test", "PrerenderTestHelper::AddPrerendersAsync",
+              "prerendering_urls", prerendering_urls, "eagerness",
+              eagerness.has_value()
+                  ? ConvertEagernessToString(eagerness.value())
+                  : "(empty)",
+              "target_hint", target_hint.empty() ? "(empty)" : target_hint);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  std::string script = JsReplace(kAddSpeculationRuleScript, prerendering_url);
+  std::string script = BuildScriptElementSpeculationRules(
+      prerendering_urls, eagerness, target_hint);
 
   if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
     // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
@@ -334,46 +383,6 @@ void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url,
     GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
         base::UTF8ToUTF16(script), base::NullCallback(), world_id);
   }
-}
-
-void PrerenderTestHelper::AddMultiplePrerenderAsync(
-    const std::vector<GURL>& prerendering_urls) {
-  TRACE_EVENT("test", "PrerenderTestHelper::AddMultiplePrerenderAsync",
-              "prerendering_urls", prerendering_urls);
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-  // Concatenate the given URLs with a comma separator.
-  std::string urls_str;
-  for (size_t i = 0; i < prerendering_urls.size(); i++) {
-    // Wrap the url with double quotes.
-    urls_str +=
-        base::StringPrintf(R"("%s")", prerendering_urls[i].spec().c_str());
-    if (i + 1 < prerendering_urls.size()) {
-      urls_str += ", ";
-    }
-  }
-
-  std::string script = base::ReplaceStringPlaceholders(
-      kAddSpeculationRuleScript, {urls_str}, nullptr);
-
-  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
-}
-
-void PrerenderTestHelper::AddPrerenderWithTargetHintAsync(
-    const GURL& prerendering_url,
-    const std::string& target_hint) {
-  TRACE_EVENT("test", "PrerenderTestHelper::AddPrerenderWithTargetHintAsync",
-              "prerendering_url", prerendering_url, "target_hint", target_hint);
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  std::string script = JsReplace(kAddSpeculationRuleWithTargetHintScript,
-                                 prerendering_url, target_hint);
-
-  // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
-  // because some test pages have ContentSecurityPolicy and EvalJs cannot work
-  // with it. See the quick migration guide for EvalJs for more information.
-  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script), base::NullCallback());
 }
 
 std::unique_ptr<PrerenderHandle>

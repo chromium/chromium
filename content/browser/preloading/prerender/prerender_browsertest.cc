@@ -397,54 +397,21 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   void AddMultiplePrerenderAsync(const std::vector<GURL>& prerendering_urls) {
-    prerender_helper_->AddMultiplePrerenderAsync(prerendering_urls);
+    prerender_helper_->AddPrerendersAsync(prerendering_urls, absl::nullopt,
+                                          std::string());
   }
 
   void AddPrerenderWithTargetHintAsync(const GURL& prerendering_url,
                                        const std::string& target_hint) {
-    prerender_helper_->AddPrerenderWithTargetHintAsync(prerendering_url,
-                                                       target_hint);
+    prerender_helper_->AddPrerendersAsync({prerendering_url}, absl::nullopt,
+                                          target_hint);
   }
 
   void AddPrerenderWithEagernessAsync(
       const GURL& prerendering_url,
       blink::mojom::SpeculationEagerness eagerness) {
-    constexpr char kAddSpeculationRuleWithEagernessScript[] = R"({
-      const script = document.createElement('script');
-      script.type = 'speculationrules';
-      script.text = `{
-        "prerender": [{
-          "source": "list",
-          "urls": [$1],
-          "eagerness": $2
-        }]
-      }`;
-      document.head.appendChild(script);
-    })";
-
-    ASSERT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-    std::string eagerness_text;
-    switch (eagerness) {
-      case blink::mojom::SpeculationEagerness::kEager:
-        eagerness_text = "eager";
-        break;
-      case blink::mojom::SpeculationEagerness::kModerate:
-        eagerness_text = "moderate";
-        break;
-      case blink::mojom::SpeculationEagerness::kConservative:
-        eagerness_text = "conservative";
-        break;
-    }
-
-    std::string script = JsReplace(kAddSpeculationRuleWithEagernessScript,
-                                   prerendering_url, eagerness_text);
-
-    // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
-    // because some test pages have ContentSecurityPolicy and EvalJs cannot work
-    // with it. See the quick migration guide for EvalJs for more information.
-    web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::UTF8ToUTF16(script), base::NullCallback());
+    prerender_helper_->AddPrerendersAsync({prerendering_url}, eagerness,
+                                          std::string());
   }
 
   bool AddTestUtilJS(RenderFrameHost* host) {
