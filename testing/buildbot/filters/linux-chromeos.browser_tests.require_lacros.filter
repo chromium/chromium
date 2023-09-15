@@ -36,9 +36,6 @@ CrosapiSystemLogSourceTest*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
 -DockedMagnifierVirtualKeyboardTest.WelcomeScreen
--ChromeVoxTutorialTest.Gestures
--ChromeVoxTutorialTest.ExitButtonTest
--ChromeVoxTutorialTest.EscapeTest
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
 -ChromeVoxLiveRegionsTest.FocusThenLiveRegion
@@ -62,8 +59,6 @@ CrosapiSystemLogSourceTest*
 -ChromeVoxEditingTest.InputEvents
 -ChromeVoxEditingTest.SelectAll
 -ChromeVoxEditingTest.BackwardWordDeleteAcrossParagraphs
--ChromeVoxTutorialTest.BasicTest
--ChromeVoxTutorialTest.EarconLesson
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
 -ChromeVoxAutoScrollHandlerTest.ScrollForward
 -ChromeVoxPanelTest.TouchGesturesMenuAvailableWhenInTouchMode
@@ -72,7 +67,6 @@ CrosapiSystemLogSourceTest*
 # TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
 -ChromeVoxEditingTest.MoveByWordSuggestions
--ChromeVoxTutorialTest.ResourcesTest
 -ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
 # TODO(crbug.com/1432222): Flaky
 -DictationE2ETest.SilencesSpokenFeedbackWhenStarting
