@@ -123,7 +123,7 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
           self.AddText(value, v)
         value = None
       else:
-        self.AddText(value, policy['default'])
+        self.AddText(value, str(policy['default']))
 
   def _WritePolicyConstraint(self, parent, policy):
     attrs = {'nullable': 'true'}
