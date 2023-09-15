@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPLEX_TASKS_IOS_CONTENT_RECORD_TASK_ID_H_
-#define IOS_CHROME_BROWSER_COMPLEX_TASKS_IOS_CONTENT_RECORD_TASK_ID_H_
+#ifndef IOS_CHROME_BROWSER_COMPLEX_TASKS_MODEL_IOS_CONTENT_RECORD_TASK_ID_H_
+#define IOS_CHROME_BROWSER_COMPLEX_TASKS_MODEL_IOS_CONTENT_RECORD_TASK_ID_H_
 
 #include <stdint.h>
 
@@ -70,4 +70,4 @@ class IOSContentRecordTaskId {
   std::vector<int64_t> children_task_ids_;
 };
 
-#endif  // IOS_CHROME_BROWSER_COMPLEX_TASKS_IOS_CONTENT_RECORD_TASK_ID_H_
+#endif  // IOS_CHROME_BROWSER_COMPLEX_TASKS_MODEL_IOS_CONTENT_RECORD_TASK_ID_H_

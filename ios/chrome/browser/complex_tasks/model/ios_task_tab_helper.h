@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPLEX_TASKS_IOS_TASK_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_COMPLEX_TASKS_IOS_TASK_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_COMPLEX_TASKS_MODEL_IOS_TASK_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_COMPLEX_TASKS_MODEL_IOS_TASK_TAB_HELPER_H_
 
 #include <unordered_map>
 
-#import "ios/chrome/browser/complex_tasks/ios_content_record_task_id.h"
+#import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -42,4 +42,4 @@ class IOSTaskTabHelper : public web::WebStateObserver,
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_COMPLEX_TASKS_IOS_TASK_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_COMPLEX_TASKS_MODEL_IOS_TASK_TAB_HELPER_H_

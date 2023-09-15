@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("complex_tasks") {
+source_set("model") {
   sources = [
     "ios_content_record_task_id.h",
     "ios_content_record_task_id.mm",
@@ -16,7 +16,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "ios_task_tab_helper_unittest.mm" ]
   deps = [
-    ":complex_tasks",
+    ":model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/web/public:public",
     "//ios/web/public/test:test",

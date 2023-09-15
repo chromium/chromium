@@ -8,7 +8,7 @@
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/synced_window_delegates_getter.h"
-#import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
+#import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
+#import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 
 #import <string>
 
@@ -56,8 +56,9 @@ void IOSTaskTabHelper::DidFinishNavigation(
       web_state->GetNavigationManager();
   web::NavigationItem* last_committed_item =
       navigation_manager->GetLastCommittedItem();
-  if (!last_committed_item)
+  if (!last_committed_item) {
     return;
+  }
   IOSContentRecordTaskId ios_content_record_task_id;
   ios_content_record_task_id.set_task_id(
       last_committed_item->GetTimestamp().since_origin().InMicroseconds());

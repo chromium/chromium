@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
+#import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 
 #import "base/time/time.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
