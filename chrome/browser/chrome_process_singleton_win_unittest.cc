@@ -43,6 +43,9 @@ TEST(ChromeProcessSingletonTest, Basic) {
   ChromeProcessSingleton ps2(profile_dir.GetPath());
   ps2.Unlock(base::BindRepeating(&ClientCallback));
 
+  EXPECT_FALSE(ps1.IsSingletonInstanceForTesting());
+  EXPECT_FALSE(ps2.IsSingletonInstanceForTesting());
+
   ProcessSingleton::NotifyResult result = ps1.NotifyOtherProcessOrCreate();
 
   ASSERT_EQ(ProcessSingleton::PROCESS_NONE, result);
@@ -50,6 +53,9 @@ TEST(ChromeProcessSingletonTest, Basic) {
 
   result = ps2.NotifyOtherProcessOrCreate();
   ASSERT_EQ(ProcessSingleton::PROCESS_NOTIFIED, result);
+
+  EXPECT_TRUE(ps1.IsSingletonInstanceForTesting());
+  EXPECT_FALSE(ps2.IsSingletonInstanceForTesting());
 
   ASSERT_EQ(1, callback_count);
 }
@@ -65,6 +71,9 @@ TEST(ChromeProcessSingletonTest, Lock) {
   ChromeProcessSingleton ps2(profile_dir.GetPath());
   ps2.Unlock(base::BindRepeating(&ClientCallback));
 
+  EXPECT_FALSE(ps1.IsSingletonInstanceForTesting());
+  EXPECT_FALSE(ps2.IsSingletonInstanceForTesting());
+
   ProcessSingleton::NotifyResult result = ps1.NotifyOtherProcessOrCreate();
 
   ASSERT_EQ(ProcessSingleton::PROCESS_NONE, result);
@@ -77,6 +86,9 @@ TEST(ChromeProcessSingletonTest, Lock) {
   ps1.Unlock(
       base::BindRepeating(&ServerCallback, base::Unretained(&callback_count)));
   ASSERT_EQ(1, callback_count);
+
+  EXPECT_TRUE(ps1.IsSingletonInstanceForTesting());
+  EXPECT_FALSE(ps2.IsSingletonInstanceForTesting());
 }
 
 #if BUILDFLAG(IS_WIN) && !defined(USE_AURA)
@@ -103,6 +115,9 @@ TEST(ChromeProcessSingletonTest, LockWithModalDialog) {
   ChromeProcessSingleton ps2(profile_dir.GetPath());
   ps2.Unlock(base::BindRepeating(&ClientCallback));
 
+  EXPECT_FALSE(ps1.IsSingletonInstance());
+  EXPECT_FALSE(ps2.IsSingletonInstance());
+
   ProcessSingleton::NotifyResult result = ps1.NotifyOtherProcessOrCreate();
 
   ASSERT_EQ(ProcessSingleton::PROCESS_NONE, result);
@@ -125,5 +140,8 @@ TEST(ChromeProcessSingletonTest, LockWithModalDialog) {
   result = ps2.NotifyOtherProcessOrCreate();
   ASSERT_EQ(ProcessSingleton::PROCESS_NOTIFIED, result);
   ASSERT_EQ(3, callback_count);
+
+  EXPECT_TRUE(ps1.IsSingletonInstance());
+  EXPECT_FALSE(ps2.IsSingletonInstance());
 }
 #endif  // BUILDFLAG(IS_WIN) && !defined(USE_AURA)

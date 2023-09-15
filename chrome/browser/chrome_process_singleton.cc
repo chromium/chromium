@@ -34,7 +34,13 @@ ChromeProcessSingleton::~ChromeProcessSingleton() = default;
 
 ProcessSingleton::NotifyResult
     ChromeProcessSingleton::NotifyOtherProcessOrCreate() {
-  return process_singleton_.NotifyOtherProcessOrCreate();
+  CHECK(!is_singleton_instance_);
+  ProcessSingleton::NotifyResult result =
+      process_singleton_.NotifyOtherProcessOrCreate();
+  if (result == ProcessSingleton::PROCESS_NONE) {
+    is_singleton_instance_ = true;
+  }
+  return result;
 }
 
 void ChromeProcessSingleton::StartWatching() {
@@ -77,6 +83,12 @@ void ChromeProcessSingleton::DeleteInstance() {
 ChromeProcessSingleton* ChromeProcessSingleton::GetInstance() {
   CHECK(g_chrome_process_singleton_);
   return g_chrome_process_singleton_;
+}
+
+// static
+bool ChromeProcessSingleton::IsSingletonInstance() {
+  return g_chrome_process_singleton_ &&
+         g_chrome_process_singleton_->is_singleton_instance_;
 }
 
 // static

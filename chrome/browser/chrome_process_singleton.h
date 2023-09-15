@@ -59,12 +59,19 @@ class ChromeProcessSingleton {
   void Unlock(
       const ProcessSingleton::NotificationCallback& notification_callback);
 
+  bool IsSingletonInstanceForTesting() const { return is_singleton_instance_; }
+
   // Create the chrome process singleton instance for the current process.
   static void CreateInstance(const base::FilePath& user_data_dir);
   // Delete the chrome process singleton instance.
   static void DeleteInstance();
   // Retrieve the chrome process singleton instance for the current process.
   static ChromeProcessSingleton* GetInstance();
+
+  // Returns true if this process is the singleton instance (i.e., a
+  // ProcessSingleton has been created and NotifyOtherProcessOrCreate() has
+  // returned PROCESS_NONE).
+  static bool IsSingletonInstance();
 
   // Setup the experiment for the early process singleton. Remove this code
   // when the experiment is over (http://www.crbug.com/1340599).
@@ -76,6 +83,9 @@ class ChromeProcessSingleton {
  private:
   bool NotificationCallback(const base::CommandLine& command_line,
                             const base::FilePath& current_directory);
+
+  // Whether or not this instance is the running single instance.
+  bool is_singleton_instance_ = false;
 
   // We compose these two locks with the client-supplied notification callback.
   // First |modal_dialog_lock_| will discard any notifications that arrive while
