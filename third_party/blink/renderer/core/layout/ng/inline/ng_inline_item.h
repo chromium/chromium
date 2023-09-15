@@ -228,6 +228,8 @@ class CORE_EXPORT NGInlineItem {
                              HeapVector<NGInlineItem>* items);
 
   RunSegmenter::RunSegmenterRange CreateRunSegmenterRange() const {
+    // Only `kText` has the `segment_data_`, see `NGInlineItem::SetSegmentData`.
+    DCHECK_EQ(Type(), kText);
     return NGInlineItemSegment::UnpackSegmentData(start_offset_, end_offset_,
                                                   segment_data_);
   }

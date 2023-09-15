@@ -114,13 +114,19 @@ void NGTextAutoSpace::Initialize(const NGInlineItemsData& data) {
   // packed in `NGInlineItemSegments` to save memory.
   const String& text = data.text_content;
   if (!data.segments) {
-    const NGInlineItem& item0 = items.front();
-    RunSegmenter::RunSegmenterRange range = item0.CreateRunSegmenterRange();
-    if (!MaybeIdeograph(range.script, text)) {
-      return;
+    for (const NGInlineItem& item : items) {
+      if (item.Type() != NGInlineItem::kText) {
+        // Only `kText` has the data, see `NGInlineItem::SetSegmentData`.
+        continue;
+      }
+      RunSegmenter::RunSegmenterRange range = item.CreateRunSegmenterRange();
+      if (!MaybeIdeograph(range.script, text)) {
+        return;
+      }
+      range.end = text.length();
+      ranges_.push_back(range);
+      break;
     }
-    range.end = text.length();
-    ranges_.push_back(range);
   } else {
     data.segments->ToRanges(ranges_);
     if (std::none_of(ranges_.begin(), ranges_.end(),
