@@ -514,7 +514,7 @@ void CloudPolicyInvalidator::RefreshPolicy(bool is_missing_payload) {
   // the client yet, so set it now that the required time has elapsed.
   if (is_missing_payload)
     core_->client()->SetInvalidationInfo(invalidation_version_, std::string());
-  core_->refresh_scheduler()->RefreshSoon();
+  core_->refresh_scheduler()->RefreshSoon(PolicyFetchReason::kInvalidation);
 }
 
 void CloudPolicyInvalidator::AcknowledgeInvalidation() {

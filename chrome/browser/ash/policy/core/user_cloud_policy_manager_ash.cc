@@ -414,9 +414,11 @@ void UserCloudPolicyManagerAsh::OnRegistrationStateChanged(
   if (waiting_for_policy_fetch_) {
     // If we're blocked on the policy fetch, now is a good time to issue it.
     if (client()->is_registered()) {
-      service()->RefreshPolicy(base::BindOnce(
-          &UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete,
-          base::Unretained(this)));
+      service()->RefreshPolicy(
+          base::BindOnce(
+              &UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete,
+              base::Unretained(this)),
+          PolicyFetchReason::kRegistrationChanged);
     } else {
       // If the client has switched to not registered, we bail out as this
       // indicates the cloud policy setup flow has been aborted.

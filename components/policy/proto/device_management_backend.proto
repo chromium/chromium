@@ -907,11 +907,35 @@ message DevicePolicyRequest {
 
   // Reason for the requesting policies, to help with monitoring and alerting
   // (e.g. to detect an increase in fetch failures during enrollment).
-  // TODO(b/298336121) Add more reasons here and in the respective call sites.
   enum Reason {
     UNSPECIFIED = 0;
     // Required policy fetch during device enrollment.
     DEVICE_ENROLLMENT = 1;
+    // Policy fetch triggered by incoming FCM invalidation.
+    INVALIDATION = 2;
+    // CloudPolicyClient registration changed (e.g. during startup).
+    REGISTRATION_CHANGED = 3;
+    // Retry after previous policy fetch failure.
+    RETRY = 4;
+    // Various retry reasons based on DMServer status, see
+    // `CloudPolicyRefreshScheduler`.
+    RETRY_AFTER_STATUS_SERVICE_ACTIVATION_PENDING = 5;
+    RETRY_AFTER_STATUS_SERVICE_POLICY_NOT_FOUND = 6;
+    RETRY_AFTER_STATUS_SERVICE_TOO_MANY_REQUESTS = 7;
+    RETRY_AFTER_STATUS_REQUEST_FAILED = 8;
+    RETRY_AFTER_STATUS_TEMPORARY_UNAVAILABLE = 9;
+    RETRY_AFTER_STATUS_CANNOT_SIGN_REQUEST = 10;
+    RETRY_AFTER_STATUS_REQUEST_INVALID = 11;
+    RETRY_AFTER_STATUS_HTTP_STATUS_ERROR = 12;
+    RETRY_AFTER_STATUS_RESPONSE_DECODING_ERROR = 13;
+    RETRY_AFTER_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED = 14;
+    RETRY_AFTER_STATUS_REQUEST_TOO_LARGE = 15;
+    // Scheduled policy refresh (e.g. once per day).
+    SCHEDULED = 16;
+    // Policy fetch triggered by sign-in.
+    SIGNIN = 17;
+    // A placeholder reason used for tests (should not occur in production).
+    TEST = 18;
   }
   optional Reason reason = 4;
 }

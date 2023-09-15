@@ -119,9 +119,8 @@ constexpr int64_t kTimestamp = 987654321;
 constexpr em::PolicyFetchRequest::SignatureType kSignatureType =
     em::PolicyFetchRequest::SHA256_RSA;
 
-constexpr PolicyFetchReason kReason = PolicyFetchReason::kUnspecified;
-constexpr auto kProtoReason =
-    enterprise_management::DevicePolicyRequest::UNSPECIFIED;
+constexpr PolicyFetchReason kReason = PolicyFetchReason::kTest;
+constexpr auto kProtoReason = enterprise_management::DevicePolicyRequest::TEST;
 
 MATCHER_P(MatchProto, expected, "matches protobuf") {
   return arg.SerializePartialAsString() == expected.SerializePartialAsString();
@@ -669,7 +668,52 @@ INSTANTIATE_TEST_SUITE_P(
                    enterprise_management::DevicePolicyRequest::UNSPECIFIED),
         std::tuple(
             PolicyFetchReason::kDeviceEnrollment,
-            enterprise_management::DevicePolicyRequest::DEVICE_ENROLLMENT)));
+            enterprise_management::DevicePolicyRequest::DEVICE_ENROLLMENT),
+        std::tuple(PolicyFetchReason::kInvalidation,
+                   enterprise_management::DevicePolicyRequest::INVALIDATION),
+        std::tuple(
+            PolicyFetchReason::kRegistrationChanged,
+            enterprise_management::DevicePolicyRequest::REGISTRATION_CHANGED),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusServiceActivationPending,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_SERVICE_ACTIVATION_PENDING),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusServicePolicyNotFound,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_SERVICE_POLICY_NOT_FOUND),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusServiceTooManyRequests,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_SERVICE_TOO_MANY_REQUESTS),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusRequestFailed,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_REQUEST_FAILED),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusTemporaryUnavailable,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_TEMPORARY_UNAVAILABLE),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusCannotSignRequest,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_CANNOT_SIGN_REQUEST),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusRequestInvalid,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_REQUEST_INVALID),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusHttpStatusError,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_HTTP_STATUS_ERROR),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusResponseDecodingError,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_RESPONSE_DECODING_ERROR),
+        std::tuple(
+            PolicyFetchReason::kRetryAfterStatusServiceManagementNotSupported,
+            enterprise_management::DevicePolicyRequest::
+                RETRY_AFTER_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED),
+        std::tuple(PolicyFetchReason::kRetryAfterStatusRequestTooLarge,
+                   enterprise_management::DevicePolicyRequest::
+                       RETRY_AFTER_STATUS_REQUEST_TOO_LARGE),
+        std::tuple(PolicyFetchReason::kScheduled,
+                   enterprise_management::DevicePolicyRequest::SCHEDULED),
+        std::tuple(PolicyFetchReason::kSignin,
+                   enterprise_management::DevicePolicyRequest::SIGNIN),
+        std::tuple(PolicyFetchReason::kTest,
+                   enterprise_management::DevicePolicyRequest::TEST)));
 
 TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();

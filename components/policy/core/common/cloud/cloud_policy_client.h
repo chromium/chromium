@@ -50,6 +50,22 @@ struct DMServerJobResult;
 enum class PolicyFetchReason {
   kUnspecified,
   kDeviceEnrollment,
+  kInvalidation,
+  kRegistrationChanged,
+  kRetryAfterStatusServiceActivationPending,
+  kRetryAfterStatusServicePolicyNotFound,
+  kRetryAfterStatusServiceTooManyRequests,
+  kRetryAfterStatusRequestFailed,
+  kRetryAfterStatusTemporaryUnavailable,
+  kRetryAfterStatusCannotSignRequest,
+  kRetryAfterStatusRequestInvalid,
+  kRetryAfterStatusHttpStatusError,
+  kRetryAfterStatusResponseDecodingError,
+  kRetryAfterStatusServiceManagementNotSupported,
+  kRetryAfterStatusRequestTooLarge,
+  kScheduled,
+  kSignin,
+  kTest,
 };
 
 // Implements the core logic required to talk to the device management service.

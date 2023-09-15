@@ -56,8 +56,10 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   // Refreshes policy. |callback| will be invoked after the operation completes
   // or aborts because of errors.
   //
-  // TODO(b/298336121) Add PolicyFetchReason parameter.
-  virtual void RefreshPolicy(RefreshPolicyCallback callback);
+  // The |reason| parameter will be used to tag the request to DMServer. This
+  // will allow for more targeted monitoring and alerting.
+  virtual void RefreshPolicy(RefreshPolicyCallback callback,
+                             PolicyFetchReason reason);
 
   // Adds/Removes an Observer for this object.
   void AddObserver(Observer* observer);

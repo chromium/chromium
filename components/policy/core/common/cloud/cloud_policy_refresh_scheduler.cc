@@ -138,13 +138,13 @@ int64_t CloudPolicyRefreshScheduler::GetActualRefreshDelay() const {
   }
 }
 
-void CloudPolicyRefreshScheduler::RefreshSoon() {
+void CloudPolicyRefreshScheduler::RefreshSoon(PolicyFetchReason reason) {
   // If the client isn't registered, there is nothing to do.
   if (!client_->is_registered())
     return;
 
   is_scheduled_for_soon_ = true;
-  RefreshAfter(0);
+  RefreshAfter(0, reason);
 }
 
 void CloudPolicyRefreshScheduler::SetInvalidationServiceAvailability(
@@ -184,7 +184,7 @@ void CloudPolicyRefreshScheduler::OnRegistrationStateChanged(
 
   // The client has registered, so trigger an immediate refresh.
   error_retry_delay_ms_ = kInitialErrorRetryDelayMs;
-  RefreshSoon();
+  RefreshSoon(PolicyFetchReason::kRegistrationChanged);
 }
 
 void CloudPolicyRefreshScheduler::OnClientError(CloudPolicyClient* client) {
@@ -225,7 +225,7 @@ void CloudPolicyRefreshScheduler::OnConnectionChanged(
     return;
 
   if (client_->last_dm_status() == DM_STATUS_REQUEST_FAILED) {
-    RefreshSoon();
+    RefreshSoon(PolicyFetchReason::kRetryAfterStatusRequestFailed);
     return;
   }
 
@@ -246,7 +246,7 @@ void CloudPolicyRefreshScheduler::OnConnectionChanged(
   const base::TimeDelta ticks_delta =
       last_refresh_ticks_ + refresh_delay - GetTickClock()->NowTicks();
   if (ticks_delta > system_delta)
-    RefreshAfter(system_delta.InMilliseconds());
+    RefreshAfter(system_delta.InMilliseconds(), PolicyFetchReason::kScheduled);
 }
 
 void CloudPolicyRefreshScheduler::UpdateLastRefreshFromPolicy() {
@@ -295,27 +295,58 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
   switch (client_->last_dm_status()) {
     case DM_STATUS_SUCCESS:
       if (store_->is_managed())
-        RefreshAfter(GetActualRefreshDelay());
+        RefreshAfter(GetActualRefreshDelay(), PolicyFetchReason::kScheduled);
       else
-        RefreshAfter(kUnmanagedRefreshDelayMs);
+        RefreshAfter(kUnmanagedRefreshDelayMs, PolicyFetchReason::kScheduled);
       return;
+
+      // Try again after `GetActualRefreshDelay()`:
     case DM_STATUS_SERVICE_ACTIVATION_PENDING:
+      return RefreshAfter(
+          GetActualRefreshDelay(),
+          PolicyFetchReason::kRetryAfterStatusServiceActivationPending);
     case DM_STATUS_SERVICE_POLICY_NOT_FOUND:
+      return RefreshAfter(
+          GetActualRefreshDelay(),
+          PolicyFetchReason::kRetryAfterStatusServicePolicyNotFound);
     case DM_STATUS_SERVICE_TOO_MANY_REQUESTS:
-      RefreshAfter(GetActualRefreshDelay());
-      return;
+      return RefreshAfter(
+          GetActualRefreshDelay(),
+          PolicyFetchReason::kRetryAfterStatusServiceTooManyRequests);
+
+      // Try again after `error_retry_delay_ms_`
     case DM_STATUS_REQUEST_FAILED:
+      return RefreshAfter(error_retry_delay_ms_,
+                          PolicyFetchReason::kRetryAfterStatusRequestFailed);
     case DM_STATUS_TEMPORARY_UNAVAILABLE:
+      return RefreshAfter(
+          error_retry_delay_ms_,
+          PolicyFetchReason::kRetryAfterStatusTemporaryUnavailable);
     case DM_STATUS_CANNOT_SIGN_REQUEST:
-      RefreshAfter(error_retry_delay_ms_);
-      return;
+      return RefreshAfter(
+          error_retry_delay_ms_,
+          PolicyFetchReason::kRetryAfterStatusCannotSignRequest);
+
+      // Try again after `kUnmanagedRefreshDelay.
     case DM_STATUS_REQUEST_INVALID:
+      return RefreshAfter(kUnmanagedRefreshDelayMs,
+                          PolicyFetchReason::kRetryAfterStatusRequestInvalid);
     case DM_STATUS_HTTP_STATUS_ERROR:
+      return RefreshAfter(kUnmanagedRefreshDelayMs,
+                          PolicyFetchReason::kRetryAfterStatusHttpStatusError);
     case DM_STATUS_RESPONSE_DECODING_ERROR:
+      return RefreshAfter(
+          kUnmanagedRefreshDelayMs,
+          PolicyFetchReason::kRetryAfterStatusResponseDecodingError);
     case DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
+      return RefreshAfter(
+          kUnmanagedRefreshDelayMs,
+          PolicyFetchReason::kRetryAfterStatusServiceManagementNotSupported);
     case DM_STATUS_REQUEST_TOO_LARGE:
-      RefreshAfter(kUnmanagedRefreshDelayMs);
-      return;
+      return RefreshAfter(kUnmanagedRefreshDelayMs,
+                          PolicyFetchReason::kRetryAfterStatusRequestTooLarge);
+
+      // No retry
     case DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID:
     case DM_STATUS_SERVICE_DEVICE_NOT_FOUND:
     case DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER:
@@ -338,10 +369,10 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
   }
 
   NOTREACHED() << "Invalid client status " << client_->last_dm_status();
-  RefreshAfter(kUnmanagedRefreshDelayMs);
+  RefreshAfter(kUnmanagedRefreshDelayMs, PolicyFetchReason::kUnspecified);
 }
 
-void CloudPolicyRefreshScheduler::PerformRefresh() {
+void CloudPolicyRefreshScheduler::PerformRefresh(PolicyFetchReason reason) {
   CancelRefresh();
 
   if (client_->is_registered()) {
@@ -353,7 +384,8 @@ void CloudPolicyRefreshScheduler::PerformRefresh() {
     // OnPolicyFetched().
     service_->RefreshPolicy(
         base::BindOnce(&CloudPolicyRefreshScheduler::OnPolicyRefreshed,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        reason);
     return;
   }
 
@@ -362,7 +394,8 @@ void CloudPolicyRefreshScheduler::PerformRefresh() {
   NOTREACHED();
 }
 
-void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms) {
+void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms,
+                                               PolicyFetchReason reason) {
   const base::TimeDelta delta(base::Milliseconds(delta_ms));
 
   // Schedule the callback, calculating the delay based on both, system time
@@ -381,8 +414,9 @@ void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms) {
   if (!delay.is_zero())
     delay += base::Milliseconds(refresh_delay_salt_ms_);
 
-  refresh_callback_.Reset(base::BindOnce(
-      &CloudPolicyRefreshScheduler::PerformRefresh, base::Unretained(this)));
+  refresh_callback_.Reset(
+      base::BindOnce(&CloudPolicyRefreshScheduler::PerformRefresh,
+                     base::Unretained(this), reason));
   task_runner_->PostDelayedTask(FROM_HERE, refresh_callback_.callback(), delay);
 }
 

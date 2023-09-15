@@ -82,11 +82,15 @@ bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
   return store()->first_policies_loaded();
 }
 
+// TODO(b/298336121) Add PolicyFetchReason parameter to make the fetch
+// more specific.
 void CloudPolicyManager::RefreshPolicies() {
   if (service()) {
     waiting_for_policy_refresh_ = true;
-    service()->RefreshPolicy(base::BindOnce(
-        &CloudPolicyManager::OnRefreshComplete, base::Unretained(this)));
+    service()->RefreshPolicy(
+        base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
+                       base::Unretained(this)),
+        PolicyFetchReason::kUnspecified);
   } else {
     OnRefreshComplete(false);
   }

@@ -104,7 +104,8 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
   }
 
   // Now initiate a policy fetch.
-  manager->core()->service()->RefreshPolicy(std::move(callback));
+  manager->core()->service()->RefreshPolicy(std::move(callback),
+                                            PolicyFetchReason::kSignin);
 }
 
 void UserPolicySigninServiceBase::OnPolicyFetched(CloudPolicyClient* client) {}

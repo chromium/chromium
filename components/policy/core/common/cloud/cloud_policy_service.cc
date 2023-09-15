@@ -47,7 +47,8 @@ CloudPolicyService::~CloudPolicyService() {
   store_->RemoveObserver(this);
 }
 
-void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback) {
+void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback,
+                                       PolicyFetchReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the client is not registered bail out.
@@ -59,7 +60,7 @@ void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback) {
   // Else, trigger a refresh.
   refresh_callbacks_.push_back(std::move(callback));
   refresh_state_ = REFRESH_POLICY_FETCH;
-  client_->FetchPolicy(PolicyFetchReason::kUnspecified);
+  client_->FetchPolicy(reason);
 }
 
 void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {

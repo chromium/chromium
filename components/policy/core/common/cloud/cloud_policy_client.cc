@@ -74,6 +74,38 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::UNSPECIFIED;
     case PolicyFetchReason::kDeviceEnrollment:
       return Request::DEVICE_ENROLLMENT;
+    case PolicyFetchReason::kInvalidation:
+      return Request::INVALIDATION;
+    case PolicyFetchReason::kRegistrationChanged:
+      return Request::REGISTRATION_CHANGED;
+    case PolicyFetchReason::kRetryAfterStatusServiceActivationPending:
+      return Request::RETRY_AFTER_STATUS_SERVICE_ACTIVATION_PENDING;
+    case PolicyFetchReason::kRetryAfterStatusServicePolicyNotFound:
+      return Request::RETRY_AFTER_STATUS_SERVICE_POLICY_NOT_FOUND;
+    case PolicyFetchReason::kRetryAfterStatusServiceTooManyRequests:
+      return Request::RETRY_AFTER_STATUS_SERVICE_TOO_MANY_REQUESTS;
+    case PolicyFetchReason::kRetryAfterStatusRequestFailed:
+      return Request::RETRY_AFTER_STATUS_REQUEST_FAILED;
+    case PolicyFetchReason::kRetryAfterStatusTemporaryUnavailable:
+      return Request::RETRY_AFTER_STATUS_TEMPORARY_UNAVAILABLE;
+    case PolicyFetchReason::kRetryAfterStatusCannotSignRequest:
+      return Request::RETRY_AFTER_STATUS_CANNOT_SIGN_REQUEST;
+    case PolicyFetchReason::kRetryAfterStatusRequestInvalid:
+      return Request::RETRY_AFTER_STATUS_REQUEST_INVALID;
+    case PolicyFetchReason::kRetryAfterStatusHttpStatusError:
+      return Request::RETRY_AFTER_STATUS_HTTP_STATUS_ERROR;
+    case PolicyFetchReason::kRetryAfterStatusResponseDecodingError:
+      return Request::RETRY_AFTER_STATUS_RESPONSE_DECODING_ERROR;
+    case PolicyFetchReason::kRetryAfterStatusServiceManagementNotSupported:
+      return Request::RETRY_AFTER_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED;
+    case PolicyFetchReason::kRetryAfterStatusRequestTooLarge:
+      return Request::RETRY_AFTER_STATUS_REQUEST_TOO_LARGE;
+    case PolicyFetchReason::kScheduled:
+      return Request::SCHEDULED;
+    case PolicyFetchReason::kSignin:
+      return Request::SIGNIN;
+    case PolicyFetchReason::kTest:
+      return Request::TEST;
   }
   NOTREACHED_NORETURN();
 }

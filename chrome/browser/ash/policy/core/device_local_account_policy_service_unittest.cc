@@ -41,6 +41,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
@@ -562,7 +563,8 @@ TEST_F(DeviceLocalAccountPolicyServiceTest, RefreshPolicy) {
   EXPECT_CALL(service_observer_, OnPolicyUpdated(account_1_user_id_)).Times(2);
   broker->core()->service()->RefreshPolicy(
       base::BindOnce(&DeviceLocalAccountPolicyServiceTest::OnRefreshDone,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      PolicyFetchReason::kTest);
   FlushDeviceSettings();
   Mock::VerifyAndClearExpectations(&service_observer_);
   Mock::VerifyAndClearExpectations(this);
