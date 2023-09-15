@@ -639,6 +639,7 @@ ci.builder(
         category = "tester|tablet",
         short_name = "12L",
     ),
+    contact_team_email = "clank-engprod@google.com",
 )
 
 ci.builder(
@@ -1456,6 +1457,7 @@ ci.builder(
         category = "on_cq|x86",
         short_name = "N",
     ),
+    contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
 )
 
@@ -1653,6 +1655,7 @@ ci.builder(
         category = "on_cq|x64",
         short_name = "12",
     ),
+    contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
 )
 
