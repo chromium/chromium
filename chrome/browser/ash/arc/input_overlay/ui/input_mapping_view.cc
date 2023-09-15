@@ -169,6 +169,16 @@ void InputMappingView::OnActionRemoved(const Action& action) {
   }
 }
 
+void InputMappingView::OnActionNewStateRemoved(const Action& action) {
+  for (auto* const child : children()) {
+    auto* action_view = static_cast<ActionView*>(child);
+    if (action_view->action() == &action) {
+      action_view->RemoveNewState();
+      break;
+    }
+  }
+}
+
 void InputMappingView::OnActionTypeChanged(Action* action, Action* new_action) {
   // No action type change function for pre-beta version.
   DCHECK(IsBeta());

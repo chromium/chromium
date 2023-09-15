@@ -29,6 +29,7 @@ class ActionViewListItem : public views::Button {
   ~ActionViewListItem() override;
 
   void OnActionInputBindingUpdated();
+  void RemoveNewState();
   void OnActionNameUpdated();
 
   Action* action() const { return action_; }

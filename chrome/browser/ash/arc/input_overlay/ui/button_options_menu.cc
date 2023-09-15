@@ -139,7 +139,7 @@ void ButtonOptionsMenu::AddActionEdit() {
   action_edit_container_
       ->SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(views::LayoutAlignment::kStart,
-                  views::LayoutAlignment::kCenter,
+                  views::LayoutAlignment::kStart,
                   /*horizontal_resize=*/1.0f,
                   views::TableLayout::ColumnSize::kUsePreferred,
                   /*fixed_width=*/0, /*min_width=*/0)
@@ -195,6 +195,9 @@ void ButtonOptionsMenu::OnTrashButtonPressed() {
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
+  if (action_->is_new()) {
+    controller_->RemoveActionNewState(action_);
+  }
   controller_->SaveToProtoFile();
   controller_->RemoveButtonOptionsMenuWidget();
 }
@@ -230,6 +233,12 @@ void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
   if (action_ == &action) {
     action_name_tile_->SetSubLabel(GetActionNameAtIndex(
         controller_->action_name_list(), action_->name_label_index()));
+  }
+}
+
+void ButtonOptionsMenu::OnActionNewStateRemoved(const Action& action) {
+  if (action_ == &action) {
+    labels_view_->RemoveNewState();
   }
 }
 

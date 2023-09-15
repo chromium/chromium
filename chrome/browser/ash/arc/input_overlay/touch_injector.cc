@@ -1002,6 +1002,12 @@ void TouchInjector::ChangeActionName(Action* action, int index) {
   NotifyActionNameUpdated(*action);
 }
 
+void TouchInjector::RemoveActionNewState(Action* action) {
+  DCHECK(IsBeta());
+  action->set_is_new(false);
+  NotifyActionNewStateRemoved(*action);
+}
+
 void TouchInjector::OverwriteDefaultAction(const ActionProto& proto,
                                            Action* action) {
   DCHECK(action);
@@ -1041,6 +1047,12 @@ void TouchInjector::NotifyActionAdded(Action& action) {
 void TouchInjector::NotifyActionRemoved(Action& action) {
   for (auto& observer : observers_) {
     observer.OnActionRemoved(action);
+  }
+}
+
+void TouchInjector::NotifyActionNewStateRemoved(Action& action) {
+  for (auto& observer : observers_) {
+    observer.OnActionNewStateRemoved(action);
   }
 }
 

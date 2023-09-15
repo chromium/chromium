@@ -90,6 +90,7 @@ class DisplayOverlayController : public ui::EventHandler,
   // the reference action.
   void ChangeActionType(Action* reference_action_, ActionType type);
   void ChangeActionName(Action* action, int index);
+  void RemoveActionNewState(Action* action);
 
   // Returns the size of active actions which include the deleted default
   // actions.
@@ -250,8 +251,8 @@ class DisplayOverlayController : public ui::EventHandler,
   // that can be selected.
   // TODO(b/274690042): Replace placeholder text with localized strings.
   const std::vector<std::u16string> action_name_list_ = {
-      u"Move", u"Jump",  u"Attack", u"Special ability", u"Crouch",
-      u"Run",  u"Shoot", u"Magic",  u"Reload",          u"Dodge"};
+      u"Move",  u"Jump",  u"Attack", u"Special ability", u"Crouch", u"Run",
+      u"Shoot", u"Magic", u"Reload", u"Dodge", u"Menu", u"Other"};
 
   const raw_ptr<TouchInjector> touch_injector_;
 

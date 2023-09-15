@@ -52,6 +52,7 @@ class EditLabels : public views::View {
   void OnActionInputBindingUpdated();
 
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
+  void RemoveNewState();
 
  private:
   friend class EditLabelTest;
@@ -78,6 +79,9 @@ class EditLabels : public views::View {
 
   // Allows for title modification if true.
   bool set_title_ = false;
+
+  // Prevents new actions from being in the error state by default.
+  bool is_new_ = false;
 };
 }  // namespace arc::input_overlay
 

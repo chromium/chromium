@@ -266,6 +266,7 @@ bool Action::InitByAddingNewAction() {
 
   InitPositions(original_positions_);
   InitPositions(current_positions_);
+  is_new_ = true;
 
   return true;
 }
@@ -275,6 +276,7 @@ void Action::InitByChangingActionType(Action* action) {
   name_ = action->name();
   original_type_ = action->original_type();
   original_input_ = std::make_unique<InputElement>(*action->original_input());
+  is_new_ = action->is_new();
 
   original_positions_ = action->original_positions();
   current_positions_ = action->current_positions();
@@ -307,6 +309,7 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
 }
 
 void Action::BindPending() {
+  set_is_new(false);
   // Check whether position is adjusted.
   if (pending_position_) {
     current_positions_[0] = *pending_position_;

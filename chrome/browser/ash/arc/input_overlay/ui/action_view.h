@@ -87,6 +87,9 @@ class ActionView : public views::View {
   // Reacts to child label focus change.
   void OnChildLabelUpdateFocus(ActionLabel* child, bool focus);
 
+  // Set the action view to be not new, for the action label.
+  void RemoveNewState();
+
   void ApplyMousePressed(const ui::MouseEvent& event);
   void ApplyMouseDragged(const ui::MouseEvent& event);
   void ApplyMouseReleased(const ui::MouseEvent& event);

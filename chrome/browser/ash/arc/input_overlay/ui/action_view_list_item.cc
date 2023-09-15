@@ -38,6 +38,10 @@ void ActionViewListItem::OnActionInputBindingUpdated() {
   labels_view_->OnActionInputBindingUpdated();
 }
 
+void ActionViewListItem::RemoveNewState() {
+  labels_view_->RemoveNewState();
+}
+
 void ActionViewListItem::OnActionNameUpdated() {
   auto action_name = GetActionNameAtIndex(controller_->action_name_list(),
                                           action_->name_label_index());

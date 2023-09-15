@@ -7,6 +7,7 @@
 
 #include "ash/style/option_button_base.h"
 #include "ash/style/option_button_group.h"
+#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button.h"
 
 namespace arc::input_overlay {
@@ -58,6 +59,8 @@ class ActionTypeButtonGroup : public ash::OptionButtonGroup,
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged | ExperimentalAsh> action_;
+
+  ActionType selected_action_type_;
 };
 
 }  // namespace arc::input_overlay

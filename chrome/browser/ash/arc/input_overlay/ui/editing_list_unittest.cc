@@ -110,6 +110,10 @@ class EditingListTest : public OverlayViewTestBase {
     return controller_->nudge_widgets_.find(editing_list_) !=
            controller_->nudge_widgets_.end();
   }
+
+  void CloseButtonOptionsMenu() {
+    controller_->RemoveButtonOptionsMenuWidget();
+  }
 };
 
 TEST_F(EditingListTest, TestAddNewAction) {
@@ -140,6 +144,9 @@ TEST_F(EditingListTest, TestPressAtActionViewListItem) {
   PressAddButton();
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_1 = GetButtonOptionsAction();
+  // The button options menu must be closed before proceeding, as it can block
+  // the editing list while open.
+  CloseButtonOptionsMenu();
   LeftClickAtActionViewListItem(/*index=*/0);
   EXPECT_TRUE(ButtonOptionsMenuExists());
   auto* action_2 = GetButtonOptionsAction();

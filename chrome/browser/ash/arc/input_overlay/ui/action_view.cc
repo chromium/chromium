@@ -163,6 +163,12 @@ void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
   }
 }
 
+void ActionView::RemoveNewState() {
+  for (auto* label : labels_) {
+    label->RemoveNewState();
+  }
+}
+
 void ActionView::ApplyMousePressed(const ui::MouseEvent& event) {
   reposition_controller_->OnMousePressed(event);
 }
@@ -193,6 +199,7 @@ bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
 
 void ActionView::OnDraggingCallback() {
   MayUpdateLabelPosition();
+  display_overlay_controller_->RemoveButtonOptionsMenuWidget();
 }
 
 void ActionView::OnMouseDragEndCallback() {

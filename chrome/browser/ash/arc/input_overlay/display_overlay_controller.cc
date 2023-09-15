@@ -635,6 +635,10 @@ void DisplayOverlayController::ChangeActionName(Action* action, int index) {
   touch_injector_->ChangeActionName(action, index);
 }
 
+void DisplayOverlayController::RemoveActionNewState(Action* action) {
+  touch_injector_->RemoveActionNewState(action);
+}
+
 size_t DisplayOverlayController::GetActiveActionsSize() {
   return touch_injector_->GetActiveActionsSize();
 }

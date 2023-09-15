@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
-#include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -48,7 +47,8 @@ void ActionTypeButtonGroup::Init() {
       // TODO(b/274690042): Replace placeholder text with localized strings.
       u"Dpad", kGameControlsDpadKeyboardIcon);
 
-  switch (action_->GetType()) {
+  selected_action_type_ = action_->GetType();
+  switch (selected_action_type_) {
     case ActionType::TAP:
       tap_button->SetSelected(true);
       break;
@@ -96,10 +96,18 @@ void ActionTypeButtonGroup::OnButtonClicked(ash::OptionButtonBase* button) {
 }
 
 void ActionTypeButtonGroup::OnActionTapButtonPressed() {
+  if (selected_action_type_ == ActionType::TAP) {
+    return;
+  }
+  selected_action_type_ = ActionType::TAP;
   controller_->ChangeActionType(action_, ActionType::TAP);
 }
 
 void ActionTypeButtonGroup::OnActionMoveButtonPressed() {
+  if (selected_action_type_ == ActionType::MOVE) {
+    return;
+  }
+  selected_action_type_ = ActionType::MOVE;
   controller_->ChangeActionType(action_, ActionType::MOVE);
 }
 

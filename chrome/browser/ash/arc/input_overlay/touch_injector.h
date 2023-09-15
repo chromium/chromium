@@ -133,6 +133,7 @@ class TouchInjector : public ui::EventRewriter {
   // the reference action.
   void ChangeActionType(Action* reference_action, ActionType action_type);
   void ChangeActionName(Action* action, int index);
+  void RemoveActionNewState(Action* action);
 
   void AddObserver(TouchInjectorObserver* observer);
   void RemoveObserver(TouchInjectorObserver* observer);
@@ -276,6 +277,7 @@ class TouchInjector : public ui::EventRewriter {
   void NotifyActionInputBindingUpdated(const Action& action);
   void NotifyActionNameUpdated(const Action& action);
   void NotifyContentBoundsSizeChanged();
+  void NotifyActionNewStateRemoved(Action& action);
 
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);

@@ -30,6 +30,7 @@ EditLabel::EditLabel(DisplayOverlayController* controller,
     : views::LabelButton(),
       controller_(controller),
       action_(action),
+      is_new_(action->is_new()),
       index_(index) {
   Init();
 }
@@ -37,6 +38,7 @@ EditLabel::EditLabel(DisplayOverlayController* controller,
 EditLabel::~EditLabel() = default;
 
 void EditLabel::OnActionInputBindingUpdated() {
+  is_new_ = false;
   if (action_->GetCurrentDisplayedInput().input_sources() ==
       InputSource::IS_NONE) {
     SetTextLabel(kUnknownBind);
@@ -49,6 +51,11 @@ void EditLabel::OnActionInputBindingUpdated() {
 
 bool EditLabel::IsInputUnbound() {
   return GetText().compare(kUnknownBind) == 0;
+}
+
+void EditLabel::RemoveNewState() {
+  is_new_ = false;
+  OnActionInputBindingUpdated();
 }
 
 void EditLabel::Init() {
@@ -72,8 +79,8 @@ void EditLabel::SetTextLabel(const std::u16string& text) {
   SetText(text);
   SetAccessibleName(CalculateAccessibleName());
   SetBackground(views::CreateThemedRoundedRectBackground(
-      text == kUnknownBind ? cros_tokens::kCrosSysErrorHighlight
-                           : cros_tokens::kCrosSysHighlightShape,
+      text == kUnknownBind && !is_new_ ? cros_tokens::kCrosSysErrorHighlight
+                                       : cros_tokens::kCrosSysHighlightShape,
       /*radius=*/8));
   if (HasFocus()) {
     SetToFocused();
@@ -86,7 +93,7 @@ void EditLabel::SetNameTagState(bool is_error,
                                 const std::u16string& error_tooltip) {
   DCHECK(parent());
   auto* parent_view = static_cast<EditLabels*>(parent());
-  parent_view->SetNameTagState(is_error, error_tooltip);
+  parent_view->SetNameTagState(is_error && !is_new_, error_tooltip);
 }
 
 std::u16string EditLabel::CalculateAccessibleName() {
@@ -96,15 +103,16 @@ std::u16string EditLabel::CalculateAccessibleName() {
 }
 
 void EditLabel::SetToDefault() {
-  SetEnabledTextColorIds(IsInputUnbound()
+  SetEnabledTextColorIds(IsInputUnbound() && !is_new_
                              ? cros_tokens::kCrosSysError
                              : cros_tokens::kCrosSysOnPrimaryContainer);
   SetBorder(nullptr);
 }
 
 void EditLabel::SetToFocused() {
-  SetEnabledTextColorIds(IsInputUnbound() ? cros_tokens::kCrosSysError
-                                          : cros_tokens::kCrosSysHighlightText);
+  SetEnabledTextColorIds(IsInputUnbound() && !is_new_
+                             ? cros_tokens::kCrosSysError
+                             : cros_tokens::kCrosSysHighlightText);
   SetBorder(views::CreateThemedRoundedRectBorder(
       /*thickness=*/2, /*corner_radius=*/8, cros_tokens::kCrosSysPrimary));
 }

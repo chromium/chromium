@@ -71,7 +71,7 @@ class ActionTap::ActionTapView : public ActionView {
     if (labels_.empty()) {
       // Create new action label when initializing.
       labels_ = ActionLabel::Show(this, ActionType::TAP, *input_binding,
-                                  TapLabelPosition::kNone);
+                                  action_->is_new(), TapLabelPosition::kNone);
     } else if (IsKeyboardBound(*input_binding)) {
       // Action label is bound to keyboard key.
       labels_[0]->SetTextActionLabel(
