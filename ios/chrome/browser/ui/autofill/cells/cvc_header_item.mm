@@ -7,9 +7,11 @@
 #import "base/apple/foundation_util.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_scaled_resources.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Spacing between elements.
@@ -52,6 +54,11 @@ const CGFloat kGooglePayBadgeHeight = 16;
 
     _googlePayBadgeImageView = [self createGooglePayBadge];
     _googlePayBadgeImageView.image = [self googlePayBadgeImage];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    _googlePayBadgeImageView.isAccessibilityElement = YES;
+    _googlePayBadgeImageView.accessibilityLabel =
+        l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
+#endif
     [self.contentView addSubview:_googlePayBadgeImageView];
 
     // Badge image aspect ratio (width / height).
