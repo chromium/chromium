@@ -43,11 +43,13 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1105,18 +1107,6 @@ TEST_F(PasswordAutofillAgentTest, NoPartialMatchForPrefilledUsername) {
       "PasswordManager.PrefilledUsernameFillOutcome",
       autofill::PrefilledUsernameFillOutcome::kPrefilledUsernameNotOverridden,
       1);
-}
-
-TEST_F(PasswordAutofillAgentTest, InputWithNoForms) {
-  const char kNoFormInputs[] =
-      "<input type='text' id='username'/>"
-      "<input type='password' id='password'/>";
-  LoadHTML(kNoFormInputs);
-
-  SimulateOnFillPasswordForm(fill_data_);
-
-  // Input elements that aren't in a <form> won't autofill.
-  CheckTextFieldsSuggestedState(std::string(), false, std::string(), false);
 }
 
 // Tests that having a matching username precludes the autofill.
@@ -3605,6 +3595,9 @@ TEST_F(PasswordAutofillAgentTest, RememberChosenUsernamePassword) {
 // Tests that we can correctly suggest to autofill two forms without username
 // fields.
 TEST_F(PasswordAutofillAgentTest, ShowSuggestionForNonUsernameFieldForms) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kAutofillUseDomNodeIdForRendererId);
   LoadHTML(kTwoNoUsernameFormsHTML);
   fill_data_.preferred_login.username_value.clear();
   UpdateUrlForHTML(kTwoNoUsernameFormsHTML);

@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -609,19 +611,13 @@ INSTANTIATE_TEST_SUITE_P(
            FindFormControlTestParam{"nonexistentField", "form1", false},
            FindFormControlTestParam{"nonexistentField", "form2", false},
            FindFormControlTestParam{"ownedField1", absl::nullopt, true},
-           FindFormControlTestParam{"ownedField1", std::string(), false},
            FindFormControlTestParam{"ownedField1", "form1", true},
-           FindFormControlTestParam{"ownedField1", "form2", false},
            FindFormControlTestParam{"ownedField2", absl::nullopt, true},
-           FindFormControlTestParam{"ownedField2", std::string(), false},
-           FindFormControlTestParam{"ownedField2", "form1", false},
            FindFormControlTestParam{"ownedField2", "form2", true},
            FindFormControlTestParam{"unownedField", absl::nullopt, true},
-           FindFormControlTestParam{"unownedField", std::string(), true},
-           FindFormControlTestParam{"unownedField", "form1", false},
-           FindFormControlTestParam{"unownedField", "form2", false}));
+           FindFormControlTestParam{"unownedField", std::string(), true}));
 
-TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdNoForm) {
+TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueId) {
   LoadHTML("<body><input id='i1'><input id='i2'><input id='i3'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto input1 = GetFormControlElementById(doc, "i1");
@@ -639,40 +635,6 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdNoForm) {
   EXPECT_EQ(input3, elements[0]);
   EXPECT_TRUE(elements[1].IsNull());
   EXPECT_EQ(input1, elements[2]);
-}
-
-TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdWithForm) {
-  LoadHTML(
-      "<body><form id='f1'><input id='i1'><input id='i2'></form><input "
-      "id='i3'></body>");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto form = GetFormElementById(doc, "f1");
-  auto input1 = GetFormControlElementById(doc, "i1");
-  auto input3 = GetFormControlElementById(doc, "i3");
-  FieldRendererId non_existing_field_id(GetFieldRendererId(input3).value() +
-                                        1000);
-
-  std::vector<FieldRendererId> renderer_ids = {GetFieldRendererId(input3),
-                                               non_existing_field_id,
-                                               GetFieldRendererId(input1)};
-
-  auto elements = FindFormControlElementsByUniqueRendererId(
-      doc, GetFormRendererId(form), renderer_ids);
-
-  // |input3| is not in the form, so it shouldn't be returned.
-  ASSERT_EQ(3u, elements.size());
-  EXPECT_TRUE(elements[0].IsNull());
-  EXPECT_TRUE(elements[1].IsNull());
-  EXPECT_EQ(input1, elements[2]);
-
-  // Expect that no elements are returned for non existing form id.
-  FormRendererId non_existing_form_id(GetFormRendererId(form).value() + 1000);
-  elements = FindFormControlElementsByUniqueRendererId(
-      doc, non_existing_form_id, renderer_ids);
-  ASSERT_EQ(3u, elements.size());
-  EXPECT_TRUE(elements[0].IsNull());
-  EXPECT_TRUE(elements[1].IsNull());
-  EXPECT_TRUE(elements[2].IsNull());
 }
 
 // Tests the extraction of the aria-label attribute.

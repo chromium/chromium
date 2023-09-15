@@ -2617,6 +2617,19 @@ bool InferLabelForElementForTesting(const WebFormControlElement& element,
 
 WebFormElement FindFormByUniqueRendererId(const WebDocument& doc,
                                           FormRendererId form_renderer_id) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId)) {
+    if (!form_renderer_id) {
+      return WebFormElement();
+    }
+    WebNode node = WebNode::FromDomNodeId(form_renderer_id.value());
+    WebFormElement form = node.DynamicTo<WebFormElement>();
+    // TODO(crbug.com/1427131): Remove when the feature launches.
+    CHECK_EQ(node.IsNull(), form.IsNull());
+    return !form.IsNull() && form.IsConnected() && form.GetDocument().GetFrame()
+               ? form
+               : WebFormElement();
+  }
   for (const auto& form : doc.Forms()) {
     if (GetFormRendererId(form) == form_renderer_id)
       return form;
@@ -2628,6 +2641,21 @@ WebFormControlElement FindFormControlElementByUniqueRendererId(
     const WebDocument& doc,
     FieldRendererId queried_form_control,
     absl::optional<FormRendererId> form_to_be_searched /*= absl::nullopt*/) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId)) {
+    if (!queried_form_control) {
+      return WebFormControlElement();
+    }
+    WebNode node = WebNode::FromDomNodeId(queried_form_control.value());
+    WebFormControlElement form_control =
+        node.DynamicTo<WebFormControlElement>();
+    // TODO(crbug.com/1427131): Remove when the feature launches.
+    CHECK_EQ(node.IsNull(), form_control.IsNull());
+    return !form_control.IsNull() && form_control.IsConnected() &&
+                   form_control.GetDocument().GetFrame()
+               ? form_control
+               : WebFormControlElement();
+  }
   auto FindField = [&](const WebVector<WebFormControlElement>& fields) {
     auto it =
         base::ranges::find(fields, queried_form_control, GetFieldRendererId);
@@ -2662,6 +2690,16 @@ WebFormControlElement FindFormControlElementByUniqueRendererId(
 std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
     const WebDocument& doc,
     const std::vector<FieldRendererId>& queried_form_controls) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId)) {
+    std::vector<WebFormControlElement> control_elements;
+    control_elements.reserve(queried_form_controls.size());
+    for (FieldRendererId queried_form_control : queried_form_controls) {
+      control_elements.push_back(
+          FindFormControlElementByUniqueRendererId(doc, queried_form_control));
+    }
+    return control_elements;
+  }
   std::vector<WebFormControlElement> result(queried_form_controls.size());
   auto renderer_id_to_index_map = BuildRendererIdToIndex(queried_form_controls);
 
@@ -2685,6 +2723,11 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
     const WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAutofillUseDomNodeIdForRendererId)) {
+    return FindFormControlElementsByUniqueRendererId(doc,
+                                                     queried_form_controls);
+  }
   std::vector<WebFormControlElement> result(queried_form_controls.size());
   WebFormElement form = FindFormByUniqueRendererId(doc, form_renderer_id);
   if (form.IsNull())

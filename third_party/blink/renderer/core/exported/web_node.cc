@@ -122,6 +122,10 @@ bool WebNode::IsNull() const {
   return private_.IsNull();
 }
 
+bool WebNode::IsConnected() const {
+  return private_->isConnected();
+}
+
 bool WebNode::IsLink() const {
   return private_->IsLink();
 }
@@ -247,6 +251,11 @@ WebNode::operator Node*() const {
 
 int WebNode::GetDomNodeId() const {
   return private_.Get()->GetDomNodeId();
+}
+
+// static
+WebNode WebNode::FromDomNodeId(int dom_node_id) {
+  return WebNode(Node::FromDomNodeId(dom_node_id));
 }
 
 }  // namespace blink

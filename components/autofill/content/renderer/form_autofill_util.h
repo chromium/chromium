@@ -403,10 +403,11 @@ blink::WebFormElement FindFormByUniqueRendererId(
 
 std::string GetAutocompleteAttribute(const blink::WebElement& element);
 
-// Returns the form control element by unique renderer id. It searches the
-// |form_to_be_searched| if specified, otherwise the whole document. Returns the
-// null element if there is no element with the |queried_form_control| renderer
-// id.
+// Returns the form control element by unique renderer id.
+// |form_to_be_searched| could be used as an optimization to only search for
+// elements in it, but doesn't guarantee that the returned element will belong
+// to it. Returns the null element if there is no element with the
+// |queried_form_control| renderer id.
 blink::WebFormControlElement FindFormControlElementByUniqueRendererId(
     const blink::WebDocument& doc,
     FieldRendererId queried_form_control,
@@ -426,12 +427,12 @@ FindFormControlElementsByUniqueRendererId(
     const blink::WebDocument& doc,
     const std::vector<FieldRendererId>& queried_form_controls);
 
-// Returns form control elements by unique renderer id from the form with
-// |form_renderer_id|. The result has the same number elements as
-// |queried_form_controls| and the i-th element of the result corresponds to
-// the i-th element of |queried_form_controls|. This function is faster than
-// the previous one, because it only retrieves form control elements from a
-// single form.
+// Returns form control elements by unique renderer id. The result has the same
+// number elements as |queried_form_controls| and the i-th element of the result
+// corresponds to the i-th element of |queried_form_controls|.
+// |form_to_be_searched| could be used as an optimization to only search for
+// elements in it, but doesn't guarantee that the returned element will belong
+// to it.
 std::vector<blink::WebFormControlElement>
 FindFormControlElementsByUniqueRendererId(
     const blink::WebDocument& doc,

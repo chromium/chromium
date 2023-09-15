@@ -195,6 +195,8 @@ class CORE_EXPORT Node : public EventTarget {
   static void DumpStatistics();
 #endif
 
+  static Node* FromDomNodeId(DOMNodeId dom_node_id);
+
   ~Node() override;
 
   // Returns the existing DOMNodeID for the node if it has already been

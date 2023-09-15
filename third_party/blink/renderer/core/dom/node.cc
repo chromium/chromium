@@ -347,6 +347,11 @@ DOMNodeId Node::GetDomNodeId() {
   return DOMNodeIds::IdForNode(this);
 }
 
+// static
+Node* Node::FromDomNodeId(DOMNodeId dom_node_id) {
+  return DOMNodeIds::NodeForId(dom_node_id);
+}
+
 NodeRareData& Node::CreateRareData() {
   if (IsElementNode()) {
     data_ = MakeGarbageCollected<ElementRareDataVector>(data_);

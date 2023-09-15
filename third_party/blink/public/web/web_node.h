@@ -54,6 +54,8 @@ class WebPluginContainer;
 // reason, subclasses must not add any additional data members.
 class BLINK_EXPORT WebNode {
  public:
+  static WebNode FromDomNodeId(int dom_node_id);
+
   virtual ~WebNode();
 
   WebNode();
@@ -69,6 +71,8 @@ class BLINK_EXPORT WebNode {
   bool LessThan(const WebNode&) const;
 
   bool IsNull() const;
+
+  bool IsConnected() const;
 
   WebNode ParentNode() const;
   WebString NodeValue() const;
