@@ -412,12 +412,6 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_ariaDropeffect() {
-        performAriaTest("aria-dropeffect.html");
-    }
-
-    @Test
-    @SmallTest
     public void test_ariaEmphasis() {
         performAriaTest("aria-emphasis.html");
     }
@@ -535,12 +529,6 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaInsertionDeletion() {
         performAriaTest("aria-insertion-deletion.html");
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaInvalid() {
-        performAriaTest("aria-invalid.html");
     }
 
     @Test

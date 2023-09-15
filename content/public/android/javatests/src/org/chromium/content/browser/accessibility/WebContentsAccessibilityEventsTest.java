@@ -301,20 +301,8 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    public void test_ariaDropeffectChanged() {
-        performTest("aria-dropeffect-changed.html", EMPTY_EXPECTATIONS_FILE);
-    }
-
-    @Test
-    @SmallTest
     public void test_ariaFlowTo() {
         performTest("aria-flow-to.html", EMPTY_EXPECTATIONS_FILE);
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaGrabbedChanged() {
-        performTest("aria-grabbed-changed.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
@@ -358,12 +346,6 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaHiddenSingleDescendantVisibilityHidden() {
         performTest(
                 "aria-hidden-single-descendant-visibility-hidden.html", EMPTY_EXPECTATIONS_FILE);
-    }
-
-    @Test
-    @SmallTest
-    public void test_ariaInvalidChanged() {
-        performTest("aria-invalid-changed.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test

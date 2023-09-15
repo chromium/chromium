@@ -538,7 +538,7 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
     case ax::mojom::IntAttribute::kAriaCurrentState:
       AddEvent(node, Event::ARIA_CURRENT_CHANGED);
       break;
-    case ax::mojom::IntAttribute::kDropeffect:
+    case ax::mojom::IntAttribute::kDropeffectDeprecated:
       AddEvent(node, Event::DROPEFFECT_CHANGED);
       break;
     case ax::mojom::IntAttribute::kHasPopup:
@@ -669,7 +669,7 @@ void AXEventGenerator::OnBoolAttributeChanged(AXTree* tree,
       if (!new_value)
         AddEvent(node, Event::LAYOUT_INVALIDATED);
       break;
-    case ax::mojom::BoolAttribute::kGrabbed:
+    case ax::mojom::BoolAttribute::kGrabbedDeprecated:
       AddEvent(node, Event::GRABBED_CHANGED);
       break;
     case ax::mojom::BoolAttribute::kLiveAtomic:

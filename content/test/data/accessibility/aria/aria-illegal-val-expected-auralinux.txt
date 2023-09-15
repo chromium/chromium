@@ -5,7 +5,6 @@
 ++[tree item] name='Checked illegal' checked selectable checkable:true
 ++[panel] name='Current illegal' current:true
 ++[panel] name='Disabled illegal'
-++[panel] name='Dropeffect illegal' dropeffect:none
 ++[tree item] name='Expanded illegal' expanded selectable
 ++[panel] name='Grabbed illegal'
 ++[push button] name='Haspopup illegal'

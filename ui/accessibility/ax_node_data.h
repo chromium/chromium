@@ -222,8 +222,6 @@ struct AX_BASE_EXPORT AXNodeData {
   void RemoveState(ax::mojom::State state);
   void AddAction(ax::mojom::Action action);
   void AddTextStyle(ax::mojom::TextStyle text_style);
-  // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  void AddDropeffect(ax::mojom::Dropeffect dropeffect);
 
   // Helper functions to get or set some common int attributes with some
   // specific enum types. To remove an attribute, set it to None.

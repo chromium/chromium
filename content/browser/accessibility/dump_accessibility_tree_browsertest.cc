@@ -746,10 +746,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaDocument) {
   RunAriaTest(FILE_PATH_LITERAL("aria-document.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaDropEffect) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-dropeffect.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaEmphasis) {
   RunAriaTest(FILE_PATH_LITERAL("aria-emphasis.html"));
 }
@@ -891,10 +887,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaGlobal) {
   RunAriaTest(FILE_PATH_LITERAL("aria-global.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaGrabbed) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-grabbed.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaGrid) {
   RunAriaTest(FILE_PATH_LITERAL("aria-grid.html"));
 }
@@ -937,10 +929,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaImgChild) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaInsertionDeletion) {
   RunAriaTest(FILE_PATH_LITERAL("aria-insertion-deletion.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaInvalid) {
-  RunAriaTest(FILE_PATH_LITERAL("aria-invalid.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

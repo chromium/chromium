@@ -7,7 +7,6 @@ rootWebArea
 ++++++treeItem name='Checked undefined' selected=false selectedFromFocus=false
 ++++++group name='Current undefined'
 ++++++group name='Disabled undefined'
-++++++group name='Dropeffect undefined'
 ++++++treeItem name='Expanded undefined' selected=false selectedFromFocus=false
 ++++++group name='Grabbed undefined'
 ++++++button name='Haspopup undefined'

@@ -7241,14 +7241,10 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
   }
 
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  if (HasIntAttribute(ax::mojom::IntAttribute::kDropeffect)) {
-    properties.push_back(
-        L"dropeffect=" +
-        base::UTF8ToWide(GetData().DropeffectBitfieldToString()));
+  if (HasIntAttribute(ax::mojom::IntAttribute::kDropeffectDeprecated)) {
+    NOTREACHED();
   }
   StateToUIAAriaProperty(properties, ax::mojom::State::kExpanded, "expanded");
-  BoolAttributeToUIAAriaProperty(properties, ax::mojom::BoolAttribute::kGrabbed,
-                                 "grabbed");
 
   switch (static_cast<ax::mojom::HasPopup>(
       GetIntAttribute(ax::mojom::IntAttribute::kHasPopup))) {

@@ -7,7 +7,6 @@ rootWebArea
 ++++++treeItem name='Checked illegal' checkedState=true selected=false
 ++++++group name='Current illegal' ariaCurrentState=true
 ++++++group name='Disabled illegal' restriction=disabled
-++++++group name='Dropeffect illegal' dropeffect=none
 ++++++treeItem expanded name='Expanded illegal' selected=false
 ++++++group name='Grabbed illegal'
 ++++++button name='Haspopup illegal'

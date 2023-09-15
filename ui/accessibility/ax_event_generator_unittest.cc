@@ -2626,42 +2626,6 @@ TEST(AXEventGeneratorTest, AtomicChanged) {
                   HasEventAtNode(AXEventGenerator::Event::ATOMIC_CHANGED, 1)));
 }
 
-TEST(AXEventGeneratorTest, DropeffectChanged) {
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(1);
-  initial_state.nodes[0].id = 1;
-
-  AXTree tree(initial_state);
-  AXEventGenerator event_generator(&tree);
-  ASSERT_THAT(event_generator, IsEmpty());
-  AXTreeUpdate update = initial_state;
-
-  update.nodes[0].AddDropeffect(ax::mojom::Dropeffect::kCopy);
-  EXPECT_TRUE(tree.Unserialize(update));
-  EXPECT_THAT(event_generator,
-              UnorderedElementsAre(HasEventAtNode(
-                  AXEventGenerator::Event::DROPEFFECT_CHANGED, 1)));
-}
-
-TEST(AXEventGeneratorTest, GrabbedChanged) {
-  AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(1);
-  initial_state.nodes[0].id = 1;
-
-  AXTree tree(initial_state);
-  AXEventGenerator event_generator(&tree);
-  ASSERT_THAT(event_generator, IsEmpty());
-  AXTreeUpdate update = initial_state;
-
-  update.nodes[0].AddBoolAttribute(ax::mojom::BoolAttribute::kGrabbed, true);
-  EXPECT_TRUE(tree.Unserialize(update));
-  EXPECT_THAT(event_generator,
-              UnorderedElementsAre(
-                  HasEventAtNode(AXEventGenerator::Event::GRABBED_CHANGED, 1)));
-}
-
 TEST(AXEventGeneratorTest, HasPopupChanged) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;

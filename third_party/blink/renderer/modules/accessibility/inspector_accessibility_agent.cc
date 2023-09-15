@@ -160,8 +160,8 @@ void FillGlobalStates(AXObject& ax_object,
           AXPropertyNameEnum::Invalid,
           CreateValue(
               node_data
-                  .GetStringAttribute(
-                      ax::mojom::blink::StringAttribute::kAriaInvalidValue)
+                  .GetStringAttribute(ax::mojom::blink::StringAttribute::
+                                          kAriaInvalidValueDeprecated)
                   .c_str(),
               AXValueTypeEnum::String)));
       break;

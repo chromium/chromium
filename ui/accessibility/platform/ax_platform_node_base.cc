@@ -1557,14 +1557,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
   // Expose dropeffect attribute.
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  if (delegate_->HasIntAttribute(ax::mojom::IntAttribute::kDropeffect)) {
-    std::string dropeffect = GetData().DropeffectBitfieldToString();
-    AddAttributeToList("dropeffect", dropeffect, attributes);
+  if (delegate_->HasIntAttribute(
+          ax::mojom::IntAttribute::kDropeffectDeprecated)) {
+    NOTREACHED();
   }
-
-  // Expose grabbed attribute.
-  // aria-grabbed is deprecated in WAI-ARIA 1.1.
-  AddAttributeToList(ax::mojom::BoolAttribute::kGrabbed, "grabbed", attributes);
 
   // Expose class attribute.
   std::string class_attr;

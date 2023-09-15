@@ -2033,15 +2033,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kModal,
                                 IsModal());
   }
-
-  // aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  Vector<ax::mojom::blink::Dropeffect> dropeffects;
-  Dropeffects(dropeffects);
-  if (!dropeffects.empty()) {
-    for (auto&& dropeffect : dropeffects) {
-      node_data->AddDropeffect(dropeffect);
-    }
-  }
 }
 
 void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
@@ -2264,12 +2255,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   if (IsDefault())
     node_data->AddState(ax::mojom::blink::State::kDefault);
-
-  // aria-grabbed is deprecated in WAI-ARIA 1.1.
-  if (IsGrabbed() != kGrabbedStateUndefined) {
-    node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kGrabbed,
-                                IsGrabbed() == kGrabbedStateTrue);
-  }
 
   if (IsHovered())
     node_data->AddState(ax::mojom::blink::State::kHovered);
@@ -2994,10 +2979,6 @@ AccessibilityExpanded AXObject::IsExpanded() const {
 
 bool AXObject::IsFocused() const {
   return false;
-}
-
-AccessibilityGrabbedState AXObject::IsGrabbed() const {
-  return kGrabbedStateUndefined;
 }
 
 bool AXObject::IsHovered() const {

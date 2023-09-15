@@ -5,7 +5,6 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++View text:"Checked illegal" checkable checked clickable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="treeItem", roleDescription="tree item"]
 ++View text:"Current illegal" stateDescription:"current item" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++View text:"Disabled illegal" disabled actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++View text:"Dropeffect illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++View text:"Expanded illegal" clickable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="treeItem", roleDescription="tree item"]
 ++View text:"Grabbed illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++Button text:"Haspopup illegal" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="button"]

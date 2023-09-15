@@ -570,9 +570,10 @@ enum StringAttribute {
   [Default]kNone = 0,
   kAccessKey = 1,
   kAppId = 2,
+  // Deprecated - Do not use.
   // AriaInvalidValue is deprecated. Spelling and Grammar errors are stored
   // using markers and invalid state in general is stored using invalidState.
-  kAriaInvalidValue = 3,
+  kAriaInvalidValueDeprecated = 3,
   kAutoComplete = 4,
   [MinVersion=2] kAriaBrailleLabel = 33,
   [MinVersion=2] kAriaBrailleRoleDescription = 34,
@@ -747,10 +748,11 @@ enum IntAttribute {
   kPreviousFocusId = 57,
   kNextFocusId = 58,
 
+  // Deprecated - Do not use.
   // For indicating what functions can be performed when a dragged object
   // is released on the drop target.
   // Note: aria-dropeffect is deprecated in WAI-ARIA 1.1.
-  kDropeffect = 59,
+  kDropeffectDeprecated = 59,
 
   // The DOMNodeID from Blink. Currently only populated when using
   // the accessibility tree for PDF exporting. Warning, this is totally
@@ -857,9 +859,10 @@ enum BoolAttribute {
   // Indicates whether this node supports text location.
   kSupportsTextLocation = 15,
 
+  // Deprecated - Do not use.
   // Indicates whether this node can be grabbed for drag-and-drop operation.
   // Note: aria-grabbed is deprecated in WAI-ARIA 1.1.
-  kGrabbed = 16,
+  kGrabbedDeprecated = 16,
 
   // Indicates whether this node causes a hard line-break
   // (e.g. block level elements, or <br>)
@@ -871,8 +874,8 @@ enum BoolAttribute {
   // True if the node has any ARIA attributes set.
   kHasAriaAttribute = 19,
 
-  // OBSOLETE - Do no use.
-  OBSOLETE_kTouchPassthrough = 20,
+  // Deprecated - Do not use.
+  kTouchPassthroughDeprecated = 20,
 
   // A hint to clients that the node is long clickable.
   [MinVersion=1] kLongClickable = 21,

@@ -117,8 +117,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Check object state.
   bool IsClickable() const final;
   bool IsFocused() const override;
-  // aria-grabbed is deprecated in WAI-ARIA 1.1.
-  AccessibilityGrabbedState IsGrabbed() const override;
   AccessibilityExpanded IsExpanded() const override;
   AccessibilitySelectedState IsSelected() const override;
   bool IsSelectedFromFocusSupported() const override;
@@ -189,7 +187,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::Role AriaRoleAttribute() const final;
   void AriaDescribedbyElements(AXObjectVector&) const override;
   void AriaOwnsElements(AXObjectVector&) const override;
-  bool SupportsARIADragging() const override;
   void Dropeffects(
       Vector<ax::mojom::blink::Dropeffect>& dropeffects) const override;
 

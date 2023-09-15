@@ -2063,16 +2063,6 @@ bool AXNodeObject::IsFocused() const {
   return focused_element && focused_element == GetElement();
 }
 
-// aria-grabbed is deprecated in WAI-ARIA 1.1.
-AccessibilityGrabbedState AXNodeObject::IsGrabbed() const {
-  if (!SupportsARIADragging())
-    return kGrabbedStateUndefined;
-
-  const AtomicString& grabbed = GetAttribute(html_names::kAriaGrabbedAttr);
-  return EqualIgnoringASCIICase(grabbed, "true") ? kGrabbedStateTrue
-                                                 : kGrabbedStateFalse;
-}
-
 AccessibilitySelectedState AXNodeObject::IsSelected() const {
   if (!GetNode() || !GetLayoutObject() || !IsSubWidget())
     return kSelectedStateUndefined;
@@ -3548,16 +3538,6 @@ void AXNodeObject::AriaDescribedbyElements(AXObjectVector& describedby) const {
 
 void AXNodeObject::AriaOwnsElements(AXObjectVector& owns) const {
   AccessibilityChildrenFromAOMProperty(AOMRelationListProperty::kOwns, owns);
-}
-
-// TODO(accessibility): Aria-dropeffect and aria-grabbed are deprecated in
-// aria 1.1 Also those properties are expected to be replaced by a new feature
-// in a future version of WAI-ARIA. After that we will re-implement them
-// following new spec.
-bool AXNodeObject::SupportsARIADragging() const {
-  const AtomicString& grabbed = GetAttribute(html_names::kAriaGrabbedAttr);
-  return EqualIgnoringASCIICase(grabbed, "true") ||
-         EqualIgnoringASCIICase(grabbed, "false");
 }
 
 ax::mojom::blink::Dropeffect AXNodeObject::ParseDropeffect(
