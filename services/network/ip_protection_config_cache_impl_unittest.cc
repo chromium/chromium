@@ -153,15 +153,16 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
     return tokens;
   }
 
-  // Call `FillCacheForTesting()` and wait until it completes.
-  void FillCacheAndWait() {
-    ipp_config_cache_->FillCacheForTesting(task_environment_.QuitClosure());
+  void CallTryGetAuthTokensAndWait() {
+    ipp_config_cache_->SetOnTryGetAuthTokensCompletedForTesting(
+        task_environment_.QuitClosure());
+    ipp_config_cache_->CallTryGetAuthTokensForTesting();
     task_environment_.RunUntilQuit();
   }
 
   // Wait until the cache fills itself.
-  void WaitForCacheFill() {
-    ipp_config_cache_->SetOnCacheRefilledForTesting(
+  void WaitForTryGetAuthTokensCompletion() {
+    ipp_config_cache_->SetOnTryGetAuthTokensCompletedForTesting(
         task_environment_.QuitClosure());
     task_environment_.RunUntilQuit();
   }
@@ -203,7 +204,7 @@ TEST_F(IpProtectionConfigCacheImplTest, IsAuthTokenAvailableFalseEmpty) {
 TEST_F(IpProtectionConfigCacheImplTest, IsAuthTokenAvailableTrue) {
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1, kFutureExpiration));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_config_cache_->IsAuthTokenAvailable());
 }
@@ -212,7 +213,7 @@ TEST_F(IpProtectionConfigCacheImplTest, IsAuthTokenAvailableTrue) {
 TEST_F(IpProtectionConfigCacheImplTest, IsAuthTokenAvailableFalseExpired) {
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1, kPastExpiration));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_FALSE(ipp_config_cache_->IsAuthTokenAvailable());
 }
@@ -227,7 +228,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenEmpty) {
 TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenTrue) {
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1, kFutureExpiration));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
       ipp_config_cache_->GetAuthToken();
@@ -241,7 +242,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenTrue) {
 TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFalseExpired) {
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1, kPastExpiration));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_FALSE(ipp_config_cache_->GetAuthToken());
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
@@ -251,7 +252,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFalseExpired) {
 TEST_F(IpProtectionConfigCacheImplTest, EmptyBatch) {
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(0, kFutureExpiration));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   ASSERT_FALSE(ipp_config_cache_->IsAuthTokenAvailable());
@@ -265,7 +266,7 @@ TEST_F(IpProtectionConfigCacheImplTest, ErrorBatch) {
   const base::TimeDelta kBackoff = base::Seconds(10);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    base::Time::Now() + kBackoff);
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   ASSERT_FALSE(ipp_config_cache_->IsAuthTokenAvailable());
@@ -281,7 +282,7 @@ TEST_F(IpProtectionConfigCacheImplTest, SkipExpiredTokens) {
   tokens.emplace_back(network::mojom::BlindSignedAuthToken::New(
       "good-token", kFutureExpiration));
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   auto got_token = ipp_config_cache_->GetAuthToken();
@@ -309,7 +310,7 @@ TEST_F(IpProtectionConfigCacheImplTest, TokenSpendRate) {
   // Fill the cache with 5 tokens.
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(5, kFutureExpiration));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Get four tokens from the batch.
@@ -346,7 +347,7 @@ TEST_F(IpProtectionConfigCacheImplTest, TokenExpirationRate) {
   // in one 5-minute interval is a very likely event.
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1024, kPastExpiration));
-  FillCacheAndWait();
+  CallTryGetAuthTokensAndWait();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Try to get a token, which will incidentally record the expired tokens.
@@ -373,7 +374,7 @@ TEST_F(IpProtectionConfigCacheImplTest, Prefill) {
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration));
   ipp_config_cache_->EnableCacheManagementForTesting();
-  WaitForCacheFill();
+  WaitForTryGetAuthTokensCompletion();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_config_cache_->IsAuthTokenAvailable());
 }
@@ -384,7 +385,7 @@ TEST_F(IpProtectionConfigCacheImplTest, RefillLowWaterMark) {
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration));
   ipp_config_cache_->EnableCacheManagementForTesting();
-  WaitForCacheFill();
+  WaitForTryGetAuthTokensCompletion();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Spend tokens down to (but not below) the low-water mark.
@@ -399,7 +400,7 @@ TEST_F(IpProtectionConfigCacheImplTest, RefillLowWaterMark) {
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   // Next call to `GetAuthToken()` should call `MaybeRefillCache()`.
-  ipp_config_cache_->SetOnCacheRefilledForTesting(
+  ipp_config_cache_->SetOnTryGetAuthTokensCompletedForTesting(
       task_environment_.QuitClosure());
   ASSERT_TRUE(ipp_config_cache_->GetAuthToken());
   task_environment_.RunUntilQuit();
@@ -413,18 +414,18 @@ TEST_F(IpProtectionConfigCacheImplTest, RefillAfterBackoff) {
   base::Time try_again_at = base::Time::Now() + base::Seconds(20);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, try_again_at);
   ipp_config_cache_->EnableCacheManagementForTesting();
-  WaitForCacheFill();
+  WaitForTryGetAuthTokensCompletion();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   base::Time try_again_at_2 = base::Time::Now() + base::Seconds(20);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, try_again_at_2);
-  WaitForCacheFill();
+  WaitForTryGetAuthTokensCompletion();
   EXPECT_EQ(base::Time::Now(), try_again_at);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   base::Time try_again_at_3 = base::Time::Now() + base::Seconds(20);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, try_again_at_3);
-  WaitForCacheFill();
+  WaitForTryGetAuthTokensCompletion();
   EXPECT_EQ(base::Time::Now(), try_again_at_2);
 }
 
@@ -448,7 +449,7 @@ TEST_F(IpProtectionConfigCacheImplTest, RefillAfterExpiration) {
       network::mojom::BlindSignedAuthToken::New("exp1", expiration1));
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
   ipp_config_cache_->EnableCacheManagementForTesting();
-  WaitForCacheFill();
+  WaitForTryGetAuthTokensCompletion();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // After the first expiration, tokens should still be available and no

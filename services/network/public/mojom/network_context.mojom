@@ -1501,9 +1501,16 @@ interface NetworkContext {
                                                    bool pkp_bypassed,
                                                    string pinning_failure_log);
 
-  // Initiates an IP Protection token request to the browser process and
-  // returns a received token, for testing.
-  VerifyIpProtectionConfigGetterForTesting() => (BlindSignedAuthToken token);
+  // Used to facilitate cross-process testing of the IP Protection feature. This
+  // method will:
+  //  - Disable active cache management and reset the IP Protection cache to a
+  //    no-tokens and no-cooldown state, and,
+  //  - Return the current cooldown if one has been set, or,
+  //  - Initiate an IP Protection token request to the browser process and
+  //    return either a returned token or the returned cooldown time
+  VerifyIpProtectionConfigGetterForTesting()
+      => (BlindSignedAuthToken? bsa_token,
+          mojo_base.mojom.Time? try_again_after);
 
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.

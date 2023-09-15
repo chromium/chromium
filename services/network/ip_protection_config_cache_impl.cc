@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/ip_protection_config_cache_impl.h"
+
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -97,6 +98,11 @@ void IpProtectionConfigCacheImpl::MaybeRefillCache() {
   ScheduleMaybeRefillCache();
 }
 
+void IpProtectionConfigCacheImpl::InvalidateTryAgainAfterTime() {
+  try_get_auth_tokens_after_ = base::Time();
+  ScheduleMaybeRefillCache();
+}
+
 // Schedule the next timed call to `MaybeRefillCache()`. This method is
 // idempotent, and may be called at any time.
 void IpProtectionConfigCacheImpl::ScheduleMaybeRefillCache() {
@@ -153,8 +159,8 @@ void IpProtectionConfigCacheImpl::OnGotAuthTokens(
     try_get_auth_tokens_after_ = *try_again_after;
   }
 
-  if (on_cache_refilled_for_testing_) {
-    std::move(on_cache_refilled_for_testing_).Run();
+  if (on_try_get_auth_tokens_completed_for_testing_) {
+    std::move(on_try_get_auth_tokens_completed_for_testing_).Run();
   }
 
   ScheduleMaybeRefillCache();
@@ -274,14 +280,27 @@ void IpProtectionConfigCacheImpl::MeasureTokenRates() {
   tokens_expired_ = 0;
 }
 
-// Call the getter's `TryGetAuthTokens()` and handle the result, calling
-// `on_cache_refilled` when complete.
-void IpProtectionConfigCacheImpl::FillCacheForTesting(
-    base::OnceClosure on_cache_refilled) {
+void IpProtectionConfigCacheImpl::DisableCacheManagementForTesting(
+    base::OnceClosure on_cache_management_disabled) {
+  disable_cache_management_for_testing_ = true;
+  ScheduleMaybeRefillCache();
+
+  if (fetching_auth_tokens_) {
+    // If a `TryGetAuthTokens()` call is underway (due to active cache
+    // management), wait for it to finish.
+    SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
+        std::move(on_cache_management_disabled));
+    return;
+  }
+  std::move(on_cache_management_disabled).Run();
+}
+
+// Call `TryGetAuthTokens()`, which will call
+// `on_try_get_auth_tokens_completed_for_testing_` when complete.
+void IpProtectionConfigCacheImpl::CallTryGetAuthTokensForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(auth_token_getter_);
-  CHECK(!on_cache_refilled_for_testing_);
-  on_cache_refilled_for_testing_ = std::move(on_cache_refilled);
+  CHECK(on_try_get_auth_tokens_completed_for_testing_);
   auth_token_getter_->TryGetAuthTokens(
       batch_size_, base::BindOnce(&IpProtectionConfigCacheImpl::OnGotAuthTokens,
                                   weak_ptr_factory_.GetWeakPtr()));

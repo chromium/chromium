@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+
 #include "base/callback_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -140,6 +141,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   std::string token = "best_token_ever";
   base::Time expiration = base::Time::Now() + base::Seconds(12345);
+  ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
   auto auth_token_getter_interceptor_ =
       std::make_unique<IpProtectionConfigGetterInterceptor>(getter, token,
                                                             expiration);
@@ -150,10 +152,13 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   // To test that the Network Service can successfully request tokens, use the
   // test method on NetworkContext that will have it request tokens and then
   // send back the first token that it receives.
-  base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr> future;
+  base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr,
+                         absl::optional<base::Time>>
+      future;
   network_context->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
-  const network::mojom::BlindSignedAuthTokenPtr& result = future.Get();
+  const network::mojom::BlindSignedAuthTokenPtr& result =
+      future.Get<network::mojom::BlindSignedAuthTokenPtr>();
   ASSERT_TRUE(result);
   EXPECT_EQ(result->token, token);
   EXPECT_EQ(result->expiration, expiration);
@@ -169,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   // We need a new interceptor that will intercept messages corresponding to the
   // incognito mode network context's `mojo::Receiver()`.
+  ASSERT_EQ(getter->receivers_for_testing().size(), 2U);
   auto incognito_auth_token_getter_interceptor_ =
       std::make_unique<IpProtectionConfigGetterInterceptor>(getter, token,
                                                             expiration);
@@ -178,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   incognito_network_context->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& incognito_result =
-      future.Get();
+      future.Get<network::mojom::BlindSignedAuthTokenPtr>();
   ASSERT_TRUE(incognito_result);
   EXPECT_EQ(incognito_result->token, token);
   EXPECT_EQ(incognito_result->expiration, expiration);
@@ -188,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   network_context->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& second_attempt_result =
-      future.Get();
+      future.Get<network::mojom::BlindSignedAuthTokenPtr>();
   ASSERT_TRUE(second_attempt_result);
   EXPECT_EQ(second_attempt_result->token, token);
   EXPECT_EQ(second_attempt_result->expiration, expiration);

@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Request a refresh of the proxy list. Call this when it's likely that the
   // proxy list is out of date.
   virtual void RequestRefreshProxyList() = 0;
+
+  // Invalidate any previous instruction that token requests should not be
+  // made until after a specified time.
+  virtual void InvalidateTryAgainAfterTime() = 0;
 };
 
 }  // namespace network

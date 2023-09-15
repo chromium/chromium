@@ -44,7 +44,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
       std::move(on_force_refresh_proxy_list_).Run();
     }
   }
-
+  void InvalidateTryAgainAfterTime() override {}
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
       override {
     return std::move(auth_token_);

@@ -134,28 +134,44 @@ class IpProtectionConfigProviderTest : public testing::Test {
         base_expiration_time_(
             base::Time::FromTimeT(absl::ToTimeT(absl_expiration_time_))) {}
 
+  void SetUp() override {
+    getter_ = std::make_unique<IpProtectionConfigProvider>(
+        IdentityManager(),
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+    bsa_ = std::make_unique<MockBlindSignAuth>();
+    getter_->SetBlindSignAuthInterfaceForTesting(bsa_.get());
+  }
+
+  void TearDown() override { getter_->Shutdown(); }
+
   // Get the IdentityManager for this test.
   signin::IdentityManager* IdentityManager() {
     return identity_test_env_.identity_manager();
   }
 
   // Call `TryGetAuthTokens()` and run until it completes.
-  void TryGetAuthTokens(int num_tokens, IpProtectionConfigProvider* getter) {
-    if (primary_account_behavior_ != PrimaryAccountBehavior::kNone) {
+  void TryGetAuthTokens(int num_tokens) {
+    if (primary_account_behavior_ == PrimaryAccountBehavior::kNone) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+      // Simulate a log out event on all platforms except ChromeOS Ash where
+      // this is not supported.
+      identity_test_env_.ClearPrimaryAccount();
+#endif
+    } else {
       identity_test_env_.MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
+
+      if (primary_account_behavior_ ==
+              PrimaryAccountBehavior::kUnknownEligibility ||
+          primary_account_behavior_ == PrimaryAccountBehavior::kReturnsToken) {
+        SetCanUseChromeIpProtectionCapability(true);
+      } else if (primary_account_behavior_ ==
+                 PrimaryAccountBehavior::kIneligible) {
+        SetCanUseChromeIpProtectionCapability(false);
+      }
     }
 
-    if (primary_account_behavior_ ==
-            PrimaryAccountBehavior::kUnknownEligibility ||
-        primary_account_behavior_ == PrimaryAccountBehavior::kReturnsToken) {
-      SetCanUseChromeIpProtectionCapability(true);
-    } else if (primary_account_behavior_ ==
-               PrimaryAccountBehavior::kIneligible) {
-      SetCanUseChromeIpProtectionCapability(false);
-    }
-
-    getter->TryGetAuthTokens(num_tokens, tokens_future_.GetCallback());
+    getter_->TryGetAuthTokens(num_tokens, tokens_future_.GetCallback());
 
     switch (primary_account_behavior_) {
       case PrimaryAccountBehavior::kNone:
@@ -226,25 +242,30 @@ class IpProtectionConfigProviderTest : public testing::Test {
   base::Time base_expiration_time_;
 
   base::HistogramTester histogram_tester_;
+
+  std::unique_ptr<IpProtectionConfigProvider> getter_;
+  // Note: In the real implementation, `IpProtectionConfigProvider()` owns the
+  // BSA implementation and can't be destroyed before it, which is important
+  // because BSA takes a pointer to `IpProtectionConfigProvider()` when
+  // requesting tokens and calls back with it once tokens are available. Here,
+  // `getter_` doesn't own the BSA implementation, so it's important to ensure
+  // that `bsa_` gets destroyed before `getter_` when the test class is
+  // destroyed so that `bsa_` doesn't call back into a destroyed `getter_`.
+  std::unique_ptr<MockBlindSignAuth> bsa_;
 };
 
 // The success case: a primary account is available, and BSA gets a token for
 // it.
 TEST_F(IpProtectionConfigProviderTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
-  bsa.tokens_ = {{"single-use-1", absl_expiration_time_},
-                 {"single-use-2", absl_expiration_time_}};
+  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_},
+                   {"single-use-2", absl_expiration_time_}};
 
-  TryGetAuthTokens(2, &getter);
+  TryGetAuthTokens(2);
 
-  EXPECT_TRUE(bsa.get_tokens_called_);
-  EXPECT_EQ(bsa.oauth_token_, "access_token");
-  EXPECT_EQ(bsa.num_tokens_, 2);
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
+  EXPECT_EQ(bsa_->num_tokens_, 2);
   std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
   expected.push_back(network::mojom::BlindSignedAuthToken::New(
       "single-use-1", base_expiration_time_));
@@ -261,17 +282,12 @@ TEST_F(IpProtectionConfigProviderTest, Success) {
 // BSA returns no tokens.
 TEST_F(IpProtectionConfigProviderTest, NoTokens) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
 
-  TryGetAuthTokens(1, &getter);
+  TryGetAuthTokens(1);
 
-  EXPECT_TRUE(bsa.get_tokens_called_);
-  EXPECT_EQ(bsa.num_tokens_, 1);
-  EXPECT_EQ(bsa.oauth_token_, "access_token");
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(
       IpProtectionConfigProvider::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
@@ -284,18 +300,13 @@ TEST_F(IpProtectionConfigProviderTest, NoTokens) {
 // BSA returns a 400 error.
 TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError400) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
-  bsa.status_ = absl::InvalidArgumentError("uhoh");
+  bsa_->status_ = absl::InvalidArgumentError("uhoh");
 
-  TryGetAuthTokens(1, &getter);
+  TryGetAuthTokens(1);
 
-  EXPECT_TRUE(bsa.get_tokens_called_);
-  EXPECT_EQ(bsa.num_tokens_, 1);
-  EXPECT_EQ(bsa.oauth_token_, "access_token");
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(IpProtectionConfigProvider::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -307,18 +318,13 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError400) {
 // BSA returns a 401 error.
 TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError401) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  bsa.status_ = absl::UnauthenticatedError("uhoh");
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
+  bsa_->status_ = absl::UnauthenticatedError("uhoh");
 
-  TryGetAuthTokens(1, &getter);
+  TryGetAuthTokens(1);
 
-  EXPECT_TRUE(bsa.get_tokens_called_);
-  EXPECT_EQ(bsa.num_tokens_, 1);
-  EXPECT_EQ(bsa.oauth_token_, "access_token");
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(IpProtectionConfigProvider::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -330,18 +336,13 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError401) {
 // BSA returns a 403 error.
 TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError403) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  bsa.status_ = absl::PermissionDeniedError("uhoh");
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
+  bsa_->status_ = absl::PermissionDeniedError("uhoh");
 
-  TryGetAuthTokens(1, &getter);
+  TryGetAuthTokens(1);
 
-  EXPECT_TRUE(bsa.get_tokens_called_);
-  EXPECT_EQ(bsa.num_tokens_, 1);
-  EXPECT_EQ(bsa.oauth_token_, "access_token");
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(
       IpProtectionConfigProvider::kNotEligibleBackoff);
   histogram_tester_.ExpectUniqueSample(
@@ -354,18 +355,13 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenError403) {
 // BSA returns some other error.
 TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenErrorOther) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  bsa.status_ = absl::UnknownError("uhoh");
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
+  bsa_->status_ = absl::UnknownError("uhoh");
 
-  TryGetAuthTokens(1, &getter);
+  TryGetAuthTokens(1);
 
-  EXPECT_TRUE(bsa.get_tokens_called_);
-  EXPECT_EQ(bsa.num_tokens_, 1);
-  EXPECT_EQ(bsa.oauth_token_, "access_token");
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
   ExpectTryGetAuthTokensResultFailed(
       IpProtectionConfigProvider::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
@@ -378,19 +374,14 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenErrorOther) {
 // The CanUseChromeIpProtection capability is not present (`kUnknown`).
 TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   primary_account_behavior_ = PrimaryAccountBehavior::kUnknownEligibility;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  bsa.tokens_ = {{"single-use-1", absl_expiration_time_},
-                 {"single-use-2", absl_expiration_time_}};
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
+  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_},
+                   {"single-use-2", absl_expiration_time_}};
 
-  TryGetAuthTokens(2, &getter);
+  TryGetAuthTokens(2);
 
-  EXPECT_TRUE(bsa.get_tokens_called_);
-  EXPECT_EQ(bsa.oauth_token_, "access_token");
-  EXPECT_EQ(bsa.num_tokens_, 2);
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
+  EXPECT_EQ(bsa_->num_tokens_, 2);
   std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
   expected.push_back(network::mojom::BlindSignedAuthToken::New(
       "single-use-1", base_expiration_time_));
@@ -407,15 +398,10 @@ TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
 // Fetching OAuth token returns an error.
 TEST_F(IpProtectionConfigProviderTest, AuthTokenError) {
   primary_account_behavior_ = PrimaryAccountBehavior::kTokenFetchError;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
 
-  TryGetAuthTokens(1, &getter);
+  TryGetAuthTokens(1);
 
-  EXPECT_FALSE(bsa.get_tokens_called_);
+  EXPECT_FALSE(bsa_->get_tokens_called_);
   ExpectTryGetAuthTokensResultFailed(
       IpProtectionConfigProvider::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
@@ -426,15 +412,10 @@ TEST_F(IpProtectionConfigProviderTest, AuthTokenError) {
 // No primary account.
 TEST_F(IpProtectionConfigProviderTest, NoPrimary) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
-  auto bsa = MockBlindSignAuth();
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  getter.SetBlindSignAuthInterfaceForTesting(&bsa);
 
-  TryGetAuthTokens(1, &getter);
+  TryGetAuthTokens(1);
 
-  EXPECT_FALSE(bsa.get_tokens_called_);
+  EXPECT_FALSE(bsa_->get_tokens_called_);
   ExpectTryGetAuthTokensResultFailed(
       IpProtectionConfigProvider::kNoAccountBackoff);
   histogram_tester_.ExpectUniqueSample(
@@ -447,57 +428,48 @@ TEST_F(IpProtectionConfigProviderTest, NoPrimary) {
 // Backoff calculations.
 TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   using enum IpProtectionTryGetAuthTokensResult;
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
 
   auto check = [&](IpProtectionTryGetAuthTokensResult result,
                    absl::optional<base::TimeDelta> backoff, bool exponential) {
-    EXPECT_EQ(getter.CalculateBackoff(result), backoff);
+    EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
     if (backoff && exponential) {
-      EXPECT_EQ(getter.CalculateBackoff(result), (*backoff) * 2);
-      EXPECT_EQ(getter.CalculateBackoff(result), (*backoff) * 4);
+      EXPECT_EQ(getter_->CalculateBackoff(result), (*backoff) * 2);
+      EXPECT_EQ(getter_->CalculateBackoff(result), (*backoff) * 4);
     } else {
-      EXPECT_EQ(getter.CalculateBackoff(result), backoff);
+      EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
     }
   };
 
   check(kSuccess, absl::nullopt, false);
-  check(kFailedNoAccount, getter.kNoAccountBackoff, false);
-  check(kFailedNotEligible, getter.kNotEligibleBackoff, false);
-  check(kFailedOAuthToken, getter.kTransientBackoff, true);
-  check(kFailedBSA400, getter.kBugBackoff, true);
-  check(kFailedBSA401, getter.kBugBackoff, true);
-  check(kFailedBSA403, getter.kNotEligibleBackoff, false);
-  check(kFailedBSAOther, getter.kTransientBackoff, true);
+  check(kFailedNoAccount, getter_->kNoAccountBackoff, false);
+  check(kFailedNotEligible, getter_->kNotEligibleBackoff, false);
+  check(kFailedOAuthToken, getter_->kTransientBackoff, true);
+  check(kFailedBSA400, getter_->kBugBackoff, true);
+  check(kFailedBSA401, getter_->kBugBackoff, true);
+  check(kFailedBSA403, getter_->kNotEligibleBackoff, false);
+  check(kFailedBSAOther, getter_->kTransientBackoff, true);
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyList) {
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
   std::vector<std::string> proxy_list = {"proxy1", "proxy2"};
-  getter.SetIpProtectionConfigHttpForTesting(
+  getter_->SetIpProtectionConfigHttpForTesting(
       std::make_unique<MockIpProtectionConfigHttp>(proxy_list));
 
   base::test::TestFuture<const absl::optional<std::vector<std::string>>&>
       proxy_list_future;
-  getter.GetProxyList(proxy_list_future.GetCallback());
+  getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
   EXPECT_THAT(proxy_list_future.Get(),
               testing::Optional(testing::ElementsAre("proxy1", "proxy2")));
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
-  IpProtectionConfigProvider getter(
-      IdentityManager(),
-      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-  getter.SetIpProtectionConfigHttpForTesting(
+  getter_->SetIpProtectionConfigHttpForTesting(
       std::make_unique<MockIpProtectionConfigHttp>(absl::nullopt));
 
   base::test::TestFuture<const absl::optional<std::vector<std::string>>&>
       proxy_list_future;
-  getter.GetProxyList(proxy_list_future.GetCallback());
+  getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
   EXPECT_EQ(proxy_list_future.Get(), absl::nullopt);
 }

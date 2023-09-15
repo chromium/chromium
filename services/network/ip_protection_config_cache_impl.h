@@ -35,15 +35,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   bool IsProxyListAvailable() override;
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
       override;
+  void InvalidateTryAgainAfterTime() override;
   const std::vector<std::string>& ProxyList() override;
   void RequestRefreshProxyList() override;
 
-  // Set a callback to occur when the cache has been refilled after a call to
-  // `MayNeedAuthTokenSoon()`. Note that this callback won't be called when
-  // using `FillCacheForTesting()`, which instead takes a callback as a
-  // parameter.
-  void SetOnCacheRefilledForTesting(base::OnceClosure on_cache_refilled) {
-    on_cache_refilled_for_testing_ = std::move(on_cache_refilled);
+  // Set a callback that will be run after the next call to `TryGetAuthTokens()`
+  // has completed.
+  void SetOnTryGetAuthTokensCompletedForTesting(
+      base::OnceClosure on_try_get_auth_tokens_completed) {
+    on_try_get_auth_tokens_completed_for_testing_ =
+        std::move(on_try_get_auth_tokens_completed);
   }
 
   // Set a callback to occur when the proxy list has been refreshed.
@@ -52,12 +53,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
     on_proxy_list_refreshed_for_testing_ = std::move(on_proxy_list_refreshed);
   }
 
-  // Enable active cache management in the background, if it was disabled in the
-  // constructor.
+  // Enable active cache management in the background, if it was disabled
+  // (either via the constructor or via a call to
+  // `DisableCacheManagementForTesting()`).
   void EnableCacheManagementForTesting() {
     disable_cache_management_for_testing_ = false;
     ScheduleMaybeRefillCache();
   }
+
+  bool IsCacheManagementEnabledForTesting() {
+    return !disable_cache_management_for_testing_;
+  }
+
+  void DisableCacheManagementForTesting(
+      base::OnceClosure on_cache_management_disabled);
 
   void EnableProxyListRefreshingForTesting() {
     disable_proxy_refreshing_for_testing_ = false;
@@ -65,8 +74,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   }
 
   // Requests tokens from the browser process and executes the provided callback
-  // when tokens are available.
-  void FillCacheForTesting(base::OnceClosure on_cache_refilled);
+  // after the response is received.
+  void CallTryGetAuthTokensForTesting();
+
+  base::Time try_get_auth_tokens_after_for_testing() {
+    return try_get_auth_tokens_after_;
+  }
+
+  bool fetching_auth_tokens_for_testing() { return fetching_auth_tokens_; }
 
  private:
   void OnGotAuthTokens(
@@ -126,9 +141,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   // A timer to run `RefreshProxyList()` when necessary.
   base::OneShotTimer next_refresh_proxy_list_;
 
-  // A callback triggered when an asynchronous cache refill is complete, for use
-  // in testing.
-  base::OnceClosure on_cache_refilled_for_testing_;
+  // A callback triggered when the next call to `TryGetAuthTokens()` occurs, for
+  // use in testing.
+  base::OnceClosure on_try_get_auth_tokens_completed_for_testing_;
 
   // A callback triggered when an asynchronous proxy-list refresh is complete,
   // for use in testing.
