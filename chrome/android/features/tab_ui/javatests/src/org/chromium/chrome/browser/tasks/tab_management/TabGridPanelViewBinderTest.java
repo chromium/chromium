@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
@@ -495,7 +495,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
 
         mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 5);
 
-        verify(mLayoutManager, times(1))
+        verify(mLayoutManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .scrollToPositionWithOffset(eq(5),
                         intThat(allOf(lessThan(mContentView.getHeight() / 2), greaterThan(0))));
     }
@@ -512,7 +512,8 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
 
         mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 5);
 
-        verify(mLinearLayoutManager, times(1)).scrollToPositionWithOffset(eq(5), eq(0));
+        verify(mLinearLayoutManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .scrollToPositionWithOffset(eq(5), eq(0));
     }
 
     @Override
