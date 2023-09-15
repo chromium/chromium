@@ -1709,11 +1709,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     // should be returned.
     DCHECK(layout_result->ExclusionSpace().IsEmpty());
 
-    if (layout_result->Status() != NGLayoutResult::kSuccess) {
-      DCHECK_EQ(layout_result->Status(),
-                NGLayoutResult::kOutOfFragmentainerSpace);
-      return layout_result;
-    }
+    DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
 
     // Check if we can fit in the opportunity block direction.
     NGFragment fragment(writing_direction, layout_result->PhysicalFragment());

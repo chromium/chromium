@@ -964,14 +964,14 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     // Layout aborted - no fragment was produced. There's nothing to move
     // past. We need to break before.
     DCHECK_EQ(layout_result.Status(), NGLayoutResult::kOutOfFragmentainerSpace);
+    // The only case where this should happen is with BR clear=all.
+    DCHECK(child.IsInline());
     return false;
   }
 
-  const auto& physical_fragment = layout_result.PhysicalFragment();
-  NGFragment fragment(space.GetWritingDirection(), physical_fragment);
-
   if (child.IsBlock()) {
-    const auto& box_fragment = To<NGPhysicalBoxFragment>(physical_fragment);
+    const auto& box_fragment =
+        To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
 
     // If we're at a resumed fragment, don't break before it. Once we've found
     // room for the first fragment, we cannot skip fragmentainers afterwards. We
@@ -992,25 +992,58 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
       return false;
   }
 
-  if (!space.HasKnownFragmentainerBlockSize()) {
-    if (space.IsInitialColumnBalancingPass() && builder) {
-      if (layout_result.PhysicalFragment().IsMonolithic() ||
-          (child.IsBlock() &&
-           IsAvoidBreakValue(space, child.Style().BreakInside()))) {
-        // If this is the initial column balancing pass, attempt to make the
-        // column block-size at least as large as the tallest piece of
-        // monolithic content and/or block with break-inside:avoid.
-        LayoutUnit block_size = BlockSizeForFragmentation(
-            layout_result, space.GetWritingDirection());
-        PropagateUnbreakableBlockSize(block_size, fragmentainer_block_offset,
-                                      builder);
-      }
+  if (!space.HasKnownFragmentainerBlockSize() &&
+      space.IsInitialColumnBalancingPass() && builder) {
+    if (layout_result.PhysicalFragment().IsMonolithic() ||
+        (child.IsBlock() &&
+         IsAvoidBreakValue(space, child.Style().BreakInside()))) {
+      // If this is the initial column balancing pass, attempt to make the
+      // column block-size at least as large as the tallest piece of monolithic
+      // content and/or block with break-inside:avoid.
+      LayoutUnit block_size =
+          BlockSizeForFragmentation(layout_result, space.GetWritingDirection());
+      PropagateUnbreakableBlockSize(block_size, fragmentainer_block_offset,
+                                    builder);
     }
+  }
+
+  bool move_past = MovePastBreakpoint(
+      space, layout_result, fragmentainer_block_offset, appeal_before, builder,
+      is_row_item, flex_column_break_info);
+
+  if (move_past && builder && child.IsBlock() && !is_row_item) {
+    // We're tentatively not going to break before this child, but we'll check
+    // the appeal of breaking there anyway. It may be the best breakpoint we'll
+    // ever find. (Note that we only do this for block children, since, when it
+    // comes to inline layout, we first need to lay out all the line boxes, so
+    // that we know what do to in order to honor orphans and widows, if at all
+    // possible. We also only do this for non-row items since items in a row
+    // will be parallel to one another.)
+    UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child), layout_result,
+                                 appeal_before, builder,
+                                 flex_column_break_info);
+  }
+
+  return move_past;
+}
+
+bool MovePastBreakpoint(const NGConstraintSpace& space,
+                        const NGLayoutResult& layout_result,
+                        LayoutUnit fragmentainer_block_offset,
+                        NGBreakAppeal appeal_before,
+                        NGBoxFragmentBuilder* builder,
+                        bool is_row_item,
+                        NGFlexColumnBreakInfo* flex_column_break_info) {
+  DCHECK_EQ(layout_result.Status(), NGLayoutResult::kSuccess);
+
+  if (!space.HasKnownFragmentainerBlockSize()) {
     // We only care about soft breaks if we have a fragmentainer block-size.
     // During column balancing this may be unknown.
     return true;
   }
 
+  const auto& physical_fragment = layout_result.PhysicalFragment();
+  NGFragment fragment(space.GetWritingDirection(), physical_fragment);
   const auto* break_token =
       DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken());
 
@@ -1090,18 +1123,6 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
         // fragmentainer. Report space shortage.
         PropagateSpaceShortage(space, &layout_result,
                                fragmentainer_block_offset, builder);
-      }
-      if (child.IsBlock() && !is_row_item) {
-        // We're tentatively not going to break before this child, but we'll
-        // check the appeal of breaking there anyway. It may be the best
-        // breakpoint we'll ever find. (Note that we only do this for block
-        // children, since, when it comes to inline layout, we first need to lay
-        // out all the line boxes, so that we know what do to in order to honor
-        // orphans and widows, if at all possible. We also only do this for
-        // non-row items since items in a row will be parallel to one another.)
-        UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child),
-                                     layout_result, appeal_before, builder,
-                                     flex_column_break_info);
       }
     }
     return true;

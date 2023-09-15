@@ -2021,11 +2021,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
                          is_last_fragmentainer_so_far);
   }
 
-  if (layout_result->Status() != NGLayoutResult::kSuccess) {
-    DCHECK_EQ(layout_result->Status(),
-              NGLayoutResult::kOutOfFragmentainerSpace);
-    return layout_result;
-  }
+  DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowInsetsForGetComputedStyle(
       offset_info.insets_for_get_computed_style,
@@ -2253,16 +2249,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     HeapVector<NodeToLayout>* fragmented_descendants) {
   const NGLayoutResult* result = LayoutOOFNode(descendant, fragmentainer_space,
                                                is_last_fragmentainer_so_far);
-
-  if (result->Status() != NGLayoutResult::kSuccess) {
-    DCHECK_EQ(result->Status(), NGLayoutResult::kOutOfFragmentainerSpace);
-    // If we're out of space, continue layout in the next fragmentainer.
-    NodeToLayout fragmented_descendant = descendant;
-    fragmented_descendant.offset_info.offset.block_offset = LayoutUnit();
-    fragmented_descendants->emplace_back(fragmented_descendant);
-    *has_actual_break_inside = true;
-    return;
-  }
+  DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
 
   // Apply the relative positioned offset now that fragmentation is complete.
   LogicalOffset oof_offset = result->OutOfFlowPositionedOffset();

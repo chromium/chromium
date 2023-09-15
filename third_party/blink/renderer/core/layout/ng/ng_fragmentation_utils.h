@@ -408,6 +408,16 @@ bool MovePastBreakpoint(
     bool is_row_item = false,
     NGFlexColumnBreakInfo* flex_column_break_info = nullptr);
 
+// Same as above, but without the parts that require an NGLayoutInputNode.
+bool MovePastBreakpoint(
+    const NGConstraintSpace& space,
+    const NGLayoutResult& layout_result,
+    LayoutUnit fragmentainer_block_offset,
+    NGBreakAppeal appeal_before,
+    NGBoxFragmentBuilder* builder,
+    bool is_row_item = false,
+    NGFlexColumnBreakInfo* flex_column_break_info = nullptr);
+
 // If the appeal of breaking before or inside the child is the same or higher
 // than any previous breakpoint we've found, set a new breakpoint in the
 // builder, and update appeal accordingly. See BreakBeforeChildIfNeeded() for

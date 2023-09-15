@@ -3676,7 +3676,6 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   };
 
   HeapVector<ResultAndOffsets> result_and_offsets;
-  HeapVector<GridItemPlacementData*> out_of_fragmentainer_space_item_placement;
   BaselineAccumulator baseline_accumulator(Style().GetFontBaseline());
   LayoutUnit max_row_expansion;
   LayoutUnit max_item_block_end;
@@ -3688,10 +3687,6 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     if (row_set_index >= breakpoint_row_set_index)
       return;
 
-    // We may have inserted a row-breakpoint due to an item running out of
-    // fragmentainer space.
-    // Clear this list if we select a different row-breakpoint.
-    out_of_fragmentainer_space_item_placement.clear();
     breakpoint_row_set_index = row_set_index;
   };
 
@@ -3703,7 +3698,6 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   auto PlaceItems = [&]() {
     // Reset our state.
     result_and_offsets.clear();
-    out_of_fragmentainer_space_item_placement.clear();
     baseline_accumulator = BaselineAccumulator(Style().GetFontBaseline());
     max_row_expansion = LayoutUnit();
     max_item_block_end = LayoutUnit();
@@ -3804,22 +3798,12 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         continue;
 
       auto* result = grid_item.node.Layout(space, break_token);
+      DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
       result_and_offsets.emplace_back(
           result,
           LogicalOffset(item_placement_data.offset.inline_offset,
                         fragment_relative_block_offset),
           item_placement_data.relative_offset);
-
-      // We may have failed to generate a fragment (due to running out of
-      // fragmentainer space). Force a breakpoint at the row, so we shift the
-      // item into the next fragmentainer.
-      if (result->Status() != NGLayoutResult::kSuccess) {
-        DCHECK_EQ(result->Status(), NGLayoutResult::kOutOfFragmentainerSpace);
-        UpdateBreakpointRowSetIndex(item_row_set_index);
-        out_of_fragmentainer_space_item_placement.push_back(
-            &item_placement_data);
-        continue;
-      }
 
       const NGBoxFragment fragment(
           container_writing_direction,
@@ -3997,12 +3981,6 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     auto* it = row_offset_adjustments->begin() + breakpoint_row_set_index;
     while (it != row_offset_adjustments->end())
       *(it++) += row_offset_delta;
-
-    // For any items that ran out of fragmentainer-space, make them block-start
-    // aligned (as they may be center/end aligned, and still not have enough
-    // space).
-    for (auto* item_placement_data : out_of_fragmentainer_space_item_placement)
-      item_placement_data->offset.block_offset = row_offset;
 
     return true;
   };

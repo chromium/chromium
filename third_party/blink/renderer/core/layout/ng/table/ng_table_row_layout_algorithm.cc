@@ -126,9 +126,8 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   NGRowBaselineTabulator row_baseline_tabulator;
   HeapVector<ResultWithOffset> results;
   bool has_inflow_break_inside = false;
-  auto PlaceCells =
-      [&](LayoutUnit row_block_size,
-          absl::optional<LayoutUnit> row_baseline) -> NGLayoutResult::EStatus {
+  auto PlaceCells = [&](LayoutUnit row_block_size,
+                        absl::optional<LayoutUnit> row_baseline) {
     // Reset our state.
     max_cell_block_size = LayoutUnit();
     row_break_before = EBreakBetween::kAuto;
@@ -156,16 +155,6 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
           min_block_size_should_encompass_intrinsic_size);
       const NGLayoutResult* cell_result =
           cell.Layout(cell_space, cell_break_token);
-
-      if (cell_result->Status() == NGLayoutResult::kOutOfFragmentainerSpace) {
-        DCHECK(has_block_fragmentation);
-        // If the cell establishes a multicol container (and we're already
-        // inside another fragmentation context), it may have failed to produce
-        // a fragment, because there wasn't enough space. We now need to
-        // propagate the failure, to make some ancestor algorithm handle the
-        // problem. We need to break before something further up.
-        return NGLayoutResult::kOutOfFragmentainerSpace;
-      }
       DCHECK_EQ(cell_result->Status(), NGLayoutResult::kSuccess);
 
       const LogicalOffset offset(
@@ -208,8 +197,6 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
         has_inflow_break_inside = !outgoing_break_token->IsAtBlockEnd();
       }
     }
-
-    return NGLayoutResult::kSuccess;
   };
 
   // Determine the baseline for the table-row if we haven't been provided a
@@ -227,12 +214,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     }
   }
 
-  {
-    NGLayoutResult::EStatus status = PlaceCells(row.block_size, row_baseline);
-    if (status == NGLayoutResult::kOutOfFragmentainerSpace)
-      return container_builder_.Abort(status);
-    DCHECK_EQ(status, NGLayoutResult::kSuccess);
-  }
+  PlaceCells(row.block_size, row_baseline);
 
   LayoutUnit previous_consumed_row_block_size;
   if (IsBreakInside(BreakToken())) {
@@ -252,11 +234,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   if (has_block_fragmentation) {
     // If we've expanded due to fragmentation, relayout with the new block-size.
     if (row.block_size != row_block_size) {
-      NGLayoutResult::EStatus status =
-          PlaceCells(row_block_size, absl::nullopt);
-      if (status == NGLayoutResult::kOutOfFragmentainerSpace)
-        return container_builder_.Abort(status);
-      DCHECK_EQ(status, NGLayoutResult::kSuccess);
+      PlaceCells(row_block_size, absl::nullopt);
     }
 
     for (auto& result : results)

@@ -43,9 +43,10 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
 
   // Lay out one row of columns. The layout result returned is for the last
   // column that was laid out. The rows themselves don't create fragments. If
-  // we're in a nested fragmentation context and completely out of outer
-  // fragmentainer space, nullptr will be returned.
+  // we're in a nested fragmentation context, and a break is inserted before the
+  // row, nullptr is returned.
   const NGLayoutResult* LayoutRow(const NGBlockBreakToken* next_column_token,
+                                  LayoutUnit miminum_column_block_size,
                                   NGMarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
@@ -84,17 +85,20 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   LayoutUnit ResolveColumnAutoBlockSize(
       const LogicalSize& column_size,
       LayoutUnit row_offset,
+      LayoutUnit available_outer_space,
       const NGBlockBreakToken* child_break_token,
       bool balance_columns);
 
   LayoutUnit ResolveColumnAutoBlockSizeInternal(
       const LogicalSize& column_size,
       LayoutUnit row_offset,
+      LayoutUnit available_outer_space,
       const NGBlockBreakToken* child_break_token,
       bool balance_columns);
 
   LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
-                                      LayoutUnit row_offset) const;
+                                      LayoutUnit row_offset,
+                                      LayoutUnit available_outer_space) const;
   LayoutUnit CurrentContentBlockOffset(LayoutUnit border_box_row_offset) const {
     return border_box_row_offset - BorderScrollbarPadding().block_start;
   }
@@ -114,23 +118,6 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
       const NGBlockNode& spanner,
       LayoutUnit block_offset) const;
   NGConstraintSpace CreateConstraintSpaceForMinMax() const;
-
-  // If this is a nested multicol container, and there's no room for anything in
-  // the current outer fragmentainer, we're normally allowed to abort (typically
-  // with NGLayoutResult::kOutOfFragmentainerSpace), and retry in the next outer
-  // fragmentainer. This is not the case for out-of-flow positioned multicol
-  // containers, though, as we're not allowed to insert a soft break before an
-  // out-of-flow positioned node. Our implementation requires that an OOF start
-  // in the fragmentainer where it would "naturally" occur. This is also not the
-  // case for floated multicols since float margins are treated as monolithic
-  // [1]. Given this, the margin of the float wouldn't get truncated after a
-  // break, which could lead to an infinite loop.
-  //
-  // [1] https://codereview.chromium.org/2479483002
-  bool MayAbortOnInsufficientSpace() const {
-    DCHECK(is_constrained_by_outer_fragmentation_context_);
-    return !Node().IsFloatingOrOutOfFlowPositioned();
-  }
 
   // The sum of all the current column children's block-sizes, as if they were
   // stacked, including any block-size that is added as a result of
