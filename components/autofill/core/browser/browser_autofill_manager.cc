@@ -53,6 +53,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
@@ -2785,14 +2786,19 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   // those fields. Function BrowserAutofillManager::GetSkipStatuses assumes that
   // the passed FormData and FormStructure have the same size. If it's not the
   // case we just assume as a fallback that all fields are relevant.
-  // TODO(crbug.com/1459990): Use the last `field_types_to_fill`
-  // so that `GetSuggestionsForProfiles` can filter out fields that
-  // are not part of the target granularity.
+  absl::optional<ServerFieldTypeSet> last_address_fields_to_fill_for_section =
+      external_delegate_->GetLastServerFieldTypesToFillForSection(
+          autofill_field.section);
   std::vector<SkipStatus> skip_statuses =
       form.fields.size() == form_structure.field_count()
           ? GetSkipStatuses(
                 form, form_structure, field, autofill_field.section,
-                /*optional_credit_card=*/nullptr, kAllServerFieldTypes,
+                /*optional_credit_card=*/nullptr,
+                last_address_fields_to_fill_for_section
+                    ? GetTargetServerFieldsForTypeAndLastTargetedFields(
+                          *last_address_fields_to_fill_for_section,
+                          autofill_field.Type())
+                    : kAllServerFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
                     AutofillSuggestionTriggerSource::

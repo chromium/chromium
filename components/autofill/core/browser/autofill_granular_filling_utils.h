@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_GRANULAR_FILLING_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_GRANULAR_FILLING_UTILS_H_
 
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
 // Helper methods specific for granular filling related behaviour.
@@ -21,6 +22,15 @@ ServerFieldTypeSet GetAddressFieldsForGroupFilling();
 // filling groups, i.e., FieldTypeGroup::kName fields, FieldTypeGroup::kPhone
 // fields or `GetAddressFieldsForGroupFilling` (from the method above).
 bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields);
+
+// Returns a set of fields to be filled, given the last targeted fields and
+// the current field type. For example, if the last targeted fields matches
+// one of the group filling sets, we will return the set of fields that matches
+// the trigering field group. This is done so that the user stays at the same
+// granularity as the one previously chosen.
+ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
+    const ServerFieldTypeSet& last_targeted_fields,
+    const AutofillType& type);
 
 }  // namespace autofill
 
