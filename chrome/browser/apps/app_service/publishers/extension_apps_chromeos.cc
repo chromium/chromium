@@ -510,6 +510,22 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
   app_time->ResumeWebActivity(app_id);
 }
 
+void ExtensionAppsChromeOs::UpdateAppSize(const std::string& app_id) {
+  if (app_type() != AppType::kChromeApp) {
+    return;
+  }
+
+  const extensions::Extension* extension = MaybeGetExtension(app_id);
+  if (!extension) {
+    return;
+  }
+
+  extensions::path_util::CalculateExtensionDirectorySize(
+      extension->path(),
+      base::BindOnce(&ExtensionAppsChromeOs::OnSizeCalculated,
+                     weak_factory_.GetWeakPtr(), extension->id()));
+}
+
 void ExtensionAppsChromeOs::OnAppWindowAdded(
     extensions::AppWindow* app_window) {
   if (!ShouldRecordAppWindowActivity(app_window)) {
@@ -966,25 +982,7 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   } else if (extension->is_extension()) {
     app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);
   }
-
-  // Calculating app size is asynchronous. The app will be republished with size
-  // on completion.
-  if (base::FeatureList::IsEnabled(::features::kAppManagementAppDetails)) {
-    CalculateAppSize(extension);
-  }
-
   return app;
-}
-
-void ExtensionAppsChromeOs::CalculateAppSize(
-    const extensions::Extension* extension) {
-  if (app_type() != AppType::kChromeApp) {
-    return;
-  }
-  extensions::path_util::CalculateExtensionDirectorySize(
-      extension->path(),
-      base::BindOnce(&ExtensionAppsChromeOs::OnSizeCalculated,
-                     weak_factory_.GetWeakPtr(), extension->id()));
 }
 
 void ExtensionAppsChromeOs::OnSizeCalculated(const std::string& app_id,

@@ -101,6 +101,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   // apps::AppPublisher overrides.
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
+  void UpdateAppSize(const std::string& app_id) override;
 
   // Overridden from AppWindowRegistry::Observer:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override;
@@ -159,7 +160,6 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   AppPtr CreateApp(const extensions::Extension* extension,
                    Readiness readiness) override;
 
-  void CalculateAppSize(const extensions::Extension* extension);
   void OnSizeCalculated(const std::string& app_id, const int64_t size);
 
   // Calculate the icon effects for the extension.
