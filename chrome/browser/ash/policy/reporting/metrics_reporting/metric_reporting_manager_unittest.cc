@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -249,6 +250,8 @@ const MetricReportingSettingData device_activity_telemetry_settings = {
 const MetricReportingSettingData runtime_counters_telemetry_settings = {
     ::ash::kDeviceReportRuntimeCounters, false,
     ::ash::kDeviceReportRuntimeCountersCheckingRateMs, 1};
+const MetricReportingSettingData website_event_settings = {
+    kReportWebsiteActivityAllowlist, false, "", 1};
 
 struct MetricReportingManagerTestCase {
   std::string test_name;
@@ -603,6 +606,48 @@ TEST_F(MetricReportingManagerEventTest,
   EXPECT_EQ(observer_manager_count, 0);
 }
 
+TEST_F(MetricReportingManagerEventTest,
+       ShouldNotCreateWebsiteEventObserverWhenAppServiceUnavailable) {
+  // Setup appropriate mocks and stubs.
+  auto fake_reporting_settings =
+      std::make_unique<test::FakeReportingSettings>();
+  auto* const mock_delegate_ptr = mock_delegate_.get();
+  int observer_manager_count = 0;
+  ON_CALL(*mock_delegate_ptr, IsUserAffiliated).WillByDefault(Return(true));
+  ON_CALL(*mock_delegate_ptr, IsAppServiceAvailableForProfile)
+      .WillByDefault(Return(false));
+  ON_CALL(*mock_delegate_ptr,
+          CreateEventObserverManager(
+              _, event_queue_ptr_.get(), _,
+              website_event_settings.enable_setting_path,
+              website_event_settings.setting_enabled_default_value, _, _))
+      .WillByDefault([&]() {
+        return std::make_unique<FakeMetricEventObserverManager>(
+            fake_reporting_settings.get(), &observer_manager_count);
+      });
+  ON_CALL(*mock_delegate_ptr,
+          CreateEventObserverManager(
+              _, user_event_queue_ptr_.get(), _,
+              website_event_settings.enable_setting_path,
+              website_event_settings.setting_enabled_default_value, _, _))
+      .WillByDefault([&]() {
+        return std::make_unique<FakeMetricEventObserverManager>(
+            fake_reporting_settings.get(), &observer_manager_count);
+      });
+
+  // Create a metric reporting manager and ensure observer manager count is 0
+  // before and after login.
+  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
+      std::move(mock_delegate_), nullptr);
+  EXPECT_THAT(observer_manager_count, Eq(0));
+  metric_reporting_manager->OnLogin(profile());
+  EXPECT_THAT(observer_manager_count, Eq(0));
+
+  ON_CALL(*mock_delegate_ptr, IsDeprovisioned).WillByDefault(Return(true));
+  metric_reporting_manager->DeviceSettingsUpdated();
+  EXPECT_THAT(observer_manager_count, Eq(0));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     MetricReportingManagerEventTests,
     MetricReportingManagerEventTest,
@@ -669,7 +714,21 @@ INSTANTIATE_TEST_SUITE_P(
           /*is_affiliated=*/true, app_event_settings,
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0}}),
+          /*expected_count_after_login=*/0},
+         {"WebsiteEvents_Unaffiliated",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, website_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"WebsiteEvents_Default",
+          /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, website_event_settings,
+          /*has_init_delay=*/false,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
            info) { return info.param.test_name; });
 

@@ -97,6 +97,11 @@ constexpr bool kReportDeviceAppInfoDefaultValue = false;
 // Default value for reporting fatal crashes.
 constexpr bool kReportDeviceCrashReportInfoDefaultValue = false;
 
+// Default value that controls website activity event reporting. Set to false
+// even though the corresponding user policy is an allowlist to signify
+// reporting is disabled by default.
+constexpr bool kReportWebsiteActivityEnabledDefaultValue = false;
+
 // Returns the default report upload frequency for the current environment.
 const base::TimeDelta GetDefaultReportUploadFrequency();
 

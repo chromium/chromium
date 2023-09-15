@@ -47,8 +47,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
+#include "chrome/browser/chromeos/reporting/websites/website_events_observer.h"
+#include "chrome/browser/chromeos/reporting/websites/website_metrics_retriever_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -336,10 +339,11 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
       /*init_delay=*/base::TimeDelta());
   InitPeripheralsCollectors();
 
-  // Start observing app events and telemetry only if the app service is
+  // Start observing app/website events and telemetry only if the app service is
   // available for the given profile.
   if (delegate_->IsAppServiceAvailableForProfile(profile)) {
     InitAppCollectors(profile);
+    InitWebsiteMetricCollectors(profile);
   }
 }
 
@@ -630,6 +634,20 @@ void MetricReportingManager::InitRuntimeCountersCollectors() {
         /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
     samplers_.push_back(std::move(psr_telemetry_sampler));
   }
+}
+
+void MetricReportingManager::InitWebsiteMetricCollectors(Profile* profile) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto website_metrics_retriever =
+      std::make_unique<WebsiteMetricsRetrieverAsh>(profile->GetWeakPtr());
+  auto website_events_observer = std::make_unique<WebsiteEventsObserver>(
+      std::move(website_metrics_retriever), user_reporting_settings_.get());
+  InitEventObserverManager(
+      std::move(website_events_observer), user_event_report_queue_.get(),
+      user_reporting_settings_.get(),
+      /*enable_setting_path=*/kReportWebsiteActivityAllowlist,
+      metrics::kReportWebsiteActivityEnabledDefaultValue,
+      /*init_delay=*/base::TimeDelta());
 }
 
 void MetricReportingManager::InitFatalCrashCollectors() {
