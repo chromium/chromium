@@ -158,9 +158,10 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
   // TODO(crbug.com/1463882): Implement status view that should be displayed
   // before passwords start being sent.
-  // TODO(crbug.com/1463882): Handle sending selected credentials for the case
-  // with more than 1 password group.
-  [self.mediator sendPasswords:_credentials toRecipients:recipients];
+  if (_credentials.size() == 1) {
+    self.mediator.selectedCredentials = _credentials;
+  }
+  [self.mediator sendSelectedPasswordsToRecipients:recipients];
   [self.delegate passwordSharingCoordinatorDidRemove:self];
 }
 
