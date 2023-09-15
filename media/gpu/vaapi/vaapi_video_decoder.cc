@@ -206,6 +206,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // Notify |decoder_delegate_| of an imminent VAContextID destruction, so it
     // can destroy any internal structures making use of it.
     decoder_delegate_->OnVAContextDestructionSoon();
+    decoder_delegate_ = nullptr;
 
     decoder_ = nullptr;
     DCHECK(vaapi_wrapper_);
@@ -215,7 +216,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
-    decoder_delegate_ = nullptr;
 
     // |cdm_context_ref_| is reset after |decoder_| because we passed
     // |cdm_context_ref_->GetCdmContext()| when creating the |decoder_|, so we
