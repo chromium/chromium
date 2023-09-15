@@ -1422,6 +1422,8 @@ static_library("ui") {
       "tabs/organization/tab_organization.h",
       "tabs/organization/tab_organization_request.cc",
       "tabs/organization/tab_organization_request.h",
+      "tabs/organization/tab_organization_session.cc",
+      "tabs/organization/tab_organization_session.h",
       "tabs/pinned_tab_codec.cc",
       "tabs/pinned_tab_codec.h",
       "tabs/pinned_tab_service.cc",

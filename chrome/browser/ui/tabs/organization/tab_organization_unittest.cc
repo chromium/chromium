@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +19,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "tab_organization_session.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class TabOrganizationTest : public testing::Test {
@@ -216,5 +219,23 @@ TEST_F(TabOrganizationTest, TabOrganizationRequestOnCancelRequest) {
   request.StartRequest();
   request.CancelRequest();
   EXPECT_EQ(request.state(), TabOrganizationRequest::State::CANCELED);
+  EXPECT_TRUE(cancel_called);
+}
+
+TEST_F(TabOrganizationTest,
+       TabOrganizationSessionDestructionCancelsRequestIfStarted) {
+  bool cancel_called = false;
+  std::unique_ptr<TabOrganizationRequest> request =
+      std::make_unique<TabOrganizationRequest>(
+          base::DoNothing(), base::BindLambdaForTesting(
+                                 [&](const TabOrganizationRequest* request) {
+                                   cancel_called = true;
+                                 }));
+
+  std::unique_ptr<TabOrganizationSession> session =
+      std::make_unique<TabOrganizationSession>(std::move(request));
+  session->StartRequest();
+  session.reset();
+
   EXPECT_TRUE(cancel_called);
 }
