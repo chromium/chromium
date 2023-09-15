@@ -1094,16 +1094,46 @@ TEST_P(AttributionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
                 .event_level_status());
 }
 
-TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {
-  base::HistogramTester histograms;
+TEST_P(AttributionStorageSqlTest, DBinitializationSucceeds_HistogramsRecorded) {
+  {
+    base::HistogramTester histograms;
 
-  OpenDatabase();
-  storage()->StoreSource(SourceBuilder().Build());
-  CloseDatabase();
+    OpenDatabase();
+    // We add two sources in the storage to be able to assert the per source
+    // file size histogram on the following db initialization.
+    storage()->StoreSource(SourceBuilder().Build());
+    storage()->StoreSource(SourceBuilder().Build());
+    CloseDatabase();
 
-  histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus2",
-                                AttributionStorageSql::InitStatus::kSuccess, 1);
-  EXPECT_GT(histograms.GetTotalSum("Conversions.Storage.Sql.FileSize"), 0);
+    histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus2",
+                                  AttributionStorageSql::InitStatus::kSuccess,
+                                  1);
+    EXPECT_GT(histograms.GetTotalSum("Conversions.Storage.Sql.FileSize"), 0);
+    // The per source histogram should not be recorded when there is no sources
+    // in the db.
+    histograms.ExpectTotalCount("Conversions.Storage.Sql.FileSize.PerSource",
+                                0u);
+  }
+  {
+    base::HistogramTester histograms;
+
+    OpenDatabase();
+    // Since the storage is initiated lazily, we need to execute an operation on
+    // the db for it to be initiated and histograms to be reported.
+    storage()->StoreSource(SourceBuilder().Build());
+    CloseDatabase();
+
+    histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus2",
+                                  AttributionStorageSql::InitStatus::kSuccess,
+                                  1);
+
+    int64_t file_size =
+        histograms.GetTotalSum("Conversions.Storage.Sql.FileSize");
+    EXPECT_GT(file_size, 0);
+    int64_t file_size_per_source =
+        histograms.GetTotalSum("Conversions.Storage.Sql.FileSize.PerSource");
+    EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
+  }
 }
 
 TEST_P(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {

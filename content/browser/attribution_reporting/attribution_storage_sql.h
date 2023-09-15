@@ -154,6 +154,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   bool HasCapacityForStoringSource(const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Returns the number of sources in storage.
+  absl::optional<int64_t> NumberOfSources()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   enum class ReportAlreadyStoredStatus {
     kNotStored,
     kStored,

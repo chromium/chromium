@@ -865,9 +865,14 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
                 ->StoreSource(SourceBuilder().SetSourceEventId(7).Build())
                 .status,
             StorableSource::Result::kInsufficientSourceCapacity);
-  EXPECT_GT(histograms.GetTotalSum(
-                "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached"),
-            0);
+
+  int64_t file_size = histograms.GetTotalSum(
+      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached");
+  EXPECT_GT(file_size, 0);
+
+  int64_t file_size_per_source = histograms.GetTotalSum(
+      "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached.PerSource");
+  EXPECT_EQ(file_size_per_source, file_size * 1024 / 2);
 
   ASSERT_THAT(storage()->GetActiveSources(),
               ElementsAre(SourceEventIdIs(5u), SourceEventIdIs(6u)));

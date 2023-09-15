@@ -781,6 +781,14 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       base::UmaHistogramCounts10M(
           "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached",
           file_size);
+      absl::optional<int64_t> number_of_sources = NumberOfSources();
+      if (number_of_sources.has_value()) {
+        CHECK_GT(*number_of_sources, 0);
+        base::UmaHistogramCounts1M(
+            "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached."
+            "PerSource",
+            file_size * 1024 / *number_of_sources);
+      }
     }
     return StoreSourceResult(
         StorableSource::Result::kInsufficientSourceCapacity,
@@ -984,8 +992,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
           /*initial_report_time=*/fake_report.report_time,
           delegate_->NewReportID(), /*failed_send_attempts=*/0,
           AttributionReport::EventLevelData(fake_report.trigger_data,
-                                            /*priority=*/0,
-                                            stored_source));
+                                            /*priority=*/0, stored_source));
       if (!StoreAttributionReport(fake_attribution_report)) {
         return StoreSourceResult(StorableSource::Result::kInternalError);
       }
@@ -2193,7 +2200,8 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
 bool AttributionStorageSql::HasCapacityForStoringSource(
     const std::string& serialized_origin) {
   sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kCountSourcesSql));
+      SQL_FROM_HERE,
+      attribution_queries::kCountActiveSourcesFromSourceOriginSql));
   statement.BindString(0, serialized_origin);
   if (!statement.Step()) {
     return false;
@@ -2403,8 +2411,22 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   if (int64_t file_size = StorageFileSizeKB(path_to_database_);
       file_size > -1) {
     base::UmaHistogramCounts10M("Conversions.Storage.Sql.FileSize", file_size);
+    absl::optional<int64_t> number_of_sources = NumberOfSources();
+    if (number_of_sources.has_value() && *number_of_sources > 0) {
+      base::UmaHistogramCounts1M("Conversions.Storage.Sql.FileSize.PerSource",
+                                 file_size * 1024 / *number_of_sources);
+    }
   }
   return true;
+}
+
+absl::optional<int64_t> AttributionStorageSql::NumberOfSources() {
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kCountSourcesSql));
+  if (!statement.Step()) {
+    return absl::nullopt;
+  }
+  return statement.ColumnInt64(0);
 }
 
 bool AttributionStorageSql::InitializeSchema(bool db_empty) {

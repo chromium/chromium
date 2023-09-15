@@ -54,10 +54,12 @@ inline constexpr const char kScanReportsData[] =
 inline constexpr const char kDeleteVestigialConversionSql[] =
     "DELETE FROM reports WHERE source_id=? RETURNING report_type";
 
-inline constexpr const char kCountSourcesSql[] =
+inline constexpr const char kCountActiveSourcesFromSourceOriginSql[] =
     "SELECT COUNT(*)FROM sources "
     "WHERE source_origin=? "
     "AND(event_level_active=1 OR aggregatable_active=1)";
+
+inline constexpr const char kCountSourcesSql[] = "SELECT COUNT(*)FROM sources";
 
 inline constexpr const char kCountReportsSql[] =
     "SELECT COUNT(*)FROM dedup_keys "

@@ -97,8 +97,9 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteVestigialConversionSql) {
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountSourcesSql) {
-  EXPECT_THAT(GetPlan(attribution_queries::kCountSourcesSql),
-              ValueIs(UsesIndex("active_sources_by_source_origin")));
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kCountActiveSourcesFromSourceOriginSql),
+      ValueIs(UsesIndex("active_sources_by_source_origin")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDedupKeySql) {
