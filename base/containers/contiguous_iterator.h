@@ -40,8 +40,13 @@ struct IsStringIterImpl
 // `static_assert(is_trivial_v<value_type>)` inside libc++'s std::basic_string.
 template <typename T>
 struct IsStringIter
-    : std::conjunction<std::is_trivial<iter_value_t<T>>, IsStringIterImpl<T>> {
-};
+    : std::conjunction<
+          std::disjunction<std::is_same<iter_value_t<T>, char>,
+                           std::is_same<iter_value_t<T>, wchar_t>,
+                           std::is_same<iter_value_t<T>, char8_t>,
+                           std::is_same<iter_value_t<T>, char16_t>,
+                           std::is_same<iter_value_t<T>, char32_t>>,
+          IsStringIterImpl<T>> {};
 
 // An iterator to std::array is contiguous.
 // Reference: https://wg21.link/array.overview#1
