@@ -245,15 +245,12 @@ found in the LICENSE file.
       </oobe-icon-button>
     </div>
     <div id="bottomButtons" class="layout horizontal">
-      <oobe-icon-button
-        id="quickStart"
+      <quick-start-entry-point
+        id="quick-start-welcome-button"
         on-click="onQuickStartClicked_"
         hidden="[[!isQuickStartEnabled]]"
-        text-key="welcomeScreenQuickStart"
-        icon1x="oobe-20:quick-start-android-device"
-        icon2x="oobe-20:quick-start-android-device"
-      >
-      </oobe-icon-button>
+        quickStartTextkey="welcomeScreenQuickStart">
+      </quick-start-entry-point>
       <oobe-text-button
         id="getStarted"
         inverse

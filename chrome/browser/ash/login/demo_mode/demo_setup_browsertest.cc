@@ -102,7 +102,8 @@ const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 const test::UIPath kNetworkScreen = {kNetworkId};
 const test::UIPath kNetworkNextButton = {kNetworkId, "nextButton"};
 const test::UIPath kNetworkBackButton = {kNetworkId, "backButton"};
-const test::UIPath kNetworkQuickStartButton = {kNetworkId, "quickStart"};
+const test::UIPath kNetworkQuickStartButton = {kNetworkId,
+                                               "quick-start-network-button"};
 
 const test::UIPath kDemoSetupProgressDialog = {kDemoSetupId,
                                                "demoSetupProgressDialog"};

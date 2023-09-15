@@ -223,6 +223,7 @@ js_library("welcome_dialog") {
   deps = [
     "../../components:long_touch_detector",
     "../../components:oobe_cr_lottie",
+    "../../components:quick_start_entry_point",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_icon_button",
     "../../components/buttons:oobe_text_button",

@@ -44,7 +44,7 @@ using ::views::Button;
 
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kLoadingDialog[] = "loadingDialog";
-constexpr char kQuickStartButton[] = "quickStart";
+constexpr char kQuickStartButton[] = "quick-start-network-button";
 constexpr char kNextButton[] = "nextButton";
 constexpr test::UIPath kCancelButtonLoadingDialog = {
     QuickStartView::kScreenId.name, kLoadingDialog, kCancelButton};

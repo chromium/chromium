@@ -55,6 +55,7 @@ group("closure_compile") {
     ":oobe_slide",
     ":oobe_types",
     ":progress_list_item",
+    ":quick_start_entry_point",
     ":quick_start_pin",
     ":security_token_pin",
     ":throbber_notice",
@@ -276,6 +277,14 @@ js_library("quick_start_pin") {
   extra_deps = [ ":web_components" ]
 }
 
+js_library("quick_start_entry_point") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/quick_start_entry_point.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("security_token_pin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.js" ]
   deps = [
@@ -353,6 +362,7 @@ html_to_js("web_components_local") {
     "oobe_slide.js",
     "progress_list_item.js",
     "quick_start_pin.js",
+    "quick_start_entry_point.js",
     "security_token_pin.js",
     "throbber_notice.js",
   ]

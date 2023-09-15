@@ -26,7 +26,7 @@ namespace ash {
 
 namespace {
 constexpr char kWelcomeScreen[] = "welcomeScreen";
-constexpr char kQuickStartButton[] = "quickStart";
+constexpr char kQuickStartButton[] = "quick-start-welcome-button";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kWifiConnectedButton[] = "wifiConnected";

@@ -140,13 +140,12 @@ found in the LICENSE file.
   <div slot="bottom-buttons" hidden$="[[navigationHidden]]">
     <div hidden="[[!isDefaultNavigationShown_(canGoBack,
         gaiaDialogButtonsType)]]" class="flex layout horizontal">
-      <oobe-icon-button id="quick-start-button"
-          on-click="onQuickStartClicked_"
-          hidden="[[!isQuickStartEnabled_]]"
-          text-key="signinScreenQuickStart"
-          icon1x="oobe-20:quick-start-android-device"
-          icon2x="oobe-20:quick-start-android-device">
-      </oobe-icon-button>
+      <quick-start-entry-point
+        id="quick-start-signin-button"
+        on-click="onQuickStartClicked_"
+        hidden="[[!isQuickStartEnabled_]]"
+        quickStartTextkey="signinScreenQuickStart">
+      </quick-start-entry-point>
       <oobe-text-button id="secondary-action-button"
           label-for-aria="[[secondaryActionButtonLabel_]]"
           on-click="onSecondaryActionButtonClicked_"
