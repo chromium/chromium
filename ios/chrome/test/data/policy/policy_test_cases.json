@@ -415,6 +415,12 @@
       }
     ]
   },
+  "IdleTimeout": {
+    "reason_for_missing_test": "The service to register the policy's pref is not implemented yet."
+  },
+  "IdleTimeoutActions": {
+    "reason_for_missing_test": "The service to register the policy's pref is not implemented yet."
+  },
   "IncognitoModeAvailability": {
     "os": [
       "ios"

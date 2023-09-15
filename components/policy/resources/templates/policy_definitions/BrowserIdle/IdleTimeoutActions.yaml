@@ -4,7 +4,7 @@ desc: |-
 
         If the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy is unset, this policy has no effect.
 
-        When the timeout from the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy is reached, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> runs the actions configured in this policy.
+        When the timeout from the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy is reached, the browser runs the actions configured in this policy.
 
         If this policy is empty or left unset, the <ph name="IDLE_TIMEOUT_POLICY_NAME">IdleTimeout</ph> policy has no effect.
 
@@ -29,6 +29,7 @@ supported_on:
 - chrome.*:116-
 future_on:
 - android
+- ios
 owners:
 - nicolaso@chromium.org
 - cbe-magic@google.com

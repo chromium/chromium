@@ -207,22 +207,25 @@ class ClearBrowsingDataAction : public Action,
   uint64_t GetRemoveMask() const {
     using content::BrowsingDataRemover;
     static const std::pair<ActionType, uint64_t> entries[] = {
-        {ActionType::kClearBrowsingHistory,
-         chrome_browsing_data_remover::DATA_TYPE_HISTORY},
-        {ActionType::kClearDownloadHistory,
-         BrowsingDataRemover::DATA_TYPE_DOWNLOADS},
-        {ActionType::kClearCookiesAndOtherSiteData,
-         chrome_browsing_data_remover::DATA_TYPE_SITE_DATA},
-        {ActionType::kClearCachedImagesAndFiles,
-         BrowsingDataRemover::DATA_TYPE_CACHE},
-        {ActionType::kClearPasswordSignin,
-         chrome_browsing_data_remover::DATA_TYPE_PASSWORDS},
-        {ActionType::kClearAutofill,
-         chrome_browsing_data_remover::DATA_TYPE_FORM_DATA},
-        {ActionType::kClearSiteSettings,
-         chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS},
-        {ActionType::kClearHostedAppData,
-         chrome_browsing_data_remover::DATA_TYPE_SITE_DATA}};
+#if !BUILDFLAG(IS_ANDROID)
+      {ActionType::kClearDownloadHistory,
+       BrowsingDataRemover::DATA_TYPE_DOWNLOADS},
+      {ActionType::kClearHostedAppData,
+       chrome_browsing_data_remover::DATA_TYPE_SITE_DATA},
+#endif  // !BUILDFLAG(IS_ANDROID)
+      {ActionType::kClearBrowsingHistory,
+       chrome_browsing_data_remover::DATA_TYPE_HISTORY},
+      {ActionType::kClearCookiesAndOtherSiteData,
+       chrome_browsing_data_remover::DATA_TYPE_SITE_DATA},
+      {ActionType::kClearCachedImagesAndFiles,
+       BrowsingDataRemover::DATA_TYPE_CACHE},
+      {ActionType::kClearPasswordSignin,
+       chrome_browsing_data_remover::DATA_TYPE_PASSWORDS},
+      {ActionType::kClearAutofill,
+       chrome_browsing_data_remover::DATA_TYPE_FORM_DATA},
+      {ActionType::kClearSiteSettings,
+       chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS}
+    };
     uint64_t result = 0;
     for (const auto& [action_type, mask] : entries) {
       if (base::Contains(action_types_, action_type)) {
@@ -239,9 +242,11 @@ class ClearBrowsingDataAction : public Action,
                        ActionType::kClearCookiesAndOtherSiteData)) {
       result |= BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
     }
+#if !BUILDFLAG(IS_ANDROID)
     if (base::Contains(action_types_, ActionType::kClearHostedAppData)) {
       result |= BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
     }
+#endif  // !BUILDFLAG(IS_ANDROID)
     return result;
   }
 
@@ -371,14 +376,16 @@ ActionFactory::ActionQueue ActionFactory::Build(
       // "clear_*" actions are all grouped into a single Action object. Collect
       // them in a flat_set<>, and create the shared object once we have the
       // entire collection.
-      case ActionType::kClearBrowsingHistory:
+#if !BUILDFLAG(IS_ANDROID)
       case ActionType::kClearDownloadHistory:
+      case ActionType::kClearHostedAppData:
+#endif  // !BUILDFLAG(IS_ANDROID)
+      case ActionType::kClearBrowsingHistory:
       case ActionType::kClearCookiesAndOtherSiteData:
       case ActionType::kClearCachedImagesAndFiles:
       case ActionType::kClearPasswordSignin:
       case ActionType::kClearAutofill:
       case ActionType::kClearSiteSettings:
-      case ActionType::kClearHostedAppData:
         clear_actions.insert(action_type);
         break;
 
