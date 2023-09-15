@@ -2087,7 +2087,6 @@ if (!is_android) {
       "../browser/hid/hid_browsertest.cc",
       "../browser/history/history_browsertest.cc",
       "../browser/history/redirect_browsertest.cc",
-      "../browser/history_clusters/history_clusters_internals_browsertest.cc",
       "../browser/history_clusters/history_clusters_metrics_browsertest.cc",
       "../browser/icon_loader_browsertest.cc",
       "../browser/icon_transcoder/svg_icon_transcoder_browsertest.cc",

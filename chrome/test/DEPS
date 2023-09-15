@@ -32,6 +32,7 @@ include_rules = [
   "+components/google/core/common",
   "+components/guest_view/browser",
   "+components/history_clusters/core",
+  "+components/history_clusters/history_clusters_internals/webui",
   "+components/history/content",
   "+components/history/core",
   "+components/infobars/content",
