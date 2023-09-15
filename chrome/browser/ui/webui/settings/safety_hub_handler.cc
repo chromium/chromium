@@ -508,7 +508,7 @@ void SafetyHubHandler::RegisterMessages() {
               HandleUndoIgnoreOriginsForNotificationPermissionReview,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSafeBrowsingState",
+      "getSafeBrowsingCardData",
       base::BindRepeating(&SafetyHubHandler::HandleGetSafeBrowsingCardData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
