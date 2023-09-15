@@ -180,6 +180,11 @@ struct OverflowMenuDestinationList: View {
                 .matchedGeometryEffect(
                   id: MenuCustomizationAnimationID.from(destination), in: namespace
                 )
+                .accessibilityElement(children: .combine)
+                .accessibilityHint(
+                  editMode?.wrappedValue.isEditing == true && destination.canBeHidden
+                    ? L10nUtils.stringWithFixup(
+                      messageId: IDS_IOS_OVERFLOW_MENU_HIDE_ITEM_ACCESSIBILITY_HINT) : "")
             }
           }
           .alignmentGuide(.top) { $0[.top] - (Constants.defaultTopMargin + extraTopMargin) }

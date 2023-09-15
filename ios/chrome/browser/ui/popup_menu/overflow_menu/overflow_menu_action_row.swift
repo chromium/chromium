@@ -95,15 +95,19 @@ struct OverflowMenuActionRow: View {
   private var rowContent: some View {
     if isEditing {
       HStack {
-        Toggle(isOn: $action.shown.animation()) {}
-          .toggleStyle(OverflowMenuActionToggleStyle())
-          .labelsHidden()
-          .tint(.chromeBlue)
+        Toggle(isOn: $action.shown.animation()) {
+          Text(action.name)
+        }
+        .toggleStyle(OverflowMenuActionToggleStyle())
+        .labelStyle(.iconOnly)
+        .tint(.chromeBlue)
+        .accessibilityRemoveTraits(.isSelected)
         rowIcon
         centerTextView
         Spacer()
       }
       .padding([.trailing], Self.editRowEndPadding)
+      .accessibilityElement(children: .combine)
     } else {
       HStack {
         // If there is no icon, the text should be centered.

@@ -76,10 +76,13 @@ struct MenuCustomizationView: View {
                 .font(.caption)
             }
             Spacer()
-            Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {}
-              .labelsHidden()
-              .tint(.chromeBlue)
+            Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {
+              Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
+            }
+            .labelsHidden()
+            .tint(.chromeBlue)
           }
+          .accessibilityElement(children: .combine)
         }
         OverflowMenuActionSection(
           actionGroup: actionCustomizationModel.actionsGroup, metricsHandler: nil
