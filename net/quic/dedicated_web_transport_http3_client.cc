@@ -126,10 +126,11 @@ void RecordNetLogQuicSessionClientStateChanged(
                         .Set("last_state", WebTransportStateString(last_state))
                         .Set("next_state", WebTransportStateString(next_state));
         if (error.has_value()) {
-          dict.Set("error", base::Value::Dict()
-                                .Set("net_error", error->net_error)
-                                .Set("quic_error", error->quic_error)
-                                .Set("details", error->details));
+          dict.Set("error",
+                   base::Value::Dict()
+                       .Set("net_error", error->net_error)
+                       .Set("quic_error", static_cast<int>(error->quic_error))
+                       .Set("details", error->details));
         }
         return dict;
       });

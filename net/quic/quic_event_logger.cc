@@ -169,7 +169,7 @@ base::Value::Dict NetLogQuicRstStreamFrameParams(
 base::Value::Dict NetLogQuicConnectionCloseFrameParams(
     const quic::QuicConnectionCloseFrame* frame) {
   base::Value::Dict dict;
-  dict.Set("quic_error", frame->quic_error_code);
+  dict.Set("quic_error", static_cast<int>(frame->quic_error_code));
   if (frame->wire_error_code != frame->quic_error_code) {
     dict.Set("quic_wire_error", static_cast<int>(frame->wire_error_code));
   }
@@ -210,7 +210,7 @@ base::Value::Dict NetLogQuicBlockedFrameParams(
 base::Value::Dict NetLogQuicGoAwayFrameParams(
     const quic::QuicGoAwayFrame* frame) {
   return base::Value::Dict()
-      .Set("quic_error", frame->error_code)
+      .Set("quic_error", static_cast<int>(frame->error_code))
       .Set("last_good_stream_id", static_cast<int>(frame->last_good_stream_id))
       .Set("reason_phrase", frame->reason_phrase);
 }
@@ -263,7 +263,7 @@ base::Value::Dict NetLogQuicOnConnectionClosedParams(
     std::string error_details,
     quic::ConnectionCloseSource source) {
   return base::Value::Dict()
-      .Set("quic_error", error)
+      .Set("quic_error", static_cast<int>(error))
       .Set("details", error_details)
       .Set("from_peer",
            source == quic::ConnectionCloseSource::FROM_PEER ? true : false);
