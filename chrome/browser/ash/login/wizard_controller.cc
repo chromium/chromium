@@ -904,7 +904,8 @@ WizardController::CreateScreens() {
   if (features::AreLocalPasswordsEnabledForConsumers()) {
     append(std::make_unique<LocalPasswordSetupScreen>(
         oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
-        base::BindRepeating([](LocalPasswordSetupScreen::Result result) {})));
+        base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
+                            weak_factory_.GetWeakPtr())));
   }
 
   return result;
@@ -1001,6 +1002,10 @@ void WizardController::ShowAddChildScreen() {
 
 void WizardController::ShowConsumerUpdateScreen() {
   SetCurrentScreen(GetScreen(ConsumerUpdateScreenView::kScreenId));
+}
+
+void WizardController::ShowLocalPasswordSetupScreen() {
+  SetCurrentScreen(GetScreen(LocalPasswordSetupView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1312,6 +1317,23 @@ void WizardController::OnTpmErrorScreenExit(TpmErrorScreen::Result result) {
   // device to reconfigure TPM in BIOS or continue using the device without
   // enrollment. This is a non-blocking error.
   AdvanceToScreen(UserCreationView::kScreenId);
+}
+
+void WizardController::OnLocalPasswordSetupScreenExit(
+    LocalPasswordSetupScreen::Result result) {
+  OnScreenExit(LocalPasswordSetupView::kScreenId,
+               LocalPasswordSetupScreen::GetResultString(result));
+  switch (result) {
+    case LocalPasswordSetupScreen::Result::kDone:
+      ShowFingerprintSetupScreen();
+      return;
+    case LocalPasswordSetupScreen::Result::kBack:
+      ShowPasswordSelectionScreen();
+      return;
+    case LocalPasswordSetupScreen::Result::kNotApplicable:
+      ShowFingerprintSetupScreen();
+      return;
+  }
 }
 
 void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {

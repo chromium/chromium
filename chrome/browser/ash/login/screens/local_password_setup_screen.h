@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
 
 namespace ash {
 
@@ -44,9 +45,14 @@ class LocalPasswordSetupScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
+  void OnSetLocalPassword(auth::mojom::ConfigureResult result);
+  std::string GetToken() const;
+
   base::WeakPtr<LocalPasswordSetupView> view_;
 
   ScreenExitCallback exit_callback_;
+
+  base::WeakPtrFactory<LocalPasswordSetupScreen> weak_factory_{this};
 };
 
 }  // namespace ash

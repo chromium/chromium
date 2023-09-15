@@ -49,6 +49,7 @@
 #include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
+#include "chrome/browser/ash/login/screens/local_password_setup_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 #include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
@@ -337,6 +338,7 @@ class WizardController : public OobeUI::Observer {
   void ShowAddChildScreen();
   void ShowConsumerUpdateScreen();
   void ShowPasswordSelectionScreen();
+  void ShowLocalPasswordSetupScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -437,6 +439,7 @@ class WizardController : public OobeUI::Observer {
   void OnGaiaInfoScreenExit(GaiaInfoScreen::Result result);
   void OnAddChildScreenExit(AddChildScreen::Result result);
   void OnConsumerUpdateScreenExit(ConsumerUpdateScreen::Result result);
+  void OnLocalPasswordSetupScreenExit(LocalPasswordSetupScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

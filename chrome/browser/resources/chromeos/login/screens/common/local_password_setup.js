@@ -94,9 +94,18 @@ class LocalPasswordSetup extends LocalPasswordSetupBase {
     this.reset_();
   }
 
-  reset_() {}
+  reset_() {
+    this.$.passwordInput.reset();
+  }
 
-  submit_() {}
+  onBackClicked() {
+    this.userActed(['back', this.$.passwordInput.value]);
+  }
+
+  onSubmit() {
+    this.setUIStep(LocalPasswordSetupState.PROGRESS);
+    this.userActed(['inputPassword', this.$.passwordInput.value]);
+  }
 }
 
 customElements.define(LocalPasswordSetup.is, LocalPasswordSetup);
