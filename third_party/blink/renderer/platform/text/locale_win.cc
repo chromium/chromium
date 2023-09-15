@@ -140,30 +140,6 @@ void LocaleWin::GetLocaleInfo(LCTYPE type, DWORD& result) {
                   sizeof(DWORD) / sizeof(TCHAR));
 }
 
-void LocaleWin::EnsureShortMonthLabels() {
-  if (!short_month_labels_.empty())
-    return;
-  const LCTYPE kTypes[12] = {
-      LOCALE_SABBREVMONTHNAME1,  LOCALE_SABBREVMONTHNAME2,
-      LOCALE_SABBREVMONTHNAME3,  LOCALE_SABBREVMONTHNAME4,
-      LOCALE_SABBREVMONTHNAME5,  LOCALE_SABBREVMONTHNAME6,
-      LOCALE_SABBREVMONTHNAME7,  LOCALE_SABBREVMONTHNAME8,
-      LOCALE_SABBREVMONTHNAME9,  LOCALE_SABBREVMONTHNAME10,
-      LOCALE_SABBREVMONTHNAME11, LOCALE_SABBREVMONTHNAME12,
-  };
-  short_month_labels_.reserve(std::size(kTypes));
-  for (unsigned i = 0; i < std::size(kTypes); ++i) {
-    short_month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
-    if (short_month_labels_.back().empty()) {
-      short_month_labels_.Shrink(0);
-      short_month_labels_.reserve(std::size(WTF::kMonthName));
-      for (unsigned m = 0; m < std::size(WTF::kMonthName); ++m)
-        short_month_labels_.push_back(WTF::kMonthName[m]);
-      return;
-    }
-  }
-}
-
 // -------------------------------- Tokenized date format
 
 static unsigned CountContinuousLetters(const String& format, unsigned index) {
@@ -268,9 +244,10 @@ static String ConvertWindowsDateTimeFormat(const String& format) {
   return converted.ToString();
 }
 
-void LocaleWin::EnsureMonthLabels() {
-  if (!month_labels_.empty())
-    return;
+const Vector<String>& LocaleWin::MonthLabels() {
+  if (!month_labels_.empty()) {
+    return month_labels_;
+  }
   const LCTYPE kTypes[12] = {
       LOCALE_SMONTHNAME1,  LOCALE_SMONTHNAME2,  LOCALE_SMONTHNAME3,
       LOCALE_SMONTHNAME4,  LOCALE_SMONTHNAME5,  LOCALE_SMONTHNAME6,
@@ -285,14 +262,16 @@ void LocaleWin::EnsureMonthLabels() {
       month_labels_.reserve(std::size(WTF::kMonthFullName));
       for (unsigned m = 0; m < std::size(WTF::kMonthFullName); ++m)
         month_labels_.push_back(WTF::kMonthFullName[m]);
-      return;
+      break;
     }
   }
+  return month_labels_;
 }
 
-void LocaleWin::EnsureWeekDayShortLabels() {
-  if (!week_day_short_labels_.empty())
-    return;
+const Vector<String>& LocaleWin::WeekDayShortLabels() {
+  if (!week_day_short_labels_.empty()) {
+    return week_day_short_labels_;
+  }
   const LCTYPE kTypes[7] = {LOCALE_SSHORTESTDAYNAME7,  // Sunday
                             LOCALE_SSHORTESTDAYNAME1,  // Monday
                             LOCALE_SSHORTESTDAYNAME2, LOCALE_SSHORTESTDAYNAME3,
@@ -308,18 +287,9 @@ void LocaleWin::EnsureWeekDayShortLabels() {
         // weekdayName starts with Monday.
         week_day_short_labels_.push_back(WTF::kWeekdayName[(w + 6) % 7]);
       }
-      return;
+      break;
     }
   }
-}
-
-const Vector<String>& LocaleWin::MonthLabels() {
-  EnsureMonthLabels();
-  return month_labels_;
-}
-
-const Vector<String>& LocaleWin::WeekDayShortLabels() {
-  EnsureWeekDayShortLabels();
   return week_day_short_labels_;
 }
 
@@ -408,7 +378,29 @@ String LocaleWin::DateTimeFormatWithoutSeconds() {
 }
 
 const Vector<String>& LocaleWin::ShortMonthLabels() {
-  EnsureShortMonthLabels();
+  if (!short_month_labels_.empty()) {
+    return short_month_labels_;
+  }
+  const LCTYPE kTypes[12] = {
+      LOCALE_SABBREVMONTHNAME1,  LOCALE_SABBREVMONTHNAME2,
+      LOCALE_SABBREVMONTHNAME3,  LOCALE_SABBREVMONTHNAME4,
+      LOCALE_SABBREVMONTHNAME5,  LOCALE_SABBREVMONTHNAME6,
+      LOCALE_SABBREVMONTHNAME7,  LOCALE_SABBREVMONTHNAME8,
+      LOCALE_SABBREVMONTHNAME9,  LOCALE_SABBREVMONTHNAME10,
+      LOCALE_SABBREVMONTHNAME11, LOCALE_SABBREVMONTHNAME12,
+  };
+  short_month_labels_.reserve(std::size(kTypes));
+  for (unsigned i = 0; i < std::size(kTypes); ++i) {
+    short_month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
+    if (short_month_labels_.back().empty()) {
+      short_month_labels_.Shrink(0);
+      short_month_labels_.reserve(std::size(WTF::kMonthName));
+      for (unsigned m = 0; m < std::size(WTF::kMonthName); ++m) {
+        short_month_labels_.push_back(WTF::kMonthName[m]);
+      }
+      break;
+    }
+  }
   return short_month_labels_;
 }
 
