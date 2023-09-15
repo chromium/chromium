@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
+#include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 #include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -110,6 +111,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   // TODO: b:298285960 - add the instantiation of this instance.
   std::unique_ptr<EditorEventProxy> editor_event_proxy_;
   std::unique_ptr<EditorClientConnector> editor_client_connector_;
+  std::unique_ptr<EditorTextQueryProvider> text_query_provider_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
