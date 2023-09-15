@@ -149,7 +149,7 @@ function stopMonitoring() {
 /**
  * Returns if monitoring mode is stopped.
  */
-function monitoringStopped() {
+function monitoringStopped(): boolean {
   return inMonitoringMode && !fetchDiffScheduler;
 }
 
@@ -262,12 +262,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Enable calling generateHistogramsAsText() from
   // histograms_internals_ui_browsertest.js for testing purposes.
-  (document as any).generateHistogramsForTest = generateHistogramsAsText;
   // Enable accessing monitoring mode status from
   // histograms_internals_ui_browsertest.js for testing purposes.
-  (document as any).monitoringStopped = monitoringStopped;
+  Object.assign(window, {generateHistogramsAsText, monitoringStopped});
   requestHistograms();
 });
+
+declare global {
+  interface Window {
+    generateHistogramsAsText(): string;
+    monitoringStopped(): boolean;
+  }
+}
 
 /**
  * Reload histograms when the "#abc" in "chrome://histograms/#abc" changes.

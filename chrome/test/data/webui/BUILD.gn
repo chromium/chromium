@@ -433,7 +433,6 @@ ts_library("build_ts") {
 
     # TODO(dpapad): Migrate the files below to TypeScript and remove allowJs
     # from tsconfig_base.json.
-    "histograms/histograms_internals_test.js",
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
     "identity_internals/identity_internals_test.js",
@@ -494,6 +493,7 @@ generate_grd("build_grd") {
     "discards:build_grdp",
     "downloads:build_grdp",
     "engagement:build_grdp",
+    "histograms:build_grdp",
     "history:build_grdp",
     "history_clusters_internals:build_grdp",
     "js:build_grdp",
@@ -527,6 +527,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/discards/resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/engagement/resources.grdp",
+    "$target_gen_dir/histograms/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/history_clusters_internals/resources.grdp",
     "$target_gen_dir/js/resources.grdp",

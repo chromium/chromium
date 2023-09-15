@@ -2,27 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://histograms/histograms_internals.js';
+
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /**
- * @returns {Promise} a Promise that will resolve on the histograms tag
- * receiving a 'histograms-updated-for-test' event.
+ * @return A Promise that will resolve on the histograms tag
+ *     receiving a 'histograms-updated-for-test' event.
  */
-async function histogramsUpdated() {
+function histogramsUpdated() {
   return new Promise((resolve) => {
-    document.querySelector('#histograms')
+    getRequiredElement('histograms')
         .addEventListener('histograms-updated-for-test', resolve);
   });
 }
 
 /**
- * @returns {Promise} a Promise that will resolve when there is at least one
- * histogram shown on the page.
+ * @return A Promise that will resolve when there is at least one
+ *     histogram shown on the page.
  */
-async function histogramsAreShown() {
-  return new Promise((resolve) => {
+function histogramsAreShown() {
+  return new Promise<void>((resolve) => {
     const checkHistograms = () => {
-      if (document.querySelector('#histograms').childElementCount > 0) {
+      if (getRequiredElement('histograms').childElementCount > 0) {
         resolve();
       } else {
         setTimeout(checkHistograms, 250);
@@ -34,18 +37,18 @@ async function histogramsAreShown() {
 
 suite('HistogramsInternals', () => {
   test('RefreshHistograms', async function() {
-    document.querySelector('#refresh').click();
+    getRequiredElement('refresh').click();
     await histogramsUpdated();
     const histogramHeader = 'Histogram: HTMLOut recorded 5 samples';
-    const indexOfHeader = document.body.textContent.indexOf(histogramHeader);
+    const indexOfHeader = document.body.textContent!.indexOf(histogramHeader);
     assertNotEquals(-1, indexOfHeader);
     assertEquals(
-        indexOfHeader, document.body.textContent.lastIndexOf(histogramHeader),
+        indexOfHeader, document.body.textContent!.lastIndexOf(histogramHeader),
         'refresh should replace existing histograms');
   });
 
   test('NoDummyHistograms', async function() {
-    document.querySelector('#refresh').click();
+    getRequiredElement('refresh').click();
     await histogramsUpdated();
     document.querySelectorAll('.histogram-header-text').forEach(header => {
       assertNotEquals(header.textContent, '');
@@ -67,28 +70,29 @@ suite('HistogramsInternals', () => {
         '20  O                                                                         (0 = 0.0%) {100.0%}';
 
     assertNotEquals(
-        document.generateHistogramsForTest().indexOf(expectedContent), -1);
+        window.generateHistogramsAsText().indexOf(expectedContent), -1);
   });
 
   test('StopMonitoring', async function() {
-    document.querySelector('#enable_monitoring').click();
+    getRequiredElement('enable_monitoring').click();
     // Wait until histograms are updated in monitoring mode.
     await histogramsUpdated();
 
-    const stopButton = document.querySelector('#stop');
-    assertFalse(document.monitoringStopped());
+    const stopButton = getRequiredElement<HTMLButtonElement>('stop');
+    assertFalse(window.monitoringStopped());
     assertEquals(stopButton.textContent, 'Stop');
     assertFalse(stopButton.disabled);
 
     stopButton.click();
-    assertTrue(document.monitoringStopped());
+    assertTrue(window.monitoringStopped());
     assertEquals(stopButton.textContent, 'Stopped');
     assertTrue(stopButton.disabled);
   });
 
   test('SubprocessCheckbox', async function() {
     await histogramsAreShown();
-    const subprocessCheckbox = document.querySelector('#subprocess_checkbox');
+    const subprocessCheckbox =
+        getRequiredElement<HTMLInputElement>('subprocess_checkbox');
     assertFalse(subprocessCheckbox.disabled);
     assertFalse(subprocessCheckbox.hasAttribute('title'));
     subprocessCheckbox.click();
@@ -97,19 +101,20 @@ suite('HistogramsInternals', () => {
 
   test('SubprocessCheckboxInMonitoringMode', async function() {
     // Enable monitoring mode.
-    document.querySelector('#enable_monitoring').click();
+    getRequiredElement('enable_monitoring').click();
     await histogramsAreShown();
-    const subprocessCheckbox = document.querySelector('#subprocess_checkbox');
+    const subprocessCheckbox =
+        getRequiredElement<HTMLInputElement>('subprocess_checkbox');
     // Subprocess checkbox will be disabled when monitoring mode is on.
     assertTrue(subprocessCheckbox.disabled);
     assertTrue(subprocessCheckbox.hasAttribute('title'));
 
     // Stop monitoring mode.
-    document.querySelector('#stop').click();
+    getRequiredElement('stop').click();
     assertTrue(subprocessCheckbox.disabled);
 
     // Exit monitoring mode.
-    document.querySelector('#disable_monitoring').click();
+    getRequiredElement('disable_monitoring').click();
     await histogramsAreShown();
     // Subprocess checkbox should be enabled again.
     assertFalse(subprocessCheckbox.disabled);
