@@ -2,27 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getAboutInfoForTest} from 'chrome://sync-internals/about.js';
+import {setAllNodesForTest} from 'chrome://sync-internals/chrome_sync.js';
+import {setupSyncResultsListForTest} from 'chrome://sync-internals/search.js';
 import {assertEquals, assertFalse, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * Checks aboutInfo's details section for the specified field.
- * @param {boolean} isValid Whether the field is valid.
- * @param {string} key The name of the key to search for in details.
- * @param {string} value The expected value if |key| is found.
- * @return {boolean} whether the field was found in the details.
- * @protected
+ * @param isValid Whether the field is valid.
+ * @param key The name of the key to search for in details.
+ * @param value The expected value if |key| is found.
+ * @return whether the field was found in the details.
  */
-function hasInDetails(isValid, key, value) {
+function hasInDetails(isValid: boolean, key: string, value: string): boolean {
   const details = getAboutInfoForTest().details;
   if (!details) {
     return false;
   }
-  for (let i = 0; i < details.length; ++i) {
-    if (!details[i].data) {
+  for (const detail of details) {
+    if (!detail.data) {
       continue;
     }
-    for (let j = 0; j < details[i].data.length; ++j) {
-      const obj = details[i].data[j];
+    for (const obj of detail.data) {
       if (obj.stat_name === key) {
         return (obj.stat_status !== 'uninitialized') === isValid &&
             obj.stat_value === value;
@@ -50,7 +54,7 @@ const HARD_CODED_ALL_NODES = [{
       'IS_UNAPPLIED_UPDATE': false,
       'IS_UNSYNCED': false,
       'LOCAL_EXTERNAL_ID': '0',
-      'META_HANDLE': '387',
+      'METAHANDLE': 387,
       'MTIME': 'Wednesday, December 31, 1969 4:00:00 PM',
       'NON_UNIQUE_NAME': 'Autofill',
       'PARENT_ID': 'r',
@@ -63,6 +67,7 @@ const HARD_CODED_ALL_NODES = [{
       'SERVER_SPECIFICS': {'autofill': {'usage_timestamp': []}},
       'SERVER_UNIQUE_POSITION': 'INVALID[]',
       'SERVER_VERSION': '1396470970810000',
+      'SERVER_VERSION_TIME': '0',
       'SPECIFICS': {'autofill': {'usage_timestamp': []}},
       'SYNCING': false,
       'TRANSACTION_VERSION': '1',
@@ -85,7 +90,7 @@ const HARD_CODED_ALL_NODES = [{
       'IS_UNAPPLIED_UPDATE': false,
       'IS_UNSYNCED': false,
       'LOCAL_EXTERNAL_ID': '0',
-      'META_HANDLE': '2989',
+      'METAHANDLE': 2989,
       'MTIME': 'Friday, March 7, 2014 5:12:19 PM',
       'NON_UNIQUE_NAME': 'autofill_entry|Email|rlsynctet2',
       'PARENT_ID': 'sZ:ADqtAZwzF4GOIyvkI2enSI62AU5p/7MNmvuSSyf7yXJ1Sk' +
@@ -106,6 +111,7 @@ const HARD_CODED_ALL_NODES = [{
       },
       'SERVER_UNIQUE_POSITION': 'INVALID[]',
       'SERVER_VERSION': '1394241139528639',
+      'SERVER_VERSION_TIME': '0',
       'SPECIFICS': {
         'autofill': {
           'name': 'Email',
@@ -232,32 +238,32 @@ suite('SyncInternals', function() {
 
   test('LoadPastedAboutInfo', function() {
     // Expose the text field.
-    document.querySelector('#import-status').click();
+    getRequiredElement('import-status').click();
 
     // Fill it with fake data.
-    document.querySelector('#status-text').value =
+    getRequiredElement<HTMLTextAreaElement>('status-text').value =
         JSON.stringify(HARD_CODED_ABOUT_INFO);
 
     // Trigger the import.
-    document.querySelector('#import-status').click();
+    getRequiredElement('import-status').click();
 
     assertTrue(hasInDetails(true, 'Summary', 'Sync service initialized'));
   });
 
   test('NetworkEventsTest', function() {
-    cr.webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_1);
-    cr.webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_2);
+    webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_1);
+    webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_2);
 
     // Make sure that both events arrived.
     const eventCount =
-        document.querySelector('#traffic-event-container').children.length;
+        getRequiredElement('traffic-event-container').children.length;
     assertGE(eventCount, 2);
 
     // Check that the event details are displayed.
-    const displayedEvent1 = document.querySelector('#traffic-event-container')
-                                .children[eventCount - 2];
-    const displayedEvent2 = document.querySelector('#traffic-event-container')
-                                .children[eventCount - 1];
+    const displayedEvent1 =
+        getRequiredElement('traffic-event-container').children[eventCount - 2]!;
+    const displayedEvent2 =
+        getRequiredElement('traffic-event-container').children[eventCount - 1]!;
     assertTrue(
         displayedEvent1.innerHTML.includes(NETWORK_EVENT_DETAILS_1.details));
     assertTrue(
@@ -268,19 +274,19 @@ suite('SyncInternals', function() {
         displayedEvent2.innerHTML.includes(NETWORK_EVENT_DETAILS_2.type));
 
     // Test that repeated events are not re-displayed.
-    cr.webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_1);
+    webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_1);
     assertEquals(
         eventCount,
-        document.querySelector('#traffic-event-container').children.length);
+        getRequiredElement('traffic-event-container').children.length);
   });
 
 
   test('SearchTabDoesntChangeOnItemSelect', function() {
     // Select the search tab.
-    const searchTab = document.querySelector('#sync-search-tab');
+    const searchTab = getRequiredElement('sync-search-tab');
     const tabs = Array.from(document.querySelectorAll('div[slot=\'tab\']'));
     const index = tabs.indexOf(searchTab);
-    document.querySelector('cr-tab-box')
+    getRequiredElement('sync-page')
         .setAttribute('selected-index', index.toString());
     assertTrue(searchTab.hasAttribute('selected'));
 
@@ -302,7 +308,8 @@ suite('SyncInternals', function() {
 
     // Select the first list item and verify the search tab remains selected.
     const firstItem =
-        document.querySelector('#sync-results-list').querySelector('li');
+        getRequiredElement('sync-results-list').querySelector('li');
+    assertTrue(!!firstItem);
     assertFalse(firstItem.hasAttribute('selected'));
     firstItem.click();
     // Verify that this selected the item.
@@ -314,34 +321,34 @@ suite('SyncInternals', function() {
     setAllNodesForTest(HARD_CODED_ALL_NODES);
 
     // Hit the refresh button.
-    document.querySelector('#node-browser-refresh-button').click();
+    getRequiredElement('node-browser-refresh-button').click();
 
     // Check that the refresh time was updated.
     assertNotEquals(
-        document.querySelector('#node-browser-refresh-time').textContent,
-        'Never');
+        getRequiredElement('node-browser-refresh-time').textContent, 'Never');
 
     // Verify some hard-coded assumptions.  These depend on the value of the
     // hard-coded nodes, specified elsewhere in this file.
 
     // Start with the tree itself.
-    const tree = document.querySelector('#sync-node-tree');
+    const tree = getRequiredElement<CrTreeElement>('sync-node-tree');
     assertEquals(1, tree.items.length);
 
     // Check the type root and expand it.
-    const typeRoot = tree.items[0];
+    const typeRoot = tree.items[0]!;
     assertFalse(typeRoot.hasAttribute('expanded'));
     typeRoot.toggleAttribute('expanded', true);
     assertEquals(1, typeRoot.items.length);
 
     // An actual sync node.  The child of the type root.
     const leaf = typeRoot.items[0];
+    assertTrue(!!leaf);
 
     // Verify that selecting it affects the details view.
-    assertTrue(document.querySelector('#node-details').hasAttribute('hidden'));
+    assertTrue(getRequiredElement('node-details').hasAttribute('hidden'));
     tree.selectedItem = leaf;
     assertTrue(leaf.hasAttribute('selected'));
-    assertFalse(document.querySelector('#node-details').hasAttribute('hidden'));
+    assertFalse(getRequiredElement('node-details').hasAttribute('hidden'));
   });
 
   test('NodeBrowserRefreshOnTabSelect', function() {
@@ -349,40 +356,36 @@ suite('SyncInternals', function() {
 
     // Should start with non-refreshed node browser.
     assertEquals(
-        document.querySelector('#node-browser-refresh-time').textContent,
-        'Never');
+        getRequiredElement('node-browser-refresh-time').textContent, 'Never');
 
     // Selecting the tab will refresh it.
-    const syncBrowserTab = document.querySelector('#sync-browser-tab');
+    const syncBrowserTab = getRequiredElement('sync-browser-tab');
     const tabs = Array.from(document.querySelectorAll('div[slot=\'tab\']'));
     const index = tabs.indexOf(syncBrowserTab);
-    document.querySelector('cr-tab-box')
-        .setAttribute('selected-index', index.toString());
+    const tabBox = getRequiredElement('sync-page');
+    tabBox.setAttribute('selected-index', index.toString());
     assertTrue(syncBrowserTab.hasAttribute('selected'));
     assertNotEquals(
-        document.querySelector('#node-browser-refresh-time').textContent,
-        'Never');
+        getRequiredElement('node-browser-refresh-time').textContent, 'Never');
 
     // Re-selecting the tab shouldn't re-refresh.
-    document.querySelector('#node-browser-refresh-time').textContent =
-        'TestCanary';
-    document.querySelector('cr-tab-box').setAttribute('selected-index', '0');
-    document.querySelector('cr-tab-box')
-        .setAttribute('selected-index', index.toString());
+    getRequiredElement('node-browser-refresh-time').textContent = 'TestCanary';
+    tabBox.setAttribute('selected-index', '0');
+    tabBox.setAttribute('selected-index', index.toString());
     assertEquals(
-        document.querySelector('#node-browser-refresh-time').textContent,
+        getRequiredElement('node-browser-refresh-time').textContent,
         'TestCanary');
   });
 
   test('DumpSyncEventsToText', function() {
     // Dispatch an event.
-    cr.webUIListenerCallback('onProtocolEvent', {someField: 'someData'});
+    webUIListenerCallback('onProtocolEvent', {someField: 'someData'});
 
     // Click the dump-to-text button.
-    document.querySelector('#dump-to-text').click();
+    getRequiredElement('dump-to-text').click();
 
     // Verify our event is among the results.
-    const eventDumpText = document.querySelector('#data-dump').textContent;
+    const eventDumpText = getRequiredElement('data-dump').textContent!;
 
     assertGE(eventDumpText.indexOf('onProtocolEvent'), 0);
     assertGE(eventDumpText.indexOf('someData'), 0);

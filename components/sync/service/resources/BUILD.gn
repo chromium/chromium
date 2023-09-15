@@ -31,6 +31,7 @@ build_webui("build") {
     "user_events.ts",
   ]
 
+  ts_composite = true
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",

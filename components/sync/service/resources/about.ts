@@ -19,12 +19,24 @@ interface TypeStatus {
 
 interface Detail {
   is_sensitive: boolean;
+  data?: Data[];
 }
 
-export let aboutInfo: {details?: Detail[], type_status?: TypeStatus[]} = {};
+interface Data {
+  stat_name: string;
+  stat_value: string;
+  stat_status: string;
+}
+
+interface AboutInfo {
+  details?: Detail[];
+  type_status?: TypeStatus[];
+}
+
+export let aboutInfo: AboutInfo = {};
 
 // For tests
-function getAboutInfoForTest() {
+export function getAboutInfoForTest(): AboutInfo {
   return aboutInfo;
 }
 
@@ -275,8 +287,7 @@ function onLoad() {
   requestDataAndRegisterForUpdates();
 }
 
-// For JS eval and tests.
-Object.assign(
-    window, {addAboutExpandListener, getAboutInfoForTest, highlightIfChanged});
+// For JS eval.
+Object.assign(window, {addAboutExpandListener, highlightIfChanged});
 
 document.addEventListener('DOMContentLoaded', onLoad, false);

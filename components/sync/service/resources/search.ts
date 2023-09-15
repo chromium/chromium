@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {SyncNode} from './chrome_sync.js';
 import {decorateQuickQueryControls, SyncSearchManager} from './sync_search.js';
 
 const submit = document.querySelector<HTMLButtonElement>('#sync-search-submit');
@@ -22,8 +21,6 @@ decorateQuickQueryControls(quickLinks, submit, query);
 const manager = new SyncSearchManager(query, submit, status, results, detail);
 
 // Add a way to override the data model for the sync results list for testing.
-function setupSyncResultsListForTest(data: SyncNode[]) {
+export function setupSyncResultsListForTest(data: object[]) {
   manager.setDataForTest(data);
 }
-
-Object.assign(window, {setupSyncResultsListForTest});

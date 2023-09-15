@@ -91,9 +91,14 @@ export function triggerRefresh() {
   chrome.send('triggerRefresh');
 }
 
+interface ServerSpecifics {
+  autofill: any;
+}
+
+type Specifics = ServerSpecifics;
+
 export interface SyncNode {
   BASE_VERSION: string;
-  BASE_VERSION_STRING: string;
   ID: string;
   IS_DIR: boolean;
   METAHANDLE: number;
@@ -102,8 +107,8 @@ export interface SyncNode {
   UNIQUE_SERVER_TAG: string;
   SERVER_VERSION: string;
   SERVER_VERSION_TIME: string;
-  SERVER_SPECIFICS: string;
-  SPECIFICS: string;
+  SERVER_SPECIFICS: ServerSpecifics;
+  SPECIFICS: Specifics;
   modelType: string;
   positionIndex?: number;
 }
@@ -126,8 +131,6 @@ export function getAllNodes(callback: (p: SyncNodeMap) => void) {
   sendWithPromise('getAllNodes').then(callback);
 }
 
-function setAllNodesForTest(nodes: SyncNodeMap) {
+export function setAllNodesForTest(nodes: SyncNodeMap) {
   nodesForTest = nodes;
 }
-
-Object.assign(window, {setAllNodesForTest});
