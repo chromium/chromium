@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -599,6 +600,68 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // The local tab should have navigated too.
   EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url);
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, SimulateLocalThenSyncTabNavigations) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  ASSERT_EQ(0, tabstrip->count());
+  AddTabToBrowser(browser, 0);
+  ASSERT_EQ(1, tabstrip->count());
+
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+
+  const GURL url_1 = GURL("https://www.example.com");
+  const GURL url_2 = GURL("https://www.example2.com");
+
+  // Manually navigate the webcontents of the saved tab locally.
+  tabstrip->GetWebContentsAt(0)->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url_1));
+  EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url_1);
+
+  // Simulate a sync navigation on the same tab.
+  service()
+      ->listener()
+      ->GetLocalTabGroupListenerMapForTesting()
+      .at(group_id)
+      .GetWebContentsTokenMapForTesting()
+      .at(tabstrip->GetWebContentsAt(0))
+      .NavigateToUrl(url_2);
+  EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url_2);
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, SimulateSyncThenLocalTabNavigations) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  ASSERT_EQ(0, tabstrip->count());
+  AddTabToBrowser(browser, 0);
+  ASSERT_EQ(1, tabstrip->count());
+
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+
+  const GURL url_1 = GURL("https://www.example.com");
+  const GURL url_2 = GURL("https://www.example2.com");
+
+  // Simulate a sync navigation on the same tab.
+  service()
+      ->listener()
+      ->GetLocalTabGroupListenerMapForTesting()
+      .at(group_id)
+      .GetWebContentsTokenMapForTesting()
+      .at(tabstrip->GetWebContentsAt(0))
+      .NavigateToUrl(url_2);
+  EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url_2);
+
+  // Manually navigate the webcontents of the saved tab locally.
+  tabstrip->GetWebContentsAt(0)->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url_1));
+  EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url_1);
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest, RemoveTabFromSyncRemovesLocalTab) {

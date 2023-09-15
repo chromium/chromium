@@ -59,16 +59,17 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
 
 void SavedTabGroupWebContentsListener::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!IsSaveableNavigation(navigation_handle)) {
-    return;
-  }
-
   // If the navigation was the result of a sync update we don't want to update
   // the SavedTabGroupModel.
   if (navigation_handle == handle_from_sync_update_) {
-    return;
-  } else {
     handle_from_sync_update_ = nullptr;
+    return;
+  }
+
+  handle_from_sync_update_ = nullptr;
+
+  if (!IsSaveableNavigation(navigation_handle)) {
+    return;
   }
 
   SavedTabGroup* group = model_->GetGroupContainingTab(token_);
