@@ -23,10 +23,7 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-# TODO(crbug.com/1444511):Add `android` to `supported_on` and remove from
-# `future_on` once have relevant approvals.
 future_on:
-- android
 - fuchsia
 items:
 - caption: Allow higher-protection proxied lookups
@@ -42,6 +39,7 @@ supported_on:
 - chrome.*:118-
 - chrome_os:118-
 - ios:118-
+- android:119-
 tags:
 - google-sharing
 - system-security
