@@ -44,12 +44,14 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LetterSpacing letter_spacing,
     const std::string& font,
     double font_size,
-    read_anything::mojom::Colors color) {
+    read_anything::mojom::Colors color,
+    double speech_rate) {
   line_spacing_ = GetLineSpacingValue(line_spacing);
   letter_spacing_ = GetLetterSpacingValue(letter_spacing);
   font_name_ = font;
   font_size_ = font_size;
   color_theme_ = static_cast<size_t>(color);
+  speech_rate_ = speech_rate;
 }
 
 void ReadAnythingAppModel::InsertDisplayNode(ui::AXNodeID node) {

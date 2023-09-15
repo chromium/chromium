@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // out/Debug/browser_tests \
-//    --gtest_filter=ReadAnythingAppToolbarTest.Checkmarks_Visible
+//    --gtest_filter=ReadAnythingAppReadAloudTest.Checkmarks_Visible
 
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the

@@ -573,9 +573,10 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LetterSpacing letter_spacing,
     const std::string& font,
     double font_size,
-    read_anything::mojom::Colors color) {
+    read_anything::mojom::Colors color,
+    double speech_rate) {
   model_.OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
-                                     font_size, color);
+                                     font_size, color, speech_rate);
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
   std::string script = "chrome.readingMode.restoreSettingsFromPrefs();";
@@ -623,6 +624,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
       .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
       .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
+      .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isWebUIToolbarVisible",
                    &ReadAnythingAppController::IsWebUIToolbarEnabled)
       .SetProperty("isReadAloudEnabled",
@@ -662,6 +664,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onYellowTheme", &ReadAnythingAppController::OnYellowTheme)
       .SetMethod("onBlueTheme", &ReadAnythingAppController::OnBlueTheme)
       .SetMethod("onFontChange", &ReadAnythingAppController::OnFontChange)
+      .SetMethod("onSpeechRateChange",
+                 &ReadAnythingAppController::OnSpeechRateChange)
       .SetMethod("getLineSpacingValue",
                  &ReadAnythingAppController::GetLineSpacingValue)
       .SetMethod("getLetterSpacingValue",
@@ -730,6 +734,10 @@ float ReadAnythingAppController::LineSpacing() const {
 
 int ReadAnythingAppController::ColorTheme() const {
   return model_.color_theme();
+}
+
+float ReadAnythingAppController::SpeechRate() const {
+  return model_.speech_rate();
 }
 
 int ReadAnythingAppController::StandardLineSpacing() const {
@@ -994,6 +1002,10 @@ void ReadAnythingAppController::OnBlueTheme() {
 
 void ReadAnythingAppController::OnFontChange(const std::string& font) {
   page_handler_->OnFontChange(font);
+}
+
+void ReadAnythingAppController::OnSpeechRateChange(double rate) {
+  page_handler_->OnSpeechRateChange(rate);
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {

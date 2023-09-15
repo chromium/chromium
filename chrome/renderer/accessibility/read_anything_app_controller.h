@@ -97,7 +97,8 @@ class ReadAnythingAppController
       read_anything::mojom::LetterSpacing letter_spacing,
       const std::string& font,
       double font_size,
-      read_anything::mojom::Colors color) override;
+      read_anything::mojom::Colors color,
+      double speech_rate) override;
   void SetDefaultLanguageCode(const std::string& code) override;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void ScreenAIServiceReady() override;
@@ -112,6 +113,7 @@ class ReadAnythingAppController
   SkColor BackgroundColor() const;
   std::string FontName() const;
   float FontSize() const;
+  float SpeechRate() const;
   void OnFontSizeChanged(bool increase);
   void OnFontSizeReset();
   SkColor ForegroundColor() const;
@@ -161,6 +163,7 @@ class ReadAnythingAppController
   void OnYellowTheme();
   void OnBlueTheme();
   void OnFontChange(const std::string& font);
+  void OnSpeechRateChange(double rate);
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts() const;

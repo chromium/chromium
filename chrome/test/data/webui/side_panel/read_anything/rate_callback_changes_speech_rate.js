@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // out/Debug/browser_tests \
-//    --gtest_filter=ReadAnythingAppToolbarTest.RateCallback_ChangesSpeechRate
+//    --gtest_filter=ReadAnythingAppReadAloudTest.RateCallback_ChangesSpeechRate
 
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the

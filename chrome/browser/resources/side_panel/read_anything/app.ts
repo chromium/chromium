@@ -169,6 +169,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // If the WebUI toolbar should be shown. This happens when the WebUI feature
   // flag is enabled.
   private isWebUIToolbarVisible_: boolean;
+  private isReadAloudEnabled_: boolean;
 
   synth = window.speechSynthesis;
 
@@ -192,6 +193,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     if (chrome.readingMode) {
       chrome.readingMode.onConnected();
     }
@@ -523,6 +525,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // TODO(crbug.com/1474951): Ensure rate change happens immediately, rather
     // than on the next set of text.
+    // TODO(crbug.com/1474951): Ensure the rate is valid for the current speech
+    // engine.
     message.rate = this.rate;
 
     this.speechStarted = true;
@@ -646,7 +650,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   restoreSettingsFromPrefs() {
-    // TODO(crbug.com/1474951): Restore rate settings
+    if (this.isReadAloudEnabled_) {
+      this.onSpeechRateChange(chrome.readingMode.speechRate);
+    }
     this.updateLineSpacing(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing(chrome.readingMode.letterSpacing);
     this.updateFont(chrome.readingMode.fontName);

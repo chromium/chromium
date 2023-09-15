@@ -181,7 +181,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.updateFonts();
   }
 
-  restoreSettingsFromPrefs(colorSuffix: string|undefined) {
+  restoreSettingsFromPrefs(colorSuffix?: string) {
     const fontNodes = Array.from(this.$.fontMenu.children);
     fontNodes.forEach((element) => {
       if (element instanceof HTMLButtonElement) {
@@ -193,7 +193,12 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       }
     });
 
-    // TODO(crbug.com/1474951): Restore rate checkmark
+    if (this.isReadAloudEnabled_) {
+      const speechRate = parseFloat(chrome.readingMode.speechRate.toFixed(1));
+      this.setRateIcon_(speechRate);
+      this.setCheckMarkForMenu_(
+          this.$.rateMenu, this.rateOptions_.indexOf(speechRate));
+    }
     this.setCheckMarkForMenu_(
         this.$.fontMenu,
         this.fontOptions_.indexOf(chrome.readingMode.fontName));
@@ -354,16 +359,17 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {
+    chrome.readingMode.onSpeechRateChange(event.model.item);
     if (this.contentPage) {
       this.contentPage.onSpeechRateChange(event.model.item);
-      this.setRateIcon(event.model.item);
+      this.setRateIcon_(event.model.item);
     }
     this.setCheckMarkForMenu_(this.$.rateMenu, event.model.index);
 
     this.closeMenus_();
   }
 
-  setRateIcon(rate: number) {
+  private setRateIcon_(rate: number) {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
     const button = shadowRoot.getElementById('rate');

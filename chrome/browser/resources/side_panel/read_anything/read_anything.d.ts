@@ -34,6 +34,9 @@ declare namespace chrome {
     // The current color theme value.
     let colorTheme: number;
 
+    // Current audio settings values.
+    let speechRate: number;
+
     // Enum values for various visual theme changes.
     let standardLineSpacing: number;
     let looseLineSpacing: number;
@@ -127,6 +130,9 @@ declare namespace chrome {
 
     // Called when the font is changed via the webui toolbar.
     function onFontChange(font: string): void;
+
+    // Called when the speech rate is changed via the webui toolbar.
+    function onSpeechRateChange(rate: number): void;
 
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.

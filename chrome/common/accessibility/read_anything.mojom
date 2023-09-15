@@ -99,6 +99,12 @@ interface UntrustedPageHandler {
   // the webui toolbar.
   OnColorChange(read_anything.mojom.Colors color);
 
+  // Informs the browser controller that the user updated the speech rate via
+  // the webui toolbar. rate is a multiplicative scale where 1 is the baseline,
+  // and 2 is twice as fast, 0.5 is half as fast. See
+  // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/rate
+  OnSpeechRateChange(double rate);
+
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
   // the target tree, which is in the main frame of the currently active web
@@ -157,7 +163,8 @@ interface UntrustedPage {
                            read_anything.mojom.LetterSpacing letter_spacing,
                            string font,
                            double font_size,
-                           read_anything.mojom.Colors color);
+                           read_anything.mojom.Colors color,
+                           double speech_rate);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   [EnableIf=enable_screen_ai_service]

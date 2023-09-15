@@ -88,3 +88,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
                        ReadAloud_GranularityHiddenWhenPaused) {
   ASSERT_TRUE(RunTest("granularity_hidden_when_paused.js"));
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest, Checkmarks_Visible) {
+  ASSERT_TRUE(RunTest("checkmark_visible_on_selected.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppReadAloudTest,
+                       RateCallback_ChangesSpeechRate) {
+  ASSERT_TRUE(RunTest("rate_callback_changes_speech_rate.js"));
+}

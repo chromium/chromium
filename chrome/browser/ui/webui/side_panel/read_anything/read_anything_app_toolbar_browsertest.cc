@@ -68,10 +68,6 @@ class ReadAnythingAppToolbarTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, Checkmarks_Visible) {
-  ASSERT_TRUE(RunTest("checkmark_visible_on_selected.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, SupportedFonts_Correct) {
   ASSERT_TRUE(RunTest("supported_fonts.js"));
 }
@@ -98,11 +94,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
                        LetterSpacingCallback_ChangesLetterSpacing) {
   ASSERT_TRUE(RunTest("letter_spacing_callback_changes_letter_spacing.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
-                       RateCallback_ChangesSpeechRate) {
-  ASSERT_TRUE(RunTest("rate_callback_changes_speech_rate.js"));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,

@@ -61,6 +61,7 @@ class ReadAnythingAppModel {
   int color_theme() const { return color_theme_; }
   const SkColor& foreground_color() const { return foreground_color_; }
   const SkColor& background_color() const { return background_color_; }
+  float speech_rate() const { return speech_rate_; }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -109,7 +110,8 @@ class ReadAnythingAppModel {
       read_anything::mojom::LetterSpacing letter_spacing,
       const std::string& font,
       double font_size,
-      read_anything::mojom::Colors color);
+      read_anything::mojom::Colors color,
+      double speech_rate);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
 
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
@@ -234,6 +236,7 @@ class ReadAnythingAppModel {
   SkColor background_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
+  float speech_rate_ = kReadAnythingDefaultSpeechRate;
 
   // Selection information.
   bool has_selection_ = false;

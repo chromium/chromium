@@ -64,6 +64,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
   if (features::IsReadAnythingWebUIToolbarEnabled()) {
     PrefService* prefs = browser_->profile()->GetPrefs();
+    double speechRate =
+        features::IsReadAnythingReadAloudEnabled()
+            ? prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate)
+            : kReadAnythingDefaultSpeechRate;
     page_->OnSettingsRestoredFromPrefs(
         static_cast<read_anything::mojom::LineSpacing>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing)),
@@ -72,7 +76,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         prefs->GetString(prefs::kAccessibilityReadAnythingFontName),
         prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
         static_cast<read_anything::mojom::Colors>(
-            prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)));
+            prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
+        speechRate);
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -149,6 +154,11 @@ void ReadAnythingUntrustedPageHandler::OnColorChange(
     read_anything::mojom::Colors color) {
   browser_->profile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingColorInfo, static_cast<size_t>(color));
+}
+
+void ReadAnythingUntrustedPageHandler::OnSpeechRateChange(double rate) {
+  browser_->profile()->GetPrefs()->SetDouble(
+      prefs::kAccessibilityReadAnythingSpeechRate, rate);
 }
 
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(
