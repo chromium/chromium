@@ -28,10 +28,11 @@
 
 namespace blink {
 
-CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type)
-    : host_type_(host_type) {}
+CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
+                                                       const gfx::Size& size)
+    : CanvasResourceHost(size), host_type_(host_type) {}
 
-void CanvasRenderingContextHost::RecordCanvasSizeToUMA(const gfx::Size& size) {
+void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {
   if (did_record_canvas_size_to_uma_)
     return;
   did_record_canvas_size_to_uma_ = true;
@@ -42,11 +43,11 @@ void CanvasRenderingContextHost::RecordCanvasSizeToUMA(const gfx::Size& size) {
       break;
     case HostType::kCanvasHost:
       UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.SqrtNumberOfPixels",
-                                  std::sqrt(size.Area64()), 1, 5000, 100);
+                                  std::sqrt(Size().Area64()), 1, 5000, 100);
       break;
     case HostType::kOffscreenCanvasHost:
       UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.OffscreenCanvas.SqrtNumberOfPixels",
-                                  std::sqrt(size.Area64()), 1, 5000, 100);
+                                  std::sqrt(Size().Area64()), 1, 5000, 100);
       break;
   }
 }

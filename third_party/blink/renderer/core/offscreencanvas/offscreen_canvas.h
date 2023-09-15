@@ -46,14 +46,14 @@ class CORE_EXPORT OffscreenCanvas final
  public:
   static OffscreenCanvas* Create(ScriptState*, unsigned width, unsigned height);
 
-  OffscreenCanvas(ExecutionContext*, const gfx::Size&);
+  OffscreenCanvas(ExecutionContext*, gfx::Size);
   ~OffscreenCanvas() override;
   void Dispose();
 
   bool IsOffscreenCanvas() const override { return true; }
   // IDL attributes
-  unsigned width() const { return size_.width(); }
-  unsigned height() const { return size_.height(); }
+  unsigned width() const { return Size().width(); }
+  unsigned height() const { return Size().height(); }
   void setWidth(unsigned);
   void setHeight(unsigned);
 
@@ -69,8 +69,7 @@ class CORE_EXPORT OffscreenCanvas final
                               const ImageEncodeOptions* options,
                               ExceptionState& exception_state);
 
-  const gfx::Size& Size() const override { return size_; }
-  void SetSize(const gfx::Size&);
+  void SetSize(gfx::Size) override;
   void RecordTransfer();
 
   void SetPlaceholderCanvasId(DOMNodeId canvas_id);
@@ -245,7 +244,6 @@ class CORE_EXPORT OffscreenCanvas final
 
   DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
 
-  gfx::Size size_;
   bool disposing_ = false;
   bool is_neutered_ = false;
   bool origin_clean_ = true;

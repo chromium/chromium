@@ -103,12 +103,10 @@ class CORE_EXPORT HTMLCanvasElement final
   unsigned width() const { return Size().width(); }
   unsigned height() const { return Size().height(); }
 
-  const gfx::Size& Size() const override { return size_; }
-
   void setWidth(unsigned, ExceptionState&);
   void setHeight(unsigned, ExceptionState&);
 
-  void SetSize(const gfx::Size& new_size);
+  void SetSize(gfx::Size new_size) final;
 
   // Called by Document::getCSSCanvasContext as well as above getContext().
   CanvasRenderingContext* GetCanvasRenderingContext(
@@ -354,7 +352,7 @@ class CORE_EXPORT HTMLCanvasElement final
   std::unique_ptr<Canvas2DLayerBridge> Create2DLayerBridge();
   void SetCanvas2DLayerBridgeInternal(std::unique_ptr<Canvas2DLayerBridge>);
 
-  void SetSurfaceSize(const gfx::Size&);
+  void SetSurfaceSize(gfx::Size);
 
   bool PaintsIntoCanvasBuffer() const;
 
@@ -384,8 +382,6 @@ class CORE_EXPORT HTMLCanvasElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
-
-  gfx::Size size_;
 
   Member<CanvasRenderingContext> context_;
   // Used only for WebGL currently.

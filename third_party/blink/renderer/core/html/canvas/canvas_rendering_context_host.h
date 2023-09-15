@@ -41,9 +41,9 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
     kCanvasHost,
     kOffscreenCanvasHost,
   };
-  explicit CanvasRenderingContextHost(HostType host_type);
+  CanvasRenderingContextHost(HostType host_type, const gfx::Size& size);
 
-  void RecordCanvasSizeToUMA(const gfx::Size&);
+  void RecordCanvasSizeToUMA();
 
   virtual void DetachContext() = 0;
 
@@ -56,7 +56,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
                          const SkIRect& damage_rect) = 0;
   virtual bool OriginClean() const = 0;
   virtual void SetOriginTainted() = 0;
-  virtual const gfx::Size& Size() const = 0;
   virtual CanvasRenderingContext* RenderingContext() const = 0;
   virtual CanvasResourceDispatcher* GetOrCreateResourceDispatcher() = 0;
 

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
@@ -21,6 +22,7 @@ class CanvasResourceProvider;
 
 class PLATFORM_EXPORT CanvasResourceHost {
  public:
+  explicit CanvasResourceHost(gfx::Size size) : size_(size) {}
   virtual ~CanvasResourceHost() = default;
   virtual void NotifyGpuContextLost() = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
@@ -33,6 +35,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
       RasterModeHint hint) = 0;
   virtual bool IsHibernating() const;
   bool IsComposited() const;
+  gfx::Size Size() const { return size_; }
+  virtual void SetSize(gfx::Size size) { size_ = size; }
 
   virtual void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   cc::PaintFlags::FilterQuality FilterQuality() const {
@@ -70,6 +74,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
       cc::PaintFlags::FilterQuality::kLow;
   gfx::HDRMetadata hdr_metadata_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
+  gfx::Size size_;
 };
 
 }  // namespace blink

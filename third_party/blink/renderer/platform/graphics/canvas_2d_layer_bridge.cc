@@ -48,14 +48,12 @@ bool Canvas2DLayerBridge::IsHibernationEnabled() {
   return base::FeatureList::IsEnabled(features::kCanvas2DHibernation);
 }
 
-Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
-                                         OpacityMode opacity_mode)
+Canvas2DLayerBridge::Canvas2DLayerBridge(OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
       have_recorded_draw_commands_(false),
       is_hidden_(false),
       is_being_displayed_(false),
       opacity_mode_(opacity_mode),
-      size_(size),
       snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr) {
   // Used by browser tests to detect the use of a Canvas2DLayerBridge.
@@ -406,11 +404,13 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
                                       size_t row_bytes,
                                       int x,
                                       int y) {
+  CHECK(resource_host_);
   if (!GetOrCreateResourceProvider())
     return false;
 
-  if (x <= 0 && y <= 0 && x + orig_info.width() >= size_.width() &&
-      y + orig_info.height() >= size_.height()) {
+  if (x <= 0 && y <= 0 &&
+      x + orig_info.width() >= resource_host_->Size().width() &&
+      y + orig_info.height() >= resource_host_->Size().height()) {
     SkipQueuedDrawCommands();
   } else {
     FlushRecording(CanvasResourceProvider::FlushReason::kWritePixels);

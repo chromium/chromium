@@ -233,8 +233,8 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
       ExecutionContextLifecycleObserver(GetExecutionContext()),
       PageVisibilityObserver(document.GetPage()),
       CanvasRenderingContextHost(
-          CanvasRenderingContextHost::HostType::kCanvasHost),
-      size_(kDefaultCanvasWidth, kDefaultCanvasHeight),
+          CanvasRenderingContextHost::HostType::kCanvasHost,
+          gfx::Size(kDefaultCanvasWidth, kDefaultCanvasHeight)),
       context_creation_was_blocked_(false),
       ignore_reset_(false),
       origin_clean_(true),
@@ -354,7 +354,7 @@ void HTMLCanvasElement::setWidth(unsigned value,
                                kDefaultCanvasWidth);
 }
 
-void HTMLCanvasElement::SetSize(const gfx::Size& new_size) {
+void HTMLCanvasElement::SetSize(gfx::Size new_size) {
   if (new_size == Size())
     return;
   ignore_reset_ = true;
@@ -517,7 +517,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
             .CompositorTaskRunner(),
         surface_layer_bridge_->GetFrameSinkId().client_id(),
         surface_layer_bridge_->GetFrameSinkId().sink_id(),
-        CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, size_);
+        CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
     // We don't actually need the begin frame signal when in low latency mode,
     // but we need to subscribe to it or else dispatching frames will not work.
     frame_dispatcher_->SetNeedsBeginFrame(GetPage()->IsPageVisible());
@@ -628,7 +628,7 @@ void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
 }
 
 void HTMLCanvasElement::PreFinalizeFrame() {
-  RecordCanvasSizeToUMA(size_);
+  RecordCanvasSizeToUMA();
 
   // PreFinalizeFrame indicates the end of a script task that may have rendered
   // into the canvas, now is a good time to unlock cache entries.
@@ -1082,14 +1082,14 @@ UkmParameters HTMLCanvasElement::GetUkmParameters() {
   return {GetDocument().UkmRecorder(), GetDocument().UkmSourceID()};
 }
 
-void HTMLCanvasElement::SetSurfaceSize(const gfx::Size& size) {
-  size_ = size;
+void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
+  CanvasResourceHost::SetSize(size);
   did_fail_to_create_resource_provider_ = false;
   DiscardResourceProvider();
   if (IsRenderingContext2D() && context_->isContextLost())
     context_->DidSetSurfaceSize();
   if (frame_dispatcher_)
-    frame_dispatcher_->Reshape(size_);
+    frame_dispatcher_->Reshape(Size());
 }
 
 const AtomicString HTMLCanvasElement::ImageSourceURL() const {
@@ -1100,8 +1100,9 @@ const AtomicString HTMLCanvasElement::ImageSourceURL() const {
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
     CanvasResourceProvider::FlushReason reason,
     SourceDrawingBuffer source_buffer) const {
-  if (size_.IsEmpty())
+  if (Size().IsEmpty()) {
     return nullptr;
+  }
 
   scoped_refptr<StaticBitmapImage> image_bitmap;
   if (OffscreenCanvasFrame()) {  // Offscreen Canvas
@@ -1145,7 +1146,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   if (image_bitmap)
     DCHECK(image_bitmap->SupportsDisplayCompositing());
   else
-    image_bitmap = CreateTransparentImage(size_);
+    image_bitmap = CreateTransparentImage(Size());
 
   return image_bitmap;
 }
@@ -1403,7 +1404,6 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
 
 std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge() {
   auto surface = std::make_unique<Canvas2DLayerBridge>(
-      Size(),
       GetRenderingContextSkColorInfo().isOpaque() ? kOpaque : kNonOpaque);
   if (!surface->IsValid())
     return nullptr;
@@ -1494,6 +1494,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
   DiscardResourceProvider();
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
+  CanvasResourceHost::SetSize(size);
   SetCanvas2DLayerBridgeInternal(std::move(bridge));
   ReplaceResourceProvider(std::move(resource_provider));
 }

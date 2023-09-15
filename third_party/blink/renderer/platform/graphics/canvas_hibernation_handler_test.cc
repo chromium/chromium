@@ -32,7 +32,7 @@ class CanvasHibernationHandlerTest : public Test {
       OpacityMode opacity_mode,
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(size, opacity_mode);
+        std::make_unique<Canvas2DLayerBridge>(opacity_mode);
     bridge->AlwaysMeasureForTesting();
     if (custom_host) {
       host_ = std::move(custom_host);

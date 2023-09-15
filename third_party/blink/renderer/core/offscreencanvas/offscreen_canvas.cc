@@ -52,12 +52,11 @@
 
 namespace blink {
 
-OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
-                                 const gfx::Size& size)
+OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, gfx::Size size)
     : CanvasRenderingContextHost(
-          CanvasRenderingContextHost::HostType::kOffscreenCanvasHost),
-      execution_context_(context),
-      size_(size) {
+          CanvasRenderingContextHost::HostType::kOffscreenCanvasHost,
+          size),
+      execution_context_(context) {
   // Other code in Blink watches for destruction of the context; be
   // robust here as well.
   if (!context->IsContextDestroyed()) {
@@ -101,7 +100,7 @@ void OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
                              const SkIRect& damage_rect) {
   if (!HasPlaceholderCanvas() || !canvas_resource)
     return;
-  RecordCanvasSizeToUMA(Size());
+  RecordCanvasSizeToUMA();
 
   base::TimeTicks commit_start_time = base::TimeTicks::Now();
   current_frame_damage_rect_.join(damage_rect);
@@ -152,20 +151,20 @@ void OffscreenCanvas::SetPlaceholderCanvasId(DOMNodeId canvas_id) {
 }
 
 void OffscreenCanvas::setWidth(unsigned width) {
-  gfx::Size new_size = size_;
+  gfx::Size new_size = Size();
   new_size.set_width(ClampTo<int>(width));
   SetSize(new_size);
 }
 
 void OffscreenCanvas::setHeight(unsigned height) {
-  gfx::Size new_size = size_;
+  gfx::Size new_size = Size();
   new_size.set_height(ClampTo<int>(height));
   SetSize(new_size);
 }
 
-void OffscreenCanvas::SetSize(const gfx::Size& size) {
+void OffscreenCanvas::SetSize(gfx::Size size) {
   // Setting size of a canvas also resets it.
-  if (size == size_) {
+  if (size == Size()) {
     if (context_ && context_->IsRenderingContext2D()) {
       context_->Reset();
       origin_clean_ = true;
@@ -173,15 +172,15 @@ void OffscreenCanvas::SetSize(const gfx::Size& size) {
     return;
   }
 
-  size_ = size;
+  CanvasResourceHost::SetSize(size);
   UpdateMemoryUsage();
-  current_frame_damage_rect_ = SkIRect::MakeWH(size_.width(), size_.height());
+  current_frame_damage_rect_ = SkIRect::MakeWH(Size().width(), Size().height());
 
   if (frame_dispatcher_)
-    frame_dispatcher_->Reshape(size_);
+    frame_dispatcher_->Reshape(Size());
   if (context_) {
     if (context_->IsWebGL() || IsWebGPU()) {
-      context_->Reshape(size_.width(), size_.height());
+      context_->Reshape(Size().width(), Size().height());
     } else if (context_->IsRenderingContext2D()) {
       context_->Reset();
       origin_clean_ = true;
@@ -204,8 +203,7 @@ void OffscreenCanvas::RecordTransfer() {
 void OffscreenCanvas::SetNeutered() {
   DCHECK(!context_);
   is_neutered_ = true;
-  size_.set_width(0);
-  size_.set_height(0);
+  SetSize(gfx::Size(0, 0));
   DeregisterFromAnimationFrameProvider();
 }
 
@@ -253,7 +251,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
   if (!context_) {
     *status = kInvalidSourceImageStatus;
     sk_sp<SkSurface> surface = SkSurfaces::Raster(
-        SkImageInfo::MakeN32Premul(size_.width(), size_.height()));
+        SkImageInfo::MakeN32Premul(Size().width(), Size().height()));
     return surface ? UnacceleratedStaticBitmapImage::Create(
                          surface->makeImageSnapshot())
                    : nullptr;
@@ -275,7 +273,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
 }
 
 gfx::Size OffscreenCanvas::BitmapSourceSize() const {
-  return size_;
+  return Size();
 }
 
 ScriptPromise OffscreenCanvas::CreateImageBitmap(
@@ -416,7 +414,7 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
     frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
         this, std::move(dispatcher_task_runner),
         std::move(agent_group_scheduler_compositor_task_runner), client_id_,
-        sink_id_, placeholder_canvas_id_, size_);
+        sink_id_, placeholder_canvas_id_, Size());
 
     if (HasPlaceholderCanvas())
       frame_dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);

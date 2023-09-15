@@ -19,7 +19,7 @@ namespace blink {
 
 class FakeCanvasResourceHost : public CanvasResourceHost {
  public:
-  explicit FakeCanvasResourceHost(gfx::Size size) : size_(size) {}
+  explicit FakeCanvasResourceHost(gfx::Size size) : CanvasResourceHost(size) {}
   void NotifyGpuContextLost() override {}
   void SetNeedsCompositingUpdate() override {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const override {}
@@ -35,7 +35,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     if (ResourceProvider())
       return ResourceProvider();
     const SkImageInfo resource_info =
-        SkImageInfo::MakeN32Premul(size_.width(), size_.height());
+        SkImageInfo::MakeN32Premul(Size().width(), Size().height());
     constexpr auto kFilterQuality = cc::PaintFlags::FilterQuality::kMedium;
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kCallClear;
@@ -67,8 +67,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     return ResourceProvider();
   }
 
- private:
-  gfx::Size size_;
 };
 
 }  // namespace blink

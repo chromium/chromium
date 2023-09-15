@@ -56,7 +56,7 @@ class StaticBitmapImage;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
  public:
-  Canvas2DLayerBridge(const gfx::Size&, OpacityMode opacity_mode);
+  explicit Canvas2DLayerBridge(OpacityMode opacity_mode);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
@@ -188,7 +188,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   bool last_record_tainted_by_write_pixels_ = false;
 
   const OpacityMode opacity_mode_;
-  const gfx::Size size_;
 
   enum SnapshotState {
     kInitialSnapshotState,

@@ -117,7 +117,7 @@ class Canvas2DLayerBridgeTest : public Test {
       OpacityMode opacity_mode,
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(size, opacity_mode);
+        std::make_unique<Canvas2DLayerBridge>(opacity_mode);
     bridge->AlwaysMeasureForTesting();
     if (custom_host)
       host_ = std::move(custom_host);
@@ -361,7 +361,7 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
                               ->ContextProvider()
                               ->GetGrContext();
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(gfx::Size(300, 150), kNonOpaque);
+        std::make_unique<Canvas2DLayerBridge>(kNonOpaque);
     host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
     host_->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
     bridge->SetCanvasResourceHost(host_.get());
