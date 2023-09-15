@@ -73,13 +73,14 @@ std::unique_ptr<HostEventLogger> HostEventFileLogger::Create() {
 void HostEventFileLogger::LogEvent(const EventTraceData& data) {
   // Log format is:
   // [YYYYMMDD/HHMMSS.sss:pid:tid:severity:file_name(line)] <message>
-  std::string message(base::StringPrintf(
-      "[%4d%02d%02d/%02d%02d%02d.%03d:%05d:%05d:%s:%s(%d)] %s",
-      data.time_stamp.year, data.time_stamp.month, data.time_stamp.day_of_month,
-      data.time_stamp.hour, data.time_stamp.minute, data.time_stamp.second,
-      data.time_stamp.millisecond, data.process_id, data.thread_id,
+  base::Time::Exploded exploded;
+  data.time_stamp.LocalExplode(&exploded);
+  std::string message = base::StringPrintf(
+      "[%4d%02d%02d/%02d%02d%02d.%03d:%05d:%05d:%s:%s(%d)] %s", exploded.year,
+      exploded.month, exploded.day_of_month, exploded.hour, exploded.minute,
+      exploded.second, exploded.millisecond, data.process_id, data.thread_id,
       EventTraceData::SeverityToString(data.severity).c_str(),
-      data.file_name.c_str(), data.line, data.message.c_str()));
+      data.file_name.c_str(), data.line, data.message.c_str());
 
   log_file_.Write(/*unused*/ 0, message.c_str(), message.size());
 }

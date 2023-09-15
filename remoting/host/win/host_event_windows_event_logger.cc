@@ -54,16 +54,17 @@ void HostEventWindowsEventLogger::LogEvent(const EventTraceData& data) {
   // If having a stable query is important in the future, then we will need to
   // change from a MOF based provider to a manifest based provider and define an
   // event schema.
+  base::Time::Exploded exploded;
+  data.time_stamp.LocalExplode(&exploded);
   std::vector<std::string> payload(
       {data.message.c_str(), base::StringPrintf("pid: %d", data.process_id),
        base::StringPrintf("tid: %d", data.thread_id),
        EventTraceData::SeverityToString(data.severity),
        base::StringPrintf("%s(%d)", data.file_name.c_str(), data.line),
-       base::StringPrintf("%4d-%02d-%02d - %02d:%02d:%02d.%03d",
-                          data.time_stamp.year, data.time_stamp.month,
-                          data.time_stamp.day_of_month, data.time_stamp.hour,
-                          data.time_stamp.minute, data.time_stamp.second,
-                          data.time_stamp.millisecond)});
+       base::StringPrintf("%4d-%02d-%02d - %02d:%02d:%02d.%03d", exploded.year,
+                          exploded.month, exploded.day_of_month, exploded.hour,
+                          exploded.minute, exploded.second,
+                          exploded.millisecond)});
 
   WORD type = SeverityToEventLogType(data.severity);
   if (!event_logger_.Log(type, MSG_HOST_LOG_EVENT, payload)) {
