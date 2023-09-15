@@ -4,7 +4,6 @@
 
 import("//android_webview/system_webview_apk_tmpl.gni")
 import("//android_webview/variables.gni")
-import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
 import("//device/vr/buildflags/buildflags.gni")

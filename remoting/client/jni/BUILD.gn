@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
-import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//remoting/android/client_java_tmpl.gni")
 import("//remoting/android/remoting_apk_tmpl.gni")
 import("//remoting/remoting_options.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 shared_library_with_jni("remoting_client_jni") {
   deps = [

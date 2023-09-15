@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//components/feed/features.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("pagecontroller_utils_java") {
   testonly = true

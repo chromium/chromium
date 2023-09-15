@@ -7,12 +7,11 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("features.gni")
 
-import("//build/config/android/jni.gni")
 import("//build/config/cronet/config.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 if (is_android || is_robolectric) {
   import("//build/config/android/rules.gni")
-  import("//third_party/jni_zero/jni_zero.gni")
 }
 
 buildflag_header("buildflags") {

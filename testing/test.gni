@@ -36,7 +36,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/create_unwind_table.gni")
   import("//build/config/android/extract_unwind_tables.gni")
-  import("//build/config/android/jni.gni")
   import("//build/config/android/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
 } else if (is_fuchsia) {
@@ -136,6 +135,12 @@ template("mixed_test") {
     not_needed(invoker, _rs_vars)
   }
 
+  if (invoker.target_type == "shared_library_with_jni") {
+    # Needed for shared_library_with_jni. Keeping this import guarded so
+    # that projects who import //testing but not //third_party/jni_zero
+    # don't have issues.
+    import("//third_party/jni_zero/jni_zero.gni")
+  }
   target(invoker.target_type, target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + _rs_vars)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)

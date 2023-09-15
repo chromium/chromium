@@ -6,12 +6,13 @@ import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/create_unwind_table.gni")
 import("//build/config/android/extract_unwind_tables.gni")
-import("//build/config/android/jni.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 declare_args() {
   # Compile libmonochrome.so with RELR relocations, which are smaller and more

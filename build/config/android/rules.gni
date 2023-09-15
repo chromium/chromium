@@ -6,7 +6,6 @@
 # Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
 import("//build/config/android/config.gni")
 import("//build/config/android/copy_ex.gni")
-import("//build/config/android/jni.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
@@ -119,14 +118,6 @@ template("create_native_executable_dist") {
     }
   }
 }
-
-if (enable_java_templates) {
-  # TODO(crbug.com/1456762) - remove this, move the generate_jni targets into
-  # //third_party/jni_zero, and migirate all usages of it.
-  if (build_with_chromium) {
-    import("//third_party/jni_zero/jni_zero.gni")
-  }
-}  # enable_java_templates
 
 # non-robolectric things
 if (enable_java_templates && is_android) {
@@ -1227,6 +1218,10 @@ if (enable_java_templates && is_android) {
           rebase = root_build_dir
         }
       } else {
+        # Needed for generate_jni_registration. Keeping this import guarded so
+        # that projects who import //build but not //third_party/jni_zero don't
+        # have issues.
+        import("//third_party/jni_zero/jni_zero.gni")
         _jni_srcjar_target_name = "${target_name}__final_jni"
         generate_jni_registration(_jni_srcjar_target_name) {
           enable_native_mocks = true

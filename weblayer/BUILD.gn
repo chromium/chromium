@@ -24,10 +24,10 @@ import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
-  import("//build/config/android/jni.gni")
   import("//build/config/android/rules.gni")
   import("//build/config/features.gni")
   import("//components/safe_browsing/buildflags.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 } else if (is_mac) {
   import("//build/apple/tweak_info_plist.gni")
   import("//build/config/mac/rules.gni")
