@@ -6107,7 +6107,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
 
   <!-- System Preferences Page -->
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE" desc="The title of the System Preferences page and respective menu item.">
-    System Preferences
+    System preferences
   </message>
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
     Storage and power
