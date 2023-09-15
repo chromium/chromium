@@ -1,0 +1,50 @@
+caption: Make the <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> File Sync
+  feature visible and available to toggle on supported devices in the
+  <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app
+default: visible
+desc: |-
+  <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> file sync automatically makes
+  files in a user's My drive available offline (space permitting) on supported
+  devices. After initially making all files available offline, all new files
+  will also be made available offline automatically. Once the feature is on, if
+  later there is insufficient space to keep the feature on, all new files will
+  stop being automatically made available offline, however, a user can still
+  manually toggle items.
+
+  Setting the policy to <ph name="POLICY_VALUE_VISIBLE">visible</ph> shows the
+  file sync functionality in the Files app and in the Settings page. Users are
+  still required to toggle the file sync functionality on themselves.
+
+  Setting the policy to <ph name="POLICY_VALUE_DISABLED">disabled</ph> will turn
+  off the file sync functionality if previously turned on by the user and will
+  also hide the feature from Files app and Settings so the user can’t re-enable
+  it. If there are any existing files that were made available offline by the
+  user, they will remain available offline and the user can manually make
+  individual files available offline (they will not be automatically made
+  available offline).
+
+  If the policy is unset, it will use
+  <ph name="POLICY_VALUE_VISIBLE">visible</ph> as the default value.
+example_value: visible
+features:
+  dynamic_refresh: false
+  per_profile: true
+supported_on:
+- chrome_os:119-
+items:
+- caption: The user can't see any of the UI relating to the <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> File Sync feature.
+  name: Disabled
+  value: disabled
+- caption: The user can use the <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> File Sync feature.
+  name: Visible
+  value: visible
+owners:
+- file://ui/file_manager/OWNERS
+- benreich@chromium.org
+schema:
+  enum:
+  - disabled
+  - visible
+  type: string
+tags: []
+type: string-enum

@@ -133,29 +133,23 @@ bool IsDriveFsBulkPinningAvailable(const Profile* const profile) {
     return false;
   }
 
-  // Does the user profile belong to a managed user or not?
-  if (!profile || !profile->GetProfilePolicyConnector()->IsManaged()) {
-    // Not a managed user. The bulk-pinning feature is available on suitable
-    // devices, as controlled by the "FeatureManagementDriveFsBulkPinning"
-    // Chrome feature.
-    return base::FeatureList::IsEnabled(
-        ash::features::kFeatureManagementDriveFsBulkPinning);
-  }
-
-  // Managed user. For Googlers, the bulk-pinning feature is available on any
-  // kind of device. This allows Googlers to easily test ("dogfood") the
-  // bulk-pinning feature.
+  // For Googlers, the bulk-pinning feature is available on any kind of device.
+  // This allows Googlers to easily test ("dogfood") the bulk-pinning feature.
   //
   // TODO(b/296316774) Revisit this decision for Googlers.
-  //
-  // Other managed users (non-Googlers) do not have access to the bulk-pinning
-  // feature for the time being.
-  //
-  // TODO(b/296315040) Allow managed users to access the bulk-pinning feature on
-  // suitable devices.
-  const User* const user = UserManager::Get()->GetActiveUser();
-  return user && gaia::IsGoogleInternalAccountEmail(
-                     user->GetAccountId().GetUserEmail());
+  if (UserManager::IsInitialized()) {
+    if (const User* const user = UserManager::Get()->GetActiveUser();
+        user && gaia::IsGoogleInternalAccountEmail(
+                    user->GetAccountId().GetUserEmail())) {
+      return true;
+    }
+  }
+
+  // For other users (non-Googlers), the bulk-pinning feature is available on
+  // suitable devices, as controlled by the
+  // "FeatureManagementDriveFsBulkPinning" Chrome feature.
+  return base::FeatureList::IsEnabled(
+      ash::features::kFeatureManagementDriveFsBulkPinning);
 }
 
 bool IsDriveFsBulkPinningAvailable() {

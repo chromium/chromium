@@ -5052,6 +5052,8 @@ static_library("browser") {
       "policy/default_geolocation_policy_handler.h",
       "policy/device_login_screen_geolocation_access_level_policy_handler.cc",
       "policy/device_login_screen_geolocation_access_level_policy_handler.h",
+      "policy/drive_file_sync_available_policy_handler.cc",
+      "policy/drive_file_sync_available_policy_handler.h",
       "policy/messaging_layer/upload/file_upload_impl.cc",
       "policy/messaging_layer/upload/file_upload_impl.h",
       "policy/os_color_mode_policy_handler.cc",

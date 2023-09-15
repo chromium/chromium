@@ -119,18 +119,6 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
-
-  {
-    TestingProfile::Builder builder;
-    builder.SetProfileName("foobar@example.com");
-    builder.OverridePolicyConnectorIsManagedForTesting(true);
-    const std::unique_ptr<TestingProfile> profile_with_domain = builder.Build();
-    ScopedFeatureList features;
-    features.InitWithFeatures(
-        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(profile_with_domain.get()));
-    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
-  }
 }
 
 }  // namespace drive::util
