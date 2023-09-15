@@ -88,7 +88,7 @@ const base::FeatureParam<bool> kEsbIphBubbleAndCollapseSettingsEnableCollapse{
 
 BASE_FEATURE(kEvaluateProtectedPasswordLengthMinimum,
              "EvaluateProtectedPasswordLengthMinimum",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kEvaluateProtectedPasswordLengthMinimumValue{
     &kEvaluateProtectedPasswordLengthMinimum, "MinimumValue",

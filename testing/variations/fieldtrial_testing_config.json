@@ -6113,12 +6113,7 @@
     "EvaluateProtectedPasswordLengthMinimum": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
