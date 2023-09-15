@@ -866,11 +866,6 @@
       name: "CSSDynamicRangeLimit",
       status: "experimental",
     },
-    // Exists so that we can run a reverse-Finch experiment to assess its performance.
-    {
-      name: "CSSEasySelectors",
-      status: "stable",
-    },
     {
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
       // https://crbug.com/949807
