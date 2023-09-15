@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.build.BuildConfig;
@@ -60,15 +61,10 @@ public class SharedPreferencesManager {
         }
     }
 
-    BaseChromePreferenceKeyChecker swapKeyCheckerForTesting(
-            BaseChromePreferenceKeyChecker newChecker) {
-        BaseChromePreferenceKeyChecker swappedOut = mKeyChecker;
-        mKeyChecker = newChecker;
-        return swappedOut;
-    }
-
     public void disableKeyCheckerForTesting() {
+        BaseChromePreferenceKeyChecker swappedOut = mKeyChecker;
         mKeyChecker = new BaseChromePreferenceKeyChecker();
+        ResettersForTesting.register(() -> mKeyChecker = swappedOut);
     }
 
     /**

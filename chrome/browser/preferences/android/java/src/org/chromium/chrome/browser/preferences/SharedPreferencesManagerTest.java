@@ -713,19 +713,12 @@ public class SharedPreferencesManagerTest {
     private void doTestPrefsAreWipedBetweenTests() {
         // Disable key checking for this test because "dirty_pref" isn't registered in the "in use"
         // list.
-        BaseChromePreferenceKeyChecker checkerHeld =
-                SharedPreferencesManager.getInstance().swapKeyCheckerForTesting(
-                        new BaseChromePreferenceKeyChecker());
+        SharedPreferencesManager.getInstance().disableKeyCheckerForTesting();
 
-        try {
-            // If the other test has set this flag and it was not wiped out, fail.
-            assertFalse(SharedPreferencesManager.getInstance().readBoolean("dirty_pref", false));
+        // If the other test has set this flag and it was not wiped out, fail.
+        assertFalse(SharedPreferencesManager.getInstance().readBoolean("dirty_pref", false));
 
-            // Set the flag so the other test ensures it was wiped out.
-            SharedPreferencesManager.getInstance().writeBoolean("dirty_pref", true);
-        } finally {
-            // Restore the key checker.
-            SharedPreferencesManager.getInstance().swapKeyCheckerForTesting(checkerHeld);
-        }
+        // Set the flag so the other test ensures it was wiped out.
+        SharedPreferencesManager.getInstance().writeBoolean("dirty_pref", true);
     }
 }
