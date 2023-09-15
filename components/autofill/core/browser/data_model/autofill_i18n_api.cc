@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::i18n_model_definition {
 
@@ -167,16 +168,28 @@ std::unique_ptr<AddressComponent> BuildSubTree(const TreeDefinition& tree_def,
   return BuildTreeNode(root, std::move(children));
 }
 
+base::span<const autofill::i18n_model_definition::FieldTypeDescription>
+GetTreeEdges(std::string_view country_code) {
+  // Always use legacy rules while `kAutofillUseI18nAddressModel` is not rolled
+  // out.
+  if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+    return kAutofillModelRules.find("XX")->second;
+  }
+
+  auto* it = kAutofillModelRules.find(country_code);
+
+  // If the entry is not defined, use the legacy rules.
+  return it == kAutofillModelRules.end()
+             ? kAutofillModelRules.find("XX")->second
+             : it->second;
+}
+
 }  // namespace
 
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
     std::string_view country_code) {
-  auto* it = kAutofillModelRules.find(country_code);
-
-  // If the entry is not defined, use the legacy rules.
-  auto tree_edges = it == kAutofillModelRules.end()
-                        ? kAutofillModelRules.find("XX")->second
-                        : it->second;
+  base::span<const autofill::i18n_model_definition::FieldTypeDescription>
+      tree_edges = GetTreeEdges(country_code);
 
   // Convert the list of node properties into an adjacency lookup table.
   // For each field type it stores the list of children of the field type.

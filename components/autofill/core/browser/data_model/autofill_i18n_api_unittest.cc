@@ -43,7 +43,17 @@ bool IsTree(AddressComponent* node, ServerFieldTypeSet* visited_types) {
 }
 }  // namespace
 
-TEST(AutofillI18nApi, GetAddressComponentModel_ReturnsNonEmptyModel) {
+class AutofillI18nApiTest : public testing::Test {
+ public:
+  AutofillI18nApiTest() = default;
+  ~AutofillI18nApiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillUseI18nAddressModel};
+};
+
+TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
   for (const auto& [country_code, properties] : kAutofillModelRules) {
       // Make sure that the process of building the model finishes and returns a
       // non empty hierarchy.
@@ -62,7 +72,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_ReturnsNonEmptyModel) {
     }
 }
 
-TEST(AutofillI18nApi, GetAddressComponentModel_ReturnedModelIsTree) {
+TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
   for (const auto& [country_code, tree_def] : kAutofillModelRules) {
     // Currently, the model for kAddressModel should comprise all the nodes in
     // the rules.
@@ -84,7 +94,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_ReturnedModelIsTree) {
   }
 }
 
-TEST(AutofillI18nApi, GetAddressComponentModel_CountryNodeHasValue) {
+TEST_F(AutofillI18nApiTest, GetAddressComponentModel_CountryNodeHasValue) {
   for (const auto& [country_code, tree_def] : kAutofillModelRules) {
     std::unique_ptr<AddressComponent> model =
         CreateAddressComponentModel(country_code);
@@ -93,7 +103,7 @@ TEST(AutofillI18nApi, GetAddressComponentModel_CountryNodeHasValue) {
   }
 }
 
-TEST(AutofillI18nApi, GetLegacyAddressHierarchy) {
+TEST_F(AutofillI18nApiTest, GetLegacyAddressHierarchy) {
   // "Countries that have not been migrated to the new Autofill i18n model
   // should use the legacy hierarchy (stored in a dummy country XX)."
 
@@ -108,7 +118,7 @@ TEST(AutofillI18nApi, GetLegacyAddressHierarchy) {
       legacy_address_hierarchy_xx->SameAs(*legacy_address_hierarchy_es.get()));
 }
 
-TEST(AutofillI18nApi, GetFormattingExpressions) {
+TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
     for (std::underlying_type_t<ServerFieldType> i = 0;
@@ -136,7 +146,7 @@ TEST(AutofillI18nApi, GetFormattingExpressions) {
   }
 }
 
-TEST(AutofillI18nApi, ParseValueByI18nRegularExpression) {
+TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
   std::string apt_str = "sala 10";
   auto* it = kAutofillParsingRulesMap.find({"BR", ADDRESS_HOME_APT_NUM});
 
