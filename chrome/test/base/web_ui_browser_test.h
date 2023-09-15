@@ -110,9 +110,6 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
 
   void set_webui_host(const std::string& webui_host);
 
-  // Enable command line flags for test.
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
   // Set up & tear down console error catching.
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;

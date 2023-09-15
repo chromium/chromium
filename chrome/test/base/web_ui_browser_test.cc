@@ -417,14 +417,6 @@ base::LazyInstance<MockWebUIProvider>::DestructorAtExit mock_provider_ =
 
 }  // namespace
 
-void BaseWebUIBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
-  JavaScriptBrowserTest::SetUpCommandLine(command_line);
-
-  // Enables the MojoJSTest bindings which are used for WebUI tests.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "MojoJSTest");
-}
-
 void BaseWebUIBrowserTest::SetUpOnMainThread() {
   JavaScriptBrowserTest::SetUpOnMainThread();
 
