@@ -302,6 +302,17 @@ bool IsReadAnythingWithScreen2xEnabled() {
              ::features::kEmergencyDisableScreenAIMainContentExtraction);
 }
 
+// This feature is only used for generating training data for Screen2x and should
+// never be used in any other circumstance, and should not be enabled by default.
+BASE_FEATURE(kDataCollectionModeForScreen2x,
+             "DataCollectionModeForScreen2x",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDataCollectionModeForScreen2xEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kDataCollectionModeForScreen2x);
+}
+
 // This feature is only for debug purposes and for security/privacy reasons,
 // should be never enabled by default .
 BASE_FEATURE(kScreenAIDebugMode,

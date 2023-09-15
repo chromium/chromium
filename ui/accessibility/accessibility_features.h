@@ -234,6 +234,17 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithScreen2x);
 // distills web pages using an ML model.
 AX_BASE_EXPORT bool IsReadAnythingWithScreen2xEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kDataCollectionModeForScreen2x);
+
+// If enabled, the browser will open with read_anything open in the side panel,
+// and calls distill only once we receive navigation's load-complete event.
+// This is because the browser is only being opened to render one webpage, for
+// the sake of generating training data for Screen2x data collection. The
+// browser is intended to be closed by the user who launches Chrome once the
+// first distill call finishes executing. This feature should be used along
+// with 'ScreenAIDebugModeEnabled=true' and --no-sandbox.
+AX_BASE_EXPORT bool IsDataCollectionModeForScreen2xEnabled();
+
 // If enabled, ScreenAI library writes some debug data in /tmp.
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
 
