@@ -1109,7 +1109,7 @@ TEST_F(AutofillTableTest, Iban) {
   // Add a valid IBAN.
   Iban iban;
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  iban.set_guid(guid);
+  iban.set_identifier(Iban::Guid(guid));
   iban.SetRawInfo(IBAN_VALUE, u"IE12 BOFI 9000 0112 3456 78");
   iban.set_nickname(u"My doctor's IBAN");
 
@@ -1130,7 +1130,7 @@ TEST_F(AutofillTableTest, Iban) {
   // Add another valid IBAN.
   Iban another_iban;
   std::string another_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  another_iban.set_guid(another_guid);
+  another_iban.set_identifier(Iban::Guid(another_guid));
   another_iban.SetRawInfo(IBAN_VALUE, u"DE91 1000 0000 0123 4567 89");
   another_iban.set_nickname(u"My brother's IBAN");
 

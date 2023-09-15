@@ -546,9 +546,9 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
       return RespondNow(Error(kErrorDataUnavailable));
   }
   autofill::Iban iban =
-      existing_iban
-          ? *existing_iban
-          : autofill::Iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
+      existing_iban ? *existing_iban
+                    : autofill::Iban(autofill::Iban::Guid(
+                          base::Uuid::GenerateRandomV4().AsLowercaseString()));
 
   iban.SetRawInfo(autofill::IBAN_VALUE, base::UTF8ToUTF16(*iban_entry->value));
 

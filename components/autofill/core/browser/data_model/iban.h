@@ -9,25 +9,50 @@
 #include <string_view>
 
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
 // A form group that stores IBAN information.
-// Note: Only local IBAN is supported for now.
 class Iban : public AutofillDataModel {
  public:
-  explicit Iban(const std::string& guid);
+  using Guid = base::StrongAlias<class GuidTag, std::string>;
+  using InstrumentId = base::StrongAlias<class InstrumentIdTag, std::string>;
 
+  enum RecordType {
+    // An IBAN extracted from a submitted form, whose record type is currently
+    // unknown or irrelevant.
+    kUnknown,
+
+    // An IBAN with a complete value managed by Chrome (not representing
+    // something stored in Google Payments). The local IBAN will only be stored
+    // on this device.
+    kLocalIban,
+
+    // An IBAN from Google Payments with masked information. Such IBANs will
+    // only have the first and last four characters of the IBAN, along with
+    // formatted dots and spaces, and will require an extra retrieval step from
+    // the GPay server to view. The server IBAN will be synced across all
+    // devices.
+    kServerIban,
+  };
+
+  // Creates an IBAN with `kUnknown` record type.
   Iban();
+
+  // Creates a local IBAN with the given `guid`.
+  explicit Iban(const Guid& guid);
+
+  // Creates a server IBAN with the given `instrument_id`.
+  explicit Iban(const InstrumentId& instrument_id);
+
   Iban(const Iban&);
   ~Iban() override;
 
   Iban& operator=(const Iban& iban);
-
-  std::string guid() const { return guid_; }
-  void set_guid(std::string_view guid) { guid_ = guid; }
 
   // Returns true if IBAN value is valid. This method is case-insensitive.
   // The validation follows the below steps:
@@ -51,10 +76,6 @@ class Iban : public AutofillDataModel {
   AutofillMetadata GetMetadata() const override;
   bool SetMetadata(const AutofillMetadata& metadata) override;
 
-  // Whether the IBAN is deletable. Always returns false for now as IBAN
-  // never expires.
-  bool IsDeletable() const override;
-
   std::u16string GetRawInfo(ServerFieldType type) const override;
   void SetRawInfoWithVerificationStatus(ServerFieldType type,
                                         const std::u16string& value,
@@ -68,13 +89,16 @@ class Iban : public AutofillDataModel {
   // or > 0 if it is different. The implied ordering can be used for culling
   // duplicates. The ordering is based on the collation order of the textual
   // contents of the fields.
-  // GUIDs, origins, and server id are not compared, only the values of
-  // the IBANs themselves.
   int Compare(const Iban& iban) const;
 
   // Equality operators compare GUIDs, origins, |value_| and |nickname_|.
   bool operator==(const Iban& iban) const;
   bool operator!=(const Iban& iban) const;
+
+  void set_identifier(const absl::variant<Guid, InstrumentId>& identifier);
+
+  const std::string& guid() const;
+  const std::string& instrument_id() const;
 
   // Returns the value (the actual bank account number) of IBAN.
   const std::u16string& value() const { return value_; }
@@ -85,6 +109,22 @@ class Iban : public AutofillDataModel {
   // with whitespaces, condense multiple whitespaces into a single one, and
   // trim leading/trailing whitespaces).
   void set_nickname(const std::u16string& nickname);
+
+  // Setters and getters for the type of this IBAN. The different types of IBAN
+  // differ in how they are stored, retrieved, and displayed to the user.
+  RecordType record_type() const { return record_type_; }
+  void set_record_type(RecordType record_type) { record_type_ = record_type; }
+
+  const std::u16string& prefix() const { return prefix_; }
+  void set_prefix(const std::u16string& prefix) { prefix_ = prefix; }
+  const std::u16string& suffix() const { return suffix_; }
+  void set_suffix(const std::u16string& suffix) { suffix_ = suffix; }
+  int length() const { return length_; }
+  void set_length(int length) { length_ = length; }
+
+  // For local IBANs, checks on `IsValid(value_)`. Always returns true for
+  // server-based IBANs because server-based IBANs don't store the full `value`.
+  bool IsValid();
 
   // Converts value (E.g., CH12 1234 1234 1234 1234) of IBAN to a partially
   // masked text formatted by the following rules:
@@ -107,15 +147,28 @@ class Iban : public AutofillDataModel {
   std::u16string GetStrippedValue() const;
 
  private:
-  // A globally unique ID for this object. It identifies the IBAN across browser
-  // restarts and is used as the primary key in the database.
-  std::string guid_;
+  // To distinguish between local IBANs, utilize the Guid as the identifier. For
+  // server-based IBANs, they are uniquely identified by the InstrumentId, a
+  // unique identifier assigned by the server.
+  absl::variant<Guid, InstrumentId> identifier_;
 
-  // The IBAN's value, i.e., the actual bank account number.
+  // The IBAN's value. For local IBANs, this value is the actual full IBAN
+  // value. For server-based IBANs, this value is empty.
   std::u16string value_;
 
   // The nickname of the IBAN. May be empty.
   std::u16string nickname_;
+
+  RecordType record_type_;
+
+  // `prefix_` and `suffix_` are the beginning and ending characters of the
+  // IBAN's value, respectively. `length_` is the length of the complete IBAN
+  // value, ignoring spaces. These three fields are used when showing the IBAN
+  // to the user in a masked format, where the prefix and suffix are shown
+  // but all characters between them stay masked.
+  std::u16string prefix_;
+  std::u16string suffix_;
+  int length_ = 0;
 };
 
 }  // namespace autofill

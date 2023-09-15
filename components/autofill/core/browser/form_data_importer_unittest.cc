@@ -2971,7 +2971,7 @@ TEST_P(FormDataImporterTest,
 }
 
 TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
-  Iban iban;
+  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   personal_data_manager_->AddIban(iban);
 
@@ -3891,7 +3891,7 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
-  Iban iban;
+  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   personal_data_manager_->AddIban(iban);
 

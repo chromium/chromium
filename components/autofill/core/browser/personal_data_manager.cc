@@ -2325,7 +2325,7 @@ std::string PersonalDataManager::SaveImportedIban(Iban& imported_iban) {
       // Set the GUID of the IBAN to the one that matches it in
       // `local_ibans_` so that UpdateIban() will be able to update the
       // specific IBAN.
-      imported_iban.set_guid(iban->guid());
+      imported_iban.set_identifier(Iban::Guid(iban->guid()));
       return UpdateIban(imported_iban);
     }
   }

@@ -1289,7 +1289,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIbanSuggestions) {
 
   auto MakeIban = [](const std::u16string& value,
                      const std::u16string& nickname) {
-    Iban iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
+    Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
     iban.set_value(value);
     if (!nickname.empty())
       iban.set_nickname(nickname);

@@ -147,6 +147,9 @@ Iban GetIban();
 // Returns an IBAN full of dummy info, different to the above.
 Iban GetIban2();
 
+// Returns a server-based IBAN full of dummy info.
+Iban GetServerIban();
+
 // Returns an IBAN full of dummy info, different to the above and without
 // nickname.
 Iban GetIbanWithoutNickname();

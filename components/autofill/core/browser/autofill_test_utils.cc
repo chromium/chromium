@@ -320,21 +320,31 @@ std::string GetStrippedValue(const char* value) {
 }
 
 Iban GetIban() {
-  Iban iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
   return iban;
 }
 
 Iban GetIban2() {
-  Iban iban;
+  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_1)));
   iban.set_nickname(u"My doctor's IBAN");
   return iban;
 }
 
+Iban GetServerIban() {
+  Iban iban(Iban::InstrumentId("1234567"));
+  // Set the prefix, suffix and length of the server IBAN.
+  iban.set_prefix(u"FR76");
+  iban.set_suffix(u"0189");
+  iban.set_length(27);
+  iban.set_nickname(u"My doctor's IBAN");
+  return iban;
+}
+
 Iban GetIbanWithoutNickname() {
-  Iban iban;
+  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_2)));
   return iban;
 }

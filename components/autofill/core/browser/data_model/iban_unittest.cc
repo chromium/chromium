@@ -41,6 +41,19 @@ TEST(IbanTest, AssignmentOperator) {
   EXPECT_EQ(iban_0, iban_1);
 }
 
+TEST(IbanTest, ConstructLocalIban) {
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  Iban local_iban{Iban::Guid(guid)};
+  EXPECT_EQ(local_iban.record_type(), Iban::RecordType::kLocalIban);
+  EXPECT_EQ(guid, local_iban.guid());
+}
+
+TEST(IbanTest, ConstructServerIban) {
+  Iban server_iban(Iban::InstrumentId("1234567"));
+  EXPECT_EQ(server_iban.record_type(), Iban::RecordType::kServerIban);
+  EXPECT_EQ("1234567", server_iban.instrument_id());
+}
+
 TEST(IbanTest, GetMetadata) {
   Iban local_iban = test::GetIban();
   local_iban.set_use_count(2);
@@ -101,6 +114,36 @@ TEST(IbanTest, SetValue) {
   // Verify trailing whitespaces were removed.
   iban.set_value(u"DE91100000000123 4567 89   ");
   EXPECT_EQ(u"DE91100000000123456789", iban.value());
+}
+
+TEST(IbanTest, ValuePrefixSuffixAndLength) {
+  Iban iban;
+  iban.set_value(u"DE91100000000123456789");
+  EXPECT_EQ(u"DE91100000000123456789", iban.value());
+  EXPECT_EQ(u"DE91", iban.prefix());
+  EXPECT_EQ(u"6789", iban.suffix());
+  EXPECT_EQ(22, iban.length());
+
+  iban.set_value(u"CH5604835012345678009");
+  EXPECT_EQ(u"CH5604835012345678009", iban.value());
+  EXPECT_EQ(u"CH56", iban.prefix());
+  EXPECT_EQ(u"8009", iban.suffix());
+  EXPECT_EQ(21, iban.length());
+}
+
+TEST(IbanTest, InvalidValuePrefixSuffixAndLength) {
+  Iban iban;
+  iban.set_value(u"DE1234567");
+  EXPECT_EQ(u"", iban.value());
+  EXPECT_EQ(u"", iban.prefix());
+  EXPECT_EQ(u"", iban.suffix());
+  EXPECT_EQ(0, iban.length());
+
+  iban.set_value(u"");
+  EXPECT_EQ(u"", iban.value());
+  EXPECT_EQ(u"", iban.prefix());
+  EXPECT_EQ(u"", iban.suffix());
+  EXPECT_EQ(0, iban.length());
 }
 
 TEST(IbanTest, SetRawData) {

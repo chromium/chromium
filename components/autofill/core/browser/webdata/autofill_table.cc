@@ -768,10 +768,9 @@ std::unique_ptr<ServerCvc> ServerCvcFromStatement(
 std::unique_ptr<Iban> IbanFromStatement(
     sql::Statement& s,
     const AutofillTableEncryptor& encryptor) {
-  auto iban = std::make_unique<Iban>();
-
   int index = 0;
-  iban->set_guid(s.ColumnString(index++));
+  auto iban = std::make_unique<Iban>(Iban::Guid(s.ColumnString(index++)));
+
   DCHECK(base::Uuid::ParseCaseInsensitive(iban->guid()).is_valid());
   iban->set_use_count(s.ColumnInt64(index++));
   iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));

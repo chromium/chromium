@@ -83,6 +83,9 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
       // Clear all IbanSave strikes for this IBAN, so that if it's later removed
       // the strike count starts over with respect to re-saving it.
       GetIbanSaveStrikeDatabase()->ClearStrikes(partial_iban_hash);
+      // Set the guid as this IBAN will be offered to save locally.
+      iban_save_candidate_.set_identifier(
+          Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
       client_->GetPersonalDataManager()->OnAcceptedLocalIbanSave(
           iban_save_candidate_);
       if (observer_for_testing_) {

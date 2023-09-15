@@ -90,7 +90,7 @@ class IbanManagerTest : public testing::Test {
   Iban SetUpIban(std::string_view value, std::string_view nickname) {
     Iban iban;
     std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    iban.set_guid(guid);
+    iban.set_identifier(Iban::Guid(guid));
     iban.set_value(base::UTF8ToUTF16(std::string(value)));
     iban.set_nickname(base::UTF8ToUTF16(std::string(nickname)));
     personal_data_manager_.AddIbanForTest(std::make_unique<Iban>(iban));
