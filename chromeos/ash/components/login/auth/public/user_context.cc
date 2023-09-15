@@ -97,15 +97,6 @@ void UserContext::CryptohomeContext::ResetAuthSessionId() {
   authsession_id_.clear();
 }
 
-base::Time UserContext::CryptohomeContext::GetSessionLifetime() const {
-  return valid_until_;
-}
-
-void UserContext::CryptohomeContext::SetSessionLifetime(
-    const base::Time& valid_until) {
-  valid_until_ = valid_until;
-}
-
 void UserContext::CryptohomeContext::SetSessionAuthFactors(
     SessionAuthFactors data) {
   session_auth_factors_ = std::move(data);
@@ -420,14 +411,6 @@ void UserContext::SetAuthSessionId(const std::string& authsession_id) {
 
 void UserContext::ResetAuthSessionId() {
   cryptohome_.ResetAuthSessionId();
-}
-
-base::Time UserContext::GetSessionLifetime() const {
-  return cryptohome_.GetSessionLifetime();
-}
-
-void UserContext::SetSessionLifetime(const base::Time& valid_until) {
-  cryptohome_.SetSessionLifetime(valid_until);
 }
 
 void UserContext::SetSessionAuthFactors(SessionAuthFactors data) {

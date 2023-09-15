@@ -446,9 +446,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   std::vector<chromeos::WaitForServiceToBeAvailableCallback>
       pending_wait_for_service_to_be_available_callbacks_;
 
-  // The list of usernames of users with mounted user dirs.
-  std::set<std::string> mounted_user_dirs_;
-
   // Other stuff/miscellaneous:
 
   // Base directory of user directories.

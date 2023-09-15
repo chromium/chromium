@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -99,18 +98,6 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
                             base::Unretained(this)));
   }
 
-  bool FireExpirationTimer() {
-    CryptohomeRecoveryScreen* screen =
-        WizardController::default_controller()
-            ->GetScreen<CryptohomeRecoveryScreen>();
-    auto* timer = screen->get_timer_for_testing();
-    if (!timer) {
-      return false;
-    }
-    timer->FireNow();
-    return true;
-  }
-
   void WaitForScreenExit() {
     if (result_.has_value()) {
       return;
@@ -118,16 +105,6 @@ class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
     base::RunLoop run_loop;
     screen_exit_callback_ = run_loop.QuitClosure();
     run_loop.Run();
-  }
-
-  bool IsMounted() {
-    base::test::TestFuture<absl::optional<user_data_auth::IsMountedReply>>
-        future;
-    FakeUserDataAuthClient::Get()->IsMounted(user_data_auth::IsMountedRequest(),
-                                             future.GetCallback());
-    auto mount_result = future.Get();
-    CHECK(mount_result.has_value());
-    return mount_result->is_mounted();
   }
 
  protected:
@@ -196,7 +173,6 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
-  EXPECT_TRUE(IsMounted());
 }
 
 // Verifies that recovery is skipped and GaiaPasswordChangedScreen is shown when
@@ -219,7 +195,6 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
   EXPECT_EQ(result_.value(),
             CryptohomeRecoveryScreen::Result::kNoRecoveryFactor);
   OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
-  EXPECT_FALSE(IsMounted());
 }
 
 // Verifies that we could fallback to the manual recovery when there is error
@@ -241,7 +216,6 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
   WaitForScreenExit();
   EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kManualRecovery);
   OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
-  EXPECT_FALSE(IsMounted());
 }
 
 // Verifies that we could retry when there is error during recovery.
@@ -276,7 +250,6 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
-  EXPECT_TRUE(IsMounted());
 }
 
 // Verifies that user is asked to sign in again when reauth token is not present
@@ -315,31 +288,6 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
-  EXPECT_TRUE(IsMounted());
-}
-
-// Recovery is cancelled after timeout.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, CancelledOnTimeout) {
-  AddFakeUser(kOldPassword);
-  cryptohome_.AddRecoveryFactor(test_user_.account_id);
-
-  OpenGaiaDialog(test_user_.account_id);
-  EXPECT_EQ(LoginDisplayHost::default_host()
-                ->GetOobeUI()
-                ->GetHandler<GaiaScreenHandler>()
-                ->GetGaiaPath(),
-            GaiaScreenHandler::GaiaPath::kReauth);
-  SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
-
-  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
-  ASSERT_TRUE(FireExpirationTimer());
-
-  WaitForScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kTimeout);
-  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_FALSE(IsMounted());
 }
 
 class CryptohomeRecoveryScreenChildTest

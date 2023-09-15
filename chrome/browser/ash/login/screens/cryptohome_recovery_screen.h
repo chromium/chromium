@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -29,7 +28,6 @@ class CryptohomeRecoveryScreen : public BaseScreen {
     kRetry,
     kNoRecoveryFactor,
     kNotApplicable,
-    kTimeout,
   };
   static std::string GetResultString(Result result);
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
@@ -44,9 +42,6 @@ class CryptohomeRecoveryScreen : public BaseScreen {
   ScreenExitCallback get_exit_callback_for_testing() { return exit_callback_; }
   void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
     exit_callback_ = callback;
-  }
-  base::OneShotTimer* get_timer_for_testing() {
-    return expiration_timer_.get();
   }
 
  protected:
@@ -64,9 +59,7 @@ class CryptohomeRecoveryScreen : public BaseScreen {
                               absl::optional<AuthenticationError> error);
   void OnReplaceContextKey(std::unique_ptr<UserContext> context,
                            absl::optional<AuthenticationError> error);
-  void OnAuthSessionExpired();
 
-  std::unique_ptr<base::OneShotTimer> expiration_timer_;
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<CryptohomeRecoveryPerformer> recovery_performer_;
 
