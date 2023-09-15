@@ -99,6 +99,42 @@ class ButtonOptionsMenu::ActionLabelButton : public views::Button {
   raw_ptr<NameTag> label_name_tag_ = nullptr;
 };
 
+// ButtonOptionsActionEdit shows in ButtonOptions and is associated with each
+// of Action.
+// ----------------------------
+// | |Name tag|        |keys| |
+// ----------------------------
+class ButtonOptionsActionEdit : public ActionEditView {
+ public:
+  ButtonOptionsActionEdit(DisplayOverlayController* controller, Action* action)
+      : ActionEditView(controller,
+                       action,
+                       ash::RoundedContainer::Behavior::kBottomRounded) {
+    // TODO(b/274690042): Replace the hardcoded string with a localized string.
+    auto* title_string =
+        (action_->is_new() ? u"Select a key" : u"Selected key");
+    name_tag_->SetTitle(title_string);
+    labels_view_->set_should_update_title(false);
+  }
+  ButtonOptionsActionEdit(const ButtonOptionsActionEdit&) = delete;
+  ButtonOptionsActionEdit& operator=(const ButtonOptionsActionEdit&) = delete;
+  ~ButtonOptionsActionEdit() override = default;
+
+  // ActionEditView:
+  void OnActionInputBindingUpdated() override {
+    ActionEditView::OnActionInputBindingUpdated();
+    // TODO(b/274690042): Replace the hardcoded string with a localized string.
+    name_tag_->SetTitle(u"Selected key");
+  }
+
+ private:
+  friend class ButtonOptionsMenuTest;
+  friend class EditLabelTest;
+
+  // ActionEditView:
+  void ClickCallback() override { labels_view_->FocusLabel(); }
+};
+
 ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
                                      Action* action)
     : TouchInjectorObserver(), controller_(controller), action_(action) {
@@ -203,30 +239,8 @@ void ButtonOptionsMenu::AddActionEdit() {
   // ||"Selected key" |key labels||
   // ||"key"                      |
   // ------------------------------
-  action_edit_container_ = AddChildView(std::make_unique<ash::RoundedContainer>(
-      ash::RoundedContainer::Behavior::kBottomRounded));
-  action_edit_container_
-      ->SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddColumn(views::LayoutAlignment::kStart,
-                  views::LayoutAlignment::kStart,
-                  /*horizontal_resize=*/1.0f,
-                  views::TableLayout::ColumnSize::kUsePreferred,
-                  /*fixed_width=*/0, /*min_width=*/0)
-      .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kCenter,
-                 /*horizontal_resize=*/1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddRows(1, views::TableLayout::kFixedSize, 0);
-  action_edit_container_->SetBorderInsets(gfx::Insets::VH(14, 16));
-  action_edit_container_->SetProperty(views::kMarginsKey,
-                                      gfx::Insets::TLBR(0, 0, 8, 0));
-
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  key_name_tag_ = action_edit_container_->AddChildView(
-      NameTag::CreateNameTag(u"Selected key"));
-  labels_view_ =
-      action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
-          controller_, action_, key_name_tag_, /*set_title=*/false));
+  action_edit_ = AddChildView(
+      std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
 }
 
 void ButtonOptionsMenu::OnTrashButtonPressed() {
@@ -256,16 +270,16 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   action_ = new_action;
   button_group_->set_action(new_action);
   action_label_button_->set_action(new_action);
-  action_edit_container_->RemoveChildViewT(labels_view_);
-  labels_view_ =
-      action_edit_container_->AddChildView(EditLabels::CreateEditLabels(
-          controller_, action_, key_name_tag_, /*set_title=*/false));
+  auto index = GetIndexOf(action_edit_);
+  RemoveChildViewT(action_edit_);
+  action_edit_ = AddChildViewAt(
+      std::make_unique<ButtonOptionsActionEdit>(controller_, action_), *index);
   controller_->UpdateButtonOptionsMenuWidgetBounds(action_);
 }
 
 void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
   if (action_ == &action) {
-    labels_view_->OnActionInputBindingUpdated();
+    action_edit_->OnActionInputBindingUpdated();
   }
 }
 
@@ -278,7 +292,7 @@ void ButtonOptionsMenu::OnActionNameUpdated(const Action& action) {
 
 void ButtonOptionsMenu::OnActionNewStateRemoved(const Action& action) {
   if (action_ == &action) {
-    labels_view_->RemoveNewState();
+    action_edit_->RemoveNewState();
   }
 }
 

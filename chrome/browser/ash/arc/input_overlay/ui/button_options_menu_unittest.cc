@@ -11,8 +11,11 @@
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -64,6 +67,13 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     button_group->OnActionTapButtonPressed();
   }
 
+  void PressActionEdit(ButtonOptionsMenu* menu) {
+    DCHECK(menu);
+    ActionEditView* action_edit = menu->action_edit_;
+    DCHECK(action_edit);
+    action_edit->OnClicked();
+  }
+
   bool IsActionInTouchInjector(Action* action) {
     const auto& actions = touch_injector_->actions();
     return std::find_if(actions.begin(), actions.end(),
@@ -85,6 +95,14 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     return false;
   }
 
+  bool IsEditLabelFocused(ButtonOptionsMenu* menu, int index) {
+    DCHECK(menu);
+    ActionEditView* action_edit = menu->action_edit_;
+    DCHECK(action_edit);
+    EditLabels* edit_labels = action_edit->labels_view_;
+    DCHECK(edit_labels);
+    return edit_labels->labels_[index]->HasFocus();
+  }
 };
 
 TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
@@ -155,6 +173,18 @@ TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   EXPECT_EQ(GetActionType(menu), ActionType::TAP);
   EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
   EXPECT_TRUE(IsActionInEditingList(menu->action()));
+}
+
+TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {
+  auto* menu = ShowButtonOptionsMenu(tap_action_);
+  PressActionEdit(menu);
+  EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/0));
+  menu = ShowButtonOptionsMenu(move_action_);
+  PressActionEdit(menu);
+  EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/0));
+  PressActionEdit(menu);
+  EXPECT_FALSE(IsEditLabelFocused(menu, /*index=*/0));
+  EXPECT_TRUE(IsEditLabelFocused(menu, /*index=*/1));
 }
 
 }  // namespace arc::input_overlay

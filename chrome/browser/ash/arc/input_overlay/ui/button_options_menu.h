@@ -8,19 +8,15 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_edit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
-
-namespace ash {
-class RoundedContainer;
-}  // namespace ash
 
 namespace arc::input_overlay {
 
 class Action;
+class ActionEditView;
 class ActionTypeButtonGroup;
 class DisplayOverlayController;
-class EditLabels;
-class NameTag;
 
 // ButtonOptionsMenu displays action's type, input binding(s) and name and it
 // can modify these information. It shows up upon clicking an action's touch
@@ -81,9 +77,7 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
 
   raw_ptr<ActionTypeButtonGroup> button_group_ = nullptr;
-  raw_ptr<ash::RoundedContainer> action_edit_container_ = nullptr;
-  raw_ptr<EditLabels, DisableDanglingPtrDetection> labels_view_ = nullptr;
-  raw_ptr<NameTag> key_name_tag_ = nullptr;
+  raw_ptr<ActionEditView, DisableDanglingPtrDetection> action_edit_ = nullptr;
   raw_ptr<ActionLabelButton> action_label_button_ = nullptr;
 };
 

@@ -20,9 +20,9 @@ std::unique_ptr<EditLabels> EditLabels::CreateEditLabels(
     DisplayOverlayController* controller,
     Action* action,
     NameTag* name_tag,
-    bool set_title) {
-  auto labels =
-      std::make_unique<EditLabels>(controller, action, name_tag, set_title);
+    bool should_update_title) {
+  auto labels = std::make_unique<EditLabels>(controller, action, name_tag,
+                                             should_update_title);
   labels->Init();
   return labels;
 }
@@ -30,11 +30,11 @@ std::unique_ptr<EditLabels> EditLabels::CreateEditLabels(
 EditLabels::EditLabels(DisplayOverlayController* controller,
                        Action* action,
                        NameTag* name_tag,
-                       bool set_title)
+                       bool should_update_title)
     : controller_(controller),
       action_(action),
       name_tag_(name_tag),
-      set_title_(set_title),
+      should_update_title_(should_update_title),
       is_new_(action_->is_new()) {}
 
 EditLabels::~EditLabels() = default;
@@ -52,7 +52,7 @@ void EditLabels::Init() {
   }
 
   UpdateNameTag();
-  if (set_title_) {
+  if (should_update_title_) {
     UpdateNameTagTitle();
   }
 }
@@ -82,6 +82,19 @@ void EditLabels::SetNameTagState(bool is_error,
   } else {
     name_tag_->SetState(is_error, error_tooltip);
   }
+}
+
+void EditLabels::FocusLabel() {
+  // Clicking the edit labels with an already focused edit label causes the next
+  // label to gain focus.
+  for (size_t i = 0; i < labels_.size(); i++) {
+    auto* label = labels_[i];
+    if (label->HasFocus()) {
+      labels_[(i + 1) % labels_.size()]->RequestFocus();
+      return;
+    }
+  }
+  labels_[0]->RequestFocus();
 }
 
 void EditLabels::InitForActionTapKeyboard() {

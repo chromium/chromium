@@ -38,7 +38,7 @@ class EditLabelTest : public OverlayViewTestBase {
   }
 
   EditLabel* GetEditLabel(const ButtonOptionsMenu* menu, size_t index) const {
-    auto& labels = menu->labels_view_->labels_;
+    auto& labels = menu->action_edit_->labels_view_->labels_;
     DCHECK_LT(index, labels.size());
     return labels[index];
   }
@@ -66,7 +66,7 @@ class EditLabelTest : public OverlayViewTestBase {
 
   bool IsInErrorState(ButtonOptionsMenu* menu) {
     DCHECK(menu);
-    return IsNameTagInErrorState(menu->labels_view_);
+    return IsNameTagInErrorState(menu->action_edit_->labels_view_);
   }
 
   bool IsInErrorState(ActionViewListItem* list_item) {

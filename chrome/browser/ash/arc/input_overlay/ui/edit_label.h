@@ -34,6 +34,7 @@ class EditLabel : public views::LabelButton {
   void RemoveNewState();
 
  private:
+  friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
 
   void Init();

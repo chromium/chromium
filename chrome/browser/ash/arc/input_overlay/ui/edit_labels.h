@@ -38,12 +38,12 @@ class EditLabels : public views::View {
       DisplayOverlayController* controller,
       Action* action,
       NameTag* name_tag,
-      bool set_title);
+      bool should_update_title);
 
   EditLabels(DisplayOverlayController* controller,
              Action* action,
              NameTag* name_tag,
-             bool set_title);
+             bool should_update_title);
 
   EditLabels(const EditLabels&) = delete;
   EditLabels& operator=(const EditLabels&) = delete;
@@ -53,8 +53,15 @@ class EditLabels : public views::View {
 
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
   void RemoveNewState();
+  // Called when this view is clicked upon.
+  void FocusLabel();
+
+  void set_should_update_title(bool should_update_title) {
+    should_update_title_ = should_update_title;
+  }
 
  private:
+  friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
 
   void Init();
@@ -78,7 +85,7 @@ class EditLabels : public views::View {
   bool missing_assign_ = false;
 
   // Allows for title modification if true.
-  bool set_title_ = false;
+  bool should_update_title_ = false;
 
   // Prevents new actions from being in the error state by default.
   bool is_new_ = false;
