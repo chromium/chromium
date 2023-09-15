@@ -40,20 +40,20 @@ found in the LICENSE file.
         </item>
         <item
             android:id="@+id/edit_menu_id"
-            android:icon="@drawable/ic_edit_24dp"
+            android:icon="@drawable/material_ic_edit_24dp"
             android:title="@string/edit_folder"
             android:visible="false"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/create_new_folder_menu_id"
-            android:icon="@drawable/ic_create_new_folder_24dp"
+            android:icon="@drawable/material_ic_create_new_folder_24dp"
             android:title="@string/create_new_folder"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/close_menu_id"
-            android:icon="@drawable/btn_close"
+            android:icon="@drawable/material_ic_close_24dp"
             android:title="@string/bookmark_toolbar_close"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
@@ -63,19 +63,19 @@ found in the LICENSE file.
         android:visible="false" >
         <item
             android:id="@+id/selection_mode_edit_menu_id"
-            android:icon="@drawable/bookmark_edit_active"
+            android:icon="@drawable/material_ic_edit_24dp"
             android:title="@string/edit_bookmark"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/selection_mode_move_menu_id"
-            android:icon="@drawable/bookmark_move_active"
+            android:icon="@drawable/material_ic_drive_file_move_24dp"
             android:title="@string/bookmark_toolbar_move"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/selection_mode_delete_menu_id"
-            android:icon="@drawable/ic_delete_white_24dp"
+            android:icon="@drawable/material_ic_delete_24dp"
             android:title="@string/bookmark_toolbar_delete"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
