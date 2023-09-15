@@ -20,7 +20,6 @@ class HostEventFileLogger : public HostEventLogger {
   // Returns nullptr if an error occurs in configuring the logger.
   static std::unique_ptr<HostEventLogger> Create();
 
-  explicit HostEventFileLogger(base::File log_file);
   HostEventFileLogger(const HostEventFileLogger&) = delete;
   HostEventFileLogger& operator=(const HostEventFileLogger&) = delete;
   ~HostEventFileLogger() override;
@@ -29,6 +28,8 @@ class HostEventFileLogger : public HostEventLogger {
   void LogEvent(const EventTraceData& data) override;
 
  private:
+  explicit HostEventFileLogger(base::File log_file);
+
   base::File log_file_;
 };
 

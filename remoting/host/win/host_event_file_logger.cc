@@ -4,12 +4,15 @@
 
 #include "remoting/host/win/host_event_file_logger.h"
 
+#include <string>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -41,8 +44,8 @@ std::unique_ptr<HostEventLogger> HostEventFileLogger::Create() {
 
   base::Time::Exploded exploded;
   base::Time::Now().LocalExplode(&exploded);
-  base::FilePath log_file_path = directory.Append(base::StringPrintf(
-      L"chrome_remote_desktop_%4d%02d%02d_%02d%02d%02d_%03d.log", exploded.year,
+  base::FilePath log_file_path = directory.AppendASCII(base::StringPrintf(
+      "chrome_remote_desktop_%4d%02d%02d_%02d%02d%02d_%03d.log", exploded.year,
       exploded.month, exploded.day_of_month, exploded.hour, exploded.minute,
       exploded.second, exploded.millisecond));
 
@@ -67,7 +70,7 @@ std::unique_ptr<HostEventLogger> HostEventFileLogger::Create() {
     PLOG(WARNING) << "Failed to create symbolic link for latest log file.";
   }
 
-  return std::make_unique<HostEventFileLogger>(std::move(log_file));
+  return base::WrapUnique(new HostEventFileLogger(std::move(log_file)));
 }
 
 void HostEventFileLogger::LogEvent(const EventTraceData& data) {
@@ -82,7 +85,7 @@ void HostEventFileLogger::LogEvent(const EventTraceData& data) {
       EventTraceData::SeverityToString(data.severity).c_str(),
       data.file_name.c_str(), data.line, data.message.c_str());
 
-  log_file_.Write(/*unused*/ 0, message.c_str(), message.size());
+  log_file_.WriteAtCurrentPosAndCheck(base::as_bytes(base::make_span(message)));
 }
 
 }  // namespace remoting

@@ -25,9 +25,6 @@ const base::FilePath::CharType kRemotingFolder[] =
 const base::FilePath::CharType kDumpFrameFolder[] =
     FILE_PATH_LITERAL("dumped_images");
 
-// Used to create a unique folder path.
-const char kDateAndTimeFormatString[] = "%d-%d-%d_%d-%d-%d";
-
 }  // namespace
 
 namespace remoting {
@@ -116,16 +113,10 @@ base::FilePath VideoFrameWriter::AppendCreationDateAndTime(
     const base::FilePath& file_path) {
   base::Time::Exploded exploded_time;
   instance_creation_time_.LocalExplode(&exploded_time);
-
-  int year = exploded_time.year;
-  int month = exploded_time.month;
-  int day = exploded_time.day_of_month;
-  int hour = exploded_time.hour;
-  int minute = exploded_time.minute;
-  int second = exploded_time.second;
-
   return file_path.AppendASCII(base::StringPrintf(
-      kDateAndTimeFormatString, year, month, day, hour, minute, second));
+      "%d-%d-%d_%d-%d-%d", exploded_time.year, exploded_time.month,
+      exploded_time.day_of_month, exploded_time.hour, exploded_time.minute,
+      exploded_time.second));
 }
 
 bool VideoFrameWriter::CreateDirectoryIfNotExists(

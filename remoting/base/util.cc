@@ -16,7 +16,7 @@
 
 namespace remoting {
 
-enum { kBytesPerPixelRGB32 = 4 };
+constexpr int kBytesPerPixelRGB32 = 4;
 
 static int CalculateRGBOffset(int x, int y, int stride) {
   return stride * y + kBytesPerPixelRGB32 * x;

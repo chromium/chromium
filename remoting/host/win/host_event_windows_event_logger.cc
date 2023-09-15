@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "remoting/host/win/event_trace_data.h"
 #include "remoting/host/win/remoting_host_messages.h"
@@ -57,8 +58,8 @@ void HostEventWindowsEventLogger::LogEvent(const EventTraceData& data) {
   base::Time::Exploded exploded;
   data.time_stamp.LocalExplode(&exploded);
   std::vector<std::string> payload(
-      {data.message.c_str(), base::StringPrintf("pid: %d", data.process_id),
-       base::StringPrintf("tid: %d", data.thread_id),
+      {data.message, "pid: " + base::NumberToString(data.process_id),
+       "tid: " + base::NumberToString(data.thread_id),
        EventTraceData::SeverityToString(data.severity),
        base::StringPrintf("%s(%d)", data.file_name.c_str(), data.line),
        base::StringPrintf("%4d-%02d-%02d - %02d:%02d:%02d.%03d", exploded.year,
