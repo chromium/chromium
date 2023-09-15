@@ -30,12 +30,10 @@ const CGFloat kFaviconBackgroundSize = 30.0;
 const CGFloat kFavIconBackgroundCornerRadius = 7.0;
 const CGFloat kFaviconContainerSize = 56.0;
 const CGFloat kFavIconContainerCornerRadius = 12.0;
-const CGSize kFavIconContainerShadowOffset = {.width = 0, .height = 4};
-const CGFloat kFavIconContainerShadowOpacity = 0.12;
 
 // Stacks constants.
 const CGFloat kContainerStackSpacing = 14.0;
-const CGFloat kLabelStackSpacing = 6.0;
+const CGFloat kLabelStackSpacing = 5.0;
 
 }  // namespace
 
@@ -130,7 +128,6 @@ const CGFloat kLabelStackSpacing = 6.0;
   UIStackView* labelStackView = [[UIStackView alloc] init];
   labelStackView.axis = UILayoutConstraintAxisVertical;
   labelStackView.spacing = kLabelStackSpacing;
-  labelStackView.distribution = UIStackViewDistributionFill;
   labelStackView.translatesAutoresizingMaskIntoConstraints = NO;
   return labelStackView;
 }
@@ -146,8 +143,6 @@ const CGFloat kLabelStackSpacing = 6.0;
   UIView* faviconBackgroundView = [[UIView alloc] init];
   faviconBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   faviconBackgroundView.layer.cornerRadius = kFavIconBackgroundCornerRadius;
-  faviconBackgroundView.layer.shadowOffset = kFavIconContainerShadowOffset;
-  faviconBackgroundView.layer.shadowOpacity = kFavIconContainerShadowOpacity;
   faviconBackgroundView.backgroundColor = UIColor.whiteColor;
   [faviconContainerView addSubview:faviconBackgroundView];
 
@@ -207,8 +202,7 @@ const CGFloat kLabelStackSpacing = 6.0;
 - (UILabel*)configuredTabTitleLabel {
   UILabel* label = [[UILabel alloc] init];
   label.text = _item.tabTitle;
-  label.font =
-      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  label.font = CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
   label.numberOfLines = 1;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.adjustsFontForContentSizeCategory = YES;

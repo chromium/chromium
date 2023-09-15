@@ -418,6 +418,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kTabResumption:
       return YES;
     default:
       return NO;
