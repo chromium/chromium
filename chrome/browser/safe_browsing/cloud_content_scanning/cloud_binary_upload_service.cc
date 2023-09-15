@@ -61,17 +61,18 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
     return net::DefineNetworkTrafficAnnotation(
         "safe_browsing_binary_upload_app", R"(
         semantics {
-          sender: "Advanced Protection Program"
+          sender: "Safe Browsing"
           description:
-            "For users part of Google's Advanced Protection Program, when a "
-            "file is downloaded, Chrome will upload that file to Safe Browsing "
-            "for detailed scanning."
+            "For users opted in to Enhanced Safe Browsing or Google's Advanced "
+            "Protection Program, when a file is downloaded, Chrome may upload "
+            "that file to Safe Browsing for detailed scanning."
           trigger:
             "The browser will upload the file to Google when the user "
-            "downloads a file, and the browser is enrolled into the "
-            "Advanced Protection Program."
+            "downloads a suspicious file and the user is opted in to Enhanced "
+            "Safe Browsing or Google's Advanced Protection Program."
           data:
-            "The downloaded file. Also an access token (enterprise only)."
+            "The downloaded file and metadata about how the user came to "
+            "download that file (including URLs)."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -85,13 +86,13 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
           last_reviewed: "2023-07-28"
         }
         policy {
-          cookies_allowed: YES
-          cookies_store: "Safe Browsing Cookie Store"
+          cookies_allowed: NO
           setting: "This is disabled by default an can only be enabled by "
-            "policy."
+            "opting in to Enhanced Safe Browsing or the Advanced Protection "
+            "Program."
           chrome_policy {
-            AdvancedProtectionAllowed {
-              AdvancedProtectionAllowed: false
+            SafeBrowsingDeepScanningEnabled: {
+              SafeBrowsingDeepScanningEnabled: false
             }
           }
         }
