@@ -187,7 +187,7 @@ ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
   return StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
       script_state, exception_state,
       WTF::BindOnce(&StorageBucket::GetSandboxedFileSystem,
-                    weak_factory_.GetWeakPtr()));
+                    WrapWeakPersistent(this)));
 }
 
 void StorageBucket::Trace(Visitor* visitor) const {

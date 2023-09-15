@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_STORAGE_BUCKET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_STORAGE_BUCKET_H_
 
-#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-blink.h"
@@ -80,8 +79,6 @@ class StorageBucket final : public ScriptWrappable,
   Member<LockManager> lock_manager_;
   Member<CacheStorage> caches_;
   Member<NavigatorBase> navigator_base_;
-
-  base::WeakPtrFactory<StorageBucket> weak_factory_{this};
 };
 
 }  // namespace blink
