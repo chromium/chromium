@@ -35,7 +35,7 @@ found in the LICENSE file.
     grid-template-areas:
       '.        .    title       .     '
       'checkbox icon category    .     '
-      '.        .    description expand';
+      '.        .    description .     ';
     grid-auto-flow: column;
     grid-template-columns: var(--checkbox-column-width) 48px 1fr 26px;
     grid-template-rows: 22px 22px auto;
@@ -166,22 +166,6 @@ found in the LICENSE file.
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
-  .expand-button {
-    align-items: flex-start;
-    display: flex;
-    grid-area: expand;
-  }
-
-  cr-expand-button {
-    --cr-icon-button-margin-start: 0;
-    --cr-icon-button-margin-end: 0;
-    --cr-expand-button-icon-size: 20px;
-    --cr-expand-button-size: 20px;
-    --cr-section-vertical-padding: 0;
-    height: 20px;
-    width: 20px;
-  }
 </style>
 <div id="appsListContainer">
   <div id="unselectAll" hidden="[[unselectSymbolHidden_(appsSelected)]]"></div>
@@ -220,15 +204,9 @@ found in the LICENSE file.
             </template>
           </ul>
         </div>
-        <div class="app-description secondary-text truncated">
+        <div class="app-description secondary-text">
           [[item.description]]
         </div>
-        <div class="expand-button">
-          <cr-expand-button
-            on-click="onExpandClicked_"
-            aria-label="[[getExpandButtonAriaLabel_(item.title)]]"
-          >
-          </cr-expand-button>
         </div>
       </div>
     </template>

@@ -1392,7 +1392,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       // will append apps instead of replacing.
       states: [
         {
-          id: '2-apps',
+          id: '3-apps',
           trigger: (screen) => {
             screen.reset();
             screen.loadAppList([
@@ -1411,6 +1411,19 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
                 in_app_purchases: true,
                 was_installed: false,
                 content_rating: '',
+                description: 'Short description',
+              },
+              {
+                title: 'anotherGapp',
+                icon_url: 'https://www.google.com/favicon.ico',
+                category: 'Games',
+                in_app_purchases: true,
+                was_installed: false,
+                content_rating: '',
+                // Current limitation is 80 characters.
+                description:
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit,' +
+                    ' sed do eiusmod tempor',
               },
             ]);
           },

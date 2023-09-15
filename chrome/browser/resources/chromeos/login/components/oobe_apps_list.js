@@ -5,7 +5,6 @@
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/ash/common/cr_scrollable_behavior.js';
 import '//resources/cr_elements/icons.html.js';
 
@@ -128,15 +127,6 @@ export class OobeAppsList extends OobeAppsListBase {
   }
 
   /**
-   * @param {string} title the name of the application.
-   * @return {string} aria label for the expand button.
-   * @private
-   */
-  getExpandButtonAriaLabel_(title) {
-    return this.i18n('recommendAppsDescriptionExpand', title);
-  }
-
-  /**
    * After any change in selection update current counter.
    * @private
    */
@@ -181,15 +171,6 @@ export class OobeAppsList extends OobeAppsListBase {
       this.allSelected_ = false;
     }
     this.updateCount_();
-  }
-
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onExpandClicked_(e) {
-    const appItem = e.currentTarget.parentElement.parentElement;
-    appItem.querySelector('.app-description').classList.toggle('truncated');
   }
 
   /**
