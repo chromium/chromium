@@ -4,6 +4,8 @@
 
 #include "ash/ambient/ambient_video_ui_launcher.h"
 
+#include <utility>
+
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
@@ -20,10 +22,6 @@
 
 namespace ash {
 namespace {
-
-base::FilePath GetVideoHtmlPath() {
-  return GetTimeOfDaySrcDir().Append(kAmbientVideoHtml);
-}
 
 base::StringPiece GetVideoFile(AmbientVideo video) {
   switch (video) {
@@ -42,6 +40,7 @@ AmbientVideoUiLauncher::AmbientVideoUiLauncher(
     : pref_service_(pref_service), view_delegate_(view_delegate) {
   CHECK(pref_service_);
 }
+
 AmbientVideoUiLauncher::~AmbientVideoUiLauncher() = default;
 
 void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
@@ -58,13 +57,16 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
                            ->ambient_controller()
                            ->ambient_weather_controller()
                            ->CreateScopedRefresher();
-  std::move(on_done).Run(/*success=*/true);
+  GetAmbientVideoHtmlPath(
+      base::BindOnce(&AmbientVideoUiLauncher::SetVideoHtmlPath,
+                     weak_factory_.GetWeakPtr(), std::move(on_done)));
 }
 
 std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
   CHECK(is_active_);
+  CHECK(!video_html_path_.empty());
   return std::make_unique<AmbientVideoView>(GetVideoFile(current_video_),
-                                            GetVideoHtmlPath(), current_video_,
+                                            video_html_path_, current_video_,
                                             view_delegate_);
 }
 
@@ -83,6 +85,12 @@ AmbientPhotoController* AmbientVideoUiLauncher::GetAmbientPhotoController() {
 
 bool AmbientVideoUiLauncher::IsActive() {
   return is_active_;
+}
+
+void AmbientVideoUiLauncher::SetVideoHtmlPath(InitializationCallback on_done,
+                                              base::FilePath video_html_path) {
+  video_html_path_ = std::move(video_html_path);
+  std::move(on_done).Run(/*success=*/!video_html_path_.empty());
 }
 
 }  // namespace ash

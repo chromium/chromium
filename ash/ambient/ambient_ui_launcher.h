@@ -38,6 +38,9 @@ class AmbientUiLauncher {
   // After Initialize() is complete, we call this method to create the view,
   // this can be called multiple times during an ambient UI session in case
   // there are multiple screens.
+  //
+  // Must only be called between a successful `Initialize()` and `Finalize()`
+  // call.
   virtual std::unique_ptr<views::View> CreateView() = 0;
 
   // Stop any processing and ends the current ambient session. This method is

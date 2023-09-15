@@ -12,6 +12,7 @@
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/constants/ambient_video.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 class PrefService;
 
@@ -38,11 +39,16 @@ class AmbientVideoUiLauncher : public AmbientUiLauncher {
   bool IsActive() override;
 
  private:
+  void SetVideoHtmlPath(InitializationCallback on_done,
+                        base::FilePath video_html_path);
+
   bool is_active_ = false;
   AmbientVideo current_video_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<AmbientViewDelegate> view_delegate_;
   std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
+  base::FilePath video_html_path_;
+  base::WeakPtrFactory<AmbientVideoUiLauncher> weak_factory_{this};
 };
 
 }  // namespace ash

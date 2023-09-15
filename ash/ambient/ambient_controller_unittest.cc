@@ -30,6 +30,7 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
+#include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
 #include "ash/public/cpp/test/in_process_image_decoder.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -53,9 +54,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "net/base/url_util.h"
@@ -75,6 +79,8 @@ using assistant::AssistantInteractionMetadata;
 
 constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";
+constexpr base::FilePath::CharType kTestDlcRootPath[] =
+    FILE_PATH_LITERAL("/test/time_of_day");
 
 std::vector<base::OnceClosure> GetEventGeneratorCallbacks(
     ui::test::EventGenerator* event_generator) {
@@ -149,12 +155,18 @@ class AmbientUiVisibilityBarrier : public AmbientUiModelObserver {
 
 class AmbientControllerTest : public AmbientAshTestBase {
  public:
-  AmbientControllerTest() = default;
+  AmbientControllerTest() {
+    dlcservice_client_.set_install_root_path(kTestDlcRootPath);
+  }
   ~AmbientControllerTest() override = default;
 
   // AmbientAshTestBase:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kAmbientModeThrottleAnimation);
+    std::vector<base::test::FeatureRef> features_to_enable =
+        personalization_app::GetTimeOfDayEnabledFeatures();
+    features_to_enable.emplace_back(features::kTimeOfDayDlc);
+    features_to_enable.emplace_back(features::kAmbientModeThrottleAnimation);
+    feature_list_.InitWithFeatures(features_to_enable, {});
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
   }
@@ -205,6 +217,7 @@ class AmbientControllerTest : public AmbientAshTestBase {
 
  protected:
   base::UserActionTester user_action_tester_;
+  FakeDlcserviceClient dlcservice_client_;
 };
 
 // Tests for behavior that are agnostic to the AmbientUiSettings selected by
@@ -2118,8 +2131,9 @@ TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
       GetContainerView()->GetViewByID(kAmbientVideoWebView));
   ASSERT_TRUE(web_view);
   EXPECT_TRUE(web_view->current_url().SchemeIsFile());
-  EXPECT_EQ(web_view->current_url().path(),
-            GetTimeOfDaySrcDir().Append(kAmbientVideoHtml).value());
+  const base::FilePath video_html_full_path =
+      base::FilePath(kTestDlcRootPath).Append(kTimeOfDayVideoHtmlSubPath);
+  EXPECT_EQ(web_view->current_url().path(), video_html_full_path.value());
   std::string video_file_requested;
   ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
                                          &video_file_requested));
@@ -2149,8 +2163,7 @@ TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
       GetContainerView()->GetViewByID(kAmbientVideoWebView));
   ASSERT_TRUE(web_view);
   EXPECT_TRUE(web_view->current_url().SchemeIsFile());
-  EXPECT_EQ(web_view->current_url().path(),
-            GetTimeOfDaySrcDir().Append(kAmbientVideoHtml).value());
+  EXPECT_EQ(web_view->current_url().path(), video_html_full_path.value());
   ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
                                          &video_file_requested));
   EXPECT_EQ(video_file_requested, kTimeOfDayCloudsVideo);

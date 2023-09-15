@@ -3828,6 +3828,7 @@ test("ash_unittests") {
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/dbus/fwupd",
     "//chromeos/ash/components/dbus/hammerd",
     "//chromeos/ash/components/dbus/hermes",
