@@ -18,27 +18,25 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  */
 public @interface SuggestionViewProperties {
     /** Whether suggestion is a search suggestion. */
-    public static final WritableBooleanPropertyKey IS_SEARCH_SUGGESTION =
-            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey IS_SEARCH_SUGGESTION = new WritableBooleanPropertyKey();
 
     /** The actual text content for the first line of text. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_1_TEXT =
+    static final WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_1_TEXT =
             new WritableObjectPropertyKey<>();
 
     /** The actual text content for the second line of text. */
     @VisibleForTesting
-    public static final WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_2_TEXT =
+    static final WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_2_TEXT =
             new WritableObjectPropertyKey<>();
 
     /** Whether suggestions can wrap-around long search query to second line. */
     @VisibleForTesting
-    public static final WritableBooleanPropertyKey ALLOW_WRAP_AROUND =
-            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey ALLOW_WRAP_AROUND = new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
+    static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
             IS_SEARCH_SUGGESTION, TEXT_LINE_1_TEXT, TEXT_LINE_2_TEXT, ALLOW_WRAP_AROUND};
 
-    public static final PropertyKey[] ALL_KEYS =
+    static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, BaseSuggestionViewProperties.ALL_KEYS);
 }

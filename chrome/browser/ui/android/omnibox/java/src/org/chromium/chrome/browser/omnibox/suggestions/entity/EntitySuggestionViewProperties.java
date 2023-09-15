@@ -12,8 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The properties associated with rendering the entity suggestion view.
  */
 @interface EntitySuggestionViewProperties {
-    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {};
+    static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {};
 
-    public static final PropertyKey[] ALL_KEYS =
+    static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionViewProperties.ALL_KEYS);
 }

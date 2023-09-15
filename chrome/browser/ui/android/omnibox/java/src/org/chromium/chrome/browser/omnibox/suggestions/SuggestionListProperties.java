@@ -14,52 +14,52 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /**
  * The properties controlling the state of the list of suggestion items.
  */
-public class SuggestionListProperties {
+@interface SuggestionListProperties {
     /** Whether the suggestion list is visible. */
-    public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
     /** The embedder for the suggestion list. */
-    public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
+    static final WritableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
             new WritableObjectPropertyKey<>();
 
     /**
      * The list of models controlling the state of the suggestion items. This should never be
      * bound to the same view more than once.
      */
-    public static final WritableObjectPropertyKey<ModelList> SUGGESTION_MODELS =
+    static final WritableObjectPropertyKey<ModelList> SUGGESTION_MODELS =
             new WritableObjectPropertyKey<>(true);
 
     /**
      * Whether the list encompasses the final set of suggestions for the current user query.
      */
-    public static final WritableBooleanPropertyKey LIST_IS_FINAL = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey LIST_IS_FINAL = new WritableBooleanPropertyKey();
 
     /**
      * Specifies the color scheme. It can be light or dark because of a publisher defined color,
      * incognito, or the default theme that follows dynamic colors.
      */
-    public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+    static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
     /**
      * The observer that will receive notifications that the user is interacting with an item on
      * the Suggestions list.
      */
-    public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.GestureObserver>
+    static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.GestureObserver>
             GESTURE_OBSERVER = new WritableObjectPropertyKey<>();
 
     /** The listener that will receive the new height of the suggestion list in pixels. */
-    public static final WritableObjectPropertyKey<Callback<Integer>>
-            DROPDOWN_HEIGHT_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<Callback<Integer>> DROPDOWN_HEIGHT_CHANGE_LISTENER =
+            new WritableObjectPropertyKey<>();
 
     /** The listener that will be invoked whenever the User scrolls the list. */
-    public static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_LISTENER =
+    static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_LISTENER =
             new WritableObjectPropertyKey<>();
 
     /** The listener that will be invoked whenever the User scrolls the list to the top. */
-    public static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_TO_TOP_LISTENER =
+    static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_TO_TOP_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, EMBEDDER,
-            SUGGESTION_MODELS, COLOR_SCHEME, GESTURE_OBSERVER, DROPDOWN_HEIGHT_CHANGE_LISTENER,
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, EMBEDDER, SUGGESTION_MODELS,
+            COLOR_SCHEME, GESTURE_OBSERVER, DROPDOWN_HEIGHT_CHANGE_LISTENER,
             DROPDOWN_SCROLL_LISTENER, DROPDOWN_SCROLL_TO_TOP_LISTENER, LIST_IS_FINAL};
 }

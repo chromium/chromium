@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** The base set of properties for most omnibox suggestions. */
-public class BaseSuggestionViewProperties {
+public @interface BaseSuggestionViewProperties {
     /** Describes density of the suggestions. */
     @IntDef({Density.DEFAULT, Density.COMPACT})
     @Retention(RetentionPolicy.SOURCE)

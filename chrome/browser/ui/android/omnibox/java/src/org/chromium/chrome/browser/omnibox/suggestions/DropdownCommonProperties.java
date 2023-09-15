@@ -11,7 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 /**
  * The set of common properties associated with dropdown suggestions.
  */
-public class DropdownCommonProperties {
+public @interface DropdownCommonProperties {
     /** Whether the suggestion background's top corners should be rounded. */
     public static final WritableBooleanPropertyKey BG_TOP_CORNER_ROUNDED =
             new WritableBooleanPropertyKey();

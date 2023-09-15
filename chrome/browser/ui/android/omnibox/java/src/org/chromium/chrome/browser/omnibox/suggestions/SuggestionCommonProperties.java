@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * The set of common properties associated with any omnibox suggestion.
  */
-public class SuggestionCommonProperties {
+public @interface SuggestionCommonProperties {
     /** Enum for identifying the device type */
     @IntDef({FormFactor.UNKNOWN, FormFactor.PHONE, FormFactor.TABLET})
     @Retention(RetentionPolicy.SOURCE)
@@ -36,5 +36,4 @@ public class SuggestionCommonProperties {
     public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             new PropertyKey[] {COLOR_SCHEME, LAYOUT_DIRECTION, DEVICE_FORM_FACTOR},
             DropdownCommonProperties.ALL_KEYS);
-    ;
 }
