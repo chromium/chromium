@@ -433,13 +433,10 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
               IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE)));
   game_controls_details_->SetID(VIEW_ID_GD_CONTROLS_DETAILS_ROW);
 
-  const bool is_flag_set =
-      game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled);
-  // TODO(b/279117180): Include application name in the subtitle.
-  // TODO(b/274690042): Replace the strings with localized strings.
-  game_controls_details_->SetSubtitle(is_flag_set ? u"On" : u"Off");
-
   if (game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty)) {
+    game_controls_details_->SetSubtitle(
+        l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_GC_SET_UP_SUB_TITLE));
+
     // Add "Set up" button for empty state.
     // TODO(b/274690042): Replace the strings with localized strings.
     game_controls_setup_button_ = game_controls_details_->AddCustomizedTailView(
@@ -453,6 +450,13 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
     game_controls_setup_button_->SetProperty(views::kMarginsKey,
                                              gfx::Insets::TLBR(0, 20, 0, 0));
   } else {
+    const bool is_game_controls_enabled =
+        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled);
+    // TODO(b/279117180): Include application name in the subtitle.
+    // TODO(b/274690042): Replace the strings with localized strings.
+    game_controls_details_->SetSubtitle(is_game_controls_enabled ? u"On"
+                                                                 : u"Off");
+
     // Add toggle button and arrow icon for non-empty state.
     auto* edit_container = game_controls_details_->AddCustomizedTailView(
         std::make_unique<views::View>());
@@ -474,7 +478,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
         l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
     game_controls_feature_switch_->SetProperty(views::kMarginsKey,
                                                gfx::Insets::TLBR(0, 0, 0, 18));
-    game_controls_feature_switch_->SetIsOn(is_flag_set);
+    game_controls_feature_switch_->SetIsOn(is_game_controls_enabled);
     // Add arrow icon.
     edit_container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
