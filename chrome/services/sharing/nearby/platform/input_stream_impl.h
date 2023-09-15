@@ -68,7 +68,7 @@ class InputStreamImpl : public InputStream {
   std::unique_ptr<ByteArray> pending_read_buffer_;
   uint32_t pending_read_buffer_pos_ = 0;
   ExceptionOr<ByteArray> exception_or_received_byte_array_;
-  absl::optional<base::WaitableEvent> read_waitable_event_;
+  base::WaitableEvent read_waitable_event_;
 };
 
 }  // namespace chrome
