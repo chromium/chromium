@@ -49,18 +49,15 @@ public class DownloadForegroundServiceTest {
      * Mimics behavior of DownloadForegroundService except for calls to the actual service.
      */
     public static class MockDownloadForegroundService extends DownloadForegroundServiceImpl {
-        @IntDef({MethodID.START_FOREGROUND, MethodID.STOP_FOREGROUND_FLAGS,
-                MethodID.RELAUNCH_NOTIFICATION})
+        @IntDef({MethodID.START_FOREGROUND, MethodID.STOP_FOREGROUND_FLAGS})
         @Retention(RetentionPolicy.SOURCE)
         public @interface MethodID {
             int START_FOREGROUND = 0;
             int STOP_FOREGROUND_FLAGS = 1;
-            int RELAUNCH_NOTIFICATION = 2;
         }
 
         int mTargetSdk = 34;
         int mStopForegroundFlags = -1;
-        int mRelaunchedNotificationId = INVALID_NOTIFICATION_ID;
         int mNextNotificationId = INVALID_NOTIFICATION_ID;
 
         // Used for saving MethodID values.
@@ -73,7 +70,6 @@ public class DownloadForegroundServiceTest {
         // Clears stored flags/boolean/id/method calls. Call between tests runs.
         void clearStoredState() {
             mStopForegroundFlags = -1;
-            mRelaunchedNotificationId = INVALID_NOTIFICATION_ID;
             mMethodCalls.clear();
             mNextNotificationId = INVALID_NOTIFICATION_ID;
         }
@@ -87,12 +83,6 @@ public class DownloadForegroundServiceTest {
         void stopForegroundInternal(int flags) {
             mMethodCalls.add(MethodID.STOP_FOREGROUND_FLAGS);
             mStopForegroundFlags = flags;
-        }
-
-        @Override
-        void relaunchOldNotification(int notificationId, Notification notification) {
-            mMethodCalls.add(MethodID.RELAUNCH_NOTIFICATION);
-            mRelaunchedNotificationId = notificationId;
         }
 
         @Override
@@ -136,7 +126,6 @@ public class DownloadForegroundServiceTest {
         mForegroundService.startOrUpdateForegroundService(
                 FAKE_DOWNLOAD_ID1, mNotification, INVALID_NOTIFICATION_ID, null, false);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
-        assertEquals(INVALID_NOTIFICATION_ID, mForegroundService.mRelaunchedNotificationId);
 
         mForegroundService.clearStoredState();
 
@@ -148,7 +137,6 @@ public class DownloadForegroundServiceTest {
                         MockDownloadForegroundService.MethodID.START_FOREGROUND);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
         assertEquals(STOP_FOREGROUND_DETACH, mForegroundService.mStopForegroundFlags);
-        assertEquals(INVALID_NOTIFICATION_ID, mForegroundService.mRelaunchedNotificationId);
 
         mForegroundService.clearStoredState();
 
@@ -160,7 +148,6 @@ public class DownloadForegroundServiceTest {
                         MockDownloadForegroundService.MethodID.START_FOREGROUND);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
         assertEquals(STOP_FOREGROUND_REMOVE, mForegroundService.mStopForegroundFlags);
-        assertEquals(INVALID_NOTIFICATION_ID, mForegroundService.mRelaunchedNotificationId);
     }
 
     /**

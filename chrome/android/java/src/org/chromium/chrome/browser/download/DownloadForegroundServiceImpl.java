@@ -139,13 +139,6 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
         getService().stopSelf();
     }
 
-    @VisibleForTesting
-    void relaunchOldNotification(int notificationId, Notification notification) {
-        if (notificationId != INVALID_NOTIFICATION_ID && notification != null) {
-            mNotificationManager.notify(notificationId, notification);
-        }
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // In the case the service was restarted when the intent is null.
