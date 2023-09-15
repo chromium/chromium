@@ -114,6 +114,7 @@ include_rules = [
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
+  "+third_party/blink/public/platform/resource_request_blocked_reason.h",
   "+third_party/crashpad/crashpad/client",
   "+third_party/crashpad/crashpad/util",
   "+third_party/zlib/google/compression_utils.h",

@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>$1</title>
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        text-align: center;
+        font: 22px/28px 'Google Sans';
+        background: #FFF;
+        color: #1F1F1F;
+      }
+      .container {
+        margin: auto;
+        padding: 24px;
+      }
+      svg {
+        width: 48px;
+        height: 63px;
+        fill: #303030;
+      }
+      .message   {
+        margin-top: 24px;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #333;
+          color: #F2F2F2;
+        }
+        svg {
+          fill: #F2F2F2;
+        }
+      }
+      @media (max-height: 200px) {
+        .container {
+          padding: 0;
+        }
+        svg {
+          width: 32px;
+          height: 42px;
+        }
+        .message {
+          display: none;
+        }
+      }
+      @media (max-height: 100px) {
+        svg {
+          width: 24px;
+          height: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <svg viewBox="0 0 48 63" fill="none">
+          <path d="M4.5 63C3.2625 63 2.20312 62.5594 1.32188 61.6781C0.440625 60.7969 0 59.7375 0 58.5V25.95C0 24.7125 0.440625 23.6531 1.32188 22.7719C2.20312 21.8906 3.2625 21.45 4.5 21.45H9.75V14.25C9.75 10.3075 11.1401 6.94688 13.9204 4.16813C16.7008 1.38938 20.0632 0 24.0079 0C27.9527 0 31.3125 1.38938 34.0875 4.16813C36.8625 6.94688 38.25 10.3075 38.25 14.25V21.45H43.5C44.7375 21.45 45.7969 21.8906 46.6781 22.7719C47.5594 23.6531 48 24.7125 48 25.95V58.5C48 59.7375 47.5594 60.7969 46.6781 61.6781C45.7969 62.5594 44.7375 63 43.5 63H4.5ZM24.0126 48C25.6042 48 26.9625 47.4492 28.0875 46.3477C29.2125 45.2461 29.775 43.9219 29.775 42.375C29.775 40.875 29.2083 39.5125 28.0749 38.2875C26.9415 37.0625 25.579 36.45 23.9874 36.45C22.3958 36.45 21.0375 37.0625 19.9125 38.2875C18.7875 39.5125 18.225 40.8875 18.225 42.4125C18.225 43.9375 18.7917 45.25 19.9251 46.35C21.0585 47.45 22.421 48 24.0126 48ZM14.25 21.45H33.75V14.25C33.75 11.5417 32.803 9.23957 30.9088 7.34377C29.0147 5.44792 26.7147 4.5 24.0089 4.5C21.303 4.5 19 5.44792 17.1 7.34377C15.2 9.23957 14.25 11.5417 14.25 14.25V21.45Z">
+        </svg>
+      </div>
+      <div class="message">$1</div>
+    </div>
+  </body>
+</html>
