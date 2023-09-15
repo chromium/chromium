@@ -15,6 +15,7 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 
+struct DownloadBubbleDisplayInfo;
 class DownloadBubbleUIController;
 class DownloadDisplay;
 
@@ -42,31 +43,6 @@ class DownloadDisplayController : public FullscreenObserver,
   DownloadDisplayController& operator=(const DownloadDisplayController&) =
       delete;
   ~DownloadDisplayController() override;
-
-  // Information extracted from iterating over all models, to avoid having to do
-  // so multiple times.
-  struct AllDownloadUIModelsInfo {
-    // Number of models that would be returned to display.
-    size_t all_models_size = 0;
-    // The last time that a download was completed. Will be null if no downloads
-    // were completed.
-    base::Time last_completed_time;
-    // Whether there are any downloads actively doing deep scanning.
-    bool has_deep_scanning = false;
-    // Whether any downloads are unactioned.
-    bool has_unactioned = false;
-    // From the button UI's perspective, whether the download is considered in
-    // progress. Consider dangerous downloads as completed, because we don't
-    // want to encourage users to interact with them.
-    int in_progress_count = 0;
-    // Count of in-progress downloads (by the above definition) that are paused.
-    int paused_count = 0;
-
-    // Returns a reference to a singleton empty struct. This is for callers who
-    // return references but don't have anything to return in some cases.
-    static const AllDownloadUIModelsInfo& EmptyInfo();
-  };
-
 
   // Returns whether the display is showing details.
   bool IsDisplayShowingDetails();
@@ -132,7 +108,7 @@ class DownloadDisplayController : public FullscreenObserver,
   // Gets info about all models to display and progress ring info from the
   // update service, then updates the toolbar button state accordingly. Returns
   // the info about all models.
-  const AllDownloadUIModelsInfo& UpdateButtonStateFromUpdateService();
+  const DownloadBubbleDisplayInfo& UpdateButtonStateFromUpdateService();
 
   // Stops and restarts `icon_disappearance_timer_`. The toolbar button will
   // be hidden after the `interval`.
@@ -147,7 +123,7 @@ class DownloadDisplayController : public FullscreenObserver,
 
   // Updates the icon state of the `display_`, including the progress ring.
   void UpdateToolbarButtonState(
-      const AllDownloadUIModelsInfo& info,
+      const DownloadBubbleDisplayInfo& info,
       const DownloadDisplay::ProgressInfo& progress_info);
 
   // Asks `display_` to make the download icon inactive.

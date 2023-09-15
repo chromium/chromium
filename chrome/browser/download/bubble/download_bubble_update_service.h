@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/download/bubble/download_bubble_display_info.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_display.h"
@@ -91,8 +92,8 @@ class DownloadBubbleUpdateService
   // initiated by normal Chrome windows. Does not prune the cache or backfill
   // missing items. May be slightly inaccurate in edge cases. Virtual for
   // testing.
-  virtual const DownloadDisplayController::AllDownloadUIModelsInfo&
-  GetAllModelsInfo(const web_app::AppId* web_app_id);
+  virtual const DownloadBubbleDisplayInfo& GetDisplayInfo(
+      const web_app::AppId* web_app_id);
 
   // Computes progress info based on in-progress downloads. If |web_app_id| is
   // non-null, the results are limited to downloads initiated by the specified
@@ -237,8 +238,7 @@ class DownloadBubbleUpdateService
     bool GetAllModelsToDisplay(
         std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
         bool force_backfill_download_items = false);
-    const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo()
-        const;
+    const DownloadBubbleDisplayInfo& GetDisplayInfo() const;
     DownloadDisplay::ProgressInfo GetProgressInfo() const;
 
     // Adds an item to the cache if it is recent enough and meets other criteria
@@ -353,7 +353,7 @@ class DownloadBubbleUpdateService
 
     // Holds the latest info about all models, relevant to the display state of
     // the download toolbar icon.
-    DownloadDisplayController::AllDownloadUIModelsInfo all_models_info_;
+    DownloadBubbleDisplayInfo display_info_;
   };
 
  public:

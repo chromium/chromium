@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "chrome/browser/download/bubble/download_bubble_display_info.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -152,9 +153,8 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   ~MockDownloadBubbleUpdateService() override = default;
 
-  void UpdateInfoForModel(
-      const DownloadUIModel& model,
-      DownloadDisplayController::AllDownloadUIModelsInfo& info) {
+  void UpdateInfoForModel(const DownloadUIModel& model,
+                          DownloadBubbleDisplayInfo& info) {
     ++info.all_models_size;
     info.last_completed_time =
         std::max(info.last_completed_time, model.GetEndTime());
@@ -174,9 +174,9 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
     }
   }
 
-  const DownloadDisplayController::AllDownloadUIModelsInfo& GetAllModelsInfo(
+  const DownloadBubbleDisplayInfo& GetDisplayInfo(
       const web_app::AppId* web_app_id) override {
-    info_ = DownloadDisplayController::AllDownloadUIModelsInfo{};
+    info_ = DownloadBubbleDisplayInfo{};
     int download_item_index = 0, offline_item_index = 0;
     // Compose a list of models from the items stored in the test fixture.
     for (ModelType type : model_types_) {
@@ -221,7 +221,7 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
  private:
   raw_ptr<Profile> profile_;
-  DownloadDisplayController::AllDownloadUIModelsInfo info_;
+  DownloadBubbleDisplayInfo info_;
   std::vector<ModelType> model_types_;
   const raw_ref<const std::vector<std::unique_ptr<StrictMockDownloadItem>>,
                 ExperimentalAsh>

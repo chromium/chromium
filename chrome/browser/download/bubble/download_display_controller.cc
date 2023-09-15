@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/download/bubble/download_bubble_display_info.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
@@ -47,18 +48,11 @@ constexpr base::TimeDelta kToolbarIconActiveTimeInterval = base::Minutes(1);
 
 // Whether there are no more in-progress downloads that are not paused, i.e.,
 // whether all actively downloading items are done.
-bool IsAllDone(const DownloadDisplayController::AllDownloadUIModelsInfo& info) {
+bool IsAllDone(const DownloadBubbleDisplayInfo& info) {
   return info.in_progress_count == info.paused_count;
 }
 
 }  // namespace
-
-// static
-const DownloadDisplayController::AllDownloadUIModelsInfo&
-DownloadDisplayController::AllDownloadUIModelsInfo::EmptyInfo() {
-  static AllDownloadUIModelsInfo empty_info;
-  return empty_info;
-}
 
 DownloadDisplayController::DownloadDisplayController(
     DownloadDisplay* display,
@@ -109,7 +103,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromUpdateService();
+  const DownloadBubbleDisplayInfo& info = UpdateButtonStateFromUpdateService();
   bool will_show_details = may_show_details && is_done && IsAllDone(info);
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
@@ -218,7 +212,7 @@ void DownloadDisplayController::OpenSecuritySubpage(
 }
 
 void DownloadDisplayController::UpdateToolbarButtonState(
-    const DownloadDisplayController::AllDownloadUIModelsInfo& info,
+    const DownloadBubbleDisplayInfo& info,
     const DownloadDisplay::ProgressInfo& progress_info) {
   if (info.all_models_size == 0) {
     HideToolbarButton();
@@ -270,10 +264,10 @@ void DownloadDisplayController::UpdateDownloadIconToInactive() {
   display_->UpdateDownloadIcon(updates);
 }
 
-const DownloadDisplayController::AllDownloadUIModelsInfo&
+const DownloadBubbleDisplayInfo&
 DownloadDisplayController::UpdateButtonStateFromUpdateService() {
-  const AllDownloadUIModelsInfo& info =
-      bubble_controller_->update_service()->GetAllModelsInfo(
+  const DownloadBubbleDisplayInfo& info =
+      bubble_controller_->update_service()->GetDisplayInfo(
           GetWebAppIdForBrowser(browser_));
   DownloadDisplay::ProgressInfo progress_info =
       bubble_controller_->update_service()->GetProgressInfo(
@@ -311,7 +305,7 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
     return;
   }
 
-  const AllDownloadUIModelsInfo& info = UpdateButtonStateFromUpdateService();
+  const DownloadBubbleDisplayInfo& info = UpdateButtonStateFromUpdateService();
   if (display_->IsShowing()) {
     ScheduleToolbarDisappearance(
         kToolbarIconVisibilityTimeInterval -

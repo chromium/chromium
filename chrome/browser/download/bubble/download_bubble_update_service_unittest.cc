@@ -9,8 +9,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/bubble/download_bubble_display_info.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
-#include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -43,8 +43,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 using ::testing::WithArg;
-using AllDownloadUIModelsInfo =
-    DownloadDisplayController::AllDownloadUIModelsInfo;
 using DownloadState = download::DownloadItem::DownloadState;
 using DownloadUIModelPtrVector =
     std::vector<DownloadUIModel::DownloadUIModelPtr>;
@@ -806,8 +804,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
                    {"now_offline_item", "two_hours_ago_offline_item"},
                    {now, two_hours_ago});
 
-  AllDownloadUIModelsInfo info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 5u);
   EXPECT_EQ(info.last_completed_time, now);
   EXPECT_EQ(info.in_progress_count, 4);
@@ -833,15 +831,15 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfoForWebApp) {
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_b_download",
                    /*is_paused=*/false, now, &app_b_id);
 
-  AllDownloadUIModelsInfo non_app_info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo non_app_info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_info.all_models_size, 3u);
   EXPECT_EQ(non_app_info.paused_count, 2);
-  AllDownloadUIModelsInfo app_a_info =
-      update_service_->GetAllModelsInfo(&app_a_id);
+  DownloadBubbleDisplayInfo app_a_info =
+      update_service_->GetDisplayInfo(&app_a_id);
   EXPECT_EQ(app_a_info.all_models_size, 2u);
-  AllDownloadUIModelsInfo app_b_info =
-      update_service_->GetAllModelsInfo(&app_b_id);
+  DownloadBubbleDisplayInfo app_b_info =
+      update_service_->GetDisplayInfo(&app_b_id);
   EXPECT_EQ(app_b_info.all_models_size, 1u);
 }
 
@@ -874,10 +872,10 @@ TEST_F(DownloadBubbleUpdateServiceTest,
       update_service_->GetProgressInfo(&app_id);
   EXPECT_EQ(app_progress_info.download_count, 1);
 
-  AllDownloadUIModelsInfo non_app_info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo non_app_info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(non_app_info.all_models_size, 0u);
-  AllDownloadUIModelsInfo app_info = update_service_->GetAllModelsInfo(&app_id);
+  DownloadBubbleDisplayInfo app_info = update_service_->GetDisplayInfo(&app_id);
   EXPECT_EQ(app_info.all_models_size, 1u);
 }
 
@@ -970,7 +968,7 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest, InitIncognito) {
 // Ephemeral warnings are only enabled when the download bubble is enabled,
 // which it is not on ChromeOS Ash.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests that the AllDownloadUIModelsInfo is updated when a download with an
+// Tests that the DownloadBubbleDisplayInfo is updated when a download with an
 // ephemeral warning expires.
 TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
   base::Time now = base::Time::Now();
@@ -983,8 +981,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
   EXPECT_TRUE(
       update_service_->GetAllModelsToDisplay(models, /*web_app_id=*/nullptr));
   EXPECT_EQ(models.size(), 2u);
-  AllDownloadUIModelsInfo info =
-      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo info =
+      update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 2u);
 
   // Mark the download with an ephemeral warning.
@@ -999,8 +997,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, OnEphemeralWarningExpired) {
   update_service_->OnEphemeralWarningExpired(GetDownloadItem(1).GetGuid());
 
   // The ephemeral warning download should no longer be observable.
-  // Check GetAllModelsInfo first, because GetAllModelsToDisplay will prune it.
-  info = update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  // Check GetDisplayInfo first, because GetAllModelsToDisplay will prune it.
+  info = update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 1u);
   EXPECT_TRUE(
       update_service_->GetAllModelsToDisplay(models, /*web_app_id=*/nullptr));
@@ -1035,8 +1033,8 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest,
   EXPECT_TRUE(incognito_update_service_->GetAllModelsToDisplay(
       models, /*web_app_id=*/nullptr));
   EXPECT_EQ(models.size(), 3u);
-  AllDownloadUIModelsInfo info =
-      incognito_update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  DownloadBubbleDisplayInfo info =
+      incognito_update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 3u);
 
   // Mark the regular profile ephemeral download with an ephemeral warning.
@@ -1060,9 +1058,9 @@ TEST_F(DownloadBubbleUpdateServiceIncognitoTest,
       incognito_download_items_[0]->GetGuid());
 
   // The ephemeral warning downloads should no longer be observable.
-  // Check GetAllModelsInfo first, because GetAllModelsToDisplay will prune
+  // Check GetDisplayInfo first, because GetAllModelsToDisplay will prune
   // them.
-  info = incognito_update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  info = incognito_update_service_->GetDisplayInfo(/*web_app_id=*/nullptr);
   EXPECT_EQ(info.all_models_size, 1u);
   EXPECT_TRUE(incognito_update_service_->GetAllModelsToDisplay(
       models, /*web_app_id=*/nullptr));
