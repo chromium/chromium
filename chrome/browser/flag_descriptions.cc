@@ -6526,8 +6526,9 @@ const char kCrosComponentsDescription[] =
 const char kLacrosAvailabilityIgnoreName[] =
     "Ignore lacros-availability policy";
 const char kLacrosAvailabilityIgnoreDescription[] =
-    "Makes the lacros-availability policy have no effect. Instead Lacros "
-    "availability will be controlled by experiment and/or user flags.";
+    "Makes the lacros-availability policy have no effect on Google-internal "
+    "accounts. Instead, Lacros availability will be controlled by experiment "
+    "and/or user flags for such accounts.";
 
 const char kLacrosOnlyName[] = "Lacros is the only browser";
 const char kLacrosOnlyDescription[] =
