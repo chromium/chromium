@@ -12,11 +12,11 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "url/gurl.h"
@@ -34,7 +34,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
  public:
   ServiceWorkerVersionInfo();
   ServiceWorkerVersionInfo(
-      EmbeddedWorkerStatus running_status,
+      blink::EmbeddedWorkerStatus running_status,
       ServiceWorkerVersion::Status status,
       absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
       const GURL& script_url,
@@ -51,7 +51,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
   ~ServiceWorkerVersionInfo() override;
 
-  EmbeddedWorkerStatus running_status;
+  blink::EmbeddedWorkerStatus running_status;
   ServiceWorkerVersion::Status status;
   absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type;
   blink::mojom::NavigationPreloadState navigation_preload_state;

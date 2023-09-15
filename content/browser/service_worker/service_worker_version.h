@@ -31,7 +31,6 @@
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_client_utils.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_ping_controller.h"
@@ -55,6 +54,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
@@ -221,7 +221,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   const blink::StorageKey& key() const { return key_; }
   const GURL& scope() const { return scope_; }
   blink::mojom::ScriptType script_type() const { return script_type_; }
-  EmbeddedWorkerStatus running_status() const {
+  blink::EmbeddedWorkerStatus running_status() const {
     return embedded_worker_->status();
   }
   ServiceWorkerVersionInfo GetInfo();
@@ -418,8 +418,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // This must be called when is_endpoint_ready() returns true, which is after
   // InitializeGlobalScope() is called.
   blink::mojom::ServiceWorker* endpoint() {
-    DCHECK(running_status() == EmbeddedWorkerStatus::STARTING ||
-           running_status() == EmbeddedWorkerStatus::RUNNING);
+    DCHECK(running_status() == blink::EmbeddedWorkerStatus::kStarting ||
+           running_status() == blink::EmbeddedWorkerStatus::kRunning);
     DCHECK(service_worker_remote_.is_bound());
     return service_worker_remote_.get();
   }
@@ -885,8 +885,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
                  bool new_has_hid_event_handlers,
                  bool new_has_usb_event_handlers) override;
   void OnStopping() override;
-  void OnStopped(EmbeddedWorkerStatus old_status) override;
-  void OnDetached(EmbeddedWorkerStatus old_status) override;
+  void OnStopped(blink::EmbeddedWorkerStatus old_status) override;
+  void OnDetached(blink::EmbeddedWorkerStatus old_status) override;
   void OnRegisteredToDevToolsManager() override;
   void OnReportException(const std::u16string& error_message,
                          int line_number,
@@ -994,7 +994,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
 
-  void OnStoppedInternal(EmbeddedWorkerStatus old_status);
+  void OnStoppedInternal(blink::EmbeddedWorkerStatus old_status);
 
   // Fires and clears all start callbacks.
   void FinishStartWorker(blink::ServiceWorkerStatusCode status);

@@ -12,13 +12,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/time/default_tick_clock.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -191,7 +191,7 @@ bool TriggerTimeoutAndCheckRunningState(ServiceWorkerContext* context,
   // TODO(b/266799118): Investigate the need to call OnRequestTermination()
   service_worker_version->OnRequestTermination();
   return service_worker_version->running_status() ==
-         content::EmbeddedWorkerStatus::RUNNING;
+         blink::EmbeddedWorkerStatus::kRunning;
 }
 
 bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
@@ -200,7 +200,7 @@ bool CheckServiceWorkerIsRunning(ServiceWorkerContext* context,
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
   return service_worker_version && service_worker_version->running_status() ==
-                                       EmbeddedWorkerStatus::RUNNING;
+                                       blink::EmbeddedWorkerStatus::kRunning;
 }
 
 bool CheckServiceWorkerIsStarting(ServiceWorkerContext* context,
@@ -209,7 +209,7 @@ bool CheckServiceWorkerIsStarting(ServiceWorkerContext* context,
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
   return service_worker_version && service_worker_version->running_status() ==
-                                       EmbeddedWorkerStatus::STARTING;
+                                       blink::EmbeddedWorkerStatus::kStarting;
 }
 
 bool CheckServiceWorkerIsStopping(ServiceWorkerContext* context,
@@ -218,7 +218,7 @@ bool CheckServiceWorkerIsStopping(ServiceWorkerContext* context,
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
   return service_worker_version && service_worker_version->running_status() ==
-                                       EmbeddedWorkerStatus::STOPPING;
+                                       blink::EmbeddedWorkerStatus::kStopping;
 }
 
 bool CheckServiceWorkerIsStopped(ServiceWorkerContext* context,
@@ -227,7 +227,7 @@ bool CheckServiceWorkerIsStopped(ServiceWorkerContext* context,
       static_cast<ServiceWorkerContextWrapper*>(context)->GetLiveVersion(
           service_worker_version_id);
   return !service_worker_version || service_worker_version->running_status() ==
-                                        EmbeddedWorkerStatus::STOPPED;
+                                        blink::EmbeddedWorkerStatus::kStopped;
 }
 
 void SetServiceWorkerIdleDelay(ServiceWorkerContext* context,

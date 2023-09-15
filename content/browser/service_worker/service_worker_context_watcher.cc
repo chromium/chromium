@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -24,7 +24,7 @@ namespace content {
 namespace {
 
 bool IsStoppedAndRedundant(const ServiceWorkerVersionInfo& version_info) {
-  return version_info.running_status == EmbeddedWorkerStatus::STOPPED &&
+  return version_info.running_status == blink::EmbeddedWorkerStatus::kStopped &&
          version_info.status == content::ServiceWorkerVersion::REDUNDANT;
 }
 
@@ -221,7 +221,7 @@ void ServiceWorkerContextWatcher::OnNewLiveVersion(
 }
 
 void ServiceWorkerContextWatcher::OnStarting(int64_t version_id) {
-  OnRunningStateChanged(version_id, EmbeddedWorkerStatus::STARTING);
+  OnRunningStateChanged(version_id, blink::EmbeddedWorkerStatus::kStarting);
 }
 
 void ServiceWorkerContextWatcher::OnStarted(
@@ -231,15 +231,15 @@ void ServiceWorkerContextWatcher::OnStarted(
     const GURL& script_url,
     const blink::ServiceWorkerToken& token,
     const blink::StorageKey& key) {
-  OnRunningStateChanged(version_id, EmbeddedWorkerStatus::RUNNING);
+  OnRunningStateChanged(version_id, blink::EmbeddedWorkerStatus::kRunning);
 }
 
 void ServiceWorkerContextWatcher::OnStopping(int64_t version_id) {
-  OnRunningStateChanged(version_id, EmbeddedWorkerStatus::STOPPING);
+  OnRunningStateChanged(version_id, blink::EmbeddedWorkerStatus::kStopping);
 }
 
 void ServiceWorkerContextWatcher::OnStopped(int64_t version_id) {
-  OnRunningStateChanged(version_id, EmbeddedWorkerStatus::STOPPED);
+  OnRunningStateChanged(version_id, blink::EmbeddedWorkerStatus::kStopped);
 }
 
 void ServiceWorkerContextWatcher::OnVersionStateChanged(
@@ -380,7 +380,7 @@ void ServiceWorkerContextWatcher::OnRegistrationDeleted(
 
 void ServiceWorkerContextWatcher::OnRunningStateChanged(
     int64_t version_id,
-    EmbeddedWorkerStatus running_status) {
+    blink::EmbeddedWorkerStatus running_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = version_info_map_.find(version_id);
   if (it == version_info_map_.end())

@@ -282,8 +282,10 @@ class CookieStoreManagerTest
     EXPECT_TRUE(active_version);
     if (!active_version)
       return false;
-    if (active_version->running_status() == EmbeddedWorkerStatus::RUNNING)
+    if (active_version->running_status() ==
+        blink::EmbeddedWorkerStatus::kRunning) {
       return true;
+    }
     {
       base::RunLoop run_loop;
       active_version->RunAfterStartWorker(

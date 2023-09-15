@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_cache_storage_matcher.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/common/content_export.h"
@@ -27,6 +26,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
@@ -121,7 +121,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   enum class RaceNetworkRequestMode { kDefault, kForced, kSkipped };
 
   void DidPrepareFetchEvent(scoped_refptr<ServiceWorkerVersion> version,
-                            EmbeddedWorkerStatus initial_worker_status);
+                            blink::EmbeddedWorkerStatus initial_worker_status);
   void DidDispatchFetchEvent(
       blink::ServiceWorkerStatusCode status,
       ServiceWorkerFetchDispatcher::FetchEventResult fetch_result,

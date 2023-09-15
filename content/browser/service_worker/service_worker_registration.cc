@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -21,6 +20,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
@@ -269,7 +269,8 @@ void ServiceWorkerRegistration::ActivateWaitingVersionWhenReady() {
   }
 
   if (IsLameDuckActiveVersion()) {
-    if (active_version()->running_status() == EmbeddedWorkerStatus::RUNNING) {
+    if (active_version()->running_status() ==
+        blink::EmbeddedWorkerStatus::kRunning) {
       // If the waiting worker is ready and the active worker needs to be
       // swapped out, ask the active worker to trigger idle timer as soon as
       // possible.
@@ -402,7 +403,8 @@ void ServiceWorkerRegistration::OnNoControllees(ServiceWorkerVersion* version) {
 
   if (IsLameDuckActiveVersion()) {
     if (should_activate_when_ready_ &&
-        active_version()->running_status() == EmbeddedWorkerStatus::RUNNING) {
+        active_version()->running_status() ==
+            blink::EmbeddedWorkerStatus::kRunning) {
       // If the waiting worker is ready and the active worker needs to be
       // swapped out, ask the active worker to trigger idle timer as soon as
       // possible.
@@ -646,7 +648,8 @@ void ServiceWorkerRegistration::DispatchActivateEvent(
   }
 
   DCHECK_EQ(ServiceWorkerVersion::ACTIVATING, activating_version->status());
-  DCHECK_EQ(EmbeddedWorkerStatus::RUNNING, activating_version->running_status())
+  DCHECK_EQ(blink::EmbeddedWorkerStatus::kRunning,
+            activating_version->running_status())
       << "Worker stopped too soon after it was started.";
   int request_id = activating_version->StartRequest(
       ServiceWorkerMetrics::EventType::ACTIVATE,

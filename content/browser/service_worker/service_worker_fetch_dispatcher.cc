@@ -23,7 +23,6 @@
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
@@ -49,6 +48,7 @@
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
@@ -578,7 +578,7 @@ void ServiceWorkerFetchDispatcher::StartWorker() {
     return;
   }
 
-  if (version_->running_status() == EmbeddedWorkerStatus::RUNNING) {
+  if (version_->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
     DispatchFetchEvent();
     return;
   }
@@ -615,8 +615,8 @@ void ServiceWorkerFetchDispatcher::DidStartWorker(
 
 void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(EmbeddedWorkerStatus::STARTING == version_->running_status() ||
-         EmbeddedWorkerStatus::RUNNING == version_->running_status())
+  DCHECK(blink::EmbeddedWorkerStatus::kStarting == version_->running_status() ||
+         blink::EmbeddedWorkerStatus::kRunning == version_->running_status())
       << "Worker stopped too soon after it was started.";
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerFetchDispatcher::DispatchFetchEvent",

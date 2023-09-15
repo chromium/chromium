@@ -9,12 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/hid/hid_service.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
@@ -127,7 +127,7 @@ void ServiceWorkerHidDelegateObserver::DispatchHidDeviceEventToWorkers(
     if (hid_service) {
       auto version = hid_service->service_worker_version();
       if (version &&
-          version->running_status() == EmbeddedWorkerStatus::RUNNING) {
+          version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
         callback.Run(device_info, hid_service);
         continue;
       }

@@ -604,9 +604,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
               features::ServiceWorkerBypassFetchHandlerTarget::
                   kAllOnlyIfServiceWorkerNotStarted) {
         switch (active_version->running_status()) {
-          case EmbeddedWorkerStatus::STOPPED:
-          case EmbeddedWorkerStatus::STOPPING:
-          case EmbeddedWorkerStatus::STARTING:
+          case blink::EmbeddedWorkerStatus::kStopped:
+          case blink::EmbeddedWorkerStatus::kStopping:
+          case blink::EmbeddedWorkerStatus::kStarting:
             // If the status is STARTING, the Serviceworker is not actually
             // started yet. So it makes sense to skip the fetch handler.
             active_version->set_fetch_handler_bypass_option(
@@ -615,7 +615,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
             CompleteWithoutLoader();
             RecordSkipReason(
                 active_version->running_status() ==
-                        EmbeddedWorkerStatus::STARTING
+                        blink::EmbeddedWorkerStatus::kStarting
                     ? FetchHandlerSkipReason::
                           kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting
                     : FetchHandlerSkipReason::
@@ -629,7 +629,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
                                ServiceWorkerMetrics::EventType::
                                    BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED));
             return;
-          case EmbeddedWorkerStatus::RUNNING:
+          case blink::EmbeddedWorkerStatus::kRunning:
             active_version->set_fetch_handler_bypass_option(
                 blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
             break;
@@ -771,7 +771,8 @@ void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
     ServiceWorkerMetrics::EventType event_type) {
   // Start service worker if it is not running so that we run the code
   // written in the top level.
-  if (active_version->running_status() == EmbeddedWorkerStatus::RUNNING) {
+  if (active_version->running_status() ==
+      blink::EmbeddedWorkerStatus::kRunning) {
     return;
   }
   active_version->StartWorker(

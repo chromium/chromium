@@ -6,7 +6,6 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/focused_node_details.h"

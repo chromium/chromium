@@ -17,7 +17,6 @@
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_watcher.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -44,15 +44,15 @@ namespace protocol {
 namespace {
 
 const std::string GetVersionRunningStatusString(
-    EmbeddedWorkerStatus running_status) {
+    blink::EmbeddedWorkerStatus running_status) {
   switch (running_status) {
-    case EmbeddedWorkerStatus::STOPPED:
+    case blink::EmbeddedWorkerStatus::kStopped:
       return ServiceWorker::ServiceWorkerVersionRunningStatusEnum::Stopped;
-    case EmbeddedWorkerStatus::STARTING:
+    case blink::EmbeddedWorkerStatus::kStarting:
       return ServiceWorker::ServiceWorkerVersionRunningStatusEnum::Starting;
-    case EmbeddedWorkerStatus::RUNNING:
+    case blink::EmbeddedWorkerStatus::kRunning:
       return ServiceWorker::ServiceWorkerVersionRunningStatusEnum::Running;
-    case EmbeddedWorkerStatus::STOPPING:
+    case blink::EmbeddedWorkerStatus::kStopping:
       return ServiceWorker::ServiceWorkerVersionRunningStatusEnum::Stopping;
     default:
       NOTREACHED();

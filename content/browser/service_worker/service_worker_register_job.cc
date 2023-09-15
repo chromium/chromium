@@ -21,7 +21,6 @@
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -39,6 +38,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -724,7 +724,8 @@ void ServiceWorkerRegisterJob::DispatchInstallEvent(
 
   DCHECK_EQ(ServiceWorkerVersion::INSTALLING, new_version()->status())
       << new_version()->status();
-  DCHECK_EQ(EmbeddedWorkerStatus::RUNNING, new_version()->running_status())
+  DCHECK_EQ(blink::EmbeddedWorkerStatus::kRunning,
+            new_version()->running_status())
       << "Worker stopped too soon after it was started.";
   int request_id = new_version()->StartRequest(
       ServiceWorkerMetrics::EventType::INSTALL,

@@ -245,7 +245,7 @@ bool IsMatchedRunningCondition(
                               blink::ServiceWorkerRouterRunningStatusCondition::
                                   RunningStatusEnum::kRunning;
   bool is_status_running =
-      running_status == blink::EmbeddedWorkerStatus::RUNNING;
+      running_status == blink::EmbeddedWorkerStatus::kRunning;
   return is_condition_running == is_status_running;
 }
 

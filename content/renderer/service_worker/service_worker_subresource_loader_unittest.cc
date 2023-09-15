@@ -561,7 +561,7 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
           mojo::NullRemote() /*remote_controller*/,
           mojo::NullRemote() /*remote_cache_storage*/, "" /*client_id*/,
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
-          absl::nullopt, blink::EmbeddedWorkerStatus::STOPPED,
+          absl::nullopt, blink::EmbeddedWorkerStatus::kStopped,
           mojo::NullReceiver() /*running_status_receiver*/);
     }
     mojo::Remote<network::mojom::URLLoaderFactory>

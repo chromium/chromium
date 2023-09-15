@@ -1024,36 +1024,36 @@ TEST(ServiceWorkerRouterEvaluator, RunningStatusMatch) {
     blink::ServiceWorkerRouterRunningStatusCondition rc;
     rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
         RunningStatusEnum::kRunning;
-    verify(rc, blink::EmbeddedWorkerStatus::RUNNING,
+    verify(rc, blink::EmbeddedWorkerStatus::kRunning,
            /*expect_match=*/true);
   }
   {
     blink::ServiceWorkerRouterRunningStatusCondition rc;
     rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
         RunningStatusEnum::kRunning;
-    verify(rc, blink::EmbeddedWorkerStatus::STOPPED,
+    verify(rc, blink::EmbeddedWorkerStatus::kStopped,
            /*expect_match=*/false);
-    verify(rc, blink::EmbeddedWorkerStatus::STARTING,
+    verify(rc, blink::EmbeddedWorkerStatus::kStarting,
            /*expect_match=*/false);
-    verify(rc, blink::EmbeddedWorkerStatus::STOPPING,
-           /*expect_match=*/false);
-  }
-  {
-    blink::ServiceWorkerRouterRunningStatusCondition rc;
-    rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
-        RunningStatusEnum::kNotRunning;
-    verify(rc, blink::EmbeddedWorkerStatus::RUNNING,
+    verify(rc, blink::EmbeddedWorkerStatus::kStopping,
            /*expect_match=*/false);
   }
   {
     blink::ServiceWorkerRouterRunningStatusCondition rc;
     rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
         RunningStatusEnum::kNotRunning;
-    verify(rc, blink::EmbeddedWorkerStatus::STOPPED,
+    verify(rc, blink::EmbeddedWorkerStatus::kRunning,
+           /*expect_match=*/false);
+  }
+  {
+    blink::ServiceWorkerRouterRunningStatusCondition rc;
+    rc.status = blink::ServiceWorkerRouterRunningStatusCondition::
+        RunningStatusEnum::kNotRunning;
+    verify(rc, blink::EmbeddedWorkerStatus::kStopped,
            /*expect_match=*/true);
-    verify(rc, blink::EmbeddedWorkerStatus::STARTING,
+    verify(rc, blink::EmbeddedWorkerStatus::kStarting,
            /*expect_match=*/true);
-    verify(rc, blink::EmbeddedWorkerStatus::STOPPING,
+    verify(rc, blink::EmbeddedWorkerStatus::kStopping,
            /*expect_match=*/true);
   }
 }

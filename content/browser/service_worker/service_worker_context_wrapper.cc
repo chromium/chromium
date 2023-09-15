@@ -30,7 +30,6 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
@@ -65,6 +64,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -979,8 +979,8 @@ bool ServiceWorkerContextWrapper::IsLiveRunningServiceWorker(
     return false;
 
   auto running_status = version->running_status();
-  if (running_status != EmbeddedWorkerStatus::STARTING &&
-      running_status != EmbeddedWorkerStatus::RUNNING) {
+  if (running_status != blink::EmbeddedWorkerStatus::kStarting &&
+      running_status != blink::EmbeddedWorkerStatus::kRunning) {
     return false;
   }
 
@@ -1603,7 +1603,7 @@ void ServiceWorkerContextWrapper::DidFindRegistrationForNavigationHint(
     return;
   }
   if (registration->active_version()->running_status() ==
-      EmbeddedWorkerStatus::RUNNING) {
+      blink::EmbeddedWorkerStatus::kRunning) {
     std::move(callback).Run(
         StartServiceWorkerForNavigationHintResult::ALREADY_RUNNING);
     return;
@@ -1645,7 +1645,7 @@ void ServiceWorkerContextWrapper::DidFindRegistrationForWarmUp(
       registration->active_version()->fetch_handler_existence() ==
           ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST ||
       registration->active_version()->running_status() ==
-          EmbeddedWorkerStatus::RUNNING) {
+          blink::EmbeddedWorkerStatus::kRunning) {
     std::move(callback).Run();
     MaybeProcessPendingWarmUpRequest();
     return;

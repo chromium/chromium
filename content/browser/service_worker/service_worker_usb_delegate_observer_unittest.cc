@@ -316,7 +316,8 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
       auto& device_added_future = device_added_futures[idx];
       auto* version = context()->GetLiveVersion(version_ids[idx]);
       ASSERT_NE(version, nullptr);
-      EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+      EXPECT_EQ(version->running_status(),
+                blink::EmbeddedWorkerStatus::kRunning);
       EXPECT_CALL(device_manager_clients[idx], OnDeviceAdded)
           .WillOnce(
               [&](auto d) { device_added_future.SetValue(std::move(d)); });
@@ -386,7 +387,8 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceRemoved) {
       auto& device_removed_future = device_removed_futures[idx];
       auto* version = context()->GetLiveVersion(version_ids[idx]);
       ASSERT_NE(version, nullptr);
-      EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+      EXPECT_EQ(version->running_status(),
+                blink::EmbeddedWorkerStatus::kRunning);
       EXPECT_CALL(device_manager_clients[idx], OnDeviceRemoved)
           .WillOnce(
               [&](auto d) { device_removed_future.SetValue(std::move(d)); });
@@ -422,7 +424,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceManagerConnectionError) {
   for (size_t idx = 0; idx < num_workers; ++idx) {
     auto* version = context()->GetLiveVersion(version_ids[idx]);
     ASSERT_NE(version, nullptr);
-    EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
     EXPECT_EQ(context()
                   ->usb_delegate_observer()
                   ->GetUsbServiceForTesting(registrations[idx]->id())
@@ -468,7 +470,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnPermissionRevoked) {
     auto* version = registrations[idx]->GetNewestVersion();
     ASSERT_NE(version, nullptr);
     StartServiceWorker(version);
-    EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
 
     mojo::Remote<device::mojom::UsbDevice> device;
     usb_services[idx]->GetDevice(device_info->guid,
@@ -615,7 +617,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, NoPermissionNotStartWorker) {
   auto fake_device_info = CreateFakeDevice();
   EXPECT_CALL(usb_delegate(), HasDevicePermission).WillOnce(Return(false));
   auto device_info = ConnectDevice(fake_device_info, &mock_device);
-  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
 }
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, ProcessPendingCallback) {
@@ -754,7 +756,7 @@ TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,
   device::MockUsbMojoDevice mock_device;
   auto fake_device_info = CreateFakeDevice();
   auto device_info = ConnectDevice(fake_device_info, &mock_device);
-  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+  EXPECT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
 }
 
 TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,

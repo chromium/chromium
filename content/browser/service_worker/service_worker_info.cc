@@ -4,24 +4,24 @@
 
 #include "content/browser/service_worker/service_worker_info.h"
 
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/public/browser/child_process_host.h"
 #include "ipc/ipc_message.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
 
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo()
-    : running_status(EmbeddedWorkerStatus::STOPPED),
+    : running_status(blink::EmbeddedWorkerStatus::kStopped),
       status(ServiceWorkerVersion::NEW),
       thread_id(ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId),
       devtools_agent_route_id(MSG_ROUTING_NONE),
       ukm_source_id(ukm::kInvalidSourceId) {}
 
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
-    EmbeddedWorkerStatus running_status,
+    blink::EmbeddedWorkerStatus running_status,
     ServiceWorkerVersion::Status status,
     absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
     const GURL& script_url,

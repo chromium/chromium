@@ -13,10 +13,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 
 namespace blink {
 class StorageKey;
@@ -129,7 +129,7 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
                              const blink::StorageKey& key) override;
 
   void OnRunningStateChanged(int64_t version_id,
-                             EmbeddedWorkerStatus running_status);
+                             blink::EmbeddedWorkerStatus running_status);
 
   std::unordered_map<int64_t, std::unique_ptr<ServiceWorkerVersionInfo>>
       version_info_map_;

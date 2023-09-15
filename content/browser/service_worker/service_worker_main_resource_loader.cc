@@ -164,16 +164,16 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
       container_host_->controller();
   if (active_worker) {
     switch (active_worker->running_status()) {
-      case blink::EmbeddedWorkerStatus::RUNNING:
+      case blink::EmbeddedWorkerStatus::kRunning:
         initial_service_worker_status_ = InitialServiceWorkerStatus::kRunning;
         break;
-      case blink::EmbeddedWorkerStatus::STARTING:
+      case blink::EmbeddedWorkerStatus::kStarting:
         initial_service_worker_status_ = InitialServiceWorkerStatus::kStarting;
         break;
-      case blink::EmbeddedWorkerStatus::STOPPING:
+      case blink::EmbeddedWorkerStatus::kStopping:
         initial_service_worker_status_ = InitialServiceWorkerStatus::kStopping;
         break;
-      case blink::EmbeddedWorkerStatus::STOPPED:
+      case blink::EmbeddedWorkerStatus::kStopped:
         initial_service_worker_status_ = InitialServiceWorkerStatus::kStopped;
         break;
     }
@@ -299,7 +299,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                         .Run(false /* reset_subresource_loader_params */,
                              net::LoadTimingInfo());
                     if (active_worker->running_status() !=
-                            EmbeddedWorkerStatus::RUNNING &&
+                            blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
                             features::
                                 kServiceWorkerStaticRouterStartServiceWorker)) {
@@ -628,7 +628,7 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
 
 void ServiceWorkerMainResourceLoader::DidPrepareFetchEvent(
     scoped_refptr<ServiceWorkerVersion> version,
-    EmbeddedWorkerStatus initial_worker_status) {
+    blink::EmbeddedWorkerStatus initial_worker_status) {
   TRACE_EVENT_WITH_FLOW1(
       "ServiceWorker", "ServiceWorkerMainResourceLoader::DidPrepareFetchEvent",
       this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,

@@ -1041,13 +1041,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   {
     base::RunLoop loop;
     version->StopWorker(loop.QuitClosure());
     loop.Run();
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   }
 
   bool is_prepare_callback_called = false;
@@ -1109,13 +1109,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   {
     base::RunLoop loop;
     version->StopWorker(loop.QuitClosure());
     loop.Run();
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   }
 
   // Set a non-existent resource to the version.
@@ -2442,7 +2442,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSha256ScriptChecksumBrowserTest,
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
   EXPECT_EQ(version->script_url(), main_script.script_url);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Validate checksums for each script, and ServiceWorkerVersion's one.
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
@@ -2476,7 +2476,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSha256ScriptChecksumBrowserTest,
   scoped_refptr<ServiceWorkerVersion> updated_version =
       wrapper()->GetLiveVersion(observer2.version_id());
   EXPECT_EQ(updated_version->script_url(), main_script.script_url);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, updated_version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+            updated_version->running_status());
 
   // Validate updated checksums for each script, and ServiceWorkerVersion's one.
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
@@ -3437,7 +3438,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
       public_context()->GetRunningServiceWorkerInfos();
@@ -3492,14 +3493,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Restart the service worker. The goal is to simulate the launch of an
   // already installed ServiceWorker.
   StopServiceWorker(version.get());
   EXPECT_EQ(StartServiceWorker(version.get()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Wait until the running status is updated.
   base::RunLoop().RunUntilIdle();
@@ -3550,7 +3551,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, FreshInstall) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
       public_context()->GetRunningServiceWorkerInfos();
@@ -3585,14 +3586,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, MAYBE_PostInstallRun) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Restart the service worker. The goal is to simulate the launch of an
   // already installed ServiceWorker.
   StopServiceWorker(version.get());
   EXPECT_EQ(StartServiceWorker(version.get()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Wait until the running status is updated.
   base::RunLoop().RunUntilIdle();
@@ -4013,7 +4014,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFencedFrameBrowserTest,
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Call backgroundFetch.fetch from the registered service worker again.
   // This ensures if restored data in the service worker keeps the info if it
@@ -4327,15 +4328,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Cancel the next navigation with beforeunload.
   EXPECT_TRUE(
@@ -4362,7 +4363,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
   EXPECT_TRUE(dialog_waiter.WasDialogRequestedCallbackCalled());
   observer2.WaitUntilRunning();
   EXPECT_EQ(
-      EmbeddedWorkerStatus::RUNNING,
+      blink::EmbeddedWorkerStatus::kRunning,
       wrapper()->GetLiveVersion(observer2.version_id())->running_status());
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
@@ -4413,16 +4414,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   EXPECT_EQ(1, version->embedded_worker()->restart_count());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   EXPECT_FALSE(version->timeout_timer_.IsRunning());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
 
@@ -4432,7 +4433,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
   EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
   EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
@@ -4447,7 +4448,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
   EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
   EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
@@ -4467,7 +4468,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   EXPECT_EQ(restart_count_on_warm_up,
             version->embedded_worker()->restart_count());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   histogram_tester.ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME), 1);
@@ -4494,16 +4495,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
 
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   EXPECT_EQ(1, version->embedded_worker()->restart_count());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   EXPECT_FALSE(version->timeout_timer_.IsRunning());
 
   // Warm-up ServiceWorker. The script should be loaded without evaluating the
@@ -4512,7 +4513,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
   EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
   EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
@@ -4525,10 +4526,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
       blink::features::kSpeculativeServiceWorkerWarmUpDuration.Get() -
       base::Minutes(1);
   version->timeout_timer_.user_task().Run();
-  while (version->running_status() != EmbeddedWorkerStatus::STOPPED) {
+  while (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {
     base::RunLoop().RunUntilIdle();
   }
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
   EXPECT_EQ(2, version->embedded_worker()->restart_count());
 
@@ -4539,7 +4540,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
 
   EXPECT_EQ(3, version->embedded_worker()->restart_count());
   EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
   histogram_tester.ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME), 1);
@@ -4583,11 +4584,11 @@ class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
 
     scoped_refptr<ServiceWorkerVersion> version =
         wrapper()->GetLiveVersion(observer1.version_id());
-    EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
     // Stop the current running service worker.
     StopServiceWorker(version.get());
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
     return version;
   }
 
@@ -4655,8 +4656,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version1->running_status());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version2->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version1->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version2->running_status());
 
   // When an anchor is added to a document, the IntersectionObserver
   // begins monitoring whether the anchor is visible in the viewport. If
@@ -4776,7 +4777,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByPointerBrowserTest,
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   AddAnchor("in_scope_url", in_scope_url);
 
@@ -4885,15 +4886,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
   observer1.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // This script asks the service worker what fetch events it saw.
   const std::string script = R"(
@@ -4944,7 +4945,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
       // Wait until running.
       observer2.WaitUntilRunning();
       version = wrapper()->GetLiveVersion(observer2.version_id());
-      EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+                version->running_status());
 
       // The handler is not used for subsequent requests even if the
       // worker has already started.
@@ -5079,16 +5081,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBypassFetchHandlerOriginTrialTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate to the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), main_page_url));
@@ -5189,19 +5191,19 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Conduct a main resource load.
   EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
                             ServiceWorkerControlleeRequestHandler::
@@ -5231,15 +5233,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
   observer1.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Conduct a main resource load.
   WorkerRunningStatusObserver observer2(public_context());
@@ -5248,7 +5250,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
     case SkipEmptyFetchHandlerEnum::kEnabled:
       // In this case, navigation request doesn't start the service
       // worker if the fetch handler is skipped.
-      EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped,
+                version->running_status());
       tester.ExpectUniqueSample(
           "ServiceWorker.FetchHandler.SkipReason",
           ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
@@ -5259,7 +5262,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       // In this case, the service worker is started while the fetch handler is
       // skipped.
       observer2.WaitUntilRunning();
-      EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+                version->running_status());
       tester.ExpectUniqueSample(
           "ServiceWorker.FetchHandler.SkipReason",
           ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
@@ -5268,7 +5272,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSkipEmptyFetchHandlerBrowserTest,
       break;
     case SkipEmptyFetchHandlerEnum::kDisabled:
       observer2.WaitUntilRunning();
-      EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+      EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+                version->running_status());
       tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
                                 ServiceWorkerControlleeRequestHandler::
                                     FetchHandlerSkipReason::kNotSkipped,
@@ -5318,11 +5323,11 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
     observer1.WaitUntilRunning();
     scoped_refptr<ServiceWorkerVersion> version =
         wrapper()->GetLiveVersion(observer1.version_id());
-    EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
     // Stop the current running service worker.
     StopServiceWorker(version.get());
-    EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
     return version;
   }
@@ -6489,16 +6494,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // Stop the current running service worker.
   StopServiceWorker(version.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate away from the service worker's scope.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
   // Navigate to the service worker's scope.
   EXPECT_TRUE(NavigateToURL(shell(), main_page_url_with_params));
@@ -6712,11 +6717,13 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     }
     observer1.WaitUntilRunning();
     active_version_ = wrapper()->GetLiveVersion(observer1.version_id());
-    ASSERT_EQ(EmbeddedWorkerStatus::RUNNING, active_version_->running_status());
+    ASSERT_EQ(blink::EmbeddedWorkerStatus::kRunning,
+              active_version_->running_status());
 
     // Stop the current running service worker.
     StopServiceWorker(active_version_.get());
-    ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, active_version_->running_status());
+    ASSERT_EQ(blink::EmbeddedWorkerStatus::kStopped,
+              active_version_->running_status());
   }
 
   int GetRequestCount(const std::string& relative_url) const {
@@ -6853,7 +6860,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // Ensure the ServiceWorker will start even if the navigation results in the
   // fallback via Static Routing.
   observer.WaitUntilRunning();
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::STATIC_ROUTER), 1);
@@ -6872,7 +6879,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // expected.
   EXPECT_EQ(0, GetRequestCount("/service_worker/fetch_handler"));
   // Fetch handler source starts the ServiceWorker.
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -6887,7 +6894,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // The result should be got from the network.
   EXPECT_EQ(1, GetRequestCount("/service_worker/direct"));
   // Network fallback doesn't start the ServiceWorker.
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -6942,7 +6949,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   const std::string relative_url = "/service_worker/direct_if_not_running";
 
   // Initial state is stopped, and should go to network.
-  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
@@ -6953,7 +6960,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // Since the ServiceWorker will start after using static routing,
   // wait for that.
   observer.WaitUntilRunning();
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
 
   // Ensure that the fetch handler is used this time.
   ASSERT_TRUE(
@@ -6971,7 +6978,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   SetupAndRegisterServiceWorker(TestType::kNetwork);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   StopServiceWorker(version().get());
-  ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
             EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
                                               "').then(response => "
@@ -6983,7 +6990,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // the fetch handler.
   EXPECT_EQ(StartServiceWorker(version().get()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version()->running_status());
   // We know there is a delay to make the renderer know the running
   // status. Or, test will timeout.
   for (;;) {
@@ -7153,7 +7160,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Ensure the ServiceWorker won't start if the navigation results in the
   // fallback via Static Routing.
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version()->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
   histogram_tester().ExpectBucketCount(
       "ServiceWorker.StartWorker.Purpose",
       static_cast<int>(ServiceWorkerMetrics::EventType::STATIC_ROUTER), 0);
@@ -7270,7 +7277,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterOriginTrialBrowserTest,
   observer.WaitUntilRunning();
   scoped_refptr<ServiceWorkerVersion> version =
       wrapper()->GetLiveVersion(observer.version_id());
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
 
   // The result should be got from the network, both for main resource and
   // subresource.

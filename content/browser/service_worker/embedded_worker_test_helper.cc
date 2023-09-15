@@ -298,7 +298,7 @@ void EmbeddedWorkerTestHelper::StartWorker(
   StartWorkerUntilStartSent(worker, std::move(params));
   // TODO(falken): Listen for OnStarted() instead of this.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, worker->status());
 }
 
 blink::mojom::EmbeddedWorkerStartParamsPtr

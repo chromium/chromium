@@ -132,7 +132,7 @@ class SWOnStoppedObserver
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     const ServiceWorkerVersion* version =
         parent::context_->GetLiveVersion(version_id);
-    ASSERT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+    ASSERT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kStopped);
     parent::Quit();
   }
 
@@ -164,7 +164,7 @@ class SWOnStartedObserver
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     const ServiceWorkerVersion* version =
         parent::context_->GetLiveVersion(version_id);
-    ASSERT_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+    ASSERT_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
     parent::Quit();
   }
 
@@ -510,13 +510,13 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         }
       case RUNNING_STATUS:
         switch (registration.active_version.running_status) {
-          case EmbeddedWorkerStatus::STOPPED:
+          case blink::EmbeddedWorkerStatus::kStopped:
             return "STOPPED";
-          case EmbeddedWorkerStatus::STARTING:
+          case blink::EmbeddedWorkerStatus::kStarting:
             return "STARTING";
-          case EmbeddedWorkerStatus::RUNNING:
+          case blink::EmbeddedWorkerStatus::kRunning:
             return "RUNNING";
-          case EmbeddedWorkerStatus::STOPPING:
+          case blink::EmbeddedWorkerStatus::kStopping:
             return "STOPPING";
         }
       case PROCESS_ID:

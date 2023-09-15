@@ -12,7 +12,6 @@
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -26,6 +25,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -684,7 +684,8 @@ void CookieStoreManager::DispatchChangeEvent(
 
   scoped_refptr<ServiceWorkerVersion> active_version =
       registration->active_version();
-  if (active_version->running_status() != EmbeddedWorkerStatus::RUNNING) {
+  if (active_version->running_status() !=
+      blink::EmbeddedWorkerStatus::kRunning) {
     active_version->RunAfterStartWorker(
         ServiceWorkerMetrics::EventType::COOKIE_CHANGE,
         base::BindOnce(&CookieStoreManager::DidStartWorkerForChangeEvent,

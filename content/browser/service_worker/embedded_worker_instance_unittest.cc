@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -23,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 
 namespace content {
@@ -52,14 +52,15 @@ class EmbeddedWorkerInstanceTest : public EmbeddedWorkerInstanceTestHarness,
 
   struct EventLog {
     EventType type;
-    absl::optional<EmbeddedWorkerStatus> status;
+    absl::optional<blink::EmbeddedWorkerStatus> status;
     absl::optional<blink::mojom::ServiceWorkerStartStatus> start_status;
   };
 
-  void RecordEvent(EventType type,
-                   absl::optional<EmbeddedWorkerStatus> status = absl::nullopt,
-                   absl::optional<blink::mojom::ServiceWorkerStartStatus>
-                       start_status = absl::nullopt) {
+  void RecordEvent(
+      EventType type,
+      absl::optional<blink::EmbeddedWorkerStatus> status = absl::nullopt,
+      absl::optional<blink::mojom::ServiceWorkerStartStatus> start_status =
+          absl::nullopt) {
     EventLog log = {type, status, start_status};
     events_.push_back(log);
   }
@@ -75,10 +76,10 @@ class EmbeddedWorkerInstanceTest : public EmbeddedWorkerInstanceTestHarness,
     fetch_handler_type_ = fetch_handler_type;
     RecordEvent(STARTED, absl::nullopt, status);
   }
-  void OnStopped(EmbeddedWorkerStatus old_status) override {
+  void OnStopped(blink::EmbeddedWorkerStatus old_status) override {
     RecordEvent(STOPPED, old_status);
   }
-  void OnDetached(EmbeddedWorkerStatus old_status) override {
+  void OnDetached(blink::EmbeddedWorkerStatus old_status) override {
     RecordEvent(DETACHED, old_status);
   }
 
@@ -95,7 +96,7 @@ TEST_F(EmbeddedWorkerInstanceTest, StartAndStop) {
   RegistrationAndVersionPair pair =
       helper_->PrepareRegistrationAndVersion(scope, url);
   auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
   worker->AddObserver(this);
 
   // Start should succeed.
@@ -103,17 +104,17 @@ TEST_F(EmbeddedWorkerInstanceTest, StartAndStop) {
 
   // The 'WorkerStarted' message should have been sent by
   // EmbeddedWorkerTestHelper.
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, worker->status());
   EXPECT_EQ(helper_->mock_render_process_id(), worker->process_id());
 
   // Stop the worker.
   worker->Stop();
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPING, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopping, worker->status());
   base::RunLoop().RunUntilIdle();
 
   // The 'WorkerStopped' message should have been sent by
   // EmbeddedWorkerTestHelper.
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
 
   // Check if the IPCs are fired in expected order.
   ASSERT_EQ(4u, events_.size());
@@ -135,7 +136,7 @@ TEST_F(EmbeddedWorkerInstanceTest, ForceNewProcess) {
       helper_->PrepareRegistrationAndVersion(scope, url);
   const int64_t service_worker_version_id = pair.second->version_id();
   auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
 
   {
     // Start once normally.
@@ -172,17 +173,17 @@ TEST_F(EmbeddedWorkerInstanceTest, StopWhenDevToolsAttached) {
   RegistrationAndVersionPair pair =
       helper_->PrepareRegistrationAndVersion(scope, url);
   auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
 
   // Start the worker and then call StopIfNotAttachedToDevTools().
   helper_->StartWorker(worker.get(), helper_->CreateStartParams(pair.second));
   EXPECT_EQ(helper_->mock_render_process_id(), worker->process_id());
   worker->StopIfNotAttachedToDevTools();
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPING, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopping, worker->status());
   base::RunLoop().RunUntilIdle();
 
   // The worker must be stopped now.
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
 
   // Set devtools_attached to true, and do the same.
   worker->SetDevToolsAttached(true);
@@ -193,13 +194,13 @@ TEST_F(EmbeddedWorkerInstanceTest, StopWhenDevToolsAttached) {
   base::RunLoop().RunUntilIdle();
 
   // The worker must not be stopped this time.
-  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, worker->status());
 
   // Calling Stop() actually stops the worker regardless of whether devtools
   // is attached or not.
   worker->Stop();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
 }
 
 TEST_F(EmbeddedWorkerInstanceTest, DetachAfterSendingStartWorkerMessage) {
@@ -224,13 +225,13 @@ TEST_F(EmbeddedWorkerInstanceTest, DetachAfterSendingStartWorkerMessage) {
   worker->Detach();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
   EXPECT_EQ(ChildProcessHost::kInvalidUniqueID, worker->process_id());
 
   // "STARTED" event should not be recorded.
   ASSERT_EQ(1u, events_.size());
   EXPECT_EQ(DETACHED, events_[0].type);
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, events_[0].status.value());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, events_[0].status.value());
 }
 
 TEST_F(EmbeddedWorkerInstanceTest, StopAfterSendingStartWorkerMessage) {
@@ -256,13 +257,13 @@ TEST_F(EmbeddedWorkerInstanceTest, StopAfterSendingStartWorkerMessage) {
   worker->Stop();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
   EXPECT_EQ(ChildProcessHost::kInvalidUniqueID, worker->process_id());
 
   // "STARTED" event should not be recorded.
   ASSERT_EQ(1u, events_.size());
   EXPECT_EQ(STOPPED, events_[0].type);
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPING, events_[0].status.value());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopping, events_[0].status.value());
   events_.clear();
 
   // Restart the worker.
@@ -291,7 +292,7 @@ TEST_F(EmbeddedWorkerInstanceTest, Detach) {
 
   // Detach.
   worker->Detach();
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
 }
 
 // Test for when sending the start IPC failed.
@@ -321,8 +322,8 @@ TEST_F(EmbeddedWorkerInstanceTest, FailToSendStartIPC) {
   EXPECT_EQ(PROCESS_ALLOCATED, events_[0].type);
   EXPECT_EQ(START_WORKER_MESSAGE_SENT, events_[1].type);
   EXPECT_EQ(DETACHED, events_[2].type);
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, events_[2].status.value());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, events_[2].status.value());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
 }
 
 TEST_F(EmbeddedWorkerInstanceTest, RemoveRemoteInterface) {
@@ -350,7 +351,7 @@ TEST_F(EmbeddedWorkerInstanceTest, RemoveRemoteInterface) {
   EXPECT_EQ(PROCESS_ALLOCATED, events_[0].type);
   EXPECT_EQ(START_WORKER_MESSAGE_SENT, events_[1].type);
   EXPECT_EQ(DETACHED, events_[2].type);
-  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, events_[2].status.value());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, events_[2].status.value());
 }
 
 class RecordCacheStorageInstanceClient
@@ -456,7 +457,7 @@ TEST_F(EmbeddedWorkerInstanceTest, AbruptCompletion) {
   RegistrationAndVersionPair pair =
       helper_->PrepareRegistrationAndVersion(scope, url);
   auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker->status());
   worker->AddObserver(this);
 
   helper_->AddPendingInstanceClient(
@@ -506,7 +507,7 @@ TEST_F(EmbeddedWorkerInstanceTest, HasFetchHandler) {
   RegistrationAndVersionPair pair1 =
       helper_->PrepareRegistrationAndVersion(scope, url);
   auto worker1 = std::make_unique<EmbeddedWorkerInstance>(pair1.second.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker1->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker1->status());
   worker1->AddObserver(this);
 
   auto* fetch_handler_worker =
@@ -523,7 +524,7 @@ TEST_F(EmbeddedWorkerInstanceTest, HasFetchHandler) {
   RegistrationAndVersionPair pair2 =
       helper_->PrepareRegistrationAndVersion(scope, url);
   auto worker2 = std::make_unique<EmbeddedWorkerInstance>(pair2.second.get());
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker2->status());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, worker2->status());
   worker2->AddObserver(this);
 
   auto* no_fetch_handler_worker =

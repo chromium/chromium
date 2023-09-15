@@ -19,13 +19,13 @@ struct BLINK_COMMON_EXPORT
   static blink::mojom::ServiceWorkerEmbeddedWorkerStatus ToMojom(
       blink::EmbeddedWorkerStatus input) {
     switch (input) {
-      case blink::EmbeddedWorkerStatus::STOPPED:
+      case blink::EmbeddedWorkerStatus::kStopped:
         return blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStopped;
-      case blink::EmbeddedWorkerStatus::STARTING:
+      case blink::EmbeddedWorkerStatus::kStarting:
         return blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStarting;
-      case blink::EmbeddedWorkerStatus::RUNNING:
+      case blink::EmbeddedWorkerStatus::kRunning:
         return blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kRunning;
-      case blink::EmbeddedWorkerStatus::STOPPING:
+      case blink::EmbeddedWorkerStatus::kStopping:
         return blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStopping;
     }
   }
@@ -34,16 +34,16 @@ struct BLINK_COMMON_EXPORT
                         blink::EmbeddedWorkerStatus* output) {
     switch (input) {
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStopped:
-        *output = blink::EmbeddedWorkerStatus::STOPPED;
+        *output = blink::EmbeddedWorkerStatus::kStopped;
         break;
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStarting:
-        *output = blink::EmbeddedWorkerStatus::STARTING;
+        *output = blink::EmbeddedWorkerStatus::kStarting;
         break;
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kRunning:
-        *output = blink::EmbeddedWorkerStatus::RUNNING;
+        *output = blink::EmbeddedWorkerStatus::kRunning;
         break;
       case blink::mojom::ServiceWorkerEmbeddedWorkerStatus::kStopping:
-        *output = blink::EmbeddedWorkerStatus::STOPPING;
+        *output = blink::EmbeddedWorkerStatus::kStopping;
         break;
     }
     return true;

@@ -4,11 +4,11 @@
 
 #include "content/browser/service_worker/service_worker_device_delegate_observer.h"
 
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
@@ -122,7 +122,7 @@ void ServiceWorkerDeviceDelegateObserver::AddPendingCallback(
   // used in the case of the worker is running and caller is waiting other
   // states to be ready for executing `callback`.
   CHECK(version);
-  CHECK_EQ(version->running_status(), EmbeddedWorkerStatus::RUNNING);
+  CHECK_EQ(version->running_status(), blink::EmbeddedWorkerStatus::kRunning);
   pending_callbacks_[version->version_id()].push_back(std::move(callback));
 }
 

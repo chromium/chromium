@@ -19,7 +19,6 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -39,6 +38,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 
@@ -85,16 +85,16 @@ base::ProcessId GetRealProcessId(int process_host_id) {
 base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
   base::Value::Dict info;
   switch (version.running_status) {
-    case EmbeddedWorkerStatus::STOPPED:
+    case blink::EmbeddedWorkerStatus::kStopped:
       info.Set("running_status", "STOPPED");
       break;
-    case EmbeddedWorkerStatus::STARTING:
+    case blink::EmbeddedWorkerStatus::kStarting:
       info.Set("running_status", "STARTING");
       break;
-    case EmbeddedWorkerStatus::RUNNING:
+    case blink::EmbeddedWorkerStatus::kRunning:
       info.Set("running_status", "RUNNING");
       break;
-    case EmbeddedWorkerStatus::STOPPING:
+    case blink::EmbeddedWorkerStatus::kStopping:
       info.Set("running_status", "STOPPING");
       break;
   }

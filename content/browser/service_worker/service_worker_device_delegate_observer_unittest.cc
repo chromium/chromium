@@ -146,7 +146,7 @@ TEST_F(ServiceWorkerDeviceDelegateObserverTest,
       future;
   mock.DispatchEventToWorker(registration_id, future.GetCallback());
   EXPECT_EQ(future.Get<0>()->running_status(),
-            blink::EmbeddedWorkerStatus::RUNNING);
+            blink::EmbeddedWorkerStatus::kRunning);
   EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kOk);
 }
 
@@ -167,7 +167,7 @@ TEST_F(ServiceWorkerDeviceDelegateObserverTest, DispatchEventLiveRegistration) {
       future;
   mock.DispatchEventToWorker(registration_id, future.GetCallback());
   EXPECT_EQ(future.Get<0>()->running_status(),
-            blink::EmbeddedWorkerStatus::RUNNING);
+            blink::EmbeddedWorkerStatus::kRunning);
   EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kOk);
 }
 
@@ -222,7 +222,7 @@ TEST_F(ServiceWorkerDeviceDelegateObserverTest, DispatchEventStartWorkerFail) {
       future;
   mock.DispatchEventToWorker(registration_id, future.GetCallback());
   EXPECT_EQ(future.Get<0>()->running_status(),
-            blink::EmbeddedWorkerStatus::STOPPED);
+            blink::EmbeddedWorkerStatus::kStopped);
   EXPECT_EQ(future.Get<1>(), blink::ServiceWorkerStatusCode::kErrorDisallowed);
 }
 

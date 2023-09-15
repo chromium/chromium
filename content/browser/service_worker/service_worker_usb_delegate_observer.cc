@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -16,6 +15,7 @@
 #include "content/browser/usb/web_usb_service_impl.h"
 #include "content/public/common/content_client.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 
 namespace content {
 
@@ -120,7 +120,7 @@ void ServiceWorkerUsbDelegateObserver::DispatchUsbDeviceEventToWorkers(
     if (usb_service) {
       auto version = usb_service->service_worker_version();
       if (version &&
-          version->running_status() == EmbeddedWorkerStatus::RUNNING) {
+          version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
         callback.Run(device_info, usb_service);
         continue;
       }
