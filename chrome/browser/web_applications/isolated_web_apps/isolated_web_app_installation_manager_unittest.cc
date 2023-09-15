@@ -19,8 +19,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -184,8 +187,9 @@ TEST_F(IsolatedWebAppInstallationManagerTest,
 TEST_F(IsolatedWebAppInstallationManagerTest,
        NoInstallationWhenDevModePolicyDisabled) {
   pref_service()->SetManagedPref(
-      policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed,
-      base::Value(false));
+      prefs::kDevToolsAvailability,
+      base::Value(base::to_underlying(
+          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
 
   base::test::RepeatingTestFuture<
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>>

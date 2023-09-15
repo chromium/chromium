@@ -10,6 +10,8 @@ desc: |-
         This setting also turns off keyboard shortcuts and menu or context menu entries to open developer tools or the JavaScript console.
 
         As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 99, this setting also controls entry points for the 'View page source' feature. If you set this policy to 'DeveloperToolsDisallowed' (value 2), users cannot access source viewing via keyboard shortcut or the context menu. To fully block source viewing, you must also add 'view-source:*' to the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> policy.
+
+        As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 119, this setting also controls whether developer mode for Isolated Web Apps can be activated and used.
 example_value: 2
 features:
   dynamic_refresh: true
