@@ -219,6 +219,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Observer interface.
   class Observer : public base::CheckedObserver {
    public:
+    ~Observer() override;
+
     // Called when the setup progresses.
     virtual void OnProgress(const Progress& progress) {}
   };

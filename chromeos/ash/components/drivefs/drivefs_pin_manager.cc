@@ -1725,4 +1725,8 @@ void PinManager::SetOnline(const bool online) {
   }
 }
 
+PinManager::Observer::~Observer() {
+  CHECK(!IsInObserverList());
+}
+
 }  // namespace drivefs::pinning

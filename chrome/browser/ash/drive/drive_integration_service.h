@@ -79,6 +79,8 @@ struct QuickAccessItem {
 // DriveIntegrationService.  All events are notified on UI thread.
 class DriveIntegrationServiceObserver : public base::CheckedObserver {
  public:
+  ~DriveIntegrationServiceObserver() override;
+
   // Triggered when the file system is mounted.
   virtual void OnFileSystemMounted() {}
 

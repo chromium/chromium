@@ -637,11 +637,7 @@ DriveIntegrationService::DriveIntegrationService(
   SetEnabled(util::IsDriveEnabledForProfile(profile));
 }
 
-DriveIntegrationService::~DriveIntegrationService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  network_state_handler_.Reset();
-  registrar_.RemoveAll();
-}
+DriveIntegrationService::~DriveIntegrationService() = default;
 
 void DriveIntegrationService::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1790,6 +1786,10 @@ KeyedService* DriveIntegrationServiceFactory::BuildServiceInstanceFor(
   }
 
   return service;
+}
+
+DriveIntegrationServiceObserver::~DriveIntegrationServiceObserver() {
+  CHECK(!IsInObserverList());
 }
 
 }  // namespace drive
