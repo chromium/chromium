@@ -13,8 +13,7 @@
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_observer.h"
+#include "components/sync_device_info/device_info_tracker.h"
 
 namespace segmentation_platform {
 
@@ -22,12 +21,13 @@ namespace segmentation_platform {
 // model. It is responsible for fetching classification results from pref, or
 // waiting and updating new classification results if unavailable at request
 // time.
-class DeviceSwitcherResultDispatcher : public base::SupportsUserData::Data,
-                                       public syncer::SyncServiceObserver {
+class DeviceSwitcherResultDispatcher
+    : public syncer::DeviceInfoTracker::Observer,
+      public base::SupportsUserData::Data {
  public:
   DeviceSwitcherResultDispatcher(
       SegmentationPlatformService* segmentation_service,
-      syncer::SyncService* sync_service,
+      syncer::DeviceInfoTracker* device_info_tracker,
       PrefService* prefs,
       FieldTrialRegister* field_trial_register);
   ~DeviceSwitcherResultDispatcher() override;
@@ -50,33 +50,32 @@ class DeviceSwitcherResultDispatcher : public base::SupportsUserData::Data,
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // SyncServiceObserver impl:
-  void OnStateChanged(syncer::SyncService* sync) override;
-  void OnSyncShutdown(syncer::SyncService* sync) override;
+  // DeviceInfoTracker::Observer impl:
+  void OnDeviceInfoChange() override;
 
  private:
   void SaveResultToPref(const ClassificationResult& result);
-  absl::optional<ClassificationResult> ReadResultFromPref();
+  absl::optional<ClassificationResult> ReadResultFromPref() const;
 
-  void RefreshSegmentResult();
+  void RefreshSegmentResultIfNeeded();
   void OnGotResult(const ClassificationResult& result);
 
   void RegisterFieldTrials();
 
   const raw_ptr<SegmentationPlatformService> segmentation_service_;
-  const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<FieldTrialRegister, AcrossTasksDanglingUntriaged>
       field_trial_register_;
   ClassificationResultCallback waiting_callback_;
   absl::optional<ClassificationResult> latest_result_;
 
-  // Observer for sync to record time durations. Note that the observation is
-  // only active when needed for metrics.
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_observation_{this};
-  bool has_sync_consent_at_startup_{false};
-  base::Time sync_consent_timestamp_;
+  // Note that the observation is only active when the result is not computed
+  // yet.
+  base::ScopedObservation<syncer::DeviceInfoTracker,
+                          syncer::DeviceInfoTracker::Observer>
+      device_info_observation_{this};
+  base::Time device_info_timestamp_;
 
   base::WeakPtrFactory<DeviceSwitcherResultDispatcher> weak_ptr_factory_{this};
 };

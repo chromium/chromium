@@ -333,30 +333,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SegmentationPlatform.DeviceSwicther.TimeFromConsentToResult"
-    units="ms" expires_after="2024-01-07">
-  <owner>ssid@chromium.org</owner>
-  <owner>chrome-segmentation-platform@google.com</owner>
-  <summary>
-    The time taken from the time user enabled sync consent to the time result is
-    available for device switcher user segment. This includes the network delay
-    for downloading the device info data. The metric is recorded once for each
-    user at the time when the user enables sync on the device.
-  </summary>
-</histogram>
-
-<histogram name="SegmentationPlatform.DeviceSwicther.TimeFromStartupToResult"
-    units="ms" expires_after="2023-10-01">
-  <owner>ssid@chromium.org</owner>
-  <owner>chrome-segmentation-platform@google.com</owner>
-  <summary>
-    The time taken from the startup to the time result is available for the
-    device switcher user segment. The metric is recorded once for each user the
-    first time the device switcher segmentation is enabled, only if the user
-    already had sync enabled.
-  </summary>
-</histogram>
-
 <histogram
     name="SegmentationPlatform.FeatureProcessing.Error.{SegmentationModel}"
     enum="SegmentationPlatformFeatureProcessingError"

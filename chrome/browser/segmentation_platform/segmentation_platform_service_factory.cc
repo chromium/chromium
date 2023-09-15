@@ -186,7 +186,9 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   }
   service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
                        std::make_unique<DeviceSwitcherResultDispatcher>(
-                           service, SyncServiceFactory::GetForProfile(profile),
+                           service,
+                           DeviceInfoSyncServiceFactory::GetForProfile(profile)
+                               ->GetDeviceInfoTracker(),
                            profile->GetPrefs(), field_trial_register));
 
   InitTabDataCollection(service, session_sync_service, std::move(tab_fetcher));

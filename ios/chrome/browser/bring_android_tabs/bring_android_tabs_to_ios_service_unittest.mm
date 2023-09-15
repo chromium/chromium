@@ -25,6 +25,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_device_info/device_info.h"
+#import "components/sync_device_info/fake_device_info_tracker.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/session_sync_test_helper.h"
@@ -74,12 +75,12 @@ class FakeDeviceSwitcherResultDispatcher
  public:
   FakeDeviceSwitcherResultDispatcher(
       segmentation_platform::SegmentationPlatformService* segmentation_service,
-      syncer::SyncService* sync_service,
+      syncer::DeviceInfoTracker* device_info_tracker,
       PrefService* prefs,
       segmentation_platform::FieldTrialRegister* field_trial_register,
       const char* classification_label)
       : DeviceSwitcherResultDispatcher(segmentation_service,
-                                       sync_service,
+                                       device_info_tracker,
                                        prefs,
                                        field_trial_register) {
     classification_label_ = classification_label;
@@ -221,6 +222,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
   BringAndroidTabsToIOSServiceTest() : PlatformTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     segmentation_platform::DeviceSwitcherResultDispatcher::RegisterProfilePrefs(
@@ -265,8 +267,8 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
     segmentation_platform::IOSFieldTrialRegisterImpl field_trial_register_ =
         segmentation_platform::IOSFieldTrialRegisterImpl();
     bring_android_tabs::FakeDeviceSwitcherResultDispatcher dispatcher(
-        &segmentation_platform_service_, test_sync_service_.get(), prefs_.get(),
-        &field_trial_register_, classification_label);
+        &segmentation_platform_service_, device_info_tracker_.get(),
+        prefs_.get(), &field_trial_register_, classification_label);
 
     // Create the BringAndroidTabsToIOSService and load tabs.
     bring_android_tabs_service_ =
@@ -313,6 +315,7 @@ class BringAndroidTabsToIOSServiceTest : public PlatformTest {
   testing::NiceMock<segmentation_platform::MockSegmentationPlatformService>
       segmentation_platform_service_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
+  std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   base::HistogramTester histogram_tester_;
 };

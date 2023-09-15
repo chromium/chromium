@@ -169,7 +169,8 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       kSegmentationDeviceSwitcherUserDataKey,
       std::make_unique<DeviceSwitcherResultDispatcher>(
           service.get(),
-          SyncServiceFactory::GetForBrowserState(chrome_browser_state),
+          DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state)
+              ->GetDeviceInfoTracker(),
           chrome_browser_state->GetPrefs(), field_trial_register));
   service->SetUserData(
       kSegmentationTabRankDispatcherUserDataKey,
@@ -205,7 +206,7 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(SessionSyncServiceFactory::GetInstance());
 }
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
