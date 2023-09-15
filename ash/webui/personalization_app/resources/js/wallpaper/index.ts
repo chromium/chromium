@@ -16,6 +16,10 @@ import './wallpaper_images_element.js';
 import './wallpaper_preview_element.js';
 import './wallpaper_selected_element.js';
 import './wallpaper_subpage_element.js';
+import './sea_pen/sea_pen_collection_element.js';
+import './sea_pen/sea_pen_images_element.js';
+import './sea_pen/sea_pen_input_element.js';
+import './sea_pen/sea_pen_templates_element.js';
 import '../../css/wallpaper.css.js';
 
 function reload(): void {

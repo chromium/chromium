@@ -12,7 +12,10 @@ import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPho
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
+import {SeaPenTemplate} from './sea_pen/sea_pen_collection_element.js';
 import {DailyRefreshState} from './wallpaper_state.js';
+
+export const QUERY: string = 'query';
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
   return !!obj && typeof obj.unitId === 'bigint';
@@ -200,4 +203,65 @@ export function findAlbumById(
     return albums.find(album => album.id === albumId) ?? null;
   }
   return null;
+}
+
+export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
+  return [
+    {
+      preview: [{
+        url: 'chrome://personalization/images/google_photos.svg',
+      }],
+      text: 'the',
+      id: '1',
+    },
+    {
+      preview: [{
+        url: 'chrome://personalization/images/ambient_mode_disabled.svg',
+      }],
+      text: 'faster',
+      id: '2',
+    },
+    {
+      preview: [{
+        url: 'chrome://personalization/images/google_photos.svg',
+      }],
+      text: 'you',
+      id: '3',
+    },
+    {
+      preview: [{
+        url: 'chrome://personalization/images/no_google_photos_images.svg',
+      }],
+      text: 'go',
+      id: '4',
+    },
+    {
+      preview: [{
+        url: 'chrome://personalization/images/ambient_mode_disabled_dark.svg',
+      }],
+      text: 'the',
+      id: '5',
+    },
+    {
+      preview: [{
+        url: 'chrome://personalization/images/no_google_photos_images.svg',
+      }],
+      text: 'shorter',
+      id: '6',
+    },
+    {
+      preview: [{
+        url: 'chrome://personalization/images/no_images.svg',
+      }],
+      text: 'you',
+      id: '7',
+    },
+    {
+      preview: [{
+        url: 'chrome://personalization/images/no_google_photos_images_dark.svg',
+      }],
+      text: 'are',
+      id: '8',
+    },
+  ];
 }

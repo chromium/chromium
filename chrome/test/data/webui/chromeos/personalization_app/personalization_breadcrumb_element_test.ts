@@ -410,7 +410,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertDeepEquals({}, queryParams);
       });
 
-  test('show breadcrumbs for SeaPen', async () => {
+  test('show breadcrumbs for SeaPen templates', async () => {
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_COLLECTION,
     });
@@ -422,5 +422,39 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       breadcrumbElement.i18n('wallpaperLabel'),
       'Sea Pen',
     ]);
+  });
+
+  test('show breadcrumbs for SeaPen template content', async () => {
+    breadcrumbElement = initElement(
+        PersonalizationBreadcrumbElement,
+        {'path': Paths.SEA_PEN_COLLECTION, 'seaPenTemplateId': '2'});
+
+    const breadcrumbContainer =
+        breadcrumbElement.shadowRoot!.getElementById('selector');
+    assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+    assertBreadcrumbs(
+        breadcrumbContainer,
+        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'faster']);
+
+    const original = PersonalizationRouterElement.instance;
+    const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+      PersonalizationRouterElement.instance = () => {
+        return {
+          goToRoute(path: Paths, queryParams: Object = {}) {
+            resolve([path, queryParams]);
+            PersonalizationRouterElement.instance = original;
+          },
+        } as PersonalizationRouterElement;
+      };
+    });
+
+    // current breadcrumbs: Home > Wallpaper > Sea Pen > faster
+    // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
+    const seaPenBreadcrumb =
+        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+    seaPenBreadcrumb!.click();
+    const [path, queryParams] = await goToRoutePromise;
+    assertEquals(Paths.SEA_PEN_COLLECTION, path);
+    assertDeepEquals({}, queryParams);
   });
 });

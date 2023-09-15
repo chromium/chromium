@@ -8,7 +8,7 @@
  */
 
 import {CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isSeaPenEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement, QueryParams} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -42,6 +42,12 @@ export class WallpaperSubpageElement extends WithPersonalizationStore {
         type: Boolean,
         computed: 'computeIsGooglePhotosAlbumShared_(queryParams)',
       },
+      isSeaPenEnabled_: {
+        type: Boolean,
+        value() {
+          return isSeaPenEnabled();
+        },
+      },
     };
   }
 
@@ -50,6 +56,7 @@ export class WallpaperSubpageElement extends WithPersonalizationStore {
   private currentSelected_: CurrentWallpaper|null;
   private isGooglePhotosIntegrationEnabled_: boolean;
   private isGooglePhotosAlbumShared_: boolean;
+  private isSeaPenEnabled_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -68,6 +75,11 @@ export class WallpaperSubpageElement extends WithPersonalizationStore {
     return !!queryParams && queryParams.googlePhotosAlbumIsShared === 'true';
   }
 
+
+  private shouldShowWallpaperSelected_(path: string): boolean {
+    return !this.shouldShowSeaPenCollection_(path);
+  }
+
   private shouldShowCollections_(path: string): boolean {
     return path === Paths.COLLECTIONS;
   }
@@ -83,6 +95,10 @@ export class WallpaperSubpageElement extends WithPersonalizationStore {
 
   private shouldShowLocalCollection_(path: string): boolean {
     return path === Paths.LOCAL_COLLECTION;
+  }
+
+  private shouldShowSeaPenCollection_(path: string): boolean {
+    return this.isSeaPenEnabled_ && path === Paths.SEA_PEN_COLLECTION;
   }
 }
 

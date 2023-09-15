@@ -26,7 +26,8 @@ import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {inBetween, isNonEmptyArray} from './utils.js';
-import {findAlbumById} from './wallpaper/utils.js';
+import {SeaPenTemplate} from './wallpaper/sea_pen/sea_pen_collection_element.js';
+import {findAlbumById, getSampleSeaPenTemplates, QUERY} from './wallpaper/utils.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {
@@ -76,6 +77,9 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       /** The topic source of the selected album(s) for screensaver. */
       topicSource: String,
 
+      /** The current SeaPen template id to display. */
+      seaPenTemplateId: String,
+
       /**
        * The current path of the page.
        */
@@ -86,7 +90,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       breadcrumbs_: {
         type: Array,
         computed:
-            'computeBreadcrumbs_(path, collections_, collectionId, albums_, albumsShared_, googlePhotosAlbumId, topicSource)',
+            'computeBreadcrumbs_(path, collections_, collectionId, albums_, albumsShared_, googlePhotosAlbumId, seaPenTemplates_, seaPenTemplateId, topicSource)',
       },
 
       collections_: {
@@ -99,6 +103,12 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       /** The list of shared Google Photos albums. */
       albumsShared_: Array,
 
+      /** The list of SeaPen templates. */
+      seaPenTemplates_: {
+        type: Array,
+        computed: 'computeSeaPenTemplates_()',
+      },
+
       /** The breadcrumb being highlighted by keyboard navigation. */
       selectedBreadcrumb_: {
         type: Object,
@@ -110,11 +120,13 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
   collectionId: string;
   googlePhotosAlbumId: string;
   topicSource: string;
+  seaPenTemplateId: string;
   path: string;
   private breadcrumbs_: string[];
   private collections_: WallpaperCollection[]|null;
   private albums_: GooglePhotosAlbum[]|null;
   private albumsShared_: GooglePhotosAlbum[]|null;
+  private seaPenTemplates_: SeaPenTemplate[]|null;
   private selectedBreadcrumb_: HTMLElement;
 
   override ready() {
@@ -207,6 +219,16 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       case Paths.SEA_PEN_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         breadcrumbs.push('Sea Pen');
+        if (this.seaPenTemplateId === QUERY) {
+          breadcrumbs.push(QUERY);
+        } else if (
+            this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
+          const template = this.seaPenTemplates_.find(
+              template => template.id === this.seaPenTemplateId);
+          if (template) {
+            breadcrumbs.push(template.text);
+          }
+        }
         break;
       case Paths.USER:
         breadcrumbs.push(this.i18n('avatarLabel'));
@@ -229,6 +251,10 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
     }
     return breadcrumbs;
+  }
+
+  private computeSeaPenTemplates_(): SeaPenTemplate[] {
+    return getSampleSeaPenTemplates();
   }
 
   private getBackButtonAriaLabel_(): string {

@@ -40,6 +40,7 @@ build_webui_tests("build_webui_tests") {
     "personalization_router_element_test.ts",
     "personalization_theme_element_test.ts",
     "personalization_toast_element_test.ts",
+    "sea_pen_collection_element_test.ts",
     "test_ambient_interface_provider.ts",
     "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",
