@@ -62,6 +62,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/init/input_method_initializer.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -655,6 +656,10 @@ void AshTestBase::PrepareForPixelDiffTest() {
   // are stable.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kStabilizeTimeDependentViewForTests);
+
+  // Enable the dark mode switch to maintain the dark mode before user login.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kForceDarkMode);
 
   DCHECK(!pixel_differ_);
   pixel_differ_ =

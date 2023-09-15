@@ -5,7 +5,6 @@
 #include "ash/focus_cycler.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
@@ -48,6 +47,11 @@ class LoginShelfViewPixelTestBase : public LoginTestBase {
             .primary_big_view();
   }
 
+  void TearDown() override {
+    primary_big_user_view_ = nullptr;
+    LoginTestBase::TearDown();
+  }
+
   raw_ptr<views::View, ExperimentalAsh> primary_big_user_view_ = nullptr;
 
  private:
@@ -67,35 +71,34 @@ class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {
 
 // Verifies that moving the focus by the tab key from the lock contents view
 // to the login shelf works as expected.
-// Test disabled due to flakiness. http://crbug.com/1468453
-TEST_F(LoginShelfViewPixelTest, DISABLED_FocusTraversalFromLockContents) {
+TEST_F(LoginShelfViewPixelTest, FocusTraversalFromLockContents) {
   // Trigger the tab key. Verify that the login user expand button is focused.
   aura::Window* primary_shelf_window = GetPrimaryShelf()->GetWindow();
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_login_user_expand_button",
-      /*revision_number=*/4, primary_big_user_view_.get(),
+      /*revision_number=*/5, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the login shelf shutdown button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
-      /*revision_number=*/4, primary_big_user_view_.get(),
+      /*revision_number=*/5, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the browser as guest button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_browser_as_guest_button",
-      /*revision_number=*/4, primary_big_user_view_.get(),
+      /*revision_number=*/5, primary_big_user_view_.get(),
       primary_shelf_window));
 
   // Trigger the tab key. Check that the add person button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_add_person_button",
-      /*revision_number=*/4, primary_big_user_view_.get(),
+      /*revision_number=*/5, primary_big_user_view_.get(),
       primary_shelf_window));
 }
 
