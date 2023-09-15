@@ -3556,7 +3556,6 @@ crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.
 crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.closed.worker.html [ Failure ]
 crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.curve.worker.html [ Failure ]
 crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.line.worker.html [ Failure ]
-crbug.com/709227 external/wpt/html/canvas/offscreen/path-objects/2d.path.stroke.prune.rect.worker.html [ Failure ]
 
 # ====== Tests from enabling .any.js/.worker.js tests end here ========
 

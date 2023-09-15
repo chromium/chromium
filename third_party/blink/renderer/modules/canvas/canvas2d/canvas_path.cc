@@ -513,6 +513,11 @@ void CanvasPath::rect(double double_x,
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
                !std::isfinite(width) || !std::isfinite(height)))
     return;
+
+  if (width == 0 && height == 0) {
+    moveTo(x, y);
+    return;
+  }
   UpdatePathFromLineIfNecessaryForMutation();
   if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
