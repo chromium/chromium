@@ -149,11 +149,13 @@ public abstract class PureJavaExceptionReporter
             File minidumpDir = new File(getCrashFilesDirectory(), CrashFileManager.CRASH_DUMP_DIR);
             // Tests disable minidump uploading by not creating the minidump directory.
             mUpload = minidumpDir.exists();
-            String overrideMinidumpDirPath =
-                    CommandLine.getInstance().getSwitchValue(DUMP_LOCATION_SWITCH);
-            if (overrideMinidumpDirPath != null) {
-                minidumpDir = new File(overrideMinidumpDirPath);
-                minidumpDir.mkdirs();
+            if (CommandLine.isInitialized()) {
+                String overrideMinidumpDirPath =
+                        CommandLine.getInstance().getSwitchValue(DUMP_LOCATION_SWITCH);
+                if (overrideMinidumpDirPath != null) {
+                    minidumpDir = new File(overrideMinidumpDirPath);
+                    minidumpDir.mkdirs();
+                }
             }
             mMinidumpFile = new File(minidumpDir, minidumpFileName);
             mMinidumpFileStream = new FileOutputStream(mMinidumpFile);
