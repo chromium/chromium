@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -96,8 +97,17 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      */
     protected abstract int footerItemType();
 
-    public TouchToFillViewBase(
-            BottomSheetController bottomSheetController, RelativeLayout contentView) {
+    /**
+     * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
+     * @param contentView The content of the bottom sheet.
+     * @param suppressCollectionA11y Disables/enables setting the collection related a11y node info,
+     *                               basically removing the "2 of 4" part in a regular RecycleView
+     *                               item announcement. Setting it to `true` implies that the item
+     *                               content description is updated accordingly for items that are
+     *                               eligible for indexing from the UI perspective.
+     */
+    public TouchToFillViewBase(BottomSheetController bottomSheetController,
+            RelativeLayout contentView, Boolean suppressCollectionA11y) {
         mBottomSheetController = bottomSheetController;
         mContentView = contentView;
         mSheetItemListView = getContentView().findViewById(R.id.sheet_item_list);
@@ -107,6 +117,14 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
             @Override
             public boolean isAutoMeasureEnabled() {
                 return true;
+            }
+
+            @Override
+            public void onInitializeAccessibilityNodeInfo(RecyclerView.Recycler recycler,
+                    RecyclerView.State state, AccessibilityNodeInfoCompat info) {
+                if (!suppressCollectionA11y) {
+                    super.onInitializeAccessibilityNodeInfo(recycler, state, info);
+                }
             }
         });
 

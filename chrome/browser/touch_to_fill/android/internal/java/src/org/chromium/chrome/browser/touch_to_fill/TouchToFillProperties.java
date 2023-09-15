@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.ui.modelutil.ListModel;
@@ -74,9 +75,12 @@ class TouchToFillProperties {
         static final PropertyModel
                 .ReadableObjectPropertyKey<Callback<Credential>> ON_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final PropertyModel
+                .ReadableObjectPropertyKey<FillableItemCollectionInfo> ITEM_COLLECTION_INFO =
+                new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
         static final PropertyKey[] ALL_KEYS = {FAVICON_OR_FALLBACK, CREDENTIAL, FORMATTED_ORIGIN,
-                ON_CLICK_LISTENER, SHOW_SUBMIT_BUTTON};
+                ON_CLICK_LISTENER, SHOW_SUBMIT_BUTTON, ITEM_COLLECTION_INFO};
 
         private CredentialProperties() {}
     }
@@ -96,9 +100,12 @@ class TouchToFillProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Callback<WebAuthnCredential>>
                 ON_WEBAUTHN_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_webauthn_click_listener");
-
+        static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
+                WEBAUTHN_ITEM_COLLECTION_INFO =
+                new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
         static final PropertyKey[] ALL_KEYS = {WEBAUTHN_CREDENTIAL, WEBAUTHN_FAVICON_OR_FALLBACK,
-                ON_WEBAUTHN_CLICK_LISTENER, SHOW_WEBAUTHN_SUBMIT_BUTTON};
+                ON_WEBAUTHN_CLICK_LISTENER, SHOW_WEBAUTHN_SUBMIT_BUTTON,
+                WEBAUTHN_ITEM_COLLECTION_INFO};
 
         private WebAuthnCredentialProperties() {}
     }

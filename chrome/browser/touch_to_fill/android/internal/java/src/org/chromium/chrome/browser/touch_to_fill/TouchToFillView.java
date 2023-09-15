@@ -67,9 +67,10 @@ class TouchToFillView extends TouchToFillViewBase {
     TouchToFillView(Context context, BottomSheetController bottomSheetController) {
         super(bottomSheetController,
                 (RelativeLayout) LayoutInflater.from(context).inflate(
-                        R.layout.touch_to_fill_sheet, null));
+                        R.layout.touch_to_fill_sheet, null),
+                true);
 
-            getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
+        getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
     }
 
     @Override

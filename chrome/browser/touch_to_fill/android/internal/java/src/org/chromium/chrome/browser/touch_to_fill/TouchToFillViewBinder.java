@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
@@ -25,6 +26,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
 import android.content.Context;
 import android.text.method.PasswordTransformationMethod;
@@ -37,6 +39,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
+import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -143,7 +146,7 @@ class TouchToFillViewBinder {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             pslOriginText.setText(model.get(FORMATTED_ORIGIN));
             pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
-        } else if (propertyKey == CREDENTIAL) {
+        } else if (propertyKey == CREDENTIAL || propertyKey == ITEM_COLLECTION_INFO) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             pslOriginText.setText(credential.getDisplayName());
             pslOriginText.setVisibility(credential.isExactMatch() ? View.GONE : View.VISIBLE);
@@ -155,9 +158,14 @@ class TouchToFillViewBinder {
             passwordText.setText(credential.getPassword());
             passwordText.setTransformationMethod(new PasswordTransformationMethod());
 
-            String contentDescription = view.getContext().getString(
+            String label = view.getContext().getString(
                     R.string.touch_to_fill_password_credential_accessibility_description,
                     credential.getFormattedUsername());
+            FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
+            String contentDescription = collectionInfo == null
+                    ? label
+                    : view.getContext().getString(R.string.touch_to_fill_a11y_item_collection_info,
+                            label, collectionInfo.getPosition(), collectionInfo.getTotal());
             view.setContentDescription(contentDescription);
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             // Whether Touch To Fill should auto-submit a form doesn't affect the credentials list.
@@ -185,14 +193,21 @@ class TouchToFillViewBinder {
                     data.mUrl, data.mFallbackColor,
                     FaviconUtils.createCircularIconGenerator(view.getContext()),
                     view.getResources(), data.mIconSize));
-        } else if (propertyKey == WEBAUTHN_CREDENTIAL) {
+        } else if (propertyKey == WEBAUTHN_CREDENTIAL
+                || propertyKey == WEBAUTHN_ITEM_COLLECTION_INFO) {
             TextView usernameText = view.findViewById(R.id.username);
             usernameText.setText(credential.getUsername());
             TextView descriptionText = view.findViewById(R.id.webauthn_credential_context);
             descriptionText.setText(R.string.touch_to_fill_sheet_webauthn_credential_context);
-            String contentDescription = view.getContext().getString(
+
+            String label = view.getContext().getString(
                     R.string.touch_to_fill_passkey_credential_accessibility_description,
                     credential.getUsername());
+            FillableItemCollectionInfo collectionInfo = model.get(WEBAUTHN_ITEM_COLLECTION_INFO);
+            String contentDescription = collectionInfo == null
+                    ? label
+                    : view.getContext().getString(R.string.touch_to_fill_a11y_item_collection_info,
+                            label, collectionInfo.getPosition(), collectionInfo.getTotal());
             view.setContentDescription(contentDescription);
         } else if (propertyKey == SHOW_WEBAUTHN_SUBMIT_BUTTON) {
             // Ignore.
@@ -230,7 +245,9 @@ class TouchToFillViewBinder {
                                                            : R.string.touch_to_fill_continue));
         } else if (propertyKey == FAVICON_OR_FALLBACK || propertyKey == FORMATTED_ORIGIN
                 || propertyKey == CREDENTIAL || propertyKey == WEBAUTHN_CREDENTIAL
-                || propertyKey == WEBAUTHN_FAVICON_OR_FALLBACK) {
+                || propertyKey == WEBAUTHN_FAVICON_OR_FALLBACK
+                || propertyKey == ITEM_COLLECTION_INFO
+                || propertyKey == WEBAUTHN_ITEM_COLLECTION_INFO) {
             // Credential properties don't affect the button.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

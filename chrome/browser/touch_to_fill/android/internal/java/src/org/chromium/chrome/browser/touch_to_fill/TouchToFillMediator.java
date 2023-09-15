@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties.MANAGE_BUTTON_TEXT;
@@ -24,6 +25,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
 import android.content.Context;
 
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterPro
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
+import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -112,9 +115,13 @@ class TouchToFillMediator {
                                         .getPasswordManagerIcon())
                         .build()));
 
+        int fillableItemsTotal = credentials.size() + webAuthnCredentials.size();
+        int fillableItemPosition = 0;
+
         mWebAuthnCredentials = webAuthnCredentials;
         for (WebAuthnCredential credential : webAuthnCredentials) {
-            final PropertyModel model = createWebAuthnModel(credential);
+            final PropertyModel model = createWebAuthnModel(credential,
+                    new FillableItemCollectionInfo(++fillableItemPosition, fillableItemsTotal));
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL, model));
             if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
@@ -124,7 +131,8 @@ class TouchToFillMediator {
 
         mCredentials = credentials;
         for (Credential credential : credentials) {
-            final PropertyModel model = createModel(credential, triggerSubmission);
+            final PropertyModel model = createModel(credential, triggerSubmission,
+                    new FillableItemCollectionInfo(++fillableItemPosition, fillableItemsTotal));
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
             if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
@@ -264,20 +272,24 @@ class TouchToFillMediator {
         return credentials.size() + webauthnCredentials.size() == 1;
     }
 
-    private PropertyModel createModel(Credential credential, boolean triggerSubmission) {
+    private PropertyModel createModel(Credential credential, boolean triggerSubmission,
+            FillableItemCollectionInfo itemCollectionInfo) {
         return new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
                 .with(CREDENTIAL, credential)
                 .with(ON_CLICK_LISTENER, this::onSelectedCredential)
                 .with(FORMATTED_ORIGIN, credential.getDisplayName())
                 .with(SHOW_SUBMIT_BUTTON, triggerSubmission)
+                .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
                 .build();
     }
 
-    private PropertyModel createWebAuthnModel(WebAuthnCredential credential) {
+    private PropertyModel createWebAuthnModel(
+            WebAuthnCredential credential, FillableItemCollectionInfo itemCollectionInfo) {
         return new PropertyModel.Builder(WebAuthnCredentialProperties.ALL_KEYS)
                 .with(WEBAUTHN_CREDENTIAL, credential)
                 .with(ON_WEBAUTHN_CLICK_LISTENER, this::onSelectedWebAuthnCredential)
                 .with(SHOW_WEBAUTHN_SUBMIT_BUTTON, false)
+                .with(WEBAUTHN_ITEM_COLLECTION_INFO, itemCollectionInfo)
                 .build();
     }
 }
